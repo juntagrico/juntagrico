@@ -8,7 +8,8 @@ class Depot(models.Model):
     """
     Location where stuff is picked up.
     """
-    name = models.CharField(max_length=100)
+    name = models.CharField("Depot Name", max_length=100)
+    street = models.CharField("Strasse", max_length=100)
 
     def __unicode__(self):
         return u"Depot: %s" %(self.name)
