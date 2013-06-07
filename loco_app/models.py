@@ -9,7 +9,7 @@ class Depot(models.Model):
     Location where stuff is picked up.
     """
     name = models.CharField("Depot Name", max_length=100)
-    description = models.CharField("Beschreibung", max_length=10000, default="")
+    description = models.CharField("Beschreibung", max_length=1000, default="")
     street = models.CharField("Strasse", max_length=100)
 
     # TODO
@@ -31,10 +31,10 @@ class Depot(models.Model):
 
 class AboType(models.Model):
     """
-    Represents all different types of Abos (subscriptions), e.g. veggies (small / large bag), eggs, cheese.
+    Represents different types of Abos (subscriptions)
     """
     name = models.CharField("Name", max_length=100)
-    description = models.CharField("Beschreibung", max_length=10000)
+    description = models.CharField("Beschreibung", max_length=1000)
 
     # TODO
     #  - frequency: monthly / weekly
@@ -45,6 +45,17 @@ class AboType(models.Model):
         return u"%s" %(self.name)
 
 
+class ExtraAboType(models.Model):
+    """
+    Types of extra abos, e.g. eggs, cheese, fruit
+    """
+    name = models.CharField("Name", max_length=100)
+    description = models.CharField("Beschreibung", max_length=1000)
+
+
+    def __unicode__(self):
+        return u"%s" %(self.name)
+
 
 class Abo(models.Model):
     """
@@ -52,22 +63,32 @@ class Abo(models.Model):
     """
     abotype = models.ForeignKey(AboType)
     depot = models.ForeignKey(Depot)
+    user_history = models.ManyToManyField(User, related_name="abo_history", through="AboHistory") 
+    extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
+    # TODO: boehnli, zusatzabos
 
     def __unicode__(self):
-        users = ", ".join(unicode(loco.user) for loco in self.locos.all())
+        users = ", ".join(unicode(user) for user in self.current_users())
         if not users:
             users = "niemandem"
-
-        return u"%s (von %s)" %(self.abotype.name, users)
-
-
     
+        namelist = [self.abotype.name]
+        namelist.extend(extra.name for extra in self.extra_abos.all())
+        return u"#%s %s (von %s)" %(self.id, " + ".join(namelist), users)
+
+
+    def current_users(self):
+        queryset = AboHistory.objects.filter(abo=self, end=None)
+        return [ah.user for ah in queryset]
+        
+
+
 class Loco(models.Model):
     """
     Additional fields for Django's default user class.
     """
     user = models.OneToOneField(User, related_name='loco')
-    abos = models.ManyToManyField(Abo, related_name='locos', blank=True, null=True)
+    # TODO: anteilscheine, taetigkeitsbereiche
 
     def __unicode__(self):
         return u"%s" %(self.user)
@@ -84,4 +105,21 @@ class Loco(models.Model):
 
 post_save.connect(Loco.create, sender=User)
 
+
+class AboHistory(models.Model):
+    """
+    Defines the User-Abo manytomany relation.
+
+    This is a complete history of abo memberships. currently active abos are found by filtering
+    for end=None
+    """
+    abo = models.ForeignKey(Abo)
+    user = models.ForeignKey(User)
+    start = models.DateField()
+    end = models.DateField(blank=True, null=True)
+
+    def __unicode__(self):
+        if self.end is None:
+            return u"%s von %s" % (self.user, self.start)
+        return u"%s von %s bis %s" % (self.user, self.start, self.end)
 
