@@ -73,6 +73,12 @@ class Abo(models.Model):
         return u"Abo #%s (%s)" %(self.id, " + ".join(namelist))
 
 
+    def bezieher(self):
+        users = self.users.all()
+        users = ", ".join(unicode(user) for user in users)
+        return users
+        
+
 abo_user_audit = model_audit.m2m(Abo.users)
 extraabo_audit = model_audit.m2m(Abo.extra_abos)
 

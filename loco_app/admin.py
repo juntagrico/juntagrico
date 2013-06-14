@@ -8,7 +8,9 @@ from loco_app.models import *
 
 
 class AboAdmin(admin.ModelAdmin):
+    list_display = ["__unicode__", "bezieher"]
     filter_horizontal = ["users"]
+    search_fields = ["users__username", "users__first_name", "users__last_name"]
 
 
 class HistoryAdmin(admin.ModelAdmin):
