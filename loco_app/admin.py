@@ -10,12 +10,13 @@ from loco_app.models import *
 class AboAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "bezieher"]
     filter_horizontal = ["users"]
-    search_fields = ["users__username", "users__first_name", "users__last_name"]
+    search_fields = ["id", "users__username", "users__first_name", "users__last_name"]
 
 
 class HistoryAdmin(admin.ModelAdmin):
     list_display = ["timestamp", "action", "fm", "to"]
     readonly_fields = ["timestamp", "action", "fm", "to"]
+    search_fields = ["id"]
     #can_delete = False
 
 
