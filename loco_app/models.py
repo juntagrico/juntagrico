@@ -68,20 +68,10 @@ class Abo(models.Model):
     # TODO: boehnli, zusatzabos
 
     def __unicode__(self):
-        users = ", ".join(unicode(user) for user in self.current_users())
-        if not users:
-            users = "niemandem"
-    
         namelist = [self.abotype.name]
         namelist.extend(extra.name for extra in self.extra_abos.all())
-        return u"#%s %s (von %s)" %(self.id, " + ".join(namelist), users)
+        return u"Abo #%s (%s)" %(self.id, " + ".join(namelist))
 
-
-    def current_users(self):
-        return self.users.all()
-        queryset = AboHistory.objects.filter(abo=self, end=None)
-        return [ah.user for ah in queryset]
-        
 
 abo_user_audit = model_audit.m2m(Abo.users)
 extraabo_audit = model_audit.m2m(Abo.extra_abos)
