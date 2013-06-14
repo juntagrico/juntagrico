@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
 
-#import model_audit
+import model_audit
 
 class Depot(models.Model):
     """
@@ -63,7 +63,7 @@ class Abo(models.Model):
     """
     abotype = models.ForeignKey(AboType)
     depot = models.ForeignKey(Depot)
-    users = models.ManyToManyField(User, related_name="abos")
+    users = models.ManyToManyField(User, related_name="abos", null=True, blank=True)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
     # TODO: boehnli, zusatzabos
 
@@ -83,7 +83,8 @@ class Abo(models.Model):
         return [ah.user for ah in queryset]
         
 
-#abo_user_log = model_audit.m2m(Abo.users)
+abo_user_audit = model_audit.m2m(Abo.users)
+extraabo_audit = model_audit.m2m(Abo.extra_abos)
 
 
 class Loco(models.Model):
