@@ -1,15 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.db.models import signals
 
-
+#import model_audit
 
 class Depot(models.Model):
     """
     Location where stuff is picked up.
     """
     name = models.CharField("Depot Name", max_length=100)
-    description = models.CharField("Beschreibung", max_length=1000, default="")
+    description = models.TextField("Beschreibung", max_length=1000, default="")
     street = models.CharField("Strasse", max_length=100)
 
     # TODO
@@ -34,7 +34,7 @@ class AboType(models.Model):
     Represents different types of Abos (subscriptions)
     """
     name = models.CharField("Name", max_length=100)
-    description = models.CharField("Beschreibung", max_length=1000)
+    description = models.TextField("Beschreibung", max_length=1000)
 
     # TODO
     #  - frequency: monthly / weekly
@@ -50,7 +50,7 @@ class ExtraAboType(models.Model):
     Types of extra abos, e.g. eggs, cheese, fruit
     """
     name = models.CharField("Name", max_length=100)
-    description = models.CharField("Beschreibung", max_length=1000)
+    description = models.TextField("Beschreibung", max_length=1000)
 
 
     def __unicode__(self):
@@ -63,7 +63,7 @@ class Abo(models.Model):
     """
     abotype = models.ForeignKey(AboType)
     depot = models.ForeignKey(Depot)
-    user_history = models.ManyToManyField(User, related_name="abo_history", through="AboHistory") 
+    users = models.ManyToManyField(User, related_name="abos")
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
     # TODO: boehnli, zusatzabos
 
@@ -78,9 +78,12 @@ class Abo(models.Model):
 
 
     def current_users(self):
+        return self.users.all()
         queryset = AboHistory.objects.filter(abo=self, end=None)
         return [ah.user for ah in queryset]
         
+
+#abo_user_log = model_audit.m2m(Abo.users)
 
 
 class Loco(models.Model):
@@ -103,23 +106,7 @@ class Loco(models.Model):
              new_loco = cls.objects.create(user=instance)
 
 
-post_save.connect(Loco.create, sender=User)
+signals.post_save.connect(Loco.create, sender=User)
 
 
-class AboHistory(models.Model):
-    """
-    Defines the User-Abo manytomany relation.
-
-    This is a complete history of abo memberships. currently active abos are found by filtering
-    for end=None
-    """
-    abo = models.ForeignKey(Abo)
-    user = models.ForeignKey(User)
-    start = models.DateField()
-    end = models.DateField(blank=True, null=True)
-
-    def __unicode__(self):
-        if self.end is None:
-            return u"%s von %s" % (self.user, self.start)
-        return u"%s von %s bis %s" % (self.user, self.start, self.end)
 

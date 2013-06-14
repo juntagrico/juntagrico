@@ -21,6 +21,7 @@ class EndFilter(admin.SimpleListFilter):
             return queryset.filter(end__isnull=True)
         return queryset
 
+"""
 class AboHistoryAdmin(admin.ModelAdmin):
     list_display = ["abo_id", "user", "start", "end"]
     list_filter = [EndFilter]
@@ -39,10 +40,11 @@ class AboHistoryInline(admin.TabularInline):
         print "asdasdasd"
         qs = admin.TabularInline.get_queryset(self, request)
         return qs.filter(end=None)
-
+"""
     
 class AboAdmin(admin.ModelAdmin):
-    inlines = [AboHistoryInline]
+    #inlines = [AboHistoryInline]
+    filter_horizontal = ["users"]
 
 
 admin.site.register(Depot)
@@ -50,4 +52,5 @@ admin.site.register(AboType)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco)
-admin.site.register(AboHistory, AboHistoryAdmin)
+#admin.site.register(abo_user_log)
+#admin.site.register(AboHistory, AboHistoryAdmin)
