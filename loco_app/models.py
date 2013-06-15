@@ -106,4 +106,8 @@ class Loco(models.Model):
 signals.post_save.connect(Loco.create, sender=User)
 
 
+class StaticString(models.Model):
+    name = models.CharField(max_length=100, primary_key=True)
+    text = models.TextField(max_length=10000)
+
 

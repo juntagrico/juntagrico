@@ -26,4 +26,5 @@ admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco)
 admin.site.register(model_audit.Audit, HistoryAdmin)
+admin.site.register(StaticString)
 
