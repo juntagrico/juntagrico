@@ -25,6 +25,9 @@ def depot_list(request, name_or_id):
     Should be able to generate pdfs and spreadsheets in the future.
     """
 
+    # old code, needs to be fixed
+    return HttpResponse("WIP")
+
     if name_or_id.isdigit():
         depot = get_object_or_404(Depot, id=int(name_or_id))
     else:
