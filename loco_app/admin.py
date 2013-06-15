@@ -14,9 +14,9 @@ class AboAdmin(admin.ModelAdmin):
 
 
 class HistoryAdmin(admin.ModelAdmin):
-    list_display = ["timestamp", "action", "fm", "to"]
-    readonly_fields = ["timestamp", "action", "fm", "to"]
-    search_fields = ["id"]
+    list_display = ["timestamp", "action", "source_type", "source_object", "target_type", "target_object"]
+    readonly_fields = list_display
+    #search_fields = ["id"]
     #can_delete = False
 
 
@@ -25,6 +25,5 @@ admin.site.register(AboType)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco)
-admin.site.register(abo_user_audit, HistoryAdmin)
-admin.site.register(extraabo_audit, HistoryAdmin)
+admin.site.register(model_audit.Audit, HistoryAdmin)
 
