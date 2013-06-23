@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
+from django.core import validators
 
 import model_audit
 
@@ -8,24 +9,24 @@ class Depot(models.Model):
     """
     Location where stuff is picked up.
     """
+    weekdays = ((0, "Montag"),
+                (1, "Dienstag"),
+                (2, "Mittwoch"),
+                (3, "cwDonnerstag"),
+                (4, "Freitag"),
+                (5, "Samstag"),
+                (6, "Sonntag"))
+
+    code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     street = models.CharField("Strasse", max_length=100)
+    contact = models.ForeignKey(User, on_delete=models.PROTECT)
+    weekday = models.PositiveIntegerField("Wochentag", choices=weekdays)
 
-    # TODO
-    #  - responsible_person
-    #  - weekday
-    #  - enforce lower case constraint at creation time
 
     def __unicode__(self):
         return u"%s" %(self.name)
-
-    def save(self, *args, **kwds):
-        """
-        Override django method to force name to be lowercase.
-        """
-        self.name = self.name.lower()
-        models.Model.save(self, *args, **kwds)
 
 
 
@@ -61,17 +62,16 @@ class Abo(models.Model):
     """
     One Abo that may be shared among several people.
     """
-    abotype = models.ForeignKey(AboType)
-    depot = models.ForeignKey(Depot)
+    abotype = models.ForeignKey(AboType, on_delete=models.PROTECT)
+    depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
     users = models.ManyToManyField(User, related_name="abos", null=True, blank=True)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
-    # TODO: boehnli, zusatzabos
+    # TODO: boehnli
 
     def __unicode__(self):
         namelist = [self.abotype.name]
         namelist.extend(extra.name for extra in self.extra_abos.all())
         return u"Abo #%s (%s)" %(self.id, " + ".join(namelist))
-
 
     def bezieher(self):
         users = self.users.all()
@@ -79,16 +79,13 @@ class Abo(models.Model):
         return users
         
 
-abo_user_audit = model_audit.m2m(Abo.users)
-extraabo_audit = model_audit.m2m(Abo.extra_abos)
-
-
 class Loco(models.Model):
     """
     Additional fields for Django's default user class.
     """
     user = models.OneToOneField(User, related_name='loco')
     # TODO: anteilscheine, taetigkeitsbereiche
+
 
     def __unicode__(self):
         return u"%s" %(self.user)
@@ -103,11 +100,12 @@ class Loco(models.Model):
              new_loco = cls.objects.create(user=instance)
 
 
-signals.post_save.connect(Loco.create, sender=User)
-
-
 class StaticString(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
     text = models.TextField(max_length=10000)
 
+
+abo_user_audit = model_audit.m2m(Abo.users)
+extraabo_audit = model_audit.m2m(Abo.extra_abos)
+signals.post_save.connect(Loco.create, sender=User)
 
