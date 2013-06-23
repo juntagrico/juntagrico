@@ -15,7 +15,9 @@ urlpatterns = patterns('',
 	url('^web/join.html', 'loco_app.views.join'),
 	url('^web/gallery.html', 'loco_app.views.gallery'),
 	url('^web/media.html', 'loco_app.views.media'),
-	url('^web/downloads.html', 'loco_app.views.downloads'),
+    url('^web/downloads.html', 'loco_app.views.downloads'),
+    url('^web/links.html', 'loco_app.views.links'),
+    url('^web/contact.html', 'loco_app.views.contact'),
 
     url('^depots/', 'loco_app.views.all_depots'),
     url('^depotliste/(?P<name_or_id>.*?)/', 'loco_app.views.depot_list'),
@@ -27,10 +29,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     (r'^tinymce/', include('tinymce.urls')),
     url(r'^medias/(?P<path>.*)$', 'django.views.static.serve', {
-            'document_root': settings.MEDIA_ROOT,
-        }),
-        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
-            'document_root': settings.STATIC_ROOT,
-        }),
+        'document_root': settings.MEDIA_ROOT,
+    }),
+    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+        'document_root': settings.STATIC_ROOT,
+    }),
 
 )

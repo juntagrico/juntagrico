@@ -113,10 +113,26 @@ def media(request):
 
     return render(request, "web/media.html", renderdict)
 
+def links(request):
+    """
+    Links to partners
+    """
+    links_list = Links.objects.all().reverse()
+
+    renderdict = {
+        'menu': {
+            'links': 'active'
+        },
+        'links': links_list,
+    }
+
+    return render(request, "web/links.html", renderdict)
+
 def downloads(request):
     """
     Downloads available
     """
+    download_list = Downloads.objects.all().reverse()
 
     renderdict = {
         'menu': {
@@ -126,6 +142,19 @@ def downloads(request):
     }
 
     return render(request, "web/downloads.html", renderdict)
+
+def contact(request):
+    """
+    Contact page
+    """
+
+    renderdict = {
+        'menu': {
+            'contact': 'active'
+        },
+    }
+
+    return render(request, "web/contact.html", renderdict)
 
 
 def all_depots(request):

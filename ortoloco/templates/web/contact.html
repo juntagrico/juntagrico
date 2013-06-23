@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h3>Kontakt</h3>
+	<div>Das ortoloco-Gemüsefeld befindet sich am Stadtrand von Dietikon im Zürcher Limmattal</div>
+	<div id="map-canvas"></div>
+	<div class="addresses row">
+		<div class="span4">
+			<strong>Adresse Gemüsebetrieb</strong><br/>
+ortoloco - Die regionale Gartenkooperative<br/>
+Spreitenbacherstrasse 35<br/>
+8953 Dietikon<br/>
+info@ortoloco.ch
+		</div>
+		<div class="span4">
+			<strong>Adresse Administration</strong><br/>
+			ortoloco - Die regionale Gartenkooperative<br/>
+			Albulastrasse 30<br/>
+			8048 Zürich<br/>
+			info@ortoloco.ch
+		</div>
+	</div>
+	<h3>Newsletter abonnieren</h3>
+	<form class="form">
+		<label class="checkbox">
+		  <input type="checkbox" name="ortoloco" value="subscribe">
+		  Ich möchte der Genossenschaft ortoloco nicht beitreten aber gerne per Mail auf dem Laufenden gehalten werden.
+		</label>
+		<label class="checkbox">
+		  <input type="checkbox" name="polit" value="subscribe">
+		  Ich möchte den unregelmässig erscheinenden Polit-Newsletter zu aktuellen Themen und Veranstaltungen der Alternativ-Kultur abonnieren.
+		</label>
+		<div class="email form-inline">
+			<label for="email">Meine Email-Adresse:</label>
+			<input id="email" name="email" type="text" placeholder="hans@muster.ch">
+		</div>
+		<div class="form-actions">
+		  <button type="submit" class="btn btn-success">Abonnieren</button>
+		</div>
+	</form>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+	<script>
+	var map;
+	function initialize() {
+	  var mapOptions = {
+	    zoom: 14,
+	    center: new google.maps.LatLng(47.4099048,8.3823588),
+	    mapTypeId: google.maps.MapTypeId.ROADMAP
+	  };
+	  map = new google.maps.Map(document.getElementById('map-canvas'),
+	      mapOptions);
+	}
+
+	google.maps.event.addDomListener(window, 'load', initialize);
+	</script>
+{% endblock %}

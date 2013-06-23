@@ -12,6 +12,9 @@ html, body {
 	font-size: 16px;
 	background-color: #fffff7;
 }
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input{
+	height: 30px;
+}
 
 /* general stuff */
 
@@ -26,42 +29,42 @@ html, body {
 	background-position: 0 51px;
 }
 .ortoloco {
-	margin-top: 50px;
-	margin-bottom: 50px;
+	margin-top: 80px;
+	margin-bottom: 80px;
 	position: relative;
 }
 .ortoloco .erbsetop {
 	position: absolute;
-	left: -40px;
-	top: -40px;
-	right: -40px;
+	left: -60px;
+	top: -60px;
+	right: -60px;
 	background-image: url(/static/img/erbse_x.png) ;
 	height: 20px;
 	opacity: 0.3;
 }
 .ortoloco .erbseleft {
 	position: absolute;
-	left: -40px;
-	top: -20px;
+	left: -60px;
+	top: -40px;
 	background-image: url(/static/img/erbse_y.png) ;
-	bottom: -20px;
+	bottom: -40px;
 	width: 20px;
 	opacity: 0.3;
 }
 .ortoloco .erbseright {
 	position: absolute;
-	right: -40px;
-	top: -20px;
+	right: -60px;
+	top: -40px;
 	background-image: url(/static/img/erbse_y.png) ;
-	bottom: -20px;
+	bottom: -40px;
 	width: 20px;
 	opacity: 0.3;
 }
 .ortoloco .erbsebottom {
 	position: absolute;
-	left: -40px;
-	bottom: -40px;
-	right: -40px;
+	left: -60px;
+	bottom: -60px;
+	right: -60px;
 	background-image: url(/static/img/erbse_x.png) ;
 	height: 20px;
 	opacity: 0.3;
@@ -110,4 +113,27 @@ html, body {
 /* medias */
 .year {
 	opacity: 0.7;
+}
+
+/* links */
+.link .desc {
+	padding-top: 5px;
+	padding-left: 35px;
+	background: url(/static/img/erbse_y.png) no-repeat left -88px;
+}
+
+/* contact */
+#map-canvas {
+	display: inline-block;
+	width: 400px;
+	height: 200px;
+}
+
+.addresses {
+	padding-top: 20px;
+	padding-bottom: 40px;
+}
+
+.email {
+	padding-top: 20px;
 }

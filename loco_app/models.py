@@ -45,7 +45,6 @@ class Links(models.Model):
     name = models.CharField("Link", max_length=200)
     description = models.CharField("Beschreibung", max_length=400)
 
-
     def __unicode__(self):
         return u"%s" %(self.name)
 
