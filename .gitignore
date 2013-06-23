@@ -1,3 +1,5 @@
 db.sqlite
 venv/*
 *.pyc
+loco_app/medias/medias
+loco_app/medias/downloads
