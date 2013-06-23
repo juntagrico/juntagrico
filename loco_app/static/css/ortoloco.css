@@ -1,0 +1,113 @@
+/* general overrides of bootstrap */
+
+a {
+	color: #4c9434;
+}
+
+a:hover, a:focus {
+	color: #315f21;
+}
+
+html, body {
+	font-size: 16px;
+	background-color: #fffff7;
+}
+
+/* general stuff */
+
+.logo {
+	background: url(/static/img/logo.png) 0 0px;
+	display: inline-block;
+	width: 220px;
+	height: 51px;
+	margin-bottom: 25px;	
+}
+.logo:hover {
+	background-position: 0 51px;
+}
+.ortoloco {
+	margin-top: 50px;
+	margin-bottom: 50px;
+	position: relative;
+}
+.ortoloco .erbsetop {
+	position: absolute;
+	left: -40px;
+	top: -40px;
+	right: -40px;
+	background-image: url(/static/img/erbse_x.png) ;
+	height: 20px;
+	opacity: 0.3;
+}
+.ortoloco .erbseleft {
+	position: absolute;
+	left: -40px;
+	top: -20px;
+	background-image: url(/static/img/erbse_y.png) ;
+	bottom: -20px;
+	width: 20px;
+	opacity: 0.3;
+}
+.ortoloco .erbseright {
+	position: absolute;
+	right: -40px;
+	top: -20px;
+	background-image: url(/static/img/erbse_y.png) ;
+	bottom: -20px;
+	width: 20px;
+	opacity: 0.3;
+}
+.ortoloco .erbsebottom {
+	position: absolute;
+	left: -40px;
+	bottom: -40px;
+	right: -40px;
+	background-image: url(/static/img/erbse_x.png) ;
+	height: 20px;
+	opacity: 0.3;
+}
+
+/* menu */
+.nav-pills>.active>a, .nav-pills>.active>a:hover, .nav-pills>.active>a:focus{
+	background-color: #62be43;
+}
+
+.nav-pills>li>a {
+	border-radius: 0;
+	margin-top: 0;
+}
+.nav-pills.nav-stacked>li>a, .nav-pills ul.nav-pills.nav-stacked>li:last-child>a {
+	margin-bottom: 0;
+}
+
+.nav-pills a:hover {
+	background: url(/static/img/erbse_y.png) no-repeat right -88px;
+}
+
+.nav-pills ul {
+	margin-bottom: 0;
+	border-bottom: 1px #62be43 solid;
+	background-color: #f6fff6;
+}
+
+.nav-pills ul {
+	margin-bottom: 0;
+	border-bottom: 1px #62be43 solid;
+	background-color: #f6fff6;
+}
+
+.nav-pills ul.nav-pills>.active>a, .nav-pills ul.nav-pills>.active>a:hover, .nav-pills ul.nav-pills>.active>a:focus{
+	background-color: #c2edb2;
+	color: #315f21;
+}
+
+/* home */
+.lastNews {
+	background: url(/static/img/home.png) right bottom no-repeat;
+	min-height: 600px;
+}
+
+/* medias */
+.year {
+	opacity: 0.7;
+}

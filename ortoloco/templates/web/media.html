@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h3>Medienecho</h3>
+	<table class="table">
+		{% with lastYear=0 %}
+		{% for media in medias %}
+	  		<tr>
+	  			<td class="year">{{media.year}}</td>
+	  			<td><a target="_blank" href="/medias/{{media.mediafile}}">{{media.name}}</a></td>
+	  		</tr>
+		{% endfor %}
+		{% endwith %}
+	</table>
+{% endblock %}

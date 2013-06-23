@@ -1,10 +1,66 @@
+<html lang="de">
 <head>
-<title>Ortoloco</title>
-<meta charset="utf-8">
+	<title>Ortoloco</title>
+	<meta charset="utf-8">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" />
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/ortoloco.css" rel="stylesheet">
 </head>
+<body>
+    <div class="container ortoloco">	
+    	<div class="erbsetop"></div>
+    	<div class="erbseleft"></div>
+    	<div class="erbseright"></div>
+    	<div class="erbsebottom"></div>
+    	<div class="row">
+    		<div class="span4">
+    			<a href="/home.html"><span class="logo"></span></a>
 
-<h1>Ortoloco</h1>
+					<ul class="nav nav-pills nav-stacked">
+						<li class="{{ menu.home }}">
+							<a href="/web/home.html">Aktuelles</a>
+						</li>
+						<li class="{{ menu.about }}">
+							<a href="/web/about.html">Das ist ortoloco</a>
+							{% if menu.about == 'active' %}
+							<ul class="nav nav-pills nav-stacked">
+								<li class="{{ menu.aboutChild }}"><a href="/web/about.html">&raquo; Die Idee</a></li>
+								<li class="{{ menu.portrait }}"><a href="/web/portrait.html">&raquo; Das Portrait</a></li>
+								<li class="{{ menu.background }}"><a href="/web/background.html">&raquo; Der Hintergrund</a></li>
+								<li class="{{ menu.abo }}"><a href="/web/abo.html">&raquo; Das Gemüse-Abo</a></li>
+							</ul>
+							{% endif %}
+						</li>
+						<li class="{{ menu.join }}">
+							<a href="/web/join.html">Genossenschafter werden</a>
+						</li>
+						<li class="{{ menu.gallery }}">
+							<a href="/web/gallery.html">Bilder</a>
+						</li>
+						<li class="{{ menu.media }}">
+							<a href="/web/media.html">Medienecho</a>
+						</li>
+						<li class="{{ menu.downloads }}"">
+							<a href="/web/downloads.html">Downloads</a>
+						</li>
+						<li class="{{ menu.links }}">
+							<a href="/web/links.html">Links</a>
+						</li>
+						<li class="{{ menu.contact }}">
+							<a href="/web/contact.html">Kontakt</a>
+						</li>
+					</ul>
 
 
-{% block content %}
-{% endblock %}
+
+
+    			{% block submenu %}
+    			{% endblock %}
+    		</div>
+    		<div class="span8">
+				{% block content %}
+				{% endblock %}
+			</div>
+	</div>
+</body>
