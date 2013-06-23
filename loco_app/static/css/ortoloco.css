@@ -137,3 +137,22 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 .email {
 	padding-top: 20px;
 }
+
+/* gallery */
+.lastImg, .lastImg:hover, .nextImg, .nextImg:hover{
+	position: relative;
+	display: inline-block;
+	z-index: 100;
+	opacity: 1;
+	font-size: 70px;
+	line-height: 70px;
+	text-decoration: none;
+	text-align: center;
+}
+.gallery-photo {
+	text-align: center;
+}
+
+.galleryDate {
+	padding-bottom: 20px;
+}

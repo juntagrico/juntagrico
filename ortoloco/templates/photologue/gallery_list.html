@@ -1,0 +1,31 @@
+{% extends "templates/photologue/gallery_list.html" %}
+
+{% block content %}
+
+<h3>Ortoloco Fotos</h3>
+
+{% if object_list %}
+    {% for gallery in object_list %}
+    <div class="photo-gallery">
+        <h4><a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a></h4>
+        <ul class="thumbnails">
+        {% for photo in gallery.sample %}
+        <li class="span2 gallery-photo">
+            <a href="{{ gallery.get_absolute_url }}" class="thumbnail"><img src="{{ photo.get_thumbnail_url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/></a>
+        </li>
+        {% endfor %}
+    	</ul>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>Keine Galerien gefunden</p>
+{% endif %}
+
+{% if is_paginated %}
+<p>{{ hits }} Galerien insgesamt.</p>
+<div id="page_controls">
+    <p>{% if has_previous %}<a href="{% url 'pl-gallery-list' previous %}">Vorherige</a> | {% endif %} Seite {{ page }} von {{ pages }} {% if has_next %}| <a href="{% url 'pl-gallery-list' next %}">Nächste</a>{% endif %}</p>
+</div>
+{% endif %}
+
+{% endblock %}

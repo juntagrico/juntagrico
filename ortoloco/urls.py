@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url('^web/downloads.html', 'loco_app.views.downloads'),
     url('^web/links.html', 'loco_app.views.links'),
     url('^web/contact.html', 'loco_app.views.contact'),
+    (r'^photologue/', include('photologue.urls')),
 
     url('^depots/', 'loco_app.views.all_depots'),
     url('^depotliste/(?P<name_or_id>.*?)/', 'loco_app.views.depot_list'),
