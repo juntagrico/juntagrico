@@ -6,6 +6,10 @@ from django.contrib.contenttypes import generic
 
 
 class Audit(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    action = models.CharField(max_length=20)
+    field = models.CharField(max_length=100)
+
     source_type = models.ForeignKey(ContentType, related_name="source_set")
     source_id = models.PositiveIntegerField()
     source_object = generic.GenericForeignKey('source_type', 'source_id')
@@ -14,28 +18,50 @@ class Audit(models.Model):
     target_id = models.PositiveIntegerField(null=True, blank=True)
     target_object = generic.GenericForeignKey('target_type', 'target_id')
 
-    timestamp = models.DateTimeField(auto_now_add=True)
-    action = models.CharField(max_length=20, default="")
 
 
 def m2m(m2mrel):
     source_model = m2mrel.field.model
     target_model = m2mrel.field.rel.to
-
+    fieldname = m2mrel.field.name
     #source_ct = ContentType.objects.get_for_model(source_model)
     target_ct = ContentType.objects.get_for_model(target_model)
 
     def callback(instance, action, pk_set, **kwds):
         if not action.startswith("post_"):
             return
-        action = action[5:]
+        action = "m2m" + action[4:]
 
-        if action == "clear":
-            Audit.objects.create(action=action, source_object=instance, target_type=target_ct)
-        elif action in ("add", "delete"):
+        if action == "m2m_clear":
+            Audit.objects.create(action=action, 
+                                 field=fieldname, 
+                                 source_object=instance, 
+                                 target_type=target_ct)
+        elif action in ("m2m_add", "m2m_delete"):
             for obj in target_model.objects.filter(pk__in=pk_set):
-                Audit.objects.create(action=action, source_object=instance, target_object=obj)
+                Audit.objects.create(action=action, 
+                                     field=fieldname, 
+                                     source_object=instance, 
+                                     target_object=obj)
 
     # callback needs to have some reference to it, otherwise set weak=False in the connect call
     signals.m2m_changed.connect(callback, sender=m2mrel.through, weak=False)
+
+
+def fk(rel):
+    source_model = rel.field.model
+    target_model = rel.field.rel.to
+    fieldname = rel.field.name
+    target_ct = ContentType.objects.get_for_model(target_model)
+
+    def callback(instance, **kwds):
+        val = getattr(instance, fieldname)
+        # pass both type and val in case val is None
+        Audit.objects.create(action="fk_set", 
+                             field=fieldname, 
+                             source_object=instance, 
+                             target_type=target_ct, 
+                             target_object=val)
+
+    signals.post_save.connect(callback, sender=source_model, weak=False)
 

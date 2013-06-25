@@ -41,7 +41,6 @@ class AboType(models.Model):
     #  - frequency: monthly / weekly
     #  - prices: yearly / quarterly / monthly
 
-
     def __unicode__(self):
         return u"%s" %(self.name)
 
@@ -66,7 +65,6 @@ class Abo(models.Model):
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
     users = models.ManyToManyField(User, related_name="abos", null=True, blank=True)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
-    # TODO: boehnli
 
     def __unicode__(self):
         namelist = [self.abotype.name]
@@ -79,6 +77,42 @@ class Abo(models.Model):
         return users
         
 
+class Anteilschein(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __unicode__(self):
+        return u"Anteilschein #%s" %(self.id)
+
+
+class Taetigkeitsbereich(models.Model):
+    name = models.CharField("Name", max_length=100)
+    description = models.TextField("Beschreibung", max_length=1000, default="")
+    coordinator = models.ForeignKey(User, on_delete=models.PROTECT)
+    users = models.ManyToManyField(User, related_name="taetigkeitsbereiche")
+
+
+"""
+class Job2Users(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.PROTECT, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
+    slots = models.PositiveIntegerField()
+
+
+class JobTyp(models.Model):
+    name = models.CharField("Name", max_length=100)
+    description = models.TextField("Beschreibung", max_length=1000, default="")
+    bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
+
+
+class Job(models.Model):
+    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
+    slots = models.PositiveIntegerField("Plaetze")
+
+    #user = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
+    users = models.ManyToManyField(User, through=Job2Users)
+"""
+
+# TODO: remove this class? doesn't seem to be needed right now
 class Loco(models.Model):
     """
     Additional fields for Django's default user class.
@@ -104,8 +138,14 @@ class StaticString(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
     text = models.TextField(max_length=10000)
 
+    def __unicode__(self):
+        return u"%s" % self.name
 
-abo_user_audit = model_audit.m2m(Abo.users)
-extraabo_audit = model_audit.m2m(Abo.extra_abos)
+
+model_audit.m2m(Abo.users)
+#model_audit.m2m(Abo.extra_abos)
+
+model_audit.fk(Anteilschein.user)
+
 signals.post_save.connect(Loco.create, sender=User)
 
