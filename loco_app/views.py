@@ -25,6 +25,8 @@ def depot_list(request, name_or_id):
     Should be able to generate pdfs and spreadsheets in the future.
     """
 
+    # TODO: use name__iexact
+
     # old code, needs to be fixed
     return HttpResponse("WIP")
 

@@ -29,17 +29,13 @@ class Depot(models.Model):
         return u"%s" %(self.name)
 
 
-
+# TODO: remove
 class AboType(models.Model):
     """
     Represents different types of Abos (subscriptions)
     """
     name = models.CharField("Name", max_length=100)
     description = models.TextField("Beschreibung", max_length=1000)
-
-    # TODO
-    #  - frequency: monthly / weekly
-    #  - prices: yearly / quarterly / monthly
 
     def __unicode__(self):
         return u"%s" %(self.name)
@@ -52,6 +48,9 @@ class ExtraAboType(models.Model):
     name = models.CharField("Name", max_length=100)
     description = models.TextField("Beschreibung", max_length=1000)
 
+    # TODO
+    #  - frequency: monthly / weekly
+    #  - prices: yearly / quarterly / monthly
 
     def __unicode__(self):
         return u"%s" %(self.name)
@@ -118,12 +117,9 @@ class Loco(models.Model):
     Additional fields for Django's default user class.
     """
     user = models.OneToOneField(User, related_name='loco')
-    # TODO: anteilscheine, taetigkeitsbereiche
-
 
     def __unicode__(self):
         return u"%s" %(self.user)
-
 
     @classmethod
     def create(cls, sender, instance, created, **kdws):
@@ -143,7 +139,8 @@ class StaticString(models.Model):
 
 
 model_audit.m2m(Abo.users)
-#model_audit.m2m(Abo.extra_abos)
+model_audit.m2m(Abo.extra_abos)
+model_audit.fk(Abo.depot)
 
 model_audit.fk(Anteilschein.user)
 
