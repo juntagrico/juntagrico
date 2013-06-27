@@ -6,6 +6,157 @@ from django.shortcuts import render, get_object_or_404
 from loco_app.models import *
 
 
+def home(request):
+    """
+    Homepage of "static" page
+    """
+    
+    renderdict = {
+        'submenu': get_object_or_404(StaticContent, name='HomeUnterMenu'),
+        'homeTitel': get_object_or_404(StaticContent, name='HomeTitel'),
+        'homeText': get_object_or_404(StaticContent, name='HomeText'),
+        'menu': {
+            'home': 'active'
+        }
+    }
+
+    return render(request, "web/home.html", renderdict)
+
+def about(request):
+    """
+    About ortoloco of "static" page
+    """
+    
+    renderdict = {
+        'menu': {
+            'about': 'active',
+            'aboutChild': 'active'
+        }
+    }
+
+    return render(request, "web/about.html", renderdict)
+
+def portrait(request):
+    """
+    About ortoloco of "static" page
+    """
+    renderdict = {
+        'menu': {
+            'about': 'active',
+            'portrait': 'active'
+        }
+    }
+
+    return render(request, "web/portrait.html", renderdict)
+
+def background(request):
+    """
+    About ortoloco of "static" page
+    """
+    renderdict = {
+        'menu': {
+            'about': 'active',
+            'background': 'active'
+        }
+    }
+
+    return render(request, "web/background.html", renderdict)
+
+def abo(request):
+    """
+    About ortoloco of "static" page
+    """
+    renderdict = {
+        'menu': {
+            'about': 'active',
+            'abo': 'active'
+        }
+    }
+
+    return render(request, "web/abo.html", renderdict)
+
+def join(request):
+    """
+    About ortoloco of "static" page
+    """
+    renderdict = {
+        'menu': {
+            'join': 'active'
+        }
+    }
+
+    return render(request, "web/join.html", renderdict)
+
+def gallery(request):
+    """
+    About ortoloco of "static" page
+    """
+    renderdict = {
+        'menu': {
+            'gallery': 'active'
+        }
+    }
+
+    return render(request, "web/gallery.html", renderdict)
+
+def media(request):
+    """
+    About ortoloco of "static" page
+    """
+    medias_list = Medias.objects.all().order_by('year').reverse()
+    renderdict = {
+        'menu': {
+            'media': 'active'
+        },
+        'medias': medias_list,
+    }
+
+    return render(request, "web/media.html", renderdict)
+
+def links(request):
+    """
+    Links to partners
+    """
+    links_list = Links.objects.all().reverse()
+
+    renderdict = {
+        'menu': {
+            'links': 'active'
+        },
+        'links': links_list,
+    }
+
+    return render(request, "web/links.html", renderdict)
+
+def downloads(request):
+    """
+    Downloads available
+    """
+    download_list = Downloads.objects.all().reverse()
+
+    renderdict = {
+        'menu': {
+            'downloads': 'active'
+        },
+        'downloads': download_list,
+    }
+
+    return render(request, "web/downloads.html", renderdict)
+
+def contact(request):
+    """
+    Contact page
+    """
+
+    renderdict = {
+        'menu': {
+            'contact': 'active'
+        },
+    }
+
+    return render(request, "web/contact.html", renderdict)
+
+
 def all_depots(request):
     """
     Simple test view.

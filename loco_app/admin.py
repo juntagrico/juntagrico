@@ -40,6 +40,10 @@ class BereichAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Depot)
+admin.site.register(StaticContent)
+admin.site.register(Medias)
+admin.site.register(Downloads)
+admin.site.register(Links)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
 #admin.site.register(Loco)

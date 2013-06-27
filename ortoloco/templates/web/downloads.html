@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h3>Downloads</h3>
+	<table class="table">
+		<tr>
+			<th>Weitere Infos für Interessierte</th>
+		</tr>
+		{% for download in downloads %}
+			<tr>
+				<th><a href="/medias/{{download.mediafile}}">{{download.name}}</a></th>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

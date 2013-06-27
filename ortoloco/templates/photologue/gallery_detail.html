@@ -1,0 +1,33 @@
+{% extends "templates/photologue/gallery_detail.html" %}
+{% load url from future %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+<link href="/static/css/jquery.fancybox.css" rel="stylesheet">	
+<script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.fancybox.pack.js"></script>
+
+<h3>{{ object.title }}</h3>
+<div class="galleryDate">Galerie vom {{ object.date_added|date:"d.m.Y" }}</div>
+{% if object.description %}<p>{{ object.description }}</p>{% endif %}
+<ul class="thumbnails photo-gallery">
+    {% for photo in object.public.reverse %}
+    <li class="gallery-photo span2">
+        <a class="thumbnail" rel="{{object.title_slug}}" href="{{ photo.image.url }}" title="{{photo.title}}">
+        	<img src="{{ photo.get_thumbnail_url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+<p><a href="{% url 'pl-gallery-list' 1 %}">Zurück zu allen Galerien</a></p>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".thumbnail").fancybox({
+			openEffect	: 'none',
+			closeEffect	: 'none'
+		});
+	});
+</script>
+{% endblock %}
