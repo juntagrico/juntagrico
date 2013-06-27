@@ -1,6 +1,7 @@
 Django==1.5.1
+Pillow==2.0.0
 South==0.7.6
 argparse==1.2.1
 distribute==0.6.28
+django-photologue==2.6.1
 wsgiref==0.1.2
-photologue==2.6.1
