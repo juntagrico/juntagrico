@@ -12,7 +12,7 @@ class Depot(models.Model):
     weekdays = ((0, "Montag"),
                 (1, "Dienstag"),
                 (2, "Mittwoch"),
-                (3, "cwDonnerstag"),
+                (3, "Donnerstag"),
                 (4, "Freitag"),
                 (5, "Samstag"),
                 (6, "Sonntag"))
@@ -28,17 +28,6 @@ class Depot(models.Model):
     def __unicode__(self):
         return u"%s" %(self.name)
 
-
-# TODO: remove
-class AboType(models.Model):
-    """
-    Represents different types of Abos (subscriptions)
-    """
-    name = models.CharField("Name", max_length=100)
-    description = models.TextField("Beschreibung", max_length=1000)
-
-    def __unicode__(self):
-        return u"%s" %(self.name)
 
 
 class ExtraAboType(models.Model):
@@ -60,21 +49,26 @@ class Abo(models.Model):
     """
     One Abo that may be shared among several people.
     """
-    abotype = models.ForeignKey(AboType, on_delete=models.PROTECT)
+    # TODO
+    # force primary user to have abo set to this instance
+
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
-    users = models.ManyToManyField(User, related_name="abos", null=True, blank=True)
+    primary_user = models.ForeignKey(User, related_name="abo_primary", null=True, blank=True)
+    users = models.ManyToManyField(User, null=True, blank=True)
+    groesse = models.PositiveIntegerField(default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
 
     def __unicode__(self):
-        namelist = [self.abotype.name]
+        
+        namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
         namelist.extend(extra.name for extra in self.extra_abos.all())
-        return u"Abo #%s (%s)" %(self.id, " + ".join(namelist))
+        return u"Abo (%s)" %(" + ".join(namelist))
 
     def bezieher(self):
+        #users = self.loco_set.all()
         users = self.users.all()
-        users = ", ".join(unicode(user) for user in users)
-        return users
-        
+        return ", ".join(unicode(user) for user in users)
+
 
 class Anteilschein(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
@@ -130,18 +124,9 @@ class Loco(models.Model):
              new_loco = cls.objects.create(user=instance)
 
 
-class StaticString(models.Model):
-    name = models.CharField(max_length=100, primary_key=True)
-    text = models.TextField(max_length=10000)
-
-    def __unicode__(self):
-        return u"%s" % self.name
-
-
-model_audit.m2m(Abo.users)
+#model_audit.m2m(Abo.users)
 model_audit.m2m(Abo.extra_abos)
 model_audit.fk(Abo.depot)
-
 model_audit.fk(Anteilschein.user)
 
 signals.post_save.connect(Loco.create, sender=User)
