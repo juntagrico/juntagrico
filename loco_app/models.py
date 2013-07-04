@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
 from django.core import validators
+from django.core.exceptions import ValidationError
 
 import model_audit
 
@@ -98,8 +99,7 @@ class Abo(models.Model):
     """
 
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
-    users = models.ManyToManyField(User, null=True, blank=True)
-    primary_user = models.ForeignKey(User, related_name="abo_primary", null=True, blank=True)
+    primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True)
     groesse = models.PositiveIntegerField(default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
 
@@ -109,43 +109,12 @@ class Abo(models.Model):
         return u"Abo (%s)" %(" + ".join(namelist))
 
     def bezieher(self):
-        #users = self.loco_set.all()
-        users = self.users.all()
-        return ", ".join(unicode(user) for user in users)
+        locos = self.locos.all()
+        return ", ".join(unicode(loco) for loco in locos)
 
-    
-    def clean(self):
-        """
-        Model validation.
-        """
-        users = list(self.users.all())
-        if len(users) == 0:
-            self.primary_user = None
-        if len(users) > 0 and self.primary_user not in self.users.all():
-            self.primary_user = users[0]
-    
-    @classmethod
-    def m2m_clean(cls, instance, action, **k):
-        """
-        Automatically adjust primary user. 
-        Djangos default clean method doesn't work properly with manytomany fields (it still reads the old
-        values when saving in the admin).
-        """
-        if action in ["post_clear", "post_remove"]:
-            instance._old_primary = instance.primary_user
-            instance.clean()
-            instance.save()
-        elif action in ["post_add"]:
-            users = instance.users.all()
-            if instance.primary_user not in users:
-                old = instance._old_primary
-                user = old if old in users else users[0]
-                instance.primary_user = user
-                instance.save()
-            instance._old_primary = None
-
-
-signals.m2m_changed.connect(Abo.m2m_clean, sender=Abo.users.through, weak=False)
+    def verantwortlicher_bezieher(self):
+        loco = self.primary_loco
+        return unicode(loco) if loco is not None else ""
 
 
 class Anteilschein(models.Model):
@@ -189,6 +158,7 @@ class Loco(models.Model):
     Additional fields for Django's default user class.
     """
     user = models.OneToOneField(User, related_name='loco')
+    abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True)
 
     def __unicode__(self):
         return u"%s" %(self.user)
@@ -202,7 +172,7 @@ class Loco(models.Model):
              new_loco = cls.objects.create(user=instance)
 
 
-model_audit.m2m(Abo.users)
+#model_audit.m2m(Abo.users)
 model_audit.m2m(Abo.extra_abos)
 model_audit.fk(Abo.depot)
 model_audit.fk(Anteilschein.user)

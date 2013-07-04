@@ -10,17 +10,48 @@ class AboAdminForm(forms.ModelForm):
     class Meta:
         model = Abo
 
+    abo_locos = forms.ModelMultipleChoiceField(queryset=Loco.objects.all(), required=False,
+                                               widget=admin.widgets.FilteredSelectMultiple("Locos", False))
+
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        self.fields["primary_user"].queryset = User.objects.filter(abo=self.instance)
-        self.fields["users"].queryset = User.objects.filter(Q(abo=None) | Q(abo=self.instance))
+        self.fields["primary_loco"].queryset = Loco.objects.filter(abo=self.instance)
+        self.fields["abo_locos"].queryset = Loco.objects.filter(Q(abo=None) | Q(abo=self.instance))
+        self.fields["abo_locos"].initial = Loco.objects.filter(abo=self.instance)
+
+
+    def clean(self):
+        # enforce integrity constraint on primary_loco
+        locos = self.cleaned_data["abo_locos"]
+        primary = self.cleaned_data["primary_loco"]
+        if len(locos) == 0:
+            self.cleaned_data["primary_loco"] = None
+        elif primary not in locos:
+            self.cleaned_data["primary_loco"] = locos[0]
+
+        return forms.ModelForm.clean(self)
+        
+
+    def save(self, commit=True):
+        if self.instance:
+            # update Abo-Loco many-to-one through foreign keys on Locos
+            old_locos = set(Loco.objects.filter(abo=self.instance))
+            new_locos = set(self.cleaned_data["abo_locos"])
+            for obj in old_locos - new_locos:
+                obj.abo = None
+                obj.save()
+            for obj in new_locos - old_locos:
+                obj.abo = self.instance
+                obj.save()
+
+        return forms.ModelForm.save(self, commit)
 
 
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
-    list_display = ["__unicode__", "primary_user", "bezieher"]
-    filter_horizontal = ["users"]
-    search_fields = ["users__username", "users__first_name", "users__last_name"]
+    list_display = ["__unicode__", "bezieher", "verantwortlicher_bezieher"]
+    #filter_horizontal = ["users"]
+    search_fields = ["locos__user__username", "locos__user__first_name", "locos__user__last_name"]
 
 
 class AuditAdmin(admin.ModelAdmin):
@@ -47,7 +78,7 @@ admin.site.register(Downloads)
 admin.site.register(Links)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
-#admin.site.register(Loco)
+admin.site.register(Loco)
 admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
 admin.site.register(model_audit.Audit, AuditAdmin)
