@@ -16,6 +16,7 @@ class StaticContent(models.Model):
     def __unicode__(self):
         return u"%s" %(self.name)
 
+
 class Medias(models.Model):
     """
     All the medias that mentioned ortoloco
@@ -28,6 +29,7 @@ class Medias(models.Model):
     def __unicode__(self):
         return u"%s" %(self.name)
 
+
 class Downloads(models.Model):
     """
     All the downloads available on ortoloco.ch
@@ -39,6 +41,7 @@ class Downloads(models.Model):
     def __unicode__(self):
         return u"%s" %(self.name)
 
+
 class Links(models.Model):
     """
     All the links that are mentioned on ortoloco.ch
@@ -48,6 +51,7 @@ class Links(models.Model):
 
     def __unicode__(self):
         return u"%s" %(self.name)
+
 
 class Depot(models.Model):
     """
@@ -73,7 +77,6 @@ class Depot(models.Model):
         return u"%s" %(self.name)
 
 
-
 class ExtraAboType(models.Model):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
@@ -93,17 +96,14 @@ class Abo(models.Model):
     """
     One Abo that may be shared among several people.
     """
-    # TODO
-    # force primary user to have abo set to this instance
 
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
-    primary_user = models.ForeignKey(User, related_name="abo_primary", null=True, blank=True)
     users = models.ManyToManyField(User, null=True, blank=True)
+    primary_user = models.ForeignKey(User, related_name="abo_primary", null=True, blank=True)
     groesse = models.PositiveIntegerField(default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
 
     def __unicode__(self):
-        
         namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
         namelist.extend(extra.name for extra in self.extra_abos.all())
         return u"Abo (%s)" %(" + ".join(namelist))
@@ -112,6 +112,40 @@ class Abo(models.Model):
         #users = self.loco_set.all()
         users = self.users.all()
         return ", ".join(unicode(user) for user in users)
+
+    
+    def clean(self):
+        """
+        Model validation.
+        """
+        users = list(self.users.all())
+        if len(users) == 0:
+            self.primary_user = None
+        if len(users) > 0 and self.primary_user not in self.users.all():
+            self.primary_user = users[0]
+    
+    @classmethod
+    def m2m_clean(cls, instance, action, **k):
+        """
+        Automatically adjust primary user. 
+        Djangos default clean method doesn't work properly with manytomany fields (it still reads the old
+        values when saving in the admin).
+        """
+        if action in ["post_clear", "post_remove"]:
+            instance._old_primary = instance.primary_user
+            instance.clean()
+            instance.save()
+        elif action in ["post_add"]:
+            users = instance.users.all()
+            if instance.primary_user not in users:
+                old = instance._old_primary
+                user = old if old in users else users[0]
+                instance.primary_user = user
+                instance.save()
+            instance._old_primary = None
+
+
+signals.m2m_changed.connect(Abo.m2m_clean, sender=Abo.users.through, weak=False)
 
 
 class Anteilschein(models.Model):
@@ -168,7 +202,7 @@ class Loco(models.Model):
              new_loco = cls.objects.create(user=instance)
 
 
-#model_audit.m2m(Abo.users)
+model_audit.m2m(Abo.users)
 model_audit.m2m(Abo.extra_abos)
 model_audit.fk(Abo.depot)
 model_audit.fk(Anteilschein.user)
