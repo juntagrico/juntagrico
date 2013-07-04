@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 from loco_app.models import *
+from django.db.models import Q
 
 
 # This form exists to restrict primary user choice to users that have actually set the
@@ -12,7 +13,7 @@ class AboAdminForm(forms.ModelForm):
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
         self.fields["primary_user"].queryset = User.objects.filter(abo=self.instance)
-        self.fields["users"].queryset = User.objects.filter(abo=None)
+        self.fields["users"].queryset = User.objects.filter(Q(abo=None) | Q(abo=self.instance))
 
 
 class AboAdmin(admin.ModelAdmin):
