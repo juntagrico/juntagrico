@@ -67,7 +67,7 @@ class Depot(models.Model):
                 (6, "Sonntag"))
 
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
-    name = models.CharField("Depot Name", max_length=100)
+    name = models.CharField("Depot Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     street = models.CharField("Strasse", max_length=100)
     contact = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -82,7 +82,7 @@ class ExtraAboType(models.Model):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
     """
-    name = models.CharField("Name", max_length=100)
+    name = models.CharField("Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000)
 
     # TODO
@@ -125,13 +125,13 @@ class Anteilschein(models.Model):
 
 
 class Taetigkeitsbereich(models.Model):
-    name = models.CharField("Name", max_length=100)
+    name = models.CharField("Name", max_length=100, validators=[validators.validate_slug], unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     coordinator = models.ForeignKey(User, on_delete=models.PROTECT)
     users = models.ManyToManyField(User, related_name="taetigkeitsbereiche")
 
     def __unicode__(self):
-        return u'Taetigkeitsbereich %s' % self.name
+        return u'%s' % self.name
 
 
 class Loco(models.Model):
@@ -157,7 +157,7 @@ class JobTyp(models.Model):
     """
     Recurring type of job.
     """
-    name = models.CharField("Name", max_length=100)
+    name = models.CharField("Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField("Dauer in Stunden")
@@ -169,7 +169,10 @@ class JobTyp(models.Model):
 class Job(models.Model):
     typ = models.ForeignKey(JobTyp, on_delete=models.PROTECT)
     slots = models.PositiveIntegerField("Plaetze")
-    start_time = models.DateTimeField()
+    time = models.DateTimeField()
+
+    def __unicode__(self):
+        return u'Job #%s (%s, %d slots)' % (self.id, self.typ.name, self.slots)
 
 
 class Boehnli(models.Model):
@@ -181,7 +184,10 @@ class Boehnli(models.Model):
     loco = models.ForeignKey(Loco, on_delete=models.PROTECT, null=True, blank=True)
 
     def __unicode__(self):
-        return u'Boehnli %s' % self.id
+        return u'Boehnli #%s' % self.id
+
+    def zeit(self):
+        return self.job.time
 
     @classmethod
     def update(cls, sender, instance, created, **kwds):
