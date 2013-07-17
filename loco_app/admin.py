@@ -83,3 +83,7 @@ admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
 admin.site.register(model_audit.Audit, AuditAdmin)
 
+admin.site.register(Boehnli)
+admin.site.register(JobTyp)
+admin.site.register(Job)
+

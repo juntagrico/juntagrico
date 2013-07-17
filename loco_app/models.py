@@ -130,29 +130,10 @@ class Taetigkeitsbereich(models.Model):
     coordinator = models.ForeignKey(User, on_delete=models.PROTECT)
     users = models.ManyToManyField(User, related_name="taetigkeitsbereiche")
 
-
-"""
-class Job2Users(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.PROTECT, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
-    slots = models.PositiveIntegerField()
+    def __unicode__(self):
+        return u'Taetigkeitsbereich %s' % self.name
 
 
-class JobTyp(models.Model):
-    name = models.CharField("Name", max_length=100)
-    description = models.TextField("Beschreibung", max_length=1000, default="")
-    bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
-
-
-class Job(models.Model):
-    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
-    slots = models.PositiveIntegerField("Plaetze")
-
-    #user = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
-    users = models.ManyToManyField(User, through=Job2Users)
-"""
-
-# TODO: remove this class? doesn't seem to be needed right now
 class Loco(models.Model):
     """
     Additional fields for Django's default user class.
@@ -169,7 +150,60 @@ class Loco(models.Model):
         Callback to create corresponding loco when new user is created.
         """
         if created:
-             new_loco = cls.objects.create(user=instance)
+             cls.objects.create(user=instance)
+
+
+class JobTyp(models.Model):
+    """
+    Recurring type of job.
+    """
+    name = models.CharField("Name", max_length=100)
+    description = models.TextField("Beschreibung", max_length=1000, default="")
+    bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
+    duration = models.PositiveIntegerField("Dauer in Stunden")
+
+    def __unicode__(self):
+        return u'JobTyp %s' % self.name
+
+
+class Job(models.Model):
+    typ = models.ForeignKey(JobTyp, on_delete=models.PROTECT)
+    slots = models.PositiveIntegerField("Plaetze")
+    start_time = models.DateTimeField()
+
+
+class Boehnli(models.Model):
+    """
+    Single boehnli (work unit).
+    Automatically created during job creation.
+    """
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    loco = models.ForeignKey(Loco, on_delete=models.PROTECT, null=True, blank=True)
+
+    def __unicode__(self):
+        return u'Boehnli %s' % self.id
+
+    @classmethod
+    def update(cls, sender, instance, created, **kwds):
+        """
+        Create and delete boehnli objects as jobs are created and have their amount of slots changed
+        """
+        if created:
+            for i in range(instance.slots):
+                cls.objects.create(job=instance)
+        else:
+            boehnlis = cls.objects.filter(job=instance) 
+            current_n = len(boehnlis)
+            target_n = instance.slots
+            if current_n < target_n:
+                for i in range(target_n - current_n):
+                    cls.objects.create(job=instance)
+            elif current_n > target_n:
+                to_delete = current_n - target_n
+                free_boehnlis = [boehnli for boehnli in boehnlis if boehnli.loco == None]
+                for boehnli in free_boehnlis[:to_delete]:
+                    boehnli.delete()
+                    
 
 
 #model_audit.m2m(Abo.users)
@@ -178,4 +212,5 @@ model_audit.fk(Abo.depot)
 model_audit.fk(Anteilschein.user)
 
 signals.post_save.connect(Loco.create, sender=User)
+signals.post_save.connect(Boehnli.update, sender=Job)
 
