@@ -66,9 +66,12 @@ class AnteilscheinAdmin(admin.ModelAdmin):
     search_fields = ["id", "user__username", "user__first_name", "user__last_name"]
 
 
-
 class BereichAdmin(admin.ModelAdmin):
     filter_horizontal = ["users"]
+
+
+class BoehnliAdmin(admin.ModelAdmin):
+    list_display = ["__unicode__", "job", "zeit", "loco"]
 
 
 admin.site.register(Depot)
@@ -83,7 +86,7 @@ admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
 admin.site.register(model_audit.Audit, AuditAdmin)
 
-admin.site.register(Boehnli)
+admin.site.register(Boehnli, BoehnliAdmin)
 admin.site.register(JobTyp)
 admin.site.register(Job)
 
