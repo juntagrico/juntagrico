@@ -18,7 +18,7 @@ class StaticContent(models.Model):
         return u"%s" %(self.name)
 
 
-class Medias(models.Model):
+class Media(models.Model):
     """
     All the medias that mentioned ortoloco
     """
@@ -31,7 +31,7 @@ class Medias(models.Model):
         return u"%s" %(self.name)
 
 
-class Downloads(models.Model):
+class Download(models.Model):
     """
     All the downloads available on ortoloco.ch
     """
@@ -43,7 +43,7 @@ class Downloads(models.Model):
         return u"%s" %(self.name)
 
 
-class Links(models.Model):
+class Link(models.Model):
     """
     All the links that are mentioned on ortoloco.ch
     """
@@ -73,7 +73,6 @@ class Depot(models.Model):
     contact = models.ForeignKey(User, on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField("Wochentag", choices=weekdays)
 
-
     def __unicode__(self):
         return u"%s" %(self.name)
 
@@ -85,10 +84,6 @@ class ExtraAboType(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000)
 
-    # TODO
-    #  - frequency: monthly / weekly
-    #  - prices: yearly / quarterly / monthly
-
     def __unicode__(self):
         return u"%s" %(self.name)
 
@@ -97,7 +92,6 @@ class Abo(models.Model):
     """
     One Abo that may be shared among several people.
     """
-
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True)
     groesse = models.PositiveIntegerField(default=1)
