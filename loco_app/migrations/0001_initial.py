@@ -29,36 +29,36 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'loco_app', ['StaticContent'])
 
-        # Adding model 'Medias'
-        db.create_table(u'loco_app_medias', (
+        # Adding model 'Media'
+        db.create_table(u'loco_app_media', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('mediafile', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('year', self.gf('django.db.models.fields.CharField')(max_length=4)),
         ))
-        db.send_create_signal(u'loco_app', ['Medias'])
+        db.send_create_signal(u'loco_app', ['Media'])
 
-        # Adding model 'Downloads'
-        db.create_table(u'loco_app_downloads', (
+        # Adding model 'Download'
+        db.create_table(u'loco_app_download', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('mediafile', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
         ))
-        db.send_create_signal(u'loco_app', ['Downloads'])
+        db.send_create_signal(u'loco_app', ['Download'])
 
-        # Adding model 'Links'
-        db.create_table(u'loco_app_links', (
+        # Adding model 'Link'
+        db.create_table(u'loco_app_link', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('description', self.gf('django.db.models.fields.CharField')(max_length=400)),
         ))
-        db.send_create_signal(u'loco_app', ['Links'])
+        db.send_create_signal(u'loco_app', ['Link'])
 
         # Adding model 'Depot'
         db.create_table(u'loco_app_depot', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('code', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.TextField')(default='', max_length=1000)),
             ('street', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('contact', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], on_delete=models.PROTECT)),
@@ -69,7 +69,7 @@ class Migration(SchemaMigration):
         # Adding model 'ExtraAboType'
         db.create_table(u'loco_app_extraabotype', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.TextField')(max_length=1000)),
         ))
         db.send_create_signal(u'loco_app', ['ExtraAboType'])
@@ -101,7 +101,7 @@ class Migration(SchemaMigration):
         # Adding model 'Taetigkeitsbereich'
         db.create_table(u'loco_app_taetigkeitsbereich', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.TextField')(default='', max_length=1000)),
             ('coordinator', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], on_delete=models.PROTECT)),
         ))
@@ -123,6 +123,33 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'loco_app', ['Loco'])
 
+        # Adding model 'JobTyp'
+        db.create_table(u'loco_app_jobtyp', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
+            ('description', self.gf('django.db.models.fields.TextField')(default='', max_length=1000)),
+            ('bereich', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.Taetigkeitsbereich'], on_delete=models.PROTECT)),
+            ('duration', self.gf('django.db.models.fields.PositiveIntegerField')()),
+        ))
+        db.send_create_signal(u'loco_app', ['JobTyp'])
+
+        # Adding model 'Job'
+        db.create_table(u'loco_app_job', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('typ', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.JobTyp'], on_delete=models.PROTECT)),
+            ('slots', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('time', self.gf('django.db.models.fields.DateTimeField')()),
+        ))
+        db.send_create_signal(u'loco_app', ['Job'])
+
+        # Adding model 'Boehnli'
+        db.create_table(u'loco_app_boehnli', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('job', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.Job'])),
+            ('loco', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.Loco'], null=True, on_delete=models.PROTECT, blank=True)),
+        ))
+        db.send_create_signal(u'loco_app', ['Boehnli'])
+
 
     def backwards(self, orm):
         # Deleting model 'Audit'
@@ -131,14 +158,14 @@ class Migration(SchemaMigration):
         # Deleting model 'StaticContent'
         db.delete_table(u'loco_app_staticcontent')
 
-        # Deleting model 'Medias'
-        db.delete_table(u'loco_app_medias')
+        # Deleting model 'Media'
+        db.delete_table(u'loco_app_media')
 
-        # Deleting model 'Downloads'
-        db.delete_table(u'loco_app_downloads')
+        # Deleting model 'Download'
+        db.delete_table(u'loco_app_download')
 
-        # Deleting model 'Links'
-        db.delete_table(u'loco_app_links')
+        # Deleting model 'Link'
+        db.delete_table(u'loco_app_link')
 
         # Deleting model 'Depot'
         db.delete_table(u'loco_app_depot')
@@ -163,6 +190,15 @@ class Migration(SchemaMigration):
 
         # Deleting model 'Loco'
         db.delete_table(u'loco_app_loco')
+
+        # Deleting model 'JobTyp'
+        db.delete_table(u'loco_app_jobtyp')
+
+        # Deleting model 'Job'
+        db.delete_table(u'loco_app_job')
+
+        # Deleting model 'Boehnli'
+        db.delete_table(u'loco_app_boehnli')
 
 
     models = {
@@ -226,18 +262,24 @@ class Migration(SchemaMigration):
             'target_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target_set'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
+        u'loco_app.boehnli': {
+            'Meta': {'object_name': 'Boehnli'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'job': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.Job']"}),
+            'loco': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.Loco']", 'null': 'True', 'on_delete': 'models.PROTECT', 'blank': 'True'})
+        },
         u'loco_app.depot': {
             'Meta': {'object_name': 'Depot'},
             'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
             'contact': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'on_delete': 'models.PROTECT'}),
             'description': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '1000'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
             'street': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'weekday': ('django.db.models.fields.PositiveIntegerField', [], {})
         },
-        u'loco_app.downloads': {
-            'Meta': {'object_name': 'Downloads'},
+        u'loco_app.download': {
+            'Meta': {'object_name': 'Download'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mediafile': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
@@ -246,10 +288,25 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'ExtraAboType'},
             'description': ('django.db.models.fields.TextField', [], {'max_length': '1000'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'})
         },
-        u'loco_app.links': {
-            'Meta': {'object_name': 'Links'},
+        u'loco_app.job': {
+            'Meta': {'object_name': 'Job'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'slots': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'time': ('django.db.models.fields.DateTimeField', [], {}),
+            'typ': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.JobTyp']", 'on_delete': 'models.PROTECT'})
+        },
+        u'loco_app.jobtyp': {
+            'Meta': {'object_name': 'JobTyp'},
+            'bereich': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.Taetigkeitsbereich']", 'on_delete': 'models.PROTECT'}),
+            'description': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '1000'}),
+            'duration': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'})
+        },
+        u'loco_app.link': {
+            'Meta': {'object_name': 'Link'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '400'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
@@ -260,8 +317,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'loco'", 'unique': 'True', 'to': u"orm['auth.User']"})
         },
-        u'loco_app.medias': {
-            'Meta': {'object_name': 'Medias'},
+        u'loco_app.media': {
+            'Meta': {'object_name': 'Media'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mediafile': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
@@ -278,7 +335,7 @@ class Migration(SchemaMigration):
             'coordinator': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'on_delete': 'models.PROTECT'}),
             'description': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '1000'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
             'users': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'taetigkeitsbereiche'", 'symmetrical': 'False', 'to': u"orm['auth.User']"})
         }
     }
