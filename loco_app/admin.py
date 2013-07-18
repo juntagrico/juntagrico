@@ -76,9 +76,9 @@ class BoehnliAdmin(admin.ModelAdmin):
 
 admin.site.register(Depot)
 admin.site.register(StaticContent)
-admin.site.register(Medias)
-admin.site.register(Downloads)
-admin.site.register(Links)
+admin.site.register(Media)
+admin.site.register(Download)
+admin.site.register(Link)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco)
