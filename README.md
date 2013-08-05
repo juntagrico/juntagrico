@@ -4,9 +4,17 @@ setting up:
     virtualenv --distribute venv
     source ./venv/bin/activate
     pip install -r requirements.txt
-    ./manage.py syncdb
 
-create new migration
+
+create DB from scratch:
+    in ortoloco/settings.py, comment out all non-django apps (loco_app, south, photologue)
+    ./manage.py syncdb
+    reactivate apps
+    ./manage.py syncdb
+    ./manage.py migrate loco_app
+    ./manage.py migrate photologue
+
+create new migration:
     ./manage.py schemamigration loco_app --auto
     ./manage.py migrate loco_app
 
