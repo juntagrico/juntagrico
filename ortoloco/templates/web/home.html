@@ -2,17 +2,16 @@
 
 {% block content %}
 	<div class="lastNews">
-		<h3>{{ homeTitel.content }}</h3>
 		<div class="row">
 		<div class="span7">
 			{% autoescape off %}
-				{{ homeText.content }}
 			{% endautoescape %}
 		</div>
 	</div>
 {% endblock %}
 
 {% block submenu %}
+    <br/><br/><br/><br/><br/>
 	<div id="news" class="well">
 		{% autoescape off %}
 			{{ submenu.content }}

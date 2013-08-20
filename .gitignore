@@ -4,3 +4,4 @@ venv/*
 loco_app/medias/medias
 loco_app/medias/downloads
 loco_app/medias/photologue/photos
+.idea

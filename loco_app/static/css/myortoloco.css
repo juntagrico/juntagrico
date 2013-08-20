@@ -1,0 +1,11 @@
+.myortoloco_logo {
+	background: url(/static/img/myortoloco.png) 0 0px;
+	display: inline-block;
+	width: 300px;
+	height: 45px;
+	margin-bottom: 25px;
+}
+
+.jobs .date {
+    width: 200px;
+}

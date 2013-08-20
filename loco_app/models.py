@@ -157,7 +157,7 @@ class JobTyp(models.Model):
     duration = models.PositiveIntegerField("Dauer in Stunden")
 
     def __unicode__(self):
-        return u'JobTyp %s' % self.name
+        return u'%s' % self.name
 
 
 class Job(models.Model):

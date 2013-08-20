@@ -4,6 +4,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 admin.autodiscover()
+from django.contrib.auth.views import login, logout
+
 
 urlpatterns = patterns('',
 	url('^$', 'loco_app.views.home'),
@@ -18,6 +20,16 @@ urlpatterns = patterns('',
     url('^web/downloads.html', 'loco_app.views.downloads'),
     url('^web/links.html', 'loco_app.views.links'),
     url('^web/contact.html', 'loco_app.views.contact'),
+
+    url('^myortoloco/home.html', 'loco_app.views.myortoloco_home'),
+    url('^myortoloco/jobs/(?P<job_id>.*?)/', 'loco_app.views.myortoloco_job'),
+    url('^myortoloco/teams/(?P<bereich_id>.*?)/', 'loco_app.views.myortoloco_team'),
+    url('^myortoloco/personal_info', 'loco_app.views.myortoloco_personal_info'),
+
+
+    (r'^accounts/login/$',  login),
+    (r'^logout/$', 'loco_app.views.logout'),
+
     (r'^photologue/', include('photologue.urls')),
 
     url('^depots/', 'loco_app.views.all_depots'),

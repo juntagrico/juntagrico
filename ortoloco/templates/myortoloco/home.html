@@ -1,0 +1,23 @@
+{% extends "myortoloco/base.html" %}
+
+{% block content %}
+    <h3>Aktuelle Arbeitseinsätze</h3>
+    <table class="jobs">
+        {% for job in jobs %}
+            <tr>
+                <td class="date">{{ job.time |date:"d.m.Y G:i" }}</td>
+                <td><a href="/myortoloco/jobs/{{ job.id }}">{{ job.typ }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br/><br/>
+    <h3>Kalender der Tätigkeitsbereiche</h3>
+    <table class="teams">
+        {% for team in teams %}
+            <tr>
+                <td><a href="/myortoloco/teams/{{ team.id }}">{{ team.name }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

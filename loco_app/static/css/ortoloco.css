@@ -1,4 +1,14 @@
 /* general overrides of bootstrap */
+@font-face {
+    font-family: 'typenoksidi';
+    src: url('/static/fonts/typenoksidi-webfont.eot');
+    src: url('/static/fonts/typenoksidi-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/fonts/typenoksidi-webfont.woff') format('woff'),
+         url('/static/fonts/typenoksidi-webfont.ttf') format('truetype'),
+         url('/static/fonts/typenoksidi-webfont.svg#typenoksidiregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
 
 a {
 	color: #4c9434;
@@ -12,11 +22,27 @@ html, body {
 	font-size: 16px;
 	background-color: #fffff7;
 }
+h1, h2,h3,h4,h5,h6, .main-menu {
+    font-family: "typenoksidi"
+}
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input{
 	height: 30px;
 }
 
 /* general stuff */
+
+.main-menu {
+    font-size: 19px;
+}
+
+.main-menu li a{
+    padding: 0;
+    line-height: 34px;
+}
+
+.main-menu li a{
+    padding: 0;
+}
 
 .logo {
 	background: url(/static/img/logo.png) 0 0px;
@@ -28,86 +54,118 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 .logo:hover {
 	background-position: 0 51px;
 }
-.ortoloco {
-	margin-top: 80px;
-	margin-bottom: 80px;
+.container {
+    min-height: 100%;
 	position: relative;
+    padding: 0px 80px 0 80px;
 }
-.ortoloco .erbsetop {
+.ortoloco {
+    margin-top: 80px;
+    background: url(/static/img/ortoloco_full.png) bottom no-repeat;
+    padding-bottom: 400px;
+}
+.ortoloco.home {
+    background: none;
+    padding-bottom: 0;
+}
+.ortoloco.home .ortoloco_gemuese {
+	background: url(/static/img/ortoloco_home_small.png) right bottom no-repeat;
+    position: absolute;
+    bottom: -5px;
+    right: 70px;
+    width: 623px;
+    height: 600px;
+}
+.container .erbsetop {
 	position: absolute;
-	left: -60px;
-	top: -60px;
-	right: -60px;
+	left: 0;
+	top: 20px;
+	right: 0;
 	background-image: url(/static/img/erbse_x.png) ;
 	height: 20px;
-	opacity: 0.3;
+	opacity: 1.0;
 }
-.ortoloco .erbseleft {
+.container .erbseleft {
 	position: absolute;
-	left: -60px;
-	top: -40px;
+	left: 0px;
+	top: 36px;
 	background-image: url(/static/img/erbse_y.png) ;
-	bottom: -40px;
+	bottom: 0px;
 	width: 20px;
-	opacity: 0.3;
+	opacity: 1.0;
 }
-.ortoloco .erbseright {
+.container .erbseright {
 	position: absolute;
-	right: -60px;
-	top: -40px;
+	right: -5px;
+	top: 36px;
 	background-image: url(/static/img/erbse_y.png) ;
-	bottom: -40px;
+	bottom: 0px;
 	width: 20px;
-	opacity: 0.3;
-}
-.ortoloco .erbsebottom {
-	position: absolute;
-	left: -60px;
-	bottom: -60px;
-	right: -60px;
-	background-image: url(/static/img/erbse_x.png) ;
-	height: 20px;
-	opacity: 0.3;
+	opacity: 1.0;
 }
 
 /* menu */
-.nav-pills>.active>a, .nav-pills>.active>a:hover, .nav-pills>.active>a:focus{
-	background-color: #62be43;
+.nav-pills>.active>a{
+	color: #4c9434;
+    background-color: transparent;
+}
+.nav-pills.nav-stacked>li>a, .nav-pills ul.nav-pills.nav-stacked>li:last-child>a {
+    background-color: transparent;
+}
+
+.nav-pills>.active>a:hover, .nav-pills>.active>a:focus {
+	color: #315f21;
+    background-color: transparent;
 }
 
 .nav-pills>li>a {
 	border-radius: 0;
 	margin-top: 0;
+    margin-left: -25px;
+    padding-left: 25px;
 }
+
 .nav-pills.nav-stacked>li>a, .nav-pills ul.nav-pills.nav-stacked>li:last-child>a {
 	margin-bottom: 0;
 }
 
 .nav-pills a:hover {
-	background: url(/static/img/erbse_y.png) no-repeat right -88px;
+	background: url(/static/img/erbse_y.png) no-repeat left -88px;
+    text-decoration: underline !important;
+}
+
+.activeItem {
+    display: none;
+}
+.active > a > .activeItem {
+    display: inline-block;
+    font-size: 50px;
+    float: right;
+    margin-top: -5px;
+    margin-right: -15px;
 }
 
 .nav-pills ul {
 	margin-bottom: 0;
-	border-bottom: 1px #62be43 solid;
-	background-color: #f6fff6;
-}
-
-.nav-pills ul {
-	margin-bottom: 0;
-	border-bottom: 1px #62be43 solid;
-	background-color: #f6fff6;
+	background-color: transparent;
 }
 
 .nav-pills ul.nav-pills>.active>a, .nav-pills ul.nav-pills>.active>a:hover, .nav-pills ul.nav-pills>.active>a:focus{
-	background-color: #c2edb2;
-	color: #315f21;
+    background-color: transparent;
 }
+.myortoloco_link {
+    position: absolute;
+    right: 25px;
+    bottom: 80px;
+    width: 19px;
+    height: 140px;
+    display: inline-block;
+	background: url(/static/img/myortoloco_link.png) 0px 0px no-repeat;
 
-/* home */
-.lastNews {
-	background: url(/static/img/home.png) right bottom no-repeat;
-	min-height: 600px;
+}
+.myortoloco_link:hover{
+	background-position: -19px 0;
+
 }
 
 /* medias */
