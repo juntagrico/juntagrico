@@ -177,3 +177,5 @@ LOGGING = {
 }
 
 GALLERY_SAMPLE_SIZE = 4
+
+#from settings_oli import *

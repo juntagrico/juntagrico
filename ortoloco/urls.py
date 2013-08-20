@@ -5,21 +5,22 @@ from django.contrib import admin
 from django.conf import settings
 admin.autodiscover()
 from django.contrib.auth.views import login, logout
+from django.views.generic import RedirectView
+
 
 
 urlpatterns = patterns('',
 	url('^$', 'loco_app.views.home'),
-	url('^web/home.html', 'loco_app.views.home'),
-	url('^web/about.html', 'loco_app.views.about'),
-	url('^web/portrait.html', 'loco_app.views.portrait'),
-	url('^web/background.html', 'loco_app.views.background'),
-	url('^web/abo.html', 'loco_app.views.abo'),
-	url('^web/join.html', 'loco_app.views.join'),
-	url('^web/gallery.html', 'loco_app.views.gallery'),
-	url('^web/media.html', 'loco_app.views.media'),
-    url('^web/downloads.html', 'loco_app.views.downloads'),
-    url('^web/links.html', 'loco_app.views.links'),
-    url('^web/contact.html', 'loco_app.views.contact'),
+	url('^aktuelles', 'loco_app.views.home'),
+	url('^idee', 'loco_app.views.about'),
+	url('^portrait', 'loco_app.views.portrait'),
+	url('^hintergrund', 'loco_app.views.background'),
+	url('^abo', 'loco_app.views.abo'),
+	url('^faq', 'loco_app.views.faq'),
+	url('^mitmachen', 'loco_app.views.join'),
+	url('^galerie', RedirectView.as_view(url='/photologue/gallery/page/1/')),
+	url('^medien', 'loco_app.views.media'),
+    url('^kontakt', 'loco_app.views.contact'),
 
     url('^myortoloco/home.html', 'loco_app.views.myortoloco_home'),
     url('^myortoloco/jobs/(?P<job_id>.*?)/', 'loco_app.views.myortoloco_job'),
@@ -44,6 +45,7 @@ urlpatterns = patterns('',
     url(r'^medias/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.MEDIA_ROOT,
     }),
+	url(r'^downloads/(?P<param>.*)$', RedirectView.as_view(url='/medias/downloads/%(param)s')),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
         'document_root': settings.STATIC_ROOT,
     }),

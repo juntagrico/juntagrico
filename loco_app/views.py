@@ -82,6 +82,19 @@ def abo(request):
 
     return render(request, "web/abo.html", renderdict)
 
+def faq(request):
+    """
+    FAQ ortoloco of "static" page
+    """
+    renderdict = {
+        'menu': {
+            'about': 'active',
+            'faq': 'active'
+        }
+    }
+
+    return render(request, "web/faq.html", renderdict)
+
 
 def join(request):
     """
@@ -94,19 +107,6 @@ def join(request):
     }
 
     return render(request, "web/join.html", renderdict)
-
-
-def gallery(request):
-    """
-    About ortoloco of "static" page
-    """
-    renderdict = {
-        'menu': {
-            'gallery': 'active'
-        }
-    }
-
-    return render(request, "web/gallery.html", renderdict)
 
 
 def media(request):

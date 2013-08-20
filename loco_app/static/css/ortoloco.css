@@ -2,31 +2,31 @@
 @font-face {
     font-family: 'typenoksidi';
     src: url('/static/fonts/typenoksidi-webfont.eot');
-    src: url('/static/fonts/typenoksidi-webfont.eot?#iefix') format('embedded-opentype'),
-         url('/static/fonts/typenoksidi-webfont.woff') format('woff'),
-         url('/static/fonts/typenoksidi-webfont.ttf') format('truetype'),
-         url('/static/fonts/typenoksidi-webfont.svg#typenoksidiregular') format('svg');
+    src: url('/static/fonts/typenoksidi-webfont.eot?#iefix') format('embedded-opentype'), url('/static/fonts/typenoksidi-webfont.woff') format('woff'), url('/static/fonts/typenoksidi-webfont.ttf') format('truetype'), url('/static/fonts/typenoksidi-webfont.svg#typenoksidiregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
 a {
-	color: #4c9434;
+    color: #4c9434;
 }
 
 a:hover, a:focus {
-	color: #315f21;
+    color: #315f21;
 }
 
 html, body {
-	font-size: 16px;
-	background-color: #fffff7;
+    font-size: 16px;
+    background-color: #fffff7;
+    height: 100%;
 }
-h1, h2,h3,h4,h5,h6, .main-menu {
-    font-family: "typenoksidi"
+
+h1, h2, h3, h4, h5, h6, .main-menu {
+    font-family: "typenoksidi", serif;
 }
-select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input{
-	height: 30px;
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    height: 30px;
 }
 
 /* general stuff */
@@ -35,108 +35,126 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     font-size: 19px;
 }
 
-.main-menu li a{
+.main-menu li a {
     padding: 0;
     line-height: 34px;
 }
 
-.main-menu li a{
+.main-menu li a {
     padding: 0;
 }
 
 .logo {
-	background: url(/static/img/logo.png) 0 0px;
-	display: inline-block;
-	width: 220px;
-	height: 51px;
-	margin-bottom: 25px;	
+    background: url(/static/img/logo.png) 0 0px;
+    display: inline-block;
+    width: 220px;
+    height: 51px;
+    margin-bottom: 25px;
 }
+
 .logo:hover {
-	background-position: 0 51px;
+    background-position: 0 51px;
 }
+
 .container {
     min-height: 100%;
-	position: relative;
+    position: relative;
     padding: 0px 80px 0 80px;
 }
+
 .ortoloco {
     margin-top: 80px;
     background: url(/static/img/ortoloco_full.png) bottom no-repeat;
     padding-bottom: 400px;
 }
+
 .ortoloco.home {
     background: none;
     padding-bottom: 0;
 }
+
+.ortoloco.home .lastNews {
+    margin-bottom: 525px;
+}
+
+.ortoloco.home .lastNews h3 {
+    color: #4c9434;
+}
+
 .ortoloco.home .ortoloco_gemuese {
-	background: url(/static/img/ortoloco_home_small.png) right bottom no-repeat;
+    background: url(/static/img/ortoloco_home_small.png) right bottom no-repeat;
     position: absolute;
     bottom: -5px;
     right: 70px;
     width: 623px;
     height: 600px;
 }
+
 .container .erbsetop {
-	position: absolute;
-	left: 0;
-	top: 20px;
-	right: 0;
-	background-image: url(/static/img/erbse_x.png) ;
-	height: 20px;
-	opacity: 1.0;
+    position: absolute;
+    left: 0;
+    top: 20px;
+    right: 0;
+    background-image: url(/static/img/erbse_x.png);
+    height: 20px;
+    opacity: 1.0;
 }
+
 .container .erbseleft {
-	position: absolute;
-	left: 0px;
-	top: 36px;
-	background-image: url(/static/img/erbse_y.png) ;
-	bottom: 0px;
-	width: 20px;
-	opacity: 1.0;
+    position: absolute;
+    left: 0px;
+    top: 36px;
+    background-image: url(/static/img/erbse_y.png);
+    bottom: 0px;
+    width: 20px;
+    opacity: 1.0;
 }
+
 .container .erbseright {
-	position: absolute;
-	right: -5px;
-	top: 36px;
-	background-image: url(/static/img/erbse_y.png) ;
-	bottom: 0px;
-	width: 20px;
-	opacity: 1.0;
+    position: absolute;
+    right: -5px;
+    top: 36px;
+    background-image: url(/static/img/erbse_y.png);
+    bottom: 0px;
+    width: 20px;
+    opacity: 1.0;
 }
 
 /* menu */
-.nav-pills>.active>a{
-	color: #4c9434;
+.nav-pills>.active>a {
+    color: #4c9434;
     background-color: transparent;
 }
+
 .nav-pills.nav-stacked>li>a, .nav-pills ul.nav-pills.nav-stacked>li:last-child>a {
     background-color: transparent;
 }
 
 .nav-pills>.active>a:hover, .nav-pills>.active>a:focus {
-	color: #315f21;
+    color: #315f21;
     background-color: transparent;
 }
 
 .nav-pills>li>a {
-	border-radius: 0;
-	margin-top: 0;
+    border-radius: 0;
+    margin-top: 0;
     margin-left: -25px;
     padding-left: 25px;
 }
 
 .nav-pills.nav-stacked>li>a, .nav-pills ul.nav-pills.nav-stacked>li:last-child>a {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .nav-pills a:hover {
-	background: url(/static/img/erbse_y.png) no-repeat left -88px;
+    background: url(/static/img/erbse_y.png) no-repeat left -88px;
     text-decoration: underline !important;
 }
 
 .activeItem {
     display: none;
 }
+
 .active > a > .activeItem {
     display: inline-block;
     font-size: 50px;
@@ -146,13 +164,14 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 }
 
 .nav-pills ul {
-	margin-bottom: 0;
-	background-color: transparent;
-}
-
-.nav-pills ul.nav-pills>.active>a, .nav-pills ul.nav-pills>.active>a:hover, .nav-pills ul.nav-pills>.active>a:focus{
+    margin-bottom: 0;
     background-color: transparent;
 }
+
+.nav-pills ul.nav-pills>.active>a, .nav-pills ul.nav-pills>.active>a:hover, .nav-pills ul.nav-pills>.active>a:focus {
+    background-color: transparent;
+}
+
 .myortoloco_link {
     position: absolute;
     right: 25px;
@@ -160,57 +179,66 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
     width: 19px;
     height: 140px;
     display: inline-block;
-	background: url(/static/img/myortoloco_link.png) 0px 0px no-repeat;
+    background: url(/static/img/myortoloco_link.png) 0px 0px no-repeat;
 
 }
-.myortoloco_link:hover{
-	background-position: -19px 0;
+
+.myortoloco_link:hover {
+    background-position: -19px 0;
 
 }
 
 /* medias */
 .year {
-	opacity: 0.7;
+    opacity: 0.7;
+}
+
+.medias tr.newYear {
+    border-top: 1px #ddd solid;
+}
+.medias.table th, .medias.table td {
+    border: 0;
 }
 
 /* links */
 .link .desc {
-	padding-top: 5px;
-	padding-left: 35px;
-	background: url(/static/img/erbse_y.png) no-repeat left -88px;
+    padding-top: 5px;
+    padding-left: 35px;
+    background: url(/static/img/erbse_y.png) no-repeat left -88px;
 }
 
 /* contact */
 #map-canvas {
-	display: inline-block;
-	width: 400px;
-	height: 200px;
+    display: inline-block;
+    width: 400px;
+    height: 200px;
 }
 
 .addresses {
-	padding-top: 20px;
-	padding-bottom: 40px;
+    padding-top: 20px;
+    padding-bottom: 40px;
 }
 
 .email {
-	padding-top: 20px;
+    padding-top: 20px;
 }
 
 /* gallery */
-.lastImg, .lastImg:hover, .nextImg, .nextImg:hover{
-	position: relative;
-	display: inline-block;
-	z-index: 100;
-	opacity: 1;
-	font-size: 70px;
-	line-height: 70px;
-	text-decoration: none;
-	text-align: center;
+.lastImg, .lastImg:hover, .nextImg, .nextImg:hover {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+    opacity: 1;
+    font-size: 70px;
+    line-height: 70px;
+    text-decoration: none;
+    text-align: center;
 }
+
 .gallery-photo {
-	text-align: center;
+    text-align: center;
 }
 
 .galleryDate {
-	padding-bottom: 20px;
+    padding-bottom: 20px;
 }
