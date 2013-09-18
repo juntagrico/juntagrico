@@ -7,10 +7,10 @@ from loco_app.models import *
 #from polls.models import Poll
 
 class Command(BaseCommand):
-    def connect(self):
+    def connect(self, user, passwd):
         db = MySQLdb.connect(host="my2.ortoloco.ch",
-                             user="my2ortoloco",
-                             passwd="My20rt0l0c0",
+                             user=user,
+                             passwd=passwd,
                              db="my2ortoloco")
 
         self.cur = db.cursor()
@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
     # entry point used by manage.py
     def handle(self, *args, **options):
-        self.connect()
+        self.connect(*args)
 
         new_users = []
         for row in self.query("SELECT * FROM usr"):
