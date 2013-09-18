@@ -69,9 +69,12 @@ class Depot(models.Model):
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
-    street = models.CharField("Strasse", max_length=100)
     contact = models.ForeignKey(User, on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField("Wochentag", choices=weekdays)
+
+    addr_street = models.CharField("Strasse", max_length=100)
+    addr_zipcode = models.CharField("PLZ", max_length=10)
+    addr_location = models.CharField("Ort", max_length=50)
 
     def __unicode__(self):
         return u"%s" %(self.name)
@@ -134,6 +137,10 @@ class Loco(models.Model):
     """
     user = models.OneToOneField(User, related_name='loco')
     abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True)
+
+    addr_street = models.CharField("Strasse", max_length=100, null=True, blank=True)
+    addr_zipcode = models.CharField("PLZ", max_length=10, null=True, blank=True)
+    addr_location = models.CharField("Ort", max_length=50, null=True, blank=True)
 
     def __unicode__(self):
         return u"%s" %(self.user)
