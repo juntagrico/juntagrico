@@ -183,6 +183,7 @@ class Boehnli(models.Model):
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     loco = models.ForeignKey(Loco, on_delete=models.PROTECT, null=True, blank=True)
+    amount = models.PositiveIntegerField("Anzahl", default=1)
 
     def __unicode__(self):
         return u'Boehnli #%s' % self.id
