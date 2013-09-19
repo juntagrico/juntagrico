@@ -6,7 +6,12 @@ from django.forms.models import modelformset_factory
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 
+from django.forms import ModelForm
+
 from loco_app.models import *
+import os
+import time, json, base64, hmac, sha, urllib
+from django.utils import simplejson
 
 
 def home(request):
@@ -81,6 +86,7 @@ def abo(request):
     }
 
     return render(request, "web/abo.html", renderdict)
+
 
 def faq(request):
     """
@@ -161,11 +167,36 @@ def contact(request):
     Contact page
     """
 
+    class PolitolocoForm(ModelForm):
+        class Meta:
+            model = Politoloco
+            fields = ['email']
+
+    success = 0
+    failure = 0
+    message = ''
+
+    f = PolitolocoForm()
+    if request.method == 'POST':
+        add_f = PolitolocoForm(request.POST)
+        if add_f.is_valid():
+            add_f.save()
+            success = 1
+            message = 'E-Mail Adresse beim Newsletter von Politoloco registriert.'
+        else:
+            failure = 1
+            message = 'E-Mail Adresse ungueltig'
+
     renderdict = {
         'menu': {
-            'contact': 'active'
+            'contact': 'active',
         },
+        'request': request,
+        'success': success,
+        'failure': failure,
+        'message': message
     }
+    print(renderdict['menu'])
 
     return render(request, "web/contact.html", renderdict)
 
@@ -254,10 +285,12 @@ def myortoloco_personal_info(request):
     }
     return render(request, "myortoloco/personal_info.html", renderdict)
 
+
 def logout(request):
     auth.logout(request)
     # Redirect to a success page.
     return HttpResponseRedirect("/web/home.html")
+
 
 def all_depots(request):
     """

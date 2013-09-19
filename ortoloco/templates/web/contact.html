@@ -25,7 +25,8 @@ info@ortoloco.ch
 		</div>
 	</div>
 	<h3>Newsletter abonnieren</h3>
-	<form class="form">
+	<form class="form" action="{{ request.path }}" method="POST">
+        {% csrf_token %}
 		<label class="checkbox">
 		  <input type="checkbox" name="polit" value="subscribe">
 		  Ich möchte den unregelmässig erscheinenden Polit-Newsletter zu aktuellen Themen und Veranstaltungen der Alternativ-Kultur abonnieren.
@@ -34,6 +35,12 @@ info@ortoloco.ch
 			<label for="email">Meine Email-Adresse:</label>
 			<input id="email" name="email" type="text" placeholder="hans@muster.ch">
 		</div>
+        {% if success == 1  %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endif %}
+        {% if failure == 1 %}
+            <div class="alert alert-error">{{ message }}</div>
+        {% endif %}
 		<div class="form-actions">
 		  <button type="submit" class="btn btn-success">Abonnieren</button>
 		</div>

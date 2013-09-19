@@ -175,6 +175,12 @@ class Job(models.Model):
     def __unicode__(self):
         return u'Job #%s (%s, %d slots)' % (self.id, self.typ.name, self.slots)
 
+class Politoloco(models.Model):
+    email = models.EmailField("E-Mail Adresse")
+
+    def __unicode__(self):
+        return u'Politoloco %s' % self.email
+
 
 class Boehnli(models.Model):
     """

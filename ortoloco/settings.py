@@ -11,18 +11,18 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3', # Add , 'mysql', 'sqlite3' or 'oracle'.
-#        'NAME': 'django',#'db.sqlite',                      # Or path to database file if using sqlite3.
-#        # The following settings are not used with sqlite3:
-#        'USER': 'django',
-#        'PASSWORD': 'django',
-#        'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-#        'PORT': '',                      # Set to empty string for default.
-#    }
-#}
-DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+DATABASES = {
+    'default': {
+        'ENGINE': 'mysql',#'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3', # Add , 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'ortoloco',#'db.sqlite',                      # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': 'ortoloco',
+        'PASSWORD': 'ortoloco',
+        'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    }
+}
+#DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -178,4 +178,8 @@ LOGGING = {
 
 GALLERY_SAMPLE_SIZE = 4
 
-#from settings_oli import *
+AWS_ACCESS_KEY_ID = 'AKIAI7EGSY6WD5R7QCBA'
+AWS_SECRET_ACCESS_KEY = "1emhqUsVRlLU0ysl6QQOkiZPBBKiX8NPro/YGX+n"
+S3_BUCKET = "ortoloco"
+
+from settings_oli import *
