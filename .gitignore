@@ -1,8 +1,8 @@
 db.sqlite
 venv/*
 *.pyc
-my_ortoloco/medias/medias
-my_ortoloco/medias/downloads
-my_ortoloco/medias/photologue/photos
+static_ortoloco/medias/medias
+static_ortoloco/medias/downloads
+static_ortoloco/medias/photologue/photos
 .idea
-my_ortoloco/medias/photologue/temp
+static_ortoloco/medias/photologue/temp

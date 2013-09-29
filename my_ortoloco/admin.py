@@ -75,14 +75,9 @@ class BoehnliAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Depot)
-admin.site.register(StaticContent)
-admin.site.register(Media)
-admin.site.register(Download)
-admin.site.register(Link)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco)
-admin.site.register(Politoloco)
 admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
 admin.site.register(model_audit.Audit, AuditAdmin)

@@ -21,39 +21,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'my_ortoloco', ['Audit'])
 
-        # Adding model 'StaticContent'
-        db.create_table(u'my_ortoloco_staticcontent', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('content', self.gf('django.db.models.fields.TextField')(default='', max_length=10000)),
-        ))
-        db.send_create_signal(u'my_ortoloco', ['StaticContent'])
-
-        # Adding model 'Media'
-        db.create_table(u'my_ortoloco_media', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('mediafile', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('year', self.gf('django.db.models.fields.CharField')(max_length=4)),
-        ))
-        db.send_create_signal(u'my_ortoloco', ['Media'])
-
-        # Adding model 'Download'
-        db.create_table(u'my_ortoloco_download', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('mediafile', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-        ))
-        db.send_create_signal(u'my_ortoloco', ['Download'])
-
-        # Adding model 'Link'
-        db.create_table(u'my_ortoloco_link', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=400)),
-        ))
-        db.send_create_signal(u'my_ortoloco', ['Link'])
-
         # Adding model 'Depot'
         db.create_table(u'my_ortoloco_depot', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -147,13 +114,6 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'my_ortoloco', ['Job'])
 
-        # Adding model 'Politoloco'
-        db.create_table(u'my_ortoloco_politoloco', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-        ))
-        db.send_create_signal(u'my_ortoloco', ['Politoloco'])
-
         # Adding model 'Boehnli'
         db.create_table(u'my_ortoloco_boehnli', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -167,18 +127,6 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
         # Deleting model 'Audit'
         db.delete_table(u'my_ortoloco_audit')
-
-        # Deleting model 'StaticContent'
-        db.delete_table(u'my_ortoloco_staticcontent')
-
-        # Deleting model 'Media'
-        db.delete_table(u'my_ortoloco_media')
-
-        # Deleting model 'Download'
-        db.delete_table(u'my_ortoloco_download')
-
-        # Deleting model 'Link'
-        db.delete_table(u'my_ortoloco_link')
 
         # Deleting model 'Depot'
         db.delete_table(u'my_ortoloco_depot')
@@ -209,9 +157,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'Job'
         db.delete_table(u'my_ortoloco_job')
-
-        # Deleting model 'Politoloco'
-        db.delete_table(u'my_ortoloco_politoloco')
 
         # Deleting model 'Boehnli'
         db.delete_table(u'my_ortoloco_boehnli')
@@ -297,12 +242,6 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
             'weekday': ('django.db.models.fields.PositiveIntegerField', [], {})
         },
-        u'my_ortoloco.download': {
-            'Meta': {'object_name': 'Download'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mediafile': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
-        },
         u'my_ortoloco.extraabotype': {
             'Meta': {'object_name': 'ExtraAboType'},
             'description': ('django.db.models.fields.TextField', [], {'max_length': '1000'}),
@@ -324,12 +263,6 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'})
         },
-        u'my_ortoloco.link': {
-            'Meta': {'object_name': 'Link'},
-            'description': ('django.db.models.fields.CharField', [], {'max_length': '400'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
-        },
         u'my_ortoloco.loco': {
             'Meta': {'object_name': 'Loco'},
             'abo': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'locos'", 'null': 'True', 'to': u"orm['my_ortoloco.Abo']"}),
@@ -338,24 +271,6 @@ class Migration(SchemaMigration):
             'addr_zipcode': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'loco'", 'unique': 'True', 'to': u"orm['auth.User']"})
-        },
-        u'my_ortoloco.media': {
-            'Meta': {'object_name': 'Media'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mediafile': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'year': ('django.db.models.fields.CharField', [], {'max_length': '4'})
-        },
-        u'my_ortoloco.politoloco': {
-            'Meta': {'object_name': 'Politoloco'},
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        u'my_ortoloco.staticcontent': {
-            'Meta': {'object_name': 'StaticContent'},
-            'content': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '10000'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         u'my_ortoloco.taetigkeitsbereich': {
             'Meta': {'object_name': 'Taetigkeitsbereich'},
