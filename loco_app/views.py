@@ -3,8 +3,10 @@ from collections import defaultdict, Counter
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.forms.models import modelformset_factory
-from django.contrib.auth.decorators import login_required
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+
+from django.forms import ModelForm
 
 from django.forms import ModelForm
 
@@ -221,6 +223,7 @@ def myortoloco_job(request, job_id):
     """
     Details for a job
     """
+    print "gags"
 
     renderdict = {
         'job': get_object_or_404(Job, id=int(job_id))
@@ -272,12 +275,15 @@ def login(request):
 
 @login_required
 def myortoloco_personal_info(request):
+    print "susle"
     UserFormSet = modelformset_factory(User, fields=('first_name', 'last_name'))
     if (request.method == 'POST'):
+        print "post"
         formset = UserFormSet(request.POST, queryset=User.objects.filter(id=request.user.id))
         if formset.is_valid():
             formset.save()
     else:
+        print "other" + request.method
         formset = UserFormSet(queryset=User.objects.all().filter(id=request.user.id))
 
     renderdict = {
@@ -286,10 +292,11 @@ def myortoloco_personal_info(request):
     return render(request, "myortoloco/personal_info.html", renderdict)
 
 
-def logout(request):
+def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
-    return HttpResponseRedirect("/web/home.html")
+    return HttpResponseRedirect("/aktuelles")
+
 
 
 def all_depots(request):

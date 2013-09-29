@@ -22,6 +22,7 @@ urlpatterns = patterns('',
 	url('^medien', 'loco_app.views.media'),
     url('^kontakt', 'loco_app.views.contact'),
 
+    #url('^myortoloco/', 'loco_app.views.myortoloco_home'),
     url('^myortoloco/home.html', 'loco_app.views.myortoloco_home'),
     url('^myortoloco/jobs/(?P<job_id>.*?)/', 'loco_app.views.myortoloco_job'),
     url('^myortoloco/teams/(?P<bereich_id>.*?)/', 'loco_app.views.myortoloco_team'),
@@ -29,7 +30,7 @@ urlpatterns = patterns('',
 
 
     (r'^accounts/login/$',  login),
-    (r'^logout/$', 'loco_app.views.logout'),
+    (r'^logout/$', 'loco_app.views.logout_view'),
 
     (r'^photologue/', include('photologue.urls')),
 
