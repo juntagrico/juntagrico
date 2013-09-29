@@ -10,7 +10,7 @@ from django.forms import ModelForm
 
 from django.forms import ModelForm
 
-from loco_app.models import *
+from my_ortoloco.models import *
 import os
 import time, json, base64, hmac, sha, urllib
 from django.utils import simplejson

@@ -2,7 +2,7 @@ import MySQLdb
 
 from django.core.management.base import BaseCommand, CommandError
 
-from loco_app.models import *
+from my_ortoloco.models import *
 
 #from polls.models import Poll
 

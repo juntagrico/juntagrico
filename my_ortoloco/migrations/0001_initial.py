@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding model 'Audit'
-        db.create_table(u'loco_app_audit', (
+        db.create_table(u'my_ortoloco_audit', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('timestamp', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('action', self.gf('django.db.models.fields.CharField')(max_length=20)),
@@ -19,186 +19,202 @@ class Migration(SchemaMigration):
             ('target_type', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='target_set', null=True, to=orm['contenttypes.ContentType'])),
             ('target_id', self.gf('django.db.models.fields.PositiveIntegerField')(null=True, blank=True)),
         ))
-        db.send_create_signal(u'loco_app', ['Audit'])
+        db.send_create_signal(u'my_ortoloco', ['Audit'])
 
         # Adding model 'StaticContent'
-        db.create_table(u'loco_app_staticcontent', (
+        db.create_table(u'my_ortoloco_staticcontent', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('content', self.gf('django.db.models.fields.TextField')(default='', max_length=10000)),
         ))
-        db.send_create_signal(u'loco_app', ['StaticContent'])
+        db.send_create_signal(u'my_ortoloco', ['StaticContent'])
 
         # Adding model 'Media'
-        db.create_table(u'loco_app_media', (
+        db.create_table(u'my_ortoloco_media', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('mediafile', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('year', self.gf('django.db.models.fields.CharField')(max_length=4)),
         ))
-        db.send_create_signal(u'loco_app', ['Media'])
+        db.send_create_signal(u'my_ortoloco', ['Media'])
 
         # Adding model 'Download'
-        db.create_table(u'loco_app_download', (
+        db.create_table(u'my_ortoloco_download', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('mediafile', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
         ))
-        db.send_create_signal(u'loco_app', ['Download'])
+        db.send_create_signal(u'my_ortoloco', ['Download'])
 
         # Adding model 'Link'
-        db.create_table(u'loco_app_link', (
+        db.create_table(u'my_ortoloco_link', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('description', self.gf('django.db.models.fields.CharField')(max_length=400)),
         ))
-        db.send_create_signal(u'loco_app', ['Link'])
+        db.send_create_signal(u'my_ortoloco', ['Link'])
 
         # Adding model 'Depot'
-        db.create_table(u'loco_app_depot', (
+        db.create_table(u'my_ortoloco_depot', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('code', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.TextField')(default='', max_length=1000)),
-            ('street', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('contact', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], on_delete=models.PROTECT)),
             ('weekday', self.gf('django.db.models.fields.PositiveIntegerField')()),
+            ('addr_street', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('addr_zipcode', self.gf('django.db.models.fields.CharField')(max_length=10)),
+            ('addr_location', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
-        db.send_create_signal(u'loco_app', ['Depot'])
+        db.send_create_signal(u'my_ortoloco', ['Depot'])
 
         # Adding model 'ExtraAboType'
-        db.create_table(u'loco_app_extraabotype', (
+        db.create_table(u'my_ortoloco_extraabotype', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.TextField')(max_length=1000)),
         ))
-        db.send_create_signal(u'loco_app', ['ExtraAboType'])
+        db.send_create_signal(u'my_ortoloco', ['ExtraAboType'])
 
         # Adding model 'Abo'
-        db.create_table(u'loco_app_abo', (
+        db.create_table(u'my_ortoloco_abo', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('depot', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.Depot'], on_delete=models.PROTECT)),
-            ('primary_loco', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='abo_primary', null=True, to=orm['loco_app.Loco'])),
+            ('depot', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['my_ortoloco.Depot'], on_delete=models.PROTECT)),
+            ('primary_loco', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='abo_primary', null=True, to=orm['my_ortoloco.Loco'])),
             ('groesse', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
         ))
-        db.send_create_signal(u'loco_app', ['Abo'])
+        db.send_create_signal(u'my_ortoloco', ['Abo'])
 
         # Adding M2M table for field extra_abos on 'Abo'
-        db.create_table(u'loco_app_abo_extra_abos', (
+        db.create_table(u'my_ortoloco_abo_extra_abos', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('abo', models.ForeignKey(orm[u'loco_app.abo'], null=False)),
-            ('extraabotype', models.ForeignKey(orm[u'loco_app.extraabotype'], null=False))
+            ('abo', models.ForeignKey(orm[u'my_ortoloco.abo'], null=False)),
+            ('extraabotype', models.ForeignKey(orm[u'my_ortoloco.extraabotype'], null=False))
         ))
-        db.create_unique(u'loco_app_abo_extra_abos', ['abo_id', 'extraabotype_id'])
+        db.create_unique(u'my_ortoloco_abo_extra_abos', ['abo_id', 'extraabotype_id'])
 
         # Adding model 'Anteilschein'
-        db.create_table(u'loco_app_anteilschein', (
+        db.create_table(u'my_ortoloco_anteilschein', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, on_delete=models.SET_NULL, blank=True)),
         ))
-        db.send_create_signal(u'loco_app', ['Anteilschein'])
+        db.send_create_signal(u'my_ortoloco', ['Anteilschein'])
 
         # Adding model 'Taetigkeitsbereich'
-        db.create_table(u'loco_app_taetigkeitsbereich', (
+        db.create_table(u'my_ortoloco_taetigkeitsbereich', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.TextField')(default='', max_length=1000)),
             ('coordinator', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], on_delete=models.PROTECT)),
         ))
-        db.send_create_signal(u'loco_app', ['Taetigkeitsbereich'])
+        db.send_create_signal(u'my_ortoloco', ['Taetigkeitsbereich'])
 
         # Adding M2M table for field users on 'Taetigkeitsbereich'
-        db.create_table(u'loco_app_taetigkeitsbereich_users', (
+        db.create_table(u'my_ortoloco_taetigkeitsbereich_users', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('taetigkeitsbereich', models.ForeignKey(orm[u'loco_app.taetigkeitsbereich'], null=False)),
+            ('taetigkeitsbereich', models.ForeignKey(orm[u'my_ortoloco.taetigkeitsbereich'], null=False)),
             ('user', models.ForeignKey(orm[u'auth.user'], null=False))
         ))
-        db.create_unique(u'loco_app_taetigkeitsbereich_users', ['taetigkeitsbereich_id', 'user_id'])
+        db.create_unique(u'my_ortoloco_taetigkeitsbereich_users', ['taetigkeitsbereich_id', 'user_id'])
 
         # Adding model 'Loco'
-        db.create_table(u'loco_app_loco', (
+        db.create_table(u'my_ortoloco_loco', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.OneToOneField')(related_name='loco', unique=True, to=orm['auth.User'])),
-            ('abo', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='locos', null=True, to=orm['loco_app.Abo'])),
+            ('abo', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='locos', null=True, to=orm['my_ortoloco.Abo'])),
+            ('addr_street', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
+            ('addr_zipcode', self.gf('django.db.models.fields.CharField')(max_length=10, null=True, blank=True)),
+            ('addr_location', self.gf('django.db.models.fields.CharField')(max_length=50, null=True, blank=True)),
         ))
-        db.send_create_signal(u'loco_app', ['Loco'])
+        db.send_create_signal(u'my_ortoloco', ['Loco'])
 
         # Adding model 'JobTyp'
-        db.create_table(u'loco_app_jobtyp', (
+        db.create_table(u'my_ortoloco_jobtyp', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=100)),
             ('description', self.gf('django.db.models.fields.TextField')(default='', max_length=1000)),
-            ('bereich', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.Taetigkeitsbereich'], on_delete=models.PROTECT)),
+            ('bereich', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['my_ortoloco.Taetigkeitsbereich'], on_delete=models.PROTECT)),
             ('duration', self.gf('django.db.models.fields.PositiveIntegerField')()),
         ))
-        db.send_create_signal(u'loco_app', ['JobTyp'])
+        db.send_create_signal(u'my_ortoloco', ['JobTyp'])
 
         # Adding model 'Job'
-        db.create_table(u'loco_app_job', (
+        db.create_table(u'my_ortoloco_job', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('typ', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.JobTyp'], on_delete=models.PROTECT)),
+            ('typ', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['my_ortoloco.JobTyp'], on_delete=models.PROTECT)),
             ('slots', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('time', self.gf('django.db.models.fields.DateTimeField')()),
         ))
-        db.send_create_signal(u'loco_app', ['Job'])
+        db.send_create_signal(u'my_ortoloco', ['Job'])
+
+        # Adding model 'Politoloco'
+        db.create_table(u'my_ortoloco_politoloco', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
+        ))
+        db.send_create_signal(u'my_ortoloco', ['Politoloco'])
 
         # Adding model 'Boehnli'
-        db.create_table(u'loco_app_boehnli', (
+        db.create_table(u'my_ortoloco_boehnli', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('job', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.Job'])),
-            ('loco', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['loco_app.Loco'], null=True, on_delete=models.PROTECT, blank=True)),
+            ('job', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['my_ortoloco.Job'])),
+            ('loco', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['my_ortoloco.Loco'], null=True, on_delete=models.PROTECT, blank=True)),
+            ('amount', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
         ))
-        db.send_create_signal(u'loco_app', ['Boehnli'])
+        db.send_create_signal(u'my_ortoloco', ['Boehnli'])
 
 
     def backwards(self, orm):
         # Deleting model 'Audit'
-        db.delete_table(u'loco_app_audit')
+        db.delete_table(u'my_ortoloco_audit')
 
         # Deleting model 'StaticContent'
-        db.delete_table(u'loco_app_staticcontent')
+        db.delete_table(u'my_ortoloco_staticcontent')
 
         # Deleting model 'Media'
-        db.delete_table(u'loco_app_media')
+        db.delete_table(u'my_ortoloco_media')
 
         # Deleting model 'Download'
-        db.delete_table(u'loco_app_download')
+        db.delete_table(u'my_ortoloco_download')
 
         # Deleting model 'Link'
-        db.delete_table(u'loco_app_link')
+        db.delete_table(u'my_ortoloco_link')
 
         # Deleting model 'Depot'
-        db.delete_table(u'loco_app_depot')
+        db.delete_table(u'my_ortoloco_depot')
 
         # Deleting model 'ExtraAboType'
-        db.delete_table(u'loco_app_extraabotype')
+        db.delete_table(u'my_ortoloco_extraabotype')
 
         # Deleting model 'Abo'
-        db.delete_table(u'loco_app_abo')
+        db.delete_table(u'my_ortoloco_abo')
 
         # Removing M2M table for field extra_abos on 'Abo'
-        db.delete_table('loco_app_abo_extra_abos')
+        db.delete_table('my_ortoloco_abo_extra_abos')
 
         # Deleting model 'Anteilschein'
-        db.delete_table(u'loco_app_anteilschein')
+        db.delete_table(u'my_ortoloco_anteilschein')
 
         # Deleting model 'Taetigkeitsbereich'
-        db.delete_table(u'loco_app_taetigkeitsbereich')
+        db.delete_table(u'my_ortoloco_taetigkeitsbereich')
 
         # Removing M2M table for field users on 'Taetigkeitsbereich'
-        db.delete_table('loco_app_taetigkeitsbereich_users')
+        db.delete_table('my_ortoloco_taetigkeitsbereich_users')
 
         # Deleting model 'Loco'
-        db.delete_table(u'loco_app_loco')
+        db.delete_table(u'my_ortoloco_loco')
 
         # Deleting model 'JobTyp'
-        db.delete_table(u'loco_app_jobtyp')
+        db.delete_table(u'my_ortoloco_jobtyp')
 
         # Deleting model 'Job'
-        db.delete_table(u'loco_app_job')
+        db.delete_table(u'my_ortoloco_job')
+
+        # Deleting model 'Politoloco'
+        db.delete_table(u'my_ortoloco_politoloco')
 
         # Deleting model 'Boehnli'
-        db.delete_table(u'loco_app_boehnli')
+        db.delete_table(u'my_ortoloco_boehnli')
 
 
     models = {
@@ -238,20 +254,20 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'loco_app.abo': {
+        u'my_ortoloco.abo': {
             'Meta': {'object_name': 'Abo'},
-            'depot': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.Depot']", 'on_delete': 'models.PROTECT'}),
-            'extra_abos': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['loco_app.ExtraAboType']", 'null': 'True', 'blank': 'True'}),
+            'depot': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['my_ortoloco.Depot']", 'on_delete': 'models.PROTECT'}),
+            'extra_abos': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['my_ortoloco.ExtraAboType']", 'null': 'True', 'blank': 'True'}),
             'groesse': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'primary_loco': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'abo_primary'", 'null': 'True', 'to': u"orm['loco_app.Loco']"})
+            'primary_loco': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'abo_primary'", 'null': 'True', 'to': u"orm['my_ortoloco.Loco']"})
         },
-        u'loco_app.anteilschein': {
+        u'my_ortoloco.anteilschein': {
             'Meta': {'object_name': 'Anteilschein'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'on_delete': 'models.SET_NULL', 'blank': 'True'})
         },
-        u'loco_app.audit': {
+        u'my_ortoloco.audit': {
             'Meta': {'object_name': 'Audit'},
             'action': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'field': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -262,75 +278,86 @@ class Migration(SchemaMigration):
             'target_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'target_set'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
-        u'loco_app.boehnli': {
+        u'my_ortoloco.boehnli': {
             'Meta': {'object_name': 'Boehnli'},
+            'amount': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'job': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.Job']"}),
-            'loco': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.Loco']", 'null': 'True', 'on_delete': 'models.PROTECT', 'blank': 'True'})
+            'job': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['my_ortoloco.Job']"}),
+            'loco': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['my_ortoloco.Loco']", 'null': 'True', 'on_delete': 'models.PROTECT', 'blank': 'True'})
         },
-        u'loco_app.depot': {
+        u'my_ortoloco.depot': {
             'Meta': {'object_name': 'Depot'},
+            'addr_location': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'addr_street': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'addr_zipcode': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
             'contact': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'on_delete': 'models.PROTECT'}),
             'description': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '1000'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'}),
-            'street': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'weekday': ('django.db.models.fields.PositiveIntegerField', [], {})
         },
-        u'loco_app.download': {
+        u'my_ortoloco.download': {
             'Meta': {'object_name': 'Download'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mediafile': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
-        u'loco_app.extraabotype': {
+        u'my_ortoloco.extraabotype': {
             'Meta': {'object_name': 'ExtraAboType'},
             'description': ('django.db.models.fields.TextField', [], {'max_length': '1000'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'})
         },
-        u'loco_app.job': {
+        u'my_ortoloco.job': {
             'Meta': {'object_name': 'Job'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'slots': ('django.db.models.fields.PositiveIntegerField', [], {}),
             'time': ('django.db.models.fields.DateTimeField', [], {}),
-            'typ': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.JobTyp']", 'on_delete': 'models.PROTECT'})
+            'typ': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['my_ortoloco.JobTyp']", 'on_delete': 'models.PROTECT'})
         },
-        u'loco_app.jobtyp': {
+        u'my_ortoloco.jobtyp': {
             'Meta': {'object_name': 'JobTyp'},
-            'bereich': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['loco_app.Taetigkeitsbereich']", 'on_delete': 'models.PROTECT'}),
+            'bereich': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['my_ortoloco.Taetigkeitsbereich']", 'on_delete': 'models.PROTECT'}),
             'description': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '1000'}),
             'duration': ('django.db.models.fields.PositiveIntegerField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '100'})
         },
-        u'loco_app.link': {
+        u'my_ortoloco.link': {
             'Meta': {'object_name': 'Link'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '400'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
-        u'loco_app.loco': {
+        u'my_ortoloco.loco': {
             'Meta': {'object_name': 'Loco'},
-            'abo': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'locos'", 'null': 'True', 'to': u"orm['loco_app.Abo']"}),
+            'abo': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'locos'", 'null': 'True', 'to': u"orm['my_ortoloco.Abo']"}),
+            'addr_location': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
+            'addr_street': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'addr_zipcode': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'loco'", 'unique': 'True', 'to': u"orm['auth.User']"})
         },
-        u'loco_app.media': {
+        u'my_ortoloco.media': {
             'Meta': {'object_name': 'Media'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mediafile': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'year': ('django.db.models.fields.CharField', [], {'max_length': '4'})
         },
-        u'loco_app.staticcontent': {
+        u'my_ortoloco.politoloco': {
+            'Meta': {'object_name': 'Politoloco'},
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+        },
+        u'my_ortoloco.staticcontent': {
             'Meta': {'object_name': 'StaticContent'},
             'content': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '10000'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'loco_app.taetigkeitsbereich': {
+        u'my_ortoloco.taetigkeitsbereich': {
             'Meta': {'object_name': 'Taetigkeitsbereich'},
             'coordinator': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'on_delete': 'models.PROTECT'}),
             'description': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '1000'}),
@@ -340,4 +367,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['loco_app']
+    complete_apps = ['my_ortoloco']

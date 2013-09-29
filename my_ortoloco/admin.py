@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from loco_app.models import *
+from my_ortoloco.models import *
 from django.db.models import Q
 
 
