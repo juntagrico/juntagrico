@@ -1,0 +1,103 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Personalien ändern</h3>
+    <br/>
+    {% if success %}
+        <div class="alert alert-success">Personalien erfolgreich geändert</div>
+    {% else %}
+        <form action="/my/profile" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <div class="control-group {% if userform.first_name.errors %}error{% endif %}">
+                <label class="control-label" for="id_first_name">Vorname</label>
+
+                <div class="controls">
+                    {{ userform.first_name }}
+                </div>
+            </div>
+            {% if userform.last_name.errors %}
+                <div class="alert alert-error">Vorname ungültig</div>
+            {% endif %}
+
+            <div class="control-group {% if userform.last_name.errors %}error{% endif %}">
+                <label class="control-label" for="id_last_name">Nachname</label>
+
+                <div class="controls">
+                    {{ userform.last_name }}
+                </div>
+            </div>
+            {% if userform.last_name.errors %}
+                <div class="alert alert-error">Nachname ungültig</div>
+            {% endif %}
+
+            <div class="control-group {% if locoform.addr_street.errors %}error{% endif %}">
+                <label class="control-label" for="id_addr_street">{{ locoform.addr_street.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.addr_street }}
+                </div>
+            </div>
+            {% if locoform.addr_street.errors %}
+                <div class="alert alert-error">Strasse ungültig</div>
+            {% endif %}
+
+            <div class="control-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
+                <label class="control-label" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.addr_zipcode }}
+                </div>
+            </div>
+            {% if locoform.addr_zipcode.errors %}
+                <div class="alert alert-error">PLZ ungültig</div>
+            {% endif %}
+
+            <div class="control-group {% if locoform.addr_location.errors %}error{% endif %}">
+                <label class="control-label" for="id_addr_location">{{ locoform.addr_location.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.addr_location }}
+                </div>
+            </div>
+            {% if locoform.addr_location.errors %}
+                <div class="alert alert-error">Ort ungültig</div>
+            {% endif %}
+
+            <div class="control-group {% if locoform.phone.errors %}error{% endif %}">
+                <label class="control-label" for="id_phone">{{ locoform.phone.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.phone }}
+                </div>
+            </div>
+            {% if locoform.phone.errors %}
+                <div class="alert alert-error">Telefon ungültig</div>
+            {% endif %}
+
+            <div class="control-group {% if locoform.mobile_phone.errors %}error{% endif %}">
+                <label class="control-label" for="id_mobile_phone">{{ locoform.mobile_phone.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.mobile_phone }}
+                </div>
+            </div>
+            {% if locoform.mobile_phone.errors %}
+                <div class="alert alert-error">Mobile ungültig</div>
+            {% endif %}
+
+            <div class="control-group {% if userform.email.errors %}error{% endif %}">
+                <label class="control-label" for="id_email">E-Mail Adresse</label>
+
+                <div class="controls">
+                    {{ userform.email }}
+                </div>
+            </div>
+            {% if userform.email.errors %}
+                <div class="alert alert-error">E-Mail ungültig</div>
+            {% endif %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Personalien ändern</button>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

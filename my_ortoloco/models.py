@@ -96,6 +96,7 @@ class Loco(models.Model):
     addr_location = models.CharField("Ort", max_length=50, null=True, blank=True)
     birthday = models.DateField("Geburtsdatum", null=True, blank=True)
     phone = models.CharField("Telefonnr", max_length=50, null=True, blank=True)
+    mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
     def __unicode__(self):
         return u"%s" %(self.user)

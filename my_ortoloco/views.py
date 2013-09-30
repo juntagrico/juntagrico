@@ -58,21 +58,37 @@ def my_team(request, bereich_id):
 
 @login_required
 def my_profile(request):
-    print "susle"
-    if (request.method == 'POST'):
-        print "post"
-        #formset = UserFormSet(request.POST, queryset=User.objects.filter(id=request.user.id))
-        #if formset.is_valid():
-        #    formset.save()
+    success = False
+    loco = Loco.objects.get(user=request.user)
+    if request.method == 'POST':
+        locoform = ProfileLocoForm(request.POST)
+        userform = ProfileUserForm(request.POST)
+        if locoform.is_valid() and userform.is_valid():
+            #set all fields of user
+            request.user.first_name = userform.cleaned_data['first_name']
+            request.user.last_name = userform.cleaned_data['last_name']
+            request.user.email = userform.cleaned_data['email']
+            request.user.save()
+
+            #set the fields of loco
+            loco.addr_street = locoform.cleaned_data['addr_street']
+            loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
+            loco.addr_location = locoform.cleaned_data['addr_location']
+            loco.phone = locoform.cleaned_data['phone']
+            loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+            loco.save()
+
+            success = True
     else:
-        print "other" + request.method
-        #user = User.objects.get(id=request.user.id)
-        #form = ProfileForm(instance=user)
+        locoform = ProfileLocoForm(instance=loco)
+        userform = ProfileUserForm(instance=request.user)
 
     renderdict = {
-        #'formset': form
+        'locoform': locoform,
+        'userform': userform,
+        'success': success
     }
-    return render(request, "personal_info.html", renderdict)
+    return render(request, "profile.html", renderdict)
 
 
 @login_required
@@ -85,7 +101,7 @@ def my_change_password(request):
             request.user.save()
             success = True
     else:
-        form = PasswordForm()  # An unbound form
+        form = PasswordForm()
 
     return render(request, 'password.html', {
         'form': form,
