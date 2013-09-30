@@ -1,0 +1,36 @@
+{% extends "mybase.html" %}
+
+{% block allcontent %}
+
+    <div class="row">
+        <div class="span3"></div>
+        <div class="span6">
+            <form action="" method="post" class="form-horizontal">
+                {% csrf_token %}
+                <div class="myortoloco_logo"></div>
+                <br/><br/>
+                <div class="control-group">
+                    <label class="control-label" for="username">Benutzername</label>
+                    <div class="controls">
+                        <input type="text" name="username" id="username" placeholder="Benutzername">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="password">Passwort</label>
+                    <div class="controls">
+                        <input type="password" name="password" id="password" placeholder="password">
+                    </div>
+                </div>
+                {% if form.errors %}
+                    <div class="alert alert-error">Sorry, das ist kein gültiges Login</div>
+                {% endif %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Anmelden</button>
+                </div>
+                <input type="hidden" name="next" value="{{ next|escape }}"/>
+            </form>
+        </div>
+        <div class="span3"></div>
+    </div>
+
+{% endblock %}

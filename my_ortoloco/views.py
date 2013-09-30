@@ -1,21 +1,14 @@
 from collections import defaultdict, Counter
-
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.forms.models import modelformset_factory
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-
-from django.forms import ModelForm
-
-from django.forms import ModelForm
-
 from my_ortoloco.models import *
-import os
-import time, json, base64, hmac, sha, urllib
-from django.utils import simplejson
+from my_ortoloco.forms import *
 
-def myortoloco_home(request):
+
+@login_required
+def my_home(request):
     """
     Overview on myortoloco
     """
@@ -28,10 +21,11 @@ def myortoloco_home(request):
         'teams': teams
     }
 
-    return render(request, "myortoloco/home.html", renderdict)
+    return render(request, "myhome.html", renderdict)
 
 
-def myortoloco_job(request, job_id):
+@login_required
+def my_job(request, job_id):
     """
     Details for a job
     """
@@ -41,10 +35,11 @@ def myortoloco_job(request, job_id):
         'job': get_object_or_404(Job, id=int(job_id))
     }
 
-    return render(request, "myortoloco/job.html", renderdict)
+    return render(request, "job.html", renderdict)
 
 
-def myortoloco_team(request, bereich_id):
+@login_required
+def my_team(request, bereich_id):
     """
     Details for a team
     """
@@ -58,57 +53,50 @@ def myortoloco_team(request, bereich_id):
         'jobs': jobs,
     }
 
-    return render(request, "myortoloco/team.html", renderdict)
-
-
-def login(request):
-    # If we submitted the form...
-    if request.method == 'POST':
-
-        # Check that the test cookie worked (we set it below):
-        if request.session.test_cookie_worked():
-
-            # The test cookie worked, so delete it.
-            request.session.delete_test_cookie()
-
-            # In practice, we'd need some logic to check username/password
-            # here, but since this is an example...
-            return HttpResponse("You're logged in.")
-
-        # The test cookie failed, so display an error message. If this
-        # were a real site, we'd want to display a friendlier message.
-        else:
-            return HttpResponse("Please enable cookies and try again.")
-
-    # If we didn't post, send the test cookie along with the login form.
-    request.session.set_test_cookie()
-    return render(request, 'foo/login_form.html')
+    return render(request, "team.html", renderdict)
 
 
 @login_required
-def myortoloco_personal_info(request):
+def my_profile(request):
     print "susle"
-    UserFormSet = modelformset_factory(User, fields=('first_name', 'last_name'))
     if (request.method == 'POST'):
         print "post"
-        formset = UserFormSet(request.POST, queryset=User.objects.filter(id=request.user.id))
-        if formset.is_valid():
-            formset.save()
+        #formset = UserFormSet(request.POST, queryset=User.objects.filter(id=request.user.id))
+        #if formset.is_valid():
+        #    formset.save()
     else:
         print "other" + request.method
-        formset = UserFormSet(queryset=User.objects.all().filter(id=request.user.id))
+        #user = User.objects.get(id=request.user.id)
+        #form = ProfileForm(instance=user)
 
     renderdict = {
-        'formset': formset
+        #'formset': form
     }
-    return render(request, "myortoloco/personal_info.html", renderdict)
+    return render(request, "personal_info.html", renderdict)
+
+
+@login_required
+def my_change_password(request):
+    success = False
+    if request.method == 'POST':
+        form = PasswordForm(request.POST)
+        if form.is_valid():
+            request.user.set_password(form.cleaned_data['password'])
+            request.user.save()
+            success = True
+    else:
+        form = PasswordForm()  # An unbound form
+
+    return render(request, 'password.html', {
+        'form': form,
+        'success': success
+    })
 
 
 def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
     return HttpResponseRedirect("/aktuelles")
-
 
 
 def all_depots(request):

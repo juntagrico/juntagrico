@@ -1,0 +1,64 @@
+<html lang="de">
+<head>
+	<title>Ortoloco</title>
+	<meta charset="utf-8">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" />
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/ortoloco.css" rel="stylesheet">
+    <link href="/static/css/myortoloco.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+    	<div class="erbsetop"></div>
+    	<div class="erbseleft"></div>
+    	<div class="erbseright"></div>
+    	<div class="erbsebottom"></div>
+    	<div class="row ortoloco">
+            {% block allcontent %}
+                <div class="span4">
+                    <a href="/home.html"><span class="myortoloco_logo"></span></a>
+
+                        <ul class="nav nav-pills nav-stacked">
+                            <li class="{{ menu.home }}">
+                                <a href="/my/home">Aktuelles</a>
+                            </li>
+                            <li class="{{ menu.personalInfo }}">
+                                <a href="/my/profil">Personalien</a>
+                            </li>
+                            <li class="{{ menu.password }}">
+                                <a href="/my/passwort">Passwort</a>
+                            </li>
+                            <li class="{{ menu.account }}">
+                                <a href="/my/account">Kontostand</a>
+                            </li>
+                            <li class="{{ menu.abonnement }}">
+                                <a href="/my/abo">Abo</a>
+                            </li>
+                            <li class="{{ menu.participation }}">
+                                <a href="/my/mitarbeit">Mitarbeit</a>
+                            </li>
+                            <li class="{{ menu.contact }}">
+                                <a href="/my/kontakt">Kontakt</a>
+                            </li>
+                            <li class="{{ menu.ortoloco }}">
+                                <a href="/aktuelles">ortoloco.ch</a>
+                            </li>
+                            <li class="{{ menu.logout }}">
+                                <a href="/logout">Abmelden</a>
+                            </li>
+                        </ul>
+
+                        <div id="news" class="well">
+                            Meine Jobs:
+                            <br/>
+                            TODO
+                        </div>
+                </div>
+                <div class="span8">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            {% endblock %}
+	</div>
+</body>

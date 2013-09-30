@@ -31,7 +31,7 @@ def home(request):
         }
     }
 
-    return render(request, "web/home.html", renderdict)
+    return render(request, "home.html", renderdict)
 
 
 def about(request):
@@ -46,7 +46,7 @@ def about(request):
         }
     }
 
-    return render(request, "web/about.html", renderdict)
+    return render(request, "about.html", renderdict)
 
 
 def portrait(request):
@@ -60,7 +60,7 @@ def portrait(request):
         }
     }
 
-    return render(request, "web/portrait.html", renderdict)
+    return render(request, "portrait.html", renderdict)
 
 
 def background(request):
@@ -74,7 +74,7 @@ def background(request):
         }
     }
 
-    return render(request, "web/background.html", renderdict)
+    return render(request, "background.html", renderdict)
 
 
 def abo(request):
@@ -88,7 +88,7 @@ def abo(request):
         }
     }
 
-    return render(request, "web/abo.html", renderdict)
+    return render(request, "abo.html", renderdict)
 
 
 def faq(request):
@@ -102,7 +102,7 @@ def faq(request):
         }
     }
 
-    return render(request, "web/faq.html", renderdict)
+    return render(request, "faq.html", renderdict)
 
 
 def join(request):
@@ -115,7 +115,7 @@ def join(request):
         }
     }
 
-    return render(request, "web/join.html", renderdict)
+    return render(request, "join.html", renderdict)
 
 
 def media(request):
@@ -130,7 +130,7 @@ def media(request):
         'medias': medias_list,
     }
 
-    return render(request, "web/media.html", renderdict)
+    return render(request, "media.html", renderdict)
 
 
 def links(request):
@@ -146,7 +146,7 @@ def links(request):
         'links': links_list,
     }
 
-    return render(request, "web/links.html", renderdict)
+    return render(request, "links.html", renderdict)
 
 
 def downloads(request):
@@ -162,7 +162,7 @@ def downloads(request):
         'downloads': download_list,
     }
 
-    return render(request, "web/downloads.html", renderdict)
+    return render(request, "downloads.html", renderdict)
 
 
 def contact(request):
@@ -201,4 +201,4 @@ def contact(request):
     }
     print(renderdict['menu'])
 
-    return render(request, "web/contact.html", renderdict)
+    return render(request, "contact.html", renderdict)
