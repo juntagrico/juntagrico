@@ -53,7 +53,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = '/Users/og/Stuff/ortoloco/my_ortoloco/medias/'
+MEDIA_ROOT = '/Users/og/Stuff/ortoloco/static_ortoloco/medias/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -64,7 +64,7 @@ MEDIA_URL = '/medias/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = '/Users/og/Stuff/ortoloco/my_ortoloco/static/'
+STATIC_ROOT = '/Users/og/Stuff/ortoloco/static/'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -124,7 +124,6 @@ WSGI_APPLICATION = 'ortoloco.wsgi.application'
 from photologue import PHOTOLOGUE_TEMPLATE_DIR
 TEMPLATE_DIRS = (
     'ortoloco/templates',
-    'myortoloco/templates',
     PHOTOLOGUE_TEMPLATE_DIR
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -179,8 +178,4 @@ LOGGING = {
 
 GALLERY_SAMPLE_SIZE = 4
 
-AWS_ACCESS_KEY_ID = 'AKIAI7EGSY6WD5R7QCBA'
-AWS_SECRET_ACCESS_KEY = "1emhqUsVRlLU0ysl6QQOkiZPBBKiX8NPro/YGX+n"
-S3_BUCKET = "ortoloco"
-
-from settings_oli import *
+from settings_local import *
