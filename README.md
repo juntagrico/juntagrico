@@ -1,5 +1,7 @@
-ortoloco.ch - die regionale gartenkooperative
+ortoloco.ch
 ===================
+###die regionale gartenkooperative
+
 
 We implement a "specific" web solution to organize all the work on a farm as a group of about ~400 persons.
 
