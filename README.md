@@ -1,12 +1,16 @@
+ortoloco.ch - die regionale gartenkooperative
+===================
 
-setting up:
+We implement a "specific" web solution to organize all the work on a farm as a group of about ~400 persons.
+
+###Setting up locally:
     sudo apt-get install virtualenv
     virtualenv --distribute venv
     source ./venv/bin/activate
     pip install -r requirements.txt
 
 
-create DB from scratch:
+###Create DB from scratch:
     in ortoloco/settings.py, comment out all non-django apps (loco_app, south, photologue)
     ./manage.py syncdb
     reactivate apps
@@ -14,11 +18,11 @@ create DB from scratch:
     ./manage.py migrate loco_app
     ./manage.py migrate photologue
 
-create new migration:
+###Create new migration:
     ./manage.py schemamigration loco_app --auto
     ./manage.py migrate loco_app
 
-test server:
+###Test server:
     - ./manage.py runserver
     - will be on localhost at port 8000
 
