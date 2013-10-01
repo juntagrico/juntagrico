@@ -20,6 +20,9 @@
             <a href="/myortoloco/jobs/{{ job.id }}">{{ job.typ }}</a>
         </li>
     {% endfor %}
+    {% if jobs|length <= 0 %}
+        Keine Jobs ausgeschrieben
+    {% endif %}
     </ul>
     <br/><br/>
     <a class="btn" href="javascript:history.back()">zurück</a>

@@ -12,16 +12,13 @@ def my_home(request):
     """
     Overview on myortoloco
     """
-
     next_jobs = Job.objects.all()[0:7]
     teams = Taetigkeitsbereich.objects.all()
 
-    renderdict = {
+    return render(request, "myhome.html", {
         'jobs': next_jobs,
         'teams': teams
-    }
-
-    return render(request, "myhome.html", renderdict)
+    })
 
 
 @login_required
@@ -29,13 +26,88 @@ def my_job(request, job_id):
     """
     Details for a job
     """
-    print "gags"
-
-    renderdict = {
+    return render(request, "job.html", {
         'job': get_object_or_404(Job, id=int(job_id))
-    }
+    })
 
-    return render(request, "job.html", renderdict)
+
+@login_required
+def my_participation(request):
+    """
+    Details for all areas a loco can participate
+    """
+    my_areas = []
+    success = False
+    if request.method == 'POST':
+        for area in Taetigkeitsbereich.objects.all():
+            if request.POST.get("area" + str(area.id)):
+                area.users.add(request.user)
+                area.save()
+            else:
+                print "remove"
+                area.users.remove(request.user)
+                area.save()
+        success = True
+
+    for area in Taetigkeitsbereich.objects.all():
+        my_areas.append({
+            'name': area.name,
+            'checked': area.users.all().__contains__(request.user),
+            'id': area.id,
+            'core': area.core,
+            'admin': area.coordinator.email
+        })
+
+    return render(request, "participation.html", {
+        'areas': my_areas,
+        'success': success
+    })
+
+
+@login_required
+def my_abo(request):
+    """
+    Details for an abo of a loco
+    """
+    if request.method == 'POST':
+        print "POST"
+        #validate
+
+        #add anteilsscheine
+        if int(request.POST.anteilsscheine_added) != request.user.anteilschein_set.all().filter(paid=False).count():
+            print "asdf"
+
+    myabo = Abo.objects.get(primary_loco=request.user)
+    aboform = AboForm()
+    #aboform.depot.widget = Select(choices=)
+
+    depots = []
+    for depot in Depot.objects.all():
+        depots.append({
+            'id': depot.id,
+            'name': depot.name,
+            'selected': myabo.depot == depot
+        })
+
+    zusatzabos = []
+    for abo in ExtraAboType.objects.all():
+        zusatzabos.append({
+            'name': abo.name,
+            'id': abo.id,
+            'checked': myabo.extra_abos.all().__contains__(abo)
+        })
+
+    return render(request, "abo.html", {
+        'aboform': aboform,
+        'zusatzabos': zusatzabos,
+        'depots': depots,
+        'sharees': myabo.locos.all(),
+        'haus_abos': myabo.haus_abos(),
+        'grosse_abos': myabo.grosse_abos(),
+        'kleine_abos': myabo.kleine_abos(),
+        'anteilsscheine_paid': request.user.anteilschein_set.all().filter(paid=True).count(),
+        'anteilsscheine_unpaid': request.user.anteilschein_set.all().filter(paid=False).count()
+    })
 
 
 @login_required
@@ -70,7 +142,6 @@ def my_profile(request):
             request.user.email = userform.cleaned_data['email']
             request.user.save()
 
-            #set the fields of loco
             loco.addr_street = locoform.cleaned_data['addr_street']
             loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
             loco.addr_location = locoform.cleaned_data['addr_location']

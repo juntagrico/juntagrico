@@ -1,9 +1,10 @@
 db.sqlite
 venv/*
 *.pyc
-static_ortoloco/medias/medias
-static_ortoloco/medias/downloads
-static_ortoloco/medias/photologue/photos
+static/medias/medias
+static/medias/downloads
+static/medias/photologue/photos
+static/admin/*
 .idea
-static_ortoloco/medias/photologue/temp
+static/medias/photologue/temp
 settings_local.py

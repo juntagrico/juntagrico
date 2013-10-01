@@ -25,9 +25,11 @@ urlpatterns = patterns('',
     #url('^myortoloco/', 'my_ortoloco.views.myortoloco_home'),
     url('^my/home', 'my_ortoloco.views.my_home'),
     url('^my/passwort', 'my_ortoloco.views.my_change_password'),
-    url('^my/jobs(?P<job_id>.*?)/', 'my_ortoloco.views.my_job'),
+    url('^my/abo', 'my_ortoloco.views.my_abo'),
+    url('^my/jobs/(?P<job_id>.*?)/', 'my_ortoloco.views.my_job'),
     url('^my/teams/(?P<bereich_id>.*?)/', 'my_ortoloco.views.my_team'),
     url('^my/profil', 'my_ortoloco.views.my_profile'),
+    url('^my/mitarbeit', 'my_ortoloco.views.my_participation'),
 
 
     (r'^accounts/login/$',  login),

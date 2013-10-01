@@ -6,7 +6,7 @@
         {% for job in jobs %}
             <tr>
                 <td class="date">{{ job.time |date:"d.m.Y G:i" }}</td>
-                <td><a href="/myortoloco/jobs/{{ job.id }}">{{ job.typ }}</a></td>
+                <td><a href="/my/jobs/{{ job.id }}">{{ job.typ }}</a></td>
             </tr>
         {% endfor %}
     </table>
@@ -15,7 +15,7 @@
     <table class="teams">
         {% for team in teams %}
             <tr>
-                <td><a href="/myortoloco/teams/{{ team.id }}">{{ team.name }}</a></td>
+                <td><a href="/my/teams/{{ team.id }}">{{ team.name }}</a></td>
             </tr>
         {% endfor %}
     </table>

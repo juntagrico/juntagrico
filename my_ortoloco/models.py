@@ -30,7 +30,7 @@ class Depot(models.Model):
     addr_location = models.CharField("Ort", max_length=50)
 
     def __unicode__(self):
-        return u"%s" %(self.name)
+        return u"%s" % (self.name)
 
 
 class ExtraAboType(models.Model):
@@ -41,7 +41,7 @@ class ExtraAboType(models.Model):
     description = models.TextField("Beschreibung", max_length=1000)
 
     def __unicode__(self):
-        return u"%s" %(self.name)
+        return u"%s" % (self.name)
 
 
 class Abo(models.Model):
@@ -56,7 +56,7 @@ class Abo(models.Model):
     def __unicode__(self):
         namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
         namelist.extend(extra.name for extra in self.extra_abos.all())
-        return u"Abo (%s)" %(" + ".join(namelist))
+        return u"Abo (%s)" % (" + ".join(namelist))
 
     def bezieher(self):
         locos = self.locos.all()
@@ -66,12 +66,22 @@ class Abo(models.Model):
         loco = self.primary_loco
         return unicode(loco) if loco is not None else ""
 
+    def haus_abos(self):
+        return int(self.groesse / 10)
+
+    def grosse_abos(self):
+        return int((self.groesse % 10) / 2)
+
+    def kleine_abos(self):
+        return self.groesse % 2
+
 
 class Anteilschein(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    paid = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u"Anteilschein #%s" %(self.id)
+        return u"Anteilschein #%s" % (self.id)
 
 
 class Taetigkeitsbereich(models.Model):
@@ -79,6 +89,7 @@ class Taetigkeitsbereich(models.Model):
     description = models.TextField("Beschreibung", max_length=1000, default="")
     coordinator = models.ForeignKey(User, on_delete=models.PROTECT)
     users = models.ManyToManyField(User, related_name="taetigkeitsbereiche")
+    core = models.BooleanField("Kernbereich", default=False)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -99,7 +110,7 @@ class Loco(models.Model):
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s" %(self.user)
+        return u"%s" % (self.user)
 
     @classmethod
     def create(cls, sender, instance, created, **kdws):
@@ -107,7 +118,7 @@ class Loco(models.Model):
         Callback to create corresponding loco when new user is created.
         """
         if created:
-             cls.objects.create(user=instance)
+            cls.objects.create(user=instance)
 
 
 class JobTyp(models.Model):
@@ -118,6 +129,7 @@ class JobTyp(models.Model):
     description = models.TextField("Beschreibung", max_length=1000, default="")
     bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField("Dauer in Stunden")
+    location = models.CharField("Ort", max_length=100, default="")
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -130,7 +142,6 @@ class Job(models.Model):
 
     def __unicode__(self):
         return u'Job #%s (%s, %d slots)' % (self.id, self.typ.name, self.slots)
-
 
 
 class Boehnli(models.Model):
@@ -157,7 +168,7 @@ class Boehnli(models.Model):
             for i in range(instance.slots):
                 cls.objects.create(job=instance)
         else:
-            boehnlis = cls.objects.filter(job=instance) 
+            boehnlis = cls.objects.filter(job=instance)
             current_n = len(boehnlis)
             target_n = instance.slots
             if current_n < target_n:
@@ -168,7 +179,6 @@ class Boehnli(models.Model):
                 free_boehnlis = [boehnli for boehnli in boehnlis if boehnli.loco == None]
                 for boehnli in free_boehnlis[:to_delete]:
                     boehnli.delete()
-                    
 
 
 #model_audit.m2m(Abo.users)

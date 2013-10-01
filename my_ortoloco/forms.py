@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm
+from django.db.models.fields import DecimalField
+from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, Select
 from my_ortoloco.models import Loco, User
 
 
@@ -23,3 +24,11 @@ class ProfileUserForm(ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+
+class AboForm(Form):
+    anteilsscheine = DecimalField(max_digits=2,decimal_places=0)
+    anteilsscheine_added = DecimalField(max_digits=2,decimal_places=0)
+    kleine_abos = DecimalField(max_digits=2,decimal_places=0)
+    grosse_abos = DecimalField(max_digits=2,decimal_places=0)
+    haus_abos = DecimalField(max_digits=2,decimal_places=0)
+    depot = CharField(widget=Select )

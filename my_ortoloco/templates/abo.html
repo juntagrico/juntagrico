@@ -1,0 +1,103 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Abo Übersicht</h3>
+    <h5>Info</h5>
+    Ein kleines Abo soll mit zwei, ein grosses mit vier Anteilscheinen (je CHF 250) begleitet sein. <br/>
+    Zusätzliche Anteilscheine geben der Genossenschaft zusätzlichen Freiraum und können jederzeit erworben werden.
+    <br/><br/>
+    {% if success %}
+        <div class="alert alert-success">Abo erfolgreich geändert</div>
+    {% else %}
+        <form action="/my/abo" method="post" class="form-horizontal">
+            {% csrf_token %}
+
+            <div class="control-group">
+                <label class="control-label" for="id_anteilsschein">Anz. Anteilsscheine</label>
+
+                <div class="controls">
+                    <input type="text" class="span1" name="anteilsscheine" value="{{ anteilsscheine_paid }}" maxlength="3" size="3" id="id_anteilsschein" disabled>
+                </div>
+            </div>
+            <div class="control-group {% if aboform.anteilsschein_added.errors %}error{% endif %}">
+                <label class="control-label" for="id_anteilsschein_added">zusätzlich bestellt</label>
+
+                <div class="controls">
+                    <input type="text" class="span1" name="anteilsschein_added" value="{{ anteilsscheine_unpaid }}" maxlength="3" size="3" id="id_anteilsschein_added">
+                </div>
+            </div>
+            {% if aboform.anteilsschein_added.errors %}
+                <div class="alert alert-error">Anz. Anteilsscheine ungültig</div>
+            {% endif %}
+            <div class="control-group {% if aboform.kleine_abos.errors %}error{% endif %}">
+                <label class="control-label" for="id_kleine_abos">Anz. kleine Abos</label>
+
+                <div class="controls">
+                    <input type="text" class="span1" name="kleine_abos" value="{{ kleine_abos }}" maxlength="3" size="3" id="id_kleine_abos">
+                </div>
+            </div>
+            {% if aboform.kleine_abos.errors %}
+                <div class="alert alert-error">Anz. kleine Abos ungültig</div>
+            {% endif %}
+            <div class="control-group {% if aboform.grosse_abos.errors %}error{% endif %}">
+                <label class="control-label" for="id_grosse_abos">Anz. grosse Abos</label>
+
+                <div class="controls">
+                    <input type="text" class="span1" name="grosse_abos" value="{{ grosse_abos }}" maxlength="3" size="3" id="id_grosse_abos">
+                </div>
+            </div>
+            {% if aboform.grosse_abos.errors %}
+                <div class="alert alert-error">Anz. grosse Abos ungültig</div>
+            {% endif %}
+            <div class="control-group {% if aboform.haus_abos.errors %}error{% endif %}">
+                <label class="control-label" for="id_haus_abos">Anz. Hausabos</label>
+
+                <div class="controls">
+                    <input type="text" class="span1" name="haus_abos" value="{{ haus_abos }}" maxlength="3" size="3" id="id_haus_abos">
+                </div>
+            </div>
+            {% if aboform.haus_abos.errors %}
+                <div class="alert alert-error">Anz. Hausabos ungültig</div>
+            {% endif %}
+
+            <div class="control-group">
+                <label class="control-label">Ich teile das Abo mit</label>
+
+                <div class="controls">
+                    <ul class="sharees">
+                        {% for sharee in sharees %}
+                            <li>{{ sharee.user.first_name }} {{ sharee.user.last_name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="id_depot">Depot</label>
+
+                <div class="controls">
+                    {{ aboform.depot }}
+                    <select name="depot" id="id_depot">
+                        {% for depot in depots %}
+                            <option value="{{ depot.id }}" {% if depot.selected %}selected{% endif %}>{{ depot.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Zusatzabos</label>
+
+                <div class="controls">
+                    {% for zusatzabo in zusatzabos %}
+                        <label class="checkbox" for="abo{{ forloop.counter0 }}">
+                            <input type="checkbox" {% if zusatzabo.checked %}checked="checked"{% endif %} id="abo{{ forloop.counter0 }}"/>
+                            {{ zusatzabo.name }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Abo ändern</button>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

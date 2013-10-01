@@ -1,0 +1,73 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Mitarbeit</h3>
+    <div class="row">
+        <div class="span8">
+            Als ortoloco-GemüsekonsumentIn verpflichtet sich jedeR, im Rahmen der eigenen Motivationen, Prioritäten und
+            Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen. <br/><br/>
+            Alle wählen zwei Tätigkeitsbereiche, in denen sie regelmässig mitarbeiten und Verantwortung übernehmen.
+            <br/><br/>
+            Infos zu den Tätigkeitsbereichen erhältst du im <a target="_blank" href="/static/others/Infoblatt_Taetigkeitsbereiche.pdf"/>Infoblatt</a>.
+            <br/><br/>
+            <form action="/my/mitarbeit" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="span4">
+                        <h4>Kernbereiche:</h4>
+                    </div>
+                    <div class="span4">
+                        <h5>Koordiniert von:</h5>
+                    </div>
+                </div>
+                {% for area in areas %}
+                    {% if area.core %}
+                    <div class="row">
+                        <div class="span4">
+                            <label class="checkbox">
+                              <input type="checkbox" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
+                              {{ area.name }}
+                            </label>
+                        </div>
+                        <div class="span4">
+                            ({{ area.admin }})
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                <br/>
+                <div class="row">
+                    <div class="span4">
+                        <h4>Weitere Bereiche:</h4>
+                    </div>
+                    <div class="span4">
+                        <h5>Koordiniert von:</h5>
+                    </div>
+                </div>
+                {% for area in areas %}
+                    {% if not area.core %}
+                    <div class="row">
+                        <div class="span4">
+                            <label class="checkbox">
+                              <input type="checkbox" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
+                              {{ area.name }}
+                            </label>
+                        </div>
+                        <div class="span4">
+                            ({{ area.admin }})
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                {% if success %}
+                    <br/>
+                    <div class="alert alert-success">Tätigkeitsbereiche erfolgreich geändert</div>
+                {% endif %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Tätigkeitsbereiche ändern</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}
