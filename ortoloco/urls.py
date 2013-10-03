@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     url('^my/teams/(?P<bereich_id>.*?)/', 'my_ortoloco.views.my_team'),
     url('^my/profil', 'my_ortoloco.views.my_profile'),
     url('^my/mitarbeit', 'my_ortoloco.views.my_participation'),
+    url('^my/kontakt', 'my_ortoloco.views.my_contact'),
 
 
     (r'^accounts/login/$',  login),

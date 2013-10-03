@@ -13,17 +13,17 @@
             {% csrf_token %}
 
             <div class="control-group">
-                <label class="control-label" for="id_anteilsschein">Anz. Anteilsscheine</label>
+                <label class="control-label" for="id_anteilsscheine">Anz. Anteilsscheine</label>
 
                 <div class="controls">
-                    <input type="text" class="span1" name="anteilsscheine" value="{{ anteilsscheine_paid }}" maxlength="3" size="3" id="id_anteilsschein" disabled>
+                    <input type="text" class="span1" name="anteilsscheine" value="{{ anteilsscheine_paid }}" maxlength="3" size="3" id="id_anteilsscheine">
                 </div>
             </div>
             <div class="control-group {% if aboform.anteilsschein_added.errors %}error{% endif %}">
-                <label class="control-label" for="id_anteilsschein_added">zusätzlich bestellt</label>
+                <label class="control-label" for="id_anteilsscheine_added">zusätzlich bestellt</label>
 
                 <div class="controls">
-                    <input type="text" class="span1" name="anteilsschein_added" value="{{ anteilsscheine_unpaid }}" maxlength="3" size="3" id="id_anteilsschein_added">
+                    <input type="text" class="span1" name="anteilsscheine_added" value="{{ anteilsscheine_unpaid }}" maxlength="3" size="3" id="id_anteilsscheine_added">
                 </div>
             </div>
             {% if aboform.anteilsschein_added.errors %}
@@ -60,22 +60,23 @@
                 <div class="alert alert-error">Anz. Hausabos ungültig</div>
             {% endif %}
 
-            <div class="control-group">
-                <label class="control-label">Ich teile das Abo mit</label>
+            {% if sharees|length > 0 %}
+                <div class="control-group">
+                    <label class="control-label">Ich teile das Abo mit</label>
 
-                <div class="controls">
-                    <ul class="sharees">
-                        {% for sharee in sharees %}
-                            <li>{{ sharee.user.first_name }} {{ sharee.user.last_name }}</li>
-                        {% endfor %}
-                    </ul>
+                    <div class="controls">
+                        <ul class="sharees">
+                            {% for sharee in sharees %}
+                                <li>{{ sharee.user.first_name }} {{ sharee.user.last_name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
             <div class="control-group">
                 <label class="control-label" for="id_depot">Depot</label>
 
                 <div class="controls">
-                    {{ aboform.depot }}
                     <select name="depot" id="id_depot">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" {% if depot.selected %}selected{% endif %}>{{ depot.name }}</option>
@@ -88,8 +89,8 @@
 
                 <div class="controls">
                     {% for zusatzabo in zusatzabos %}
-                        <label class="checkbox" for="abo{{ forloop.counter0 }}">
-                            <input type="checkbox" {% if zusatzabo.checked %}checked="checked"{% endif %} id="abo{{ forloop.counter0 }}"/>
+                        <label class="checkbox" for="abo{{ zusatzabo.id }}">
+                            <input type="checkbox" {% if zusatzabo.checked %}checked="checked"{% endif %} name="abo{{ zusatzabo.id }}" id="abo{{ zusatzabo.id }}"/>
                             {{ zusatzabo.name }}
                         </label>
                     {% endfor %}

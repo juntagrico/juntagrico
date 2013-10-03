@@ -5,6 +5,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
+from django.core.mail import send_mail
 
 
 @login_required
@@ -44,7 +45,6 @@ def my_participation(request):
                 area.users.add(request.user)
                 area.save()
             else:
-                print "remove"
                 area.users.remove(request.user)
                 area.save()
         success = True
@@ -69,18 +69,49 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    if request.method == 'POST':
-        print "POST"
-        #validate
-
-        #add anteilsscheine
-        if int(request.POST.anteilsscheine_added) != request.user.anteilschein_set.all().filter(paid=False).count():
-            print "asdf"
-
     myabo = Abo.objects.get(primary_loco=request.user)
-    aboform = AboForm()
-    #aboform.depot.widget = Select(choices=)
 
+    if request.method == 'POST':
+        aboform = AboForm(request.POST)
+        if aboform.is_valid():
+            a_unpaid = int(aboform.data['anteilsscheine_added'])
+            a_paid = int(aboform.data['anteilsscheine'])
+            # neue anteilsscheine loeschen (nur unbezahlte) falls neu weniger
+            if request.user.anteilschein_set.count() > a_unpaid + a_paid:
+                todelete = request.user.anteilschein_set.count() - (a_unpaid + a_paid)
+                for unpaid in request.user.anteilschein_set.all().filter(paid=False):
+                    if todelete > 0:
+                        unpaid.delete()
+                        todelete -= 1
+
+            #neue unbezahlte anteilsscheine hinzufuegen falls erwuenscht
+            if request.user.anteilschein_set.count() < a_unpaid + a_paid:
+                toadd = (a_unpaid + a_paid) - request.user.anteilschein_set.count()
+                for num in range(0, toadd):
+                    anteilsschein = Anteilschein(user=request.user, paid=False)
+                    anteilsschein.save()
+
+            # abo groesse setzen
+            abosize = int(aboform.data['kleine_abos']) + 2 * int(aboform.data['grosse_abos']) + 10 * int(aboform.data['haus_abos'])
+            if abosize != myabo.groesse:
+                myabo.groesse = abosize
+                myabo.save()
+
+            # depot wechseln
+            if myabo.depot.id != aboform.data['depot']:
+                myabo.depot = Depot.objects.get(id=aboform.data['depot'])
+                myabo.save()
+
+            # zusatzabos
+            for zusatzabo in ExtraAboType.objects.all():
+                if aboform.data.has_key('abo' + str(zusatzabo.id)):
+                    myabo.extra_abos.add(zusatzabo)
+                    myabo.save()
+                else:
+                    myabo.extra_abos.remove(zusatzabo)
+                    myabo.save()
+
+    aboform = AboForm()
     depots = []
     for depot in Depot.objects.all():
         depots.append({
@@ -101,7 +132,7 @@ def my_abo(request):
         'aboform': aboform,
         'zusatzabos': zusatzabos,
         'depots': depots,
-        'sharees': myabo.locos.all(),
+        'sharees': myabo.locos.exclude(id=request.user.id),
         'haus_abos': myabo.haus_abos(),
         'grosse_abos': myabo.grosse_abos(),
         'kleine_abos': myabo.kleine_abos(),
@@ -126,6 +157,23 @@ def my_team(request, bereich_id):
     }
 
     return render(request, "team.html", renderdict)
+
+
+@login_required
+def my_contact(request):
+    """
+    Kontaktformular
+    """
+
+    if request.method == "POST":
+        #  FIXME change to info@ortoloco.ch
+        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), request.user.email, ['oliver.ganz@gmail.com'], fail_silently=False)
+
+    renderdict = {
+        'usernameAndEmail': request.user.first_name + " " + request.user.last_name + "<" + request.user.email + ">"
+    }
+
+    return render(request, "contact.html", renderdict)
 
 
 @login_required

@@ -26,9 +26,9 @@ class ProfileUserForm(ModelForm):
         fields = ['first_name', 'last_name', 'email']
 
 class AboForm(Form):
-    anteilsscheine = DecimalField(max_digits=2,decimal_places=0)
+    anteilsscheine = CharField(label='asdf', min_length=1)
     anteilsscheine_added = DecimalField(max_digits=2,decimal_places=0)
     kleine_abos = DecimalField(max_digits=2,decimal_places=0)
     grosse_abos = DecimalField(max_digits=2,decimal_places=0)
     haus_abos = DecimalField(max_digits=2,decimal_places=0)
-    depot = CharField(widget=Select )
+    depot = CharField(widget=Select)

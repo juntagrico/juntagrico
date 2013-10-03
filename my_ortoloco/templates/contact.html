@@ -1,0 +1,36 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Kontakt</h3>
+    <br/>
+    <form action="/my/kontakt" method="POST" class="form-horizontal">
+        {% csrf_token %}
+        <div class="control-group">
+            <label class="control-label" for="sender">Absender</label>
+            <div class="controls senderContact">
+                {{ usernameAndEmail }}
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="message">Mitteilung</label>
+            <div class="controls">
+                <textarea name="message" id="message" class="span5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <label for="copy" class="checkbox">
+                    <input type="checkbox" name="copy" id="copy">
+                    Kopie an mich
+                </label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Nachricht verschicken</button>
+        </div>
+    </form>
+    ortoloco, Albulastrasse 30, 8048 Zürich<br/>
+    info@ortoloco.ch
+{% endblock %}

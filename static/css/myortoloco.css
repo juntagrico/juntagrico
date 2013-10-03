@@ -10,6 +10,6 @@
     width: 200px;
 }
 
-.sharees {
+.sharees, .senderContact {
     margin-top: 5px;
 }
