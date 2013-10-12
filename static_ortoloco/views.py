@@ -169,7 +169,6 @@ def contact(request):
     """
     Contact page
     """
-
     class PolitolocoForm(ModelForm):
         class Meta:
             model = Politoloco
@@ -199,6 +198,5 @@ def contact(request):
         'failure': failure,
         'message': message
     }
-    print(renderdict['menu'])
 
     return render(request, "contact.html", renderdict)

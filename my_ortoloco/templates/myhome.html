@@ -1,7 +1,16 @@
 {% extends "mybase.html" %}
 
 {% block content %}
-    <h3>Aktuelle Arbeitseinsätze</h3>
+    <h4>Dein Konto</h4>
+    {% for i in bohnenrange %}
+        {% if i <= userbohnen %}
+            <img class="jobstatus" src="/static/img/erbse_voll.png"/>
+        {% else %}
+            <img class="jobstatus" src="/static/img/erbse_leer.png"/>
+        {% endif %}
+    {% endfor %}
+    <br/><br/>
+    <h4>Aktuelle Arbeitseinsätze</h4>
     <table class="jobs">
         {% for job in jobs %}
             <tr>
@@ -11,7 +20,7 @@
         {% endfor %}
     </table>
     <br/><br/>
-    <h3>Kalender der Tätigkeitsbereiche</h3>
+    <h4>Kalender der Tätigkeitsbereiche</h4>
     <table class="teams">
         {% for team in teams %}
             <tr>

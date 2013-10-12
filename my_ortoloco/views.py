@@ -16,9 +16,14 @@ def my_home(request):
     next_jobs = Job.objects.all()[0:7]
     teams = Taetigkeitsbereich.objects.all()
 
+    print request.user.loco.abo.groesse * 10
+
     return render(request, "myhome.html", {
         'jobs': next_jobs,
-        'teams': teams
+        'teams': teams,
+        #abo gesamtbohnen / # bezieher
+        'bohnenrange': range(0, request.user.loco.abo.groesse * 10 / request.user.loco.abo.locos.count()),
+        'userbohnen': Boehnli.objects.filter(loco=request.user.loco).__len__()
     })
 
 
@@ -27,8 +32,48 @@ def my_job(request, job_id):
     """
     Details for a job
     """
+    job = get_object_or_404(Job, id=int(job_id))
+
+    def check_int(s):
+        if s[0] in ('-', '+'):
+            return s[1:].isdigit()
+        return s.isdigit()
+
+    error = None
+    if request.method == 'POST':
+        num = request.POST.get("jobs")
+        my_bohnen = job.boehnli_set.all().filter(loco=request.user.loco)
+        left_bohnen = job.boehnli_set.all().filter(loco=None)
+        print left_bohnen.__len__()
+        if check_int(num) and 0 < int(num) <= left_bohnen.__len__():
+            # adding participants
+            add = int(num)
+            for bohne in left_bohnen:
+                if (add > 0):
+                    bohne.loco = request.user.loco
+                    bohne.save()
+                    add -= 1
+        elif check_int(num) and int(num) < 0 and my_bohnen.__len__() >= -int(num):
+            # remove some participants
+            remove = -int(num)
+            for bohne in my_bohnen:
+                if remove > 0:
+                    bohne.loco = None
+                    bohne.save()
+                    remove -= 1
+        else:
+            error = "Ungueltige Anzahl Einschreibungen"
+
+    boehnlis = Boehnli.objects.filter(job_id=job.id)
+    participants = []
+    for bohne in boehnlis:
+        if bohne.loco is not None:
+            participants.append(bohne.loco.user)
     return render(request, "job.html", {
-        'job': get_object_or_404(Job, id=int(job_id))
+        'participants': participants,
+        'job': job,
+        'slotrange': range(0, job.slots),
+        'error': error
     })
 
 
@@ -69,76 +114,81 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    myabo = Abo.objects.get(primary_loco=request.user)
+    if Abo.objects.filter(primary_loco=request.user).count() > 0:
+        myabo = Abo.objects.get(primary_loco=request.user)
 
-    if request.method == 'POST':
-        aboform = AboForm(request.POST)
-        if aboform.is_valid():
-            a_unpaid = int(aboform.data['anteilsscheine_added'])
-            a_paid = int(aboform.data['anteilsscheine'])
-            # neue anteilsscheine loeschen (nur unbezahlte) falls neu weniger
-            if request.user.anteilschein_set.count() > a_unpaid + a_paid:
-                todelete = request.user.anteilschein_set.count() - (a_unpaid + a_paid)
-                for unpaid in request.user.anteilschein_set.all().filter(paid=False):
-                    if todelete > 0:
-                        unpaid.delete()
-                        todelete -= 1
+        if request.method == 'POST':
+            aboform = AboForm(request.POST)
+            if aboform.is_valid():
+                a_unpaid = int(aboform.data['anteilsscheine_added'])
+                a_paid = int(aboform.data['anteilsscheine'])
+                # neue anteilsscheine loeschen (nur unbezahlte) falls neu weniger
+                if request.user.anteilschein_set.count() > a_unpaid + a_paid:
+                    todelete = request.user.anteilschein_set.count() - (a_unpaid + a_paid)
+                    for unpaid in request.user.anteilschein_set.all().filter(paid=False):
+                        if todelete > 0:
+                            unpaid.delete()
+                            todelete -= 1
 
-            #neue unbezahlte anteilsscheine hinzufuegen falls erwuenscht
-            if request.user.anteilschein_set.count() < a_unpaid + a_paid:
-                toadd = (a_unpaid + a_paid) - request.user.anteilschein_set.count()
-                for num in range(0, toadd):
-                    anteilsschein = Anteilschein(user=request.user, paid=False)
-                    anteilsschein.save()
+                #neue unbezahlte anteilsscheine hinzufuegen falls erwuenscht
+                if request.user.anteilschein_set.count() < a_unpaid + a_paid:
+                    toadd = (a_unpaid + a_paid) - request.user.anteilschein_set.count()
+                    for num in range(0, toadd):
+                        anteilsschein = Anteilschein(user=request.user, paid=False)
+                        anteilsschein.save()
 
-            # abo groesse setzen
-            abosize = int(aboform.data['kleine_abos']) + 2 * int(aboform.data['grosse_abos']) + 10 * int(aboform.data['haus_abos'])
-            if abosize != myabo.groesse:
-                myabo.groesse = abosize
-                myabo.save()
-
-            # depot wechseln
-            if myabo.depot.id != aboform.data['depot']:
-                myabo.depot = Depot.objects.get(id=aboform.data['depot'])
-                myabo.save()
-
-            # zusatzabos
-            for zusatzabo in ExtraAboType.objects.all():
-                if aboform.data.has_key('abo' + str(zusatzabo.id)):
-                    myabo.extra_abos.add(zusatzabo)
-                    myabo.save()
-                else:
-                    myabo.extra_abos.remove(zusatzabo)
+                # abo groesse setzen
+                abosize = int(aboform.data['kleine_abos']) + 2 * int(aboform.data['grosse_abos']) + 10 * int(aboform.data['haus_abos'])
+                if abosize != myabo.groesse:
+                    myabo.groesse = abosize
                     myabo.save()
 
-    aboform = AboForm()
-    depots = []
-    for depot in Depot.objects.all():
-        depots.append({
-            'id': depot.id,
-            'name': depot.name,
-            'selected': myabo.depot == depot
-        })
+                # depot wechseln
+                if myabo.depot.id != aboform.data['depot']:
+                    myabo.depot = Depot.objects.get(id=aboform.data['depot'])
+                    myabo.save()
 
-    zusatzabos = []
-    for abo in ExtraAboType.objects.all():
-        zusatzabos.append({
-            'name': abo.name,
-            'id': abo.id,
-            'checked': myabo.extra_abos.all().__contains__(abo)
-        })
+                # zusatzabos
+                for zusatzabo in ExtraAboType.objects.all():
+                    if aboform.data.has_key('abo' + str(zusatzabo.id)):
+                        myabo.extra_abos.add(zusatzabo)
+                        myabo.save()
+                    else:
+                        myabo.extra_abos.remove(zusatzabo)
+                        myabo.save()
 
-    return render(request, "abo.html", {
-        'aboform': aboform,
-        'zusatzabos': zusatzabos,
-        'depots': depots,
-        'sharees': myabo.locos.exclude(id=request.user.id),
-        'haus_abos': myabo.haus_abos(),
-        'grosse_abos': myabo.grosse_abos(),
-        'kleine_abos': myabo.kleine_abos(),
-        'anteilsscheine_paid': request.user.anteilschein_set.all().filter(paid=True).count(),
-        'anteilsscheine_unpaid': request.user.anteilschein_set.all().filter(paid=False).count()
-    })
+        aboform = AboForm()
+        depots = []
+        for depot in Depot.objects.all():
+            depots.append({
+                'id': depot.id,
+                'name': depot.name,
+                'selected': myabo.depot == depot
+            })
+
+        zusatzabos = []
+        for abo in ExtraAboType.objects.all():
+            zusatzabos.append({
+                'name': abo.name,
+                'id': abo.id,
+                'checked': myabo.extra_abos.all().__contains__(abo)
+            })
+
+        return render(request, "my_abo.html", {
+            'aboform': aboform,
+            'zusatzabos': zusatzabos,
+            'depots': depots,
+            'sharees': myabo.locos.exclude(id=request.user.id),
+            'haus_abos': myabo.haus_abos(),
+            'grosse_abos': myabo.grosse_abos(),
+            'kleine_abos': myabo.kleine_abos(),
+            'anteilsscheine_paid': request.user.anteilschein_set.all().filter(paid=True).count(),
+            'anteilsscheine_unpaid': request.user.anteilschein_set.all().filter(paid=False).count()
+        })
+    else:
+        return render(request, "my_abo.html", {
+            'noabo': True
+        })
 
 
 @login_required
@@ -164,6 +214,7 @@ def my_contact(request):
     """
     Kontaktformular
     """
+    print "my"
 
     if request.method == "POST":
         #  FIXME change to info@ortoloco.ch
@@ -173,7 +224,7 @@ def my_contact(request):
         'usernameAndEmail': request.user.first_name + " " + request.user.last_name + "<" + request.user.email + ">"
     }
 
-    return render(request, "contact.html", renderdict)
+    return render(request, "my_contact.html", renderdict)
 
 
 @login_required

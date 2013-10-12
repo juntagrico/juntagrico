@@ -139,6 +139,7 @@ class Job(models.Model):
     typ = models.ForeignKey(JobTyp, on_delete=models.PROTECT)
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
+    earning = models.PositiveIntegerField("Bohnen pro Person", default=1)
 
     def __unicode__(self):
         return u'Job #%s (%s, %d slots)' % (self.id, self.typ.name, self.slots)
@@ -151,7 +152,6 @@ class Boehnli(models.Model):
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     loco = models.ForeignKey(Loco, on_delete=models.PROTECT, null=True, blank=True)
-    amount = models.PositiveIntegerField("Anzahl", default=1)
 
     def __unicode__(self):
         return u'Boehnli #%s' % self.id
