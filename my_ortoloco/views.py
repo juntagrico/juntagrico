@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
 from django.core.mail import send_mail
+from datetime import date
 
 
 @login_required
@@ -16,14 +17,26 @@ def my_home(request):
     next_jobs = Job.objects.all()[0:7]
     teams = Taetigkeitsbereich.objects.all()
 
-    print request.user.loco.abo.groesse * 10
+    if request.user.loco.abo is not None:
+        bohnenrange = range(0, request.user.loco.abo.groesse * 10 / request.user.loco.abo.locos.count())
+        allebohnen = Boehnli.objects.filter(loco=request.user.loco)
+        userbohnen = []
+        for bohne in allebohnen:
+            if bohne.job.time.year == date.today().year:
+                userbohnen.append(bohne)
+        no_abo = False
+    else:
+        no_abo = True
+        bohnenrange = None
+        userbohnen = []
 
     return render(request, "myhome.html", {
         'jobs': next_jobs,
         'teams': teams,
         #abo gesamtbohnen / # bezieher
-        'bohnenrange': range(0, request.user.loco.abo.groesse * 10 / request.user.loco.abo.locos.count()),
-        'userbohnen': Boehnli.objects.filter(loco=request.user.loco).__len__()
+        'no_abo': no_abo,
+        'bohnenrange': bohnenrange,
+        'userbohnen': userbohnen.__len__()
     })
 
 

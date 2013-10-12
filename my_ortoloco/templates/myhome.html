@@ -2,13 +2,17 @@
 
 {% block content %}
     <h4>Dein Konto</h4>
-    {% for i in bohnenrange %}
-        {% if i <= userbohnen %}
-            <img class="jobstatus" src="/static/img/erbse_voll.png"/>
-        {% else %}
-            <img class="jobstatus" src="/static/img/erbse_leer.png"/>
-        {% endif %}
-    {% endfor %}
+    {% if no_abo %}
+        <div class="alert">Du hast kein Abo</div>
+    {% else %}
+        {% for i in bohnenrange %}
+            {% if i <= userbohnen %}
+                <img class="jobstatus" src="/static/img/erbse_voll.png"/>
+            {% else %}
+                <img class="jobstatus" src="/static/img/erbse_leer.png"/>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     <br/><br/>
     <h4>Aktuelle Arbeitseinsätze</h4>
     <table class="jobs">
