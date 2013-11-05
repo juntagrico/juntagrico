@@ -39,6 +39,7 @@ urlpatterns = patterns('',
     (r'^photologue/', include('photologue.urls')),
 
     url('^depotliste/(?P<name>.*?)/', 'my_ortoloco.views.depot_list'),
+    url('^test_filters/$', 'my_ortoloco.views.test_filters'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

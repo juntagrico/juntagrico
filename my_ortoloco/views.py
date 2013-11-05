@@ -336,3 +336,13 @@ def depot_list(request, name):
     return render_to_pdf(request, "depot_pdf.html", renderdict)
 
 
+def test_filters(request):
+    from filters import Filter
+    lst = Filter.get_all()
+    print Loco.objects.filter(Filter.get_all()[0][1])
+    res = []
+    for name, q in Filter.get_all():
+        res.append("<br><br>%s:" %name)
+        res.extend(str(i) for i in Loco.objects.filter(q))
+    return HttpResponse("<br>".join(res))
+
