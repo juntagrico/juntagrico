@@ -8,6 +8,7 @@ from my_ortoloco.forms import *
 from django.core.mail import send_mail
 from datetime import date
 
+from my_ortoloco.helpers import render_to_pdf
 
 @login_required
 def my_home(request):
@@ -298,34 +299,11 @@ def logout_view(request):
     return HttpResponseRedirect("/aktuelles")
 
 
-def all_depots(request):
-    """
-    Simple test view.
-    """
-    depot_list = Depot.objects.all()
-
-    renderdict = {
-        'depots': depot_list,
-    }
-    return render(request, "depots.html", renderdict)
-
-
-def depot_list(request, name_or_id):
+def depot_list(request, name):
     """
     Create table of users and their abos for a specific depot.
-
-    Should be able to generate pdfs and spreadsheets in the future.
     """
-
-    # TODO: use name__iexact
-
-    # old code, needs to be fixed
-    return HttpResponse("WIP")
-
-    if name_or_id.isdigit():
-        depot = get_object_or_404(Depot, id=int(name_or_id))
-    else:
-        depot = get_object_or_404(Depot, name=name_or_id.lower())
+    depot = get_object_or_404(Depot, code=name)
 
     # get all abos of this depot
     abos = Abo.objects.filter(depot=depot)
@@ -336,21 +314,17 @@ def depot_list(request, name_or_id):
         locos = sorted(loco.user.username for loco in locos)
         return u", ".join(locos)
 
-    # accumulate abos by sets of locos, e.g. Vitor: klein x1, gross: x0, eier x1
-    # d is a dictionary of counters, which count the number of each abotype for a given set of users.
-    d = defaultdict(Counter)
-    for abo in abos:
-        d[locos_to_str(abo.locos.all())][abo.abotype] += 1
-
     # build rows of data.
-    abotypes = AboType.objects.all()
-    header = ["Personen"]
+    abotypes = ExtraAboType.objects.all()
+    header = ["Abo id", "Personen", u"Groesse"]
     header.extend(i.name for i in abotypes)
     header.append("abgeholt")
     data = []
-    for (locos, counter) in sorted(d.items()):
-        row = [locos]
-        row.extend(counter[i] for i in abotypes)
+    for abo in abos:
+        extra_abos = set(abo.extra_abos.all())
+        row = [str(abo.id), locos_to_str(abo.locos.all()), str(abo.groesse)]
+        row.extend("1" if i in extra_abos else "" for i in abotypes)
+        row.append("")
         data.append(row)
 
     renderdict = {
@@ -358,5 +332,7 @@ def depot_list(request, name_or_id):
         "table_header": header,
         "table_data": data,
     }
-    return render(request, "depot_list.html", renderdict)
     
+    return render_to_pdf(request, "depot_pdf.html", renderdict)
+
+
