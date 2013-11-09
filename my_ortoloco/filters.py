@@ -1,9 +1,8 @@
-from django.db.models import Q
+from functools import partial
+
+#from django.db.models import Q
 
 from my_ortoloco.models import *
-
-
-
 
 
 class Filter(object):
@@ -11,7 +10,12 @@ class Filter(object):
 
     def __init__(self, name, q):
         self.name = name
-        self.q = q
+        def safe_q(*args):
+            try:
+                return q(*args)
+            except Exception:
+                return False
+        self.q = safe_q
         self.all_filters.append(self)
 
     def get(self):
@@ -24,20 +28,42 @@ class Filter(object):
             res.extend(instance.get())
         return res
 
+    @classmethod
+    def get_names(cls):
+        for name, q in cls.get_all():
+            yield name
 
-class FilterList(Filter):
+    @classmethod
+    def execute(cls, names, op):
+        if op == "OR":
+            aggregate = any
+        elif op == "AND":
+            aggregate = all
+
+        d = dict(cls.get_all())
+        filter_funcs = [d[name] for name in names]
+        return [loco for loco in Loco.objects.all()
+                if aggregate(f(loco) for f in filter_funcs)]
+
+
+    @classmethod
+    def format_data(cls, queryset, formatter):
+        return [formatter(obj) for obj in queryset]
+
+
+class FilterGen(Filter):
     def __init__(self, name_func, q_func, parameter_func):
         Filter.__init__(self, name_func, q_func)
         self.parameter_func = parameter_func
 
     def get(self):
         for p in self.parameter_func():
-            yield self.name(p), self.q(p)
+            yield self.name(p), partial(self.q, p)
         
 
+Filter("Staff", lambda loco: loco.user.is_staff)
+Filter("Nicht Staff", lambda loco: not loco.user.is_staff)
+FilterGen(lambda depot: "Depot %s" %depot.name,
+          lambda depot, loco: loco.abo.depot==depot,
+          Depot.objects.all)
 
-
-Filter("staff", Q(user__is_staff=True))
-FilterList(lambda depot: "Depot %s" %depot.name,
-           lambda depot: Q(abo__depot=depot), 
-           Depot.objects.all)

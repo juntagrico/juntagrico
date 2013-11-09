@@ -3,12 +3,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from my_ortoloco.models import *
-from my_ortoloco.forms import *
 from django.core.mail import send_mail
 from datetime import date
 
+from my_ortoloco.models import *
+from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
+from my_ortoloco.filters import Filter
 
 @login_required
 def my_home(request):
@@ -337,12 +338,29 @@ def depot_list(request, name):
 
 
 def test_filters(request):
-    from filters import Filter
     lst = Filter.get_all()
-    print Loco.objects.filter(Filter.get_all()[0][1])
     res = []
-    for name, q in Filter.get_all():
+    for name in Filter.get_names():
         res.append("<br><br>%s:" %name)
-        res.extend(str(i) for i in Loco.objects.filter(q))
+        tmp = Filter.execute([name], "OR")
+        data = Filter.format_data(tmp, lambda loco: loco.user.username)
+        res.extend(data)
     return HttpResponse("<br>".join(res))
+
+
+def test_filters_post(request):
+    # TODO: extract filter params from post request
+    # the full list of filters is obtained by Filter.get_names()
+
+    filters = ["Staff", "Depot GZ Oerlikon"]
+    op = "OR"
+
+    res = ["Staff OR Oerlikon:<br>"]
+    locos = Filter.execute(filters, op)
+    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" %(loco.user.username, loco.user.email))
+
+    res.extend(data)
+    return HttpResponse("<br>".join(res))
+
+
 
