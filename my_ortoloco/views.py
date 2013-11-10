@@ -351,14 +351,11 @@ def test_filters(request):
 def test_filters_post(request):
     # TODO: extract filter params from post request
     # the full list of filters is obtained by Filter.get_names()
-
-    filters = ["Staff", "Depot GZ Oerlikon"]
-    op = "OR"
-
-    res = ["Staff OR Oerlikon:<br>"]
+    filters = ["Zusatzabo Eier", "Depot GZ Oerlikon"]
+    op = "AND"
+    res = ["Eier AND Oerlikon:<br>"]
     locos = Filter.execute(filters, op)
     data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" %(loco.user.username, loco.user.email))
-
     res.extend(data)
     return HttpResponse("<br>".join(res))
 

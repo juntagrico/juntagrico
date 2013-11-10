@@ -61,9 +61,28 @@ class FilterGen(Filter):
             yield self.name(p), partial(self.q, p)
         
 
-Filter("Staff", lambda loco: loco.user.is_staff)
-Filter("Nicht Staff", lambda loco: not loco.user.is_staff)
-FilterGen(lambda depot: "Depot %s" %depot.name,
+
+FilterGen(lambda depot: "Depot {0}".format(depot.name),
           lambda depot, loco: loco.abo.depot==depot,
           Depot.objects.all)
 
+Filter("Alle mit Abo", lambda loco: loco.abo)
+Filter("Alle ohne Abo", lambda loco: not loco.abo)
+
+Filter("Anteilscheinbesitzer",
+       lambda loco: loco.user.anteilschein_set.exists())
+Filter("Nicht Anteilscheinbesitzer",
+       lambda loco: not loco.user.anteilschein_set.exists())
+
+Filter("kleines Abo", lambda loco: loco.abo.kleine_abos())
+Filter("grosses Abo", lambda loco: loco.abo.grosse_abos())
+Filter("Hausabo", lambda loco: loco.abo.haus_abos())
+
+
+FilterGen(lambda za: u"Zusatzabo {0}".format(za.name),
+          lambda za, loco: za.abo_set.filter(id=loco.abo.id),
+          ExtraAboType.objects.all)
+
+FilterGen(lambda bereich: u"Taetigkeitsbereich {0}".format(bereich.name),
+          lambda bereich, loco: bereich.users.filter(id=loco.user.id),
+          Taetigkeitsbereich.objects.all)
