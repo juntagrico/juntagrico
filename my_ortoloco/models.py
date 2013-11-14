@@ -5,25 +5,19 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 
 import model_audit
+import helpers
 
 
 class Depot(models.Model):
     """
     Location where stuff is picked up.
     """
-    weekdays = ((0, "Montag"),
-                (1, "Dienstag"),
-                (2, "Mittwoch"),
-                (3, "Donnerstag"),
-                (4, "Freitag"),
-                (5, "Samstag"),
-                (6, "Sonntag"))
 
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     contact = models.ForeignKey(User, on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField("Wochentag", choices=weekdays)
+    weekday = models.PositiveIntegerField("Wochentag", choices=helpers.weekday_choices)
 
     addr_street = models.CharField("Strasse", max_length=100)
     addr_zipcode = models.CharField("PLZ", max_length=10)
@@ -142,7 +136,7 @@ class Job(models.Model):
     earning = models.PositiveIntegerField("Bohnen pro Person", default=1)
 
     def __unicode__(self):
-        return u'Job #%s (%s, %d slots)' % (self.id, self.typ.name, self.slots)
+        return u'Job #%s' % (self.id)
 
 
 class Boehnli(models.Model):
