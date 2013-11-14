@@ -12,7 +12,6 @@ class Depot(models.Model):
     """
     Location where stuff is picked up.
     """
-
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
@@ -126,7 +125,7 @@ class JobTyp(models.Model):
     location = models.CharField("Ort", max_length=100, default="")
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return u'%s - %s' % (self.bereich, self.name)
 
 
 class Job(models.Model):
@@ -137,6 +136,15 @@ class Job(models.Model):
 
     def __unicode__(self):
         return u'Job #%s' % (self.id)
+
+
+    def freie_plaetze(self):
+        return self.boehnli_set.filter(loco=None).count()
+
+
+    def besetzte_plaetze(self):
+        return self.boehnli_set.filter(loco__isnull=True).count()
+        
 
 
 class Boehnli(models.Model):
