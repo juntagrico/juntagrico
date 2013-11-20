@@ -14,26 +14,23 @@
     	<div class="erbseleft"></div>
     	<div class="erbseright"></div>
     	<div class="erbsebottom"></div>
+        <div class="row myortoloco">
+            <div class="span12">
+                    <a href="/my/home"><span class="myortoloco_logo"></span></a>
+            </div>
+        </div>
     	<div class="row ortoloco">
             {% block allcontent %}
-                <div class="span4">
-                    <a href="/home.html"><span class="myortoloco_logo"></span></a>
-
+                <div class="span3">
                         <ul class="nav nav-pills nav-stacked">
-                            <li class="{{ menu.home }}">
-                                <a href="/my/home">Aktuelles</a>
-                            </li>
-                            <li class="{{ menu.personalInfo }}">
-                                <a href="/my/profil">Personalien</a>
-                            </li>
-                            <li class="{{ menu.password }}">
-                                <a href="/my/passwort">Passwort</a>
-                            </li>
                             <li class="{{ menu.abonnement }}">
                                 <a href="/my/abo">Abo</a>
                             </li>
                             <li class="{{ menu.participation }}">
                                 <a href="/my/mitarbeit">Mitarbeit</a>
+                            </li>
+                            <li class="{{ menu.participation }}">
+                                <a href="/my/einsaetze">Einsätze</a>
                             </li>
                             <li class="{{ menu.contact }}">
                                 <a href="/my/kontakt">Kontakt</a>
@@ -41,12 +38,29 @@
                             <li class="{{ menu.ortoloco }}">
                                 <a href="/aktuelles">ortoloco.ch</a>
                             </li>
+                            <hr>
+                            <li class="{{ menu.personalInfo }}">
+                                <a href="/my/profil">Personalien</a>
+                            </li>
                             <li class="{{ menu.logout }}">
                                 <a href="/logout">Abmelden</a>
                             </li>
                         </ul>
+                        <hr>
+                        <div class="bohnen">
+                            {% block bohnen %}
+                                Dein Böhnli-Konto:<br/>
+                                {% for i in bohnenrange %}
+                                    {% if i <= userbohnen %}
+                                        <img class="jobstatus" src="/static/img/erbse_voll.png"/>
+                                    {% else %}
+                                        <img class="jobstatus" src="/static/img/erbse_leer.png"/>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endblock %}
+                        </div>
                 </div>
-                <div class="span8">
+                <div class="span9">
                     {% block content %}
                     {% endblock %}
                 </div>

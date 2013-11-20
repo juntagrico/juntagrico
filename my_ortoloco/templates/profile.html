@@ -92,6 +92,13 @@
                     {{ userform.email }}
                 </div>
             </div>
+            <div class="control-group {% if userform.email.errors %}error{% endif %}">
+                <label class="control-label"></label>
+
+                <div class="controls">
+                    <a href="/my/passwort">hier kannst du das Passwort ändern</a>
+                </div>
+            </div>
             {% if userform.email.errors %}
                 <div class="alert alert-error">E-Mail ungültig</div>
             {% endif %}

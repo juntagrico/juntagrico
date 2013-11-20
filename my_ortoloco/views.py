@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from collections import defaultdict, Counter
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -11,6 +12,24 @@ from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
 
+def getBohnenDict(request):
+    if request.user.loco.abo is not None:
+        allebohnen = Boehnli.objects.filter(loco=request.user.loco)
+        userbohnen = []
+        for bohne in allebohnen:
+            if bohne.job.time.year == date.today().year:
+                userbohnen.append(bohne)
+        bohnenrange = range(0, max(userbohnen.__len__(), request.user.loco.abo.groesse * 10 / request.user.loco.abo.locos.count()))
+
+    else:
+        bohnenrange = None
+        userbohnen = []
+    return {
+        'bohnenrange': bohnenrange,
+        'userbohnen': userbohnen.__len__()
+    }
+
+
 @login_required
 def my_home(request):
     """
@@ -20,26 +39,28 @@ def my_home(request):
     teams = Taetigkeitsbereich.objects.all()
 
     if request.user.loco.abo is not None:
-        bohnenrange = range(0, request.user.loco.abo.groesse * 10 / request.user.loco.abo.locos.count())
-        allebohnen = Boehnli.objects.filter(loco=request.user.loco)
-        userbohnen = []
-        for bohne in allebohnen:
-            if bohne.job.time.year == date.today().year:
-                userbohnen.append(bohne)
         no_abo = False
     else:
         no_abo = True
-        bohnenrange = None
-        userbohnen = []
 
-    return render(request, "myhome.html", {
-        'jobs': next_jobs,
+    jobs = []
+    for job in next_jobs:
+        jobs.append({
+            'time': job.time,
+            'id': job.id,
+            'typ': job.typ,
+            'status': job.get_status_bohne()
+        })
+
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'jobs': jobs,
         'teams': teams,
-        #abo gesamtbohnen / # bezieher
-        'no_abo': no_abo,
-        'bohnenrange': bohnenrange,
-        'userbohnen': userbohnen.__len__()
+        'no_abo': no_abo
     })
+
+    return render(request, "myhome.html", renderdict)
 
 
 @login_required
@@ -84,12 +105,15 @@ def my_job(request, job_id):
     for bohne in boehnlis:
         if bohne.loco is not None:
             participants.append(bohne.loco.user)
-    return render(request, "job.html", {
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
         'participants': participants,
         'job': job,
         'slotrange': range(0, job.slots),
         'error': error
-    })
+    });
+    return render(request, "job.html", renderdict)
 
 
 @login_required
@@ -102,8 +126,10 @@ def my_participation(request):
     if request.method == 'POST':
         for area in Taetigkeitsbereich.objects.all():
             if request.POST.get("area" + str(area.id)):
-                area.users.add(request.user)
-                area.save()
+                if request.user not in area.users.all():
+                    area.users.add(request.user)
+                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name, 'Soeben hat sich ' + request.user.first_name + " " + request.user.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email], fail_silently=False)
+                    area.save()
             else:
                 area.users.remove(request.user)
                 area.save()
@@ -118,10 +144,12 @@ def my_participation(request):
             'admin': area.coordinator.email
         })
 
-    return render(request, "participation.html", {
+    renderdict = getBohnenDict(request)
+    renderdict.update({
         'areas': my_areas,
         'success': success
     })
+    return render(request, "participation.html", renderdict)
 
 
 @login_required
@@ -189,7 +217,8 @@ def my_abo(request):
                 'checked': myabo.extra_abos.all().__contains__(abo)
             })
 
-        return render(request, "my_abo.html", {
+        renderdict = getBohnenDict(request)
+        renderdict.update({
             'aboform': aboform,
             'zusatzabos': zusatzabos,
             'depots': depots,
@@ -200,10 +229,13 @@ def my_abo(request):
             'anteilsscheine_paid': request.user.anteilschein_set.all().filter(paid=True).count(),
             'anteilsscheine_unpaid': request.user.anteilschein_set.all().filter(paid=False).count()
         })
+        return render(request, "my_abo.html", renderdict)
     else:
-        return render(request, "my_abo.html", {
+        renderdict = getBohnenDict(request)
+        renderdict.update({
             'noabo': True
         })
+        return render(request, "my_abo.html", renderdict)
 
 
 @login_required
@@ -216,12 +248,23 @@ def my_team(request, bereich_id):
 
     jobs = Job.objects.all().filter(typ=job_types)
 
-    renderdict = {
+    renderdict = getBohnenDict(request)
+    renderdict.update({
         'team': get_object_or_404(Taetigkeitsbereich, id=int(bereich_id)),
         'jobs': jobs,
-    }
-
+    })
     return render(request, "team.html", renderdict)
+
+@login_required
+def my_einsaetze(request):
+    """
+    All jobs to be sorted etc.
+    """
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+    })
+    return render(request, "jobs.html", renderdict)
 
 
 @login_required
@@ -232,13 +275,12 @@ def my_contact(request):
     print "my"
 
     if request.method == "POST":
-        #  FIXME change to info@ortoloco.ch
-        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), request.user.email, ['oliver.ganz@gmail.com'], fail_silently=False)
+        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), request.user.email, ['orto@xiala.net'], fail_silently=False)
 
-    renderdict = {
+    renderdict = getBohnenDict(request)
+    renderdict.update({
         'usernameAndEmail': request.user.first_name + " " + request.user.last_name + "<" + request.user.email + ">"
-    }
-
+    })
     return render(request, "my_contact.html", renderdict)
 
 
@@ -268,11 +310,12 @@ def my_profile(request):
         locoform = ProfileLocoForm(instance=loco)
         userform = ProfileUserForm(instance=request.user)
 
-    renderdict = {
+    renderdict = getBohnenDict(request)
+    renderdict.update({
         'locoform': locoform,
         'userform': userform,
         'success': success
-    }
+    })
     return render(request, "profile.html", renderdict)
 
 
@@ -288,10 +331,12 @@ def my_change_password(request):
     else:
         form = PasswordForm()
 
-    return render(request, 'password.html', {
+    renderdict = getBohnenDict(request)
+    renderdict.update({
         'form': form,
         'success': success
     })
+    return render(request, 'password.html', renderdict)
 
 
 def logout_view(request):

@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     url('^my/profil', 'my_ortoloco.views.my_profile'),
     url('^my/mitarbeit', 'my_ortoloco.views.my_participation'),
     url('^my/kontakt', 'my_ortoloco.views.my_contact'),
+    url('^my/einsaetze', 'my_ortoloco.views.my_einsaetze'),
 
 
     (r'^accounts/login/$',  login),

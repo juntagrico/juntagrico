@@ -122,7 +122,20 @@ def media(request):
     """
     About ortoloco of "static" page
     """
-    medias_list = Media.objects.all().order_by('year').reverse()
+    medias_list = []
+    first = True
+    first_year = ""
+    for media in Media.objects.all().order_by('year').reverse():
+        medias_list.append({
+            'shown': first or first_year == media.year or request.GET.get("year") is not None and request.GET.get("year") == media.year,
+            'year': media.year,
+            'mediafile': media.mediafile,
+            'name': media.name
+        })
+        if first:
+            first = False
+            first_year = media.year
+
     renderdict = {
         'menu': {
             'media': 'active'
@@ -169,6 +182,7 @@ def contact(request):
     """
     Contact page
     """
+
     class PolitolocoForm(ModelForm):
         class Meta:
             model = Politoloco

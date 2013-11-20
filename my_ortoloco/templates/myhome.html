@@ -1,30 +1,24 @@
 {% extends "mybase.html" %}
 
 {% block content %}
-    <h4>Dein Konto</h4>
     {% if no_abo %}
         <div class="alert">Du hast kein Abo</div>
-    {% else %}
-        {% for i in bohnenrange %}
-            {% if i <= userbohnen %}
-                <img class="jobstatus" src="/static/img/erbse_voll.png"/>
-            {% else %}
-                <img class="jobstatus" src="/static/img/erbse_leer.png"/>
-            {% endif %}
-        {% endfor %}
+        <br/><br/>
     {% endif %}
-    <br/><br/>
-    <h4>Aktuelle Arbeitseinsätze</h4>
+    <h3>Aktuelle Arbeitseinsätze</h3>
     <table class="jobs">
         {% for job in jobs %}
-            <tr>
+            <tr class="{% if job.status == "erbse_voll.png" %}full{% endif %}">
                 <td class="date">{{ job.time |date:"d.m.Y G:i" }}</td>
                 <td><a href="/my/jobs/{{ job.id }}">{{ job.typ }}</a></td>
+                <td class="status"><img src="/static/img/{{ job.status }}"/></td>
             </tr>
         {% endfor %}
     </table>
-    <br/><br/>
-    <h4>Kalender der Tätigkeitsbereiche</h4>
+    <br/>
+    <a href="/my/einsaetze/">Hier alle Arbeitseinsätze anzeigen</a>
+    <br/><br/><br/>
+    <h4>Zu den Kalendern der einzelnen Tätigkeitsbereiche</h4>
     <table class="teams">
         {% for team in teams %}
             <tr>

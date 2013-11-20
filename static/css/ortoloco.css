@@ -199,6 +199,12 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 .medias.table th, .medias.table td {
     border: 0;
 }
+.medias tr {
+    display: none;
+}
+.medias tr.shown, .medias tr.newYear{
+    display: table-row;
+}
 
 /* links */
 .link .desc {

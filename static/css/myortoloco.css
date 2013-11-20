@@ -10,10 +10,30 @@
     width: 200px;
 }
 
+.jobs .status {
+    padding-left: 30px;
+}
+
+.jobs .full {
+    opacity: 0.2;
+}
+
 .sharees, .senderContact {
     margin-top: 5px;
 }
 
 .jobstatus {
     margin-right: -7px;
+}
+
+.ortoloco {
+    margin-top: 0;
+}
+
+.myortoloco {
+    margin-top: 80px;
+}
+
+.ortoloco h3 {
+    margin-top: -10px;
 }
