@@ -51,7 +51,7 @@
                             {% block bohnen %}
                                 Dein Böhnli-Konto:<br/>
                                 {% for i in bohnenrange %}
-                                    {% if i <= userbohnen %}
+                                    {% if i < userbohnen %}
                                         <img class="jobstatus" src="/static/img/erbse_voll.png"/>
                                     {% else %}
                                         <img class="jobstatus" src="/static/img/erbse_leer.png"/>
