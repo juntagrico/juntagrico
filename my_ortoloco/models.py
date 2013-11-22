@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
@@ -143,8 +144,8 @@ class Job(models.Model):
 
 
     def besetzte_plaetze(self):
-        return self.boehnli_set.filter(loco__isnull=True).count()
-        
+        return self.slots - self.freie_plaetze()
+
 
     def get_status_bohne(self):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
@@ -152,12 +153,12 @@ class Job(models.Model):
         for bohne in boehnlis:
             if bohne.loco is not None:
                 participants.append(bohne.loco.user)
-        print (100/ self.slots * participants.__len__())
+        print (100 / self.slots * participants.__len__())
         if self.slots == participants.__len__():
             return "erbse_voll.png"
-        elif 100/ self.slots * participants.__len__() >= 75:
+        elif 100 / self.slots * participants.__len__() >= 75:
             return "erbse_fast_voll.png"
-        elif 100/ self.slots * participants.__len__() >= 50:
+        elif 100 / self.slots * participants.__len__() >= 50:
             return "erbse_halb.png"
         else:
             return "erbse_fast_leer.png"

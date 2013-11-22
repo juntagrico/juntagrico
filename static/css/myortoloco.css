@@ -18,6 +18,32 @@
     opacity: 0.2;
 }
 
+#jobs .list {
+    width: 100%;
+}
+
+#jobs_header {
+    margin-bottom: 20px;
+}
+
+#jobs_footer {
+    margin-top: 20px;
+}
+
+#jobs_page_prev, #jobs_page_next {
+    display: none !important;
+}
+
+#jobs th {
+    background-color: #4c9434;
+    color: white;
+}
+
+#jobs .table-sort {
+    font-family: Arial;
+    font-size: 12;
+}
+
 .sharees, .senderContact {
     margin-top: 5px;
 }

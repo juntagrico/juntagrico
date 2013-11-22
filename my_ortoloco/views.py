@@ -12,6 +12,7 @@ from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
 
+
 def getBohnenDict(request):
     if request.user.loco.abo is not None:
         allebohnen = Boehnli.objects.filter(loco=request.user.loco)
@@ -51,7 +52,6 @@ def my_home(request):
             'typ': job.typ,
             'status': job.get_status_bohne()
         })
-
 
     renderdict = getBohnenDict(request)
     renderdict.update({
@@ -128,7 +128,9 @@ def my_participation(request):
             if request.POST.get("area" + str(area.id)):
                 if request.user not in area.users.all():
                     area.users.add(request.user)
-                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name, 'Soeben hat sich ' + request.user.first_name + " " + request.user.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email], fail_silently=False)
+                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
+                              'Soeben hat sich ' + request.user.first_name + " " + request.user.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net',
+                              [area.coordinator.email], fail_silently=False)
                     area.save()
             else:
                 area.users.remove(request.user)
@@ -255,15 +257,17 @@ def my_team(request, bereich_id):
     })
     return render(request, "team.html", renderdict)
 
+
 @login_required
 def my_einsaetze(request):
     """
     All jobs to be sorted etc.
     """
-
     renderdict = getBohnenDict(request)
     renderdict.update({
+        'jobs': Job.objects.all()
     })
+
     return render(request, "jobs.html", renderdict)
 
 
@@ -378,7 +382,7 @@ def depot_list(request, name):
         "table_header": header,
         "table_data": data,
     }
-    
+
     return render_to_pdf(request, "depot_pdf.html", renderdict)
 
 
@@ -386,7 +390,7 @@ def test_filters(request):
     lst = Filter.get_all()
     res = []
     for name in Filter.get_names():
-        res.append("<br><br>%s:" %name)
+        res.append("<br><br>%s:" % name)
         tmp = Filter.execute([name], "OR")
         data = Filter.format_data(tmp, lambda loco: loco.user.username)
         res.extend(data)
@@ -400,7 +404,7 @@ def test_filters_post(request):
     op = "AND"
     res = ["Eier AND Oerlikon:<br>"]
     locos = Filter.execute(filters, op)
-    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" %(loco.user.username, loco.user.email))
+    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" % (loco.user.username, loco.user.email))
     res.extend(data)
     return HttpResponse("<br>".join(res))
 
