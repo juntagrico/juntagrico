@@ -15,7 +15,7 @@ class Depot(models.Model):
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
-    contact = models.ForeignKey(User, on_delete=models.PROTECT)
+    contact = models.ForeignKey("Loco", on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField("Wochentag", choices=helpers.weekday_choices)
 
     addr_street = models.CharField("Strasse", max_length=100)
@@ -69,30 +69,19 @@ class Abo(models.Model):
         return self.groesse % 2
 
 
-class Anteilschein(models.Model):
-    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
-    paid = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        return u"Anteilschein #%s" % (self.id)
-
-
-class Taetigkeitsbereich(models.Model):
-    name = models.CharField("Name", max_length=100, validators=[validators.validate_slug], unique=True)
-    description = models.TextField("Beschreibung", max_length=1000, default="")
-    coordinator = models.ForeignKey(User, on_delete=models.PROTECT)
-    users = models.ManyToManyField(User, related_name="taetigkeitsbereiche")
-    core = models.BooleanField("Kernbereich", default=False)
-
-    def __unicode__(self):
-        return u'%s' % self.name
-
-
 class Loco(models.Model):
     """
     Additional fields for Django's default user class.
     """
+
+    # user class is only used for logins, permissions, and other builtin django stuff
+    # all user information should be stored in the Loco model
     user = models.OneToOneField(User, related_name='loco')
+    
+    first_name = models.CharField("Vorname", max_length=30)
+    last_name = models.CharField("Nachname", max_length=30)
+    email = models.EmailField()
+    
     abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True)
 
     addr_street = models.CharField("Strasse", max_length=100, null=True, blank=True)
@@ -103,7 +92,7 @@ class Loco(models.Model):
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s" % (self.user)
+        return u"%s %s (%s)" %(self.first_name, self.last_name, self.user.username)
 
     @classmethod
     def create(cls, sender, instance, created, **kdws):
@@ -112,6 +101,27 @@ class Loco(models.Model):
         """
         if created:
             cls.objects.create(user=instance)
+
+
+
+class Anteilschein(models.Model):
+    loco = models.ForeignKey(Loco, null=True, blank=True, on_delete=models.SET_NULL)
+    paid = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return u"Anteilschein #%s" % (self.id)
+
+
+class Taetigkeitsbereich(models.Model):
+    name = models.CharField("Name", max_length=100, validators=[validators.validate_slug], unique=True)
+    description = models.TextField("Beschreibung", max_length=1000, default="")
+    coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
+    locos = models.ManyToManyField(Loco, related_name="taetigkeitsbereiche")
+    core = models.BooleanField("Kernbereich", default=False)
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
 
 
 class JobTyp(models.Model):
@@ -151,7 +161,7 @@ class Job(models.Model):
         participants = []
         for bohne in boehnlis:
             if bohne.loco is not None:
-                participants.append(bohne.loco.user)
+                participants.append(bohne.loco)
         print (100/ self.slots * participants.__len__())
         if self.slots == participants.__len__():
             return "erbse_voll.png"
@@ -202,7 +212,7 @@ class Boehnli(models.Model):
 #model_audit.m2m(Abo.users)
 model_audit.m2m(Abo.extra_abos)
 model_audit.fk(Abo.depot)
-model_audit.fk(Anteilschein.user)
+model_audit.fk(Anteilschein.loco)
 
 signals.post_save.connect(Loco.create, sender=User)
 signals.post_save.connect(Boehnli.update, sender=Job)
