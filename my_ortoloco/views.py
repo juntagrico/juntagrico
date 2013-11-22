@@ -13,13 +13,14 @@ from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
 
 def getBohnenDict(request):
-    if request.user.loco.abo is not None:
-        allebohnen = Boehnli.objects.filter(loco=request.user.loco)
+    loco = request.user.loco
+    if loco.abo is not None:
+        allebohnen = Boehnli.objects.filter(loco=loco)
         userbohnen = []
         for bohne in allebohnen:
             if bohne.job.time.year == date.today().year:
                 userbohnen.append(bohne)
-        bohnenrange = range(0, max(userbohnen.__len__(), request.user.loco.abo.groesse * 10 / request.user.loco.abo.locos.count()))
+        bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.groesse * 10 / loco.abo.locos.count()))
 
     else:
         bohnenrange = None
@@ -35,10 +36,11 @@ def my_home(request):
     """
     Overview on myortoloco
     """
+    loco = request.user.loco
     next_jobs = Job.objects.all()[0:7]
     teams = Taetigkeitsbereich.objects.all()
 
-    if request.user.loco.abo is not None:
+    if loco.abo is not None:
         no_abo = False
     else:
         no_abo = True
@@ -68,6 +70,7 @@ def my_job(request, job_id):
     """
     Details for a job
     """
+    loco = request.user.loco
     job = get_object_or_404(Job, id=int(job_id))
 
     def check_int(s):
@@ -78,7 +81,7 @@ def my_job(request, job_id):
     error = None
     if request.method == 'POST':
         num = request.POST.get("jobs")
-        my_bohnen = job.boehnli_set.all().filter(loco=request.user.loco)
+        my_bohnen = job.boehnli_set.all().filter(loco=loco)
         left_bohnen = job.boehnli_set.all().filter(loco=None)
         print left_bohnen.__len__()
         if check_int(num) and 0 < int(num) <= left_bohnen.__len__():
@@ -86,7 +89,7 @@ def my_job(request, job_id):
             add = int(num)
             for bohne in left_bohnen:
                 if (add > 0):
-                    bohne.loco = request.user.loco
+                    bohne.loco = loco
                     bohne.save()
                     add -= 1
         elif check_int(num) and int(num) < 0 and my_bohnen.__len__() >= -int(num):
@@ -121,24 +124,25 @@ def my_participation(request):
     """
     Details for all areas a loco can participate
     """
+    loco = request.user.loco
     my_areas = []
     success = False
     if request.method == 'POST':
         for area in Taetigkeitsbereich.objects.all():
             if request.POST.get("area" + str(area.id)):
-                if request.user.loco not in area.locos.all():
-                    area.locos.add(request.user.loco)
-                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name, 'Soeben hat sich ' + request.user.loco.first_name + " " + request.user.loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email], fail_silently=False)
+                if loco not in area.locos.all():
+                    area.locos.add(loco)
+                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name, 'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email], fail_silently=False)
                     area.save()
             else:
-                area.locos.remove(request.user.loco)
+                area.locos.remove(loco)
                 area.save()
         success = True
 
     for area in Taetigkeitsbereich.objects.all():
         my_areas.append({
             'name': area.name,
-            'checked': area.locos.all().__contains__(request.user.loco),
+            'checked': area.locos.all().__contains__(loco),
             'id': area.id,
             'core': area.core,
             'admin': area.coordinator.email
@@ -157,8 +161,9 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    if Abo.objects.filter(primary_loco=request.user.loco).count() > 0:
-        myabo = Abo.objects.get(primary_loco=request.user.loco)
+    loco = request.user.loco
+    if Abo.objects.filter(primary_loco=loco).count() > 0:
+        myabo = Abo.objects.get(primary_loco=loco)
 
         if request.method == 'POST':
             aboform = AboForm(request.POST)
@@ -166,18 +171,18 @@ def my_abo(request):
                 a_unpaid = int(aboform.data['anteilsscheine_added'])
                 a_paid = int(aboform.data['anteilsscheine'])
                 # neue anteilsscheine loeschen (nur unbezahlte) falls neu weniger
-                if request.user.loco.anteilschein_set.count() > a_unpaid + a_paid:
-                    todelete = request.user.loco.anteilschein_set.count() - (a_unpaid + a_paid)
-                    for unpaid in request.user.loco.anteilschein_set.all().filter(paid=False):
+                if loco.anteilschein_set.count() > a_unpaid + a_paid:
+                    todelete = loco.anteilschein_set.count() - (a_unpaid + a_paid)
+                    for unpaid in loco.anteilschein_set.all().filter(paid=False):
                         if todelete > 0:
                             unpaid.delete()
                             todelete -= 1
 
                 #neue unbezahlte anteilsscheine hinzufuegen falls erwuenscht
-                if request.user.loco.anteilschein_set.count() < a_unpaid + a_paid:
-                    toadd = (a_unpaid + a_paid) - request.user.loco.anteilschein_set.count()
+                if loco.anteilschein_set.count() < a_unpaid + a_paid:
+                    toadd = (a_unpaid + a_paid) - loco.anteilschein_set.count()
                     for num in range(0, toadd):
-                        anteilsschein = Anteilschein(locor=request.user.loco, paid=False)
+                        anteilsschein = Anteilschein(locor=loco, paid=False)
                         anteilsschein.save()
 
                 # abo groesse setzen
@@ -222,12 +227,12 @@ def my_abo(request):
             'aboform': aboform,
             'zusatzabos': zusatzabos,
             'depots': depots,
-            'sharees': myabo.locos.exclude(id=request.user.loco.id),
+            'sharees': myabo.locos.exclude(id=loco.id),
             'haus_abos': myabo.haus_abos(),
             'grosse_abos': myabo.grosse_abos(),
             'kleine_abos': myabo.kleine_abos(),
-            'anteilsscheine_paid': request.user.loco.anteilschein_set.all().filter(paid=True).count(),
-            'anteilsscheine_unpaid': request.user.loco.anteilschein_set.all().filter(paid=False).count()
+            'anteilsscheine_paid': loco.anteilschein_set.all().filter(paid=True).count(),
+            'anteilsscheine_unpaid': loco.anteilschein_set.all().filter(paid=False).count()
         })
         return render(request, "my_abo.html", renderdict)
     else:
@@ -273,13 +278,14 @@ def my_contact(request):
     Kontaktformular
     """
     print "my"
+    loco = request.user.loco
 
     if request.method == "POST":
-        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), request.user.loco.email, ['orto@xiala.net'], fail_silently=False)
+        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), loco.email, ['orto@xiala.net'], fail_silently=False)
 
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'usernameAndEmail': request.user.loco.first_name + " " + request.user.loco.last_name + "<" + request.user.loco.email + ">"
+        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">"
     })
     return render(request, "my_contact.html", renderdict)
 
