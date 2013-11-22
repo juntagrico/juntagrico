@@ -164,7 +164,7 @@ class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
     list_display = ["__unicode__", "bezieher", "verantwortlicher_bezieher"]
     #filter_horizontal = ["users"]
-    search_fields = ["locos__user__username", "locos__user__first_name", "locos__user__last_name"]
+    search_fields = ["locos__user__username", "locos__first_name", "locos__last_name"]
 
 
 class AuditAdmin(admin.ModelAdmin):
@@ -175,12 +175,12 @@ class AuditAdmin(admin.ModelAdmin):
 
 
 class AnteilscheinAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "user"]
-    search_fields = ["id", "user__username", "user__first_name", "user__last_name"]
+    list_display = ["__unicode__", "loco"]
+    search_fields = ["id", "loco__username", "loco__first_name", "loco__last_name"]
 
 
 class BereichAdmin(admin.ModelAdmin):
-    filter_horizontal = ["users"]
+    filter_horizontal = ["locos"]
 
 
 class BoehnliAdmin(admin.ModelAdmin):
@@ -188,10 +188,16 @@ class BoehnliAdmin(admin.ModelAdmin):
 
 
 
+class LocoAdmin(admin.ModelAdmin):
+    list_display = ["__unicode__", "email"]
+    search_fields = ["first_name", "last_name", "email"]
+
+
+
 admin.site.register(Depot)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
-admin.site.register(Loco)
+admin.site.register(Loco, LocoAdmin)
 admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
 admin.site.register(model_audit.Audit, AuditAdmin)

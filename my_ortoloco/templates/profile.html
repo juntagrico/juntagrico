@@ -8,25 +8,25 @@
     {% else %}
         <form action="/my/profile" method="post" class="form-horizontal">
             {% csrf_token %}
-            <div class="control-group {% if userform.first_name.errors %}error{% endif %}">
+            <div class="control-group {% if locoform.first_name.errors %}error{% endif %}">
                 <label class="control-label" for="id_first_name">Vorname</label>
 
                 <div class="controls">
-                    {{ userform.first_name }}
+                    {{ locoform.first_name }}
                 </div>
             </div>
-            {% if userform.last_name.errors %}
+            {% if locoform.last_name.errors %}
                 <div class="alert alert-error">Vorname ungültig</div>
             {% endif %}
 
-            <div class="control-group {% if userform.last_name.errors %}error{% endif %}">
+            <div class="control-group {% if locoform.last_name.errors %}error{% endif %}">
                 <label class="control-label" for="id_last_name">Nachname</label>
 
                 <div class="controls">
-                    {{ userform.last_name }}
+                    {{ locoform.last_name }}
                 </div>
             </div>
-            {% if userform.last_name.errors %}
+            {% if locoform.last_name.errors %}
                 <div class="alert alert-error">Nachname ungültig</div>
             {% endif %}
 
@@ -85,21 +85,21 @@
                 <div class="alert alert-error">Mobile ungültig</div>
             {% endif %}
 
-            <div class="control-group {% if userform.email.errors %}error{% endif %}">
+            <div class="control-group {% if locoform.email.errors %}error{% endif %}">
                 <label class="control-label" for="id_email">E-Mail Adresse</label>
 
                 <div class="controls">
-                    {{ userform.email }}
+                    {{ locoform.email }}
                 </div>
             </div>
-            <div class="control-group {% if userform.email.errors %}error{% endif %}">
+            <div class="control-group {% if locoform.email.errors %}error{% endif %}">
                 <label class="control-label"></label>
 
                 <div class="controls">
                     <a href="/my/passwort">hier kannst du das Passwort ändern</a>
                 </div>
             </div>
-            {% if userform.email.errors %}
+            {% if locoform.email.errors %}
                 <div class="alert alert-error">E-Mail ungültig</div>
             {% endif %}
             <div class="form-actions">
