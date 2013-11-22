@@ -83,7 +83,6 @@ def my_job(request, job_id):
         num = request.POST.get("jobs")
         my_bohnen = job.boehnli_set.all().filter(loco=loco)
         left_bohnen = job.boehnli_set.all().filter(loco=None)
-        print left_bohnen.__len__()
         if check_int(num) and 0 < int(num) <= left_bohnen.__len__():
             # adding participants
             add = int(num)
@@ -277,7 +276,6 @@ def my_contact(request):
     """
     Kontaktformular
     """
-    print "my"
     loco = request.user.loco
 
     if request.method == "POST":
