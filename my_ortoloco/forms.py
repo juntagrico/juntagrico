@@ -17,13 +17,10 @@ class PasswordForm(Form):
 class ProfileLocoForm(ModelForm):
     class Meta:
         model = Loco
-        fields = ['addr_street', 'addr_zipcode', 'addr_location', 'birthday', 'phone', 'mobile_phone']
+        fields = ['first_name', 'last_name', 'email', 
+                  'addr_street', 'addr_zipcode', 'addr_location', 
+                  'birthday', 'phone', 'mobile_phone']
 
-
-class ProfileUserForm(ModelForm):
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email']
 
 class AboForm(Form):
     anteilsscheine = CharField(label='asdf', min_length=1)

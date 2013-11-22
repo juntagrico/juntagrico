@@ -104,7 +104,7 @@ def my_job(request, job_id):
     participants = []
     for bohne in boehnlis:
         if bohne.loco is not None:
-            participants.append(bohne.loco.user)
+            participants.append(bohne.loco)
 
     renderdict = getBohnenDict(request)
     renderdict.update({
@@ -126,19 +126,19 @@ def my_participation(request):
     if request.method == 'POST':
         for area in Taetigkeitsbereich.objects.all():
             if request.POST.get("area" + str(area.id)):
-                if request.user not in area.users.all():
-                    area.users.add(request.user)
-                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name, 'Soeben hat sich ' + request.user.first_name + " " + request.user.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email], fail_silently=False)
+                if request.user.loco not in area.locos.all():
+                    area.locos.add(request.user.loco)
+                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name, 'Soeben hat sich ' + request.user.loco.first_name + " " + request.user.loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email], fail_silently=False)
                     area.save()
             else:
-                area.users.remove(request.user)
+                area.locos.remove(request.user.loco)
                 area.save()
         success = True
 
     for area in Taetigkeitsbereich.objects.all():
         my_areas.append({
             'name': area.name,
-            'checked': area.users.all().__contains__(request.user),
+            'checked': area.locos.all().__contains__(request.user.loco),
             'id': area.id,
             'core': area.core,
             'admin': area.coordinator.email
@@ -157,8 +157,8 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    if Abo.objects.filter(primary_loco=request.user).count() > 0:
-        myabo = Abo.objects.get(primary_loco=request.user)
+    if Abo.objects.filter(primary_loco=request.user.loco).count() > 0:
+        myabo = Abo.objects.get(primary_loco=request.user.loco)
 
         if request.method == 'POST':
             aboform = AboForm(request.POST)
@@ -166,18 +166,18 @@ def my_abo(request):
                 a_unpaid = int(aboform.data['anteilsscheine_added'])
                 a_paid = int(aboform.data['anteilsscheine'])
                 # neue anteilsscheine loeschen (nur unbezahlte) falls neu weniger
-                if request.user.anteilschein_set.count() > a_unpaid + a_paid:
-                    todelete = request.user.anteilschein_set.count() - (a_unpaid + a_paid)
-                    for unpaid in request.user.anteilschein_set.all().filter(paid=False):
+                if request.user.loco.anteilschein_set.count() > a_unpaid + a_paid:
+                    todelete = request.user.loco.anteilschein_set.count() - (a_unpaid + a_paid)
+                    for unpaid in request.user.loco.anteilschein_set.all().filter(paid=False):
                         if todelete > 0:
                             unpaid.delete()
                             todelete -= 1
 
                 #neue unbezahlte anteilsscheine hinzufuegen falls erwuenscht
-                if request.user.anteilschein_set.count() < a_unpaid + a_paid:
-                    toadd = (a_unpaid + a_paid) - request.user.anteilschein_set.count()
+                if request.user.loco.anteilschein_set.count() < a_unpaid + a_paid:
+                    toadd = (a_unpaid + a_paid) - request.user.loco.anteilschein_set.count()
                     for num in range(0, toadd):
-                        anteilsschein = Anteilschein(user=request.user, paid=False)
+                        anteilsschein = Anteilschein(locor=request.user.loco, paid=False)
                         anteilsschein.save()
 
                 # abo groesse setzen
@@ -222,12 +222,12 @@ def my_abo(request):
             'aboform': aboform,
             'zusatzabos': zusatzabos,
             'depots': depots,
-            'sharees': myabo.locos.exclude(id=request.user.id),
+            'sharees': myabo.locos.exclude(id=request.user.loco.id),
             'haus_abos': myabo.haus_abos(),
             'grosse_abos': myabo.grosse_abos(),
             'kleine_abos': myabo.kleine_abos(),
-            'anteilsscheine_paid': request.user.anteilschein_set.all().filter(paid=True).count(),
-            'anteilsscheine_unpaid': request.user.anteilschein_set.all().filter(paid=False).count()
+            'anteilsscheine_paid': request.user.loco.anteilschein_set.all().filter(paid=True).count(),
+            'anteilsscheine_unpaid': request.user.loco.anteilschein_set.all().filter(paid=False).count()
         })
         return render(request, "my_abo.html", renderdict)
     else:
@@ -275,11 +275,11 @@ def my_contact(request):
     print "my"
 
     if request.method == "POST":
-        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), request.user.email, ['orto@xiala.net'], fail_silently=False)
+        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), request.user.loco.email, ['orto@xiala.net'], fail_silently=False)
 
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'usernameAndEmail': request.user.first_name + " " + request.user.last_name + "<" + request.user.email + ">"
+        'usernameAndEmail': request.user.loco.first_name + " " + request.user.loco.last_name + "<" + request.user.loco.email + ">"
     })
     return render(request, "my_contact.html", renderdict)
 
@@ -287,17 +287,14 @@ def my_contact(request):
 @login_required
 def my_profile(request):
     success = False
-    loco = Loco.objects.get(user=request.user)
+    loco = request.user.loco
     if request.method == 'POST':
         locoform = ProfileLocoForm(request.POST)
-        userform = ProfileUserForm(request.POST)
-        if locoform.is_valid() and userform.is_valid():
+        if locoform.is_valid():
             #set all fields of user
-            request.user.first_name = userform.cleaned_data['first_name']
-            request.user.last_name = userform.cleaned_data['last_name']
-            request.user.email = userform.cleaned_data['email']
-            request.user.save()
-
+            loco.first_name = locoform.cleaned_data['first_name']
+            loco.last_name = locoform.cleaned_data['last_name']
+            loco.email = locoform.cleaned_data['email']
             loco.addr_street = locoform.cleaned_data['addr_street']
             loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
             loco.addr_location = locoform.cleaned_data['addr_location']
@@ -308,12 +305,10 @@ def my_profile(request):
             success = True
     else:
         locoform = ProfileLocoForm(instance=loco)
-        userform = ProfileUserForm(instance=request.user)
 
     renderdict = getBohnenDict(request)
     renderdict.update({
         'locoform': locoform,
-        'userform': userform,
         'success': success
     })
     return render(request, "profile.html", renderdict)
@@ -357,7 +352,7 @@ def depot_list(request, name):
     # helper function to format set of locos consistently
     def locos_to_str(locos):
         # TODO: use first and last name
-        locos = sorted(loco.user.username for loco in locos)
+        locos = sorted(unicode(loco) for loco in locos)
         return u", ".join(locos)
 
     # build rows of data.
@@ -388,7 +383,7 @@ def test_filters(request):
     for name in Filter.get_names():
         res.append("<br><br>%s:" %name)
         tmp = Filter.execute([name], "OR")
-        data = Filter.format_data(tmp, lambda loco: loco.user.username)
+        data = Filter.format_data(tmp, unicode)
         res.extend(data)
     return HttpResponse("<br>".join(res))
 
@@ -400,7 +395,7 @@ def test_filters_post(request):
     op = "AND"
     res = ["Eier AND Oerlikon:<br>"]
     locos = Filter.execute(filters, op)
-    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" %(loco.user.username, loco.user.email))
+    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" %(loco, loco.email))
     res.extend(data)
     return HttpResponse("<br>".join(res))
 
