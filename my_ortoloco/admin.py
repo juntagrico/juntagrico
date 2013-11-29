@@ -32,27 +32,29 @@ class AboAdminForm(forms.ModelForm):
         # enforce integrity constraint on primary_loco
         locos = self.cleaned_data["abo_locos"]
         primary = self.cleaned_data["primary_loco"]
-        if len(locos) == 0:
-            self.cleaned_data["primary_loco"] = None
-        elif primary not in locos:
-            self.cleaned_data["primary_loco"] = locos[0]
+        if primary not in locos:
+            self.cleaned_data["primary_loco"] = locos[0] if locos else None
 
         return forms.ModelForm.clean(self)
         
 
     def save(self, commit=True):
-        if self.instance:
-            # update Abo-Loco many-to-one through foreign keys on Locos
-            old_locos = set(Loco.objects.filter(abo=self.instance))
-            new_locos = set(self.cleaned_data["abo_locos"])
-            for obj in old_locos - new_locos:
-                obj.abo = None
-                obj.save()
-            for obj in new_locos - old_locos:
-                obj.abo = self.instance
-                obj.save()
+        # HACK: set commit=True, ignoring what the admin tells us.
+        # This causes save_m2m to be called.
+        return forms.ModelForm.save(self, commit=True)
 
-        return forms.ModelForm.save(self, commit)
+
+    def save_m2m(self):
+        # update Abo-Loco many-to-one through foreign keys on Locos
+        old_locos = set(Loco.objects.filter(abo=self.instance))
+        new_locos = set(self.cleaned_data["abo_locos"])
+        for obj in old_locos - new_locos:
+            obj.abo = None
+            obj.save()
+        for obj in new_locos - old_locos:
+            obj.abo = self.instance
+            obj.save()
+
 
 
 class JobCopyForm(forms.ModelForm):
