@@ -43,7 +43,8 @@ class Abo(models.Model):
     One Abo that may be shared among several people.
     """
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
-    primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True)
+    primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
+                                     on_delete=models.SET_NULL)
     groesse = models.PositiveIntegerField(default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
 
@@ -83,7 +84,8 @@ class Loco(models.Model):
     last_name = models.CharField("Nachname", max_length=30)
     email = models.EmailField()
     
-    abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True)
+    abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
+                            on_delete=models.SET_NULL)
 
     addr_street = models.CharField("Strasse", max_length=100, null=True, blank=True)
     addr_zipcode = models.CharField("PLZ", max_length=10, null=True, blank=True)
