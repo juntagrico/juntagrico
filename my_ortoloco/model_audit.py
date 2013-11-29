@@ -55,13 +55,15 @@ def fk(rel):
     target_ct = ContentType.objects.get_for_model(target_model)
 
     def callback(instance, **kwds):
-        val = getattr(instance, fieldname)
-        # pass both type and val in case val is None
-        Audit.objects.create(action="fk_set", 
-                             field=fieldname, 
-                             source_object=instance, 
-                             target_type=target_ct, 
-                             target_object=val)
+        target_obj = getattr(instance, fieldname)
+        kwds = dict(action="fk_set", field=fieldname, source_object=instance)
+        # ContentType errors out when passing a target_ct with a null object.
+        # Therefore, either pass a non-null object, or just the target_ct
+        if target_obj is None:
+            kwds["target_type"] = target_ct
+        else:
+            kwds["target_object"] = target_obj
+        Audit.objects.create(**kwds)
 
     signals.post_save.connect(callback, sender=source_model, weak=False)
 
