@@ -43,10 +43,10 @@ class Abo(models.Model):
     One Abo that may be shared among several people.
     """
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
-    primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
-                                     on_delete=models.SET_NULL)
     groesse = models.PositiveIntegerField(default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
+    primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
+                                     on_delete=models.SET_NULL)
 
     def __unicode__(self):
         namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
@@ -118,9 +118,9 @@ class Anteilschein(models.Model):
 class Taetigkeitsbereich(models.Model):
     name = models.CharField("Name", max_length=100, validators=[validators.validate_slug], unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
+    core = models.BooleanField("Kernbereich", default=False)
     coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
     locos = models.ManyToManyField(Loco, related_name="taetigkeitsbereiche")
-    core = models.BooleanField("Kernbereich", default=False)
 
     def __unicode__(self):
         return u'%s' % self.name

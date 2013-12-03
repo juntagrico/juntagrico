@@ -199,7 +199,7 @@ class AboAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "bezieher", "verantwortlicher_bezieher"]
     #filter_horizontal = ["users"]
     search_fields = ["locos__user__username", "locos__first_name", "locos__last_name"]
-    raw_id_fields = ["primary_loco"]
+    #raw_id_fields = ["primary_loco"]
 
 
 class AuditAdmin(admin.ModelAdmin):
