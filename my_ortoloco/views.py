@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict, Counter
+import re
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
@@ -82,23 +84,17 @@ def my_job(request, job_id):
     if request.method == 'POST':
         num = request.POST.get("jobs")
         my_bohnen = job.boehnli_set.all().filter(loco=loco)
-        left_bohnen = job.boehnli_set.all().filter(loco=None)
-        if check_int(num) and 0 < int(num) <= left_bohnen.__len__():
+        if check_int(num) and 0 < int(num) <= job.freie_plaetze():
             # adding participants
             add = int(num)
-            for bohne in left_bohnen:
-                if (add > 0):
-                    bohne.loco = loco
-                    bohne.save()
-                    add -= 1
-        elif check_int(num) and int(num) < 0 and my_bohnen.__len__() >= -int(num):
+            for i in range(add):
+                bohne = Boehnli.objects.create(loco=loco, job=job)
+                #bohne.save()
+        elif check_int(num) and  0 > int(num) >= -len(my_bohnen):
             # remove some participants
             remove = -int(num)
-            for bohne in my_bohnen:
-                if remove > 0:
-                    bohne.loco = None
-                    bohne.save()
-                    remove -= 1
+            for bohne in my_bohnen[:remove]:
+                bohne.delete()
         else:
             error = "Ungueltige Anzahl Einschreibungen"
 

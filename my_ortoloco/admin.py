@@ -129,9 +129,18 @@ class JobCopyForm(forms.ModelForm):
         return res
 
 
+class BoehnliInline(admin.TabularInline):
+    model = Boehnli
+
+    #can_delete = False
+    extra = 0
+    #max_num = 0 # TODO: write get_max_num
+
+
 class JobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "typ", "time", "earning", "slots", "freie_plaetze"]
     actions = ["copy_job"]
+    inlines = [BoehnliInline]
 
     def copy_job(self, request, queryset):
         if queryset.count() != 1:

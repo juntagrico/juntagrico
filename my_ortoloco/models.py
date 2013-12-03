@@ -152,25 +152,22 @@ class Job(models.Model):
 
 
     def freie_plaetze(self):
-        return self.boehnli_set.filter(loco=None).count()
+        return self.slots - self.besetzte_plaetze()
 
 
     def besetzte_plaetze(self):
-        return self.slots - self.freie_plaetze()
+        return self.boehnli_set.count()
 
 
     def get_status_bohne(self):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
-        participants = []
-        for bohne in boehnlis:
-            if bohne.loco is not None:
-                participants.append(bohne.loco)
-        print (100/ self.slots * participants.__len__())
-        if self.slots == participants.__len__():
+        participants = boehnlis.count()
+        pctfull = participants * 100 / self.slots
+        if pctfull >= 100:
             return "erbse_voll.png"
-        elif 100 / self.slots * participants.__len__() >= 75:
+        elif pctfull >= 75:
             return "erbse_fast_voll.png"
-        elif 100 / self.slots * participants.__len__() >= 50:
+        elif pctfull >= 50:
             return "erbse_halb.png"
         else:
             return "erbse_fast_leer.png"
@@ -190,26 +187,6 @@ class Boehnli(models.Model):
     def zeit(self):
         return self.job.time
 
-    @classmethod
-    def update(cls, sender, instance, created, **kwds):
-        """
-        Create and delete boehnli objects as jobs are created and have their amount of slots changed
-        """
-        if created:
-            for i in range(instance.slots):
-                cls.objects.create(job=instance)
-        else:
-            boehnlis = cls.objects.filter(job=instance)
-            current_n = len(boehnlis)
-            target_n = instance.slots
-            if current_n < target_n:
-                for i in range(target_n - current_n):
-                    cls.objects.create(job=instance)
-            elif current_n > target_n:
-                to_delete = current_n - target_n
-                free_boehnlis = [boehnli for boehnli in boehnlis if boehnli.loco == None]
-                for boehnli in free_boehnlis[:to_delete]:
-                    boehnli.delete()
 
 
 #model_audit.m2m(Abo.users)
@@ -218,5 +195,4 @@ model_audit.fk(Abo.depot)
 model_audit.fk(Anteilschein.loco)
 
 signals.post_save.connect(Loco.create, sender=User)
-signals.post_save.connect(Boehnli.update, sender=Job)
 
