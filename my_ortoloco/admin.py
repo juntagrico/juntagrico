@@ -56,7 +56,6 @@ class AboAdminForm(forms.ModelForm):
             obj.save()
 
 
-
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = Job
@@ -131,16 +130,40 @@ class JobCopyForm(forms.ModelForm):
 
 class BoehnliInline(admin.TabularInline):
     model = Boehnli
+    #readonly_fields = ["loco"]
+    raw_id_fields = ["loco"]
 
     #can_delete = False
-    extra = 0
-    #max_num = 0 # TODO: write get_max_num
+    #extra = 0
+
+   
+    def get_extra(self, request, obj=None):
+        if obj is None:
+            return 0
+        return obj.freie_plaetze()
+    
+
+    def get_max_num(self, request, obj):
+        if obj is None:
+            return 0
+        return obj.slots
 
 
 class JobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "typ", "time", "earning", "slots", "freie_plaetze"]
     actions = ["copy_job"]
     inlines = [BoehnliInline]
+    readonly_fields = ["freie_plaetze"]
+
+    fieldsets = (
+        (None, {"fields": ("typ",
+                           "time", 
+                           "earning",
+                           "slots", 
+                           "freie_plaetze")}),
+    )
+
+
 
     def copy_job(self, request, queryset):
         if queryset.count() != 1:
@@ -176,44 +199,57 @@ class AboAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "bezieher", "verantwortlicher_bezieher"]
     #filter_horizontal = ["users"]
     search_fields = ["locos__user__username", "locos__first_name", "locos__last_name"]
+    raw_id_fields = ["primary_loco"]
 
 
 class AuditAdmin(admin.ModelAdmin):
     list_display = ["timestamp", "source_type", "target_type", "field", "action", 
                     "source_object", "target_object"]
-    readonly_fields = list_display
     #can_delete = False
 
 
 class AnteilscheinAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "loco"]
     search_fields = ["id", "loco__username", "loco__first_name", "loco__last_name"]
+    raw_id_fields = ["loco"]
+
+
+class DepotAdmin(admin.ModelAdmin):
+    raw_id_fields = ["contact"]
 
 
 class BereichAdmin(admin.ModelAdmin):
     filter_horizontal = ["locos"]
+    raw_id_fields = ["coordinator"]
 
 
 class BoehnliAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "job", "zeit", "loco"]
+    raw_id_fields = ["job", "loco"]
 
 
 
 class LocoAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "email"]
     search_fields = ["first_name", "last_name", "email"]
+    raw_id_fields = ["abo"]
+    readonly_fields = ["user"]
 
 
 
-admin.site.register(Depot)
+admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraAboType)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco, LocoAdmin)
 admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
+
+# This is only added to admin for debugging
 admin.site.register(model_audit.Audit, AuditAdmin)
 
-admin.site.register(Boehnli, BoehnliAdmin)
+# Not adding this because it can and should be edited from Job, 
+# where integrity constraints are checked
+#admin.site.register(Boehnli, BoehnliAdmin)
 admin.site.register(JobTyp)
 admin.site.register(Job, JobAdmin)
 
