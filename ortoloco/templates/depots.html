@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-
-{% block content %}
-    {% for depot in depots %}
-        <h2>{{ depot.name }}</h2>
-        Dein freundliches Nachbarschaftsdepot an der Strasse: {{ depot.street }}!
-    {% endfor %}
-{% endblock %}
