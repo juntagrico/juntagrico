@@ -161,9 +161,13 @@ def my_abo(request):
     Details for an abo of a loco
     """
     loco = request.user.loco
-    if Abo.objects.filter(primary_loco=loco).count() > 0:
-        myabo = Abo.objects.get(primary_loco=loco)
-
+    myabo = loco.abo
+    if myabo is None:
+        renderdict = getBohnenDict(request)
+        renderdict.update({
+            'noabo': True
+        })
+    elif myabo.primary_loco == loco:
         if request.method == 'POST':
             aboform = AboForm(request.POST)
             if aboform.is_valid():
@@ -233,13 +237,16 @@ def my_abo(request):
             'anteilsscheine_paid': loco.anteilschein_set.all().filter(paid=True).count(),
             'anteilsscheine_unpaid': loco.anteilschein_set.all().filter(paid=False).count()
         })
-        return render(request, "my_abo.html", renderdict)
     else:
+        # TODO: loco ist nicht primary_loco
+        #   - muss Anteilscheine editieren können
+        #   - sieht Abo, darf aber nicht editieren
         renderdict = getBohnenDict(request)
         renderdict.update({
-            'noabo': True
+            'noabo': False
         })
-        return render(request, "my_abo.html", renderdict)
+
+    return render(request, "my_abo.html", renderdict)
 
 
 @login_required
