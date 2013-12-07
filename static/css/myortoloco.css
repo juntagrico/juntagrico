@@ -63,3 +63,12 @@
 .ortoloco h3 {
     margin-top: -10px;
 }
+
+.createabo .control-label{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.createabo #depot {
+    margin-bottom: 3px;
+}

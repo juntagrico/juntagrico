@@ -21,11 +21,15 @@ def home(request):
     """
     Homepage of "static" page
     """
-
+    submenu = ""
+    if StaticContent.objects.all().filter(name='HomeUnterMenu').__len__() > 0:
+        submenu = StaticContent.objects.all().filter(name='HomeUnterMenu')[0].content
+    welcome_text = ""
+    if StaticContent.objects.all().filter(name='Willkommen').__len__() > 0:
+        welcome_text = StaticContent.objects.all().filter(name='Willkommen')[0].content
     renderdict = {
-        'submenu': get_object_or_404(StaticContent, name='HomeUnterMenu'),
-        #'homeTitel': get_object_or_404(StaticContent, name='HomeTitel'),
-        #'homeText': get_object_or_404(StaticContent, name='HomeText'),
+        'submenu': submenu,
+        'welcomeText': welcome_text,
         'menu': {
             'home': 'active'
         }

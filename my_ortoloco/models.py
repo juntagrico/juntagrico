@@ -87,11 +87,11 @@ class Loco(models.Model):
     abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
                             on_delete=models.SET_NULL)
 
-    addr_street = models.CharField("Strasse", max_length=100, null=True, blank=True)
-    addr_zipcode = models.CharField("PLZ", max_length=10, null=True, blank=True)
-    addr_location = models.CharField("Ort", max_length=50, null=True, blank=True)
+    addr_street = models.CharField("Strasse", max_length=100)
+    addr_zipcode = models.CharField("PLZ", max_length=10)
+    addr_location = models.CharField("Ort", max_length=50)
     birthday = models.DateField("Geburtsdatum", null=True, blank=True)
-    phone = models.CharField("Telefonnr", max_length=50, null=True, blank=True)
+    phone = models.CharField("Telefonnr", max_length=50)
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
     def __unicode__(self):

@@ -1,0 +1,112 @@
+{% extends "mybase.html" %}
+
+{% block allcontent %}
+    <div class="span2"></div>
+    <div class="span8">
+        <h3>Wähle dein Abo</h3>
+        <br/>
+
+        <h5>Infos:</h5>
+
+        Um Mitglied der Genossenschaft ortoloco zu werden, musst du mindestens einen Anteilschein (CHF 250) erwerben. Zudem soll ein kleines Abo mit zwei, ein grosses Abo mit vier Anteilscheinen
+        begleitet sein.
+        <br/><br/>
+
+        <form action="" method="post" class="form-horizontal createabo">
+            {% csrf_token %}
+            <div class="control-group">
+                <label class="control-label">Abogrösse</label>
+
+                <div class="controls">
+                    <label class="radio" for="small">
+                        <input type="radio" name="abo" value="small" id="small" checked="checked"/>
+                        <strong>Kleines Abo</strong>
+
+                        <div>
+                            Ein kleines Abo, für 1-2 Personen geeignet. Benötigt zwei Anteilsscheine
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"></label>
+
+                <div class="controls">
+                    <label class="radio" for="big">
+                        <input type="radio" name="abo" value="big" id="big"/>
+                        <strong>Grosses Abo</strong>
+
+                        <div>
+                            Das grosse Abo empfiehlt sich für WG's oder Familien und benötigt vier Anteilsscheine.
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"></label>
+
+                <div class="controls">
+                    <label class="radio" for="house">
+                        <input type="radio" name="abo" value="house" id="house"/>
+                        <strong>Haus-Abo</strong>
+
+                        <div>
+                            Das Haus-Abo ist für grosse Gruppen, welche sich das Abo aufteilen. Es müssen ebenfalls mindestens vier Anteilsscheine gezeichnet werden.
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="depot">Depot</label>
+
+                <div class="controls">
+                    <select name="depot" id="depot">
+                        {% for depot in depots %}
+                            <option value="{{ depot.id }}">{{ depot.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="depot">
+                        Wähle ein Depot aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Mitabonnenten</label>
+
+                <div class="controls">
+                    <button class="btn btn-small">Weiteren Mitabonnent hinzufügen</button>
+                    // to be done
+                    <br/><br/>
+                    Bisher hast du keine Mitabonnenten eingetragen<br/><br/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">Anteilsscheine</label>
+
+                <div class="controls">
+                    <label for="scheine">
+                        <input type="text" name="scheine" id="scheine" value="2" class="span1"/><br/>
+                        Du kannst unbeschränkt Anteilsscheine kaufen, es steht dir auch nachher immer frei zusätzliche Anteilsscheine zu erwerben.
+                        Allerdings musst du je nach Abo ein Minimum besitzen um zu starten.
+
+                        <script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
+                        <script type="text/javascript">
+                            $("input[type=radio]").change(function () {
+                                $("#scheine").val($(":checked").val() === "small" ? 2 : 4);
+                            });
+                        </script>
+                    </label>
+                    {% if scheineerror %}
+                        <div class="alert alert-error">Du brauchst mehr Anteilsscheine für das gewählte Abo</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Abo erstellen</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

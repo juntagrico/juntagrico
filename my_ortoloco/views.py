@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict, Counter
-import re
+
+from datetime import date
 
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from datetime import date
+from django.contrib.auth import authenticate, login
+from django.template.loader import get_template
+from django.template import Context
+from django.core.mail import EmailMultiAlternatives
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
@@ -90,7 +93,7 @@ def my_job(request, job_id):
             for i in range(add):
                 bohne = Boehnli.objects.create(loco=loco, job=job)
                 #bohne.save()
-        elif check_int(num) and  0 > int(num) >= -len(my_bohnen):
+        elif check_int(num) and 0 > int(num) >= -len(my_bohnen):
             # remove some participants
             remove = -int(num)
             for bohne in my_bohnen[:remove]:
@@ -127,7 +130,9 @@ def my_participation(request):
             if request.POST.get("area" + str(area.id)):
                 if loco not in area.locos.all():
                     area.locos.add(loco)
-                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name, 'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email], fail_silently=False)
+                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
+                              'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email],
+                              fail_silently=False)
                     area.save()
             else:
                 area.locos.remove(loco)
@@ -276,6 +281,139 @@ def my_einsaetze(request):
     return render(request, "jobs.html", renderdict)
 
 
+def my_signup(request):
+    """
+    Become a member of ortoloco
+    """
+    success = False
+    agberror = False
+    agbchecked = False
+    userexists = False
+    if request.method == 'POST':
+        agbchecked = request.POST.get("agb") == "on"
+
+        locoform = ProfileLocoForm(request.POST)
+        if not agbchecked:
+            agberror = True
+        else:
+            if locoform.is_valid():
+                #check if user already exists
+                if User.objects.filter(email=locoform.cleaned_data['email']).__len__() > 0:
+                    userexists = True
+                else:
+                    #set all fields of user
+                    #email is also username... we do not use it
+                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], 'randompassword') # TODO random password
+                    user.loco.first_name = locoform.cleaned_data['first_name']
+                    user.loco.last_name = locoform.cleaned_data['last_name']
+                    user.loco.email = locoform.cleaned_data['email']
+                    user.loco.addr_street = locoform.cleaned_data['addr_street']
+                    user.loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
+                    user.loco.addr_location = locoform.cleaned_data['addr_location']
+                    user.loco.phone = locoform.cleaned_data['phone']
+                    user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+                    user.loco.save()
+
+                    #log in to allow him to make changes to the abo
+                    loggedin_user = authenticate(username=locoform.cleaned_data['email'], password='randompassword')
+                    login(request, loggedin_user)
+                    success = True
+                    return redirect("/my/aboerstellen")
+    else:
+        locoform = ProfileLocoForm()
+
+    renderdict = {
+        'locoform': locoform,
+        'success': success,
+        'agberror': agberror,
+        'agbchecked': agbchecked,
+        'userexists': userexists
+    }
+    return render(request, "signup.html", renderdict)
+
+
+@login_required
+def my_createabo(request):
+    """
+    Abo erstellen
+    """
+    loco = request.user.loco
+    scheineerror = False
+
+    if request.method == "POST":
+        scheine = int(request.POST.get("scheine"))
+        if (scheine < 4 and (request.POST.get("abo") == "house" or request.POST.get("abo") == "big")) or scheine < 2:
+            scheineerror = True
+        else:
+            depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
+            if request.POST.get("abo") == "house":
+                loco.abo = Abo.objects.create(groesse=10, primary_loco=loco, depot=depot)
+            elif request.POST.get("abo") == "big":
+                loco.abo = Abo.objects.create(groesse=2, primary_loco=loco, depot=depot)
+            else:
+                loco.abo = Abo.objects.create(groesse=1, primary_loco=loco, depot=depot)
+            loco.save()
+
+            #user did it all => send confirmation mail
+
+            plaintext = get_template('mails/welcome_mail.txt')
+            htmly = get_template('mails/welcome_mail.html')
+
+            d = Context({
+                'subject': 'Willkommen bei ortoloco',
+                'username': loco.email,
+                'password': 'randomPassword',
+                'serverurl': "http://" + request.META["HTTP_HOST"]
+            })
+
+            text_content = plaintext.render(d)
+            html_content = htmly.render(d)
+
+            msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [loco.email])
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+
+            return redirect("/my/willkommen")
+
+    renderdict = {
+        "depots": Depot.objects.all(),
+        "scheineerror": scheineerror
+    }
+    return render(request, "createabo.html", renderdict)
+
+
+@login_required
+def my_welcome(request):
+    """
+    Willkommen
+    """
+    loco = request.user.loco
+    next_jobs = Job.objects.all()[0:7]
+    teams = Taetigkeitsbereich.objects.all()
+
+    if loco.abo is not None:
+        no_abo = False
+    else:
+        no_abo = True
+
+    jobs = []
+    for job in next_jobs:
+        jobs.append({
+            'time': job.time,
+            'id': job.id,
+            'typ': job.typ,
+            'status': job.get_status_bohne()
+        })
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'jobs': jobs,
+        'teams': teams,
+        'no_abo': no_abo
+    })
+    return render(request, "welcome.html", renderdict)
+
+
 @login_required
 def my_contact(request):
     """
@@ -404,7 +542,7 @@ def test_filters_post(request):
     op = "AND"
     res = ["Eier AND Oerlikon:<br>"]
     locos = Filter.execute(filters, op)
-    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" %(loco, loco.email))
+    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" % (loco, loco.email))
     res.extend(data)
     return HttpResponse("<br>".join(res))
 

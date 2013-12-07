@@ -1,0 +1,129 @@
+{% extends "mybase.html" %}
+
+{% block allcontent %}
+    <div class="span2"></div>
+    <div class="span8">
+        <h3>Werde ein ortoloco - Personalien</h3>
+        <br/>
+
+        <form action="" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <div class="control-group {% if locoform.last_name.errors %}error{% endif %}">
+                <label class="control-label" for="name">Name *</label>
+
+                <div class="controls">
+                    {{ locoform.last_name }}
+                    {% if locoform.last_name.errors %}
+                        <div class="help-inline">Name ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.first_name.errors %}error{% endif %}">
+                <label class="control-label" for="prename">Vorname *</label>
+
+                <div class="controls">
+                    {{ locoform.first_name }}
+                    {% if locoform.first_name.errors %}
+                        <div class="help-inline">Vorname ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.addr_street.errors %}error{% endif %}">
+                <label class="control-label" for="street">Strasse *</label>
+
+                <div class="controls">
+                    {{ locoform.addr_street }}
+                    {% if locoform.addr_street.errors %}
+                        <div class="help-inline">Strasse ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
+                <label class="control-label" for="zip">PLZ *</label>
+
+                <div class="controls">
+                    {{ locoform.addr_zipcode }}
+                    {% if locoform.addr_zipcode.errors %}
+                        <div class="help-inline">PLZ ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.addr_location.errors %}error{% endif %}">
+                <label class="control-label" for="city">Ort *</label>
+
+                <div class="controls">
+                    {{ locoform.addr_location }}
+                    {% if locoform.addr_location.errors %}
+                        <div class="help-inline">Ort ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.phone.errors %}error{% endif %}">
+                <label class="control-label" for="phone">Telefon *</label>
+
+                <div class="controls">
+                    {{ locoform.phone }}
+                    {% if locoform.phone.errors %}
+                        <div class="help-inline">Telefon ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.mobile_phone.errors %}error{% endif %}">
+                <label class="control-label" for="mobile">Mobile &nbsp;</label>
+
+                <div class="controls">
+                    {{ locoform.mobile_phone }}
+                    {% if locoform.mobile_phone.errors %}
+                        <div class="help-inline">Mobile ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.email.errors %}error{% endif %}">
+                <label class="control-label" for="email">Email *</label>
+
+                <div class="controls">
+                    {{ locoform.email }}
+                    {% if locoform.email.errors %}
+                        <div class="help-inline">Email ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if locoform.birthday.errors %}error{% endif %}">
+                <label class="control-label" for="birthday">Geburtstag &nbsp;</label>
+
+                <div class="controls">
+                    {{ locoform.birthday }}
+                    {% if locoform.birthday.errors %}
+                        <div class="help-inline">Geburtstag ungültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <label class="checkbox">
+                        {{ locoform.agb }}
+                        <input type="checkbox" name="agb" id="agb" {% if agbchecked %}checked="checked"{% endif %}>
+                        Ich habe die <a href="/static/others/Statuten_7.3.2010.pdf">Statuten</a> gelesen und erkläre meinen Willen, der "Genossenschaft ortoloco - Die regionale Gartenkooperative"
+                        beizutreten. Hiermit beantrage ich meine Aufnahme.
+
+                        {% if agberror %}
+                            <div class="alert alert-error">Statuten müssen angenommen werden</div>
+                        {% endif %}
+                    </label>
+                </div>
+            </div>
+            {% if userexists %}
+                <div class="alert alert-error">
+                    Diese Email-Adresse existiert bereits im System. <br/>
+                    <a href="/my/home">Hier gehts zum Login</a>
+                </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Anmelden</button>
+            </div>
+            <input type="hidden" name="next" value="{{ next|escape }}"/>
+        </form>
+    </div>
+
+{% endblock %}
