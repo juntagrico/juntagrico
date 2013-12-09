@@ -134,10 +134,16 @@ class BoehnliInline(admin.TabularInline):
     raw_id_fields = ["loco"]
 
     #can_delete = False
-    #extra = 0
+
+    # TODO: added these temporarily, need to be removed
+    extra = 0
+    max_num = 0
 
    
     def get_extra(self, request, obj=None):
+        # TODO is this needed?
+        #if "copy_job" in request.path:
+        #    return 0
         if obj is None:
             return 0
         return obj.freie_plaetze()
@@ -155,6 +161,7 @@ class JobAdmin(admin.ModelAdmin):
     inlines = [BoehnliInline]
     readonly_fields = ["freie_plaetze"]
 
+    """
     fieldsets = (
         (None, {"fields": ("typ",
                            "time", 
@@ -162,6 +169,7 @@ class JobAdmin(admin.ModelAdmin):
                            "slots", 
                            "freie_plaetze")}),
     )
+    """
 
 
 
