@@ -9,20 +9,16 @@
                 <th>Datum</th>
                 <th>Job</th>
                 <th>Status</th>
-                <th>Dauer</th>
                 <th>Ort</th>
-                <th>Bereich</th>
             </tr>
             </thead>
             <tbody>
             {% for job in jobs %}
                 <tr>
-                    <td>{{ job.time |date:"d.m.Y G:i" }}||{{ job.time|date:"c" }}</td>
-                    <td>{{ job.typ.name }}</td>
-                    <td>{{ job.besetzte_plaetze }}/{{ job.slots }}</td>
-                    <td>{{ job.typ.duration }}</td>
+                    <td>{{ job.wochentag }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}||{{ job.time_stamp }}</td>
+                    <td><a href="/my/jobs/{{ job.id }}">{{ job.typ.name }}</a></td>
+                    <td><img src="/static/img/{{ job.get_status_bohne }}"/></td>
                     <td>{{ job.typ.location }}</td>
-                    <td>{{ job.typ.bereich.name }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -36,11 +32,12 @@
             return cellValue.split("||")[0];
         }
         dable.columnData[0].CustomSortFunc = function (columnIndex, ascending, currentRows) {
-            return currentRows.sort(function (a, b) {
+            currentRows.sort(function (a, b) {
                 var a = a[0].split("||")[1];
                 var b = b[0].split("||")[1];
-                return ascending ? a > b : a < b;
+                return ascending ? a-b : b-a;
             });
+            return currentRows;
         }
         dable.UpdateDisplayedRows();        // Update the table
         dable.UpdateStyle();                // Reapply our styles

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import signals
 from django.core import validators
 from django.core.exceptions import ValidationError
+import time
 
 import model_audit
 import helpers
@@ -79,11 +80,11 @@ class Loco(models.Model):
     # user class is only used for logins, permissions, and other builtin django stuff
     # all user information should be stored in the Loco model
     user = models.OneToOneField(User, related_name='loco')
-    
+
     first_name = models.CharField("Vorname", max_length=30)
     last_name = models.CharField("Nachname", max_length=30)
     email = models.EmailField()
-    
+
     abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
                             on_delete=models.SET_NULL)
 
@@ -95,7 +96,7 @@ class Loco(models.Model):
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s %s (%s)" %(self.first_name, self.last_name, self.user.username)
+        return u"%s %s (%s)" % (self.first_name, self.last_name, self.user.username)
 
     @classmethod
     def create(cls, sender, instance, created, **kdws):
@@ -104,7 +105,6 @@ class Loco(models.Model):
         """
         if created:
             cls.objects.create(user=instance)
-
 
 
 class Anteilschein(models.Model):
@@ -124,7 +124,6 @@ class Taetigkeitsbereich(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
-
 
 
 class JobTyp(models.Model):
@@ -150,9 +149,30 @@ class Job(models.Model):
     def __unicode__(self):
         return u'Job #%s' % (self.id)
 
+    def wochentag(self):
+        if self.time.isoweekday() == 1:
+            return "Mo"
+        elif self.time.isoweekday() == 2:
+            return "Di"
+        elif self.time.isoweekday() == 3:
+            return "Mi"
+        elif self.time.isoweekday() == 4:
+            return "Do"
+        elif self.time.isoweekday() == 5:
+            return "Fr"
+        elif self.time.isoweekday() == 6:
+            return "Sa"
+        else:
+            return "So"
+
+    def time_stamp(self):
+        return int(time.mktime(self.time.timetuple()) * 1000)
 
     def freie_plaetze(self):
         return self.slots - self.besetzte_plaetze()
+
+    def end_time(self):
+        return self.time + datetime.timedelta(hours=self.typ.duration)
 
 
     def besetzte_plaetze(self):
@@ -186,7 +206,6 @@ class Boehnli(models.Model):
 
     def zeit(self):
         return self.job.time
-
 
 
 #model_audit.m2m(Abo.users)

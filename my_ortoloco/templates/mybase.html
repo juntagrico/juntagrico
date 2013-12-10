@@ -59,6 +59,19 @@
                                 {% endfor %}
                             {% endblock %}
                         </div>
+                        <hr>
+                        <div class="jobs">
+                            {% block next_jobs %}
+                                Meine nächsten Jobs:
+                                <ul class="unstyled next-jobs">
+                                {% for bohne in next_jobs %}
+                                    <li><a href="/my/jobs/{{ bohne.job.id }}">{{ bohne.job.typ.name }}</a><br/>
+                                    <div class="time">{{ bohne.job.time|date:"d.m H:i" }}-{{ bohne.job.end_time|date:"H:i" }}</div>
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                            {% endblock %}
+                        </div>
                 </div>
                 <div class="span9">
                     {% block content %}

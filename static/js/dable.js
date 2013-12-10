@@ -390,7 +390,7 @@
 
                 var showing = footer.querySelector('#' + $export.id + '_showing');
                 if (showing) {
-                    showing.innerHTML = "Du siehst insgesamt " + ($export.VisibleRowCount()) + " Einträge";
+                    showing.innerHTML = "Du siehst " + ($export.VisibleRowCount()) + " Einträge";
                     if ($export.VisibleRowCount() != $export.RowCount()) {
                         showing.innerHTML += " (gefiltert, von insgesamt " + ($export.RowCount()) + " Einträgen)";
                     }

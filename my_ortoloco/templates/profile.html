@@ -95,13 +95,13 @@
             <div class="control-group {% if locoform.email.errors %}error{% endif %}">
                 <label class="control-label"></label>
 
+                {% if locoform.email.errors %}
+                    <div class="alert alert-error">E-Mail ungültig</div>
+                {% endif %}
                 <div class="controls">
-                    <a href="/my/passwort">hier kannst du das Passwort ändern</a>
+                    <a href="/my/passwort">hier kannst du dein Passwort ändern</a>
                 </div>
             </div>
-            {% if locoform.email.errors %}
-                <div class="alert alert-error">E-Mail ungültig</div>
-            {% endif %}
             <div class="form-actions">
                 <button type="submit" class="btn btn-success">Personalien ändern</button>
             </div>

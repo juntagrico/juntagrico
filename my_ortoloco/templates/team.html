@@ -16,7 +16,7 @@
     <ul class="unstyled beans">
     {% for job in jobs %}
         <li>
-            <span class="date">{{ job.time |date:"d.m.Y G:i" }}</span>
+            <span class="date">{{ job.time |date:"d.m H:i" }}</span>
             <a href="/myortoloco/jobs/{{ job.id }}">{{ job.typ }}</a>
         </li>
     {% endfor %}

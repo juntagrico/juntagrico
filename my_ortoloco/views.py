@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate, login
 from django.template.loader import get_template
 from django.template import Context
 from django.core.mail import EmailMultiAlternatives
+from django.utils import timezone
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
@@ -23,17 +24,19 @@ def getBohnenDict(request):
     if loco.abo is not None:
         allebohnen = Boehnli.objects.filter(loco=loco)
         userbohnen = []
+
+
         for bohne in allebohnen:
-            if bohne.job.time.year == date.today().year:
+            if bohne.job.time.year == date.today().year and bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
                 userbohnen.append(bohne)
         bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.groesse * 10 / loco.abo.locos.count()))
-
     else:
         bohnenrange = None
         userbohnen = []
     return {
         'bohnenrange': bohnenrange,
-        'userbohnen': userbohnen.__len__()
+        'userbohnen': userbohnen.__len__(),
+        'next_jobs': Boehnli.objects.all().filter(loco=loco).order_by("job__time")
     }
 
 
@@ -42,29 +45,12 @@ def my_home(request):
     """
     Overview on myortoloco
     """
-    loco = request.user.loco
-    next_jobs = Job.objects.all()[0:7]
-    teams = Taetigkeitsbereich.objects.all()
-
-    if loco.abo is not None:
-        no_abo = False
-    else:
-        no_abo = True
-
-    jobs = []
-    for job in next_jobs:
-        jobs.append({
-            'time': job.time,
-            'id': job.id,
-            'typ': job.typ,
-            'status': job.get_status_bohne()
-        })
 
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'jobs': jobs,
-        'teams': teams,
-        'no_abo': no_abo
+        'jobs': Job.objects.all()[0:7],
+        'teams': Taetigkeitsbereich.objects.all(),
+        'no_abo': request.user.loco.abo is None
     })
 
     return render(request, "myhome.html", renderdict)

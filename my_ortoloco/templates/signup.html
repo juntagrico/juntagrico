@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="control-group {% if locoform.addr_street.errors %}error{% endif %}">
-                <label class="control-label" for="street">Strasse *</label>
+                <label class="control-label" for="street">Strasse/Nr. *</label>
 
                 <div class="controls">
                     {{ locoform.addr_street }}
@@ -103,7 +103,7 @@
                     <label class="checkbox">
                         {{ locoform.agb }}
                         <input type="checkbox" name="agb" id="agb" {% if agbchecked %}checked="checked"{% endif %}>
-                        Ich habe die <a href="/static/others/Statuten_7.3.2010.pdf">Statuten</a> gelesen und erkläre meinen Willen, der "Genossenschaft ortoloco - Die regionale Gartenkooperative"
+                        Ich habe die <a href="/static/others/Statuten_7.3.2010.pdf">Statuten und das Betriebsreglement</a> gelesen und erkläre meinen Willen, der "Genossenschaft ortoloco - Die regionale Gartenkooperative"
                         beizutreten. Hiermit beantrage ich meine Aufnahme.
 
                         {% if agberror %}

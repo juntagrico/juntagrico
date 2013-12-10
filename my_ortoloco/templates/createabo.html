@@ -8,8 +8,7 @@
 
         <h5>Infos:</h5>
 
-        Um Mitglied der Genossenschaft ortoloco zu werden, musst du mindestens einen Anteilschein (CHF 250) erwerben. Zudem soll ein kleines Abo mit zwei, ein grosses Abo mit vier Anteilscheinen
-        begleitet sein.
+        Um Mitglied der Genossenschaft ortoloco zu werden, musst du mindestens einen Anteilschein (CHF 250) erwerben.
         <br/><br/>
 
         <form action="" method="post" class="form-horizontal createabo">
@@ -23,7 +22,7 @@
                         <strong>Kleines Abo</strong>
 
                         <div>
-                            Ein kleines Abo, für 1-2 Personen geeignet. Benötigt zwei Anteilsscheine
+                            Ein kleines Abo, für 2-3 Personen geeignet und benötigt mindestens zwei Anteilsscheine.
                         </div>
                     </label>
                 </div>
@@ -37,7 +36,7 @@
                         <strong>Grosses Abo</strong>
 
                         <div>
-                            Das grosse Abo empfiehlt sich für WG's oder Familien und benötigt vier Anteilsscheine.
+                            Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilsscheine.
                         </div>
                     </label>
                 </div>
@@ -51,7 +50,21 @@
                         <strong>Haus-Abo</strong>
 
                         <div>
-                            Das Haus-Abo ist für grosse Gruppen, welche sich das Abo aufteilen. Es müssen ebenfalls mindestens vier Anteilsscheine gezeichnet werden.
+                            Das Haus-Abo ist für ca. 10 Haushälte. Es müssen mindestens 20 Anteilsscheine gezeichnet werden.
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"></label>
+
+                <div class="controls">
+                    <label class="radio" for="none">
+                        <input type="radio" name="abo" value="none" id="none"/>
+                        <strong>Kein Abo</strong>
+
+                        <div>
+                            Du kannst auch ohne ein Abo ein ortoloco sein. Bleibe immer auf dem Laufenden und spring ein wenn du Lust hast.
                         </div>
                     </label>
                 </div>
@@ -93,7 +106,16 @@
                         <script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
                         <script type="text/javascript">
                             $("input[type=radio]").change(function () {
-                                $("#scheine").val($(":checked").val() === "small" ? 2 : 4);
+                                if ($(":checked").val() === "small") {
+                                    $("#scheine").val(2);
+                                } else if ($(":checked").val() === "big") {
+                                    $("#scheine").val(4);
+                                } else if ($(":checked").val() === "house") {
+                                    $("#scheine").val(20);
+                                }
+                                else {
+                                    $("#scheine").val(1);
+                                }
                             });
                         </script>
                     </label>
