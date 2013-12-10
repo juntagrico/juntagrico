@@ -150,20 +150,8 @@ class Job(models.Model):
         return u'Job #%s' % (self.id)
 
     def wochentag(self):
-        if self.time.isoweekday() == 1:
-            return "Mo"
-        elif self.time.isoweekday() == 2:
-            return "Di"
-        elif self.time.isoweekday() == 3:
-            return "Mi"
-        elif self.time.isoweekday() == 4:
-            return "Do"
-        elif self.time.isoweekday() == 5:
-            return "Fr"
-        elif self.time.isoweekday() == 6:
-            return "Sa"
-        else:
-            return "So"
+        weekday = helpers.weekdays[self.time.isoweekday()]
+        return weekday[:2]
 
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
