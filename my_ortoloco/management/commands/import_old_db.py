@@ -4,7 +4,6 @@ from django.core.management.base import BaseCommand, CommandError
 
 from my_ortoloco.models import *
 
-#from polls.models import Poll
 
 class Command(BaseCommand):
     def connect(self, user, passwd):
@@ -25,8 +24,18 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.connect(*args)
 
+        self.create_users()
+
+
+    def create_users(self):
+        """
+        Import user data from old db, creating a User instance and a linked Loco instance.
+        """
+        assert Users.objects.all().count() == 1
+
         new_users = []
-        for row in self.query("SELECT * FROM usr"):
+        query = list(self.query("SELECT * FROM usr"))
+        for row in query:
             email=row[0]
 
             # convert from latin-1 encoded string to unicode object, which is 
@@ -37,16 +46,15 @@ class Command(BaseCommand):
             new_users.append(user)
 
 
-        # get existing users from db
-        old_users = set(User.objects.all())
-
-        # bulk_create groups everything into a single query. However, Post-create events won't be sent
-        # so Loco instances have to be created manually.
+        # bulk_create groups everything into a single query. Post-create events won't be sent.
         User.objects.bulk_create(new_users)
 
-        # get fresh user objects back from db, now with primary keys etc.
-        new_users = set(User.objects.all()) - old_users
+        new_locos = []
+        users = list(User.object.all())
+        users = users[1:] # kick out super user
+        for user, row in zip(users, query):
+            loco = Loco(user=user)
+            new_locos.append(loco)
 
-        # create loco for each new user
-        Loco.objects.bulk_create(Loco(user=user) for user in new_users)
+        Loco.objects.bulk_create(new_locos)
 
