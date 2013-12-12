@@ -159,28 +159,29 @@ class BoehnliInline(admin.TabularInline):
 
 class JobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "typ", "time", "earning", "slots", "freie_plaetze"]
-    actions = ["copy_job"]
+    actions = ["copy_job", "mass_copy_job"]
+    search_fields = ["typ__name", "typ__bereich__name"]
+
     inlines = [BoehnliInline]
     readonly_fields = ["freie_plaetze"]
 
-    """
-    fieldsets = (
-        (None, {"fields": ("typ",
-                           "time", 
-                           "earning",
-                           "slots", 
-                           "freie_plaetze")}),
-    )
-    """
 
-    def copy_job(self, request, queryset):
+    def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
             self.message_user(request, u"Genau 1 Job auswählen!", level=messages.ERROR) 
             return HttpResponseRedirect("")
 
         inst, = queryset.all()
         return HttpResponseRedirect("copy_job/%s/" % inst.id)
-    copy_job.short_description = "Job kopieren"
+    mass_copy_job.short_description = "Job mehrfach kopieren..."
+
+
+    def copy_job(self, request, queryset):
+        for inst in queryset.all():
+            newjob = Job(typ=inst.typ, slots=inst.slots, time=inst.time, earning=inst.earning)
+            newjob.save()
+    copy_job.short_description = "Jobs kopieren"
+    
 
 
     def get_form(self, request, obj=None, **kwds):
@@ -198,7 +199,15 @@ class JobAdmin(admin.ModelAdmin):
 
 
     def copy_job_view(self, request, jobid):
-        return self.change_view(request, jobid, extra_context={'title':"Copy job"})
+        # HUGE HACK: modify admin properties just for this view
+        tmp_readonly = self.readonly_fields
+        tmp_inlines = self.inlines
+        self.readonly_fields = []
+        self.inlines = []
+        res = self.change_view(request, jobid, extra_context={'title':"Copy job"})
+        self.readonly_fields = tmp_readonly
+        self.inlines = tmp_inlines
+        return res
     
 
 
