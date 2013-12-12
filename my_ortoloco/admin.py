@@ -7,9 +7,11 @@ from django.db.models import Q
 from django.http import  HttpResponse, HttpResponseRedirect
 from django.conf.urls import patterns
 from django.utils import timezone
+from django.core.urlresolvers import reverse
 
 from my_ortoloco.models import *
 from my_ortoloco import helpers
+from my_ortoloco import admin_helpers
 
 
 # This form exists to restrict primary user choice to users that have actually set the
@@ -171,8 +173,6 @@ class JobAdmin(admin.ModelAdmin):
     )
     """
 
-
-
     def copy_job(self, request, queryset):
         if queryset.count() != 1:
             self.message_user(request, u"Genau 1 Job auswählen!", level=messages.ERROR) 
@@ -237,10 +237,32 @@ class BoehnliAdmin(admin.ModelAdmin):
 
 
 
+class LocoAdminForm(forms.ModelForm):
+    class Meta:
+        model = Loco
+
+
+    def __init__(self, *a, **k):
+        forms.ModelForm.__init__(self, *a, **k)
+        loco = k["instance"]
+        if loco.abo:
+            url = reverse("admin:my_ortoloco_abo_change", args=(loco.abo.id,))
+            link = "<a href=%s>%s</a>" % (url, loco.abo)
+        else:
+            link = "Kein Abo"
+        self.fields["abo_link"].initial = link
+
+    abo_link = forms.URLField(widget=admin_helpers.MyHTMLWidget(), required=False,
+                              label="Abo")
+
+
+
 class LocoAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "email"]
+    form = LocoAdminForm
+    list_display = ["user", "first_name", "last_name", "email"]
     search_fields = ["first_name", "last_name", "email"]
-    raw_id_fields = ["abo"]
+    #raw_id_fields = ["abo"]
+    exclude = ["abo"]
     readonly_fields = ["user"]
 
 

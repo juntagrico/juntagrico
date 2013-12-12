@@ -85,15 +85,16 @@ class Loco(models.Model):
     last_name = models.CharField("Nachname", max_length=30)
     email = models.EmailField()
 
-    abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
-                            on_delete=models.SET_NULL)
-
     addr_street = models.CharField("Strasse", max_length=100)
     addr_zipcode = models.CharField("PLZ", max_length=10)
     addr_location = models.CharField("Ort", max_length=50)
     birthday = models.DateField("Geburtsdatum", null=True, blank=True)
     phone = models.CharField("Telefonnr", max_length=50)
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
+
+    abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
+                            on_delete=models.SET_NULL)
+
 
     def __unicode__(self):
         return u"%s %s (%s)" % (self.first_name, self.last_name, self.user.username)
