@@ -74,6 +74,10 @@ class JobCopyForm(forms.ModelForm):
     end_date = forms.DateField(label="Enddatum", required=False,
                                widget=admin.widgets.AdminDateWidget)
 
+
+    weekly = forms.ChoiceField(choices=[(7, "jede Woche"), (14, "Alle zwei Wochen")],
+                               widget=forms.widgets.RadioSelect, initial=7)
+
     
     def __init__(self, *a, **k):
         super(JobCopyForm, self).__init__(*a, **k)
@@ -122,7 +126,10 @@ class JobCopyForm(forms.ModelForm):
         weekdays = cleaned_data["weekdays"]
         weekdays = set(int(i) for i in weekdays)
         res = []
+        skip_even_weeks = cleaned_data["weekly"] == "14"
         for delta in range((end - start).days + 1):
+            if skip_even_weeks and delta % 14 >= 7:
+                continue
             date = start + datetime.timedelta(delta)
             if not date.weekday() in weekdays:
                 continue
