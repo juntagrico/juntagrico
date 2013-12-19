@@ -8,3 +8,4 @@ static/admin/*
 .idea
 static/medias/photologue/temp
 settings_local.py
+*.bak
