@@ -128,7 +128,7 @@ def my_participation(request):
     for area in Taetigkeitsbereich.objects.all():
         my_areas.append({
             'name': area.name,
-            'checked': area.locos.all().__contains__(loco),
+            'checked': loco in area.locos.all(),
             'id': area.id,
             'core': area.core,
             'admin': area.coordinator.email
@@ -209,7 +209,7 @@ def my_abo(request):
             zusatzabos.append({
                 'name': abo.name,
                 'id': abo.id,
-                'checked': myabo.extra_abos.all().__contains__(abo)
+                'checked': abo in myabo.extra_abos.all()
             })
 
         renderdict = getBohnenDict(request)

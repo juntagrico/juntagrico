@@ -1,4 +1,4 @@
-Django==1.5.1
+Django==1.6
 MySQL-python==1.2.4
 Pillow==2.0.0
 South==0.7.6
