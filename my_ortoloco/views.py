@@ -25,7 +25,6 @@ def getBohnenDict(request):
         allebohnen = Boehnli.objects.filter(loco=loco)
         userbohnen = []
 
-
         for bohne in allebohnen:
             if bohne.job.time.year == date.today().year and bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
                 userbohnen.append(bohne)
@@ -140,6 +139,28 @@ def my_participation(request):
         'success': success
     })
     return render(request, "participation.html", renderdict)
+
+
+@login_required
+def my_pastjobs(request):
+    """
+    All past jobs of current user
+    """
+    loco = request.user.loco
+
+    allebohnen = Boehnli.objects.filter(loco=loco)
+    past_bohnen = []
+
+    for bohne in allebohnen:
+        if bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+            past_bohnen.append(bohne)
+
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'bohnen': past_bohnen
+    })
+    return render(request, "my_pastjobs.html", renderdict)
 
 
 @login_required
@@ -325,10 +346,12 @@ def my_createabo(request):
     """
     loco = request.user.loco
     scheineerror = False
+    selectedabo = "small"
 
     if request.method == "POST":
         scheine = int(request.POST.get("scheine"))
-        if (scheine < 4 and (request.POST.get("abo") == "house" or request.POST.get("abo") == "big")) or scheine < 2:
+        selectedabo = request.POST.get("abo")
+        if (scheine < 4 and request.POST.get("abo") == "big") or (scheine < 20 and request.POST.get("abo") == "house") or scheine < 2:
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
@@ -363,6 +386,7 @@ def my_createabo(request):
 
     renderdict = {
         "depots": Depot.objects.all(),
+        "selectedabo": selectedabo,
         "scheineerror": scheineerror
     }
     return render(request, "createabo.html", renderdict)

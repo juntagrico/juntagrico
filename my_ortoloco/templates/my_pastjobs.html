@@ -1,0 +1,14 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Deine vergangenen Einsätze</h3>
+
+    <div>Achtung, es werden nur Einsätze von diesem Kalenderjahr angezeigt.</div><br/>
+    <ul class="unstyled">
+        {% for bohne in bohnen %}
+            <li><a href="/my/jobs/{{ bohne.job.id }}">{{ bohne.job.typ.name }}</a><br/>
+            <div class="time">{{ bohne.job.time|date:"d.m H:i" }}-{{ bohne.job.end_time|date:"H:i" }}</div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

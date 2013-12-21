@@ -49,7 +49,7 @@
                         <hr>
                         <div class="bohnen">
                             {% block bohnen %}
-                                Dein Böhnli-Konto:<br/>
+                                <h5>Dein Böhnli-Konto</h5>
                                 {% for i in bohnenrange %}
                                     {% if i < userbohnen %}
                                         <img class="jobstatus" src="/static/img/erbse_voll.png"/>
@@ -62,7 +62,7 @@
                         <hr>
                         <div class="jobs">
                             {% block next_jobs %}
-                                Meine nächsten Jobs:
+                                <h5>Nächste Einsätze</h5>
                                 <ul class="unstyled next-jobs">
                                 {% for bohne in next_jobs %}
                                     <li><a href="/my/jobs/{{ bohne.job.id }}">{{ bohne.job.typ.name }}</a><br/>
