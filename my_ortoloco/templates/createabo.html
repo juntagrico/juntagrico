@@ -18,7 +18,7 @@
 
                 <div class="controls">
                     <label class="radio" for="small">
-                        <input type="radio" name="abo" value="small" id="small" checked="checked"/>
+                        <input type="radio" name="abo" value="small" id="small" {% if selectedabo == "small" %}checked="checked"{% endif %}/>
                         <strong>Kleines Abo</strong>
 
                         <div>
@@ -32,7 +32,7 @@
 
                 <div class="controls">
                     <label class="radio" for="big">
-                        <input type="radio" name="abo" value="big" id="big"/>
+                        <input type="radio" name="abo" value="big" id="big" {% if selectedabo == "big" %}checked="checked"{% endif %}/>
                         <strong>Grosses Abo</strong>
 
                         <div>
@@ -46,7 +46,7 @@
 
                 <div class="controls">
                     <label class="radio" for="house">
-                        <input type="radio" name="abo" value="house" id="house"/>
+                        <input type="radio" name="abo" value="house" id="house" {% if selectedabo == "house" %}checked="checked"{% endif %}/>
                         <strong>Haus-Abo</strong>
 
                         <div>
