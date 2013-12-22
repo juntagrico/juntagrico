@@ -19,6 +19,8 @@ class Depot(models.Model):
     description = models.TextField("Beschreibung", max_length=1000, default="")
     contact = models.ForeignKey("Loco", on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField("Wochentag", choices=helpers.weekday_choices)
+    latitude = models.CharField("Latitude", max_length=100, default="")
+    longitude = models.CharField("Longitude", max_length=100, default="")
 
     addr_street = models.CharField("Strasse", max_length=100)
     addr_zipcode = models.CharField("PLZ", max_length=10)
@@ -57,6 +59,9 @@ class Abo(models.Model):
     def bezieher(self):
         locos = self.locos.all()
         return ", ".join(unicode(loco) for loco in locos)
+
+    def bezieher_locos(self):
+        return self.locos.all()
 
     def verantwortlicher_bezieher(self):
         loco = self.primary_loco

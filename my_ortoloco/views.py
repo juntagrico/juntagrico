@@ -18,6 +18,12 @@ from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
 
+import string
+import random
+
+
+def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
+
 
 def getBohnenDict(request):
     loco = request.user.loco
@@ -155,7 +161,6 @@ def my_pastjobs(request):
         if bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
             past_bohnen.append(bohne)
 
-
     renderdict = getBohnenDict(request)
     renderdict.update({
         'bohnen': past_bohnen
@@ -193,7 +198,7 @@ def my_abo(request):
                 if loco.anteilschein_set.count() < a_unpaid + a_paid:
                     toadd = (a_unpaid + a_paid) - loco.anteilschein_set.count()
                     for num in range(0, toadd):
-                        anteilsschein = Anteilschein(locor=loco, paid=False)
+                        anteilsschein = Anteilschein(loco=loco, paid=False)
                         anteilsschein.save()
 
                 # abo groesse setzen
@@ -310,7 +315,8 @@ def my_signup(request):
                 else:
                     #set all fields of user
                     #email is also username... we do not use it
-                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], 'randompassword') # TODO random password
+                    password = password_generator()
+                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password)
                     user.loco.first_name = locoform.cleaned_data['first_name']
                     user.loco.last_name = locoform.cleaned_data['last_name']
                     user.loco.email = locoform.cleaned_data['email']
@@ -321,8 +327,10 @@ def my_signup(request):
                     user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
                     user.loco.save()
 
+                    # TODO send email that he got a password
+
                     #log in to allow him to make changes to the abo
-                    loggedin_user = authenticate(username=locoform.cleaned_data['email'], password='randompassword')
+                    loggedin_user = authenticate(username=locoform.cleaned_data['email'], password=password)
                     login(request, loggedin_user)
                     success = True
                     return redirect("/my/aboerstellen")
@@ -340,54 +348,132 @@ def my_signup(request):
 
 
 @login_required
+def my_add_loco(request, abo_id):
+    scheineerror = False
+    scheine = 1
+    userexists = False
+    if request.method == 'POST':
+        locoform = ProfileLocoForm(request.POST)
+        if User.objects.filter(email=request.POST.get('email')).__len__() > 0:
+            userexists = True
+        try:
+            scheine = int(request.POST.get("anteilsscheine"))
+            scheineerror = scheine < 0
+        except TypeError:
+            scheineerror = True
+        except  ValueError:
+            scheineerror = True
+        if locoform.is_valid() and scheineerror is False and userexists is False:
+            user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password_generator())
+            user.loco.first_name = locoform.cleaned_data['first_name']
+            user.loco.last_name = locoform.cleaned_data['last_name']
+            user.loco.email = locoform.cleaned_data['email']
+            user.loco.addr_street = locoform.cleaned_data['addr_street']
+            user.loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
+            user.loco.addr_location = locoform.cleaned_data['addr_location']
+            user.loco.phone = locoform.cleaned_data['phone']
+            user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+            user.loco.abo_id = abo_id
+            user.loco.save()
+
+            for num in range(0, scheine):
+                anteilsschein = Anteilschein(loco=user.loco, paid=False)
+                anteilsschein.save()
+
+            # TODO send email that he was added
+
+            user.loco.save()
+            return redirect('/my/aboerstellen')
+
+    else:
+        locoform = ProfileLocoForm()
+    renderdict = {
+        'scheine': scheine,
+        'userexists': userexists,
+        'scheineerror': scheineerror,
+        'locoform': locoform,
+        "loco": request.user.loco,
+        "depots": Depot.objects.all()
+    }
+    return render(request, "add_loco.html", renderdict)
+
+
+@login_required
 def my_createabo(request):
     """
     Abo erstellen
     """
     loco = request.user.loco
     scheineerror = False
-    selectedabo = "small"
+    if loco.abo is None or loco.abo.groesse is 1:
+        selectedabo = "small"
+    elif loco.abo.groesse is 2:
+        selectedabo = "big"
+    else:
+        selectedabo = "house"
+
+    loco_scheine = 0
+    for abo_loco in loco.abo.bezieher_locos():
+        loco_scheine += abo_loco.anteilschein_set.all().__len__()
 
     if request.method == "POST":
         scheine = int(request.POST.get("scheine"))
         selectedabo = request.POST.get("abo")
+
+        scheine += loco_scheine
         if (scheine < 4 and request.POST.get("abo") == "big") or (scheine < 20 and request.POST.get("abo") == "house") or scheine < 2:
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
+            groesse = 1
             if request.POST.get("abo") == "house":
-                loco.abo = Abo.objects.create(groesse=10, primary_loco=loco, depot=depot)
+                groesse = 10
             elif request.POST.get("abo") == "big":
-                loco.abo = Abo.objects.create(groesse=2, primary_loco=loco, depot=depot)
+                groesse = 2
             else:
-                loco.abo = Abo.objects.create(groesse=1, primary_loco=loco, depot=depot)
+                groesse = 1
+            if loco.abo is None:
+                loco.abo = Abo.objects.create(groesse=groesse, primary_loco=loco, depot=depot)
+            else:
+                loco.abo.groesse = groesse
+                loco.abo.depot = depot
+            loco.abo.save()
             loco.save()
 
-            #user did it all => send confirmation mail
+            if request.POST.get("add_loco"):
+                return redirect("/my/abonnent/" + str(loco.abo_id))
+            else:
+                #user did it all => send confirmation mail
 
-            plaintext = get_template('mails/welcome_mail.txt')
-            htmly = get_template('mails/welcome_mail.html')
+                plaintext = get_template('mails/welcome_mail.txt')
+                htmly = get_template('mails/welcome_mail.html')
 
-            d = Context({
-                'subject': 'Willkommen bei ortoloco',
-                'username': loco.email,
-                'password': 'randomPassword',
-                'serverurl': "http://" + request.META["HTTP_HOST"]
-            })
+                # reset password so we can send it to him
+                password = password_generator()
+                request.user.password = password
+                d = Context({
+                    'subject': 'Willkommen bei ortoloco',
+                    'username': loco.email,
+                    'password': password,
+                    'serverurl': "http://" + request.META["HTTP_HOST"]
+                })
 
-            text_content = plaintext.render(d)
-            html_content = htmly.render(d)
+                text_content = plaintext.render(d)
+                html_content = htmly.render(d)
 
-            msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [loco.email])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
-
-            return redirect("/my/willkommen")
+                msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [loco.email])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
+                return redirect("/my/willkommen")
 
     renderdict = {
+        'loco_scheine': loco_scheine,
+        "loco": request.user.loco,
         "depots": Depot.objects.all(),
-        "selectedabo": selectedabo,
-        "scheineerror": scheineerror
+        'selected_depot': request.user.loco.abo.depot,
+        "selected_abo": selectedabo,
+        "scheineerror": scheineerror,
+        "mit_locos": request.user.loco.abo.bezieher_locos()
     }
     return render(request, "createabo.html", renderdict)
 

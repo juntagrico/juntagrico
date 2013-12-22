@@ -80,3 +80,8 @@
 .createabo #depot {
     margin-bottom: 3px;
 }
+
+#map-canvas {
+    width: 580px;
+    height: 400px;
+}
