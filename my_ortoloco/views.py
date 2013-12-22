@@ -6,17 +6,15 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login
-from django.template.loader import get_template
-from django.template import Context
-from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
+
+from mailer import *
 
 import string
 import random
@@ -121,9 +119,9 @@ def my_participation(request):
             if request.POST.get("area" + str(area.id)):
                 if loco not in area.locos.all():
                     area.locos.add(loco)
-                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-                              'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email],
-                              fail_silently=False)
+
+                    # send a mail to the coordinator
+                    send_new_loco_in_taetigkeitsbereich_to_bg(area, loco)
                     area.save()
             else:
                 area.locos.remove(loco)
@@ -327,8 +325,6 @@ def my_signup(request):
                     user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
                     user.loco.save()
 
-                    # TODO send email that he got a password
-
                     #log in to allow him to make changes to the abo
                     loggedin_user = authenticate(username=locoform.cleaned_data['email'], password=password)
                     login(request, loggedin_user)
@@ -380,7 +376,7 @@ def my_add_loco(request, abo_id):
                 anteilsschein = Anteilschein(loco=user.loco, paid=False)
                 anteilsschein.save()
 
-            # TODO send email that he was added
+            send_been_added_to_abo(request.user.loco.first_name + " " + request.user.loco.last_name, user.loco.email)
 
             user.loco.save()
             return redirect('/my/aboerstellen')
@@ -443,27 +439,12 @@ def my_createabo(request):
             if request.POST.get("add_loco"):
                 return redirect("/my/abonnent/" + str(loco.abo_id))
             else:
-                #user did it all => send confirmation mail
-
-                plaintext = get_template('mails/welcome_mail.txt')
-                htmly = get_template('mails/welcome_mail.html')
-
-                # reset password so we can send it to him
                 password = password_generator()
                 request.user.password = password
-                d = Context({
-                    'subject': 'Willkommen bei ortoloco',
-                    'username': loco.email,
-                    'password': password,
-                    'serverurl': "http://" + request.META["HTTP_HOST"]
-                })
 
-                text_content = plaintext.render(d)
-                html_content = htmly.render(d)
+                #user did it all => send confirmation mail
+                send_welcome_mail(loco.email, password, request.META["HTTP_HOST"])
 
-                msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [loco.email])
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
                 return redirect("/my/willkommen")
 
     renderdict = {
@@ -518,7 +499,8 @@ def my_contact(request):
     loco = request.user.loco
 
     if request.method == "POST":
-        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), loco.email, ['orto@xiala.net'], fail_silently=False)
+        # send mail to bg
+        send_contact_form("", send_contact_form, loco)
 
     renderdict = getBohnenDict(request)
     renderdict.update({

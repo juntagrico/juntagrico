@@ -5,6 +5,8 @@ import dj_database_url
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "omg@doodle"]
+
 ADMINS = (
 # ('Your Name', 'your_email@example.com'),
 )
