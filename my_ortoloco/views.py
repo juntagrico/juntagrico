@@ -105,6 +105,18 @@ def my_job(request, job_id):
     });
     return render(request, "job.html", renderdict)
 
+@login_required
+def my_depot(request, depot_id):
+    """
+    Details for a Depot
+    """
+    depot = get_object_or_404(Depot, id=int(depot_id))
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'depot': depot
+    });
+    return render(request, "depot.html", renderdict)
 
 @login_required
 def my_participation(request):
@@ -171,92 +183,15 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    loco = request.user.loco
-    myabo = loco.abo
-    if myabo is None:
-        renderdict = getBohnenDict(request)
-        renderdict.update({
-            'noabo': True
-        })
-    elif myabo.primary_loco == loco:
-        if request.method == 'POST':
-            aboform = AboForm(request.POST)
-            if aboform.is_valid():
-                a_unpaid = int(aboform.data['anteilsscheine_added'])
-                a_paid = int(aboform.data['anteilsscheine'])
-                # neue anteilsscheine loeschen (nur unbezahlte) falls neu weniger
-                if loco.anteilschein_set.count() > a_unpaid + a_paid:
-                    todelete = loco.anteilschein_set.count() - (a_unpaid + a_paid)
-                    for unpaid in loco.anteilschein_set.all().filter(paid=False):
-                        if todelete > 0:
-                            unpaid.delete()
-                            todelete -= 1
-
-                #neue unbezahlte anteilsscheine hinzufuegen falls erwuenscht
-                if loco.anteilschein_set.count() < a_unpaid + a_paid:
-                    toadd = (a_unpaid + a_paid) - loco.anteilschein_set.count()
-                    for num in range(0, toadd):
-                        anteilsschein = Anteilschein(loco=loco, paid=False)
-                        anteilsschein.save()
-
-                # abo groesse setzen
-                abosize = int(aboform.data['kleine_abos']) + 2 * int(aboform.data['grosse_abos']) + 10 * int(aboform.data['haus_abos'])
-                if abosize != myabo.groesse:
-                    myabo.groesse = abosize
-                    myabo.save()
-
-                # depot wechseln
-                if myabo.depot.id != aboform.data['depot']:
-                    myabo.depot = Depot.objects.get(id=aboform.data['depot'])
-                    myabo.save()
-
-                # zusatzabos
-                for zusatzabo in ExtraAboType.objects.all():
-                    if aboform.data.has_key('abo' + str(zusatzabo.id)):
-                        myabo.extra_abos.add(zusatzabo)
-                        myabo.save()
-                    else:
-                        myabo.extra_abos.remove(zusatzabo)
-                        myabo.save()
-
-        aboform = AboForm()
-        depots = []
-        for depot in Depot.objects.all():
-            depots.append({
-                'id': depot.id,
-                'name': depot.name,
-                'selected': myabo.depot == depot
-            })
-
-        zusatzabos = []
-        for abo in ExtraAboType.objects.all():
-            zusatzabos.append({
-                'name': abo.name,
-                'id': abo.id,
-                'checked': abo in myabo.extra_abos.all()
-            })
-
-        renderdict = getBohnenDict(request)
-        renderdict.update({
-            'aboform': aboform,
-            'zusatzabos': zusatzabos,
-            'depots': depots,
-            'sharees': myabo.locos.exclude(id=loco.id),
-            'haus_abos': myabo.haus_abos(),
-            'grosse_abos': myabo.grosse_abos(),
-            'kleine_abos': myabo.kleine_abos(),
-            'anteilsscheine_paid': loco.anteilschein_set.all().filter(paid=True).count(),
-            'anteilsscheine_unpaid': loco.anteilschein_set.all().filter(paid=False).count()
-        })
-    else:
-        # TODO: loco ist nicht primary_loco
-        #   - muss Anteilscheine editieren können
-        #   - sieht Abo, darf aber nicht editieren
-        renderdict = getBohnenDict(request)
-        renderdict.update({
-            'noabo': False
-        })
-
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'zusatzabos': request.user.loco.abo.extra_abos.all(),
+        'loco': request.user.loco,
+        'scheine': request.user.loco.anteilschein_set.count(),
+        'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email),
+        'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid=False).count(),
+        'sharees': request.user.loco.abo.locos.exclude(id=request.user.loco.id)
+    })
     return render(request, "my_abo.html", renderdict)
 
 
@@ -409,8 +344,9 @@ def my_createabo(request):
         selectedabo = "house"
 
     loco_scheine = 0
-    for abo_loco in loco.abo.bezieher_locos():
-        loco_scheine += abo_loco.anteilschein_set.all().__len__()
+    if loco.abo is not None:
+        for abo_loco in loco.abo.bezieher_locos().exclude(email=request.user.loco.email):
+            loco_scheine += abo_loco.anteilschein_set.all().__len__()
 
     if request.method == "POST":
         scheine = int(request.POST.get("scheine"))
@@ -436,6 +372,14 @@ def my_createabo(request):
             loco.abo.save()
             loco.save()
 
+            if loco.anteilschein_set.count() < int(request.POST.get("scheine")):
+                toadd = int(request.POST.get("scheine")) - loco.anteilschein_set.count()
+                for num in range(0, toadd):
+                    anteilsschein = Anteilschein(loco=loco, paid=False)
+                    anteilsschein.save()
+
+
+
             if request.POST.get("add_loco"):
                 return redirect("/my/abonnent/" + str(loco.abo_id))
             else:
@@ -447,14 +391,20 @@ def my_createabo(request):
 
                 return redirect("/my/willkommen")
 
+    selected_depot = None
+    mit_locos = []
+    if request.user.loco.abo is not None:
+        selected_depot = request.user.loco.abo.depot
+        mit_locos = request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email)
+
     renderdict = {
         'loco_scheine': loco_scheine,
         "loco": request.user.loco,
         "depots": Depot.objects.all(),
-        'selected_depot': request.user.loco.abo.depot,
+        'selected_depot': selected_depot,
         "selected_abo": selectedabo,
         "scheineerror": scheineerror,
-        "mit_locos": request.user.loco.abo.bezieher_locos()
+        "mit_locos": mit_locos
     }
     return render(request, "createabo.html", renderdict)
 
@@ -464,30 +414,14 @@ def my_welcome(request):
     """
     Willkommen
     """
-    loco = request.user.loco
-    next_jobs = Job.objects.all()[0:7]
-    teams = Taetigkeitsbereich.objects.all()
-
-    if loco.abo is not None:
-        no_abo = False
-    else:
-        no_abo = True
-
-    jobs = []
-    for job in next_jobs:
-        jobs.append({
-            'time': job.time,
-            'id': job.id,
-            'typ': job.typ,
-            'status': job.get_status_bohne()
-        })
 
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'jobs': jobs,
-        'teams': teams,
-        'no_abo': no_abo
+        'jobs': Job.objects.all()[0:7],
+        'teams': Taetigkeitsbereich.objects.all(),
+        'no_abo': request.user.loco.abo is None
     })
+
     return render(request, "welcome.html", renderdict)
 
 
@@ -500,7 +434,7 @@ def my_contact(request):
 
     if request.method == "POST":
         # send mail to bg
-        send_contact_form("", send_contact_form, loco)
+        send_contact_form(request.POST.get("subject"), request.POST.get("message"), loco, request.POST.get("copy"))
 
     renderdict = getBohnenDict(request)
     renderdict.update({

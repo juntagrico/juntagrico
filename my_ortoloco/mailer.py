@@ -26,8 +26,10 @@ def send_new_loco_in_taetigkeitsbereich_to_bg(area, loco):
               'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email])
 
 
-def send_contact_form(subject, message, loco):
+def send_contact_form(subject, message, loco, copy_to_loco):
     send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, ['orto@xiala.net'])
+    if copy_to_loco:
+        send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, loco.email)
 
 
 def send_welcome_mail(email, password, server):
