@@ -50,6 +50,7 @@ class Abo(models.Model):
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.SET_NULL)
+    active = models.BooleanField(default=False)
 
     def __unicode__(self):
         namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
@@ -75,6 +76,10 @@ class Abo(models.Model):
 
     def kleine_abos(self):
         return self.groesse % 2
+
+    class Meta:
+        verbose_name = "Abo"
+        verbose_name_plural = "Abos"
 
 
 class Loco(models.Model):
