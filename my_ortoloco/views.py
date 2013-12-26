@@ -384,7 +384,9 @@ def my_createabo(request):
                 return redirect("/my/abonnent/" + str(loco.abo_id))
             else:
                 password = password_generator()
-                request.user.password = password
+
+                request.user.set_password(password)
+                request.user.save()
 
                 #user did it all => send confirmation mail
                 send_welcome_mail(loco.email, password, request.META["HTTP_HOST"])
