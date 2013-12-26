@@ -1,19 +1,8 @@
-from collections import defaultdict, Counter
-
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
-from django.forms.models import modelformset_factory
-from django.contrib import auth
-from django.contrib.auth.decorators import login_required
-
-from django.forms import ModelForm
 
 from django.forms import ModelForm
 
 from static_ortoloco.models import *
-import os
-import time, json, base64, hmac, sha, urllib
-from django.utils import simplejson
 
 # Create your views here.
 

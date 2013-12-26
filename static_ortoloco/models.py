@@ -13,6 +13,10 @@ class StaticContent(models.Model):
     def __unicode__(self):
         return u"%s" %(self.name)
 
+    class Meta:
+        verbose_name = "Statischer Inhalt"
+        verbose_name_plural = "Statische Inhalte"
+
 
 class Media(models.Model):
     """
@@ -26,6 +30,10 @@ class Media(models.Model):
     def __unicode__(self):
         return u"%s" %(self.name)
 
+    class Meta:
+        verbose_name = "Media"
+        verbose_name_plural = "Medien"
+
 
 class Download(models.Model):
     """
@@ -38,6 +46,10 @@ class Download(models.Model):
     def __unicode__(self):
         return u"%s" %(self.name)
 
+    class Meta:
+        verbose_name = "Download"
+        verbose_name_plural = "Downloads"
+
 
 class Link(models.Model):
     """
@@ -48,6 +60,10 @@ class Link(models.Model):
 
     def __unicode__(self):
         return u"%s" %(self.name)
+
+    class Meta:
+        verbose_name = "Link"
+        verbose_name_plural = "Links"
 
 class Politoloco(models.Model):
     email = models.EmailField("E-Mail Adresse")

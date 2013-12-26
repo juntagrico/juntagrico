@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import datetime
 from django.db import models
 from django.contrib.auth.models import User
@@ -29,6 +31,10 @@ class Depot(models.Model):
     def __unicode__(self):
         return u"%s %s" % (self.id,self.name)
 
+    class Meta:
+        verbose_name = "Depot"
+        verbose_name_plural = "Depots"
+
 
 class ExtraAboType(models.Model):
     """
@@ -39,6 +45,10 @@ class ExtraAboType(models.Model):
 
     def __unicode__(self):
         return u"%s %s" % (self.id,self.name)
+
+    class Meta:
+        verbose_name = "Zusatz-Abo"
+        verbose_name_plural = "Zusatz-Abos"
 
 
 class Abo(models.Model):
@@ -117,6 +127,10 @@ class Loco(models.Model):
         if created:
             cls.objects.create(user=instance)
 
+    class Meta:
+        verbose_name = "Loco"
+        verbose_name_plural = "Locos"
+
 
 class Anteilschein(models.Model):
     loco = models.ForeignKey(Loco, null=True, blank=True, on_delete=models.SET_NULL)
@@ -124,6 +138,10 @@ class Anteilschein(models.Model):
 
     def __unicode__(self):
         return u"Anteilschein #%s" % (self.id)
+
+    class Meta:
+        verbose_name = "Anteilsschein"
+        verbose_name_plural = "Anteilsscheine"
 
 
 class Taetigkeitsbereich(models.Model):
@@ -135,6 +153,10 @@ class Taetigkeitsbereich(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
+
+    class Meta:
+        verbose_name = 'Tätigkeitsbereich'
+        verbose_name_plural = 'Tätigkeitsbereiche'
 
 
 class JobTyp(models.Model):
@@ -149,6 +171,10 @@ class JobTyp(models.Model):
 
     def __unicode__(self):
         return u'%s - %s' % (self.bereich, self.name)
+
+    class Meta:
+        verbose_name = 'Jobart'
+        verbose_name_plural = 'Jobarten'
 
 
 class Job(models.Model):
@@ -190,6 +216,10 @@ class Job(models.Model):
         else:
             return "erbse_fast_leer.png"
 
+    class Meta:
+        verbose_name = 'Job'
+        verbose_name_plural = 'Jobs'
+
 
 class Boehnli(models.Model):
     """
@@ -204,6 +234,10 @@ class Boehnli(models.Model):
 
     def zeit(self):
         return self.job.time
+
+    class Meta:
+        verbose_name = 'Böhnli'
+        verbose_name_plural = 'Böhnlis'
 
 
 #model_audit.m2m(Abo.users)

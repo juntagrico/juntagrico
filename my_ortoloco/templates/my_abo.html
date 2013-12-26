@@ -6,18 +6,6 @@
         <div class="alert">Du hast noch kein Abo<br/>Du möchtest eines? Melde dich hier an: <a href="/my/aboerstellen">Abo erstellen</a></div>
     {% else %}
         <dl class="dl-horizontal">
-            <dt>Anteilsscheine</dt>
-            <dd>
-                {{ scheine }} (davon {{ scheine_unpaid }} noch nicht bezahlt)<br/><br/>
-                Anteilsscheine von Mitabonnenten:
-                <ul>
-                    {% for abonnent in  mitabonnenten %}
-                        <li>{{ abonnent.anteilschein_set.count }} von {{ abonnent.first_name }} {{ abonnent.last_name }}</li>
-                    {% endfor %}
-                </ul>
-            </dd>
-            <dt>&nbsp;</dt>
-            <dd>&nbsp;</dd>
             <dt>Abogrösse</dt>
             <dd>
                 {% if loco.abo.groesse == 1 %}
@@ -29,6 +17,28 @@
                 {% if loco.abo.groesse == 10 %}
                     Haus Abo
                 {% endif %}
+            </dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Status</dt>
+            <dd>
+                {% if loco.abo.active %}
+                    Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
+                {% else %}
+                    <span class="text-error">Auf der Warteliste</span> - Du erhälst leider im Moment noch kein Gemüse
+                {% endif %}
+            </dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Anteilsscheine</dt>
+            <dd>
+                {{ scheine }} (davon {{ scheine_unpaid }} noch nicht bezahlt)<br/><br/>
+                Anteilsscheine von Mitabonnenten:
+                <ul>
+                    {% for abonnent in  mitabonnenten %}
+                        <li>{{ abonnent.anteilschein_set.count }} von {{ abonnent.first_name }} {{ abonnent.last_name }}</li>
+                    {% endfor %}
+                </ul>
             </dd>
             {% if sharees|length > 0 %}
                 <dt>&nbsp;</dt>
@@ -69,7 +79,8 @@
             {% endif %}
         </dl>
         <div class="form-actions">
-            <button class="btn btn-success" disabled="disabled">Abo ändern</button> * derzeit noch nicht möglich
+            <button class="btn btn-success" disabled="disabled">Abo ändern</button>
+            * derzeit noch nicht möglich
         </div>
     {% endif %}
 {% endblock %}
