@@ -13,7 +13,7 @@ from my_ortoloco.models import *
 from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
-
+import hashlib
 from mailer import *
 
 import string
@@ -275,7 +275,11 @@ def my_signup(request):
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
-                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password)
+
+                    names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
+                    username = names + hashlib.sha1("your message").hexdigest()
+
+                    user = User.objects.create_user(username[:30], locoform.cleaned_data['email'], password)
                     user.loco.first_name = locoform.cleaned_data['first_name']
                     user.loco.last_name = locoform.cleaned_data['last_name']
                     user.loco.email = locoform.cleaned_data['email']

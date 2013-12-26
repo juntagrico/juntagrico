@@ -11,6 +11,13 @@ ADMINS = (
 # ('Your Name', 'your_email@example.com'),
 )
 
+
+# let the users login with their emails
+AUTHENTICATION_BACKENDS = (
+    'my_ortoloco.helpers.AuthenticateWithEmail',
+    'django.contrib.auth.backends.ModelBackend'
+)
+
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -27,7 +34,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.orto.xiala.net']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -92,7 +99,7 @@ STATICFILES_FINDERS = (
 )
 
 #tinyMCE
-TINYMCE_JS_URL = '/static/js/tinymce/tinymce.min.js'    
+TINYMCE_JS_URL = '/static/js/tinymce/tinymce.min.js'
 
 TINYMCE_DEFAULT_CONFIG = {'theme': "modern", 'relative_urls': False, "valid_styles" : { '*' : 'color,text-align,font-size,font-weight,font-style,text-decoration' }}
 
