@@ -6,17 +6,21 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login
-from django.template.loader import get_template
-from django.template import Context
-from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
+
+from mailer import *
+
+import string
+import random
+
+
+def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
 
 def getBohnenDict(request):
@@ -101,6 +105,18 @@ def my_job(request, job_id):
     });
     return render(request, "job.html", renderdict)
 
+@login_required
+def my_depot(request, depot_id):
+    """
+    Details for a Depot
+    """
+    depot = get_object_or_404(Depot, id=int(depot_id))
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'depot': depot
+    });
+    return render(request, "depot.html", renderdict)
 
 @login_required
 def my_participation(request):
@@ -115,9 +131,9 @@ def my_participation(request):
             if request.POST.get("area" + str(area.id)):
                 if loco not in area.locos.all():
                     area.locos.add(loco)
-                    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-                              'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email],
-                              fail_silently=False)
+
+                    # send a mail to the coordinator
+                    send_new_loco_in_taetigkeitsbereich_to_bg(area, loco)
                     area.save()
             else:
                 area.locos.remove(loco)
@@ -155,7 +171,6 @@ def my_pastjobs(request):
         if bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
             past_bohnen.append(bohne)
 
-
     renderdict = getBohnenDict(request)
     renderdict.update({
         'bohnen': past_bohnen
@@ -168,92 +183,15 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    loco = request.user.loco
-    myabo = loco.abo
-    if myabo is None:
-        renderdict = getBohnenDict(request)
-        renderdict.update({
-            'noabo': True
-        })
-    elif myabo.primary_loco == loco:
-        if request.method == 'POST':
-            aboform = AboForm(request.POST)
-            if aboform.is_valid():
-                a_unpaid = int(aboform.data['anteilsscheine_added'])
-                a_paid = int(aboform.data['anteilsscheine'])
-                # neue anteilsscheine loeschen (nur unbezahlte) falls neu weniger
-                if loco.anteilschein_set.count() > a_unpaid + a_paid:
-                    todelete = loco.anteilschein_set.count() - (a_unpaid + a_paid)
-                    for unpaid in loco.anteilschein_set.all().filter(paid=False):
-                        if todelete > 0:
-                            unpaid.delete()
-                            todelete -= 1
-
-                #neue unbezahlte anteilsscheine hinzufuegen falls erwuenscht
-                if loco.anteilschein_set.count() < a_unpaid + a_paid:
-                    toadd = (a_unpaid + a_paid) - loco.anteilschein_set.count()
-                    for num in range(0, toadd):
-                        anteilsschein = Anteilschein(locor=loco, paid=False)
-                        anteilsschein.save()
-
-                # abo groesse setzen
-                abosize = int(aboform.data['kleine_abos']) + 2 * int(aboform.data['grosse_abos']) + 10 * int(aboform.data['haus_abos'])
-                if abosize != myabo.groesse:
-                    myabo.groesse = abosize
-                    myabo.save()
-
-                # depot wechseln
-                if myabo.depot.id != aboform.data['depot']:
-                    myabo.depot = Depot.objects.get(id=aboform.data['depot'])
-                    myabo.save()
-
-                # zusatzabos
-                for zusatzabo in ExtraAboType.objects.all():
-                    if aboform.data.has_key('abo' + str(zusatzabo.id)):
-                        myabo.extra_abos.add(zusatzabo)
-                        myabo.save()
-                    else:
-                        myabo.extra_abos.remove(zusatzabo)
-                        myabo.save()
-
-        aboform = AboForm()
-        depots = []
-        for depot in Depot.objects.all():
-            depots.append({
-                'id': depot.id,
-                'name': depot.name,
-                'selected': myabo.depot == depot
-            })
-
-        zusatzabos = []
-        for abo in ExtraAboType.objects.all():
-            zusatzabos.append({
-                'name': abo.name,
-                'id': abo.id,
-                'checked': abo in myabo.extra_abos.all()
-            })
-
-        renderdict = getBohnenDict(request)
-        renderdict.update({
-            'aboform': aboform,
-            'zusatzabos': zusatzabos,
-            'depots': depots,
-            'sharees': myabo.locos.exclude(id=loco.id),
-            'haus_abos': myabo.haus_abos(),
-            'grosse_abos': myabo.grosse_abos(),
-            'kleine_abos': myabo.kleine_abos(),
-            'anteilsscheine_paid': loco.anteilschein_set.all().filter(paid=True).count(),
-            'anteilsscheine_unpaid': loco.anteilschein_set.all().filter(paid=False).count()
-        })
-    else:
-        # TODO: loco ist nicht primary_loco
-        #   - muss Anteilscheine editieren können
-        #   - sieht Abo, darf aber nicht editieren
-        renderdict = getBohnenDict(request)
-        renderdict.update({
-            'noabo': False
-        })
-
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'zusatzabos': request.user.loco.abo.extra_abos.all(),
+        'loco': request.user.loco,
+        'scheine': request.user.loco.anteilschein_set.count(),
+        'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email),
+        'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid=False).count(),
+        'sharees': request.user.loco.abo.locos.exclude(id=request.user.loco.id)
+    })
     return render(request, "my_abo.html", renderdict)
 
 
@@ -310,7 +248,8 @@ def my_signup(request):
                 else:
                     #set all fields of user
                     #email is also username... we do not use it
-                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], 'randompassword') # TODO random password
+                    password = password_generator()
+                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password)
                     user.loco.first_name = locoform.cleaned_data['first_name']
                     user.loco.last_name = locoform.cleaned_data['last_name']
                     user.loco.email = locoform.cleaned_data['email']
@@ -322,7 +261,7 @@ def my_signup(request):
                     user.loco.save()
 
                     #log in to allow him to make changes to the abo
-                    loggedin_user = authenticate(username=locoform.cleaned_data['email'], password='randompassword')
+                    loggedin_user = authenticate(username=locoform.cleaned_data['email'], password=password)
                     login(request, loggedin_user)
                     success = True
                     return redirect("/my/aboerstellen")
@@ -340,54 +279,134 @@ def my_signup(request):
 
 
 @login_required
+def my_add_loco(request, abo_id):
+    scheineerror = False
+    scheine = 1
+    userexists = False
+    if request.method == 'POST':
+        locoform = ProfileLocoForm(request.POST)
+        if User.objects.filter(email=request.POST.get('email')).__len__() > 0:
+            userexists = True
+        try:
+            scheine = int(request.POST.get("anteilsscheine"))
+            scheineerror = scheine < 0
+        except TypeError:
+            scheineerror = True
+        except  ValueError:
+            scheineerror = True
+        if locoform.is_valid() and scheineerror is False and userexists is False:
+            user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password_generator())
+            user.loco.first_name = locoform.cleaned_data['first_name']
+            user.loco.last_name = locoform.cleaned_data['last_name']
+            user.loco.email = locoform.cleaned_data['email']
+            user.loco.addr_street = locoform.cleaned_data['addr_street']
+            user.loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
+            user.loco.addr_location = locoform.cleaned_data['addr_location']
+            user.loco.phone = locoform.cleaned_data['phone']
+            user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+            user.loco.abo_id = abo_id
+            user.loco.save()
+
+            for num in range(0, scheine):
+                anteilsschein = Anteilschein(loco=user.loco, paid=False)
+                anteilsschein.save()
+
+            send_been_added_to_abo(request.user.loco.first_name + " " + request.user.loco.last_name, user.loco.email)
+
+            user.loco.save()
+            return redirect('/my/aboerstellen')
+
+    else:
+        locoform = ProfileLocoForm()
+    renderdict = {
+        'scheine': scheine,
+        'userexists': userexists,
+        'scheineerror': scheineerror,
+        'locoform': locoform,
+        "loco": request.user.loco,
+        "depots": Depot.objects.all()
+    }
+    return render(request, "add_loco.html", renderdict)
+
+
+@login_required
 def my_createabo(request):
     """
     Abo erstellen
     """
     loco = request.user.loco
     scheineerror = False
-    selectedabo = "small"
+    if loco.abo is None or loco.abo.groesse is 1:
+        selectedabo = "small"
+    elif loco.abo.groesse is 2:
+        selectedabo = "big"
+    else:
+        selectedabo = "house"
+
+    loco_scheine = 0
+    if loco.abo is not None:
+        for abo_loco in loco.abo.bezieher_locos().exclude(email=request.user.loco.email):
+            loco_scheine += abo_loco.anteilschein_set.all().__len__()
 
     if request.method == "POST":
         scheine = int(request.POST.get("scheine"))
         selectedabo = request.POST.get("abo")
+
+        scheine += loco_scheine
         if (scheine < 4 and request.POST.get("abo") == "big") or (scheine < 20 and request.POST.get("abo") == "house") or scheine < 2:
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
+            groesse = 1
             if request.POST.get("abo") == "house":
-                loco.abo = Abo.objects.create(groesse=10, primary_loco=loco, depot=depot)
+                groesse = 10
             elif request.POST.get("abo") == "big":
-                loco.abo = Abo.objects.create(groesse=2, primary_loco=loco, depot=depot)
+                groesse = 2
             else:
-                loco.abo = Abo.objects.create(groesse=1, primary_loco=loco, depot=depot)
+                groesse = 1
+            if loco.abo is None:
+                loco.abo = Abo.objects.create(groesse=groesse, primary_loco=loco, depot=depot)
+            else:
+                loco.abo.groesse = groesse
+                loco.abo.depot = depot
+            loco.abo.save()
             loco.save()
 
-            #user did it all => send confirmation mail
+            if loco.anteilschein_set.count() < int(request.POST.get("scheine")):
+                toadd = int(request.POST.get("scheine")) - loco.anteilschein_set.count()
+                for num in range(0, toadd):
+                    anteilsschein = Anteilschein(loco=loco, paid=False)
+                    anteilsschein.save()
 
-            plaintext = get_template('mails/welcome_mail.txt')
-            htmly = get_template('mails/welcome_mail.html')
 
-            d = Context({
-                'subject': 'Willkommen bei ortoloco',
-                'username': loco.email,
-                'password': 'randomPassword',
-                'serverurl': "http://" + request.META["HTTP_HOST"]
-            })
 
-            text_content = plaintext.render(d)
-            html_content = htmly.render(d)
+            if request.POST.get("add_loco"):
+                return redirect("/my/abonnent/" + str(loco.abo_id))
+            else:
+                password = password_generator()
 
-            msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [loco.email])
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
+                request.user.set_password(password)
+                request.user.save()
 
-            return redirect("/my/willkommen")
+                #user did it all => send confirmation mail
+                send_welcome_mail(loco.email, password, request.META["HTTP_HOST"])
+
+                return redirect("/my/willkommen")
+
+    selected_depot = None
+    mit_locos = []
+    if request.user.loco.abo is not None:
+        selected_depot = request.user.loco.abo.depot
+        mit_locos = request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email)
 
     renderdict = {
+        'loco_scheine': loco_scheine,
+        "loco": request.user.loco,
         "depots": Depot.objects.all(),
-        "selectedabo": selectedabo,
-        "scheineerror": scheineerror
+        'selected_depot': selected_depot,
+        "selected_abo": selectedabo,
+        "scheineerror": scheineerror,
+        "mit_locos": mit_locos
     }
     return render(request, "createabo.html", renderdict)
 
@@ -397,30 +416,14 @@ def my_welcome(request):
     """
     Willkommen
     """
-    loco = request.user.loco
-    next_jobs = Job.objects.all()[0:7]
-    teams = Taetigkeitsbereich.objects.all()
-
-    if loco.abo is not None:
-        no_abo = False
-    else:
-        no_abo = True
-
-    jobs = []
-    for job in next_jobs:
-        jobs.append({
-            'time': job.time,
-            'id': job.id,
-            'typ': job.typ,
-            'status': job.get_status_bohne()
-        })
 
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'jobs': jobs,
-        'teams': teams,
-        'no_abo': no_abo
+        'jobs': Job.objects.all()[0:7],
+        'teams': Taetigkeitsbereich.objects.all(),
+        'no_abo': request.user.loco.abo is None
     })
+
     return render(request, "welcome.html", renderdict)
 
 
@@ -432,7 +435,8 @@ def my_contact(request):
     loco = request.user.loco
 
     if request.method == "POST":
-        send_mail('Anfrage per my.ortoloco', request.POST.get("message"), loco.email, ['orto@xiala.net'], fail_silently=False)
+        # send mail to bg
+        send_contact_form(request.POST.get("subject"), request.POST.get("message"), loco, request.POST.get("copy"))
 
     renderdict = getBohnenDict(request)
     renderdict.update({
