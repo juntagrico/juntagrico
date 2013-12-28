@@ -1,0 +1,121 @@
+{% extends "mybase.html" %}
+
+{% block allcontent %}
+    <div class="span2"></div>
+    <div class="span8">
+        <h3>Mitabonnent hinzufügen</h3>
+        <br/>
+
+        <form action="" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <div class="control-group {% if locoform.first_name.errors %}error{% endif %}">
+                <label class="control-label" for="id_first_name">Vorname</label>
+
+                <div class="controls">
+                    {{ locoform.first_name }}
+                    {% if locoform.first_name.errors %}
+                        <span class="help-inline">Vorname ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.last_name.errors %}error{% endif %}">
+                <label class="control-label" for="id_last_name">Nachname</label>
+
+                <div class="controls">
+                    {{ locoform.last_name }}
+                    {% if locoform.last_name.errors %}
+                        <span class="help-inline">Nachname ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.addr_street.errors %}error{% endif %}">
+                <label class="control-label" for="id_addr_street">{{ locoform.addr_street.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.addr_street }}
+                    {% if locoform.addr_street.errors %}
+                        <span class="help-inline">Strasse ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
+                <label class="control-label" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.addr_zipcode }}
+                    {% if locoform.addr_zipcode.errors %}
+                        <span class="help-inline">PLZ ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.addr_location.errors %}error{% endif %}">
+                <label class="control-label" for="id_addr_location">{{ locoform.addr_location.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.addr_location }}
+                    {% if locoform.addr_location.errors %}
+                        <span class="help-inline">Ort ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.phone.errors %}error{% endif %}">
+                <label class="control-label" for="id_phone">{{ locoform.phone.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.phone }}
+                    {% if locoform.phone.errors %}
+                        <span class="help-inline">Telefon ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.mobile_phone.errors %}error{% endif %}">
+                <label class="control-label" for="id_mobile_phone">{{ locoform.mobile_phone.label }}</label>
+
+                <div class="controls">
+                    {{ locoform.mobile_phone }}
+                    {% if locoform.mobile_phone.errors %}
+                        <span class="help-inline">Mobile ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.email.errors %}error{% endif %}">
+                <label class="control-label" for="id_email">E-Mail Adresse</label>
+
+                <div class="controls">
+                    {{ locoform.email }}
+
+                    {% if locoform.email.errors %}
+                        <span class="help-inline">E-Mail ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="control-group {% if scheineerror %}error{% endif %}">
+                <label class="control-label" for="id_anteilsscheine">Anteilsscheine</label>
+
+                <div class="controls">
+                    <input type="text" class="span1" name="anteilsscheine" id="id_anteilsscheine" value="{{ scheine }}">
+
+                    {% if scheineerror %}
+                        <span class="help-inline">Bitte positive Zahl eingeben</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if userexists %}
+                <div class="alert alert-error">
+                    Diese Email-Adresse existiert bereits im System. Bitte meldet euch bei <a href="mailto:info@ortoloco.ch">info@ortoloco.ch</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
+                </div>
+            {% endif %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Mitabonnent hinzufügen</button>
+                <a href="/my/aboerstellen" class="btn">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

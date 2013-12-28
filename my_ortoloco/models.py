@@ -19,6 +19,8 @@ class Depot(models.Model):
     description = models.TextField("Beschreibung", max_length=1000, default="")
     contact = models.ForeignKey("Loco", on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField("Wochentag", choices=helpers.weekday_choices)
+    latitude = models.CharField("Latitude", max_length=100, default="")
+    longitude = models.CharField("Longitude", max_length=100, default="")
 
     addr_street = models.CharField("Strasse", max_length=100)
     addr_zipcode = models.CharField("PLZ", max_length=10)
@@ -48,6 +50,7 @@ class Abo(models.Model):
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.SET_NULL)
+    active = models.BooleanField(default=False)
 
     def __unicode__(self):
         namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
@@ -57,6 +60,9 @@ class Abo(models.Model):
     def bezieher(self):
         locos = self.locos.all()
         return ", ".join(unicode(loco) for loco in locos)
+
+    def bezieher_locos(self):
+        return self.locos.all()
 
     def verantwortlicher_bezieher(self):
         loco = self.primary_loco
@@ -70,6 +76,10 @@ class Abo(models.Model):
 
     def kleine_abos(self):
         return self.groesse % 2
+
+    class Meta:
+        verbose_name = "Abo"
+        verbose_name_plural = "Abos"
 
 
 class Loco(models.Model):

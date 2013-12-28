@@ -35,6 +35,9 @@ urlpatterns = patterns('',
     url('^my/anmelden', 'my_ortoloco.views.my_signup'),
     url('^my/aboerstellen', 'my_ortoloco.views.my_createabo'),
     url('^my/willkommen', 'my_ortoloco.views.my_welcome'),
+    url('^my/vergangenejobs', 'my_ortoloco.views.my_pastjobs'),
+    url('^my/abonnent/(?P<abo_id>.*?)/', 'my_ortoloco.views.my_add_loco'),
+    url('^my/depot/(?P<depot_id>.*?)/', 'my_ortoloco.views.my_depot'),
 
 
     (r'^accounts/login/$',  login),
