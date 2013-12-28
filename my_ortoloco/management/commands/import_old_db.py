@@ -1,8 +1,9 @@
+import datetime
+import re
+
 import MySQLdb
-import datetime, re
-
 from django.core.management.base import BaseCommand, CommandError
-
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from my_ortoloco.models import *
 
 
@@ -20,21 +21,36 @@ class Command(BaseCommand):
         for row in self.cur.fetchall():
             yield row
 
-
     def decode_row(self, row):
-        return [i.decode("latin-1") if isinstance(i, basestring) else i for i in row]
+        #return [i.decode("latin-1") if isinstance(i, basestring) else i for i in row]
+        return [i.decode("latin-1","ignore") if isinstance(i, basestring) else i for i in row]
 
     # entry point used by manage.py
     def handle(self, *args, **options):
         self.connect(*args)
 
+        print 'Starting migration on ', datetime.datetime.now()
         self.create_users()
-
+        self.create_taetigkeitsbereiche()
+        self.create_depots()
+        self.create_taetigkeitsbereich_locos()
+        self.create_jobtypes()
+        self.create_jobs()
+        self.create_extraabotypes()
+        self.create_abos()
+        self.create_abo_extra_abos()
+        self.create_anteilscheine()
+        print 'Finished migration on ', datetime.datetime.now()
 
     def create_users(self):
         """
         Import user data from old db, creating a User instance and a linked Loco instance.
         """
+
+        print '***************************************************************'
+        print 'Migrating users and locos'
+        print '***************************************************************'
+
         assert User.objects.all().count() == 1
 
         query = list(self.query("SELECT * FROM person p "
@@ -48,7 +64,8 @@ class Command(BaseCommand):
         oldsize = len(query)
         query = [row for row in query if None not in (row[0], row[15])]
         if len(query) < oldsize:
-            print "warning: some inconsistent data, ignoring..."
+            print
+            "warning: some inconsistent data, ignoring..."
 
         new_users = []
         for row in query:
@@ -77,7 +94,7 @@ class Command(BaseCommand):
                 tag, monat, jahr = [int(i) for i in geburtsdatum.split(".")]
                 geburi_date = datetime.date(jahr, monat, tag)
 
-            loco = Loco(user=user, 
+            loco = Loco(user=user,
                         first_name=vorname,
                         last_name=name,
                         email=email,
@@ -92,3 +109,538 @@ class Command(BaseCommand):
 
         Loco.objects.bulk_create(new_locos)
 
+        print '***************************************************************'
+        print 'users and locos migrated'
+        print '***************************************************************'
+    def create_taetigkeitsbereiche(self):
+
+        print '***************************************************************'
+        print 'Migrating Taetigkeitsbereiche'
+        print '***************************************************************'
+
+        query = list(self.query("SELECT * FROM lux_funktion ")) 	
+        new_taetigkeitsbereiche = []
+        locos = sorted(Loco.objects.all(), key=lambda u: u.id)
+        loco_id=None
+        for row in query:
+            id, name, description, type, showorder = self.decode_row(row) 
+            locos = sorted(Loco.objects.all(), key=lambda u: u.id)
+            for loco in locos:
+                if loco.email in description:
+                    loco_id=loco.id
+                    break
+                else:
+                    loco_id=loco.id
+
+                taetigkeitsbereich = Taetigkeitsbereich(name=name,
+                                                        description=description,
+                                                        coordinator_id=loco_id)
+
+            new_taetigkeitsbereiche.append(taetigkeitsbereich)
+
+
+        Taetigkeitsbereich.objects.bulk_create(new_taetigkeitsbereiche)
+
+        print '***************************************************************'
+        print 'Taetigkeitsbereiche migrated'
+        print '***************************************************************'
+
+    def create_depots(self):
+
+        print '***************************************************************'
+        print 'Migrating Depots'
+        print '***************************************************************'
+
+        query = list(self.query("SELECT id, 'SomeCode' as code, name, "
+                                "description, 9999 as contact_id,24 as weekday, "
+                                "case when instr(data,',')>0 "
+                                "then substring(data,1, instr(data,',')-1) "
+                                "else name "
+                                "end as addr_street, "
+                                "addr_zipcode, "
+                                "case when instr(data,',')>0 "
+                                "then substring(data,instr(data,',')+6,length(data)-instr(data,',')) "
+                                "else 'Z?rich' "
+                                "end as addr_location "
+                                "FROM ( "
+                                "SELECT id "
+                                ",case when instr(description,':')>0 "
+                                "then substring(description,1,instr(description,':')-1) "
+                                "else  case when instr(description,',')>0 "
+                                "then substring(description,1,instr(description,',')-1) "
+                                "else 'No Name' end "
+                                "end as name "
+                                ",description"
+                                ",name as addr_zipcode "
+                                ",case when instr(description,':')>0 "
+                                "then substring(description,instr(description,':')+1,"
+                                "length(description)-instr(description,':')) "
+                                "else  case when instr(description,',')>0 "
+                                "then substring(description,instr(description,',')+1,"
+                                "length(description)-instr(description,',')) "
+                                "else CONCAT('-, ',description) end "
+                                "end as data "
+                                "FROM lu_depot "
+                                ") dt"))
+
+        new_depots = [] 
+        locos = sorted(Loco.objects.all(), key=lambda u: u.id)
+        loco_id=locos[0].id
+        for row in query:
+            id, code, name, description, contact_id, weekday, addr_street, addr_zipcode, addr_location = self.decode_row(row)
+
+            code = code+name+addr_street+addr_zipcode
+
+            if name=='No Name':
+                name=name+addr_zipcode
+            depot = Depot(code=code,
+                          name=name,
+                          description=description,
+                          contact_id=loco_id,
+                          weekday=weekday,
+                          addr_street=addr_street,
+                          addr_zipcode=addr_zipcode,
+                          addr_location=addr_location)
+
+            new_depots.append(depot)
+        Depot.objects.bulk_create(new_depots)
+
+        print '***************************************************************'
+        print 'Depots migrated'
+        print '***************************************************************'
+
+    def create_taetigkeitsbereich_locos(self):
+
+        print '***************************************************************'
+        print 'Building Teatigkeitsbereiche_Locos'
+        print '***************************************************************'
+
+        query = list(self.query("select pu.*,funktion, "
+                                    "case when substr(funktion,1,1)=1 then 'ernten' else '' end fkt1, "
+                                    "case when substr(funktion,3,1)=1 then 'abpacken' else '' end fkt2, "
+                                    "case when substr(funktion,5,1)=1 then 'verteilen' else '' end fkt3, "
+                                    "case when substr(funktion,7,1)=1 then 'garten' else '' end fkt4, "
+                                    "case when substr(funktion,9,1)=1 then 'rand' else '' end fkt5, "
+                                    "case when substr(funktion,11,1)=1 then 'freitag' else '' end fkt6, "
+                                    "case when substr(funktion,13,1)=1 then 'springer' else '' end fkt7, "
+                                    "case when substr(funktion,15,1)=1 then 'wochenend' else '' end fkt8, "
+                                    "case when substr(funktion,17,1)=1 then 'infrastruktur' else '' end fkt9, "
+                                    "case when substr(funktion,19,1)=1 then 'gastrofeste' else '' end fkt10, "
+                                    "case when substr(funktion,21,1)=1 then 'adminbuchhaltung' else '' end fkt11, "
+                                    "case when substr(funktion,23,1)=1 then 'beeren' else '' end fkt12, "
+                                    "case when substr(funktion,25,1)=1 then 'pilze' else '' end fkt13, "
+                                    "case when substr(funktion,27,1)=1 then 'kraeuterblumen' else '' end fkt14 "
+                                    "from funktion f "
+                                    "join "
+                                    "( "
+                                    "select pid,vorname,name "
+                                    "from "
+                                    "(SELECT  p.* "
+                                    "FROM person p "
+                                    "LEFT OUTER JOIN usr u "
+                                    "ON p.pid = u.pid "
+                                    "where u.pid is not null "
+                                    "UNION "
+                                    "SELECT p.* "
+                                    "FROM person p "
+                                    "RIGHT OUTER JOIN usr u "
+                                    "ON p.pid = u.pid "
+                                    "where p.pid is not null "
+                                    ") dt "
+                                    "where pid is not null "
+                                    ") pu "
+                                    "on f.pid=pu.pid "
+                                    "order by pid "))
+
+        new_taetigkeitsbereich0_locos = []
+        new_taetigkeitsbereich1_locos = []
+        new_taetigkeitsbereich2_locos = []
+        new_taetigkeitsbereich3_locos = []
+        new_taetigkeitsbereich4_locos = []
+        new_taetigkeitsbereich5_locos = []
+        new_taetigkeitsbereich6_locos = []
+        new_taetigkeitsbereich7_locos = []
+        new_taetigkeitsbereich8_locos = []
+        new_taetigkeitsbereich9_locos = []
+        new_taetigkeitsbereich10_locos = []
+        new_taetigkeitsbereich11_locos = []
+        new_taetigkeitsbereich12_locos = []
+        new_taetigkeitsbereich13_locos = []
+
+        locos = sorted(Loco.objects.all(), key=lambda l: l.id)
+        taetigkeitsbereiche = sorted(Taetigkeitsbereich.objects.all(), key=lambda ta: ta.id)
+        print taetigkeitsbereiche
+
+        for row in query:
+            pid,vorname,name,funktion,fkt1,fkt2,fkt3,fkt4,fkt5,fkt6,fkt7,fkt8,fkt9,fkt10,fkt11,fkt12,fkt13, \
+            fkt14 = self.decode_row(row)
+
+            for loco in locos:
+                if name == loco.last_name and vorname == loco.first_name:
+                    if fkt1 == taetigkeitsbereiche[0].name:
+                        new_taetigkeitsbereich0_locos.append(loco.id)
+                    if fkt2 == taetigkeitsbereiche[1].name:
+                        new_taetigkeitsbereich1_locos.append(loco.id)
+                    if fkt3 == taetigkeitsbereiche[2].name:
+                        new_taetigkeitsbereich2_locos.append(loco.id)
+                    if fkt4 == taetigkeitsbereiche[3].name:
+                        new_taetigkeitsbereich3_locos.append(loco.id)
+                    if fkt5 == taetigkeitsbereiche[4].name:
+                        new_taetigkeitsbereich4_locos.append(loco.id)
+                    if fkt6 == taetigkeitsbereiche[5].name:
+                        new_taetigkeitsbereich5_locos.append(loco.id)
+                    if fkt7 == taetigkeitsbereiche[6].name:
+                        new_taetigkeitsbereich6_locos.append(loco.id)
+                    if fkt8 == taetigkeitsbereiche[7].name:
+                        new_taetigkeitsbereich7_locos.append(loco.id)
+                    if fkt9 == taetigkeitsbereiche[8].name:
+                        new_taetigkeitsbereich8_locos.append(loco.id)
+                    if fkt10 == taetigkeitsbereiche[9].name:
+                        new_taetigkeitsbereich9_locos.append(loco.id)
+                    if fkt11 == taetigkeitsbereiche[10].name:
+                        new_taetigkeitsbereich10_locos.append(loco.id)
+                    if fkt12 == taetigkeitsbereiche[11].name:
+                        new_taetigkeitsbereich11_locos.append(loco.id)
+                    if fkt13 == taetigkeitsbereiche[12].name:
+                        new_taetigkeitsbereich12_locos.append(loco.id)
+                    if fkt14 == taetigkeitsbereiche[13].name:
+                        new_taetigkeitsbereich13_locos.append(loco.id)
+
+        t0= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[0].id)
+        t0.locos=new_taetigkeitsbereich0_locos
+
+        t1= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[1].id)
+        t1.locos=new_taetigkeitsbereich1_locos
+
+        t2= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[2].id)
+        t2.locos=new_taetigkeitsbereich2_locos
+
+        t3= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[3].id)
+        t3.locos=new_taetigkeitsbereich3_locos
+
+        t4= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[4].id)
+        t4.locos=new_taetigkeitsbereich4_locos
+
+        t5= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[5].id)
+        t5.locos=new_taetigkeitsbereich5_locos
+
+        t6= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[6].id)
+        t6.locos=new_taetigkeitsbereich6_locos
+
+        t7= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[7].id)
+        t7.locos=new_taetigkeitsbereich7_locos
+
+        t8= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[8].id)
+        t8.locos=new_taetigkeitsbereich8_locos
+
+        t9= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[9].id)
+        t9.locos=new_taetigkeitsbereich9_locos
+
+        t10= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[10].id)
+        t10.locos=new_taetigkeitsbereich10_locos
+
+        t11= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[11].id)
+        t11.locos=new_taetigkeitsbereich11_locos
+
+        t12= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[12].id)
+        t12.locos=new_taetigkeitsbereich12_locos
+
+        t13= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[13].id)
+        t13.locos=new_taetigkeitsbereich13_locos
+
+        print '***************************************************************'
+        print 'Teatigkeitsbereiche_Locos built'
+        print '***************************************************************'
+
+    def create_jobtypes(self):
+
+        print '***************************************************************'
+        print 'Migrating JobTypes'
+        print '***************************************************************'
+
+        query = list(self.query("SELECT * FROM lux_job WHERE active=1 GROUP BY name"))
+
+        new_jobtypes = []
+        taetigkeitsbereiche = sorted(Taetigkeitsbereich.objects.all(), key=lambda ta: ta.id)
+
+        for row in query:
+            jid,name,description,units,cat,start,loc,created_on,created_by,active,beans = self.decode_row(row)
+
+
+            if name == 'Abpackkoordination':
+                idlookup=Taetigkeitsbereich.objects.get(name='abpacken')
+                bereich_id=idlookup.id
+            elif name == 'Aktionstag':
+                idlookup=Taetigkeitsbereich.objects.get(name='garten')
+                bereich_id=idlookup.id
+            elif name == 'Beeren ernten':
+                idlookup=Taetigkeitsbereich.objects.get(name='beeren')
+                bereich_id=idlookup.id
+            elif name == 'Ernten':
+                idlookup=Taetigkeitsbereich.objects.get(name='ernten')
+                bereich_id=idlookup.id
+            elif name =='Ernteverteilung':
+                idlookup=Taetigkeitsbereich.objects.get(name='verteilen')
+                bereich_id=idlookup.id
+            elif name == 'Ernteverteilung+F':
+                idlookup=Taetigkeitsbereich.objects.get(name='verteilen')
+                bereich_id=idlookup.id
+            elif name == 'Freitags-Ernten':
+                idlookup=Taetigkeitsbereich.objects.get(name='freitag')
+                bereich_id=idlookup.id
+            elif name == 'Freitagsaktionstag':
+                idlookup=Taetigkeitsbereich.objects.get(name='freitag')
+                bereich_id=idlookup.id
+            elif name == 'Fyrobigj?te':
+                idlookup=Taetigkeitsbereich.objects.get(name='garten')
+                bereich_id=idlookup.id
+            elif name == 'Gm?es abpacken':
+                idlookup=Taetigkeitsbereich.objects.get(name='abpacken')
+                bereich_id=idlookup.id
+            elif name == 'Kochen am Aktionstag':
+                idlookup=Taetigkeitsbereich.objects.get(name='gastrofeste')
+                bereich_id=idlookup.id
+            elif name == 'Kr?uter und Blumen':
+                idlookup=Taetigkeitsbereich.objects.get(name='kraeuterblumen')
+                bereich_id=idlookup.id
+            elif name == 'Tageseinsatz':
+                idlookup=Taetigkeitsbereich.objects.get(name='garten')
+                bereich_id=idlookup.id
+
+            jobtyp = JobTyp(name=name,
+                            description=description,
+                            bereich_id=bereich_id,
+                            duration=4,
+                            location=loc)
+
+            new_jobtypes.append(jobtyp)
+
+        JobTyp.objects.bulk_create(new_jobtypes)
+
+        print '***************************************************************'
+        print 'JobTypes migrated'
+        print '***************************************************************'
+
+    def create_jobs(self):
+
+        print '***************************************************************'
+        print 'Migrating Jobs'
+        print '***************************************************************'
+
+        query = list(self.query("SELECT j.jid as jjid, timestamp, lj.jid as ljjid, name as jname, lj.units as slots "
+                                "FROM job j "
+                                "    JOIN lux_job lj "
+                                "ON j.jid=lj.jid "
+                                "WHERE lj.active=1"))
+
+        print query[0]
+        new_jobs = []
+
+        for row in query:
+            jjid, timestamp, ljjid, jname, slots = self.decode_row(row)
+
+            idlookup=JobTyp.objects.get(name=jname)
+            convdate=datetime.date.fromtimestamp(timestamp)
+
+            typ=idlookup.id
+
+            job = Job(typ_id=typ,
+                      slots=slots,
+                      time=convdate,
+                      earning=1)
+
+            new_jobs.append(job)
+
+        Job.objects.bulk_create(new_jobs)
+
+        print '***************************************************************'
+        print 'Jobs migrated'
+        print '***************************************************************'
+
+    def create_extraabotypes(self):
+
+        print '***************************************************************'
+        print 'Migrating ExtraAboTypes'
+        print '***************************************************************'
+
+        query = list(self.query("SELECT * "
+                                "FROM lux_abo "
+                                "WHERE showorder is not null "
+                                "order by showorder"))
+
+        new_extraabotypes = []
+
+        for row in query:
+            id, name, description, type, price, showorder = self.decode_row(row)
+
+            extraabotype = ExtraAboType(name=name,
+                                        description=description)
+
+            new_extraabotypes.append(extraabotype)
+
+        ExtraAboType.objects.bulk_create(new_extraabotypes)
+
+        print '***************************************************************'
+        print 'ExtraAboTypes migrated'
+        print '***************************************************************'
+
+    def create_abos(self):
+
+        print '***************************************************************'
+        print 'Migrating Abos'
+        print '***************************************************************'
+
+        query = list(self.query("SELECT a.pid as abopid, anteilschein, abo, abomit as abomitpid, "
+                                "a.timestamp, p.name as last_name, p.vorname as first_name, "
+                                "p.email, description "
+                                "FROM abo a "
+                                "JOIN person p "
+                                "ON a.pid=p.pid "
+                                "JOIN lu_depot ld "
+                                "ON a.depot=ld.id"))
+
+        new_abos = []
+
+        for row in query:
+            abopid, anteilschein, abo, abomitpid, timestamp, last_name, first_name, email, \
+            description = self.decode_row(row)
+
+            try:
+                locoidlookup=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
+
+                depotidlookup=Depot.objects.get(description=description)
+
+                abo = Abo(depot_id=depotidlookup.id,
+                          primary_loco_id=locoidlookup.id,
+                          groesse=anteilschein)
+
+                new_abos.append(abo)
+
+            except ObjectDoesNotExist:
+                print 'Warning: Loco ', last_name, ' ', first_name, ' ', email, ' not found'
+            except MultipleObjectsReturned:
+                print 'Warning: More than one Loco for ', last_name, ' ', first_name, ' ', email
+
+        Abo.objects.bulk_create(new_abos)
+
+        print '***************************************************************'
+        print 'Abos migrated'
+        print '***************************************************************'
+
+    def create_abo_extra_abos(self):
+
+        print '***************************************************************'
+        print 'Building Abo_Extra_Abos'
+        print '***************************************************************'
+
+        query = list(self.query("SELECT a.pid as abopid, anteilschein, "
+                                "p.name as last_name, p.vorname as first_name, "
+                                "p.email, "
+                                "case when substr(abo,7,1)='1' then 'eier_4' else '' end eat1, "
+                                "case when substr(abo,9,1)='1' then 'eier_6' else '' end eat2, "
+                                "case when substr(abo,11,1)='1' then 'kaese_025' else '' end eat3, "
+                                "case when substr(abo,13,1)='1' then 'kaese_05' else '' end eat4, "
+                                "case when substr(abo,15,1)='1' then 'kaese_1' else '' end eat5, "
+                                "case when substr(abo,17,1)='1' then 'obst_klein' else '' end eat6, "
+                                "case when substr(abo,19,1)='1' then 'obst_gross' else '' end eat7 "
+                                "FROM abo a "
+                                "JOIN person p "
+                                "ON a.pid=p.pid "))
+
+        locos = sorted(Loco.objects.all(), key=lambda l: l.id)
+        extraabotypes=sorted(ExtraAboType.objects.all(), key=lambda eat: eat.id)
+
+        for row in query:
+            abopid, anteilschein, last_name, first_name, email, eat1, eat2, eat3, eat4, eat5,\
+            eat6, eat7 = self.decode_row(row)
+
+            for loco in locos:
+
+                if last_name == loco.last_name and first_name == loco.first_name:
+                    new_eattypes0_abos = []
+                    if eat1 == extraabotypes[0].name:
+
+                        eatidlkp=ExtraAboType.objects.get(name=eat1)
+                        new_eattypes0_abos.append(eatidlkp.id)
+
+                    if eat2 == extraabotypes[1].name:
+
+                        eatidlkp=ExtraAboType.objects.get(name=eat2)
+                        new_eattypes0_abos.append(eatidlkp.id)
+
+                    if eat3 == extraabotypes[2].name:
+
+                        eatidlkp=ExtraAboType.objects.get(name=eat3)
+                        new_eattypes0_abos.append(eatidlkp.id)
+
+                    if eat4 == extraabotypes[3].name:
+
+                        eatidlkp=ExtraAboType.objects.get(name=eat4)
+                        new_eattypes0_abos.append(eatidlkp.id)
+
+                    if eat5 == extraabotypes[4].name:
+
+                        eatidlkp=ExtraAboType.objects.get(name=eat5)
+                        new_eattypes0_abos.append(eatidlkp.id)
+
+                    if eat6 == extraabotypes[5].name:
+
+                        eatidlkp=ExtraAboType.objects.get(name=eat6)
+                        new_eattypes0_abos.append(eatidlkp.id)
+
+                    if eat7 == extraabotypes[6].name:
+
+                        eatidlkp=ExtraAboType.objects.get(name=eat7)
+                        new_eattypes0_abos.append(eatidlkp.id)
+
+                    try:
+                        a0 = Abo.objects.get(primary_loco_id=loco.id)
+                        a0.extra_abos=new_eattypes0_abos
+                    except ObjectDoesNotExist:
+                        print 'No Abo found for primary_loco_id: ',loco.id
+                    except MultipleObjectsReturned:
+                        print 'Warning: More than one Abo for ', loco.id, ' ', loco.last_name, ' ', \
+                        loco.first_name, ' ', loco.email
+
+        print '***************************************************************'
+        print 'Abo_Extra_Abos built'
+        print '***************************************************************'
+
+    def create_anteilscheine(self):
+
+        print '***************************************************************'
+        print 'Building Anteilscheine'
+        print '***************************************************************'
+
+        query = list(self.query("select a.pid as abopid, anteilschein, p.name as last_name, "
+                                "p.vorname as first_name,p.email "
+                                "from abo a "
+                                "join person p "
+                                "on a.pid=p.pid"))
+
+        for row in query:
+            abopid, anteilschein,last_name, first_name, email = self.decode_row(row)
+
+            i = 0
+            new_anteilscheine = []
+
+            while i < anteilschein:
+                try:
+                    loco=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
+                    anteilscheine = Anteilschein(paid=1,
+                                                 loco_id=loco.id)
+                    new_anteilscheine.append(anteilscheine)
+                    i = i+1
+                except ObjectDoesNotExist:
+                    i = i+1
+                    print 'No Abo found for primary_loco_id: ',loco.id
+                except MultipleObjectsReturned:
+                    i = i+1
+                    print 'Warning: More than one Abo for ', loco.id, ' ', loco.last_name, ' ', \
+                    loco.first_name, ' ', loco.email
+
+            Anteilschein.objects.bulk_create(new_anteilscheine)
+
+        print '***************************************************************'
+        print 'Anteilscheine built'
+        print '***************************************************************'

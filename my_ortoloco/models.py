@@ -27,7 +27,7 @@ class Depot(models.Model):
     addr_location = models.CharField("Ort", max_length=50)
 
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s %s" % (self.id,self.name)
 
 
 class ExtraAboType(models.Model):
@@ -38,7 +38,7 @@ class ExtraAboType(models.Model):
     description = models.TextField("Beschreibung", max_length=1000)
 
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s %s" % (self.id,self.name)
 
 
 class Abo(models.Model):
@@ -55,7 +55,7 @@ class Abo(models.Model):
     def __unicode__(self):
         namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
         namelist.extend(extra.name for extra in self.extra_abos.all())
-        return u"Abo (%s)" % (" + ".join(namelist))
+        return u"Abo (%s) %s" % (" + ".join(namelist),self.id)
 
     def bezieher(self):
         locos = self.locos.all()
@@ -159,6 +159,7 @@ class Job(models.Model):
 
     def __unicode__(self):
         return u'Job #%s' % (self.id)
+        
 
     def wochentag(self):
         weekday = helpers.weekdays[self.time.isoweekday()]
@@ -173,10 +174,8 @@ class Job(models.Model):
     def end_time(self):
         return self.time + datetime.timedelta(hours=self.typ.duration)
 
-
     def besetzte_plaetze(self):
         return self.boehnli_set.count()
-
 
     def get_status_bohne(self):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
