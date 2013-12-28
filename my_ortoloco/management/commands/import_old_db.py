@@ -112,6 +112,7 @@ class Command(BaseCommand):
         print '***************************************************************'
         print 'users and locos migrated'
         print '***************************************************************'
+
     def create_taetigkeitsbereiche(self):
 
         print '***************************************************************'
@@ -120,21 +121,24 @@ class Command(BaseCommand):
 
         query = list(self.query("SELECT * FROM lux_funktion ")) 	
         new_taetigkeitsbereiche = []
-        locos = sorted(Loco.objects.all(), key=lambda u: u.id)
-        loco_id=None
+
         for row in query:
-            id, name, description, type, showorder = self.decode_row(row) 
+            id, name, description, type, showorder = self.decode_row(row)
+            loco_id=None
             locos = sorted(Loco.objects.all(), key=lambda u: u.id)
             for loco in locos:
                 if loco.email in description:
                     loco_id=loco.id
+                    taetigkeitsbereich = Taetigkeitsbereich(name=name,
+                                                            description=description,
+                                                            coordinator_id=loco_id)
                     break
+
                 else:
                     loco_id=loco.id
-
-                taetigkeitsbereich = Taetigkeitsbereich(name=name,
-                                                        description=description,
-                                                        coordinator_id=loco_id)
+                    taetigkeitsbereich = Taetigkeitsbereich(name=name,
+                                                            description=description,
+                                                            coordinator_id=loco_id)
 
             new_taetigkeitsbereiche.append(taetigkeitsbereich)
 
@@ -269,7 +273,6 @@ class Command(BaseCommand):
 
         locos = sorted(Loco.objects.all(), key=lambda l: l.id)
         taetigkeitsbereiche = sorted(Taetigkeitsbereich.objects.all(), key=lambda ta: ta.id)
-        print taetigkeitsbereiche
 
         for row in query:
             pid,vorname,name,funktion,fkt1,fkt2,fkt3,fkt4,fkt5,fkt6,fkt7,fkt8,fkt9,fkt10,fkt11,fkt12,fkt13, \
