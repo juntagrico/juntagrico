@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
     def decode_row(self, row):
         #return [i.decode("latin-1") if isinstance(i, basestring) else i for i in row]
-        return [i.decode("ascii","ignore") if isinstance(i, basestring) else i for i in row]
+        return [i.decode("latin-1","ignore") if isinstance(i, basestring) else i for i in row]
 
     # entry point used by manage.py
     def handle(self, *args, **options):
