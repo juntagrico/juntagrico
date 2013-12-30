@@ -41,9 +41,10 @@ def getBohnenDict(request):
     else:
         bohnenrange = None
         userbohnen = []
+        next_jobs = []
     return {
         'bohnenrange': bohnenrange,
-        'userbohnen': userbohnen.__len__(),
+        'userbohnen': len(userbohnen),
         'next_jobs': next_jobs
     }
 
