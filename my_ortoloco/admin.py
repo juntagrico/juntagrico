@@ -260,8 +260,10 @@ class LocoAdminForm(forms.ModelForm):
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        loco = k["instance"]
-        if loco.abo:
+        loco = k.get("instance")
+        if loco is None:
+            link = ""
+        elif loco.abo:
             url = reverse("admin:my_ortoloco_abo_change", args=(loco.abo.id,))
             link = "<a href=%s>%s</a>" % (url, loco.abo)
         else:
