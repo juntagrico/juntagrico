@@ -5,19 +5,41 @@ from django.core import mail
 from django.template.loader import get_template
 from django.template import Context
 from django.core.mail import EmailMultiAlternatives
+import re
 
 
 # sends mail only to specified email-addresses if dev mode
 def send_mail(subject, message, from_email, to_emails):
-    print settings.DEBUG
     if settings.DEBUG is False:
         mail.send_mail(subject, message, from_email, to_emails, fail_silently=False)
+        print "Mail sent to " + ", ".join(to_emails) + ""
     else:
         for email in to_emails:
-            if email in settings.WHITELIST_EMAILS:
-                mail.send_mail(subject, message, from_email, to_emails, fail_silently=False)
-            else:
-                print "Mail not sent to " + ", ".join(to_emails) + ", not in whitelist"
+            sent = False
+            for entry in settings.WHITELIST_EMAILS:
+                if sent is False and re.match(entry, email):
+                    mail.send_mail(subject, message, from_email, [email], fail_silently=False)
+                    sent = True
+                    print "Mail sent to " + email + ", on whitelist: " + entry
+            if not sent:
+                print "Mail not sent to " + ", " + email + ", not in whitelist"
+    return None
+
+
+def send_mail_multi(email_multi_message):
+    if settings.DEBUG is False:
+        email_multi_message.send()
+        print "Mail sent to " + ", ".join(email_multi_message.to) + ""
+    else:
+        for email in email_multi_message.to:
+            sent = False
+            for entry in settings.WHITELIST_EMAILS:
+                if sent is False and re.match(entry, email):
+                    email_multi_message.send()
+                    sent = True
+                    print "Mail sent to " + email + ", on whitelist: " + entry
+            if not sent:
+                print "Mail not sent to " + email + ", not in whitelist"
     return None
 
 
@@ -49,7 +71,7 @@ def send_welcome_mail(email, password, server):
 
     msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [email])
     msg.attach_alternative(html_content, "text/html")
-    msg.send()
+    send_mail_multi(msg)
 
 
 def send_been_added_to_abo(name, email):

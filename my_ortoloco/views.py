@@ -13,7 +13,7 @@ from my_ortoloco.models import *
 from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
-
+import hashlib
 from mailer import *
 
 import string
@@ -33,13 +33,18 @@ def getBohnenDict(request):
             if bohne.job.time.year == date.today().year and bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
                 userbohnen.append(bohne)
         bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.groesse * 10 / loco.abo.locos.count()))
+
+        next_jobs = []
+        for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
+            if bohne.job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+                next_jobs.append(bohne.job)
     else:
         bohnenrange = None
         userbohnen = []
     return {
         'bohnenrange': bohnenrange,
         'userbohnen': userbohnen.__len__(),
-        'next_jobs': Boehnli.objects.all().filter(loco=loco).order_by("job__time")
+        'next_jobs': next_jobs
     }
 
 
@@ -105,6 +110,7 @@ def my_job(request, job_id):
     });
     return render(request, "job.html", renderdict)
 
+
 @login_required
 def my_depot(request, depot_id):
     """
@@ -117,6 +123,7 @@ def my_depot(request, depot_id):
         'depot': depot
     });
     return render(request, "depot.html", renderdict)
+
 
 @login_required
 def my_participation(request):
@@ -219,6 +226,25 @@ def my_einsaetze(request):
     All jobs to be sorted etc.
     """
     renderdict = getBohnenDict(request)
+
+    jobs = []
+    for job in Job.objects.all():
+        if job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+            jobs.append(job)
+    renderdict.update({
+        'jobs': jobs,
+        'show_all': True
+    })
+
+    return render(request, "jobs.html", renderdict)
+
+
+@login_required
+def my_einsaetze_all(request):
+    """
+    All jobs to be sorted etc.
+    """
+    renderdict = getBohnenDict(request)
     renderdict.update({
         'jobs': Job.objects.all()
     })
@@ -249,7 +275,11 @@ def my_signup(request):
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
-                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password)
+
+                    names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
+                    username = names + hashlib.sha1("your message").hexdigest()
+
+                    user = User.objects.create_user(username[:30], locoform.cleaned_data['email'], password)
                     user.loco.first_name = locoform.cleaned_data['first_name']
                     user.loco.last_name = locoform.cleaned_data['last_name']
                     user.loco.email = locoform.cleaned_data['email']
@@ -377,8 +407,6 @@ def my_createabo(request):
                 for num in range(0, toadd):
                     anteilsschein = Anteilschein(loco=loco, paid=False)
                     anteilsschein.save()
-
-
 
             if request.POST.get("add_loco"):
                 return redirect("/my/abonnent/" + str(loco.abo_id))

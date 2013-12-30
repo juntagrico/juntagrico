@@ -5,7 +5,9 @@ Wir freuen uns dich bei uns begrüssen zu können.
 Unter my.ortoloco.ch kannst du dich ab sofort für Jobs anmelden und vieles mehr.
 
 Email: {{ username }}
-Passwort: {{ password }} (Bitte setze dir gleich ein neues, das du dir gut merken kannst)
+Passwort: {{ password }}
+Bitte setze dir hier gleich ein neues, welches du dir gut merken kannst:
+{{serverurl}}/my/passwort
 
 Weitere Infos wirst du bald vom Kernteam erhalten.
 

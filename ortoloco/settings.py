@@ -5,10 +5,17 @@ import dj_database_url
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "omg@doodle.com", "orto@xiala.net"]
+WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "omg@doodle.com", "orto@xiala.net", "oliver.ganz+.*@gmail.com"]
 
 ADMINS = (
 # ('Your Name', 'your_email@example.com'),
+)
+
+
+# let the users login with their emails
+AUTHENTICATION_BACKENDS = (
+    'my_ortoloco.helpers.AuthenticateWithEmail',
+    'django.contrib.auth.backends.ModelBackend'
 )
 
 MANAGERS = ADMINS
@@ -27,7 +34,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.orto.xiala.net']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -91,6 +98,11 @@ STATICFILES_FINDERS = (
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+#tinyMCE
+TINYMCE_JS_URL = '/static/js/tinymce/tinymce.min.js'
+
+TINYMCE_DEFAULT_CONFIG = {'theme': "modern", 'relative_urls': False, "valid_styles" : { '*' : 'color,text-align,font-size,font-weight,font-style,text-decoration' }}
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'd3w=vyfqpqmcj#&ge1d0$ch#ff7$qt#6z)lzqt=9pg8wg%d^%s'
 
@@ -141,6 +153,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'tinymce'
 )
 
 # A sample logging configuration. The only tangible logging
