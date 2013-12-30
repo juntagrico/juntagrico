@@ -61,7 +61,7 @@ class AboAdminForm(forms.ModelForm):
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = Job
-        fields = ["typ", "slots", "earning"]
+        fields = ["typ", "slots"]
 
     weekdays = forms.MultipleChoiceField(label="Wochentage", choices=helpers.weekday_choices, 
                                          widget=forms.widgets.CheckboxSelectMultiple)
@@ -106,7 +106,7 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = Job.objects.create(typ=inst.typ, slots=inst.slots, time=dt, earning=inst.earning)
+            job = Job.objects.create(typ=inst.typ, slots=inst.slots, time=dt)
             newjobs.append(job)
             job.save()
 
@@ -165,7 +165,7 @@ class BoehnliInline(admin.TabularInline):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "typ", "time", "earning", "slots", "freie_plaetze"]
+    list_display = ["__unicode__", "typ", "time", "slots", "freie_plaetze"]
     actions = ["copy_job", "mass_copy_job"]
     search_fields = ["typ__name", "typ__bereich__name"]
 
@@ -185,7 +185,7 @@ class JobAdmin(admin.ModelAdmin):
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = Job(typ=inst.typ, slots=inst.slots, time=inst.time, earning=inst.earning)
+            newjob = Job(typ=inst.typ, slots=inst.slots, time=inst.time)
             newjob.save()
     copy_job.short_description = "Jobs kopieren"
     

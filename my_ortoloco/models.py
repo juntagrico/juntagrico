@@ -135,6 +135,7 @@ class Loco(models.Model):
 class Anteilschein(models.Model):
     loco = models.ForeignKey(Loco, null=True, blank=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
+    canceled = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"Anteilschein #%s" % (self.id)
@@ -164,13 +165,19 @@ class JobTyp(models.Model):
     Recurring type of job.
     """
     name = models.CharField("Name", max_length=100, unique=True)
+    displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField("Dauer in Stunden")
     location = models.CharField("Ort", max_length=100, default="")
 
     def __unicode__(self):
-        return u'%s - %s' % (self.bereich, self.name)
+        return u'%s - %s' % (self.bereich, self.get_name())
+
+    def get_name(self):
+        if self.displayed_name is not None:
+            return self.displayed_name
+        return self.name
 
     class Meta:
         verbose_name = 'Jobart'
@@ -181,7 +188,6 @@ class Job(models.Model):
     typ = models.ForeignKey(JobTyp, on_delete=models.PROTECT)
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
-    earning = models.PositiveIntegerField("Bohnen pro Person", default=1)
 
     def __unicode__(self):
         return u'Job #%s' % (self.id)
@@ -224,10 +230,9 @@ class Job(models.Model):
 class Boehnli(models.Model):
     """
     Single boehnli (work unit).
-    Automatically created during job creation.
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    loco = models.ForeignKey(Loco, on_delete=models.PROTECT, null=True, blank=True)
+    loco = models.ForeignKey(Loco, on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u'Boehnli #%s' % self.id
