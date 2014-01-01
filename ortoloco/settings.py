@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'static_ortoloco',
     'photologue',
     'south',
+    'django_cron',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
