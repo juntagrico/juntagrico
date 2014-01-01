@@ -1,0 +1,41 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Mails verschicken</h3>
+    <br/>
+    <form action="/my/mails" method="POST" class="form-horizontal">
+        {% csrf_token %}
+        <div class="control-group">
+            <label class="control-label" for="sender">Absender</label>
+            <div class="controls senderContact">
+                info@ortoloco.ch
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="receiver">Empfänger</label>
+            <div class="controls senderContact">
+                Wähle mind. eine der folgenden Gruppen:
+                <label class="checkbox" for="allabo">
+                    <input type="checkbox" id="allabo" name="allabo">
+                    Alle Abonnenten (inkl. MitabonnentInnen)
+                </label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="subject">Betreff</label>
+            <div class="controls">
+                <input type="text" name="subject" id="subject" placeholder="Betreff" class="span5"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="message">Mitteilung</label>
+            <div class="controls">
+                <textarea name="message" id="message" class="span5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Nachricht verschicken</button>
+        </div>
+    </form>
+{% endblock %}

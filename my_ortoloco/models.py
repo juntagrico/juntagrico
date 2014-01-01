@@ -35,8 +35,55 @@ class Depot(models.Model):
         day = "Unbekannt"
         if self.weekday < 8 and self.weekday > 0:
             day = helpers.weekdays[self.weekday]
-
         return day
+
+    def small_abos(self):
+        return len(self.abo_set.all().filter(groesse=1))
+
+    def big_abos(self):
+        return len(self.abo_set.all().filter(groesse=2))
+
+    def vier_eier(self):
+        eier = 0
+        for abo in self.abo_set.all():
+            eier += len(abo.extra_abos.all().filter(description="Eier 4er Pack"))
+        return eier
+
+    def sechs_eier(self):
+        eier = 0
+        for abo in self.abo_set.all():
+            eier += len(abo.extra_abos.all().filter(description="Eier 6er Pack"))
+        return eier
+
+    def kaese_ganz(self):
+        kaese = 0
+        for abo in self.abo_set.all():
+            kaese += len(abo.extra_abos.all().filter(description="Käse ganz"))
+        return kaese
+
+    def kaese_halb(self):
+        kaese = 0
+        for abo in self.abo_set.all():
+            kaese += len(abo.extra_abos.all().filter(description="Käse halb"))
+        return kaese
+
+    def kaese_viertel(self):
+        kaese = 0
+        for abo in self.abo_set.all():
+            kaese += len(abo.extra_abos.all().filter(description="Käse viertel"))
+        return kaese
+
+    def big_obst(self):
+        obst = 0
+        for abo in self.abo_set.all():
+            obst += len(abo.extra_abos.all().filter(description="Obst gr. (2kg)"))
+        return obst
+
+    def small_obst(self):
+        obst = 0
+        for abo in self.abo_set.all():
+            obst += len(abo.extra_abos.all().filter(description="Obst kl. (1kg)"))
+        return obst
 
     class Meta:
         verbose_name = "Depot"
@@ -114,10 +161,10 @@ class Abo(models.Model):
         return len(self.extra_abos.all().filter(description="Käse viertel")) > 0
 
     def gross_obst(self):
-        return len(self.extra_abos.all().filter(description="Obst gross")) > 0
+        return len(self.extra_abos.all().filter(description="Obst gr. (2kg)")) > 0
 
     def klein_obst(self):
-        return len(self.extra_abos.all().filter(description="Obst klein")) > 0
+        return len(self.extra_abos.all().filter(description="Obst kl. (1kg)")) > 0
 
     class Meta:
         verbose_name = "Abo"
@@ -173,8 +220,8 @@ class Anteilschein(models.Model):
         return u"Anteilschein #%s" % (self.id)
 
     class Meta:
-        verbose_name = "Anteilsschein"
-        verbose_name_plural = "Anteilsscheine"
+        verbose_name = "Anteilschein"
+        verbose_name_plural = "Anteilscheine"
 
 
 class Taetigkeitsbereich(models.Model):
