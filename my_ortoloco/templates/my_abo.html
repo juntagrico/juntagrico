@@ -40,11 +40,11 @@
                     {% endfor %}
                 </ul>
             </dd>
-            {% if sharees|length > 0 %}
-                <dt>&nbsp;</dt>
-                <dd>&nbsp;</dd>
-                <dt>Abo geteilt mit</dt>
-                <dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Abo geteilt mit</dt>
+            <dd>
+                {% if sharees|length > 0 %}
                     {% if sharees|length > 1 %}
                         <ul>
                             {% for sharee in sharees %}
@@ -55,9 +55,13 @@
                         {% for sharee in sharees %}
                             {{ sharee.first_name }} {{ sharee.last_name }}
                         {% endfor %}
+                        <br/>
                     {% endif %}
-                </dd>
-            {% endif %}
+                {% else %}
+                    Du hast noch keine Mitabonnenten eingetragen.<br/>
+                {% endif %}
+                <a href="/my/abonnent/{{ loco.abo.id }}?return=/my/abo">Hier Mitabonnenten eintragen</a>
+            </dd>
             <dt>&nbsp;</dt>
             <dd>&nbsp;</dd>
             <dt>Depot</dt>
