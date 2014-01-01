@@ -46,6 +46,7 @@ urlpatterns = patterns('',
 
     (r'^photologue/', include('photologue.urls')),
 
+    url('^exports/depotlisten', 'my_ortoloco.views.alldepots_list'),
     url('^depotliste/(?P<name>.*?)/', 'my_ortoloco.views.depot_list'),
     url('^test_filters/$', 'my_ortoloco.views.test_filters'),
     url('^test_filters_post/$', 'my_ortoloco.views.test_filters_post'),

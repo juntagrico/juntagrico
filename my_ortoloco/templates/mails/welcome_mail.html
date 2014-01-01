@@ -1,13 +1,19 @@
 {% extends "mails/email.html" %}
 {% block content %}
-    Wir freuen uns dich bei uns begrüssen zu können.
+    <b>Willkommen!</b><br/><br/>
+
+    Wir freuen uns, dich bei ortoloco begrüssen zu dürfen.
+    <br/><br/>
+    Unter <a href="http://my.ortoloco.ch">my.ortoloco.ch</a> kannst du dich ab sofort für Arbeitseinsätze anmelden und vieles mehr.
     <br/><br/>
     Unter my.ortoloco.ch kannst du dich ab sofort für Jobs anmelden und vieles mehr.
     <br/><br/>
     Email: {{ username }}<br/>
-    Passwort: {{ password }} (Bitte setze dir <a href="{{ serverurl }}/my/passwort">hier</a> gleich ein neues, welches du dir gut merken kannst)
+    Passwort: {{ password }} (bitte setze dir <a href="{{ serverurl }}/my/passwort">hier</a> gleich ein neues Passwort)
     <br/><br/>
-    Weitere Infos wirst du bald vom Kernteam erhalten.
+    Weitere Infos wirst du bald erhalten. Bei Fragen oder Unklarheiten einfach melden: <br/>
+    <a href="mailto:info@ortoloco.ch">info@ortoloco.ch</a>
     <br/><br/>
-    Viel Spass bei ortoloco!
+    Herzlich grüsst,<br/>
+    die ortoloco-Betriebsgruppe
 {% endblock %}
