@@ -278,7 +278,7 @@ def my_signup(request):
                     password = password_generator()
 
                     names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
-                    username = names + hashlib.sha1("your message").hexdigest()
+                    username = names + hashlib.sha1(locoform.cleaned_data['email']).hexdigest()
 
                     user = User.objects.create_user(username[:30], locoform.cleaned_data['email'], password)
                     user.loco.first_name = locoform.cleaned_data['first_name']
