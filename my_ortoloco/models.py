@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import datetime
 from django.db import models
 from django.contrib.auth.models import User
@@ -27,7 +29,18 @@ class Depot(models.Model):
     addr_location = models.CharField("Ort", max_length=50)
 
     def __unicode__(self):
-        return u"%s %s" % (self.id,self.name)
+        return u"%s %s" % (self.id, self.name)
+
+    def wochentag(self):
+        day = "Unbekannt"
+        if self.weekday < 8 and self.weekday > 0:
+            day = helpers.weekdays[self.weekday]
+
+        return day
+
+    class Meta:
+        verbose_name = "Depot"
+        verbose_name_plural = "Depots"
 
 
 class ExtraAboType(models.Model):
@@ -38,7 +51,11 @@ class ExtraAboType(models.Model):
     description = models.TextField("Beschreibung", max_length=1000)
 
     def __unicode__(self):
-        return u"%s %s" % (self.id,self.name)
+        return u"%s %s" % (self.id, self.name)
+
+    class Meta:
+        verbose_name = "Zusatz-Abo"
+        verbose_name_plural = "Zusatz-Abos"
 
 
 class Abo(models.Model):
@@ -55,10 +72,14 @@ class Abo(models.Model):
     def __unicode__(self):
         namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
         namelist.extend(extra.name for extra in self.extra_abos.all())
-        return u"Abo (%s) %s" % (" + ".join(namelist),self.id)
+        return u"Abo (%s) %s" % (" + ".join(namelist), self.id)
 
     def bezieher(self):
         locos = self.locos.all()
+        return ", ".join(unicode(loco) for loco in locos)
+
+    def andere_bezieher(self):
+        locos = self.bezieher_locos().exclude(email=self.primary_loco.email)
         return ", ".join(unicode(loco) for loco in locos)
 
     def bezieher_locos(self):
@@ -76,6 +97,27 @@ class Abo(models.Model):
 
     def kleine_abos(self):
         return self.groesse % 2
+
+    def vier_eier(self):
+        return len(self.extra_abos.all().filter(description="Eier 4er Pack")) > 0
+
+    def sechs_eier(self):
+        return len(self.extra_abos.all().filter(description="Eier 6er Pack")) > 0
+
+    def ganze_kaese(self):
+        return len(self.extra_abos.all().filter(description="Käse ganz")) > 0
+
+    def halbe_kaese(self):
+        return len(self.extra_abos.all().filter(description="Käse halb")) > 0
+
+    def viertel_kaese(self):
+        return len(self.extra_abos.all().filter(description="Käse viertel")) > 0
+
+    def gross_obst(self):
+        return len(self.extra_abos.all().filter(description="Obst gross")) > 0
+
+    def klein_obst(self):
+        return len(self.extra_abos.all().filter(description="Obst klein")) > 0
 
     class Meta:
         verbose_name = "Abo"
@@ -107,7 +149,7 @@ class Loco(models.Model):
 
 
     def __unicode__(self):
-        return u"%s %s (%s)" % (self.first_name, self.last_name, self.user.username)
+        return u"%s %s" % (self.first_name, self.last_name)
 
     @classmethod
     def create(cls, sender, instance, created, **kdws):
@@ -117,13 +159,22 @@ class Loco(models.Model):
         if created:
             cls.objects.create(user=instance)
 
+    class Meta:
+        verbose_name = "Loco"
+        verbose_name_plural = "Locos"
+
 
 class Anteilschein(models.Model):
     loco = models.ForeignKey(Loco, null=True, blank=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
+    canceled = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u"Anteilschein #%s" % (self.id)
+
+    class Meta:
+        verbose_name = "Anteilsschein"
+        verbose_name_plural = "Anteilsscheine"
 
 
 class Taetigkeitsbereich(models.Model):
@@ -136,30 +187,43 @@ class Taetigkeitsbereich(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
+    class Meta:
+        verbose_name = 'Tätigkeitsbereich'
+        verbose_name_plural = 'Tätigkeitsbereiche'
+
 
 class JobTyp(models.Model):
     """
     Recurring type of job.
     """
     name = models.CharField("Name", max_length=100, unique=True)
+    displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField("Dauer in Stunden")
     location = models.CharField("Ort", max_length=100, default="")
 
     def __unicode__(self):
-        return u'%s - %s' % (self.bereich, self.name)
+        return u'%s - %s' % (self.bereich, self.get_name())
+
+    def get_name(self):
+        if self.displayed_name is not None:
+            return self.displayed_name
+        return self.name
+
+    class Meta:
+        verbose_name = 'Jobart'
+        verbose_name_plural = 'Jobarten'
 
 
 class Job(models.Model):
     typ = models.ForeignKey(JobTyp, on_delete=models.PROTECT)
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
-    earning = models.PositiveIntegerField("Bohnen pro Person", default=1)
 
     def __unicode__(self):
         return u'Job #%s' % (self.id)
-        
+
 
     def wochentag(self):
         weekday = helpers.weekdays[self.time.isoweekday()]
@@ -190,20 +254,27 @@ class Job(models.Model):
         else:
             return "erbse_fast_leer.png"
 
+    class Meta:
+        verbose_name = 'Job'
+        verbose_name_plural = 'Jobs'
+
 
 class Boehnli(models.Model):
     """
     Single boehnli (work unit).
-    Automatically created during job creation.
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    loco = models.ForeignKey(Loco, on_delete=models.PROTECT, null=True, blank=True)
+    loco = models.ForeignKey(Loco, on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u'Boehnli #%s' % self.id
 
     def zeit(self):
         return self.job.time
+
+    class Meta:
+        verbose_name = 'Böhnli'
+        verbose_name_plural = 'Böhnlis'
 
 
 #model_audit.m2m(Abo.users)

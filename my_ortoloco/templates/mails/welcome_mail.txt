@@ -1,13 +1,19 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-Wir freuen uns dich bei uns begrüssen zu können.
+Willkommen!
+
+Wir freuen uns, dich bei ortoloco begrüssen zu dürfen.
 
 Unter my.ortoloco.ch kannst du dich ab sofort für Jobs anmelden und vieles mehr.
 
 Email: {{ username }}
-Passwort: {{ password }} (Bitte setze dir gleich ein neues, das du dir gut merken kannst)
+Passwort: {{ password }}
+Bitte setze dir hier gleich ein neues Passwort:
+{{serverurl}}/my/passwort
 
-Weitere Infos wirst du bald vom Kernteam erhalten.
+Weitere Infos wirst du bald erhalten. Bei Fragen oder Unklarheiten einfach melden:
+info@ortoloco.ch
 
-Viel Spass bei ortoloco!
+Herzlich grüsst,
+die ortoloco-Betriebsgruppe
 {% endblock %}

@@ -61,7 +61,7 @@ class AboAdminForm(forms.ModelForm):
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = Job
-        fields = ["typ", "slots", "earning"]
+        fields = ["typ", "slots"]
 
     weekdays = forms.MultipleChoiceField(label="Wochentage", choices=helpers.weekday_choices, 
                                          widget=forms.widgets.CheckboxSelectMultiple)
@@ -69,16 +69,16 @@ class JobCopyForm(forms.ModelForm):
     time = forms.TimeField(label="Zeit", required=False,
                            widget=admin.widgets.AdminTimeWidget)
 
-    start_date = forms.DateField(label="Anfangsdatum", required=False,
+    start_date = forms.DateField(label="Anfangsdatum", required=True,
                                  widget=admin.widgets.AdminDateWidget)
-    end_date = forms.DateField(label="Enddatum", required=False,
+    end_date = forms.DateField(label="Enddatum", required=True,
                                widget=admin.widgets.AdminDateWidget)
 
 
     weekly = forms.ChoiceField(choices=[(7, "jede Woche"), (14, "Alle zwei Wochen")],
                                widget=forms.widgets.RadioSelect, initial=7)
 
-    
+
     def __init__(self, *a, **k):
         super(JobCopyForm, self).__init__(*a, **k)
         inst = k.pop("instance")
@@ -90,8 +90,9 @@ class JobCopyForm(forms.ModelForm):
     
     def clean(self):
         cleaned_data = forms.ModelForm.clean(self)
-        if not self.get_dates(cleaned_data):
-            raise ValidationError("Not enough events")
+        if "start_date" in cleaned_data and "end_date" in cleaned_data:
+            if not self.get_dates(cleaned_data):
+                raise ValidationError("Kein neuer Job fällt zwischen Anfangs- und Enddatum")
         return cleaned_data
     
 
@@ -106,13 +107,14 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = Job.objects.create(typ=inst.typ, slots=inst.slots, time=dt, earning=inst.earning)
+            job = Job.objects.create(typ=inst.typ, slots=inst.slots, time=dt)
             newjobs.append(job)
             job.save()
 
         # create new objects
         # HACK: admin expects a saveable object to be returned when commit=False
-        return newjobs[-1]
+        #return newjobs[-1]
+        return inst
 
 
     def save_m2m(self):
@@ -165,7 +167,7 @@ class BoehnliInline(admin.TabularInline):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "typ", "time", "earning", "slots", "freie_plaetze"]
+    list_display = ["__unicode__", "typ", "time", "slots", "freie_plaetze"]
     actions = ["copy_job", "mass_copy_job"]
     search_fields = ["typ__name", "typ__bereich__name"]
 
@@ -185,7 +187,7 @@ class JobAdmin(admin.ModelAdmin):
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = Job(typ=inst.typ, slots=inst.slots, time=inst.time, earning=inst.earning)
+            newjob = Job(typ=inst.typ, slots=inst.slots, time=inst.time)
             newjob.save()
     copy_job.short_description = "Jobs kopieren"
     
@@ -215,6 +217,14 @@ class JobAdmin(admin.ModelAdmin):
         self.readonly_fields = tmp_readonly
         self.inlines = tmp_inlines
         return res
+
+    
+    def construct_change_message(self, request, form, formsets):
+        # As of django 1.6 the automatic logging of changes triggered by the change view behaves badly
+        # when custom forms are used. This is a workaround.
+        if "copy_job" in request.path:
+            return ""
+        return admin.ModelAdmin.construct_change_message(self, request, form, formsets)
     
 
 
@@ -260,8 +270,10 @@ class LocoAdminForm(forms.ModelForm):
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        loco = k["instance"]
-        if loco.abo:
+        loco = k.get("instance")
+        if loco is None:
+            link = ""
+        elif loco.abo:
             url = reverse("admin:my_ortoloco_abo_change", args=(loco.abo.id,))
             link = "<a href=%s>%s</a>" % (url, loco.abo)
         else:

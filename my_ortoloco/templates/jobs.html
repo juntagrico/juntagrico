@@ -16,7 +16,7 @@
             {% for job in jobs %}
                 <tr>
                     <td>{{ job.wochentag }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}||{{ job.time_stamp }}</td>
-                    <td><a href="/my/jobs/{{ job.id }}">{{ job.typ.name }}</a></td>
+                    <td><a href="/my/jobs/{{ job.id }}">{{ job.typ.get_name }}</a></td>
                     <td><img src="/static/img/{{ job.get_status_bohne }}"/></td>
                     <td>{{ job.typ.location }}</td>
                 </tr>
@@ -24,6 +24,10 @@
             </tbody>
         </table>
     </div>
+    <br/><br/>
+    {% if show_all %}
+        <a href="/my/einsaetze/alle">Auch vergangene Jobs anzeigen</a>
+    {% endif %}
 
     <script type="text/javascript" src="/static/js/dable.js"></script>
     <script type="text/javascript">

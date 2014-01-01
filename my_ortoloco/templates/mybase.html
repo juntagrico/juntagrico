@@ -63,13 +63,17 @@
                         <div class="jobs">
                             {% block next_jobs %}
                                 <h5>Nächste Einsätze</h5>
-                                <ul class="unstyled next-jobs">
-                                {% for bohne in next_jobs %}
-                                    <li><a href="/my/jobs/{{ bohne.job.id }}">{{ bohne.job.typ.name }}</a><br/>
-                                    <div class="time">{{ bohne.job.time|date:"d.m H:i" }}-{{ bohne.job.end_time|date:"H:i" }}</div>
-                                    </li>
-                                {% endfor %}
-                                </ul>
+                                {% if next_jobs|length > 0 %}
+                                    <ul class="unstyled next-jobs">
+                                    {% for job in next_jobs %}
+                                        <li><a href="/my/jobs/{{ job.id }}">{{ job.typ.name }}</a><br/>
+                                        <div class="time">{{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}</div>
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    Noch für keine Jobs angemeldet
+                                {% endif %}
                             {% endblock %}
                         </div>
                 </div>

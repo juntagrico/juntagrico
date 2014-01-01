@@ -17,7 +17,7 @@
     {% for job in jobs %}
         <li>
             <span class="date">{{ job.time |date:"d.m H:i" }}</span>
-            <a href="/myortoloco/jobs/{{ job.id }}">{{ job.typ }}</a>
+            <a href="/my/jobs/{{ job.id }}">{{ job.typ }}</a>
         </li>
     {% endfor %}
     {% if jobs|length <= 0 %}

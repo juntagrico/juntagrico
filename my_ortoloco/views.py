@@ -13,7 +13,7 @@ from my_ortoloco.models import *
 from my_ortoloco.forms import *
 from my_ortoloco.helpers import render_to_pdf
 from my_ortoloco.filters import Filter
-
+import hashlib
 from mailer import *
 
 import string
@@ -25,6 +25,7 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 
 def getBohnenDict(request):
     loco = request.user.loco
+    next_jobs = []
     if loco.abo is not None:
         allebohnen = Boehnli.objects.filter(loco=loco)
         userbohnen = []
@@ -33,13 +34,18 @@ def getBohnenDict(request):
             if bohne.job.time.year == date.today().year and bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
                 userbohnen.append(bohne)
         bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.groesse * 10 / loco.abo.locos.count()))
+
+        for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
+            if bohne.job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+                next_jobs.append(bohne.job)
     else:
         bohnenrange = None
         userbohnen = []
+        next_jobs = []
     return {
         'bohnenrange': bohnenrange,
-        'userbohnen': userbohnen.__len__(),
-        'next_jobs': Boehnli.objects.all().filter(loco=loco).order_by("job__time")
+        'userbohnen': len(userbohnen),
+        'next_jobs': next_jobs
     }
 
 
@@ -105,6 +111,7 @@ def my_job(request, job_id):
     });
     return render(request, "job.html", renderdict)
 
+
 @login_required
 def my_depot(request, depot_id):
     """
@@ -117,6 +124,7 @@ def my_depot(request, depot_id):
         'depot': depot
     });
     return render(request, "depot.html", renderdict)
+
 
 @login_required
 def my_participation(request):
@@ -183,14 +191,22 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
+    extraabos = []
+    mitabonnenten = []
+    sharees = []
+    if request.user.loco.abo:
+        extraabos = request.user.loco.abo.extra_abos.all()
+        mitabonnenten = request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email)
+        sharees = request.user.loco.abo.locos.exclude(id=request.user.loco.id)
+
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'zusatzabos': request.user.loco.abo.extra_abos.all(),
+        'zusatzabos': extraabos,
         'loco': request.user.loco,
         'scheine': request.user.loco.anteilschein_set.count(),
-        'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email),
+        'mitabonnenten': mitabonnenten,
         'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid=False).count(),
-        'sharees': request.user.loco.abo.locos.exclude(id=request.user.loco.id)
+        'sharees': sharees
     })
     return render(request, "my_abo.html", renderdict)
 
@@ -215,6 +231,25 @@ def my_team(request, bereich_id):
 
 @login_required
 def my_einsaetze(request):
+    """
+    All jobs to be sorted etc.
+    """
+    renderdict = getBohnenDict(request)
+
+    jobs = []
+    for job in Job.objects.all():
+        if job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+            jobs.append(job)
+    renderdict.update({
+        'jobs': jobs,
+        'show_all': True
+    })
+
+    return render(request, "jobs.html", renderdict)
+
+
+@login_required
+def my_einsaetze_all(request):
     """
     All jobs to be sorted etc.
     """
@@ -249,7 +284,11 @@ def my_signup(request):
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
-                    user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password)
+
+                    names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
+                    username = names + hashlib.sha1(locoform.cleaned_data['email']).hexdigest()
+
+                    user = User.objects.create_user(username[:30], locoform.cleaned_data['email'], password)
                     user.loco.first_name = locoform.cleaned_data['first_name']
                     user.loco.last_name = locoform.cleaned_data['last_name']
                     user.loco.email = locoform.cleaned_data['email']
@@ -295,7 +334,9 @@ def my_add_loco(request, abo_id):
         except  ValueError:
             scheineerror = True
         if locoform.is_valid() and scheineerror is False and userexists is False:
-            user = User.objects.create_user(locoform.cleaned_data['email'], locoform.cleaned_data['email'], password_generator())
+            names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
+            username = names + hashlib.sha1(locoform.cleaned_data['email']).hexdigest()
+            user = User.objects.create_user(username, locoform.cleaned_data['email'], password_generator())
             user.loco.first_name = locoform.cleaned_data['first_name']
             user.loco.last_name = locoform.cleaned_data['last_name']
             user.loco.email = locoform.cleaned_data['email']
@@ -314,6 +355,8 @@ def my_add_loco(request, abo_id):
             send_been_added_to_abo(request.user.loco.first_name + " " + request.user.loco.last_name, user.loco.email)
 
             user.loco.save()
+            if request.GET.get("return"):
+                return redirect(request.GET.get("return"))
             return redirect('/my/aboerstellen')
 
     else:
@@ -377,8 +420,6 @@ def my_createabo(request):
                 for num in range(0, toadd):
                     anteilsschein = Anteilschein(loco=loco, paid=False)
                     anteilsschein.save()
-
-
 
             if request.POST.get("add_loco"):
                 return redirect("/my/abonnent/" + str(loco.abo_id))
@@ -499,6 +540,18 @@ def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
     return HttpResponseRedirect("/aktuelles")
+
+
+def alldepots_list(request):
+    """
+    Printable list of all depots to check on get gemüse
+    """
+    renderdict = {
+        "depots": Depot.objects.all().filter(),
+        "datum": timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
+    }
+
+    return render(request, "exports/all_depots.html", renderdict)
 
 
 def depot_list(request, name):
