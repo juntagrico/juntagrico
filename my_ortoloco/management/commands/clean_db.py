@@ -21,8 +21,8 @@ class Command(BaseCommand):
         Taetigkeitsbereich.objects.all().delete()
 
         # delete all users except super
+        Loco.objects.filter(user__id__gt=1).delete()
         User.objects.filter(id__gt=1).delete()
-        Loco.objects.filter(id__gt=1).delete()
 
 
         # TODO
