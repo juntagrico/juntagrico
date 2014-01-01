@@ -22,7 +22,7 @@
                         <strong>Kleines Abo</strong>
 
                         <div>
-                            Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilsscheine.
+                            Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilscheine.
                         </div>
                     </label>
                 </div>
@@ -36,7 +36,7 @@
                         <strong>Grosses Abo</strong>
 
                         <div>
-                            Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilsscheine.
+                            Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilscheine.
                         </div>
                     </label>
                 </div>
@@ -50,7 +50,7 @@
                         <strong>Haus-Abo</strong>
 
                         <div>
-                            Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilsscheine gezeichnet werden.
+                            Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.
                         </div>
                     </label>
                 </div>
@@ -88,7 +88,7 @@
             </div>
 
             <div class="control-group">
-                <label class="control-label">Mitabonnenten</label>
+                <label class="control-label">MitabonnentInnen</label>
 
                 <div class="controls">
                     {% if 0 == mit_locos|length %}
@@ -96,7 +96,7 @@
                     {% else %}
                         <ul>
                             {% for loco in mit_locos %}
-                                <li>{{ loco.first_name }} {{ loco.last_name }} - {{ loco.anteilschein_set.all|length }} Anteilsschein(e)</li>
+                                <li>{{ loco.first_name }} {{ loco.last_name }} - {{ loco.anteilschein_set.all|length }} Anteilschein(e)</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -105,7 +105,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="control-label">Anteilsscheine</label>
+                <label class="control-label">Anteilscheine</label>
 
                 <div class="controls">
                     <label for="scheine">
@@ -131,7 +131,7 @@
                         </script>
                     </label>
                     {% if scheineerror %}
-                        <div class="alert alert-error">Du brauchst mehr Anteilsscheine für das gewählte Abo</div>
+                        <div class="alert alert-error">Du brauchst mehr Anteilscheine für das gewählte Abo</div>
                     {% endif %}
                 </div>
             </div>
