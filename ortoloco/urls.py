@@ -42,6 +42,7 @@ urlpatterns = patterns('',
     url('^my/vergangenejobs$', 'my_ortoloco.views.my_pastjobs'),
     url('^my/abonnent/(?P<abo_id>.*?)/', 'my_ortoloco.views.my_add_loco'),
     url('^my/depot/(?P<depot_id>.*?)/', 'my_ortoloco.views.my_depot'),
+    url('^my/mails$', 'my_ortoloco.views.my_mails'),
 
 
     (r'^accounts/login/$',  login),

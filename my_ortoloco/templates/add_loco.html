@@ -3,7 +3,7 @@
 {% block allcontent %}
     <div class="span2"></div>
     <div class="span8">
-        <h3>Mitabonnent hinzufügen</h3>
+        <h3>MitabonnentIn hinzufügen</h3>
         <br/>
 
         <form action="" method="post" class="form-horizontal">
@@ -97,10 +97,10 @@
                 </div>
             </div>
             <div class="control-group {% if scheineerror %}error{% endif %}">
-                <label class="control-label" for="id_anteilsscheine">Anteilsscheine</label>
+                <label class="control-label" for="id_anteilscheine">Anteilscheine</label>
 
                 <div class="controls">
-                    <input type="text" class="span1" name="anteilsscheine" id="id_anteilsscheine" value="{{ scheine }}">
+                    <input type="text" class="span1" name="anteilscheine" id="id_anteilscheine" value="{{ scheine }}">
 
                     {% if scheineerror %}
                         <span class="help-inline">Bitte positive Zahl eingeben</span>
@@ -113,7 +113,7 @@
                 </div>
             {% endif %}
             <div class="form-actions">
-                <button type="submit" class="btn btn-success">Mitabonnent hinzufügen</button>
+                <button type="submit" class="btn btn-success">MitabonnentIn hinzufügen</button>
                 <a href="/my/aboerstellen" class="btn">Abbrechen</a>
             </div>
         </form>

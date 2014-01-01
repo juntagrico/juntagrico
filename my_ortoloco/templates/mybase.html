@@ -38,6 +38,12 @@
                             <li class="{{ menu.ortoloco }}">
                                 <a href="/aktuelles">ortoloco.ch</a>
                             </li>
+                            {% if staff_user %}
+                                <hr>
+                                <li>
+                                <a href="/my/mails">Mails verschicken</a>
+                                </li>
+                            {% endif %}
                             <hr>
                             <li class="{{ menu.personalInfo }}">
                                 <a href="/my/profil">Personalien</a>

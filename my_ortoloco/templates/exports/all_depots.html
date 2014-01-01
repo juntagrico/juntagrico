@@ -5,22 +5,21 @@
     <style>
         @page {
             size: a4 portrait;
-                @frame content_frame {
-        left: 50pt;
-            width: 512pt;
-            top: 90pt;
-            height: 632pt;
-        }
-                @frame header_frame {
-        -pdf-frame-content:header_content;
-            left: 50pt;
-            width: 512pt;
-            top: 50pt;
-            height: 40pt;
-            text-align: center;
-        }
-
+            @frame content_frame {
+                left: 50pt;
+                width: 512pt;
+                top: 90pt;
+                height: 632pt;
             }
+            @frame header_frame {
+                -pdf-frame-content:header_content;
+                left: 50pt;
+                width: 512pt;
+                top: 50pt;
+                height: 40pt;
+                text-align: center;
+            }
+        }
 
         .page-break {
             page-break-after: always;
@@ -45,8 +44,17 @@
         .bottom-border {
             border-bottom: 1px black solid;
         }
+
         th {
             text-align: left;
+        }
+        td {
+            font-size: 14px;
+            line-height: 14px;
+            height: 16px;
+        }
+        .small {
+            font-size: 12px;
         }
     </style>
 </head>
@@ -65,39 +73,39 @@
             <td></td>
             <td></td>
             <td></td>
-            <td colspan="2" class="top-border left-border right-border">ABO</td>
-            <td colspan="2" class="top-border right-border">EIER</td>
-            <td colspan="3" class="top-border right-border">KÄSE <span style="font-size:11px">1x Anfang Monat!</span></td>
-            <td colspan="3" class="top-border right-border">OBST <span style="font-size:11px">ab Mitte Sept.!</span></td>
+            <th colspan="2" class="top-border left-border right-border">ABO</th>
+            <th colspan="2" class="top-border right-border">EIER</th>
+            <th colspan="3" class="top-border right-border">KÄSE<br/><span style="font-size:11px">1x Anfang Monat!</span></th>
+            <th colspan="3" class="top-border right-border">OBST</th>
         </tr>
         <tr>
             <td></td>
             <td></td>
             <td></td>
-            <td class="left-border bottom-border">klein</td>
-            <td class="bottom-border right-border">gross</td>
-            <td class="bottom-border">4er</td>
-            <td class="bottom-border right-border">6er</td>
-            <td class="bottom-border">ganz</td>
-            <td class="bottom-border">halb</td>
-            <td class="bottom-border right-border">viertel</td>
-            <td class="bottom-border">gross</td>
-            <td class="bottom-border">klein</td>
-            <td class="bottom-border right-border"></td>
+            <td class="small left-border bottom-border">klein</td>
+            <td class="small bottom-border right-border">gross</td>
+            <td class="small bottom-border">4er</td>
+            <td class="small bottom-border right-border">6er</td>
+            <td class="small bottom-border">ganz</td>
+            <td class="small bottom-border">halb</td>
+            <td class="small bottom-border right-border">viertel</td>
+            <td class="small bottom-border">gross</td>
+            <td class="small bottom-border">klein</td>
+            <td class="small bottom-border right-border"></td>
         </tr>
         <tr>
             <td style="width:120px;"></td>
             <td style="width:120px;"></td>
-            <td style="width:160px; text-align:right;">TOTAL</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
-            <td style="width:40px;">x</td>
+            <td style="width:150px; text-align:right;">TOTAL</td>
+            <td style="width:40px;">{{ depot.small_abos }}</td>
+            <td style="width:40px;">{{ depot.big_abos }}</td>
+            <td style="width:40px;">{{ depot.vier_eier }}</td>
+            <td style="width:40px;">{{ depot.sechs_eier }}</td>
+            <td style="width:40px;">{{ depot.kaese_ganz }}</td>
+            <td style="width:40px;">{{ depot.kaese_halb }}</td>
+            <td style="width:40px;">{{ depot.kaese_viertel }}</td>
+            <td style="width:40px;">{{ depot.big_obst }}</td>
+            <td style="width:40px;">{{ depot.small_obst }}</td>
             <td style="width:80px;"></td>
         </tr>
         <tr>

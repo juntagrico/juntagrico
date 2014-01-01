@@ -35,6 +35,7 @@ def send_mail_multi(email_multi_message):
             sent = False
             for entry in settings.WHITELIST_EMAILS:
                 if sent is False and re.match(entry, email):
+                    email_multi_message.to = email
                     email_multi_message.send()
                     sent = True
                     print "Mail sent to " + email + ", on whitelist: " + entry
@@ -75,4 +76,22 @@ def send_welcome_mail(email, password, server):
 
 
 def send_been_added_to_abo(name, email):
-    send_mail('Du wurdest als Mitabonnent hinzugefuegt', "Soeben hat dich " + name + " zu seinem Abo hinzugefuegt.", 'orto@xiala.net', [email])
+    send_mail('Du wurdest als MitabonnentIn hinzugefügt', "Soeben hat dich " + name + " zu seinem Abo hinzugefügt.", 'orto@xiala.net', [email])
+
+def send_filtered_mail(subject, message, emails, server):
+    plaintext = get_template('mails/filtered_mail.txt')
+    htmly = get_template('mails/filtered_mail.html')
+
+    # reset password so we can send it to him
+    d = Context({
+        'subject': subject,
+        'content': message,
+        'serverurl': "http://" + server
+    })
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)

@@ -25,15 +25,15 @@
                 {% if loco.abo.active %}
                     Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
                 {% else %}
-                    <span class="text-error">Auf der Warteliste</span> - Du erhälst leider im Moment noch kein Gemüse
+                    <span class="text-error">Auf der Warteliste</span> - du erhälst leider im Moment noch kein Gemüse.
                 {% endif %}
             </dd>
             <dt>&nbsp;</dt>
             <dd>&nbsp;</dd>
-            <dt>Anteilsscheine</dt>
+            <dt>Anteilscheine</dt>
             <dd>
-                {{ scheine }} (davon {{ scheine_unpaid }} noch nicht bezahlt)<br/><br/>
-                Anteilsscheine von Mitabonnenten:
+                {{ scheine }} {% if scheine_unpaid > 0 %}(davon {{ scheine_unpaid }} noch nicht bezahlt){% endif %}<br/><br/>
+                Anteilscheine von MitabonnentInnen:
                 <ul>
                     {% for abonnent in  mitabonnenten %}
                         <li>{{ abonnent.anteilschein_set.count }} von {{ abonnent.first_name }} {{ abonnent.last_name }}</li>
@@ -58,15 +58,15 @@
                         <br/>
                     {% endif %}
                 {% else %}
-                    Du hast noch keine Mitabonnenten eingetragen.<br/>
+                    Du hast noch keine MitabonnentInnen eingetragen.<br/>
                 {% endif %}
-                <a href="/my/abonnent/{{ loco.abo.id }}?return=/my/abo">Hier Mitabonnenten eintragen</a>
+                <a href="/my/abonnent/{{ loco.abo.id }}?return=/my/abo">Hier MitabonnentInnen eintragen</a>
             </dd>
             <dt>&nbsp;</dt>
             <dd>&nbsp;</dd>
             <dt>Depot</dt>
             <dd>
-                {{ loco.abo.depot }} > <a href="/my/depot/{{ loco.abo.depot.id }}">Weitere Infos zum Depot</a>
+                {{ loco.abo.depot.name }} > <a href="/my/depot/{{ loco.abo.depot.id }}">Weitere Infos zum Depot</a>
             </dd>
 
             {% if zusatzabos|length > 0 %}

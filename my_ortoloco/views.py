@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.utils import timezone
 
@@ -45,7 +46,8 @@ def getBohnenDict(request):
     return {
         'bohnenrange': bohnenrange,
         'userbohnen': len(userbohnen),
-        'next_jobs': next_jobs
+        'next_jobs': next_jobs,
+        'staff_user': request.user.is_staff
     }
 
 
@@ -327,7 +329,7 @@ def my_add_loco(request, abo_id):
         if User.objects.filter(email=request.POST.get('email')).__len__() > 0:
             userexists = True
         try:
-            scheine = int(request.POST.get("anteilsscheine"))
+            scheine = int(request.POST.get("anteilscheine"))
             scheineerror = scheine < 0
         except TypeError:
             scheineerror = True
@@ -349,8 +351,8 @@ def my_add_loco(request, abo_id):
             user.loco.save()
 
             for num in range(0, scheine):
-                anteilsschein = Anteilschein(loco=user.loco, paid=False)
-                anteilsschein.save()
+                anteilschein = Anteilschein(loco=user.loco, paid=False)
+                anteilschein.save()
 
             send_been_added_to_abo(request.user.loco.first_name + " " + request.user.loco.last_name, user.loco.email)
 
@@ -418,8 +420,8 @@ def my_createabo(request):
             if loco.anteilschein_set.count() < int(request.POST.get("scheine")):
                 toadd = int(request.POST.get("scheine")) - loco.anteilschein_set.count()
                 for num in range(0, toadd):
-                    anteilsschein = Anteilschein(loco=loco, paid=False)
-                    anteilsschein.save()
+                    anteilschein = Anteilschein(loco=loco, paid=False)
+                    anteilschein.save()
 
             if request.POST.get("add_loco"):
                 return redirect("/my/abonnent/" + str(loco.abo_id))
@@ -536,6 +538,20 @@ def my_change_password(request):
     return render(request, 'password.html', renderdict)
 
 
+@staff_member_required
+def my_mails(request):
+    if request.method == 'POST':
+        emails = []
+        if request.POST.get("allabo") == "on":
+            for loco in Loco.objects.filter(abo=None):
+                emails.append(loco.email)
+            send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), emails, request.META["HTTP_HOST"])
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+    })
+    return render(request, 'mail_sender.html', renderdict)
+
+
 def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
@@ -551,7 +567,7 @@ def alldepots_list(request):
         "datum": timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
     }
 
-    return render(request, "exports/all_depots.html", renderdict)
+    return render_to_pdf(request, "exports/all_depots.html", renderdict)
 
 
 def depot_list(request, name):
