@@ -7,6 +7,9 @@ admin.autodiscover()
 from django.contrib.auth.views import login, logout
 from django.views.generic import RedirectView
 
+import django_cron
+django_cron.autodiscover()
+
 
 
 urlpatterns = patterns('',
