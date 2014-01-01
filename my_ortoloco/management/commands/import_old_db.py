@@ -204,7 +204,9 @@ class Command(BaseCommand):
                           weekday=weekday,
                           addr_street=addr_street,
                           addr_zipcode=addr_zipcode,
-                          addr_location=addr_location)
+                          addr_location=addr_location,
+                          latitude="47.345",
+                          longitude="8.549")
 
             new_depots.append(depot)
         Depot.objects.bulk_create(new_depots)
@@ -449,8 +451,7 @@ class Command(BaseCommand):
 
             job = Job(typ_id=typ,
                       slots=slots,
-                      time=convdate,
-                      earning=1)
+                      time=convdate)
 
             new_jobs.append(job)
 
