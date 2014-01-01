@@ -255,6 +255,7 @@ class DepotAdmin(admin.ModelAdmin):
 class BereichAdmin(admin.ModelAdmin):
     filter_horizontal = ["locos"]
     raw_id_fields = ["coordinator"]
+    list_display = ["name", "core", "coordinator"]
 
 
 class BoehnliAdmin(admin.ModelAdmin):

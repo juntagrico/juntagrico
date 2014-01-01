@@ -130,23 +130,27 @@ class Command(BaseCommand):
         query = list(self.query("SELECT * FROM lux_funktion ")) 	
         new_taetigkeitsbereiche = []
 
+        from _koordinatoren import koordinatoren
+
         for row in query:
             id, name, description, type, showorder = self.decode_row(row)
-            loco_id=None
-            locos = sorted(Loco.objects.all(), key=lambda u: u.id)
-            for loco in locos:
-                if loco.email in description:
-                    loco_id=loco.id
-                    taetigkeitsbereich = Taetigkeitsbereich(name=name,
-                                                            description=description,
-                                                            coordinator_id=loco_id)
-                    break
+            
+            if name not in koordinatoren:
+                print "not migrating bereich %s" % name
+                continue
 
-                else:
-                    loco_id=loco.id
-                    taetigkeitsbereich = Taetigkeitsbereich(name=name,
-                                                            description=description,
-                                                            coordinator_id=loco_id)
+            email = koordinatoren[name]
+            try:
+                coordinator = Loco.objects.get(email=email)
+            except Exception:
+                print "cannot find loco with email %s" %email
+                coordinator = Loco.objects.get(pk=1)
+            core = name in ("ernten", "abpacken", "verteilen")
+
+            taetigkeitsbereich = Taetigkeitsbereich(name=name,
+                                                    description=description,
+                                                    coordinator=coordinator,
+                                                    core=core)
 
             new_taetigkeitsbereiche.append(taetigkeitsbereich)
 
@@ -278,8 +282,6 @@ class Command(BaseCommand):
         new_taetigkeitsbereich9_locos = []
         new_taetigkeitsbereich10_locos = []
         new_taetigkeitsbereich11_locos = []
-        new_taetigkeitsbereich12_locos = []
-        new_taetigkeitsbereich13_locos = []
 
         locos = sorted(Loco.objects.all(), key=lambda l: l.id)
         taetigkeitsbereiche = sorted(Taetigkeitsbereich.objects.all(), key=lambda ta: ta.id)
@@ -314,10 +316,6 @@ class Command(BaseCommand):
                         new_taetigkeitsbereich10_locos.append(loco.id)
                     if fkt12 == taetigkeitsbereiche[11].name:
                         new_taetigkeitsbereich11_locos.append(loco.id)
-                    if fkt13 == taetigkeitsbereiche[12].name:
-                        new_taetigkeitsbereich12_locos.append(loco.id)
-                    if fkt14 == taetigkeitsbereiche[13].name:
-                        new_taetigkeitsbereich13_locos.append(loco.id)
 
         t0= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[0].id)
         t0.locos=new_taetigkeitsbereich0_locos
@@ -354,12 +352,6 @@ class Command(BaseCommand):
 
         t11= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[11].id)
         t11.locos=new_taetigkeitsbereich11_locos
-
-        t12= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[12].id)
-        t12.locos=new_taetigkeitsbereich12_locos
-
-        t13= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[13].id)
-        t13.locos=new_taetigkeitsbereich13_locos
 
         print '***************************************************************'
         print 'Teatigkeitsbereiche_Locos built'
