@@ -146,6 +146,7 @@ class Command(BaseCommand):
                 print "cannot find loco with email %s" %email
                 coordinator = Loco.objects.get(pk=1)
             core = name in ("ernten", "abpacken", "verteilen")
+            hidden = name in ("adminbuchhaltung",)
 
             taetigkeitsbereich = Taetigkeitsbereich(name=name,
                                                     description=description,

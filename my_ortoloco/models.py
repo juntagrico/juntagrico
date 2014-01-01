@@ -228,6 +228,7 @@ class Taetigkeitsbereich(models.Model):
     name = models.CharField("Name", max_length=100, validators=[validators.validate_slug], unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     core = models.BooleanField("Kernbereich", default=False)
+    hidden = models.BooleanField("versteckt", default=False)
     coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
     locos = models.ManyToManyField(Loco, related_name="taetigkeitsbereiche")
 
