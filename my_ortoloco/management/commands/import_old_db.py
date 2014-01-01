@@ -363,6 +363,12 @@ class Command(BaseCommand):
         print 'Migrating JobTypes'
         print '***************************************************************'
 
+        from _create_jobtyps import create_jobtyps
+
+        create_jobtyps()
+
+        return
+
         query = list(self.query("SELECT * FROM lux_job WHERE active=1 GROUP BY name"))
 
         new_jobtypes = []
@@ -444,7 +450,11 @@ class Command(BaseCommand):
         for row in query:
             jjid, timestamp, ljjid, jname, slots = self.decode_row(row)
 
-            idlookup=JobTyp.objects.get(name=jname)
+            try:
+                idlookup=JobTyp.objects.get(name=jname)
+            except Exception:
+                print "No jobtyp with name %s" % jname
+                continue
             convdate=datetime.date.fromtimestamp(timestamp)
 
             typ=idlookup.id
