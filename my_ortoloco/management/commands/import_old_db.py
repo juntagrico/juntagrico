@@ -144,7 +144,8 @@ class Command(BaseCommand):
                 coordinator = Loco.objects.get(email=email)
             except Exception:
                 print "cannot find loco with email %s" %email
-                coordinator = Loco.objects.get(pk=1)
+                #coordinator = Loco.objects.get(pk=1)
+                coordinator = Loco.objects.get(user_id=1)
             core = name in ("ernten", "abpacken", "verteilen")
             hidden = name in ("adminbuchhaltung",)
 
@@ -368,67 +369,6 @@ class Command(BaseCommand):
 
         create_jobtyps()
 
-        return
-
-        query = list(self.query("SELECT * FROM lux_job WHERE active=1 GROUP BY name"))
-
-        new_jobtypes = []
-        taetigkeitsbereiche = sorted(Taetigkeitsbereich.objects.all(), key=lambda ta: ta.id)
-
-        for row in query:
-            jid,name,description,units,cat,start,loc,created_on,created_by,active,beans = self.decode_row(row)
-
-
-            if name == 'Abpackkoordination':
-                idlookup=Taetigkeitsbereich.objects.get(name='abpacken')
-                bereich_id=idlookup.id
-            elif name == 'Aktionstag':
-                idlookup=Taetigkeitsbereich.objects.get(name='garten')
-                bereich_id=idlookup.id
-            elif name == 'Beeren ernten':
-                idlookup=Taetigkeitsbereich.objects.get(name='beeren')
-                bereich_id=idlookup.id
-            elif name == 'Ernten':
-                idlookup=Taetigkeitsbereich.objects.get(name='ernten')
-                bereich_id=idlookup.id
-            elif name =='Ernteverteilung':
-                idlookup=Taetigkeitsbereich.objects.get(name='verteilen')
-                bereich_id=idlookup.id
-            elif name == 'Ernteverteilung+F':
-                idlookup=Taetigkeitsbereich.objects.get(name='verteilen')
-                bereich_id=idlookup.id
-            elif name == 'Freitags-Ernten':
-                idlookup=Taetigkeitsbereich.objects.get(name='freitag')
-                bereich_id=idlookup.id
-            elif name == 'Freitagsaktionstag':
-                idlookup=Taetigkeitsbereich.objects.get(name='freitag')
-                bereich_id=idlookup.id
-            elif name == 'Fyrobigj?te':
-                idlookup=Taetigkeitsbereich.objects.get(name='garten')
-                bereich_id=idlookup.id
-            elif name == 'Gm?es abpacken':
-                idlookup=Taetigkeitsbereich.objects.get(name='abpacken')
-                bereich_id=idlookup.id
-            elif name == 'Kochen am Aktionstag':
-                idlookup=Taetigkeitsbereich.objects.get(name='gastrofeste')
-                bereich_id=idlookup.id
-            elif name == 'Kr?uter und Blumen':
-                idlookup=Taetigkeitsbereich.objects.get(name='kraeuterblumen')
-                bereich_id=idlookup.id
-            elif name == 'Tageseinsatz':
-                idlookup=Taetigkeitsbereich.objects.get(name='garten')
-                bereich_id=idlookup.id
-
-            jobtyp = JobTyp(name=name,
-                            description=description,
-                            bereich_id=bereich_id,
-                            duration=4,
-                            location=loc)
-
-            new_jobtypes.append(jobtyp)
-
-        JobTyp.objects.bulk_create(new_jobtypes)
-
         print '***************************************************************'
         print 'JobTypes migrated'
         print '***************************************************************'
@@ -445,7 +385,6 @@ class Command(BaseCommand):
                                 "ON j.jid=lj.jid "
                                 "WHERE lj.active=1"))
 
-        print query[0]
         new_jobs = []
 
         for row in query:
@@ -579,9 +518,6 @@ class Command(BaseCommand):
                 print 'Warning: Loco ', abo.primary_loco_id, ' not found'
 
 
-
-
-
         print '***************************************************************'
         print 'Abos migrated'
         print '***************************************************************'
@@ -599,9 +535,9 @@ class Command(BaseCommand):
                                 "case when substr(abo,7,1)='1' then 'eier_4' else '' end eat1, "
                                 "case when substr(abo,9,1)='1' then 'eier_6' else '' end eat2, "
                                 "case when substr(abo,11,1)='1' then 'kaese_1' else '' end eat3, "
+                                "case when substr(abo,13,1)='1' then 'obst_klein' else '' end eat6, "
                                 "case when substr(abo,15,1)='1' then 'kaese_05' else '' end eat4, "
-                                "case when substr(abo,17,1)='1' then 'kaese_025' else '' end eat5, "
-                                "case when substr(abo,13,1)='1' then 'obst_klein' else '' end eat6 "
+                                "case when substr(abo,17,1)='1' then 'kaese_025' else '' end eat5 "
                                 "FROM abo a "
                                 "JOIN person p "
                                 "ON a.pid=p.pid "))
