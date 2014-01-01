@@ -9,10 +9,10 @@ from my_ortoloco.models import *
 
 class Command(BaseCommand):
     def connect(self, user, passwd):
-        db = MySQLdb.connect(host="my2.ortoloco.ch",
+        db = MySQLdb.connect(host="my.ortoloco.ch",
                              user=user,
                              passwd=passwd,
-                             db="my2ortoloco")
+                             db="myortoloco")
 
         self.cur = db.cursor()
 
@@ -495,18 +495,31 @@ class Command(BaseCommand):
 
         query = list(self.query("SELECT a.pid as abopid, anteilschein, abo, abomit as abomitpid, "
                                 "a.timestamp, p.name as last_name, p.vorname as first_name, "
-                                "p.email, description "
+                                "p.email, description, "
+                                "case when (substr(abo,1,1)=1 and substr(abo,3,1)=0) then 1 "
+                                "else case when (substr(abo,1,1)=1 and substr(abo,3,1)=1) then 3 "
+                                "else case when substr(abo,3,1)=1 then 2 "
+                                "else case when substr(abo,3,1)=2 then 4 "
+                                "end "
+                                "end "
+                                "end "
+                                "end as groesse "
                                 "FROM abo a "
                                 "JOIN person p "
                                 "ON a.pid=p.pid "
                                 "JOIN lu_depot ld "
-                                "ON a.depot=ld.id"))
+                                "ON a.depot=ld.id "
+                                "where (substr(abo,1,1)=1 "
+                                "or substr(abo,3,1)=1 "
+                                "or substr(abo,19,1)=1) "
+                                "or (substr(abo,1,1)=1 and substr(abo,3,1)=1)"
+                                "or substr(abo,3,1) = 2"))
 
         new_abos = []
 
         for row in query:
             abopid, anteilschein, abo, abomitpid, timestamp, last_name, first_name, email, \
-            description = self.decode_row(row)
+            description, groesse = self.decode_row(row)
 
             try:
                 locoidlookup=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
@@ -515,7 +528,7 @@ class Command(BaseCommand):
 
                 abo = Abo(depot_id=depotidlookup.id,
                           primary_loco_id=locoidlookup.id,
-                          groesse=anteilschein)
+                          groesse=groesse)
 
                 new_abos.append(abo)
 
@@ -525,6 +538,22 @@ class Command(BaseCommand):
                 print 'Warning: More than one Loco for ', last_name, ' ', first_name, ' ', email
 
         Abo.objects.bulk_create(new_abos)
+
+        abos = sorted(Abo.objects.all(), key=lambda a: a.id)
+
+        for abo in abos:
+
+            try:
+                loco=Loco.objects.get(id=abo.primary_loco.id)
+                loco.abo=abo
+                loco.save()
+            except ObjectDoesNotExist:
+                print 'Warning: Loco ', abo.primary_loco_id, ' not found'
+
+
+
+
+
 
         print '***************************************************************'
         print 'Abos migrated'
@@ -541,11 +570,11 @@ class Command(BaseCommand):
                                 "p.email, "
                                 "case when substr(abo,7,1)='1' then 'eier_4' else '' end eat1, "
                                 "case when substr(abo,9,1)='1' then 'eier_6' else '' end eat2, "
-                                "case when substr(abo,11,1)='1' then 'kaese_025' else '' end eat3, "
-                                "case when substr(abo,13,1)='1' then 'kaese_05' else '' end eat4, "
-                                "case when substr(abo,15,1)='1' then 'kaese_1' else '' end eat5, "
-                                "case when substr(abo,17,1)='1' then 'obst_klein' else '' end eat6, "
-                                "case when substr(abo,19,1)='1' then 'obst_gross' else '' end eat7 "
+                                "case when substr(abo,11,1)='1' then 'kaese_1' else '' end eat3, "
+                                "case when substr(abo,15,1)='1' then 'kaese_05' else '' end eat4, "
+                                "case when substr(abo,17,1)='1' then 'kaese_025' else '' end eat5, "
+                                "case when substr(abo,13,1)='1' then 'obst_klein' else '' end eat6, "
+                                "case when substr(abo,5,1)='1' then 'obst_gross' else '' end eat7 "
                                 "FROM abo a "
                                 "JOIN person p "
                                 "ON a.pid=p.pid "))
