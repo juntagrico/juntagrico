@@ -512,7 +512,7 @@ class Command(BaseCommand):
         print 'Migrating Abos'
         print '***************************************************************'
 
-        query = list(self.query("SELECT a.pid as abopid, anteilschein, abo, abomit as abomitpid, "
+        query = list(self.query("SELECT a.pid as abopid, anteilschein, abo as abostr, abomit as abomitpid, "
                                 "a.timestamp, p.name as last_name, p.vorname as first_name, "
                                 "p.email, description, "
                                 "case when (substr(abo,1,1)=1 and substr(abo,3,1)=0) then 1 "
@@ -522,23 +522,29 @@ class Command(BaseCommand):
                                 "end "
                                 "end "
                                 "end "
-                                "end as groesse "
+                                "end as groesse, "
+                                "p1.name as abomitname, "
+                                "p1.vorname as abomitvorname, "
+                                "p1.email as abomitemail "
                                 "FROM abo a "
                                 "JOIN person p "
                                 "ON a.pid=p.pid "
                                 "JOIN lu_depot ld "
                                 "ON a.depot=ld.id "
+                                "LEFT OUTER JOIN person p1 "
+                                "ON a.abomit = p1.pid "
                                 "where (substr(abo,1,1)=1 "
                                 "or substr(abo,3,1)=1 "
                                 "or substr(abo,19,1)=1) "
                                 "or (substr(abo,1,1)=1 and substr(abo,3,1)=1)"
                                 "or substr(abo,3,1) = 2"))
 
+        d = dict((row[12], row) for row in query)
         new_abos = []
 
         for row in query:
-            abopid, anteilschein, abo, abomitpid, timestamp, last_name, first_name, email, \
-            description, groesse = self.decode_row(row)
+            abopid, anteilschein, abostr, abomitpid, timestamp, last_name, first_name, email, \
+            description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
 
             try:
                 locoidlookup=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
@@ -566,9 +572,18 @@ class Command(BaseCommand):
                 loco=Loco.objects.get(id=abo.primary_loco.id)
                 loco.abo=abo
                 loco.save()
+                for row in query:
+                    abopid, anteilschein, abostr, abomitpid, timestamp, last_name, first_name, email, \
+                    description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
+                    if loco.email == email and abomitemail is not None:
+                        try:
+                            mit_loco = Loco.objects.get(email=abomitemail)
+                            mit_loco.abo=abo
+                            mit_loco.save()
+                        except MultipleObjectsReturned:
+                            print 'Warning: More than one Loco for ', abomitname, ' ', abomitvorname, ' ', abomitemail
             except ObjectDoesNotExist:
                 print 'Warning: Loco ', abo.primary_loco_id, ' not found'
-
 
 
 
