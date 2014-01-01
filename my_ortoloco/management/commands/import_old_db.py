@@ -1,5 +1,6 @@
 import datetime
 import re
+import itertools
 
 import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
@@ -62,17 +63,24 @@ class Command(BaseCommand):
 
         # everything wer're throwing out here is bad data of some form...
         oldsize = len(query)
-        query = [row for row in query if None not in (row[0], row[15])]
+        #query = [row for row in query if None not in (row[0], row[15])]
+        query = [row for row in query if None not in (row[0],)]
         if len(query) < oldsize:
-            print
-            "warning: some inconsistent data, ignoring..."
+            print "warning: some inconsistent data, ignoring..."
+
+        newid = (u"fake_email_%03d@ortoloco.ch" % i for i in itertools.count()).next
 
         new_users = []
         for row in query:
             pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
             uid, pwd, lvl, _ = row
+            
+            if uid is None:
+                uid = newid()
+            else:
+                uid = uid.decode("latin-1")
 
-            user = User(username=uid.decode("latin-1"))
+            user = User(username=uid)
             new_users.append(user)
 
         # bulk_create groups everything into a single query. Post-create events won't be sent.
