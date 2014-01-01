@@ -569,60 +569,35 @@ class Command(BaseCommand):
                                 "JOIN person p "
                                 "ON a.pid=p.pid "))
 
-        locos = sorted(Loco.objects.all(), key=lambda l: l.id)
-        extraabotypes=sorted(ExtraAboType.objects.all(), key=lambda eat: eat.id)
+        d = dict((row[4], row) for row in query)
 
-        for row in query:
+        for abo in Abo.objects.all():
+            loco = abo.primary_loco
+            key = loco.email
+            if key not in d:
+                print "No extraabo data found for abo <%s> corresponding to <%s>" %(abo, loco)
+                continue
+
+            row = d[key]
+
             abopid, anteilschein, last_name, first_name, email, eat1, eat2, eat3, eat4, eat5,\
             eat6, eat7 = self.decode_row(row)
 
-            for loco in locos:
+            new_eattypes0_abos = []
+            if eat1 != "": 
+                new_eattypes0_abos.append(eat1)
+            if eat2 != "": 
+                new_eattypes0_abos.append(eat2)
+            if eat3 != "": 
+                new_eattypes0_abos.append(eat3)
+            if eat4 != "": 
+                new_eattypes0_abos.append(eat4)
+            if eat5 != "": 
+                new_eattypes0_abos.append(eat5)
+            if eat6 != "": 
+                new_eattypes0_abos.append(eat6)
 
-                if last_name == loco.last_name and first_name == loco.first_name:
-                    new_eattypes0_abos = []
-                    if eat1 == extraabotypes[0].name:
-
-                        eatidlkp=ExtraAboType.objects.get(name=eat1)
-                        new_eattypes0_abos.append(eatidlkp.id)
-
-                    if eat2 == extraabotypes[1].name:
-
-                        eatidlkp=ExtraAboType.objects.get(name=eat2)
-                        new_eattypes0_abos.append(eatidlkp.id)
-
-                    if eat3 == extraabotypes[2].name:
-
-                        eatidlkp=ExtraAboType.objects.get(name=eat3)
-                        new_eattypes0_abos.append(eatidlkp.id)
-
-                    if eat4 == extraabotypes[3].name:
-
-                        eatidlkp=ExtraAboType.objects.get(name=eat4)
-                        new_eattypes0_abos.append(eatidlkp.id)
-
-                    if eat5 == extraabotypes[4].name:
-
-                        eatidlkp=ExtraAboType.objects.get(name=eat5)
-                        new_eattypes0_abos.append(eatidlkp.id)
-
-                    if eat6 == extraabotypes[5].name:
-
-                        eatidlkp=ExtraAboType.objects.get(name=eat6)
-                        new_eattypes0_abos.append(eatidlkp.id)
-
-                    if eat7 == extraabotypes[6].name:
-
-                        eatidlkp=ExtraAboType.objects.get(name=eat7)
-                        new_eattypes0_abos.append(eatidlkp.id)
-
-                    try:
-                        a0 = Abo.objects.get(primary_loco_id=loco.id)
-                        a0.extra_abos=new_eattypes0_abos
-                    except ObjectDoesNotExist:
-                        print 'No Abo found for primary_loco_id: ',loco.id
-                    except MultipleObjectsReturned:
-                        print 'Warning: More than one Abo for ', loco.id, ' ', loco.last_name, ' ', \
-                        loco.first_name, ' ', loco.email
+            abo.extra_abos = ExtraAboType.objects.filter(name__in=new_eattypes0_abos)
 
         print '***************************************************************'
         print 'Abo_Extra_Abos built'
