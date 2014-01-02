@@ -59,7 +59,8 @@ class Command(BaseCommand):
                                 "UNION ALL "
                                 "SELECT * FROM person p "
                                 "    RIGHT OUTER JOIN usr u ON p.pid = u.pid "
-                                "WHERE p.pid is null"))
+                                "WHERE p.pid is null "
+                                "order by name,vorname,email, confirmed desc"))
 
         # everything wer're throwing out here is bad data of some form...
         oldsize = len(query)
@@ -89,11 +90,16 @@ class Command(BaseCommand):
         new_locos = []
         users = sorted(User.objects.all(), key=lambda u: u.id)
         users = users[1:] # kick out super user
+        num_unique_locos = 0
+        total_locos = 0
+        cnt = 0
+        chk_str = ''
 
         for user, row in zip(users, query):
             pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
             uid, pwd, lvl, _ = self.decode_row(row)
 
+            total_locos += 1
             if not re.match(r'\d{2}\.\d{2}\.\d{4}', geburtsdatum):
                 # garbage
                 geburi_date = None
@@ -102,18 +108,28 @@ class Command(BaseCommand):
                 tag, monat, jahr = [int(i) for i in geburtsdatum.split(".")]
                 geburi_date = datetime.date(jahr, monat, tag)
 
-            loco = Loco(user=user,
-                        first_name=vorname,
-                        last_name=name,
-                        email=email,
-                        addr_street=strasse,
-                        addr_zipcode=plz,
-                        addr_location=ort,
-                        birthday=geburi_date,
-                        phone=tel1,
-                        mobile_phone=tel2)
+            if chk_str != name+vorname+email: #filter non unique locos
+                chk_str = name+vorname+email
+                loco = Loco(user=user,
+                            first_name=vorname,
+                            last_name=name,
+                            email=email,
+                            addr_street=strasse,
+                            addr_zipcode=plz,
+                            addr_location=ort,
+                            birthday=geburi_date,
+                            phone=tel1,
+                            mobile_phone=tel2)
 
-            new_locos.append(loco)
+                num_unique_locos += 1
+                new_locos.append(loco)
+            else:
+                print 'Warning: Non unique Loco: ', name, vorname, email, 'only one instance migrated'
+
+
+
+        print 'Unique: ', num_unique_locos
+        print 'Total: ', total_locos
 
         Loco.objects.bulk_create(new_locos)
 
@@ -178,7 +194,7 @@ class Command(BaseCommand):
                                 "addr_zipcode, "
                                 "case when instr(data,',')>0 "
                                 "then substring(data,instr(data,',')+6,length(data)-instr(data,',')) "
-                                "else 'Z?rich' "
+                                "else 'Zürich' "
                                 "end as addr_location "
                                 "FROM ( "
                                 "SELECT id "
@@ -471,7 +487,6 @@ class Command(BaseCommand):
                                 "or (substr(abo,1,1)=1 and substr(abo,3,1)=1)"
                                 "or substr(abo,3,1) = 2"))
 
-        d = dict((row[12], row) for row in query)
         new_abos = []
 
         for row in query:
@@ -509,11 +524,12 @@ class Command(BaseCommand):
                     description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
                     if loco.email == email and abomitemail is not None:
                         try:
-                            mit_loco = Loco.objects.get(email=abomitemail)
+                            mit_loco = Loco.objects.get(last_name=abomitname,first_name=abomitvorname,email=abomitemail)
                             mit_loco.abo=abo
                             mit_loco.save()
                         except MultipleObjectsReturned:
-                            print 'Warning: More than one Loco for ', abomitname, ' ', abomitvorname, ' ', abomitemail
+                            print 'Warning: More than one abomit_Loco for ', abomitname, ' ', abomitvorname,\
+                                  ' ', abomitemail
             except ObjectDoesNotExist:
                 print 'Warning: Loco ', abo.primary_loco_id, ' not found'
 
@@ -569,6 +585,8 @@ class Command(BaseCommand):
                 new_eattypes0_abos.append(eat5)
             if eat6 != "": 
                 new_eattypes0_abos.append(eat6)
+            if eat7 != "":
+                new_eattypes0_abos.append(eat7)
 
             abo.extra_abos = ExtraAboType.objects.filter(name__in=new_eattypes0_abos)
 
