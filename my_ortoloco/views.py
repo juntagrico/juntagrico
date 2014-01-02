@@ -151,12 +151,14 @@ def my_participation(request):
         success = True
 
     for area in Taetigkeitsbereich.objects.all():
+        if area.hidden:
+            continue
         my_areas.append({
             'name': area.name,
             'checked': loco in area.locos.all(),
             'id': area.id,
             'core': area.core,
-            'admin': area.coordinator.email
+            'admin': u"%s (%s)" %(area.coordinator, area.coordinator.email)
         })
 
     renderdict = getBohnenDict(request)
