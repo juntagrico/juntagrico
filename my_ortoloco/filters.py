@@ -62,7 +62,7 @@ class FilterGen(Filter):
         
 
 
-FilterGen(lambda depot: "Depot {0}".format(depot.name),
+FilterGen(lambda depot: u"Depot {0}".format(depot.name),
           lambda depot, loco: loco.abo.depot==depot,
           Depot.objects.all)
 

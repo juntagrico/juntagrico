@@ -558,53 +558,22 @@ def logout_view(request):
     return HttpResponseRedirect("/aktuelles")
 
 
-def alldepots_list(request):
+def alldepots_list(request, name):
     """
     Printable list of all depots to check on get gemüse
     """
+    if name == "":
+        depots = Depot.objects.all()
+    else:
+        depots = [get_object_or_404(Depot, code=name)]
+
     renderdict = {
-        "depots": Depot.objects.all().filter(),
-        "datum": timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone())
+        "depots": depots,
+        "datum": timezone.now()
     }
 
     return render_to_pdf(request, "exports/all_depots.html", renderdict)
 
-
-def depot_list(request, name):
-    """
-    Create table of users and their abos for a specific depot.
-    """
-    depot = get_object_or_404(Depot, code=name)
-
-    # get all abos of this depot
-    abos = Abo.objects.filter(depot=depot)
-
-    # helper function to format set of locos consistently
-    def locos_to_str(locos):
-        # TODO: use first and last name
-        locos = sorted(unicode(loco) for loco in locos)
-        return u", ".join(locos)
-
-    # build rows of data.
-    abotypes = ExtraAboType.objects.all()
-    header = ["Abo id", "Personen", u"Groesse"]
-    header.extend(i.name for i in abotypes)
-    header.append("abgeholt")
-    data = []
-    for abo in abos:
-        extra_abos = set(abo.extra_abos.all())
-        row = [str(abo.id), locos_to_str(abo.locos.all()), str(abo.groesse)]
-        row.extend("1" if i in extra_abos else "" for i in abotypes)
-        row.append("")
-        data.append(row)
-
-    renderdict = {
-        "depot": depot,
-        "table_header": header,
-        "table_data": data,
-    }
-
-    return render_to_pdf(request, "depot_pdf.html", renderdict)
 
 
 def test_filters(request):
