@@ -230,7 +230,7 @@ class Taetigkeitsbereich(models.Model):
     core = models.BooleanField("Kernbereich", default=False)
     hidden = models.BooleanField("versteckt", default=False)
     coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
-    locos = models.ManyToManyField(Loco, related_name="taetigkeitsbereiche", blank=True, null=True)
+    locos = models.ManyToManyField(Loco, related_name="areas", blank=True, null=True)
 
     def __unicode__(self):
         return u'%s' % self.name

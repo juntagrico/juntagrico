@@ -137,17 +137,15 @@ def my_participation(request):
     my_areas = []
     success = False
     if request.method == 'POST':
-        for area in Taetigkeitsbereich.objects.all():
-            if request.POST.get("area" + str(area.id)):
-                if loco not in area.locos.all():
-                    area.locos.add(loco)
-
-                    # send a mail to the coordinator
-                    send_new_loco_in_taetigkeitsbereich_to_bg(area, loco)
-                    area.save()
-            else:
-                area.locos.remove(loco)
-                area.save()
+        old_areas = set(loco.areas.all())
+        new_areas = set(area for area in Taetigkeitsbereich.objects.all()
+                        if request.POST.get("area" + str(area.id)))
+        if old_areas != new_areas:
+            loco.areas = new_areas
+            loco.save()
+            for area in new_areas - old_areas:
+                send_new_loco_in_taetigkeitsbereich_to_bg(area, loco)
+            
         success = True
 
     for area in Taetigkeitsbereich.objects.all():
