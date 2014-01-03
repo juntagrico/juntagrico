@@ -219,21 +219,27 @@ class Command(BaseCommand):
                                 ") dt"))
 
         new_depots = [] 
-        locos = sorted(Loco.objects.all(), key=lambda u: u.id)
-        loco_id=locos[0].id
+        #locos = sorted(Loco.objects.all(), key=lambda u: u.id)
+        loco = User.objects.get(id=1).loco
 
         newid = ("d%02d" % i for i in itertools.count(1)).next
 
         for row in query:
             id, code, name, description, contact_id, weekday, addr_street, addr_zipcode, addr_location = self.decode_row(row)
-
             if name=='No Name':
                 name=name+addr_zipcode
             code = newid()
+
+            from _depots import depot_wochentag
+            weekday = depot_wochentag[name]
+            if weekday == -1:
+                print "Skipping depot %s (no longer exists?)" % name
+                continue
+
             depot = Depot(code=code,
                           name=name,
                           description=description,
-                          contact_id=loco_id,
+                          contact=loco,
                           weekday=weekday,
                           addr_street=addr_street,
                           addr_zipcode=addr_zipcode,
@@ -242,6 +248,7 @@ class Command(BaseCommand):
                           longitude="8.549")
 
             new_depots.append(depot)
+
         Depot.objects.bulk_create(new_depots)
 
         print '***************************************************************'
