@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 import re
 import itertools
@@ -220,13 +221,15 @@ class Command(BaseCommand):
         new_depots = [] 
         locos = sorted(Loco.objects.all(), key=lambda u: u.id)
         loco_id=locos[0].id
+
+        newid = ("d%02d" % i for i in itertools.count(1)).next
+
         for row in query:
             id, code, name, description, contact_id, weekday, addr_street, addr_zipcode, addr_location = self.decode_row(row)
 
-            code = code+name+addr_street+addr_zipcode
-
             if name=='No Name':
                 name=name+addr_zipcode
+            code = newid()
             depot = Depot(code=code,
                           name=name,
                           description=description,
@@ -599,6 +602,10 @@ class Command(BaseCommand):
         print '***************************************************************'
         print 'Building Anteilscheine'
         print '***************************************************************'
+
+        print "skipping for now!"
+        return
+
 
         query = list(self.query("select a.pid as abopid, anteilschein, p.name as last_name, "
                                 "p.vorname as first_name,p.email "

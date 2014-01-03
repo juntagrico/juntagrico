@@ -250,6 +250,7 @@ class AnteilscheinAdmin(admin.ModelAdmin):
 
 class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ["contact"]
+    list_display = ["name", "code", "weekday"]
 
 
 class BereichAdmin(admin.ModelAdmin):
