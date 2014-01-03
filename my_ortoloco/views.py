@@ -2,6 +2,7 @@
 
 from datetime import date
 
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
@@ -565,7 +566,7 @@ def alldepots_list(request, name):
     if name == "":
         depots = Depot.objects.all()
     else:
-        depots = [get_object_or_404(Depot, code=name)]
+        depots = Depot.objects.filter(Q(code__iexact=name) | Q(name__iexact=name))
 
     renderdict = {
         "depots": depots,
