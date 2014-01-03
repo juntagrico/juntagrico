@@ -566,7 +566,7 @@ def alldepots_list(request, name):
     if name == "":
         depots = Depot.objects.all()
     else:
-        depots = Depot.objects.filter(Q(code__iexact=name) | Q(name__iexact=name))
+        depots = [get_object_or_404(Depot, code__iexact=name)]
 
     renderdict = {
         "depots": depots,
