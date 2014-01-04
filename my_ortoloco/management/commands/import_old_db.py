@@ -2,6 +2,7 @@
 import datetime
 import re
 import itertools
+from collections import defaultdict
 
 import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
@@ -264,7 +265,7 @@ class Command(BaseCommand):
     def create_taetigkeitsbereich_locos(self):
 
         print '***************************************************************'
-        print 'Building Teatigkeitsbereiche_Locos'
+        print 'Building Taetigkeitsbereiche_Locos'
         print '***************************************************************'
 
         query = list(self.query("select pu.*,funktion, "
@@ -420,11 +421,9 @@ class Command(BaseCommand):
             jid, name, description, units, cat, start, loc, created_on, created_by, active, beans = self.decode_row(row)
 
             start = datetime.datetime.fromtimestamp(int(start) + 7*60*60)
+            if datetime.date(2014, 3, 4) < datetime.date(start.year, start.month, start.day) < datetime.date(2014, 3, 30):
+                start -= datetime.timedelta(hours=1)
             start = timezone.make_aware(start, timezone.get_current_timezone())
-            if start.month >= 3:
-                # HACK: apply daylight saving time from 2014-03-01
-                #start += datetime.timedelta(hours=1)
-                pass
 
             try:
                 typ = JobTyp.objects.get(name__iexact=name)
@@ -546,47 +545,58 @@ class Command(BaseCommand):
 
             try:
                 locoidlookup=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
-                try:
-                    depotidlookup=Depot.objects.get(description=description)
-                except ObjectDoesNotExist:
-                    print 'Warning: No Depot found for ', last_name, ' ', first_name, ' ', email, \
-                          ',random Depot assigned'
-
-                abo = Abo(depot_id=depotidlookup.id,
-                          primary_loco_id=locoidlookup.id,
-                          groesse=groesse)
-
-                new_abos.append(abo)
-
             except ObjectDoesNotExist:
                 print 'Warning: Loco ', last_name, ' ', first_name, ' ', email, ' not found'
+                continue
             except MultipleObjectsReturned:
                 print 'Warning: More than one Loco for ', last_name, ' ', first_name, ' ', email
+                continue
+
+            try:
+                depotidlookup=Depot.objects.get(description=description)
+            except ObjectDoesNotExist:
+                print 'Warning: No Depot found for ', last_name, ' ', first_name, ' ', email, \
+                      ',random Depot assigned'
+
+            abo = Abo(depot_id=depotidlookup.id,
+                      primary_loco_id=locoidlookup.id,
+                      groesse=groesse)
+
+            new_abos.append(abo)
+
 
         Abo.objects.bulk_create(new_abos)
 
         abos = sorted(Abo.objects.all(), key=lambda a: a.id)
 
-        for abo in abos:
+        primary_to_all = defaultdict(list)
+        for row in query:
+            abopid, anteilschein, abostr, abomitpid, timestamp, last_name, first_name, email, \
+            description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
+            if abomitemail is not None:
+                primary_to_all[email].append(abomitemail)
 
+
+        new_abolocos = []
+        for abo in abos:
             try:
                 loco=Loco.objects.get(id=abo.primary_loco.id)
-                loco.abo=abo
-                loco.save()
-                for row in query:
-                    abopid, anteilschein, abostr, abomitpid, timestamp, last_name, first_name, email, \
-                    description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
-                    if loco.email == email and abomitemail is not None:
-                        try:
-                            mit_loco = Loco.objects.get(last_name=abomitname,first_name=abomitvorname,email=abomitemail)
-                            mit_loco.abo=abo
-                            mit_loco.save()
-                        except MultipleObjectsReturned:
-                            print 'Warning: More than one abomit_Loco for ', abomitname, ' ', abomitvorname,\
-                                  ' ', abomitemail
             except ObjectDoesNotExist:
                 print 'Warning: Loco ', abo.primary_loco_id, ' not found'
+                continue
 
+            loco.abo=abo
+            loco.save()
+            new_abolocos.append(loco)
+
+            for mitemail in primary_to_all[loco.email]:
+                try:
+                    mit_loco = Loco.objects.get(last_name=abomitname,first_name=abomitvorname,email=abomitemail)
+                    mit_loco.abo=abo
+                    mit_loco.save()
+                except MultipleObjectsReturned:
+                    print 'Warning: More than one abomit_Loco for ', abomitname, ' ', abomitvorname,\
+                          ' ', abomitemail
 
         print '***************************************************************'
         print 'Abos migrated'
@@ -612,8 +622,10 @@ class Command(BaseCommand):
                                 "JOIN person p "
                                 "ON a.pid=p.pid "))
 
+        # map each email to its corresponding row
         d = dict((row[4], row) for row in query)
 
+        new_aboextraabos = []
         for abo in Abo.objects.all():
             loco = abo.primary_loco
             key = loco.email
@@ -627,22 +639,14 @@ class Command(BaseCommand):
             eat6, eat7 = self.decode_row(row)
 
             new_eattypes0_abos = []
-            if eat1 != "": 
-                new_eattypes0_abos.append(eat1)
-            if eat2 != "": 
-                new_eattypes0_abos.append(eat2)
-            if eat3 != "": 
-                new_eattypes0_abos.append(eat3)
-            if eat4 != "": 
-                new_eattypes0_abos.append(eat4)
-            if eat5 != "": 
-                new_eattypes0_abos.append(eat5)
-            if eat6 != "": 
-                new_eattypes0_abos.append(eat6)
-            if eat7 != "":
-                new_eattypes0_abos.append(eat7)
+            # each eat is either the name of an extraabotype or "", see query above
+            names = set((eat1, eat2, eat3, eat4, eat5, eat6, eat7)) - set(("",))
 
-            abo.extra_abos = ExtraAboType.objects.filter(name__in=new_eattypes0_abos)
+            for extra in ExtraAboType.objects.filter(name__in=names):
+                aea = Abo.extra_abos.through(abo=abo, extraabotype=extra)
+                new_aboextraabos.append(aea)
+
+        Abo.extra_abos.through.objects.bulk_create(new_aboextraabos)
 
         print '***************************************************************'
         print 'Abo_Extra_Abos built'
