@@ -195,7 +195,7 @@ class Command(BaseCommand):
                                 "addr_zipcode, "
                                 "case when instr(data,',')>0 "
                                 "then substring(data,instr(data,',')+6,length(data)-instr(data,',')) "
-                                "else 'Zürich' "
+                                "else 'ZÃ¼rich' "
                                 "end as addr_location "
                                 "FROM ( "
                                 "SELECT id "
@@ -505,8 +505,11 @@ class Command(BaseCommand):
 
             try:
                 locoidlookup=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
-
-                depotidlookup=Depot.objects.get(description=description)
+                try:
+                    depotidlookup=Depot.objects.get(description=description)
+                except ObjectDoesNotExist:
+                    print 'Warning: No Depot found for ', last_name, ' ', first_name, ' ', email, \
+                          ',random Depot assigned'
 
                 abo = Abo(depot_id=depotidlookup.id,
                           primary_loco_id=locoidlookup.id,
