@@ -305,18 +305,7 @@ class Command(BaseCommand):
                                     "on f.pid=pu.pid "
                                     "order by pid "))
 
-        new_taetigkeitsbereich0_locos = []
-        new_taetigkeitsbereich1_locos = []
-        new_taetigkeitsbereich2_locos = []
-        new_taetigkeitsbereich3_locos = []
-        new_taetigkeitsbereich4_locos = []
-        new_taetigkeitsbereich5_locos = []
-        new_taetigkeitsbereich6_locos = []
-        new_taetigkeitsbereich7_locos = []
-        new_taetigkeitsbereich8_locos = []
-        new_taetigkeitsbereich9_locos = []
-        new_taetigkeitsbereich10_locos = []
-        new_taetigkeitsbereich11_locos = []
+        new_bereiche_locos = defaultdict(list)
 
         locos = sorted(Loco.objects.all(), key=lambda l: l.id)
         taetigkeitsbereiche = sorted(Taetigkeitsbereich.objects.all(), key=lambda ta: ta.id)
@@ -327,66 +316,18 @@ class Command(BaseCommand):
 
             for loco in locos:
                 if name == loco.last_name and vorname == loco.first_name:
-                    if fkt1 == taetigkeitsbereiche[0].name:
-                        new_taetigkeitsbereich0_locos.append(loco.id)
-                    if fkt2 == taetigkeitsbereiche[1].name:
-                        new_taetigkeitsbereich1_locos.append(loco.id)
-                    if fkt3 == taetigkeitsbereiche[2].name:
-                        new_taetigkeitsbereich2_locos.append(loco.id)
-                    if fkt4 == taetigkeitsbereiche[3].name:
-                        new_taetigkeitsbereich3_locos.append(loco.id)
-                    if fkt5 == taetigkeitsbereiche[4].name:
-                        new_taetigkeitsbereich4_locos.append(loco.id)
-                    if fkt6 == taetigkeitsbereiche[5].name:
-                        new_taetigkeitsbereich5_locos.append(loco.id)
-                    if fkt7 == taetigkeitsbereiche[6].name:
-                        new_taetigkeitsbereich6_locos.append(loco.id)
-                    if fkt8 == taetigkeitsbereiche[7].name:
-                        new_taetigkeitsbereich7_locos.append(loco.id)
-                    if fkt9 == taetigkeitsbereiche[8].name:
-                        new_taetigkeitsbereich8_locos.append(loco.id)
-                    if fkt10 == taetigkeitsbereiche[9].name:
-                        new_taetigkeitsbereich9_locos.append(loco.id)
-                    if fkt11 == taetigkeitsbereiche[10].name:
-                        new_taetigkeitsbereich10_locos.append(loco.id)
-                    if fkt12 == taetigkeitsbereiche[11].name:
-                        new_taetigkeitsbereich11_locos.append(loco.id)
+                    for fkt in (fkt1, fkt2, fkt3, fkt4, fkt5, fkt6, fkt7, fkt8, fkt9, fkt10, fkt11):
+                        # if fkt is "" it is thrown into dict anyway and ignored afterward.
+                        new_bereiche_locos[fkt].append(loco)
 
-        t0= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[0].id)
-        t0.locos=new_taetigkeitsbereich0_locos
+        new_bereichlocos = []
+        for bereich in Taetigkeitsbereich.objects.all():
+            for loco in new_bereiche_locos[bereich.name]:
+                bl = bereich.locos.through(taetigkeitsbereich=bereich, loco=loco)
+                new_bereichlocos.append(bl)
+            #bereich.locos = new_bereiche_locos[bereich.name]
 
-        t1= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[1].id)
-        t1.locos=new_taetigkeitsbereich1_locos
-
-        t2= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[2].id)
-        t2.locos=new_taetigkeitsbereich2_locos
-
-        t3= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[3].id)
-        t3.locos=new_taetigkeitsbereich3_locos
-
-        t4= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[4].id)
-        t4.locos=new_taetigkeitsbereich4_locos
-
-        t5= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[5].id)
-        t5.locos=new_taetigkeitsbereich5_locos
-
-        t6= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[6].id)
-        t6.locos=new_taetigkeitsbereich6_locos
-
-        t7= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[7].id)
-        t7.locos=new_taetigkeitsbereich7_locos
-
-        t8= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[8].id)
-        t8.locos=new_taetigkeitsbereich8_locos
-
-        t9= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[9].id)
-        t9.locos=new_taetigkeitsbereich9_locos
-
-        t10= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[10].id)
-        t10.locos=new_taetigkeitsbereich10_locos
-
-        t11= Taetigkeitsbereich.objects.get(id=taetigkeitsbereiche[11].id)
-        t11.locos=new_taetigkeitsbereich11_locos
+        bereich.locos.through.objects.bulk_create(new_bereichlocos)
 
         print '***************************************************************'
         print 'Teatigkeitsbereiche_Locos built'
