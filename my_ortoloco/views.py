@@ -146,7 +146,7 @@ def my_participation(request):
             loco.save()
             for area in new_areas - old_areas:
                 send_new_loco_in_taetigkeitsbereich_to_bg(area, loco)
-            
+
         success = True
 
     for area in Taetigkeitsbereich.objects.all():
@@ -157,7 +157,7 @@ def my_participation(request):
             'checked': loco in area.locos.all(),
             'id': area.id,
             'core': area.core,
-            'admin': u"%s (%s)" %(area.coordinator, area.coordinator.email)
+            'admin': u"%s (%s)" % (area.coordinator, area.coordinator.email)
         })
 
     renderdict = getBohnenDict(request)
@@ -539,18 +539,43 @@ def my_change_password(request):
     return render(request, 'password.html', renderdict)
 
 
+def my_new_password(request):
+    sent = False
+    if request.method == 'POST':
+        sent = True
+        locos = Loco.objects.filter(email=request.POST.get('username'))
+        print locos
+        if len(locos)>0:
+            loco = locos[0]
+            pw = password_generator()
+            print pw
+            loco.user.set_password(pw)
+            loco.user.save()
+            send_mail_password_reset(loco.user.email, pw)
+
+    renderdict = {
+        'sent': sent
+    }
+    return render(request, 'my_newpassword.html', renderdict)
+
+
 @staff_member_required
 def my_mails(request):
     if request.method == 'POST':
         emails = []
         if request.POST.get("allabo") == "on":
-            for loco in Loco.objects.filter(abo=None):
+            for loco in Loco.objects.exclude(abo=None):
                 emails.append(loco.email)
             send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), emails, request.META["HTTP_HOST"])
     renderdict = getBohnenDict(request)
     renderdict.update({
     })
     return render(request, 'mail_sender.html', renderdict)
+
+
+@staff_member_required
+def my_depotlisten(request):
+    return alldepots_list(request, "")
 
 
 def logout_view(request):
@@ -573,8 +598,23 @@ def alldepots_list(request, name):
         "datum": timezone.now()
     }
 
-    return render_to_pdf(request, "exports/all_depots.html", renderdict)
+    return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')
 
+
+def my_createlocoforsuperuserifnotexist(request):
+    """
+    just a helper to create a loco for superuser
+    """
+    if request.user.is_superuser and len(Loco.objects.filter(email=request.user.email)) is 0:
+        loco = Loco.objects.create(user=request.user, first_name="super", last_name="duper", email=request.user.email, addr_street="superstreet", addr_zipcode="8000",
+                                   addr_location="SuperCity", phone="012345678")
+        loco.save()
+        request.user.loco = loco
+        request.user.save()
+
+
+    # we do just nothing if its not a superuser or he has already a loco
+    return redirect("/my/home")
 
 
 def test_filters(request):

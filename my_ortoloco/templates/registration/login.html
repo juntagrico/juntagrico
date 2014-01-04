@@ -7,7 +7,6 @@
         <div class="span6">
             <form action="" method="post" class="form-horizontal">
                 {% csrf_token %}
-                <div class="myortoloco_logo"></div>
                 <br/><br/>
                 <div class="control-group">
                     <label class="control-label" for="username">Email</label>
@@ -25,7 +24,8 @@
                     <div class="alert alert-error">Sorry, das ist kein gültiges Login</div>
                 {% endif %}
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-success">Anmelden</button>
+                    <button type="submit" class="btn btn-success">Anmelden</button><br/><br/>
+                    <a href="/my/neuespasswort">Neues Passwort anfordern</a>
                 </div>
                 <input type="hidden" name="next" value="{{ next|escape }}"/>
             </form>

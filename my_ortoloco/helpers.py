@@ -24,14 +24,14 @@ class AuthenticateWithEmail(object):
             return None
 
 
-def render_to_pdf(request, template_name, renderdict):
+def render_to_pdf(request, template_name, renderdict, filename):
     """
     Take a string of rendered html and pack it into a pdf.
     """
     rendered_html = get_template(template_name).render(Context(renderdict))
 
     response = HttpResponse(content_type="application/pdf")
-    response['Content-Disposition'] = 'attachment; filename="test.pdf"'
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
 
     success = pisa.CreatePDF(rendered_html, dest=response)
 
