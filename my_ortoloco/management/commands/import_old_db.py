@@ -6,6 +6,8 @@ import itertools
 import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.utils import timezone
+
 from my_ortoloco.models import *
 
 
@@ -30,6 +32,7 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         self.connect(*args)
+        self.userids = {}
 
         print 'Starting migration on ', datetime.datetime.now()
         self.create_users()
@@ -124,8 +127,11 @@ class Command(BaseCommand):
 
                 num_unique_locos += 1
                 new_locos.append(loco)
+
+                # keep this data around to associate locos with jobs later
+                self.userids[pid] = user.id
             else:
-                print 'Warning: Non unique Loco: ', name, vorname, email, 'only one instance migrated'
+                print 'Warning: Non unique Loco: %s %s %s only one instance migrated' % (name, vorname, email)
 
 
 
@@ -405,33 +411,68 @@ class Command(BaseCommand):
         print 'Migrating Jobs'
         print '***************************************************************'
 
-        query = list(self.query("SELECT j.jid as jjid, timestamp, lj.jid as ljjid, name as jname, lj.units as slots "
-                                "FROM job j "
-                                "    JOIN lux_job lj "
-                                "ON j.jid=lj.jid "
-                                "WHERE lj.active=1"))
+        query = list(self.query("SELECT * "
+                                "from lux_job "
+                                "where active=1"))
 
         new_jobs = []
-
         for row in query:
-            jjid, timestamp, ljjid, jname, slots = self.decode_row(row)
+            jid, name, description, units, cat, start, loc, created_on, created_by, active, beans = self.decode_row(row)
+
+            start = datetime.datetime.fromtimestamp(int(start) + 7*60*60)
+            start = timezone.make_aware(start, timezone.get_current_timezone())
+            if start.month >= 3:
+                # HACK: apply daylight saving time from 2014-03-01
+                #start += datetime.timedelta(hours=1)
+                pass
 
             try:
-                idlookup=JobTyp.objects.get(name=jname)
+                typ = JobTyp.objects.get(name__iexact=name)
             except Exception:
-                print "No jobtyp with name %s" % jname
+                print "No jobtyp with name %s" % name
                 continue
-            convdate=datetime.date.fromtimestamp(timestamp)
 
-            typ=idlookup.id
-
-            job = Job(typ_id=typ,
-                      slots=slots,
-                      time=convdate)
+            job = Job(typ=typ,
+                      slots=units,
+                      time=start)
 
             new_jobs.append(job)
 
         Job.objects.bulk_create(new_jobs)
+
+        # translate job ids from old to new db
+        jobids = dict((row[0], job.id) for (job, row) in zip(Job.objects.all(), query))
+        
+        # now that jobs are created, associate locos that already registered themselves for the job
+        
+        # create reference time at start of year 2014
+        delta = datetime.datetime(2014, 1, 1) - datetime.datetime.fromtimestamp(0)
+        reference = delta.days * 86400 + delta.seconds
+
+        query = self.query("SELECT j.pid, j.jid, j.units "
+                           "  FROM job j "
+                           "       JOIN lux_job lj "
+                           "  ON j.jid=lj.jid "
+                           "  WHERE lj.active=1")
+
+        new_boehnlis = []
+        for row in query:
+            pid, jid, units = self.decode_row(row)
+
+            if jid not in jobids:
+                # assume job already done
+                print "Cannot find job corresponding to old job %s" %jid
+                continue
+            if pid not in self.userids:
+                print "Cannot find loco corresponding to person %s" %pid
+                continue
+                
+            loco = Loco.objects.get(user_id=self.userids[pid])
+            job = Job.objects.get(id=jobids[jid])
+            b = Boehnli(job=job, loco=loco)
+            new_boehnlis.append(b)
+
+        Boehnli.objects.bulk_create(new_boehnlis)
 
         print '***************************************************************'
         print 'Jobs migrated'
