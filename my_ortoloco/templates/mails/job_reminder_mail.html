@@ -1,6 +1,5 @@
 {% extends "mails/email.html" %}
 {% block content %}
-    <b>Job-Erinnerung!</b><br/><br/>
     Nicht vergessen: <br/>
 
     Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein ortoloco-Arbeitseinsatz <b>"{{ job.typ.displayed_name }}"</b> statt.

@@ -1,7 +1,5 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-Willkommen!
-
 Wir freuen uns, dich bei ortoloco begrüssen zu dürfen.
 
 Unter my.ortoloco.ch kannst du dich ab sofort für Jobs anmelden und vieles mehr.

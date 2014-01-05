@@ -1,7 +1,5 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-Willkommen!
-
 Wir freuen uns, dich bei ortoloco begrüssen zu dürfen. Soeben hat dich Lea Egloff zu ihrem/seinem Gemüsebo hinzugefügt und für dich {{ anteilsscheine }} Anteilschein(e) erworben. Wenn du damit einverstanden bist, ortoloco-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
 Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
 
