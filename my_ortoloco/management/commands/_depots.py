@@ -13,7 +13,7 @@ u"Höngg": 2,
 "Kraftwerk1": 2,
 
 # "Fondli": 4,
-"Glanzenberg": 4,
+#"Glanzenberg": 4,
 "Altstetten": 4,
 "Karthago": 4,
 "Selnau": 4,
@@ -21,6 +21,6 @@ u"Höngg": 2,
 "No Name9999": 4, # Wollishofen
 
 "Urdorf": -1, # gibt es nicht mehr
-"Dietikon": -1, # ???
+"Dietikon": 4, # same as Glanzenberg
 }
 
