@@ -85,8 +85,26 @@ def send_welcome_mail(email, password, server):
     send_mail_multi(msg)
 
 
-def send_been_added_to_abo(name, email):
-    send_mail('Du wurdest als MitabonnentIn hinzugefügt', "Soeben hat dich " + name + " zu seinem Abo hinzugefügt.", 'orto@xiala.net', [email])
+def send_been_added_to_abo(email, password, anteilsscheine, hash, server):
+    plaintext = get_template('mails/welcome_added_mail.txt')
+    htmly = get_template('mails/welcome_added_mail.html')
+
+    # reset password so we can send it to him
+    d = Context({
+        'subject': 'Willkommen bei ortoloco',
+        'username': email,
+        'password': password,
+        'hash': hash,
+        'anteilsscheine': anteilsscheine,
+        'serverurl': "http://" + server
+    })
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [email])
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
 
 
 def send_filtered_mail(subject, message, emails, server):

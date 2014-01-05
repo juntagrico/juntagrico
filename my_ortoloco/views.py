@@ -339,7 +339,8 @@ def my_add_loco(request, abo_id):
         if locoform.is_valid() and scheineerror is False and userexists is False:
             names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
             username = names + hashlib.sha1(locoform.cleaned_data['email']).hexdigest()
-            user = User.objects.create_user(username, locoform.cleaned_data['email'], password_generator())
+            pw = password_generator()
+            user = User.objects.create_user(username, locoform.cleaned_data['email'], pw)
             user.loco.first_name = locoform.cleaned_data['first_name']
             user.loco.last_name = locoform.cleaned_data['last_name']
             user.loco.email = locoform.cleaned_data['email']
@@ -348,6 +349,7 @@ def my_add_loco(request, abo_id):
             user.loco.addr_location = locoform.cleaned_data['addr_location']
             user.loco.phone = locoform.cleaned_data['phone']
             user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+            user.loco.confirmed = False
             user.loco.abo_id = abo_id
             user.loco.save()
 
@@ -355,7 +357,7 @@ def my_add_loco(request, abo_id):
                 anteilschein = Anteilschein(loco=user.loco, paid=False)
                 anteilschein.save()
 
-            send_been_added_to_abo(request.user.loco.first_name + " " + request.user.loco.last_name, user.loco.email)
+            send_been_added_to_abo(user.loco.email, pw, scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
 
             user.loco.save()
             if request.GET.get("return"):
@@ -470,6 +472,18 @@ def my_welcome(request):
 
     return render(request, "welcome.html", renderdict)
 
+def my_confirm(request, hash):
+    """
+    Confirm from a user that has been added as a Mitabonnent
+    """
+
+    for loco in Loco.objects.all():
+        if hash == hashlib.sha1(loco.email + str(loco.abo_id)).hexdigest():
+            loco.confirmed = True
+            loco.save()
+
+    return redirect("/my/home")
+
 
 @login_required
 def my_contact(request):
@@ -545,10 +559,9 @@ def my_new_password(request):
         sent = True
         locos = Loco.objects.filter(email=request.POST.get('username'))
         print locos
-        if len(locos)>0:
+        if len(locos) > 0:
             loco = locos[0]
             pw = password_generator()
-            print pw
             loco.user.set_password(pw)
             loco.user.save()
             send_mail_password_reset(loco.user.email, pw)
@@ -561,14 +574,25 @@ def my_new_password(request):
 
 @staff_member_required
 def my_mails(request):
+    sent = 0
     if request.method == 'POST':
-        emails = []
+        emails = set()
         if request.POST.get("allabo") == "on":
             for loco in Loco.objects.exclude(abo=None):
-                emails.append(loco.email)
+                emails.add(loco.email)
+        if request.POST.get("allanteilsschein") == "on":
+            for loco in Loco.objects.all():
+                if loco.anteilschein_set.count() > 0:
+                    emails.add(loco.email)
+        if request.POST.get("all") == "on":
+            for loco in Loco.objects.all():
+                emails.add(loco.email)
+        if len(emails) > 0:
             send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), emails, request.META["HTTP_HOST"])
+            sent = len(emails)
     renderdict = getBohnenDict(request)
     renderdict.update({
+        'sent': sent
     })
     return render(request, 'mail_sender.html', renderdict)
 

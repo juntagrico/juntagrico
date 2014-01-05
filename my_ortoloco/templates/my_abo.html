@@ -36,7 +36,11 @@
                 Anteilscheine von MitabonnentInnen:
                 <ul>
                     {% for abonnent in  mitabonnenten %}
-                        <li>{{ abonnent.anteilschein_set.count }} von {{ abonnent.first_name }} {{ abonnent.last_name }}</li>
+                        <li>{{ abonnent.anteilschein_set.count }} von {{ abonnent.first_name }} {{ abonnent.last_name }}
+                            {% if not abonnent.confirmed %}
+                                (nicht bestätigt)
+                            {% endif %}
+                        </li>
                     {% endfor %}
                 </ul>
             </dd>
