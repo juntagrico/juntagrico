@@ -9,7 +9,6 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
-from django.utils import timezone
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
@@ -33,12 +32,12 @@ def getBohnenDict(request):
         userbohnen = []
 
         for bohne in allebohnen:
-            if bohne.job.time.year == date.today().year and bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+            if bohne.job.time.year == date.today().year and bohne.job.time < datetime.datetime.now():
                 userbohnen.append(bohne)
         bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.groesse * 10 / loco.abo.locos.count()))
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
-            if bohne.job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+            if bohne.job.time > datetime.datetime.now():
                 next_jobs.append(bohne.job)
     else:
         bohnenrange = None
@@ -179,7 +178,7 @@ def my_pastjobs(request):
     past_bohnen = []
 
     for bohne in allebohnen:
-        if bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+        if bohne.job.time < datetime.datetime.now():
             past_bohnen.append(bohne)
 
     renderdict = getBohnenDict(request)
@@ -241,7 +240,7 @@ def my_einsaetze(request):
 
     jobs = []
     for job in Job.objects.all():
-        if job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+        if job.time > datetime.datetime.now():
             jobs.append(job)
     renderdict.update({
         'jobs': jobs,
@@ -619,7 +618,7 @@ def alldepots_list(request, name):
 
     renderdict = {
         "depots": depots,
-        "datum": timezone.now()
+        "datum": datetime.now()
     }
 
     return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')
