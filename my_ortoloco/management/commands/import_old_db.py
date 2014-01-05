@@ -387,10 +387,7 @@ class Command(BaseCommand):
         for row in query:
             jid, name, description, units, cat, start, loc, created_on, created_by, active, beans = self.decode_row(row)
 
-            start = datetime.datetime.fromtimestamp(int(start) + 7*60*60)
-            if datetime.date(2014, 3, 4) < datetime.date(start.year, start.month, start.day) < datetime.date(2014, 3, 30):
-                start -= datetime.timedelta(hours=1)
-            start = timezone.make_aware(start, timezone.get_current_timezone())
+            start = datetime.datetime.fromtimestamp(int(start))
 
             try:
                 typ = JobTyp.objects.get(name__iexact=name)
