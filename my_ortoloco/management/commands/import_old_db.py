@@ -257,8 +257,6 @@ class Command(BaseCommand):
                                 ") dt"))
 
         new_depots = []
-        #locos = sorted(Loco.objects.all(), key=lambda u: u.id)
-        loco = User.objects.get(id=1).loco
 
         newid = ("d%02d" % i for i in itertools.count(1)).next
 
@@ -268,12 +266,17 @@ class Command(BaseCommand):
                 name = name + addr_zipcode
             code = newid()
 
-            from _depots import depot_wochentag
-
+            from _depots import depot_wochentag, depot_betreuer
             weekday = depot_wochentag[name]
             if weekday == -1:
                 print "Skipping depot %s (no longer exists?)" % name
                 continue
+
+            try:
+                loco = Loco.objects.get(email=depot_betreuer[name])
+            except ObjectDoesNotExist:
+                print "can't find loco with email %s" % depot_betreuer[name]
+                loco = Loco.objects.get(user_id=1)
 
             depot = Depot(code=code,
                           name=name,

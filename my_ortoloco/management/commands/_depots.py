@@ -24,3 +24,22 @@ u"Höngg": 2,
 "Dietikon": 4, # same as Glanzenberg
 }
 
+depot_betreuer = {
+"Fondli": "seraina@ortoloco.ch",
+u"Höngg": "jairstern@gmx.net", 
+"Affoltern": "timm-eugster@gmx.ch",
+"GZ Oerlikon": "markus.pfister@gz-zh.ch",
+"GZ Buchegg": "david@ortoloco.ch",
+"Schaffhauserstr. 10": "humbell@ethz.ch",
+"Konradstr. 73": "jojo@roll-laden.tv",
+"Josefstrasse": "rene@immerda.ch",
+"No Name0": "marc.hoppler@gmail.com", # Wipkingen
+"Kraftwerk1": "hans.e.widmer@bluewin.ch",
+
+"Dietikon": "svenko76@hotmail.com", # Glanzenberg
+"Altstetten": "tina@ortoloco.ch",
+"Karthago": "daniela.christina.widmer@gmail.com",
+"Selnau": "suzanneforel@hotmail.com",
+"Enge": "jancito@hispeed.ch",
+"No Name9999": "astridhorvath@gmail.com", # Wollishofen
+}
