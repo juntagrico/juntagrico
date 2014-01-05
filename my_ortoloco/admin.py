@@ -290,7 +290,7 @@ class LocoAdminForm(forms.ModelForm):
 class LocoAdmin(admin.ModelAdmin):
     form = LocoAdminForm
     list_display = ["user", "first_name", "last_name", "email"]
-    search_fields = ["first_name", "last_name", "email"]
+    search_fields = ["first_name", "last_name", "email", "user__username"]
     #raw_id_fields = ["abo"]
     exclude = ["abo"]
     readonly_fields = ["user"]
