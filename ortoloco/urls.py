@@ -49,6 +49,7 @@ urlpatterns = patterns('',
 
     url('^my/createlocoforsuperuserifnotexist$', 'my_ortoloco.views.my_createlocoforsuperuserifnotexist'),
     url('^my/startmigrationonceassuperadmin$', 'my_ortoloco.views.my_startmigration'),
+    url('^my/migratedbtonewestversion', 'my_ortoloco.views.migrate_apps'),
 
 
     (r'^accounts/login/$',  login),

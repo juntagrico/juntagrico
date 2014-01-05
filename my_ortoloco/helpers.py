@@ -5,16 +5,17 @@ from django.template import Context
 
 from xhtml2pdf import pisa
 
+from models import Loco
 from django.contrib.auth.models import User
 
 
 class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
         try:
-            user = User.objects.get(**{'email': username})
+            user = Loco.objects.get(**{'email': username}).user
             if user.check_password(password):
                 return user
-        except User.DoesNotExist:
+        except Loco.DoesNotExist:
             return None
 
     def get_user(self, user_id):

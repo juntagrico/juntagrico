@@ -563,7 +563,7 @@ def my_new_password(request):
             pw = password_generator()
             loco.user.set_password(pw)
             loco.user.save()
-            send_mail_password_reset(loco.user.email, pw)
+            send_mail_password_reset(loco.email, pw)
 
     renderdict = {
         'sent': sent
@@ -660,7 +660,7 @@ def alldepots_list(request, name):
         all = overview.get('all')
         row['small_abo'] += depot.small_abos()
         row['big_abo'] += depot.big_abos()
-        row['entities'] += 2*depot.big_abos() + depot.small_abos()
+        row['entities'] += 2 * depot.big_abos() + depot.small_abos()
         row['egg4'] += depot.vier_eier()
         row['egg6'] += depot.sechs_eier()
         row['cheesefull'] += depot.kaese_ganz()
@@ -670,7 +670,7 @@ def alldepots_list(request, name):
         row['smallobst'] += depot.small_obst()
         all['small_abo'] += depot.small_abos()
         all['big_abo'] += depot.big_abos()
-        all['entities'] += 2*depot.big_abos() + depot.small_abos()
+        all['entities'] += 2 * depot.big_abos() + depot.small_abos()
         all['egg4'] += depot.vier_eier()
         all['egg6'] += depot.sechs_eier()
         all['cheesefull'] += depot.kaese_ganz()
@@ -707,8 +707,17 @@ def my_createlocoforsuperuserifnotexist(request):
 @staff_member_required
 def my_startmigration(request):
     from django.core.management import call_command
+
     call_command('clean_db')
-    call_command('import_old_db')
+    call_command('import_old_db', request.GET.get("username"), request.GET.get("password"))
+
+@staff_member_required
+def migrate_apps(request):
+    from django.core.management import call_command
+
+    call_command('migrate', 'my_ortoloco')
+    call_command('migrate', 'static_ortoloco')
+
 
 def test_filters(request):
     lst = Filter.get_all()
