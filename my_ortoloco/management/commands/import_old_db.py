@@ -78,35 +78,24 @@ class Command(BaseCommand):
 
         rows_with_same_email = defaultdict(dict)
 
-        #new_query = []
-        #chk_str = ""
         for row in query:
             pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
             uid, pwd, lvl, _ = row
 
             rows_with_same_email[email][pid] = row
 
-            """
-            if chk_str == email: #filter non unique locos
-                print 'Warning: Non unique Loco: %s %s %s only one instance migrated' % (name, vorname, email)
-                continue
-            chk_str = email
-            new_query.append(row)
-            """
-
         pidswithabo = set(self.query("SELECT pid from abo"))
+        #pidswithabo.update(self.query("SELECT abomit from abo"))
         new_query = []
         for email, d in rows_with_same_email.iteritems():
             overlap = pidswithabo.intersection(d.keys())
             if len(overlap) == 0:
                 # take any row we want, i.e. confirmed if available, else the one with lowest pid
-                chosenpid = -1
+                chosenpid = min(d)
                 for pid, row in d.items():
                     if row[10]: # confirmed
                         chosenpid = pid
                         break
-                if chosenpid == -1:
-                    chosenpid = min(d)
                 new_query.append(d[chosenpid])
             elif len(overlap) == 1:
                 # take row correspinding to abo
@@ -133,7 +122,6 @@ class Command(BaseCommand):
 
             user = User(username=uid)
             new_users.append(user)
-
 
         # bulk_create groups everything into a single query. Post-create events won't be sent.
         User.objects.bulk_create(new_users)
@@ -353,7 +341,8 @@ class Command(BaseCommand):
 
             for loco in locos:
                 if name == loco.last_name and vorname == loco.first_name:
-                    for fkt in (fkt1, fkt2, fkt3, fkt4, fkt5, fkt6, fkt7, fkt8, fkt9, fkt10, fkt11):
+                    for fkt in (fkt1, fkt2, fkt3, fkt4, fkt5, fkt6, fkt7, fkt8, 
+                                fkt9, fkt10, fkt11, fkt12, fkt13, fkt14):
                         # if fkt is "" it is thrown into dict anyway and ignored afterward.
                         new_bereiche_locos[fkt].append(loco)
 
@@ -564,7 +553,7 @@ class Command(BaseCommand):
 
             for mitemail in primary_to_all[loco.email]:
                 try:
-                    mit_loco = Loco.objects.get(last_name=abomitname,first_name=abomitvorname,email=abomitemail)
+                    mit_loco = Loco.objects.get(email=abomitemail)
                     mit_loco.abo=abo
                     mit_loco.save()
                 except MultipleObjectsReturned:
