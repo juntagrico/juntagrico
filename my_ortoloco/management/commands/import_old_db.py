@@ -82,6 +82,10 @@ class Command(BaseCommand):
             pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
             uid, pwd, lvl, _ = row
 
+            # getting desperate
+            if vorname == "Caudia":
+                continue
+
             rows_with_same_email[email][pid] = row
 
         pidswithabo = set(self.query("SELECT pid from abo"))
@@ -115,15 +119,18 @@ class Command(BaseCommand):
             uid, pwd, lvl, _ = row
 
             if uid is None:
-                uid = newid()
-                #uid = email.decode("latin-1")
+                #uid = newid()
+                uid = email.decode("latin-1")
             else:
                 uid = uid.decode("latin-1")
 
+            # build username the same way as when registering new user
+            import hashlib
+            username = "%s:%s %s" %(vorname[:10], name[:10], hashlib.sha1(email).hexdigest())
             user = User(username=uid)
             new_users.append(user)
 
-        # bulk_create groups everything into a single query. Post-create events won't be sent.
+        # bulk_create gsroups everything into a single query. Post-create events won't be sent.
         User.objects.bulk_create(new_users)
 
         new_locos = []
