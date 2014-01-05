@@ -7,6 +7,7 @@ from django.db.models import signals
 from django.core import validators
 from django.core.exceptions import ValidationError
 import time
+from django.db.models import Q
 
 import model_audit
 import helpers
@@ -38,10 +39,10 @@ class Depot(models.Model):
         return day
 
     def small_abos(self):
-        return len(self.abo_set.all().filter(groesse=1))
+        return len(self.abo_set.filter(Q(groesse=1) | Q(groesse=3)))
 
     def big_abos(self):
-        return len(self.abo_set.all().filter(groesse=2))
+        return len(self.abo_set.filter(Q(groesse=2) | Q(groesse=3) | Q(groesse=4))) + len(self.abo_set.filter(groesse=4))
 
     def vier_eier(self):
         eier = 0

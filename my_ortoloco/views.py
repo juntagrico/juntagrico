@@ -708,15 +708,28 @@ def my_createlocoforsuperuserifnotexist(request):
 def my_startmigration(request):
     from django.core.management import call_command
 
+    from StringIO import StringIO
+
+    f = StringIO()
+
     call_command('clean_db')
-    call_command('import_old_db', request.GET.get("username"), request.GET.get("password"))
+    call_command('import_old_db', request.GET.get("username"), request.GET.get("password"), stdout=f, stderr=f)
+
+    return HttpResponse(f.getvalue())
+
 
 @staff_member_required
 def migrate_apps(request):
     from django.core.management import call_command
 
+    from StringIO import StringIO
+
+    f = StringIO()
+
     call_command('migrate', 'my_ortoloco')
     call_command('migrate', 'static_ortoloco')
+
+    return HttpResponse(f.getvalue())
 
 
 def test_filters(request):

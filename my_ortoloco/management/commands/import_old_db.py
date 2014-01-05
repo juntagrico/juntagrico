@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
     def decode_row(self, row):
         #return [i.decode("latin-1") if isinstance(i, basestring) else i for i in row]
-        return [i.decode("latin-1","ignore") if isinstance(i, basestring) else i for i in row]
+        return [i.decode("latin-1", "ignore") if isinstance(i, basestring) else i for i in row]
 
     # entry point used by manage.py
     def handle(self, *args, **options):
@@ -65,7 +65,7 @@ class Command(BaseCommand):
                                 "SELECT * FROM person p "
                                 "    RIGHT OUTER JOIN usr u ON p.pid = u.pid "
                                 "WHERE p.pid is null "))
-                                #"order by email,  confirmed desc"))
+        #"order by email,  confirmed desc"))
 
 
         # everything wer're throwing out here is bad data of some form...
@@ -74,7 +74,6 @@ class Command(BaseCommand):
         query = [row for row in query if None not in (row[0],)]
         if len(query) < oldsize:
             print "warning: some inconsistent data, ignoring..."
-
 
         rows_with_same_email = defaultdict(dict)
 
@@ -106,10 +105,9 @@ class Command(BaseCommand):
                 new_query.append(d[overlap.pop()])
             else:
                 # this should never happen
-                raise ValueError("error: several abos point to pids with same email %s." %email)
+                raise ValueError("error: several abos point to pids with same email %s." % email)
 
         query = new_query
-
 
         newid = (u"newuser%03d" % i for i in itertools.count()).next
 
@@ -126,9 +124,10 @@ class Command(BaseCommand):
 
             # build username the same way as when registering new user
             import hashlib
+
             pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
             uid, pwd, lvl, _ = self.decode_row(row)
-            username = u"%s:%s %s" %(vorname[:10], name[:10], hashlib.sha1(email).hexdigest())
+            username = u"%s:%s %s" % (vorname[:10], name[:10], hashlib.sha1(email).hexdigest())
             user = User(username=username[:30])
             new_users.append(user)
 
@@ -172,7 +171,6 @@ class Command(BaseCommand):
             # keep this data around to associate locos with jobs later
             self.userids[pid] = user.id
 
-
         Loco.objects.bulk_create(new_locos)
 
         print '***************************************************************'
@@ -185,14 +183,14 @@ class Command(BaseCommand):
         print 'Migrating Taetigkeitsbereiche'
         print '***************************************************************'
 
-        query = list(self.query("SELECT * FROM lux_funktion ")) 	
+        query = list(self.query("SELECT * FROM lux_funktion "))
         new_taetigkeitsbereiche = []
 
         from _koordinatoren import koordinatoren
 
         for row in query:
             id, name, description, type, showorder = self.decode_row(row)
-            
+
             if name not in koordinatoren:
                 print "not migrating bereich %s" % name
                 continue
@@ -201,7 +199,7 @@ class Command(BaseCommand):
             try:
                 coordinator = Loco.objects.get(email=email)
             except Exception:
-                print "cannot find loco with email %s" %email
+                print "cannot find loco with email %s" % email
                 #coordinator = Loco.objects.get(pk=1)
                 coordinator = Loco.objects.get(user_id=1)
             core = name in ("ernten", "abpacken", "verteilen")
@@ -213,7 +211,6 @@ class Command(BaseCommand):
                                                     core=core)
 
             new_taetigkeitsbereiche.append(taetigkeitsbereich)
-
 
         Taetigkeitsbereich.objects.bulk_create(new_taetigkeitsbereiche)
 
@@ -259,7 +256,7 @@ class Command(BaseCommand):
                                 "FROM lu_depot "
                                 ") dt"))
 
-        new_depots = [] 
+        new_depots = []
         #locos = sorted(Loco.objects.all(), key=lambda u: u.id)
         loco = User.objects.get(id=1).loco
 
@@ -267,11 +264,12 @@ class Command(BaseCommand):
 
         for row in query:
             id, code, name, description, contact_id, weekday, addr_street, addr_zipcode, addr_location = self.decode_row(row)
-            if name=='No Name':
-                name=name+addr_zipcode
+            if name == 'No Name':
+                name = name + addr_zipcode
             code = newid()
 
             from _depots import depot_wochentag
+
             weekday = depot_wochentag[name]
             if weekday == -1:
                 print "Skipping depot %s (no longer exists?)" % name
@@ -303,41 +301,41 @@ class Command(BaseCommand):
         print '***************************************************************'
 
         query = list(self.query("select pu.*,funktion, "
-                                    "case when substr(funktion,1,1)=1 then 'ernten' else '' end fkt1, "
-                                    "case when substr(funktion,3,1)=1 then 'abpacken' else '' end fkt2, "
-                                    "case when substr(funktion,5,1)=1 then 'verteilen' else '' end fkt3, "
-                                    "case when substr(funktion,7,1)=1 then 'garten' else '' end fkt4, "
-                                    "case when substr(funktion,9,1)=1 then 'rand' else '' end fkt5, "
-                                    "case when substr(funktion,11,1)=1 then 'freitag' else '' end fkt6, "
-                                    "case when substr(funktion,13,1)=1 then 'springer' else '' end fkt7, "
-                                    "case when substr(funktion,15,1)=1 then 'wochenend' else '' end fkt8, "
-                                    "case when substr(funktion,17,1)=1 then 'infrastruktur' else '' end fkt9, "
-                                    "case when substr(funktion,19,1)=1 then 'gastrofeste' else '' end fkt10, "
-                                    "case when substr(funktion,21,1)=1 then 'adminbuchhaltung' else '' end fkt11, "
-                                    "case when substr(funktion,23,1)=1 then 'beeren' else '' end fkt12, "
-                                    "case when substr(funktion,25,1)=1 then 'pilze' else '' end fkt13, "
-                                    "case when substr(funktion,27,1)=1 then 'kraeuterblumen' else '' end fkt14 "
-                                    "from funktion f "
-                                    "join "
-                                    "( "
-                                    "select pid,vorname,name "
-                                    "from "
-                                    "(SELECT  p.* "
-                                    "FROM person p "
-                                    "LEFT OUTER JOIN usr u "
-                                    "ON p.pid = u.pid "
-                                    "where u.pid is not null "
-                                    "UNION "
-                                    "SELECT p.* "
-                                    "FROM person p "
-                                    "RIGHT OUTER JOIN usr u "
-                                    "ON p.pid = u.pid "
-                                    "where p.pid is not null "
-                                    ") dt "
-                                    "where pid is not null "
-                                    ") pu "
-                                    "on f.pid=pu.pid "
-                                    "order by pid "))
+                                "case when substr(funktion,1,1)=1 then 'ernten' else '' end fkt1, "
+                                "case when substr(funktion,3,1)=1 then 'abpacken' else '' end fkt2, "
+                                "case when substr(funktion,5,1)=1 then 'verteilen' else '' end fkt3, "
+                                "case when substr(funktion,7,1)=1 then 'garten' else '' end fkt4, "
+                                "case when substr(funktion,9,1)=1 then 'rand' else '' end fkt5, "
+                                "case when substr(funktion,11,1)=1 then 'freitag' else '' end fkt6, "
+                                "case when substr(funktion,13,1)=1 then 'springer' else '' end fkt7, "
+                                "case when substr(funktion,15,1)=1 then 'wochenend' else '' end fkt8, "
+                                "case when substr(funktion,17,1)=1 then 'infrastruktur' else '' end fkt9, "
+                                "case when substr(funktion,19,1)=1 then 'gastrofeste' else '' end fkt10, "
+                                "case when substr(funktion,21,1)=1 then 'adminbuchhaltung' else '' end fkt11, "
+                                "case when substr(funktion,23,1)=1 then 'beeren' else '' end fkt12, "
+                                "case when substr(funktion,25,1)=1 then 'pilze' else '' end fkt13, "
+                                "case when substr(funktion,27,1)=1 then 'kraeuterblumen' else '' end fkt14 "
+                                "from funktion f "
+                                "join "
+                                "( "
+                                "select pid,vorname,name "
+                                "from "
+                                "(SELECT  p.* "
+                                "FROM person p "
+                                "LEFT OUTER JOIN usr u "
+                                "ON p.pid = u.pid "
+                                "where u.pid is not null "
+                                "UNION "
+                                "SELECT p.* "
+                                "FROM person p "
+                                "RIGHT OUTER JOIN usr u "
+                                "ON p.pid = u.pid "
+                                "where p.pid is not null "
+                                ") dt "
+                                "where pid is not null "
+                                ") pu "
+                                "on f.pid=pu.pid "
+                                "order by pid "))
 
         new_bereiche_locos = defaultdict(list)
 
@@ -345,12 +343,12 @@ class Command(BaseCommand):
         taetigkeitsbereiche = sorted(Taetigkeitsbereich.objects.all(), key=lambda ta: ta.id)
 
         for row in query:
-            pid,vorname,name,funktion,fkt1,fkt2,fkt3,fkt4,fkt5,fkt6,fkt7,fkt8,fkt9,fkt10,fkt11,fkt12,fkt13, \
+            pid, vorname, name, funktion, fkt1, fkt2, fkt3, fkt4, fkt5, fkt6, fkt7, fkt8, fkt9, fkt10, fkt11, fkt12, fkt13, \
             fkt14 = self.decode_row(row)
 
             for loco in locos:
                 if name == loco.last_name and vorname == loco.first_name:
-                    for fkt in (fkt1, fkt2, fkt3, fkt4, fkt5, fkt6, fkt7, fkt8, 
+                    for fkt in (fkt1, fkt2, fkt3, fkt4, fkt5, fkt6, fkt7, fkt8,
                                 fkt9, fkt10, fkt11, fkt12, fkt13, fkt14):
                         # if fkt is "" it is thrown into dict anyway and ignored afterward.
                         new_bereiche_locos[fkt].append(loco)
@@ -360,7 +358,7 @@ class Command(BaseCommand):
             for loco in new_bereiche_locos[bereich.name]:
                 bl = bereich.locos.through(taetigkeitsbereich=bereich, loco=loco)
                 new_bereichlocos.append(bl)
-            #bereich.locos = new_bereiche_locos[bereich.name]
+                #bereich.locos = new_bereiche_locos[bereich.name]
 
         bereich.locos.through.objects.bulk_create(new_bereichlocos)
 
@@ -414,9 +412,9 @@ class Command(BaseCommand):
 
         # translate job ids from old to new db
         jobids = dict((row[0], job.id) for (job, row) in zip(Job.objects.all(), query))
-        
+
         # now that jobs are created, associate locos that already registered themselves for the job
-        
+
         # create reference time at start of year 2014
         delta = datetime.datetime(2014, 1, 1) - datetime.datetime.fromtimestamp(0)
         reference = delta.days * 86400 + delta.seconds
@@ -433,12 +431,12 @@ class Command(BaseCommand):
 
             if jid not in jobids:
                 # assume job already done
-                print "Cannot find job corresponding to old job %s" %jid
+                print "Cannot find job corresponding to old job %s" % jid
                 continue
             if pid not in self.userids:
-                print "Cannot find loco corresponding to person %s" %pid
+                print "Cannot find loco corresponding to person %s" % pid
                 continue
-                
+
             loco = Loco.objects.get(user_id=self.userids[pid])
             job = Job.objects.get(id=jobids[jid])
             b = Boehnli(job=job, loco=loco)
@@ -521,18 +519,18 @@ class Command(BaseCommand):
                 primary_to_all[email].append(abomitemail)
 
             try:
-                locoidlookup=Loco.objects.get(email=email)
+                locoidlookup = Loco.objects.get(email=email)
             except ObjectDoesNotExist:
-                print 'Warning: Loco ', last_name, first_name, email, ' not found, skipping abo'
+                print 'Warning: Loco ', email, ' not found, skipping abo'
                 continue
             except MultipleObjectsReturned:
-                print 'Warning: More than one Loco for ', last_name, first_name, email, ", skipping abo"
+                print 'Warning: More than one Loco for ', email, ", skipping abo"
                 continue
 
             try:
-                depotidlookup=Depot.objects.get(description=description)
+                depotidlookup = Depot.objects.get(description=description)
             except ObjectDoesNotExist:
-                print 'Warning: No Depot found for ', last_name, first_name, email, ", skipping abo"
+                print 'Warning: No Depot found for ', email, ", skipping abo"
                 continue
 
             abo = Abo(depot_id=depotidlookup.id,
@@ -541,30 +539,29 @@ class Command(BaseCommand):
 
             new_abos.append(abo)
 
-
         Abo.objects.bulk_create(new_abos)
 
         new_abolocos = []
         abos = sorted(Abo.objects.all(), key=lambda a: a.id)
         for abo in abos:
             try:
-                loco=Loco.objects.get(id=abo.primary_loco.id)
+                loco = Loco.objects.get(id=abo.primary_loco.id)
             except ObjectDoesNotExist:
                 print 'Warning: Loco ', abo.primary_loco_id, ' not found'
                 continue
 
-            loco.abo=abo
+            loco.abo = abo
             loco.save()
             new_abolocos.append(loco)
 
             for mitemail in primary_to_all[loco.email]:
                 try:
                     mit_loco = Loco.objects.get(email=abomitemail)
-                    mit_loco.abo=abo
+                    mit_loco.abo = abo
                     mit_loco.save()
                 except MultipleObjectsReturned:
-                    print 'Warning: More than one abomit_Loco for ', abomitname, ' ', abomitvorname,\
-                          ' ', abomitemail
+                    print 'Warning: More than one abomit_Loco for ', abomitname, ' ', abomitvorname, \
+                        ' ', abomitemail
 
         print '***************************************************************'
         print 'Abos migrated'
@@ -598,12 +595,12 @@ class Command(BaseCommand):
             loco = abo.primary_loco
             key = loco.email
             if key not in d:
-                print "No extraabo data found for abo <%s> corresponding to <%s>" %(abo, loco)
+                print "No extraabo data found for abo <%s> corresponding to <%s>" % (abo, loco)
                 continue
 
             row = d[key]
 
-            abopid, anteilschein, last_name, first_name, email, eat1, eat2, eat3, eat4, eat5,\
+            abopid, anteilschein, last_name, first_name, email, eat1, eat2, eat3, eat4, eat5, \
             eat6, eat7 = self.decode_row(row)
 
             new_eattypes0_abos = []
@@ -629,7 +626,6 @@ class Command(BaseCommand):
         print "skipping for now!"
         return
 
-
         query = list(self.query("select a.pid as abopid, anteilschein, p.name as last_name, "
                                 "p.vorname as first_name,p.email "
                                 "from abo a "
@@ -637,25 +633,24 @@ class Command(BaseCommand):
                                 "on a.pid=p.pid"))
 
         for row in query:
-            abopid, anteilschein,last_name, first_name, email = self.decode_row(row)
+            abopid, anteilschein, last_name, first_name, email = self.decode_row(row)
 
             i = 0
             new_anteilscheine = []
 
             while i < anteilschein:
                 try:
-                    loco=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
+                    loco = Loco.objects.get(last_name=last_name, first_name=first_name, email=email)
                     anteilscheine = Anteilschein(paid=1,
                                                  loco_id=loco.id)
                     new_anteilscheine.append(anteilscheine)
-                    i = i+1
+                    i = i + 1
                 except ObjectDoesNotExist:
-                    i = i+1
-                    print 'No Abo found for primary_loco_id: ',loco.id
+                    i = i + 1
+                    print 'No Abo found for primary_loco_id: ', loco.id
                 except MultipleObjectsReturned:
-                    i = i+1
-                    print 'Warning: More than one Abo for ', loco.id, ' ', loco.last_name, ' ', \
-                    loco.first_name, ' ', loco.email
+                    i = i + 1
+                    print 'Warning: More than one Abo for ', loco.id, ' ', loco.email
 
             Anteilschein.objects.bulk_create(new_anteilscheine)
 
