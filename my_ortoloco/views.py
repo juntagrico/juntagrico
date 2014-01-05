@@ -26,7 +26,7 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 
 def getBohnenDict(request):
     loco = request.user.loco
-    next_jobs = []
+    next_jobs = set()
     if loco.abo is not None:
         allebohnen = Boehnli.objects.filter(loco=loco)
         userbohnen = []
@@ -38,11 +38,11 @@ def getBohnenDict(request):
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
             if bohne.job.time > datetime.datetime.now():
-                next_jobs.append(bohne.job)
+                next_jobs.add(bohne.job)
     else:
         bohnenrange = None
         userbohnen = []
-        next_jobs = []
+        next_jobs = set()
     return {
         'bohnenrange': bohnenrange,
         'userbohnen': len(userbohnen),
@@ -98,9 +98,8 @@ def my_job(request, job_id):
         else:
             error = "Ungueltige Anzahl Einschreibungen"
 
-    boehnlis = Boehnli.objects.filter(job_id=job.id)
     participants = []
-    for bohne in boehnlis:
+    for bohne in Boehnli.objects.filter(job_id=job.id):
         if bohne.loco is not None:
             participants.append(bohne.loco)
 

@@ -31,7 +31,6 @@ def send_mail(subject, message, from_email, to_emails):
 
 
 def send_mail_multi(email_multi_message):
-    print email_multi_message.to
     okmails = []
     if settings.DEBUG is False:
         okmails = email_multi_message.to
@@ -127,3 +126,20 @@ def send_filtered_mail(subject, message, emails, server):
 
 def send_mail_password_reset(email, password):
     send_mail('Dein neues ortoloco Passwort', 'Du hast dein Passwort neu setzen lassen: ' + password, 'info@ortoloco.ch', [email])
+
+def send_job_reminder(emails, job, participants):
+    plaintext = get_template('mails/job_reminder_mail.txt')
+    htmly = get_template('mails/job_reminder_mail.html')
+
+    # reset password so we can send it to him
+    d = Context({
+        'job': job,
+        'participants': participants
+    })
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives("ortoloco - Job-Erinnerung", text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
