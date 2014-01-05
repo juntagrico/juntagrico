@@ -563,7 +563,7 @@ def my_new_password(request):
             pw = password_generator()
             loco.user.set_password(pw)
             loco.user.save()
-            send_mail_password_reset(loco.user.email, pw)
+            send_mail_password_reset(loco.email, pw)
 
     renderdict = {
         'sent': sent
