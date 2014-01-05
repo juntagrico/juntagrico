@@ -711,6 +711,13 @@ def my_startmigration(request):
     call_command('clean_db')
     call_command('import_old_db', request.GET.get("username"), request.GET.get("password"))
 
+@staff_member_required
+def migrate_apps(request):
+    from django.core.management import call_command
+
+    call_command('migrate', 'my_ortoloco')
+    call_command('migrate', 'static_ortoloco')
+
 
 def test_filters(request):
     lst = Filter.get_all()
