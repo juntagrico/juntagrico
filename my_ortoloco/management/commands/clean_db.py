@@ -14,6 +14,7 @@ class Command(BaseCommand):
         Audit.objects.all().delete()
         Depot.objects.all().delete()
         ExtraAboType.objects.all().delete()
+        Boehnli.objects.all().delete()
 
         # delete in correct order to avoid triggering protection
         Job.objects.all().delete()
