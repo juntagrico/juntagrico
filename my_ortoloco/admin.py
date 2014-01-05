@@ -13,7 +13,6 @@ from my_ortoloco.models import *
 from my_ortoloco import helpers
 from my_ortoloco import admin_helpers
 
-
 # This form exists to restrict primary user choice to users that have actually set the
 # current abo as their abo
 class AboAdminForm(forms.ModelForm):
@@ -312,5 +311,3 @@ admin.site.register(model_audit.Audit, AuditAdmin)
 #admin.site.register(Boehnli, BoehnliAdmin)
 admin.site.register(JobTyp)
 admin.site.register(Job, JobAdmin)
-
-

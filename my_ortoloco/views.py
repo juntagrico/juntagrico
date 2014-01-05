@@ -9,7 +9,6 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
-from django.utils import timezone
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
@@ -27,23 +26,23 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 
 def getBohnenDict(request):
     loco = request.user.loco
-    next_jobs = []
+    next_jobs = set()
     if loco.abo is not None:
         allebohnen = Boehnli.objects.filter(loco=loco)
         userbohnen = []
 
         for bohne in allebohnen:
-            if bohne.job.time.year == date.today().year and bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+            if bohne.job.time.year == date.today().year and bohne.job.time < datetime.datetime.now():
                 userbohnen.append(bohne)
         bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.groesse * 10 / loco.abo.locos.count()))
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
-            if bohne.job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
-                next_jobs.append(bohne.job)
+            if bohne.job.time > datetime.datetime.now():
+                next_jobs.add(bohne.job)
     else:
         bohnenrange = None
         userbohnen = []
-        next_jobs = []
+        next_jobs = set()
     return {
         'bohnenrange': bohnenrange,
         'userbohnen': len(userbohnen),
@@ -99,9 +98,8 @@ def my_job(request, job_id):
         else:
             error = "Ungueltige Anzahl Einschreibungen"
 
-    boehnlis = Boehnli.objects.filter(job_id=job.id)
     participants = []
-    for bohne in boehnlis:
+    for bohne in Boehnli.objects.filter(job_id=job.id):
         if bohne.loco is not None:
             participants.append(bohne.loco)
 
@@ -179,7 +177,7 @@ def my_pastjobs(request):
     past_bohnen = []
 
     for bohne in allebohnen:
-        if bohne.job.time < timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+        if bohne.job.time < datetime.datetime.now():
             past_bohnen.append(bohne)
 
     renderdict = getBohnenDict(request)
@@ -241,7 +239,7 @@ def my_einsaetze(request):
 
     jobs = []
     for job in Job.objects.all():
-        if job.time > timezone.make_aware(datetime.datetime.now(), timezone.get_default_timezone()):
+        if job.time > datetime.datetime.now():
             jobs.append(job)
     renderdict.update({
         'jobs': jobs,
@@ -472,6 +470,7 @@ def my_welcome(request):
 
     return render(request, "welcome.html", renderdict)
 
+
 def my_confirm(request, hash):
     """
     Confirm from a user that has been added as a Mitabonnent
@@ -617,9 +616,73 @@ def alldepots_list(request, name):
     else:
         depots = [get_object_or_404(Depot, code__iexact=name)]
 
+    overview = {
+        'Dienstag': {
+            'small_abo': 0,
+            'big_abo': 0,
+            'entities': 0,
+            'egg4': 0,
+            'egg6': 0,
+            'cheesefull': 0,
+            'cheesehalf': 0,
+            'cheesequarter': 0,
+            'bigobst': 0,
+            'smallobst': 0
+        },
+        'Donnerstag': {
+            'small_abo': 0,
+            'big_abo': 0,
+            'entities': 0,
+            'egg4': 0,
+            'egg6': 0,
+            'cheesefull': 0,
+            'cheesehalf': 0,
+            'cheesequarter': 0,
+            'bigobst': 0,
+            'smallobst': 0
+        },
+        'all': {
+            'small_abo': 0,
+            'big_abo': 0,
+            'entities': 0,
+            'egg4': 0,
+            'egg6': 0,
+            'cheesefull': 0,
+            'cheesehalf': 0,
+            'cheesequarter': 0,
+            'bigobst': 0,
+            'smallobst': 0
+        }
+    }
+
+    for depot in depots:
+        row = overview.get(depot.get_weekday_display())
+        all = overview.get('all')
+        row['small_abo'] += depot.small_abos()
+        row['big_abo'] += depot.big_abos()
+        row['entities'] += 2*depot.big_abos() + depot.small_abos()
+        row['egg4'] += depot.vier_eier()
+        row['egg6'] += depot.sechs_eier()
+        row['cheesefull'] += depot.kaese_ganz()
+        row['cheesehalf'] += depot.kaese_halb()
+        row['cheesequarter'] += depot.kaese_viertel()
+        row['bigobst'] += depot.big_obst()
+        row['smallobst'] += depot.small_obst()
+        all['small_abo'] += depot.small_abos()
+        all['big_abo'] += depot.big_abos()
+        all['entities'] += 2*depot.big_abos() + depot.small_abos()
+        all['egg4'] += depot.vier_eier()
+        all['egg6'] += depot.sechs_eier()
+        all['cheesefull'] += depot.kaese_ganz()
+        all['cheesehalf'] += depot.kaese_halb()
+        all['cheesequarter'] += depot.kaese_viertel()
+        all['bigobst'] += depot.big_obst()
+        all['smallobst'] += depot.small_obst()
+
     renderdict = {
+        "overview": overview,
         "depots": depots,
-        "datum": timezone.now()
+        "datum": datetime.datetime.now()
     }
 
     return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')

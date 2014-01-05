@@ -270,6 +270,7 @@ class Job(models.Model):
     typ = models.ForeignKey(JobTyp, on_delete=models.PROTECT)
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
+    reminder_sent = models.BooleanField("Reminder verschickt", default=False)
 
     def __unicode__(self):
         return u'Job #%s' % (self.id)
