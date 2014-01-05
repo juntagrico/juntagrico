@@ -704,6 +704,12 @@ def my_createlocoforsuperuserifnotexist(request):
     return redirect("/my/home")
 
 
+@staff_member_required
+def my_startmigration(request):
+    from django.core.management import call_command
+    call_command('clean_db')
+    call_command('import_old_db')
+
 def test_filters(request):
     lst = Filter.get_all()
     res = []
