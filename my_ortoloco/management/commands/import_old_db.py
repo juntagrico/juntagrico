@@ -126,8 +126,10 @@ class Command(BaseCommand):
 
             # build username the same way as when registering new user
             import hashlib
-            username = "%s:%s %s" %(vorname[:10], name[:10], hashlib.sha1(email).hexdigest())
-            user = User(username=uid)
+            pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
+            uid, pwd, lvl, _ = self.decode_row(row)
+            username = u"%s:%s %s" %(vorname[:10], name[:10], hashlib.sha1(email).hexdigest())
+            user = User(username=username[:30])
             new_users.append(user)
 
         # bulk_create gsroups everything into a single query. Post-create events won't be sent.
