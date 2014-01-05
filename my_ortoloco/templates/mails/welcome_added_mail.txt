@@ -1,0 +1,24 @@
+{% extends "mails/email.txt" %}
+{% block content %}
+Willkommen!
+
+Wir freuen uns, dich bei ortoloco begrüssen zu dürfen. Soeben hat dich Lea Egloff zu ihrem/seinem Gemüsebo hinzugefügt und für dich {{ anteilsscheine }} Anteilschein(e) erworben. Wenn du damit einverstanden bist, ortoloco-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
+Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
+
+Statuten: {{ serverurl }}/static/others/131129_Statuten_ortoloco.pdf
+Betriebsreglement: {{ serverurl }}/static/others/131129_Betriebsreglement_ortoloco.pdf
+
+
+Unter my.ortoloco.ch kannst du dich ab sofort für Jobs anmelden und vieles mehr.
+
+Email: {{ username }}
+Passwort: {{ password }}
+Bitte setze dir hier gleich ein neues Passwort:
+{{serverurl}}/my/passwort
+
+Weitere Infos wirst du bald erhalten. Bei Fragen oder Unklarheiten einfach melden:
+info@ortoloco.ch
+
+Herzlich grüsst,
+die ortoloco-Betriebsgruppe
+{% endblock %}

@@ -194,6 +194,8 @@ class Loco(models.Model):
     abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
                             on_delete=models.SET_NULL)
 
+    confirmed = models.BooleanField("Bestäetigt", default=True)
+
 
     def __unicode__(self):
         return u"%s %s" % (self.first_name, self.last_name)

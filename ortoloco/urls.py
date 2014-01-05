@@ -43,6 +43,10 @@ urlpatterns = patterns('',
     url('^my/abonnent/(?P<abo_id>.*?)/', 'my_ortoloco.views.my_add_loco'),
     url('^my/depot/(?P<depot_id>.*?)/', 'my_ortoloco.views.my_depot'),
     url('^my/mails$', 'my_ortoloco.views.my_mails'),
+    url('^my/depotlisten', 'my_ortoloco.views.my_depotlisten'),
+    url('^my/createlocoforsuperuserifnotexist$', 'my_ortoloco.views.my_createlocoforsuperuserifnotexist'),
+    url('^my/neuespasswort$', 'my_ortoloco.views.my_new_password'),
+    url('^my/bestaetigung/(?P<hash>.*?)/', 'my_ortoloco.views.my_confirm'),
 
 
     (r'^accounts/login/$',  login),

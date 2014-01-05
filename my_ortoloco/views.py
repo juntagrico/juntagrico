@@ -146,7 +146,7 @@ def my_participation(request):
             loco.save()
             for area in new_areas - old_areas:
                 send_new_loco_in_taetigkeitsbereich_to_bg(area, loco)
-            
+
         success = True
 
     for area in Taetigkeitsbereich.objects.all():
@@ -157,7 +157,7 @@ def my_participation(request):
             'checked': loco in area.locos.all(),
             'id': area.id,
             'core': area.core,
-            'admin': u"%s (%s)" %(area.coordinator, area.coordinator.email)
+            'admin': u"%s (%s)" % (area.coordinator, area.coordinator.email)
         })
 
     renderdict = getBohnenDict(request)
@@ -339,7 +339,8 @@ def my_add_loco(request, abo_id):
         if locoform.is_valid() and scheineerror is False and userexists is False:
             names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
             username = names + hashlib.sha1(locoform.cleaned_data['email']).hexdigest()
-            user = User.objects.create_user(username, locoform.cleaned_data['email'], password_generator())
+            pw = password_generator()
+            user = User.objects.create_user(username, locoform.cleaned_data['email'], pw)
             user.loco.first_name = locoform.cleaned_data['first_name']
             user.loco.last_name = locoform.cleaned_data['last_name']
             user.loco.email = locoform.cleaned_data['email']
@@ -348,6 +349,7 @@ def my_add_loco(request, abo_id):
             user.loco.addr_location = locoform.cleaned_data['addr_location']
             user.loco.phone = locoform.cleaned_data['phone']
             user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+            user.loco.confirmed = False
             user.loco.abo_id = abo_id
             user.loco.save()
 
@@ -355,7 +357,7 @@ def my_add_loco(request, abo_id):
                 anteilschein = Anteilschein(loco=user.loco, paid=False)
                 anteilschein.save()
 
-            send_been_added_to_abo(request.user.loco.first_name + " " + request.user.loco.last_name, user.loco.email)
+            send_been_added_to_abo(user.loco.email, pw, scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
 
             user.loco.save()
             if request.GET.get("return"):
@@ -470,6 +472,18 @@ def my_welcome(request):
 
     return render(request, "welcome.html", renderdict)
 
+def my_confirm(request, hash):
+    """
+    Confirm from a user that has been added as a Mitabonnent
+    """
+
+    for loco in Loco.objects.all():
+        if hash == hashlib.sha1(loco.email + str(loco.abo_id)).hexdigest():
+            loco.confirmed = True
+            loco.save()
+
+    return redirect("/my/home")
+
 
 @login_required
 def my_contact(request):
@@ -539,18 +553,53 @@ def my_change_password(request):
     return render(request, 'password.html', renderdict)
 
 
+def my_new_password(request):
+    sent = False
+    if request.method == 'POST':
+        sent = True
+        locos = Loco.objects.filter(email=request.POST.get('username'))
+        print locos
+        if len(locos) > 0:
+            loco = locos[0]
+            pw = password_generator()
+            loco.user.set_password(pw)
+            loco.user.save()
+            send_mail_password_reset(loco.user.email, pw)
+
+    renderdict = {
+        'sent': sent
+    }
+    return render(request, 'my_newpassword.html', renderdict)
+
+
 @staff_member_required
 def my_mails(request):
+    sent = 0
     if request.method == 'POST':
-        emails = []
+        emails = set()
         if request.POST.get("allabo") == "on":
-            for loco in Loco.objects.filter(abo=None):
-                emails.append(loco.email)
+            for loco in Loco.objects.exclude(abo=None):
+                emails.add(loco.email)
+        if request.POST.get("allanteilsschein") == "on":
+            for loco in Loco.objects.all():
+                if loco.anteilschein_set.count() > 0:
+                    emails.add(loco.email)
+        if request.POST.get("all") == "on":
+            for loco in Loco.objects.all():
+                emails.add(loco.email)
+        if len(emails) > 0:
             send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), emails, request.META["HTTP_HOST"])
+            sent = len(emails)
     renderdict = getBohnenDict(request)
     renderdict.update({
+        'sent': sent
     })
     return render(request, 'mail_sender.html', renderdict)
+
+
+@staff_member_required
+def my_depotlisten(request):
+    return alldepots_list(request, "")
 
 
 def logout_view(request):
@@ -573,8 +622,23 @@ def alldepots_list(request, name):
         "datum": timezone.now()
     }
 
-    return render_to_pdf(request, "exports/all_depots.html", renderdict)
+    return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')
 
+
+def my_createlocoforsuperuserifnotexist(request):
+    """
+    just a helper to create a loco for superuser
+    """
+    if request.user.is_superuser and len(Loco.objects.filter(email=request.user.email)) is 0:
+        loco = Loco.objects.create(user=request.user, first_name="super", last_name="duper", email=request.user.email, addr_street="superstreet", addr_zipcode="8000",
+                                   addr_location="SuperCity", phone="012345678")
+        loco.save()
+        request.user.loco = loco
+        request.user.save()
+
+
+    # we do just nothing if its not a superuser or he has already a loco
+    return redirect("/my/home")
 
 
 def test_filters(request):

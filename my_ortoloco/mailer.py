@@ -10,37 +10,47 @@ import re
 
 # sends mail only to specified email-addresses if dev mode
 def send_mail(subject, message, from_email, to_emails):
+    okmails = []
     if settings.DEBUG is False:
-        mail.send_mail(subject, message, from_email, to_emails, fail_silently=False)
-        print "Mail sent to " + ", ".join(to_emails) + ""
+        okmails = to_emails
     else:
         for email in to_emails:
             sent = False
             for entry in settings.WHITELIST_EMAILS:
                 if sent is False and re.match(entry, email):
-                    mail.send_mail(subject, message, from_email, [email], fail_silently=False)
                     sent = True
-                    print "Mail sent to " + email + ", on whitelist: " + entry
+                    okmails.append(email)
             if not sent:
                 print "Mail not sent to " + ", " + email + ", not in whitelist"
+
+    if len(okmails) > 0:
+        mail.send_mail(subject, message, from_email, [email], fail_silently=False)
+        print "Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else "")
+
     return None
 
 
 def send_mail_multi(email_multi_message):
+    print email_multi_message.to
+    okmails = []
     if settings.DEBUG is False:
-        email_multi_message.send()
-        print "Mail sent to " + ", ".join(email_multi_message.to) + ""
+        okmails = email_multi_message.to
     else:
         for email in email_multi_message.to:
             sent = False
             for entry in settings.WHITELIST_EMAILS:
                 if sent is False and re.match(entry, email):
-                    email_multi_message.to = email
-                    email_multi_message.send()
                     sent = True
-                    print "Mail sent to " + email + ", on whitelist: " + entry
+                    okmails.append(email)
             if not sent:
                 print "Mail not sent to " + email + ", not in whitelist"
+
+
+    if len(okmails) > 0:
+        email_multi_message.to = []
+        email_multi_message.bcc = okmails
+        email_multi_message.send()
+        print "Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else "")
     return None
 
 
@@ -75,8 +85,27 @@ def send_welcome_mail(email, password, server):
     send_mail_multi(msg)
 
 
-def send_been_added_to_abo(name, email):
-    send_mail('Du wurdest als MitabonnentIn hinzugefügt', "Soeben hat dich " + name + " zu seinem Abo hinzugefügt.", 'orto@xiala.net', [email])
+def send_been_added_to_abo(email, password, anteilsscheine, hash, server):
+    plaintext = get_template('mails/welcome_added_mail.txt')
+    htmly = get_template('mails/welcome_added_mail.html')
+
+    # reset password so we can send it to him
+    d = Context({
+        'subject': 'Willkommen bei ortoloco',
+        'username': email,
+        'password': password,
+        'hash': hash,
+        'anteilsscheine': anteilsscheine,
+        'serverurl': "http://" + server
+    })
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [email])
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
+
 
 def send_filtered_mail(subject, message, emails, server):
     plaintext = get_template('mails/filtered_mail.txt')
@@ -95,3 +124,6 @@ def send_filtered_mail(subject, message, emails, server):
     msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
+
+def send_mail_password_reset(email, password):
+    send_mail('Dein neues ortoloco Passwort', 'Du hast dein Passwort neu setzen lassen: ' + password, 'info@ortoloco.ch', [email])
