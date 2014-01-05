@@ -711,10 +711,21 @@ def my_startmigration(request):
     from StringIO import StringIO
 
     f = StringIO()
+    f.write("asdasda")
 
-    call_command('clean_db')
+    import sys
+    oldstdout = sys.stdout
+    oldstderr = sys.stdout
+    sys.stdout = f
+    sys.stderr = f
+
+    call_command('clean_db', stdout=f, stderr=f)
     call_command('import_old_db', request.GET.get("username"), request.GET.get("password"), stdout=f, stderr=f)
 
+    sys.stdout = oldstdout
+    sys.stderr = oldstderr
+
+    print f.getvalue()
     return HttpResponse(f.getvalue())
 
 
