@@ -64,8 +64,9 @@ class Command(BaseCommand):
                                 "UNION ALL "
                                 "SELECT * FROM person p "
                                 "    RIGHT OUTER JOIN usr u ON p.pid = u.pid "
-                                "WHERE p.pid is null "
-                                "order by name,vorname,email, confirmed desc"))
+                                "WHERE p.pid is null "))
+                                #"order by email,  confirmed desc"))
+
 
         # everything wer're throwing out here is bad data of some form...
         oldsize = len(query)
@@ -74,20 +75,65 @@ class Command(BaseCommand):
         if len(query) < oldsize:
             print "warning: some inconsistent data, ignoring..."
 
-        newid = (u"fake_email_%03d@ortoloco.ch" % i for i in itertools.count()).next
+
+        rows_with_same_email = defaultdict(dict)
+
+        #new_query = []
+        #chk_str = ""
+        for row in query:
+            pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
+            uid, pwd, lvl, _ = row
+
+            rows_with_same_email[email][pid] = row
+
+            """
+            if chk_str == email: #filter non unique locos
+                print 'Warning: Non unique Loco: %s %s %s only one instance migrated' % (name, vorname, email)
+                continue
+            chk_str = email
+            new_query.append(row)
+            """
+
+        pidswithabo = set(self.query("SELECT pid from abo"))
+        new_query = []
+        for email, d in rows_with_same_email.iteritems():
+            overlap = pidswithabo.intersection(d.keys())
+            if len(overlap) == 0:
+                # take any row we want, i.e. confirmed if available, else the one with lowest pid
+                chosenpid = -1
+                for pid, row in d.items():
+                    if row[10]: # confirmed
+                        chosenpid = pid
+                        break
+                if chosenpid == -1:
+                    chosenpid = min(d)
+                new_query.append(d[chosenpid])
+            elif len(overlap) == 1:
+                # take row correspinding to abo
+                new_query.append(d[overlap.pop()])
+            else:
+                # this should never happen
+                raise ValueError("error: several abos point to pids with same email %s." %email)
+
+        query = new_query
+
+
+        newid = (u"newuser%03d" % i for i in itertools.count()).next
 
         new_users = []
         for row in query:
             pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
             uid, pwd, lvl, _ = row
-            
+
             if uid is None:
                 uid = newid()
+                #uid = email.decode("latin-1")
             else:
                 uid = uid.decode("latin-1")
 
             user = User(username=uid)
             new_users.append(user)
+
 
         # bulk_create groups everything into a single query. Post-create events won't be sent.
         User.objects.bulk_create(new_users)
@@ -98,7 +144,6 @@ class Command(BaseCommand):
         num_unique_locos = 0
         total_locos = 0
         cnt = 0
-        chk_str = ''
 
         for user, row in zip(users, query):
             pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
@@ -113,31 +158,23 @@ class Command(BaseCommand):
                 tag, monat, jahr = [int(i) for i in geburtsdatum.split(".")]
                 geburi_date = datetime.date(jahr, monat, tag)
 
-            if chk_str != name+vorname+email: #filter non unique locos
-                chk_str = name+vorname+email
-                loco = Loco(user=user,
-                            first_name=vorname,
-                            last_name=name,
-                            email=email,
-                            addr_street=strasse,
-                            addr_zipcode=plz,
-                            addr_location=ort,
-                            birthday=geburi_date,
-                            phone=tel1,
-                            mobile_phone=tel2)
+            loco = Loco(user=user,
+                        first_name=vorname,
+                        last_name=name,
+                        email=email,
+                        addr_street=strasse,
+                        addr_zipcode=plz,
+                        addr_location=ort,
+                        birthday=geburi_date,
+                        phone=tel1,
+                        mobile_phone=tel2)
 
-                num_unique_locos += 1
-                new_locos.append(loco)
+            num_unique_locos += 1
+            new_locos.append(loco)
 
-                # keep this data around to associate locos with jobs later
-                self.userids[pid] = user.id
-            else:
-                print 'Warning: Non unique Loco: %s %s %s only one instance migrated' % (name, vorname, email)
+            # keep this data around to associate locos with jobs later
+            self.userids[pid] = user.id
 
-
-
-        print 'Unique: ', num_unique_locos
-        print 'Total: ', total_locos
 
         Loco.objects.bulk_create(new_locos)
 
@@ -479,25 +516,29 @@ class Command(BaseCommand):
                                 "or substr(abo,3,1) = 2"))
 
         new_abos = []
+        primary_to_all = defaultdict(list)
 
         for row in query:
             abopid, anteilschein, abostr, abomitpid, timestamp, last_name, first_name, email, \
             description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
 
+            if abomitemail is not None:
+                primary_to_all[email].append(abomitemail)
+
             try:
-                locoidlookup=Loco.objects.get(last_name=last_name,first_name=first_name,email=email)
+                locoidlookup=Loco.objects.get(email=email)
             except ObjectDoesNotExist:
-                print 'Warning: Loco ', last_name, ' ', first_name, ' ', email, ' not found'
+                print 'Warning: Loco ', last_name, first_name, email, ' not found, skipping abo'
                 continue
             except MultipleObjectsReturned:
-                print 'Warning: More than one Loco for ', last_name, ' ', first_name, ' ', email
+                print 'Warning: More than one Loco for ', last_name, first_name, email, ", skipping abo"
                 continue
 
             try:
                 depotidlookup=Depot.objects.get(description=description)
             except ObjectDoesNotExist:
-                print 'Warning: No Depot found for ', last_name, ' ', first_name, ' ', email, \
-                      ',random Depot assigned'
+                print 'Warning: No Depot found for ', last_name, first_name, email, ", skipping abo"
+                continue
 
             abo = Abo(depot_id=depotidlookup.id,
                       primary_loco_id=locoidlookup.id,
@@ -508,17 +549,8 @@ class Command(BaseCommand):
 
         Abo.objects.bulk_create(new_abos)
 
-        abos = sorted(Abo.objects.all(), key=lambda a: a.id)
-
-        primary_to_all = defaultdict(list)
-        for row in query:
-            abopid, anteilschein, abostr, abomitpid, timestamp, last_name, first_name, email, \
-            description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
-            if abomitemail is not None:
-                primary_to_all[email].append(abomitemail)
-
-
         new_abolocos = []
+        abos = sorted(Abo.objects.all(), key=lambda a: a.id)
         for abo in abos:
             try:
                 loco=Loco.objects.get(id=abo.primary_loco.id)
