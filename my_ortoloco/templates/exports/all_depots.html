@@ -137,7 +137,7 @@
 {% endfor %}
 {% for depot in depots %}
     <h2 style="font-size: 18px;">{{ depot.wochentag }} - {{ depot.name }}</h2>
-    <h3 style="font-size: 16px;">{{ depot.description }}, {{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
+    <h3 style="font-size: 16px;">{{ depot.description }}</h3>
 
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
@@ -199,8 +199,8 @@
                 <td class="top-border left-border">{{ abo.primary_loco.first_name }}</td>
                 <td class="top-border left-border">{{ abo.primary_loco.last_name }}</td>
                 <td class="top-border left-border">{{ abo.andere_bezieher }}</td>
-                <td class="top-border left-border">{% if abo.groesse == 1 %}1{% endif %}</td>
-                <td class="top-border left-border">{% if abo.groesse == 2 %}1{% endif %}</td>
+                <td class="top-border left-border">{% if abo.kleine_abos %}{{ abo.kleine_abos }} {% endif %}</td>
+                <td class="top-border left-border">{% if abo.grosse_abos %}{{ abo.grosse_abos }} {% endif %}</td>
                 <td class="top-border left-border">{% if abo.vier_eier %}1{% endif %}</td>
                 <td class="top-border left-border">{% if abo.sechs_eier %}1{% endif %}</td>
                 <td class="top-border left-border">{% if abo.ganze_kaese %}1{% endif %}</td>
@@ -212,7 +212,7 @@
             </tr>
         {% endfor %}
     </table>
-    Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.phone }}, {{ depot.contact.email }}
+    Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
     <div class="page-break"></div>
 {% endfor %}
 </body>

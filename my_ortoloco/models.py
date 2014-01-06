@@ -195,7 +195,7 @@ class Loco(models.Model):
     abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
                             on_delete=models.SET_NULL)
 
-    confirmed = models.BooleanField("Bestäetigt", default=True)
+    confirmed = models.BooleanField("bestätigt", default=True)
 
 
     def __unicode__(self):
@@ -212,6 +212,12 @@ class Loco(models.Model):
     class Meta:
         verbose_name = "Loco"
         verbose_name_plural = "Locos"
+
+
+    def get_phone(self):
+        if self.mobile_phone is not None:
+            return self.mobile_phone
+        return self.phone
 
 
 class Anteilschein(models.Model):
