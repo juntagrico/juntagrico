@@ -143,14 +143,13 @@
         <tr>
             <td></td>
             <td></td>
-            <td></td>
             <th colspan="2" class="top-border left-border right-border">ABO</th>
             <th colspan="2" class="top-border right-border">EIER</th>
             <th colspan="3" class="top-border right-border">KÄSE<br/><span style="font-size:11px">1x Anfang Monat!</span></th>
-            <th colspan="3" class="top-border right-border">OBST</th>
+            <th colspan="2" class="top-border right-border">OBST</th>
+            <th colspan="2" class="top-border right-border"></th>
         </tr>
         <tr>
-            <td></td>
             <td></td>
             <td></td>
             <td class="small left-border bottom-border">klein</td>
@@ -161,13 +160,13 @@
             <td class="small bottom-border">halb</td>
             <td class="small bottom-border right-border">viertel</td>
             <td class="small bottom-border">gross</td>
-            <td class="small bottom-border">klein</td>
+            <td class="small bottom-border right-border">klein</td>
+            <td></td>
             <td class="small bottom-border right-border"></td>
         </tr>
         <tr>
-            <td style="width:120px;"></td>
-            <td style="width:120px;"></td>
-            <td style="width:150px; text-align:right;">TOTAL</td>
+            <td style="width:180px;"></td>
+            <td style="width:180px; text-align:right;">TOTAL</td>
             <td style="width:40px;">{{ depot.small_abos }}</td>
             <td style="width:40px;">{{ depot.big_abos }}</td>
             <td style="width:40px;">{{ depot.vier_eier }}</td>
@@ -177,11 +176,11 @@
             <td style="width:40px;">{{ depot.kaese_viertel }}</td>
             <td style="width:40px;">{{ depot.big_obst }}</td>
             <td style="width:40px;">{{ depot.small_obst }}</td>
-            <td style="width:80px;"></td>
+            <td style="width:60px;"></td>
+            <td style="width:60px;"></td>
         </tr>
         <tr>
-            <th>Vorname</th>
-            <th>Nachname</th>
+            <th>Name</th>
             <th>Abo mit</th>
             <th></th>
             <th></th>
@@ -193,11 +192,11 @@
             <th></th>
             <th></th>
             <th style="text-align: right;">abgeholt</th>
+            <th style="text-align: right;">Tasche retour</th>
         </tr>
         {% for abo in depot.abo_set.all %}
             <tr>
-                <td class="top-border left-border">{{ abo.primary_loco.first_name }}</td>
-                <td class="top-border left-border">{{ abo.primary_loco.last_name }}</td>
+                <td class="top-border left-border">{{ abo.primary_loco.get_name }}</td>
                 <td class="top-border left-border">{{ abo.andere_bezieher }}</td>
                 <td class="top-border left-border">{% if abo.kleine_abos %}{{ abo.kleine_abos }} {% endif %}</td>
                 <td class="top-border left-border">{% if abo.grosse_abos %}{{ abo.grosse_abos }} {% endif %}</td>
@@ -208,6 +207,7 @@
                 <td class="top-border left-border">{% if abo.viertel_kaese %}1{% endif %}</td>
                 <td class="top-border left-border">{% if abo.gross_obst %}1{% endif %}</td>
                 <td class="top-border left-border">{% if abo.klein_obst %}1{% endif %}</td>
+                <td class="top-border left-border"></td>
                 <td class="top-border left-border right-border"></td>
             </tr>
         {% endfor %}
