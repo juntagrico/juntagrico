@@ -231,7 +231,7 @@ class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
     list_display = ["__unicode__", "bezieher", "verantwortlicher_bezieher", "depot"]
     #filter_horizontal = ["users"]
-    search_fields = ["locos__user__username", "locos__first_name", "locos__last_name"]
+    search_fields = ["locos__user__username", "locos__first_name", "locos__last_name", "depot__name"]
     raw_id_fields = ["primary_loco"]
 
 

@@ -199,7 +199,7 @@ class Loco(models.Model):
 
 
     def __unicode__(self):
-        return u"%s %s" % (self.first_name, self.last_name)
+        return self.get_name()
 
     @classmethod
     def create(cls, sender, instance, created, **kdws):
@@ -213,9 +213,11 @@ class Loco(models.Model):
         verbose_name = "Loco"
         verbose_name_plural = "Locos"
 
+    def get_name(self):
+        return u"%s %s" % (self.first_name, self.last_name)
 
     def get_phone(self):
-        if self.mobile_phone is not None:
+        if self.mobile_phone != "":
             return self.mobile_phone
         return self.phone
 
