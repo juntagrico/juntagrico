@@ -229,10 +229,10 @@ class JobAdmin(admin.ModelAdmin):
 
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
-    list_display = ["__unicode__", "bezieher", "verantwortlicher_bezieher"]
+    list_display = ["__unicode__", "bezieher", "verantwortlicher_bezieher", "depot"]
     #filter_horizontal = ["users"]
     search_fields = ["locos__user__username", "locos__first_name", "locos__last_name"]
-    #raw_id_fields = ["primary_loco"]
+    raw_id_fields = ["primary_loco"]
 
 
 class AuditAdmin(admin.ModelAdmin):
@@ -249,7 +249,8 @@ class AnteilscheinAdmin(admin.ModelAdmin):
 
 class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ["contact"]
-    list_display = ["name", "code", "weekday"]
+    list_display = ["name", "code", "weekday", "contact"]
+
 
 
 class BereichAdmin(admin.ModelAdmin):
@@ -258,10 +259,11 @@ class BereichAdmin(admin.ModelAdmin):
     list_display = ["name", "core", "hidden", "coordinator"]
 
 
+"""
 class BoehnliAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "job", "zeit", "loco"]
     raw_id_fields = ["job", "loco"]
-
+"""
 
 
 class LocoAdminForm(forms.ModelForm):
@@ -288,8 +290,8 @@ class LocoAdminForm(forms.ModelForm):
 
 class LocoAdmin(admin.ModelAdmin):
     form = LocoAdminForm
-    list_display = ["user", "first_name", "last_name", "email"]
-    search_fields = ["first_name", "last_name", "email", "user__username"]
+    list_display = ["email", "first_name", "last_name"]
+    search_fields = ["first_name", "last_name", "email"]
     #raw_id_fields = ["abo"]
     exclude = ["abo"]
     readonly_fields = ["user"]
