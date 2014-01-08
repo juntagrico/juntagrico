@@ -49,6 +49,7 @@ depot_email_hack = {
 "raimund@ortoloco.ch": "raimund.olb@orange.fr", 
 "tina@ortoloco.ch": "tinas1@gmx.ch",
 "david@ortoloco.ch": "davidcschulze@yahoo.de",
+"dorothea@ortoloco.ch": "dorotheamueller@gmx.ch",
 }
 
 

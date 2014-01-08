@@ -3,7 +3,6 @@ import datetime
 import re
 import itertools
 from collections import defaultdict
-import hashlib
 
 import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
@@ -213,7 +212,8 @@ class Command(BaseCommand):
 
             email = koordinatoren[name]
             try:
-                coordinator = Loco.objects.get(email=email)
+                lookup_email = depot_email_hack.get(email, email)
+                coordinator = Loco.objects.get(email=lookup_email)
             except Exception:
                 print "cannot find loco with email %s" % email
                 #coordinator = Loco.objects.get(pk=1)
