@@ -60,9 +60,10 @@ def my_home(request):
     Overview on myortoloco
     """
 
+    jobs = Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'jobs': Job.objects.all()[0:7],
+        'jobs': jobs[:7],
         'teams': Taetigkeitsbereich.objects.all(),
         'no_abo': request.user.loco.abo is None
     })
@@ -240,10 +241,7 @@ def my_einsaetze(request):
     """
     renderdict = getBohnenDict(request)
 
-    jobs = []
-    for job in Job.objects.all():
-        if job.time > datetime.datetime.now():
-            jobs.append(job)
+    jobs = Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
     renderdict.update({
         'jobs': jobs,
         'show_all': True
@@ -258,8 +256,9 @@ def my_einsaetze_all(request):
     All jobs to be sorted etc.
     """
     renderdict = getBohnenDict(request)
+    jobs = Job.objects.all().order_by("time")
     renderdict.update({
-        'jobs': Job.objects.all()
+        'jobs': jobs,
     })
 
     return render(request, "jobs.html", renderdict)
