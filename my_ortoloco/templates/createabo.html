@@ -161,7 +161,7 @@
                 center: new google.maps.LatLng(47.3825462, 8.4653627)
             }
             var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-            var createDepotMap = function (name, description, addr, zip, city, lat, long) {
+            var createDepotMap = function (name, addr, zip, city, lat, long) {
                 var depot = new google.maps.Marker({
                     position: new google.maps.LatLng(lat, long),
                     map: map,
@@ -169,14 +169,14 @@
                 });
                 google.maps.event.addListener(depot, 'click', function () {
                     new google.maps.InfoWindow({
-                        content: "<h1>" + name + "</h1><b>" + description + "</b><br/>" + addr + "<br/>" + zip + " " + city
+                        content: "<h1>" + name + "</h1>" + addr + "<br/>" + zip + " " + city
                     }).open(map, depot);
                 });
             };
 
             {% for depot in depots %}
                 {% if depot.latitude %}
-                    createDepotMap("{{ depot.name }}", "{{ depot.description }}", "{{ depot.addr_street }}", "{{ depot.addr_zipcode }}", "{{ depot.addr_location }}", {{ depot.latitude }}, {{ depot.longitude }})
+                    createDepotMap("{{ depot.name }}", "{{ depot.addr_street }}", "{{ depot.addr_zipcode }}", "{{ depot.addr_location }}", {{ depot.latitude }}, {{ depot.longitude }})
                 {% endif %}
             {% endfor %}
         }
