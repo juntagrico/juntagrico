@@ -21,6 +21,8 @@ from my_ortoloco.helpers import render_to_pdf, Swapstd, make_username
 from my_ortoloco.filters import Filter
 from my_ortoloco.mailer import *
 
+import hashlib
+
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
@@ -286,7 +288,7 @@ def my_signup(request):
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
-                    username = make_username(locoform.cleaned_data['first_name'], 
+                    username = make_username(locoform.cleaned_data['first_name'],
                                              locoform.cleaned_data['last_name'],
                                              locoform.cleaned_data['email'])
 
@@ -336,8 +338,9 @@ def my_add_loco(request, abo_id):
         except  ValueError:
             scheineerror = True
         if locoform.is_valid() and scheineerror is False and userexists is False:
-            names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
-            username = names + hashlib.sha1(locoform.cleaned_data['email']).hexdigest()
+            username = make_username(locoform.cleaned_data['first_name'],
+                                     locoform.cleaned_data['last_name'],
+                                     locoform.cleaned_data['email'])
             pw = password_generator()
             user = User.objects.create_user(username, locoform.cleaned_data['email'], pw)
             user.loco.first_name = locoform.cleaned_data['first_name']
@@ -400,7 +403,7 @@ def my_createabo(request):
         selectedabo = request.POST.get("abo")
 
         scheine += loco_scheine
-        if (scheine < 4 and request.POST.get("abo") == "big") or (scheine < 20 and request.POST.get("abo") == "house") or scheine < 2:
+        if (scheine < 4 and request.POST.get("abo") == "big") or (scheine < 20 and request.POST.get("abo") == "house") or (scheine < 2 and request.POST.get("abo") == "small" ) or (scheine == 0):
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
