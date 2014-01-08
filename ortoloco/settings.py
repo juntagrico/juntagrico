@@ -101,7 +101,7 @@ STATICFILES_FINDERS = (
 #tinyMCE
 TINYMCE_JS_URL = '/static/js/tinymce/tinymce.min.js'
 
-TINYMCE_DEFAULT_CONFIG = {'theme': "modern", 'relative_urls': False, "valid_styles" : { '*' : 'color,text-align,font-size,font-weight,font-style,text-decoration' }}
+TINYMCE_DEFAULT_CONFIG = {'theme': "modern", 'plugins': 'link', 'relative_urls': False, "valid_styles" : { '*' : 'color,text-align,font-size,font-weight,font-style,text-decoration' }}
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'd3w=vyfqpqmcj#&ge1d0$ch#ff7$qt#6z)lzqt=9pg8wg%d^%s'
