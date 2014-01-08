@@ -24,7 +24,8 @@ def send_mail(subject, message, from_email, to_emails):
                 print "Mail not sent to " + ", " + email + ", not in whitelist"
 
     if len(okmails) > 0:
-        mail.send_mail(subject, message, from_email, [email], fail_silently=False)
+        for amail in okmails:
+            mail.send_mail(subject, message, from_email, [amail], fail_silently=False)
         print "Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else "")
 
     return None
@@ -61,7 +62,7 @@ def send_new_loco_in_taetigkeitsbereich_to_bg(area, loco):
 def send_contact_form(subject, message, loco, copy_to_loco):
     send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, ['orto@xiala.net'])
     if copy_to_loco:
-        send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, loco.email)
+        send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, [loco.email])
 
 
 def send_welcome_mail(email, password, server):
