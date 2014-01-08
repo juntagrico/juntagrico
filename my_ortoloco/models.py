@@ -179,11 +179,11 @@ class Loco(models.Model):
 
     # user class is only used for logins, permissions, and other builtin django stuff
     # all user information should be stored in the Loco model
-    user = models.OneToOneField(User, related_name='loco')
+    user = models.OneToOneField(User, related_name='loco', null=True, blank=True)
 
     first_name = models.CharField("Vorname", max_length=30)
     last_name = models.CharField("Nachname", max_length=30)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
 
     addr_street = models.CharField("Strasse", max_length=100)
     addr_zipcode = models.CharField("PLZ", max_length=10)
@@ -207,7 +207,17 @@ class Loco(models.Model):
         Callback to create corresponding loco when new user is created.
         """
         if created:
-            cls.objects.create(user=instance)
+            username = helpers.make_username(instance.first_name, instance.last_name, instance.email)
+            user = User(username=username)
+            user.save()
+            user = User.objects.get(username=username)
+            instance.user = user
+            instance.save()
+
+    @classmethod
+    def post_delete(cls, sender, instance, **kwds):
+        instance.user.delete()
+
 
     class Meta:
         verbose_name = "Loco"
@@ -342,5 +352,6 @@ model_audit.m2m(Abo.extra_abos)
 model_audit.fk(Abo.depot)
 model_audit.fk(Anteilschein.loco)
 
-signals.post_save.connect(Loco.create, sender=User)
+signals.post_save.connect(Loco.create, sender=Loco)
+signals.post_delete.connect(Loco.post_delete, sender=Loco)
 
