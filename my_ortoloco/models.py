@@ -32,6 +32,10 @@ class Depot(models.Model):
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
 
+
+    def active_abos(self):
+        return self.abo_set.filter(active=True)
+
     def wochentag(self):
         day = "Unbekannt"
         if self.weekday < 8 and self.weekday > 0:
@@ -39,50 +43,50 @@ class Depot(models.Model):
         return day
 
     def small_abos(self):
-        return len(self.abo_set.filter(Q(groesse=1) | Q(groesse=3)))
+        return len(self.active_abos().filter(Q(groesse=1) | Q(groesse=3)))
 
     def big_abos(self):
-        return len(self.abo_set.filter(Q(groesse=2) | Q(groesse=3) | Q(groesse=4))) + len(self.abo_set.filter(groesse=4))
+        return len(self.active_abos().filter(Q(groesse=2) | Q(groesse=3) | Q(groesse=4))) + len(self.active_abos().filter(groesse=4))
 
     def vier_eier(self):
         eier = 0
-        for abo in self.abo_set.all():
+        for abo in self.active_abos().all():
             eier += len(abo.extra_abos.all().filter(description="Eier 4er Pack"))
         return eier
 
     def sechs_eier(self):
         eier = 0
-        for abo in self.abo_set.all():
+        for abo in self.active_abos().all():
             eier += len(abo.extra_abos.all().filter(description="Eier 6er Pack"))
         return eier
 
     def kaese_ganz(self):
         kaese = 0
-        for abo in self.abo_set.all():
+        for abo in self.active_abos().all():
             kaese += len(abo.extra_abos.all().filter(description="Käse ganz"))
         return kaese
 
     def kaese_halb(self):
         kaese = 0
-        for abo in self.abo_set.all():
+        for abo in self.active_abos().all():
             kaese += len(abo.extra_abos.all().filter(description="Käse halb"))
         return kaese
 
     def kaese_viertel(self):
         kaese = 0
-        for abo in self.abo_set.all():
+        for abo in self.active_abos().all():
             kaese += len(abo.extra_abos.all().filter(description="Käse viertel"))
         return kaese
 
     def big_obst(self):
         obst = 0
-        for abo in self.abo_set.all():
+        for abo in self.active_abos().all():
             obst += len(abo.extra_abos.all().filter(description="Obst gr. (2kg)"))
         return obst
 
     def small_obst(self):
         obst = 0
-        for abo in self.abo_set.all():
+        for abo in self.active_abos().all():
             obst += len(abo.extra_abos.all().filter(description="Obst kl. (1kg)"))
         return obst
 

@@ -193,7 +193,7 @@
             <th style="text-align: right;">abgeholt</th>
             <th style="text-align: right;">Tasche retour</th>
         </tr>
-        {% for abo in depot.abo_set.all %}
+        {% for abo in depot.active_abos.all %}
             <tr>
                 <td style="text-align:right" class="top-border left-border">{{ abo.primary_loco.get_name }}</td>
                 <td style="text-align:right" class="top-border left-border">{{ abo.andere_bezieher }}</td>
