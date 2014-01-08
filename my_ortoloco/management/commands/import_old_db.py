@@ -3,14 +3,21 @@ import datetime
 import re
 import itertools
 from collections import defaultdict
+import hashlib
 
 import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
+from django.contrib.auth.models import Permission, Group
 
 from my_ortoloco.models import *
+from my_ortoloco.model_audit import *
+from my_ortoloco.helpers import make_username
 
+from _depots import *
+from _koordinatoren import koordinatoren
+from _create_jobtyps import create_jobtyps
 
 class Command(BaseCommand):
     def connect(self, user, passwd):
@@ -32,9 +39,10 @@ class Command(BaseCommand):
 
     # entry point used by manage.py
     def handle(self, *args, **options):
+        assert User.objects.all().count() == 1
         self.connect(*args)
         self.userids = {}
-
+        
         print 'Starting migration on ', datetime.datetime.now()
         self.create_users()
         self.create_taetigkeitsbereiche()
@@ -48,16 +56,32 @@ class Command(BaseCommand):
         self.create_anteilscheine()
         print 'Finished migration on ', datetime.datetime.now()
 
+        # set emails of some people to @ortoloco.ch address
+        # TODO: remove this
+        for k,v in depot_email_hack.items():
+            loco = Loco.objects.get(email=v)
+            loco.email = k
+            loco.save()
+        
+        # add bg group
+        apps = ("static_ortoloco", "my_ortoloco", "photologue")
+        perms = Permission.objects.filter(content_type__app_label__in=apps)
+        g = Group(name="Betriebsgruppe")
+        g.save()
+        g = Group.objects.get(name="Betriebsgruppe")
+        g.permissions = perms
+        g.save()
+            
+        # finally, clean up
+        Audit.objects.all().delete()
+                
+
     def create_users(self):
-        """
-        Import user data from old db, creating a User instance and a linked Loco instance.
-        """
 
         print '***************************************************************'
         print 'Migrating users and locos'
         print '***************************************************************'
 
-        assert User.objects.all().count() == 1
 
         query = list(self.query("SELECT * FROM person p "
                                 "    LEFT OUTER JOIN usr u ON p.pid = u.pid "
@@ -65,15 +89,10 @@ class Command(BaseCommand):
                                 "SELECT * FROM person p "
                                 "    RIGHT OUTER JOIN usr u ON p.pid = u.pid "
                                 "WHERE p.pid is null "))
-        #"order by email,  confirmed desc"))
-
 
         # everything wer're throwing out here is bad data of some form...
-        oldsize = len(query)
         #query = [row for row in query if None not in (row[0], row[15])]
         query = [row for row in query if None not in (row[0],)]
-        if len(query) < oldsize:
-            print "warning: some inconsistent data, ignoring..."
 
         rows_with_same_email = defaultdict(dict)
 
@@ -88,7 +107,7 @@ class Command(BaseCommand):
             rows_with_same_email[email][pid] = row
 
         pidswithabo = set(self.query("SELECT pid from abo"))
-        #pidswithabo.update(self.query("SELECT abomit from abo"))
+        pidswithabo.update(self.query("SELECT abomit from abo"))
         new_query = []
         for email, d in rows_with_same_email.iteritems():
             overlap = pidswithabo.intersection(d.keys())
@@ -123,12 +142,10 @@ class Command(BaseCommand):
                 uid = uid.decode("latin-1")
 
             # build username the same way as when registering new user
-            import hashlib
 
-            pid, name, vorname, strasse, plz, ort, tel1, tel2, email, geburtsdatum, confirmed, timestamp, \
-            uid, pwd, lvl, _ = self.decode_row(row)
-            username = u"%s:%s %s" % (vorname[:10], name[:10], hashlib.sha1(email).hexdigest())
-            user = User(username=username[:30])
+            name, vorname = self.decode_row((vorname, name))
+            username = make_username(vorname, name, email)
+            user = User(username=username)
             new_users.append(user)
 
         # bulk_create gsroups everything into a single query. Post-create events won't be sent.
@@ -186,7 +203,6 @@ class Command(BaseCommand):
         query = list(self.query("SELECT * FROM lux_funktion "))
         new_taetigkeitsbereiche = []
 
-        from _koordinatoren import koordinatoren
 
         for row in query:
             id, name, description, type, showorder = self.decode_row(row)
@@ -256,9 +272,9 @@ class Command(BaseCommand):
                                 "FROM lu_depot "
                                 ") dt"))
 
-        new_depots = []
 
         newid = ("d%02d" % i for i in itertools.count(1)).next
+        new_depots = []
 
         for row in query:
             id, code, name, description, contact_id, weekday, addr_street, addr_zipcode, addr_location = self.decode_row(row)
@@ -266,18 +282,20 @@ class Command(BaseCommand):
                 name = name + addr_zipcode
             code = newid()
 
-            from _depots import depot_wochentag, depot_betreuer
             weekday = depot_wochentag[name]
             if weekday == -1:
                 print "Skipping depot %s (no longer exists?)" % name
                 continue
 
             try:
-                loco = Loco.objects.get(email=depot_betreuer[name])
+                email = depot_betreuer[name]
+                lookup_email = depot_email_hack.get(email, email)
+                loco = Loco.objects.get(email=lookup_email)
             except ObjectDoesNotExist:
-                print "can't find loco with email %s" % depot_betreuer[name]
+                print "can't find loco with email %s" % new_email
                 loco = Loco.objects.get(user_id=1)
 
+            name = depot_names.get(name, name)
             depot = Depot(code=code,
                           name=name,
                           description=description,
@@ -292,6 +310,7 @@ class Command(BaseCommand):
             new_depots.append(depot)
 
         Depot.objects.bulk_create(new_depots)
+
 
         print '***************************************************************'
         print 'Depots migrated'
@@ -366,7 +385,7 @@ class Command(BaseCommand):
         bereich.locos.through.objects.bulk_create(new_bereichlocos)
 
         print '***************************************************************'
-        print 'Teatigkeitsbereiche_Locos built'
+        print 'Taetigkeitsbereiche_Locos built'
         print '***************************************************************'
 
     def create_jobtypes(self):
@@ -375,7 +394,6 @@ class Command(BaseCommand):
         print 'Migrating JobTypes'
         print '***************************************************************'
 
-        from _create_jobtyps import create_jobtyps
 
         create_jobtyps()
 
@@ -544,27 +562,50 @@ class Command(BaseCommand):
 
         Abo.objects.bulk_create(new_abos)
 
-        new_abolocos = []
+
         abos = sorted(Abo.objects.all(), key=lambda a: a.id)
         for abo in abos:
-            try:
-                loco = Loco.objects.get(id=abo.primary_loco.id)
-            except ObjectDoesNotExist:
-                print 'Warning: Loco ', abo.primary_loco_id, ' not found'
-                continue
+            loco = abo.primary_loco
 
             loco.abo = abo
             loco.save()
-            new_abolocos.append(loco)
 
             for mitemail in primary_to_all[loco.email]:
                 try:
-                    mit_loco = Loco.objects.get(email=abomitemail)
+                    mit_loco = Loco.objects.get(email=mitemail)
                     mit_loco.abo = abo
                     mit_loco.save()
                 except MultipleObjectsReturned:
                     print 'Warning: More than one abomit_Loco for ', abomitname, ' ', abomitvorname, \
                         ' ', abomitemail
+
+        # create donnerstag fondli
+        # TODO: remove this
+        fondli = Depot.objects.get(name="Fondli")
+        fondli2 = Depot(code="xyz",
+                        name="Fondli 2",
+                        description=fondli.description,
+                        contact=fondli.contact,
+                        weekday=fondli.weekday + 2,
+                        addr_street=fondli.addr_street,
+                        addr_zipcode=fondli.addr_zipcode,
+                        addr_location=fondli.addr_location,
+                        latitude="47.345",
+                        longitude="8.549")
+        fondli2.save()
+
+        for abo in fondli.abo_set.all():
+            if abo.primary_loco.email not in depot_fondli_hack:
+                abo.depot = fondli2
+                abo.save()
+
+
+        # HACK: change depot descriptions here, if this was done earlier, it would have broken the lookup.
+        # TODO: remove
+        for depot in Depot.objects.filter(name__in=depot_descriptions):
+            depot.description = depot_descriptions[depot.name]
+            depot.save()
+
 
         print '***************************************************************'
         print 'Abos migrated'
@@ -660,3 +701,4 @@ class Command(BaseCommand):
         print '***************************************************************'
         print 'Anteilscheine built'
         print '***************************************************************'
+

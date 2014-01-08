@@ -5,7 +5,6 @@ from StringIO import StringIO
 import string
 import random
 import sys
-import hashlib
 
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
@@ -18,7 +17,7 @@ from django.core.management import call_command
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
-from my_ortoloco.helpers import render_to_pdf, Swapstd
+from my_ortoloco.helpers import render_to_pdf, Swapstd, make_username
 from my_ortoloco.filters import Filter
 from my_ortoloco.mailer import *
 
@@ -287,9 +286,9 @@ def my_signup(request):
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
-
-                    names = locoform.cleaned_data['first_name'][:10] + ":" + locoform.cleaned_data['last_name'][:10] + " "
-                    username = names + hashlib.sha1(locoform.cleaned_data['email']).hexdigest()
+                    username = make_username(locoform.cleaned_data['first_name'], 
+                                             locoform.cleaned_data['last_name'],
+                                             locoform.cleaned_data['email'])
 
                     user = User.objects.create_user(username[:30], locoform.cleaned_data['email'], password)
                     user.loco.first_name = locoform.cleaned_data['first_name']

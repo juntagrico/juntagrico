@@ -1,10 +1,11 @@
 import sys
-
+import hashlib
 
 from django.http import HttpResponse, HttpResponseServerError
 
 from django.template.loader import get_template
 from django.template import Context
+from django.template.defaultfilters import slugify
 
 from xhtml2pdf import pisa
 
@@ -69,3 +70,10 @@ class Swapstd(object):
 
     def __exit__(self, *a):
         sys.stdout, sys.stderr = self.old
+
+
+def make_username(firstname, lastname, email):
+    firstname = slugify(firstname)[:10]
+    lastname = slugify(lastname)[:10]
+    email = hashlib.sha1(email).hexdigest()
+    return ("%s_%s_%s" %(firstname, lastname, email))[:30]

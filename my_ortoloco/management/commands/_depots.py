@@ -25,7 +25,7 @@ u"Höngg": 2,
 }
 
 depot_betreuer = {
-"Fondli": "seraina@ortoloco.ch",
+"Fondli": "raimund@ortoloco.ch",
 u"Höngg": "jairstern@gmx.net", 
 "Affoltern": "timm-eugster@gmx.ch",
 "GZ Oerlikon": "markus.pfister@gz-zh.ch",
@@ -43,3 +43,33 @@ u"Höngg": "jairstern@gmx.net",
 "Enge": "jancito@hispeed.ch",
 "No Name9999": "astridhorvath@gmail.com", # Wollishofen
 }
+
+
+depot_email_hack = {
+"raimund@ortoloco.ch": "raimund.olb@orange.fr", 
+"tina@ortoloco.ch": "tinas1@gmx.ch",
+"david@ortoloco.ch": "davidcschulze@yahoo.de",
+}
+
+
+depot_names = {
+"No Name0": "Wipkingen", 
+"No Name9999": "Wollishofen", 
+}
+
+depot_descriptions = {
+"Wipkingen": "Wipkingen: GZ Wipkingen, Breitensteinstrasse 19a, 8037 Zürich",  
+"Wollishofen": "Wollishofen: claro-Laden, Mutschellenstrasse 188, 8038 Zürich", 
+}
+
+
+# alle am dienstag
+depot_fondli_hack = set((
+"renli@gmx.ch",
+"andreyna@bluewin.ch",
+"mbvmbaum@bluewin.ch",
+"luz@gmx.ch",
+"mayaburger@swissonline.ch",
+"danni.bukatz@gmail.com",
+"celinewolff@hotmail.com",
+))
