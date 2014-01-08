@@ -220,8 +220,8 @@
 
             // reorder the depots now according to distances
             var options = $("#depot");
-            depots.sort(function (a, b) {
-                return a.duration > b.duration;
+            depots = depots.sort(function (a, b) {
+                return a.duration - b.duration;
             })
             $.each(depots, function (i, d) {
                 $("#depot").append(options.find("#depot" + d.code).addClass("sorted"));
