@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from datetime import date
+from StringIO import StringIO
+import string
+import random
+import sys
+import hashlib
 
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
@@ -9,16 +14,13 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
+from django.core.management import call_command
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
-from my_ortoloco.helpers import render_to_pdf
+from my_ortoloco.helpers import render_to_pdf, Swapstd
 from my_ortoloco.filters import Filter
-import hashlib
-from mailer import *
-
-import string
-import random
+from my_ortoloco.mailer import *
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
@@ -706,41 +708,20 @@ def my_createlocoforsuperuserifnotexist(request):
 
 @staff_member_required
 def my_startmigration(request):
-    from django.core.management import call_command
-
-    from StringIO import StringIO
-
     f = StringIO()
-    f.write("asdasda")
-
-    import sys
-    oldstdout = sys.stdout
-    oldstderr = sys.stdout
-    sys.stdout = f
-    sys.stderr = f
-
-    call_command('clean_db', stdout=f, stderr=f)
-    call_command('import_old_db', request.GET.get("username"), request.GET.get("password"), stdout=f, stderr=f)
-
-    sys.stdout = oldstdout
-    sys.stderr = oldstderr
-
-    print f.getvalue()
-    return HttpResponse(f.getvalue())
+    with Swapstd(f):
+        call_command('clean_db')
+        call_command('import_old_db', request.GET.get("username"), request.GET.get("password"))
+    return HttpResponse(f.getvalue(), content_type="text/plain")
 
 
 @staff_member_required
 def migrate_apps(request):
-    from django.core.management import call_command
-
-    from StringIO import StringIO
-
     f = StringIO()
-
-    call_command('migrate', 'my_ortoloco')
-    call_command('migrate', 'static_ortoloco')
-
-    return HttpResponse(f.getvalue())
+    with Swapstd(f):
+        call_command('migrate', 'my_ortoloco')
+        call_command('migrate', 'static_ortoloco')
+    return HttpResponse(f.getvalue(), content_type="text/plain")
 
 
 def test_filters(request):

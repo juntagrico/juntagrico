@@ -1,3 +1,6 @@
+import sys
+
+
 from django.http import HttpResponse, HttpResponseServerError
 
 from django.template.loader import get_template
@@ -51,3 +54,18 @@ weekday_choices = ((1, "Montag"),
 
 weekdays = dict(weekday_choices)
 
+
+class Swapstd(object):
+    def __init__(self, f=None, g=None):
+        if g is None:
+            g = f
+        self.new = (f, g)
+        self.old = (sys.stdout, sys.stderr)
+
+
+    def __enter__(self):
+        sys.stdout, sys.stderr = self.new
+
+
+    def __exit__(self, *a):
+        sys.stdout, sys.stderr = self.old
