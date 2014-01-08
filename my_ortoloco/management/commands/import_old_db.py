@@ -556,7 +556,8 @@ class Command(BaseCommand):
 
             abo = Abo(depot_id=depotidlookup.id,
                       primary_loco_id=locoidlookup.id,
-                      groesse=groesse)
+                      groesse=groesse,
+                      active=True)
 
             new_abos.append(abo)
 
