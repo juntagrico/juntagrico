@@ -407,9 +407,13 @@ class Command(BaseCommand):
         print 'Migrating Jobs'
         print '***************************************************************'
 
+        # create reference time at start of year 2014
+        delta = datetime.datetime(2014, 1, 1) - datetime.datetime.fromtimestamp(0)
+        reference = delta.days * 86400 + delta.seconds
+
         query = list(self.query("SELECT * "
                                 "from lux_job "
-                                "where active=1"))
+                                "WHERE start>%s" % reference))
 
         new_jobs = []
         for row in query:
@@ -436,15 +440,11 @@ class Command(BaseCommand):
 
         # now that jobs are created, associate locos that already registered themselves for the job
 
-        # create reference time at start of year 2014
-        delta = datetime.datetime(2014, 1, 1) - datetime.datetime.fromtimestamp(0)
-        reference = delta.days * 86400 + delta.seconds
-
         query = self.query("SELECT j.pid, j.jid, j.units "
                            "  FROM job j "
                            "       JOIN lux_job lj "
                            "  ON j.jid=lj.jid "
-                           "  WHERE lj.active=1")
+                           "  WHERE lj.start>%s" % reference)
 
         new_boehnlis = []
         for row in query:
