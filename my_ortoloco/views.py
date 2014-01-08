@@ -615,7 +615,7 @@ def alldepots_list(request, name):
     Printable list of all depots to check on get gemüse
     """
     if name == "":
-        depots = Depot.objects.all()
+        depots = Depot.objects.all().order_by("code")
     else:
         depots = [get_object_or_404(Depot, code__iexact=name)]
 

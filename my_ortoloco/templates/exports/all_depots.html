@@ -137,6 +137,7 @@
 {% endfor %}
 {% for depot in depots %}
     <h2 style="font-size: 18px;">{{ depot.wochentag }} - {{ depot.name }}</h2>
+    <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
 
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>

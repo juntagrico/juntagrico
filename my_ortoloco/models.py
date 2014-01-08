@@ -19,7 +19,6 @@ class Depot(models.Model):
     """
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100, unique=True)
-    description = models.TextField("Beschreibung", max_length=1000, default="")
     contact = models.ForeignKey("Loco", on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField("Wochentag", choices=helpers.weekday_choices)
     latitude = models.CharField("Latitude", max_length=100, default="")
@@ -118,7 +117,7 @@ class Abo(models.Model):
     groesse = models.PositiveIntegerField(default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
-                                     on_delete=models.SET_NULL)
+                                     on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
 
     def __unicode__(self):
