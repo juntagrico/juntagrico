@@ -287,23 +287,20 @@ def my_signup(request):
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
-                    username = make_username(locoform.cleaned_data['first_name'],
-                                             locoform.cleaned_data['last_name'],
-                                             locoform.cleaned_data['email'])
 
-                    user = User.objects.create_user(username[:30], locoform.cleaned_data['email'], password)
-                    user.loco.first_name = locoform.cleaned_data['first_name']
-                    user.loco.last_name = locoform.cleaned_data['last_name']
-                    user.loco.email = locoform.cleaned_data['email']
-                    user.loco.addr_street = locoform.cleaned_data['addr_street']
-                    user.loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
-                    user.loco.addr_location = locoform.cleaned_data['addr_location']
-                    user.loco.phone = locoform.cleaned_data['phone']
-                    user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
-                    user.loco.save()
+                    loco = Loco.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'],email=locoform.cleaned_data['email'])
+                    loco.addr_street = locoform.cleaned_data['addr_street']
+                    loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
+                    loco.addr_location = locoform.cleaned_data['addr_location']
+                    loco.phone = locoform.cleaned_data['phone']
+                    loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+                    loco.save()
+
+                    loco.user.set_password(password)
+                    loco.user.save()
 
                     #log in to allow him to make changes to the abo
-                    loggedin_user = authenticate(username=locoform.cleaned_data['email'], password=password)
+                    loggedin_user = authenticate(username=loco.user.username, password=password)
                     login(request, loggedin_user)
                     success = True
                     return redirect("/my/aboerstellen")
