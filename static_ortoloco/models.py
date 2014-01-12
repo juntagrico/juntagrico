@@ -73,3 +73,6 @@ class Politoloco(models.Model):
 
     def __unicode__(self):
         return u'Politoloco %s' % self.email
+
+    class Meta:
+        permissions = (('can_send_newsletter', 'Kann politoloco-Newsletter verschicken'),)

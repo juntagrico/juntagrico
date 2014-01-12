@@ -4,13 +4,10 @@ from datetime import date
 from StringIO import StringIO
 import string
 import random
-import sys
-
-from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
@@ -22,6 +19,7 @@ from my_ortoloco.filters import Filter
 from my_ortoloco.mailer import *
 
 import hashlib
+from static_ortoloco.models import Politoloco
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
@@ -50,7 +48,8 @@ def getBohnenDict(request):
         'bohnenrange': bohnenrange,
         'userbohnen': len(userbohnen),
         'next_jobs': next_jobs,
-        'staff_user': request.user.is_staff
+        'staff_user': request.user.is_staff,
+        'politoloco': request.user.has_perm('can_send_newsletter')
     }
 
 
@@ -191,6 +190,27 @@ def my_pastjobs(request):
     return render(request, "my_pastjobs.html", renderdict)
 
 
+@permission_required('politoloco.can_send_newsletter')
+def send_politoloco(request):
+    """
+    Send politoloco newsletter
+    """
+    sent = 0
+    if request.method == 'POST':
+        emails = set()
+        for loco in Politoloco.objects.all():
+            emails.add(loco.email)
+
+        send_politoloco_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"])
+        sent = len(emails)
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'locos': Politoloco.objects.count(),
+        'sent': sent
+    })
+    return render(request, 'mail_sender_politoloco.html', renderdict)
+
+
 @login_required
 def my_abo(request):
     """
@@ -288,7 +308,7 @@ def my_signup(request):
                     #email is also username... we do not use it
                     password = password_generator()
 
-                    loco = Loco.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'],email=locoform.cleaned_data['email'])
+                    loco = Loco.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'], email=locoform.cleaned_data['email'])
                     loco.addr_street = locoform.cleaned_data['addr_street']
                     loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
                     loco.addr_location = locoform.cleaned_data['addr_location']
@@ -507,7 +527,7 @@ def my_profile(request):
     success = False
     loco = request.user.loco
     if request.method == 'POST':
-        locoform = ProfileLocoForm(request.POST)
+        locoform = ProfileLocoForm(request.POST, instance=loco)
         if locoform.is_valid():
             #set all fields of user
             loco.first_name = locoform.cleaned_data['first_name']
@@ -587,7 +607,7 @@ def my_mails(request):
             for loco in Loco.objects.all():
                 emails.add(loco.email)
         if len(emails) > 0:
-            send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), emails, request.META["HTTP_HOST"])
+            send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"])
             sent = len(emails)
     renderdict = getBohnenDict(request)
     renderdict.update({

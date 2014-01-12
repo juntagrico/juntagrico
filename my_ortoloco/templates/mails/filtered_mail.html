@@ -1,4 +1,6 @@
 {% extends "mails/email.html" %}
 {% block content %}
+{% autoescape off %}
     {{ content }}
+{% endautoescape %}
 {% endblock %}

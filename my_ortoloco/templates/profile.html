@@ -6,7 +6,7 @@
     {% if success %}
         <div class="alert alert-success">Personalien erfolgreich geändert</div>
     {% else %}
-        <form action="" method="post" class="form-horizontal">
+        <form method="post" class="form-horizontal">
             {% csrf_token %}
             <div class="control-group {% if locoform.first_name.errors %}error{% endif %}">
                 <label class="control-label" for="id_first_name">Vorname</label>

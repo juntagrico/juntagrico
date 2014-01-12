@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 
 from django.forms import ModelForm
 
@@ -16,6 +16,7 @@ def home(request):
     welcome_text = ""
     if StaticContent.objects.all().filter(name='Willkommen').__len__() > 0:
         welcome_text = StaticContent.objects.all().filter(name='Willkommen')[0].content
+
     renderdict = {
         'submenu': submenu,
         'welcomeText': welcome_text,

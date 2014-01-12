@@ -1,8 +1,10 @@
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <title>ortoloco.ch - Die regionale Gartenkooperative</title>
-    <meta charset="utf-8">
-    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="shortcut icon" href="/static/img/favicon.ico">
 
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/ortoloco.css" rel="stylesheet">
@@ -23,29 +25,29 @@
                         {% if menu.about == 'active' %}
                             <ul class="nav nav-pills nav-stacked">
                                 <li class="{{ menu.aboutChild }}"><a href="/idee">&raquo; Die Idee <span
-                                        class="activeItem"><</span></a></li>
+                                        class="activeItem">&lt;</span></a></li>
                                 <li class="{{ menu.portrait }}"><a href="/portrait">&raquo; Das Portrait <span
-                                        class="activeItem"><</span></a></li>
+                                        class="activeItem">&lt;</span></a></li>
                                 <li class="{{ menu.background }}"><a href="/hintergrund">&raquo; Der Hintergrund
-                                    <span class="activeItem"><</span></a></li>
+                                    <span class="activeItem">&lt;</span></a></li>
                                 <li class="{{ menu.abo }}"><a href="/abo">&raquo; Das Gemüse-Abo <span
-                                        class="activeItem"><</span></a></li>
+                                        class="activeItem">&lt;</span></a></li>
                                 <li class="{{ menu.faq }}"><a href="/faq">&raquo; Häufige Fragen <span
-                                        class="activeItem"><</span></a></li>
+                                        class="activeItem">&lt;</span></a></li>
                             </ul>
                         {% endif %}
                     </li>
                     <li class="{{ menu.join }}">
-                        <a href="/mitmachen">GenossenschafterIn werden <span class="activeItem"><</span></a>
+                        <a href="/mitmachen">GenossenschafterIn werden <span class="activeItem">&lt;</span></a>
                     </li>
                     <li class="{{ menu.gallery }}">
-                        <a href="/galerie">Bilder <span class="activeItem"><</span></a>
+                        <a href="/galerie">Bilder <span class="activeItem">&lt;</span></a>
                     </li>
                     <li class="{{ menu.media }}">
-                        <a href="/medien">Medienecho <span class="activeItem"><</span></a>
+                        <a href="/medien">Medienecho <span class="activeItem">&lt;</span></a>
                     </li>
                     <li class="{{ menu.contact }}">
-                        <a href="/kontakt">Kontakt <span class="activeItem"><</span></a>
+                        <a href="/kontakt">Kontakt <span class="activeItem">&lt;</span></a>
                     </li>
                 </ul>
                 {% block submenu %}
@@ -57,6 +59,8 @@
             </div>
         </div>
         <a href="/my/home" class="myortoloco_link"></a>
+
         <div class="ortoloco_gemuese"></div>
     </div>
+</div>
 </body>

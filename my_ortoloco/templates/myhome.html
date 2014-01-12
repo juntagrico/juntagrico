@@ -12,7 +12,7 @@
             <tr class="{% if job.status == "erbse_voll.png" %}full{% endif %}">
                 <td class="date">{{ job.time |date:"d.m H:i" }}</td>
                 <td><a href="/my/jobs/{{ job.id }}">{{ job.typ }}</a></td>
-                <td class="status"><img src="/static/img/{{ job.get_status_bohne }}"/></td>
+                <td class="status"><img alt="Job-Status: {{ job.get_status_bohne }}" src="/static/img/{{ job.get_status_bohne }}"/></td>
             </tr>
         {% endfor %}
     </table>

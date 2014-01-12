@@ -17,7 +17,7 @@
                 <tr>
                     <td>{{ job.wochentag }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}||{{ job.time_stamp }}</td>
                     <td><a href="/my/jobs/{{ job.id }}">{{ job.typ.get_name }}</a></td>
-                    <td><img src="/static/img/{{ job.get_status_bohne }}"/></td>
+                    <td><img alt="Job-Status: {{ job.get_status_bohne }}" src="/static/img/{{ job.get_status_bohne }}"/></td>
                     <td>{{ job.typ.location }}</td>
                 </tr>
             {% endfor %}

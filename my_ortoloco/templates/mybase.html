@@ -1,95 +1,106 @@
+<!DOCTYPE html>
 <html lang="de">
 <head>
-	<title>my.ortoloco</title>
-	<meta charset="utf-8">
-    <link rel="shortcut icon" href="/static/img/favicon.ico" />
+    <title>my.ortoloco</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
 
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/ortoloco.css" rel="stylesheet">
     <link href="/static/css/myortoloco.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-    	<div class="erbsetop"></div>
-    	<div class="erbseleft"></div>
-    	<div class="erbseright"></div>
-    	<div class="erbsebottom"></div>
-        <div class="row myortoloco">
-            <div class="span12">
-                    <a href="/my/home"><span class="myortoloco_logo"></span></a>
-            </div>
+<div class="container">
+    <div class="erbsetop"></div>
+    <div class="erbseleft"></div>
+    <div class="erbseright"></div>
+    <div class="erbsebottom"></div>
+    <div class="row myortoloco">
+        <div class="span12">
+            <a href="/my/home"><span class="myortoloco_logo"></span></a>
         </div>
-    	<div class="row ortoloco">
-            {% block allcontent %}
-                <div class="span3">
-                        <ul class="nav nav-pills nav-stacked">
-                            <li class="{{ menu.abonnement }}">
-                                <a href="/my/abo">Abo</a>
-                            </li>
-                            <li class="{{ menu.participation }}">
-                                <a href="/my/mitarbeit">Mitarbeit</a>
-                            </li>
-                            <li class="{{ menu.participation }}">
-                                <a href="/my/einsaetze">Einsätze</a>
-                            </li>
-                            <li class="{{ menu.contact }}">
-                                <a href="/my/kontakt">Kontakt</a>
-                            </li>
-                            <li class="{{ menu.ortoloco }}">
-                                <a href="/aktuelles">ortoloco.ch</a>
-                            </li>
-                            {% if staff_user %}
-                                <hr>
-                                <li>
-                                <a href="/my/mails">Mails verschicken</a>
-                                </li>
-                                <li>
-                                <a href="/my/depotlisten">Depotlisten drucken</a>
-                                </li>
-                            {% endif %}
+    </div>
+    <div class="row ortoloco">
+        {% block allcontent %}
+            <div class="span3">
+                <ul class="nav nav-pills nav-stacked">
+                    <li class="{{ menu.abonnement }}">
+                        <a href="/my/abo">Abo</a>
+                    </li>
+                    <li class="{{ menu.participation }}">
+                        <a href="/my/mitarbeit">Mitarbeit</a>
+                    </li>
+                    <li class="{{ menu.participation }}">
+                        <a href="/my/einsaetze">Einsätze</a>
+                    </li>
+                    <li class="{{ menu.contact }}">
+                        <a href="/my/kontakt">Kontakt</a>
+                    </li>
+                    <li class="{{ menu.ortoloco }}">
+                        <a href="/aktuelles">ortoloco.ch</a>
+                    </li>
+                    {% if staff_user %}
+                        <li>
                             <hr>
-                            <li class="{{ menu.personalInfo }}">
-                                <a href="/my/profil">Personalien</a>
-                            </li>
-                            <li class="{{ menu.logout }}">
-                                <a href="/logout">Abmelden</a>
-                            </li>
-                        </ul>
+                            <a href="/my/mails">Mails verschicken</a>
+                        </li>
+                        <li>
+                            <a href="/my/depotlisten">Depotlisten drucken</a>
+                        </li>
+                    {% endif %}
+                    {% if politoloco %}
+                        <li>
+                            {% if not staff_user %}
+                                <hr>
+                            {% endif %}
+                            <a href="/my/politoloco">politoloco versenden</a>
+                        </li>
+                    {% endif %}
+                    <li class="{{ menu.personalInfo }}">
                         <hr>
-                        <div class="bohnen">
-                            {% block bohnen %}
-                                <h5>Dein Böhnli-Konto</h5>
-                                {% for i in bohnenrange %}
-                                    {% if i < userbohnen %}
-                                        <img class="jobstatus" src="/static/img/erbse_voll.png"/>
-                                    {% else %}
-                                        <img class="jobstatus" src="/static/img/erbse_leer.png"/>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endblock %}
-                        </div>
-                        <hr>
-                        <div class="jobs">
-                            {% block next_jobs %}
-                                <h5>Nächste Einsätze</h5>
-                                {% if next_jobs|length > 0 %}
-                                    <ul class="unstyled next-jobs">
-                                    {% for job in next_jobs %}
-                                        <li><a href="/my/jobs/{{ job.id }}">{{ job.typ.name }}</a><br/>
-                                        <div class="time">{{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}</div>
-                                        </li>
-                                    {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    Noch für keine Jobs angemeldet
-                                {% endif %}
-                            {% endblock %}
-                        </div>
-                </div>
-                <div class="span9">
-                    {% block content %}
+                        <a href="/my/profil">Personalien</a>
+                    </li>
+                    <li class="{{ menu.logout }}">
+                        <a href="/logout">Abmelden</a>
+                    </li>
+                </ul>
+                <hr>
+                <div class="bohnen">
+                    {% block bohnen %}
+                        <h5>Dein Böhnli-Konto</h5>
+                        {% for i in bohnenrange %}
+                            {% if i < userbohnen %}
+                                <img alt="Volle Erbse" class="jobstatus" src="/static/img/erbse_voll.png"/>
+                            {% else %}
+                                <img alt="Leere Erbse" class="jobstatus" src="/static/img/erbse_leer.png"/>
+                            {% endif %}
+                        {% endfor %}
                     {% endblock %}
                 </div>
-            {% endblock %}
-	</div>
+                <hr>
+                <div class="jobs">
+                    {% block next_jobs %}
+                        <h5>Nächste Einsätze</h5>
+                        {% if next_jobs|length > 0 %}
+                            <ul class="unstyled next-jobs">
+                                {% for job in next_jobs %}
+                                    <li><a href="/my/jobs/{{ job.id }}">{{ job.typ.name }}</a><br/>
+
+                                        <div class="time">{{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}</div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            Noch für keine Jobs angemeldet
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            </div>
+            <div class="span9">
+                {% block content %}
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+</div>
 </body>

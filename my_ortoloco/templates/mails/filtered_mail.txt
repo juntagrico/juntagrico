@@ -1,4 +1,4 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-    {{ content }}
+{{ content }}
 {% endblock %}

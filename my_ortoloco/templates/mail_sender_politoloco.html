@@ -23,7 +23,8 @@
                 }
             });
         </script>
-        <form action="/my/mails" method="POST" class="form-horizontal">
+
+        <form method="POST" class="form-horizontal">
             {% csrf_token %}
             <div class="control-group">
                 <label class="control-label">Absender</label>
@@ -36,19 +37,7 @@
                 <label class="control-label">Empfänger</label>
 
                 <div class="controls senderContact">
-                    Wähle mind. eine der folgenden Gruppen:
-                    <label class="checkbox" for="allabo">
-                        <input type="checkbox" id="allabo" name="allabo">
-                        Alle Abonnenten (inkl. MitabonnentInnen)
-                    </label>
-                    <label class="checkbox" for="allanteilsschein">
-                        <input type="checkbox" id="allanteilsschein" name="allanteilsschein">
-                        Alle Genossenschafter
-                    </label>
-                    <label class="checkbox" for="all">
-                        <input type="checkbox" id="all" name="all">
-                        Alle (im System)
-                    </label>
+                    Alle politolocos (Aktuelle Anzahl: {{ locos }})
                 </div>
             </div>
             <div class="control-group">
@@ -62,8 +51,16 @@
                 <label class="control-label" for="message">Mitteilung</label>
 
                 <div class="controls">
+                    <div class="row">
+                        <div class="span6 politoloco"></div>
+                    </div>
                     <textarea name="message" id="message" class="span5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
                     <input type="hidden" id="textMessage" name="textMessage"/>
+                    <br/><br/>
+
+                    <div class="row">
+                        <div class="span6 politoloco"></div>
+                    </div>
                 </div>
             </div>
 

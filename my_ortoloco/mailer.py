@@ -45,7 +45,6 @@ def send_mail_multi(email_multi_message):
             if not sent:
                 print "Mail not sent to " + email + ", not in whitelist"
 
-
     if len(okmails) > 0:
         email_multi_message.to = []
         email_multi_message.bcc = okmails
@@ -107,26 +106,55 @@ def send_been_added_to_abo(email, password, anteilsscheine, hash, server):
     send_mail_multi(msg)
 
 
-def send_filtered_mail(subject, message, emails, server):
+def send_filtered_mail(subject, message, text_message, emails, server):
     plaintext = get_template('mails/filtered_mail.txt')
     htmly = get_template('mails/filtered_mail.html')
 
-    # reset password so we can send it to him
-    d = Context({
+    htmld = Context({
         'subject': subject,
         'content': message,
         'serverurl': "http://" + server
     })
+    textd = Context({
+        'subject': subject,
+        'content': text_message,
+        'serverurl': "http://" + server
+    })
 
-    text_content = plaintext.render(d)
-    html_content = htmly.render(d)
+    text_content = plaintext.render(textd)
+    html_content = htmly.render(htmld)
 
     msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
+
+def send_politoloco_mail(subject, message, text_message, emails, server):
+    plaintext = get_template('mails/politoloco.txt')
+    htmly = get_template('mails/politoloco.html')
+
+    htmld = Context({
+        'subject': subject,
+        'content': message,
+        'serverurl': "http://" + server
+    })
+    textd = Context({
+        'subject': subject,
+        'content': text_message,
+        'serverurl': "http://" + server
+    })
+
+    text_content = plaintext.render(textd)
+    html_content = htmly.render(htmld)
+
+    msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
+
+
 def send_mail_password_reset(email, password):
     send_mail('Dein neues ortoloco Passwort', 'Du hast dein Passwort neu setzen lassen: ' + password, 'info@ortoloco.ch', [email])
+
 
 def send_job_reminder(emails, job, participants):
     plaintext = get_template('mails/job_reminder_mail.txt')

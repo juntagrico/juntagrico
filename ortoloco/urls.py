@@ -46,6 +46,7 @@ urlpatterns = patterns('',
     url('^my/depotlisten', 'my_ortoloco.views.my_depotlisten'),
     url('^my/neuespasswort$', 'my_ortoloco.views.my_new_password'),
     url('^my/bestaetigung/(?P<hash>.*?)/', 'my_ortoloco.views.my_confirm'),
+    url('^my/politoloco$', 'my_ortoloco.views.send_politoloco'),
 
     #url('^my/createlocoforsuperuserifnotexist$', 'my_ortoloco.views.my_createlocoforsuperuserifnotexist'),
     #url('^my/startmigrationonceassuperadmin$', 'my_ortoloco.views.my_startmigration'),

@@ -6,13 +6,13 @@
     <form action="/my/kontakt" method="POST" class="form-horizontal">
         {% csrf_token %}
         <div class="control-group">
-            <label class="control-label" for="sender">Absender</label>
+            <label class="control-label">Absender</label>
             <div class="controls senderContact">
                 {{ usernameAndEmail }}
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="sender">Empfänger</label>
+            <label class="control-label">Empfänger</label>
             <div class="controls senderContact">
                 info@ortoloco.ch
             </div>

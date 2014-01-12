@@ -1,18 +1,18 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-    Nicht vergessen:
+Nicht vergessen:
 
-    Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein ortoloco-Arbeitseinsatz "{{ job.typ.displayed_name }}" statt.
+Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein ortoloco-Arbeitseinsatz "{{ job.typ.displayed_name }}" statt.
 
-    Details:
+Details:
 
-    Job:             {{ job.typ.description }}
-    Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-    mitlocos:        {{ participants }}
-    Ort:             {{ job.typ.location }}
+Job:             {{ job.typ.description }}
+Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+mitlocos:        {{ participants }}
+Ort:             {{ job.typ.location }}
 
-    Wir freuen uns, dich zu sehen und zählen auf dich!
+Wir freuen uns, dich zu sehen und zählen auf dich!
 
-    Herzlich grüsst,
-    dein ortoloco-Team
+Herzlich grüsst,
+dein ortoloco-Team
 {% endblock %}
