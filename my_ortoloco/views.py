@@ -45,7 +45,6 @@ def getBohnenDict(request):
         userbohnen = []
         next_jobs = set()
 
-    print request.user.has_perm('static_ortoloco.can_send_newsletter')
     return {
         'bohnenrange': bohnenrange,
         'userbohnen': len(userbohnen),
@@ -579,7 +578,6 @@ def my_new_password(request):
     if request.method == 'POST':
         sent = True
         locos = Loco.objects.filter(email=request.POST.get('username'))
-        print locos
         if len(locos) > 0:
             loco = locos[0]
             pw = password_generator()
