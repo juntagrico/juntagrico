@@ -1,5 +1,6 @@
 import sys
 import hashlib
+import subprocess
 
 from django.http import HttpResponse, HttpResponseServerError
 
@@ -10,6 +11,7 @@ from django.template.defaultfilters import slugify
 from xhtml2pdf import pisa
 
 from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 class AuthenticateWithEmail(object):
@@ -77,3 +79,21 @@ def make_username(firstname, lastname, email):
     lastname = slugify(lastname)[:10]
     email = hashlib.sha1(email).hexdigest()
     return ("%s_%s_%s" %(firstname, lastname, email))[:30]
+
+
+@staff_member_required
+def run_in_shell(request, command_string, input=None):
+    p = subprocess.Popen(command_string, shell=True, stdout=subprocess.PIPE, stderr= subprocess.PIPE)
+    out, err = p.communicate(input)
+
+    res = ("Finished running command:\n"
+           "%s\n"
+           "\n"
+           "stdout:\n"
+           "%s\n"
+           "\n"
+           "stderr:\n"
+           "%s\n") % (command_string, out, err)
+    return HttpResponse(res, content_type="text/plain")
+
+

@@ -14,7 +14,7 @@ from django.core.management import call_command
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
-from my_ortoloco.helpers import render_to_pdf, Swapstd, make_username
+from my_ortoloco.helpers import render_to_pdf, Swapstd, make_username, run_in_shell
 from my_ortoloco.filters import Filter
 from my_ortoloco.mailer import *
 
@@ -743,6 +743,13 @@ def migrate_apps(request):
     return HttpResponse(f.getvalue(), content_type="text/plain")
 
 
+@staff_member_required
+def pip_install(request):
+    command = "pip install -r requirements.txt"
+    res = run_in_shell(request, command)
+    return res
+
+
 def test_filters(request):
     lst = Filter.get_all()
     res = []
@@ -764,6 +771,7 @@ def test_filters_post(request):
     data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" % (loco, loco.email))
     res.extend(data)
     return HttpResponse("<br>".join(res))
+
 
 
 
