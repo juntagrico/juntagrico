@@ -44,12 +44,14 @@ def getBohnenDict(request):
         bohnenrange = None
         userbohnen = []
         next_jobs = set()
+
+    print request.user.has_perm('static_ortoloco.can_send_newsletter')
     return {
         'bohnenrange': bohnenrange,
         'userbohnen': len(userbohnen),
         'next_jobs': next_jobs,
         'staff_user': request.user.is_staff,
-        'politoloco': request.user.has_perm('can_send_newsletter')
+        'politoloco': request.user.has_perm('static_ortoloco.can_send_newsletter')
     }
 
 
@@ -190,7 +192,7 @@ def my_pastjobs(request):
     return render(request, "my_pastjobs.html", renderdict)
 
 
-@permission_required('politoloco.can_send_newsletter')
+@permission_required('static_ortoloco.can_send_newsletter')
 def send_politoloco(request):
     """
     Send politoloco newsletter
