@@ -64,7 +64,7 @@ def my_home(request):
     renderdict = getBohnenDict(request)
     renderdict.update({
         'jobs': jobs[:7],
-        'teams': Taetigkeitsbereich.objects.all(),
+        'teams': Taetigkeitsbereich.objects.filter(hidden=False),
         'no_abo': request.user.loco.abo is None
     })
 
@@ -141,7 +141,7 @@ def my_participation(request):
     success = False
     if request.method == 'POST':
         old_areas = set(loco.areas.all())
-        new_areas = set(area for area in Taetigkeitsbereich.objects.all()
+        new_areas = set(area for area in Taetigkeitsbereich.objects.filter(hidden=False)
                         if request.POST.get("area" + str(area.id)))
         if old_areas != new_areas:
             loco.areas = new_areas
@@ -151,7 +151,7 @@ def my_participation(request):
 
         success = True
 
-    for area in Taetigkeitsbereich.objects.all():
+    for area in Taetigkeitsbereich.objects.filter(hidden=False):
         if area.hidden:
             continue
         my_areas.append({
@@ -159,7 +159,7 @@ def my_participation(request):
             'checked': loco in area.locos.all(),
             'id': area.id,
             'core': area.core,
-            'admin': u"%s (%s)" % (area.coordinator, area.coordinator.email)
+            'coordinator': area.coordinator
         })
 
     renderdict = getBohnenDict(request)
@@ -464,7 +464,7 @@ def my_welcome(request):
     renderdict = getBohnenDict(request)
     renderdict.update({
         'jobs': Job.objects.all()[0:7],
-        'teams': Taetigkeitsbereich.objects.all(),
+        'teams': Taetigkeitsbereich.objects.filter(hidden=False),
         'no_abo': request.user.loco.abo is None
     })
 

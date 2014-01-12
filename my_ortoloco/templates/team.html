@@ -9,21 +9,22 @@
     <br/>
     <div class="row">
         <div class="span3">Verantwortlicher:</div>
-        <div class="span5"><a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.get_full_name }}</a></div>
+        <div class="span5">{{ team.coordinator.first_name }} {{ team.coordinator.last_name }}<br/><a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.email }}</a></div>
     </div>
     <br/>
     <h4>Kommende Termine</h4>
-    <ul class="unstyled beans">
-    {% for job in jobs %}
-        <li>
-            <span class="date">{{ job.time |date:"d.m H:i" }}</span>
-            <a href="/my/jobs/{{ job.id }}">{{ job.typ }}</a>
-        </li>
-    {% endfor %}
+    <table class="jobs">
+        {% for job in jobs %}
+            <tr class="{% if job.status == "erbse_voll.png" %}full{% endif %}">
+                <td class="date">{{ job.time |date:"d.m H:i" }}</td>
+                <td><a href="/my/jobs/{{ job.id }}">{{ job.typ }}</a></td>
+                <td class="status"><img src="/static/img/{{ job.get_status_bohne }}"/></td>
+            </tr>
+        {% endfor %}
+    </table>
     {% if jobs|length <= 0 %}
         Keine Jobs ausgeschrieben
     {% endif %}
-    </ul>
     <br/><br/>
     <a class="btn" href="javascript:history.back()">zurück</a>
 {% endblock %}

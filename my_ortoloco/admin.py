@@ -83,7 +83,7 @@ class JobCopyForm(forms.ModelForm):
         inst = k.pop("instance")
 
         self.fields["start_date"].initial = inst.time.date() + datetime.timedelta(days=1)
-        self.fields["time"].initial = timezone.localtime(inst.time).timetz()
+        self.fields["time"].initial = inst.time
         self.fields["weekdays"].initial = [inst.time.weekday()]
     
     

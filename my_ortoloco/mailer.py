@@ -56,11 +56,11 @@ def send_mail_multi(email_multi_message):
 
 def send_new_loco_in_taetigkeitsbereich_to_bg(area, loco):
     send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'orto@xiala.net', [area.coordinator.email])
+              'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'info@ortoloco.ch', [area.coordinator.email])
 
 
 def send_contact_form(subject, message, loco, copy_to_loco):
-    send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, ['orto@xiala.net'])
+    send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, ['info@ortoloco.ch'])
     if copy_to_loco:
         send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, [loco.email])
 
@@ -80,7 +80,7 @@ def send_welcome_mail(email, password, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [email])
+    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'info@ortoloco.ch', [email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
@@ -102,7 +102,7 @@ def send_been_added_to_abo(email, password, anteilsscheine, hash, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'orto@xiala.net', [email])
+    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'info@ortoloco.ch', [email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
