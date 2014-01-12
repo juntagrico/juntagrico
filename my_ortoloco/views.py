@@ -46,6 +46,7 @@ def getBohnenDict(request):
         next_jobs = set()
 
     return {
+        'user': request.user,
         'bohnenrange': bohnenrange,
         'userbohnen': len(userbohnen),
         'next_jobs': next_jobs,

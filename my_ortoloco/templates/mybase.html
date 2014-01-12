@@ -15,6 +15,16 @@
     <div class="erbseleft"></div>
     <div class="erbseright"></div>
     <div class="erbsebottom"></div>
+
+    {% if user.is_impersonate %}
+        <div class="row impersonate">
+            <div class="span12">
+                <div class="alert alert-block">
+                    Du imitierst derzeit den Benutzer “{{ user.loco.first_name }} {{ user.loco.last_name }}”. <a href="/impersonate/stop">Beende dies hier</a>.
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <div class="row myortoloco">
         <div class="span12">
             <a href="/my/home"><span class="myortoloco_logo"></span></a>

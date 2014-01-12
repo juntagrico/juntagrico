@@ -4,7 +4,7 @@ import datetime
 from django.contrib import admin, messages
 from django import forms
 from django.db.models import Q
-from django.http import  HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.conf.urls import patterns
 from django.utils import timezone
 from django.core.urlresolvers import reverse
@@ -37,7 +37,7 @@ class AboAdminForm(forms.ModelForm):
             self.cleaned_data["primary_loco"] = locos[0] if locos else None
 
         return forms.ModelForm.clean(self)
-        
+
 
     def save(self, commit=True):
         # HACK: set commit=True, ignoring what the admin tells us.
@@ -62,7 +62,7 @@ class JobCopyForm(forms.ModelForm):
         model = Job
         fields = ["typ", "slots"]
 
-    weekdays = forms.MultipleChoiceField(label="Wochentage", choices=helpers.weekday_choices, 
+    weekdays = forms.MultipleChoiceField(label="Wochentage", choices=helpers.weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
 
     time = forms.TimeField(label="Zeit", required=False,
@@ -72,7 +72,6 @@ class JobCopyForm(forms.ModelForm):
                                  widget=admin.widgets.AdminDateWidget)
     end_date = forms.DateField(label="Enddatum", required=True,
                                widget=admin.widgets.AdminDateWidget)
-
 
     weekly = forms.ChoiceField(choices=[(7, "jede Woche"), (14, "Alle zwei Wochen")],
                                widget=forms.widgets.RadioSelect, initial=7)
@@ -85,15 +84,15 @@ class JobCopyForm(forms.ModelForm):
         self.fields["start_date"].initial = inst.time.date() + datetime.timedelta(days=1)
         self.fields["time"].initial = inst.time
         self.fields["weekdays"].initial = [inst.time.weekday()]
-    
-    
+
+
     def clean(self):
         cleaned_data = forms.ModelForm.clean(self)
         if "start_date" in cleaned_data and "end_date" in cleaned_data:
             if not self.get_dates(cleaned_data):
                 raise ValidationError("Kein neuer Job fällt zwischen Anfangs- und Enddatum")
         return cleaned_data
-    
+
 
     def save(self, commit=True):
         weekdays = self.cleaned_data["weekdays"]
@@ -149,7 +148,7 @@ class BoehnliInline(admin.TabularInline):
     extra = 0
     max_num = 0
 
-   
+
     def get_extra(self, request, obj=None):
         # TODO is this needed?
         #if "copy_job" in request.path:
@@ -157,7 +156,7 @@ class BoehnliInline(admin.TabularInline):
         if obj is None:
             return 0
         return obj.freie_plaetze()
-    
+
 
     def get_max_num(self, request, obj):
         if obj is None:
@@ -176,11 +175,12 @@ class JobAdmin(admin.ModelAdmin):
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, u"Genau 1 Job auswählen!", level=messages.ERROR) 
+            self.message_user(request, u"Genau 1 Job auswählen!", level=messages.ERROR)
             return HttpResponseRedirect("")
 
         inst, = queryset.all()
         return HttpResponseRedirect("copy_job/%s/" % inst.id)
+
     mass_copy_job.short_description = "Job mehrfach kopieren..."
 
 
@@ -188,20 +188,20 @@ class JobAdmin(admin.ModelAdmin):
         for inst in queryset.all():
             newjob = Job(typ=inst.typ, slots=inst.slots, time=inst.time)
             newjob.save()
+
     copy_job.short_description = "Jobs kopieren"
-    
 
 
     def get_form(self, request, obj=None, **kwds):
         if "copy_job" in request.path:
             return JobCopyForm
         return super(JobAdmin, self).get_form(request, obj, **kwds)
-        
-    
+
+
     def get_urls(self):
         urls = super(JobAdmin, self).get_urls()
         my_urls = patterns("",
-            (r"^copy_job/(?P<jobid>.*?)/$", self.admin_site.admin_view(self.copy_job_view))
+                           (r"^copy_job/(?P<jobid>.*?)/$", self.admin_site.admin_view(self.copy_job_view))
         )
         return my_urls + urls
 
@@ -212,19 +212,18 @@ class JobAdmin(admin.ModelAdmin):
         tmp_inlines = self.inlines
         self.readonly_fields = []
         self.inlines = []
-        res = self.change_view(request, jobid, extra_context={'title':"Copy job"})
+        res = self.change_view(request, jobid, extra_context={'title': "Copy job"})
         self.readonly_fields = tmp_readonly
         self.inlines = tmp_inlines
         return res
 
-    
+
     def construct_change_message(self, request, form, formsets):
         # As of django 1.6 the automatic logging of changes triggered by the change view behaves badly
         # when custom forms are used. This is a workaround.
         if "copy_job" in request.path:
             return ""
         return admin.ModelAdmin.construct_change_message(self, request, form, formsets)
-    
 
 
 class AboAdmin(admin.ModelAdmin):
@@ -236,7 +235,7 @@ class AboAdmin(admin.ModelAdmin):
 
 
 class AuditAdmin(admin.ModelAdmin):
-    list_display = ["timestamp", "source_type", "target_type", "field", "action", 
+    list_display = ["timestamp", "source_type", "target_type", "field", "action",
                     "source_object", "target_object"]
     #can_delete = False
 
@@ -250,7 +249,6 @@ class AnteilscheinAdmin(admin.ModelAdmin):
 class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ["contact"]
     list_display = ["name", "code", "weekday", "contact"]
-
 
 
 class BereichAdmin(admin.ModelAdmin):
@@ -287,7 +285,6 @@ class LocoAdminForm(forms.ModelForm):
                               label="Abo")
 
 
-
 class LocoAdmin(admin.ModelAdmin):
     form = LocoAdminForm
     list_display = ["email", "first_name", "last_name"]
@@ -295,7 +292,17 @@ class LocoAdmin(admin.ModelAdmin):
     #raw_id_fields = ["abo"]
     exclude = ["abo"]
     readonly_fields = ["user"]
+    actions = ["impersonate_job"]
 
+
+    def impersonate_job(self, request, queryset):
+        if queryset.count() != 1:
+            self.message_user(request, u"Genau 1 Loco auswählen!", level=messages.ERROR)
+            return HttpResponseRedirect("")
+        inst, = queryset.all()
+        return HttpResponseRedirect("/impersonate/%s/" % inst.user.id)
+
+    impersonate_job.short_description = "Loco imitieren (impersonate)..."
 
 
 admin.site.register(Depot, DepotAdmin)

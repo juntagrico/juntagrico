@@ -48,6 +48,8 @@ urlpatterns = patterns('',
     url('^my/bestaetigung/(?P<hash>.*?)/', 'my_ortoloco.views.my_confirm'),
     url('^my/politoloco$', 'my_ortoloco.views.send_politoloco'),
 
+    url(r'^impersonate/', include('impersonate.urls')),
+
     #url('^my/createlocoforsuperuserifnotexist$', 'my_ortoloco.views.my_createlocoforsuperuserifnotexist'),
     #url('^my/startmigrationonceassuperadmin$', 'my_ortoloco.views.my_startmigration'),
     url('^my/migratedbtonewestversion', 'my_ortoloco.views.migrate_apps'),
