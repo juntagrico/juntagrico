@@ -146,6 +146,20 @@ class Abo(models.Model):
     def grosse_abos(self):
         return int((self.groesse % 10) / 2)
 
+    def groesse_name(self):
+        if self.groesse == 1:
+            return "Kleines Abo"
+        elif self.groesse == 2:
+            return "Grosses Abo"
+        elif self.groesse == 10:
+            return "Haus Abo"
+        elif self.groesse == 3:
+            return "Kleines + Grosses Abo"
+        elif self.groesse == 4:
+            return "2 Grosse Abos"
+        else:
+            return "Spezialgrösse"
+
     def kleine_abos(self):
         return self.groesse % 2
 

@@ -7,7 +7,7 @@ import random
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
@@ -20,6 +20,8 @@ from my_ortoloco.mailer import *
 
 import hashlib
 from static_ortoloco.models import Politoloco
+
+from decorators import primary_loco_of_abo
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
@@ -220,11 +222,9 @@ def my_abo(request):
     """
     extraabos = []
     mitabonnenten = []
-    sharees = []
     if request.user.loco.abo:
         extraabos = request.user.loco.abo.extra_abos.all()
-        mitabonnenten = request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email)
-        sharees = request.user.loco.abo.locos.exclude(id=request.user.loco.id)
+        mitabonnenten = request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.abo.primary_loco.email)
 
     renderdict = getBohnenDict(request)
     renderdict.update({
@@ -233,9 +233,49 @@ def my_abo(request):
         'scheine': request.user.loco.anteilschein_set.count(),
         'mitabonnenten': mitabonnenten,
         'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid=False).count(),
-        'sharees': sharees
+        'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email
     })
     return render(request, "my_abo.html", renderdict)
+
+
+@primary_loco_of_abo
+def my_abo_change(request, abo_id):
+    """
+    Ein Abo ändern
+    """
+    month = int(time.strftime("%m"))
+    if month >= 7:
+        next_extra = datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
+    else:
+        next_extra = datetime.date(day=1, month=7, year=datetime.date.today().year)
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'loco': request.user.loco,
+        'change_size': month <= 10,
+        'change_extra': month != 6 and month != 12,
+        'next_extra_abo_date': next_extra,
+        'next_size_date': datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
+    })
+    return render(request, "my_abo_change.html", renderdict)
+
+
+@primary_loco_of_abo
+def my_depot_change(request, abo_id):
+    """
+    Ein Abo-Depot ändern
+    """
+    saved = False
+    if request.method == "POST":
+        request.user.loco.abo.depot = get_object_or_404(Depot, id=int(request.POST.get("depot")))
+        request.user.loco.abo.save()
+        saved = True
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'saved': saved,
+        'loco': request.user.loco,
+        "depots": Depot.objects.all()
+    })
+    return render(request, "my_depot_change.html", renderdict)
 
 
 @login_required
@@ -360,26 +400,29 @@ def my_add_loco(request, abo_id):
                                      locoform.cleaned_data['last_name'],
                                      locoform.cleaned_data['email'])
             pw = password_generator()
-            user = User.objects.create_user(username, locoform.cleaned_data['email'], pw)
-            user.loco.first_name = locoform.cleaned_data['first_name']
-            user.loco.last_name = locoform.cleaned_data['last_name']
-            user.loco.email = locoform.cleaned_data['email']
-            user.loco.addr_street = locoform.cleaned_data['addr_street']
-            user.loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
-            user.loco.addr_location = locoform.cleaned_data['addr_location']
-            user.loco.phone = locoform.cleaned_data['phone']
-            user.loco.mobile_phone = locoform.cleaned_data['mobile_phone']
-            user.loco.confirmed = False
-            user.loco.abo_id = abo_id
-            user.loco.save()
+            loco = Loco.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'], email=locoform.cleaned_data['email'])
+            loco.first_name = locoform.cleaned_data['first_name']
+            loco.last_name = locoform.cleaned_data['last_name']
+            loco.email = locoform.cleaned_data['email']
+            loco.addr_street = locoform.cleaned_data['addr_street']
+            loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
+            loco.addr_location = locoform.cleaned_data['addr_location']
+            loco.phone = locoform.cleaned_data['phone']
+            loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+            loco.confirmed = False
+            loco.abo_id = abo_id
+            loco.save()
+
+            loco.user.set_password(pw)
+            loco.user.save()
 
             for num in range(0, scheine):
-                anteilschein = Anteilschein(loco=user.loco, paid=False)
+                anteilschein = Anteilschein(loco=loco, paid=False)
                 anteilschein.save()
 
-            send_been_added_to_abo(user.loco.email, pw, scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
+            send_been_added_to_abo(loco.email, pw, scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
 
-            user.loco.save()
+            loco.save()
             if request.GET.get("return"):
                 return redirect(request.GET.get("return"))
             return redirect('/my/aboerstellen')

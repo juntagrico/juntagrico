@@ -1,0 +1,74 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Abo ändern</h3>
+    Welchen Teil deines Abos möchtest du ändern?<br/><br/>
+    <br/>
+    <div class="row">
+        <div class="span3">
+            <h3>Depot</h3>
+            <br/>
+            Das Depot kann jederzeit geändert werden. Die Änderung wird berücksichtigt,
+            falls sie bis am Sonntag Abend vor der Zustellung gemacht wurde.
+        </div>
+        <div class="span3">
+            <h3>Grösse</h3>
+            <br/>
+            Die Grösse eines Abos (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende Oktober gemacht werden,
+            damit die Änderung auf Anfang Januar in Kraft tritt.
+        </div>
+        <div class="span3">
+            <h3>Zusatz-Abos</h3>
+            <br/>
+            Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat gekündet werden.
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="span3">
+        </div>
+        <div class="span3">
+            Nächstmögliches Datum:
+            {{ next_size_date |date:"d.m.Y" }}
+        </div>
+        <div class="span3">
+            Nächstmögliches Datum:
+            {{ next_extra_abo_date |date:"d.m.Y" }}
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="span3">
+            <h5>Momentanes Depot:</h5>
+            {{ loco.abo.depot.name }}
+        </div>
+        <div class="span3">
+            <h5>Momentane Grösse:</h5>
+            {{ loco.abo.groesse_name }}
+        </div>
+        <div class="span3">
+            <h5>Momentane Zusatz-Abos:</h5>
+            {% if loco.abo.extra_abos.all|length == 0 %}
+                Keine Zusatz-Abos
+            {% else %}
+            {% for zusatzabo in loco.abo.extra_abos.all %}
+                <li>{{ zusatzabo.name }}</li>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="span3">
+            <a href="/my/abo/{{ loco.abo.id }}/aendern/depot" class="btn btn-success">Depot ändern</a>
+        </div>
+        <div class="span3">
+            <button class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</button><br/>
+            {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
+        </div>
+        <div class="span3">
+            <button class="btn btn-success" {% if not change_extra %}disabled="disabled"{% endif %}>Zusatz-Abos ändern</button>
+            {% if not change_extra %}* nur Januar-Mai und August-November möglich{% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -48,15 +48,15 @@
             <dd>&nbsp;</dd>
             <dt>Abo geteilt mit</dt>
             <dd>
-                {% if sharees|length > 0 %}
-                    {% if sharees|length > 1 %}
+                {% if mitabonnenten|length > 0 %}
+                    {% if mitabonnenten|length > 1 %}
                         <ul>
-                            {% for sharee in sharees %}
+                            {% for sharee in mitabonnenten %}
                                 <li>{{ sharee.first_name }} {{ sharee.last_name }}</li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        {% for sharee in sharees %}
+                        {% for sharee in mitabonnenten %}
                             {{ sharee.first_name }} {{ sharee.last_name }}
                         {% endfor %}
                         <br/>
@@ -88,7 +88,11 @@
         </dl>
         <div class="form-actions">
             <button class="btn btn-success" disabled="disabled">Abo ändern</button>
-            * derzeit noch nicht möglich
+            {% if primary %}
+                * derzeit noch nicht möglich
+            {% else %}
+                * Das Abo kann nur der Hauptabonnent ändern.
+            {% endif %}
         </div>
     {% endif %}
 {% endblock %}
