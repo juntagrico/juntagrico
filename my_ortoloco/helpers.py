@@ -1,6 +1,7 @@
 import sys
 import hashlib
 import subprocess
+import datetime
 
 from django.http import HttpResponse, HttpResponseServerError
 
@@ -56,6 +57,11 @@ weekday_choices = ((1, "Montag"),
                    (7, "Sonntag"))
 
 weekdays = dict(weekday_choices)
+
+
+def get_current_jobs():
+	from models import Job
+	return Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
 
 
 class Swapstd(object):

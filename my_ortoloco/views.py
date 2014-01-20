@@ -14,7 +14,7 @@ from django.core.management import call_command
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
-from my_ortoloco.helpers import render_to_pdf, Swapstd, make_username, run_in_shell
+from my_ortoloco.helpers import *
 from my_ortoloco.filters import Filter
 from my_ortoloco.mailer import *
 
@@ -63,7 +63,7 @@ def my_home(request):
     Overview on myortoloco
     """
 
-    jobs = Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
+    jobs = get_current_jobs()
     renderdict = getBohnenDict(request)
     renderdict.update({
         'jobs': jobs[:7],
@@ -286,7 +286,7 @@ def my_team(request, bereich_id):
 
     job_types = JobTyp.objects.all().filter(bereich=bereich_id)
 
-    jobs = Job.objects.all().filter(typ=job_types)
+    jobs = get_current_jobs().filter(typ=job_types)
 
     renderdict = getBohnenDict(request)
     renderdict.update({
@@ -303,7 +303,7 @@ def my_einsaetze(request):
     """
     renderdict = getBohnenDict(request)
 
-    jobs = Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
+    jobs = get_current_jobs();
     renderdict.update({
         'jobs': jobs,
         'show_all': True
@@ -528,7 +528,7 @@ def my_welcome(request):
 
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'jobs': Job.objects.all()[0:7],
+        'jobs': get_current_jobs()[:7],
         'teams': Taetigkeitsbereich.objects.filter(hidden=False),
         'no_abo': request.user.loco.abo is None
     })
