@@ -83,7 +83,7 @@ class JobCopyForm(forms.ModelForm):
 
         self.fields["start_date"].initial = inst.time.date() + datetime.timedelta(days=1)
         self.fields["time"].initial = inst.time
-        self.fields["weekdays"].initial = [inst.time.weekday()]
+        self.fields["weekdays"].initial = [inst.time.isoweekday()]
 
 
     def clean(self):
@@ -131,7 +131,7 @@ class JobCopyForm(forms.ModelForm):
             if skip_even_weeks and delta % 14 >= 7:
                 continue
             date = start + datetime.timedelta(delta)
-            if not date.weekday() in weekdays:
+            if not date.isoweekday() in weekdays:
                 continue
             res.append(date)
         return res
@@ -313,7 +313,7 @@ admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
 
 # This is only added to admin for debugging
-admin.site.register(model_audit.Audit, AuditAdmin)
+#admin.site.register(model_audit.Audit, AuditAdmin)
 
 # Not adding this because it can and should be edited from Job, 
 # where integrity constraints are checked
