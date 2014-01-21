@@ -220,20 +220,17 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    extraabos = []
-    mitabonnenten = []
-    if request.user.loco.abo:
-        extraabos = request.user.loco.abo.extra_abos.all()
-        mitabonnenten = request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.abo.primary_loco.email)
-
     renderdict = getBohnenDict(request)
+    if request.user.loco.abo:
+        renderdict.update({
+            'zusatzabos': request.user.loco.abo.extra_abos.all(),
+            'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.abo.primary_loco.email),
+            'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email
+        })
     renderdict.update({
-        'zusatzabos': extraabos,
         'loco': request.user.loco,
         'scheine': request.user.loco.anteilschein_set.count(),
-        'mitabonnenten': mitabonnenten,
         'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid=False).count(),
-        'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email
     })
     return render(request, "my_abo.html", renderdict)
 
