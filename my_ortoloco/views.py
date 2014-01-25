@@ -202,14 +202,23 @@ def send_politoloco(request):
     sent = 0
     if request.method == 'POST':
         emails = set()
-        for loco in Politoloco.objects.all():
-            emails.add(loco.email)
+        if request.POST.get("allpolitoloco"):
+            for loco in Politoloco.objects.all():
+                emails.add(loco.email)
+
+        if request.POST.get("allortolocos"):
+            for loco in Loco.objects.all():
+                emails.add(loco.email)
+
+        if request.POST.get("allsingleemail"):
+            emails.add(request.POST.get("singleemail"))
 
         send_politoloco_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"])
         sent = len(emails)
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'locos': Politoloco.objects.count(),
+        'politolocos': Politoloco.objects.count(),
+        'ortolocos': Loco.objects.count(),
         'sent': sent
     })
     return render(request, 'mail_sender_politoloco.html', renderdict)

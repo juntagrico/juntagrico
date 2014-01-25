@@ -37,7 +37,19 @@
                 <label class="control-label">Empfänger</label>
 
                 <div class="controls text-label">
-                    Alle politolocos (Aktuelle Anzahl: {{ locos }})
+                    Wähle mind. eine der folgenden Gruppen:
+                    <label class="checkbox politoloco-label" for="allpolitoloco">
+                        <input type="checkbox" id="allpolitoloco" name="allpolitoloco">
+                        Alle politolocos (Aktuelle Anzahl: {{ politolocos }})
+                    </label>
+                    <label class="checkbox politoloco-label" for="allortolocos">
+                        <input type="checkbox" id="allortolocos" name="allortolocos">
+                        Alle ortolocos (Aktuelle Anzahl: {{ ortolocos }})
+                    </label>
+                    <label class="checkbox politoloco-label" for="allsingleemail">
+                        <input type="checkbox" id="allsingleemail" name="allsingleemail">
+                        Nur an diese Email: <input type="text" id="singleemail" name="singleemail"/>
+                    </label>
                 </div>
             </div>
             <div class="control-group">
