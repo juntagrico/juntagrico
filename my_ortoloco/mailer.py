@@ -160,7 +160,6 @@ def send_job_reminder(emails, job, participants):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
 
-    # reset password so we can send it to him
     d = Context({
         'job': job,
         'participants': participants
