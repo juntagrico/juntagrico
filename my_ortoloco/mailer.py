@@ -156,13 +156,14 @@ def send_mail_password_reset(email, password):
     send_mail('Dein neues ortoloco Passwort', 'Du hast dein Passwort neu setzen lassen: ' + password, 'info@ortoloco.ch', [email])
 
 
-def send_job_reminder(emails, job, participants):
+def send_job_reminder(emails, job, participants, server):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
 
     d = Context({
         'job': job,
         'participants': participants
+        'serverurl': "http://" + server
     })
 
     text_content = plaintext.render(d)
