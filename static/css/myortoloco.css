@@ -9,7 +9,8 @@
 .next-jobs {
     margin-top: 5px;
 }
-.next-jobs .time{
+
+.next-jobs .time {
     margin-bottom: 10px;
     font-size: 14px;
 }
@@ -89,7 +90,7 @@
 #depot #map-canvas {
     margin-left: 180px;
     width: 400px;
-    height:440px;
+    height: 440px;
 }
 
 .politoloco {
@@ -100,6 +101,15 @@
 .politoloco-label {
     line-height: 40px;
 }
-.politoloco-label input[type=checkbox]{
+
+.politoloco-label input[type=checkbox] {
     margin-top: 15px;
+}
+
+#filter-locos {
+    width: 1000px;
+}
+
+#filter-locos table {
+    font-size: 10px;
 }

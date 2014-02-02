@@ -665,6 +665,14 @@ def my_mails(request):
     })
     return render(request, 'mail_sender.html', renderdict)
 
+@staff_member_required
+def my_filters(request):
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'locos': Loco.objects.all()
+    })
+    return render(request, 'filters.html', renderdict)
+
 
 @staff_member_required
 def my_depotlisten(request):
