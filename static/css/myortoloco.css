@@ -31,19 +31,24 @@
     width: 100%;
 }
 
-#jobs_header {
+#jobs_header, #filter-locos_header {
     margin-bottom: 20px;
 }
 
-#jobs_footer {
+#filter-locos a {
+    color: white;
+    text-decoration: underline;
+}
+
+#jobs_footer, #filter-locos_footer {
     margin-top: 20px;
 }
 
-#jobs_page_prev, #jobs_page_next {
+#jobs_page_prev, #jobs_page_next, #filter-locos_page_prev, #filter-locos_page_next {
     display: none !important;
 }
 
-#jobs th {
+#jobs th, #filter-locos th {
     background-color: #4c9434;
     color: white;
 }
