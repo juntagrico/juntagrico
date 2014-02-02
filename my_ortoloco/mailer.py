@@ -162,7 +162,7 @@ def send_job_reminder(emails, job, participants, server):
 
     d = Context({
         'job': job,
-        'participants': participants
+        'participants': participants,
         'serverurl': "http://" + server
     })
 

@@ -11,7 +11,7 @@ class Send_Job_Reminders(Job):
     def job(self):
         now = datetime.datetime.now();
         end = now + datetime.timedelta(1);
-        for job in models.Job.objects.filter(time__range=(now, end), reminder_sent__exact==False):
+        for job in models.Job.objects.filter(time__range=(now, end), reminder_sent__exact=False):
             participants = []
             emails = []
             for bohne in models.Boehnli.objects.filter(job_id=job.id):
