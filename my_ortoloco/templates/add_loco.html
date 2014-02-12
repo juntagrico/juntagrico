@@ -8,8 +8,19 @@
 
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
+            <div class="control-group {% if locoform.last_name.errors %}error{% endif %}">
+                <label class="control-label" for="id_last_name">Name *</label>
+
+                <div class="controls">
+                    {{ locoform.last_name }}
+                    {% if locoform.last_name.errors %}
+                        <span class="help-inline">Name ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="control-group {% if locoform.first_name.errors %}error{% endif %}">
-                <label class="control-label" for="id_first_name">Vorname</label>
+                <label class="control-label" for="id_first_name">Vorname *</label>
 
                 <div class="controls">
                     {{ locoform.first_name }}
@@ -19,19 +30,8 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.last_name.errors %}error{% endif %}">
-                <label class="control-label" for="id_last_name">Nachname</label>
-
-                <div class="controls">
-                    {{ locoform.last_name }}
-                    {% if locoform.last_name.errors %}
-                        <span class="help-inline">Nachname ungültig</span>
-                    {% endif %}
-                </div>
-            </div>
-
             <div class="control-group {% if locoform.addr_street.errors %}error{% endif %}">
-                <label class="control-label" for="id_addr_street">{{ locoform.addr_street.label }}</label>
+                <label class="control-label" for="id_addr_street">{{ locoform.addr_street.label }} *</label>
 
                 <div class="controls">
                     {{ locoform.addr_street }}
@@ -42,7 +42,7 @@
             </div>
 
             <div class="control-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
-                <label class="control-label" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }}</label>
+                <label class="control-label" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }} *</label>
 
                 <div class="controls">
                     {{ locoform.addr_zipcode }}
@@ -53,7 +53,7 @@
             </div>
 
             <div class="control-group {% if locoform.addr_location.errors %}error{% endif %}">
-                <label class="control-label" for="id_addr_location">{{ locoform.addr_location.label }}</label>
+                <label class="control-label" for="id_addr_location">{{ locoform.addr_location.label }} *</label>
 
                 <div class="controls">
                     {{ locoform.addr_location }}
@@ -64,7 +64,7 @@
             </div>
 
             <div class="control-group {% if locoform.phone.errors %}error{% endif %}">
-                <label class="control-label" for="id_phone">{{ locoform.phone.label }}</label>
+                <label class="control-label" for="id_phone">{{ locoform.phone.label }} *</label>
 
                 <div class="controls">
                     {{ locoform.phone }}
@@ -75,7 +75,7 @@
             </div>
 
             <div class="control-group {% if locoform.mobile_phone.errors %}error{% endif %}">
-                <label class="control-label" for="id_mobile_phone">{{ locoform.mobile_phone.label }}</label>
+                <label class="control-label" for="id_mobile_phone">{{ locoform.mobile_phone.label }} &nbsp;</label>
 
                 <div class="controls">
                     {{ locoform.mobile_phone }}
@@ -86,13 +86,25 @@
             </div>
 
             <div class="control-group {% if locoform.email.errors %}error{% endif %}">
-                <label class="control-label" for="id_email">E-Mail Adresse</label>
+                <label class="control-label" for="id_email">E-Mail Adresse *</label>
 
                 <div class="controls">
                     {{ locoform.email }}
 
                     {% if locoform.email.errors %}
                         <span class="help-inline">E-Mail ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="control-group {% if locoform.birthday.errors %}error{% endif %}">
+                <label class="control-label" for="birthday">Geburtstag &nbsp;</label>
+
+                <div class="controls">
+                    {{ locoform.birthday }}
+
+                    {% if locoform.birthday.errors %}
+                        <span class="help-inline">Geburtstag ungültig</span>
                     {% endif %}
                 </div>
             </div>
