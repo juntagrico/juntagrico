@@ -434,7 +434,13 @@ def my_add_loco(request, abo_id):
             return redirect('/my/aboerstellen')
 
     else:
-        locoform = ProfileLocoForm()
+        loco = request.user.loco
+        initial = {"addr_street": loco.addr_street,
+                   "addr_zipcode": loco.addr_zipcode,
+                   "addr_location": loco.addr_location,
+                   "phone": loco.phone,
+                   }
+        locoform = ProfileLocoForm(initial=initial)
     renderdict = {
         'scheine': scheine,
         'userexists': userexists,
