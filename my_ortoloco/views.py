@@ -511,6 +511,7 @@ def my_createabo(request):
 
                 #user did it all => send confirmation mail
                 send_welcome_mail(loco.email, password, request.META["HTTP_HOST"])
+                send_welcome_mail("lea@ortoloco.ch", "<geheim>", request.META["HTTP_HOST"])
 
                 return redirect("/my/willkommen")
 
