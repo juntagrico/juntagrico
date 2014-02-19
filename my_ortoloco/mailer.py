@@ -84,7 +84,7 @@ def send_welcome_mail(email, password, server):
     send_mail_multi(msg)
 
 
-def send_been_added_to_abo(email, password, anteilsscheine, hash, server):
+def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
     plaintext = get_template('mails/welcome_added_mail.txt')
     htmly = get_template('mails/welcome_added_mail.html')
 
@@ -92,6 +92,7 @@ def send_been_added_to_abo(email, password, anteilsscheine, hash, server):
     d = Context({
         'subject': 'Willkommen bei ortoloco',
         'username': email,
+        'name': name,
         'password': password,
         'hash': hash,
         'anteilsscheine': anteilsscheine,

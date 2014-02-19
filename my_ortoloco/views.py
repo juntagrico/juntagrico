@@ -426,7 +426,7 @@ def my_add_loco(request, abo_id):
                 anteilschein = Anteilschein(loco=loco, paid=False)
                 anteilschein.save()
 
-            send_been_added_to_abo(loco.email, pw, scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
+            send_been_added_to_abo(loco.email, pw, loco.get_name(), scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
 
             loco.save()
             if request.GET.get("return"):
