@@ -153,7 +153,7 @@ def send_politoloco_mail(subject, message, text_message, emails, server):
     send_mail_multi(msg)
 
 
-def send_mail_password_reset(email, password):
+def send_mail_password_reset(email, password, server):
     plaintext = get_template('mails/password_reset_mail.txt')
     htmly = get_template('mails/password_reset_mail.html')
     subject = 'Dein neues ortoloco Passwort'
@@ -161,12 +161,14 @@ def send_mail_password_reset(email, password):
     htmld = Context({
         'subject': subject,
         'email': email,
-        'password': password
+        'password': password,
+        'serverurl': "http://" + server
     })
     textd = Context({
         'subject': subject,
         'email': email,
-        'password': password
+        'password': password,
+        'serverurl': "http://" + server
     })
 
     text_content = plaintext.render(textd)
