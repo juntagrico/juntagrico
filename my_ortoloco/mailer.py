@@ -154,7 +154,27 @@ def send_politoloco_mail(subject, message, text_message, emails, server):
 
 
 def send_mail_password_reset(email, password):
-    send_mail('Dein neues ortoloco Passwort', 'Du hast dein Passwort neu setzen lassen: ' + password, 'info@ortoloco.ch', [email])
+    plaintext = get_template('mails/password_reset_mail.txt')
+    htmly = get_template('mails/password_reset_mail.html')
+    subject = 'Dein neues ortoloco Passwort'
+
+    htmld = Context({
+        'subject': subject,
+        'email': email,
+        'password': password
+    })
+    textd = Context({
+        'subject': subject,
+        'email': email,
+        'password': password
+    })
+
+    text_content = plaintext.render(textd)
+    html_content = htmly.render(htmld)
+
+    msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', [email])
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
 
 
 def send_job_reminder(emails, job, participants, server):
