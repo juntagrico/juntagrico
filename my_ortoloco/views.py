@@ -96,12 +96,6 @@ def my_job(request, job_id):
             add = int(num)
             for i in range(add):
                 bohne = Boehnli.objects.create(loco=loco, job=job)
-                #bohne.save()
-        elif check_int(num) and 0 > int(num) >= -len(my_bohnen):
-            # remove some participants
-            remove = -int(num)
-            for bohne in my_bohnen[:remove]:
-                bohne.delete()
         else:
             error = "Ungueltige Anzahl Einschreibungen"
 
