@@ -1,0 +1,31 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Extra-Abos ändern</h3>
+    {% if saved %}
+        <div class="alert alert-success">
+            Die Extra-Abos wurden erfolgreich geändert.<br/>
+            <a href="/my/abo">Zurück zur Abo-Übersicht</a>
+        </div>
+    {% else %}
+        <br/>
+        <form method="post" class="form-horizontal createabo">
+            {% csrf_token %}
+            <div class="control-group">
+                <label class="control-label" for="depot">Deine Abos</label>
+
+                <div class="controls">
+                    {% for extra in extras %}
+                        <label class="checkbox" for="abo{{ extra.id }}">
+                            <input type="checkbox" value="{{ extra.id }}" name="abo{{ extra.id }}" id="abo{{ extra.id }}" {% if extra.selected %}checked="checked"{% endif %} />{{ extra.name }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Extra-Abos ändern</button>
+            </div>
+        </form>
+    {% endif %}
+
+{% endblock %}

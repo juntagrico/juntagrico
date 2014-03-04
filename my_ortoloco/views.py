@@ -283,6 +283,65 @@ def my_depot_change(request, abo_id):
     })
     return render(request, "my_depot_change.html", renderdict)
 
+@primary_loco_of_abo
+def my_size_change(request, abo_id):
+    """
+    Eine Abo-Grösse ändern
+    """
+    saved = False
+    if request.method == "POST":
+        request.user.loco.abo.groesse = int(request.POST.get("abo"))
+        request.user.loco.abo.save()
+        saved = True
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'saved': saved,
+        'groesse': request.user.loco.abo.groesse
+    })
+    return render(request, "my_size_change.html", renderdict)
+
+
+@primary_loco_of_abo
+def my_extra_change(request, abo_id):
+    """
+    Ein Extra-Abos ändern
+    """
+    saved = False
+    if request.method == "POST":
+        for extra_abo in ExtraAboType.objects.all():
+            if request.POST.get("abo" + str(extra_abo.id)) == str(extra_abo.id):
+                request.user.loco.abo.extra_abos.add(extra_abo)
+                extra_abo.abo_set.add(request.user.loco.abo)
+            else:
+                request.user.loco.abo.extra_abos.remove(extra_abo)
+                extra_abo.abo_set.remove(request.user.loco.abo)
+
+            request.user.loco.abo.save()
+            extra_abo.save()
+
+        saved = True
+
+    abos = []
+    for abo in ExtraAboType.objects.all():
+        if abo in request.user.loco.abo.extra_abos.all():
+            abos.append({
+                'id': abo.id,
+                'name': abo.name,
+                'selected': True
+            })
+        else:
+            abos.append({
+                'id': abo.id,
+                'name': abo.name
+            })
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'saved': saved,
+        'loco': request.user.loco,
+        "extras": abos
+    })
+    return render(request, "my_extra_change.html", renderdict)
+
 
 @login_required
 def my_team(request, bereich_id):
@@ -439,7 +498,7 @@ def my_add_loco(request, abo_id):
                    "addr_zipcode": loco.addr_zipcode,
                    "addr_location": loco.addr_location,
                    "phone": loco.phone,
-                   }
+        }
         locoform = ProfileLocoForm(initial=initial)
     renderdict = {
         'scheine': scheine,
@@ -671,6 +730,7 @@ def my_mails(request):
         'sent': sent
     })
     return render(request, 'mail_sender.html', renderdict)
+
 
 @staff_member_required
 def my_filters(request):
