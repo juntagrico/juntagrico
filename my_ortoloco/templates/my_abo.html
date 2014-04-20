@@ -85,12 +85,40 @@
                     </ul>
                 </dd>
             {% endif %}
+            {% if andere_zusatzabos %}
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+                <dt>Neue Zusatzabos</dt>
+                <dd>
+                    (Diese werden am {{ next_extra_abo_date |date:"d.m.Y" }} aktiviert)
+                    <ul>
+                        {% for zusatzabo in future_zusatzabos %}
+                            <li>{{ zusatzabo.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </dd>
+            {% endif %}
+            {% if loco.abo.groesse != loco.abo.future_groesse %}
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+                <dt>Neue Abogrösse</dt>
+                <dd>
+                    (Diese wird am {{ next_size_date |date:"d.m.Y" }} aktiviert)<br/>
+                    {% if loco.abo.future_groesse == 1 %}
+                        Kleines Abo
+                    {% endif %}
+                    {% if loco.abo.future_groesse == 2 %}
+                        Grosses Abo
+                    {% endif %}
+                    {% if loco.abo.future_groesse == 10 %}
+                        Haus Abo
+                    {% endif %}
+                </dd>
+            {% endif %}
         </dl>
         <div class="form-actions">
-            <button class="btn btn-success" disabled="disabled">Abo ändern</button>
-            {% if primary %}
-                * derzeit noch nicht möglich
-            {% else %}
+            <a href="/my/abo/{{ loco.abo.id }}/aendern" class="btn btn-success">Abo ändern</a>
+            {% if not primary %}
                 * Das Abo kann nur der Hauptabonnent ändern.
             {% endif %}
         </div>

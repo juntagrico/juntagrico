@@ -224,11 +224,22 @@ def my_abo(request):
     Details for an abo of a loco
     """
     renderdict = getBohnenDict(request)
+    gleiche_zusatzabos = request.user.loco.abo.extra_abos.count() is request.user.loco.abo.future_extra_abos.count()
+    for extra in request.user.loco.abo.extra_abos.all():
+        contains = False
+        for future in request.user.loco.abo.future_extra_abos.all():
+            contains = future.name == extra.name
+            print str(gleiche_zusatzabos) + ":" + str(contains) + ":" + future.name + ":" + extra.name
+        gleiche_zusatzabos = gleiche_zusatzabos and contains
     if request.user.loco.abo:
         renderdict.update({
             'zusatzabos': request.user.loco.abo.extra_abos.all(),
+            'future_zusatzabos': request.user.loco.abo.future_extra_abos.all(),
+            'andere_zusatzabos': not gleiche_zusatzabos,
             'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.abo.primary_loco.email),
-            'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email
+            'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email,
+            'next_extra_abo_date': Abo.next_extra_change_date(),
+            'next_size_date': Abo.next_size_change_date()
         })
     renderdict.update({
         'loco': request.user.loco,
@@ -244,17 +255,13 @@ def my_abo_change(request, abo_id):
     Ein Abo ändern
     """
     month = int(time.strftime("%m"))
-    if month >= 7:
-        next_extra = datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
-    else:
-        next_extra = datetime.date(day=1, month=7, year=datetime.date.today().year)
     renderdict = getBohnenDict(request)
     renderdict.update({
         'loco': request.user.loco,
         'change_size': month <= 10,
         'change_extra': month != 6 and month != 12,
-        'next_extra_abo_date': next_extra,
-        'next_size_date': datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
+        'next_extra_abo_date': Abo.next_extra_change_date(),
+        'next_size_date': Abo.next_size_change_date()
     })
     return render(request, "my_abo_change.html", renderdict)
 
@@ -277,6 +284,7 @@ def my_depot_change(request, abo_id):
     })
     return render(request, "my_depot_change.html", renderdict)
 
+
 @primary_loco_of_abo
 def my_size_change(request, abo_id):
     """
@@ -284,13 +292,13 @@ def my_size_change(request, abo_id):
     """
     saved = False
     if request.method == "POST":
-        request.user.loco.abo.groesse = int(request.POST.get("abo"))
+        request.user.loco.abo.future_groesse = int(request.POST.get("abo"))
         request.user.loco.abo.save()
         saved = True
     renderdict = getBohnenDict(request)
     renderdict.update({
         'saved': saved,
-        'groesse': request.user.loco.abo.groesse
+        'groesse': request.user.loco.abo.future_groesse
     })
     return render(request, "my_size_change.html", renderdict)
 
@@ -304,11 +312,11 @@ def my_extra_change(request, abo_id):
     if request.method == "POST":
         for extra_abo in ExtraAboType.objects.all():
             if request.POST.get("abo" + str(extra_abo.id)) == str(extra_abo.id):
-                request.user.loco.abo.extra_abos.add(extra_abo)
-                extra_abo.abo_set.add(request.user.loco.abo)
+                request.user.loco.abo.future_extra_abos.add(extra_abo)
+                extra_abo.future_extra_abos.add(request.user.loco.abo)
             else:
-                request.user.loco.abo.extra_abos.remove(extra_abo)
-                extra_abo.abo_set.remove(request.user.loco.abo)
+                request.user.loco.abo.future_extra_abos.remove(extra_abo)
+                extra_abo.future_extra_abos.remove(request.user.loco.abo)
 
             request.user.loco.abo.save()
             extra_abo.save()
@@ -317,7 +325,7 @@ def my_extra_change(request, abo_id):
 
     abos = []
     for abo in ExtraAboType.objects.all():
-        if abo in request.user.loco.abo.extra_abos.all():
+        if abo in request.user.loco.abo.future_extra_abos.all():
             abos.append({
                 'id': abo.id,
                 'name': abo.name,

@@ -115,7 +115,9 @@ class Abo(models.Model):
     """
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
     groesse = models.PositiveIntegerField(default=1)
+    future_groesse = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
+    future_extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True, related_name="future_extra_abos")
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
@@ -146,19 +148,37 @@ class Abo(models.Model):
     def grosse_abos(self):
         return int((self.groesse % 10) / 2)
 
-    def groesse_name(self):
-        if self.groesse == 1:
-            return "Kleines Abo"
-        elif self.groesse == 2:
-            return "Grosses Abo"
-        elif self.groesse == 10:
-            return "Haus Abo"
-        elif self.groesse == 3:
-            return "Kleines + Grosses Abo"
-        elif self.groesse == 4:
-            return "2 Grosse Abos"
+    @staticmethod
+    def next_extra_change_date():
+        month = int(time.strftime("%m"))
+        if month >= 7:
+            next_extra = datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
         else:
-            return "Spezialgrösse"
+            next_extra = datetime.date(day=1, month=7, year=datetime.date.today().year)
+        return next_extra
+
+    @staticmethod
+    def next_size_change_date():
+        return datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
+
+    @staticmethod
+    def size_name(size):
+        if size == 1:
+            return "Kleines Abo"
+        elif size == 2:
+            return "Grosses Abo"
+        elif size == 10:
+            return "Haus Abo"
+        elif size == 3:
+            return "Kleines + Grosses Abo"
+        elif size == 4:
+            return "2 Grosse Abos"
+
+    def groesse_name(self):
+        return Abo.size_name(self.groesse)
+
+    def future_groesse_name(self):
+        return Abo.size_name(self.future_groesse)
 
     def kleine_abos(self):
         return self.groesse % 2
