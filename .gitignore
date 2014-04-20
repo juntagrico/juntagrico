@@ -9,3 +9,4 @@ static/admin/*
 static/medias/photologue/temp
 settings_local.py
 *.bak
+ssl/*
