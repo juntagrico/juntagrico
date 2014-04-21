@@ -228,8 +228,7 @@ def my_abo(request):
     for extra in request.user.loco.abo.extra_abos.all():
         contains = False
         for future in request.user.loco.abo.future_extra_abos.all():
-            contains = future.name == extra.name
-            print str(gleiche_zusatzabos) + ":" + str(contains) + ":" + future.name + ":" + extra.name
+            contains = contains or future.name == extra.name
         gleiche_zusatzabos = gleiche_zusatzabos and contains
     if request.user.loco.abo:
         renderdict.update({
@@ -317,7 +316,7 @@ def my_extra_change(request, abo_id):
             else:
                 request.user.loco.abo.future_extra_abos.remove(extra_abo)
                 extra_abo.future_extra_abos.remove(request.user.loco.abo)
-
+            request.user.loco.abo.extra_abos_changed = True
             request.user.loco.abo.save()
             extra_abo.save()
 

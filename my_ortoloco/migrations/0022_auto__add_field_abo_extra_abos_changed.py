@@ -8,27 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Abo.future_groesse'
-        db.add_column(u'my_ortoloco_abo', 'future_groesse',
-                      self.gf('django.db.models.fields.PositiveIntegerField')(default=1),
+        # Adding field 'Abo.extra_abos_changed'
+        db.add_column(u'my_ortoloco_abo', 'extra_abos_changed',
+                      self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
-
-        # Adding M2M table for field future_extra_abos on 'Abo'
-        m2m_table_name = u'my_ortoloco_abo_future_extra_abos'
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('abo', models.ForeignKey(orm[u'my_ortoloco.abo'], null=False)),
-            ('extraabotype', models.ForeignKey(orm[u'my_ortoloco.extraabotype'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['abo_id', 'extraabotype_id'])
 
 
     def backwards(self, orm):
-        # Deleting field 'Abo.future_groesse'
-        db.delete_column(u'my_ortoloco_abo', 'future_groesse')
-
-        # Removing M2M table for field future_extra_abos on 'Abo'
-        db.delete_table(u'my_ortoloco_abo_future_extra_abos')
+        # Deleting field 'Abo.extra_abos_changed'
+        db.delete_column(u'my_ortoloco_abo', 'extra_abos_changed')
 
 
     models = {
@@ -73,6 +61,7 @@ class Migration(SchemaMigration):
             'active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'depot': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['my_ortoloco.Depot']", 'on_delete': 'models.PROTECT'}),
             'extra_abos': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['my_ortoloco.ExtraAboType']", 'null': 'True', 'blank': 'True'}),
+            'extra_abos_changed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'future_extra_abos': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'future_extra_abos'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['my_ortoloco.ExtraAboType']"}),
             'future_groesse': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
             'groesse': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
