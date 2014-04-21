@@ -18,6 +18,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
         from models import Loco
+
         try:
             user = Loco.objects.get(**{'email': username}).user
             if user.check_password(password):
@@ -60,8 +61,9 @@ weekdays = dict(weekday_choices)
 
 
 def get_current_jobs():
-	from models import Job
-	return Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
+    from models import Job
+
+    return Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
 
 
 class Swapstd(object):
@@ -84,12 +86,12 @@ def make_username(firstname, lastname, email):
     firstname = slugify(firstname)[:10]
     lastname = slugify(lastname)[:10]
     email = hashlib.sha1(email).hexdigest()
-    return ("%s_%s_%s" %(firstname, lastname, email))[:30]
+    return ("%s_%s_%s" % (firstname, lastname, email))[:30]
 
 
 @staff_member_required
 def run_in_shell(request, command_string, input=None):
-    p = subprocess.Popen(command_string, shell=True, stdout=subprocess.PIPE, stderr= subprocess.PIPE)
+    p = subprocess.Popen(command_string, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = p.communicate(input)
 
     res = ("Finished running command:\n"

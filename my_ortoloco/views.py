@@ -68,10 +68,12 @@ def my_home(request):
     if StaticContent.objects.all().filter(name='my.ortoloco').__len__() > 0:
         announcement = u"<h3>Ankündigungen:</h3>" + StaticContent.objects.all().filter(name='my.ortoloco')[0].content + "</br>"
 
-    jobs = get_current_jobs()
+    next_jobs = set(get_current_jobs()[:7])
+    pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=datetime.datetime.now()))
+    next_aktionstage = set(Job.objects.filter(typ__name="Aktionstag", time__gte=datetime.datetime.now()).order_by("time")[:2])
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'jobs': jobs[:7],
+        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_aktionstage), key=lambda job: job.time),
         'teams': Taetigkeitsbereich.objects.filter(hidden=False),
         'no_abo': request.user.loco.abo is None,
         'announcement': announcement
