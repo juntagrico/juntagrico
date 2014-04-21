@@ -174,6 +174,8 @@ class Abo(models.Model):
             return "Kleines + Grosses Abo"
         elif size == 4:
             return "2 Grosse Abos"
+        else:
+            return "Kein Abo"
 
     def groesse_name(self):
         return Abo.size_name(self.groesse)
