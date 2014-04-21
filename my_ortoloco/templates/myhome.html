@@ -6,6 +6,10 @@
         <div class="alert">Du hast kein Abo</div>
         <br/><br/>
     {% endif %}
+
+    {% autoescape off %}
+        {{ announcement }}
+    {% endautoescape %}
     <h3>Aktuelle Arbeitseinsätze</h3>
     <table class="jobs">
         {% for job in jobs %}

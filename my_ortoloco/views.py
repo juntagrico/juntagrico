@@ -18,6 +18,8 @@ from my_ortoloco.helpers import *
 from my_ortoloco.filters import Filter
 from my_ortoloco.mailer import *
 
+from static_ortoloco.models import StaticContent
+
 import hashlib
 from static_ortoloco.models import Politoloco
 
@@ -62,13 +64,17 @@ def my_home(request):
     """
     Overview on myortoloco
     """
+    announcement = ""
+    if StaticContent.objects.all().filter(name='my.ortoloco').__len__() > 0:
+        announcement = u"<h3>Ankündigungen:</h3>" + StaticContent.objects.all().filter(name='my.ortoloco')[0].content + "</br>"
 
     jobs = get_current_jobs()
     renderdict = getBohnenDict(request)
     renderdict.update({
         'jobs': jobs[:7],
         'teams': Taetigkeitsbereich.objects.filter(hidden=False),
-        'no_abo': request.user.loco.abo is None
+        'no_abo': request.user.loco.abo is None,
+        'announcement': announcement
     })
 
     return render(request, "myhome.html", renderdict)
