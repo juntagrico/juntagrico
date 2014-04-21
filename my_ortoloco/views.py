@@ -207,7 +207,13 @@ def send_politoloco(request):
         if request.POST.get("allsingleemail"):
             emails.add(request.POST.get("singleemail"))
 
-        send_politoloco_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"])
+        index = 1
+        attachements = []
+        while request.FILES.get("image-" + str(index)) is not None:
+            attachements.append(request.FILES.get("image-" + str(index)))
+            index += 1
+
+        send_politoloco_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
         sent = len(emails)
     renderdict = getBohnenDict(request)
     renderdict.update({
@@ -723,8 +729,18 @@ def my_mails(request):
         if request.POST.get("all") == "on":
             for loco in Loco.objects.all():
                 emails.add(loco.email)
+
+        if request.POST.get("allsingleemail"):
+            emails.add(request.POST.get("singleemail"))
+
+        index = 1
+        attachements = []
+        while request.FILES.get("image-" + str(index)) is not None:
+            attachements.append(request.FILES.get("image-" + str(index)))
+            index += 1
+
         if len(emails) > 0:
-            send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"])
+            send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
             sent = len(emails)
     renderdict = getBohnenDict(request)
     renderdict.update({

@@ -6,6 +6,8 @@
     {% if sent > 0 %}
         <div class="alert alert-success">Email wurde an {{ sent }} Empfänger verschickt.</div>
     {% else %}
+        <script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
+        <script type="text/javascript" src="/static/js/attachment_appender.js"></script>
         <script type="text/javascript" src="/static/js/tinymce/tinymce.min.js"></script>
         <script type="text/javascript">
             tinymce.init({
@@ -24,7 +26,7 @@
             });
         </script>
 
-        <form method="POST" class="form-horizontal">
+        <form method="POST" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="control-group">
                 <label class="control-label">Absender</label>
@@ -38,15 +40,15 @@
 
                 <div class="controls text-label">
                     Wähle mind. eine der folgenden Gruppen:
-                    <label class="checkbox politoloco-label" for="allpolitoloco">
+                    <label class="checkbox high-label" for="allpolitoloco">
                         <input type="checkbox" id="allpolitoloco" name="allpolitoloco">
                         Alle politolocos (Aktuelle Anzahl: {{ politolocos }})
                     </label>
-                    <label class="checkbox politoloco-label" for="allortolocos">
+                    <label class="checkbox high-label" for="allortolocos">
                         <input type="checkbox" id="allortolocos" name="allortolocos">
                         Alle ortolocos (Aktuelle Anzahl: {{ ortolocos }})
                     </label>
-                    <label class="checkbox politoloco-label" for="allsingleemail">
+                    <label class="checkbox high-label" for="allsingleemail">
                         <input type="checkbox" id="allsingleemail" name="allsingleemail">
                         Nur an diese Email: <input type="text" id="singleemail" name="singleemail"/>
                     </label>
@@ -68,6 +70,18 @@
                     </div>
                     <textarea name="message" id="message" class="span5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
                     <input type="hidden" id="textMessage" name="textMessage"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="attachements">Anhänge</label>
+
+                <div class="controls" id="attachements">
+                    <div class="file-upload">
+                        <div class="file-upload-button">
+                            <input type="file" name="image-1">
+                            <button class="btn">Datei auswählen</button>
+                        </div>
+                    </div>
                     <br/><br/>
 
                     <div class="row">

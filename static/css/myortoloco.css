@@ -103,12 +103,30 @@
     background: url('/static/img/erbse_x_politoloco.png') repeat-x;
 }
 
-.politoloco-label {
+.high-label {
     line-height: 40px;
 }
 
-.politoloco-label input[type=checkbox] {
+.high-label input[type=checkbox] {
     margin-top: 15px;
+}
+
+.file-upload {
+    line-height: 30px;
+}
+
+.file-upload-button {
+    display: inline-block;
+    position: relative;
+}
+
+.file-upload-button > input[type=file] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
 }
 
 #filter-locos {

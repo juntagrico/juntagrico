@@ -107,7 +107,7 @@ def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
     send_mail_multi(msg)
 
 
-def send_filtered_mail(subject, message, text_message, emails, server):
+def send_filtered_mail(subject, message, text_message, emails, server, attachments):
     plaintext = get_template('mails/filtered_mail.txt')
     htmly = get_template('mails/filtered_mail.html')
 
@@ -127,10 +127,12 @@ def send_filtered_mail(subject, message, text_message, emails, server):
 
     msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
+    for attachment in attachments:
+        msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
 
 
-def send_politoloco_mail(subject, message, text_message, emails, server):
+def send_politoloco_mail(subject, message, text_message, emails, server, attachments):
     plaintext = get_template('mails/politoloco.txt')
     htmly = get_template('mails/politoloco.html')
 
@@ -150,6 +152,8 @@ def send_politoloco_mail(subject, message, text_message, emails, server):
 
     msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
+    for attachment in attachments:
+        msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
 
 
