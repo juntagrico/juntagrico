@@ -48,12 +48,22 @@
         </div>
         <div class="span3">
             <h5>Zukünftige Zusatz-Abos:</h5>
-            {% if loco.abo.future_extra_abos.all|length == 0 %}
-                Keine Zusatz-Abos
+            {% if not loco.abo.extra_abos_changed %}
+                {% if loco.abo.extra_abos.all|length == 0 %}
+                    Keine Zusatz-Abos
+                {% else %}
+                    {% for zusatzabo in loco.abo.extra_abos.all %}
+                        <li>{{ zusatzabo.name }}</li>
+                    {% endfor %}
+                {% endif %}
             {% else %}
-            {% for zusatzabo in loco.abo.future_extra_abos.all %}
-                <li>{{ zusatzabo.name }}</li>
-            {% endfor %}
+                {% if loco.abo.future_extra_abos.all|length == 0 %}
+                    Keine Zusatz-Abos
+                {% else %}
+                    {% for zusatzabo in loco.abo.future_extra_abos.all %}
+                        <li>{{ zusatzabo.name }}</li>
+                    {% endfor %}
+                {% endif %}
             {% endif %}
         </div>
     </div>

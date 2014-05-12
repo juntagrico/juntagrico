@@ -338,17 +338,30 @@ def my_extra_change(request, abo_id):
 
     abos = []
     for abo in ExtraAboType.objects.all():
-        if abo in request.user.loco.abo.future_extra_abos.all():
-            abos.append({
-                'id': abo.id,
-                'name': abo.name,
-                'selected': True
-            })
+        if request.user.loco.abo.extra_abos_changed:
+            if abo in request.user.loco.abo.future_extra_abos.all():
+                abos.append({
+                    'id': abo.id,
+                    'name': abo.name,
+                    'selected': True
+                })
+            else:
+                abos.append({
+                    'id': abo.id,
+                    'name': abo.name
+                })
         else:
-            abos.append({
-                'id': abo.id,
-                'name': abo.name
-            })
+            if abo in request.user.loco.abo.extra_abos.all():
+                abos.append({
+                    'id': abo.id,
+                    'name': abo.name,
+                    'selected': True
+                })
+            else:
+                abos.append({
+                    'id': abo.id,
+                    'name': abo.name
+                })
     renderdict = getBohnenDict(request)
     renderdict.update({
         'saved': saved,
