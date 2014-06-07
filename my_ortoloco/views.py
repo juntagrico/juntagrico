@@ -242,12 +242,14 @@ def my_abo(request):
 
     current_zusatzabos = request.user.loco.abo.extra_abos.all()
     future_zusatzabos = request.user.loco.abo.future_extra_abos.all()
+    zusatzabos_changed = (request.user.loco.abo.extra_abos_changed and 
+                          set(current_zusatzabos) != set(future_zusatzabos))
 
     if request.user.loco.abo:
         renderdict.update({
             'zusatzabos': current_zusatzabos,
             'future_zusatzabos': future_zusatzabos,
-            'zusatzabos_changed': set(current_zusatzabos) != set(future_zusatzabos),
+            'zusatzabos_changed': zusatzabos_changed,
             'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.abo.primary_loco.email),
             'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email,
             'next_extra_abo_date': Abo.next_extra_change_date(),
