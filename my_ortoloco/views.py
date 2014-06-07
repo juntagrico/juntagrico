@@ -273,7 +273,6 @@ def my_abo_change(request, abo_id):
     renderdict.update({
         'loco': request.user.loco,
         'change_size': month <= 10,
-        'change_extra': month != 6 and month != 12,
         'next_extra_abo_date': Abo.next_extra_change_date(),
         'next_size_date': Abo.next_size_change_date()
     })

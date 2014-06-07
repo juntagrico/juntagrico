@@ -70,14 +70,13 @@
                 <dt>Zusatzabos</dt>
                 <dd>
                     {% if zusatzabos|length == 0 %}
-                        Keine Zusatzabos > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
+                        Keine Zusatzabos
                     {% else %}
                         <ul>
                             {% for zusatzabo in zusatzabos %}
                                 <li>{{ zusatzabo.name }}</li>
                             {% endfor %}
                         </ul>
-                        > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
                     {% endif %}
                 </dd>
             {% if zusatzabos_changed %}
@@ -86,14 +85,15 @@
                 <dt>Neue Zusatzabos</dt>
                 <dd>
                     (Die Änderungen treten am {{ next_extra_abo_date |date:"d.m.Y" }} in Kraft)
-                    <ul>
-                        {% if not future_zusatzabos %}
-                            <li> Keine Zusatzabos </li>    
-                        {% endif %}
-                        {% for zusatzabo in future_zusatzabos %}
-                            <li>{{ zusatzabo.name }}</li>
-                        {% endfor %}
-                    </ul>
+                    {% if not future_zusatzabos %}
+                        <br>Keine Zusatzabos
+                    {% else %}
+                        <ul>
+                            {% for zusatzabo in future_zusatzabos %}
+                                <li>{{ zusatzabo.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </dd>
             {% endif %}
 

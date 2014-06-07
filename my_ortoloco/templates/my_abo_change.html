@@ -20,7 +20,9 @@
         <div class="span3">
             <h3>Zusatz-Abos</h3>
             <br/>
-            Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden.
+            Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
+            > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
+
         </div>
     </div>
     <br/>
@@ -77,8 +79,7 @@
             {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
         </div>
         <div class="span3">
-            <a href="/my/abo/{{ loco.abo.id }}/aendern/extra" class="btn btn-success" {% if not change_extra %}disabled="disabled"{% endif %}>Zusatz-Abos ändern</a>
-            {% if not change_extra %}* nur Januar-Mai und August-November möglich{% endif %}
+            <a href="/my/abo/{{ loco.abo.id }}/aendern/extra" class="btn btn-success">Zusatz-Abos ändern</a>
         </div>
     </div>
 {% endblock %}
