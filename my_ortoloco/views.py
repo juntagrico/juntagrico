@@ -912,6 +912,17 @@ def pip_install(request):
     res = run_in_shell(request, command)
     return res
 
+def mini_migrate_future_zusatzabos(request):
+    lst = []
+    Through = Abo.future_extra_abos.through
+
+    for abo in Abo.objects.filter(extra_abos_changed=False):
+        for extra in abo.extra_abos.all():
+            lst.append(Through(extraabotype=extra, abo=abo))
+
+    Through.objects.bulk_create(lst)
+    Abo.objects.filter(extra_abos_changed=False).update(extra_abos_changed=True)
+    return HttpResponse("See console!")
 
 def test_filters(request):
     lst = Filter.get_all()
