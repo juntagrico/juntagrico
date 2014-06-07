@@ -70,7 +70,7 @@
                 <dt>Zusatzabos</dt>
                 <dd>
                     {% if zusatzabos|length == 0 %}
-                        Du hast im Moment keine Zusatzabos. > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
+                        Keine Zusatzabos > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
                     {% else %}
                         <ul>
                             {% for zusatzabo in zusatzabos %}
@@ -80,25 +80,29 @@
                         > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
                     {% endif %}
                 </dd>
-            {% if andere_zusatzabos and loco.abo.extra_abos_changed %}
+            {% if zusatzabos_changed %}
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
                 <dt>Neue Zusatzabos</dt>
                 <dd>
-                    (Diese werden am {{ next_extra_abo_date |date:"d.m.Y" }} aktiviert)
+                    (Die Änderungen treten am {{ next_extra_abo_date |date:"d.m.Y" }} in Kraft)
                     <ul>
+                        {% if not future_zusatzabos %}
+                            <li> Keine Zusatzabos </li>    
+                        {% endif %}
                         {% for zusatzabo in future_zusatzabos %}
                             <li>{{ zusatzabo.name }}</li>
                         {% endfor %}
                     </ul>
                 </dd>
             {% endif %}
+
             {% if loco.abo.groesse != loco.abo.future_groesse %}
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
                 <dt>Neue Abogrösse</dt>
                 <dd>
-                    (Diese wird am {{ next_size_date |date:"d.m.Y" }} aktiviert)<br/>
+                    (Die Änderung tritt am {{ next_extra_abo_date |date:"d.m.Y" }} in Kraft)<br>
                     {{ loco.abo.future_groesse_name }}
                 </dd>
             {% endif %}

@@ -239,16 +239,15 @@ def my_abo(request):
     """
     renderdict = getBohnenDict(request)
     gleiche_zusatzabos = request.user.loco.abo.extra_abos.count() is request.user.loco.abo.future_extra_abos.count()
-    for extra in request.user.loco.abo.extra_abos.all():
-        contains = False
-        for future in request.user.loco.abo.future_extra_abos.all():
-            contains = contains or future.name == extra.name
-        gleiche_zusatzabos = gleiche_zusatzabos and contains
+
+    current_zusatzabos = request.user.loco.abo.extra_abos.all()
+    future_zusatzabos = request.user.loco.abo.future_extra_abos.all()
+
     if request.user.loco.abo:
         renderdict.update({
-            'zusatzabos': request.user.loco.abo.extra_abos.all(),
-            'future_zusatzabos': request.user.loco.abo.future_extra_abos.all(),
-            'andere_zusatzabos': not gleiche_zusatzabos,
+            'zusatzabos': current_zusatzabos,
+            'future_zusatzabos': future_zusatzabos,
+            'zusatzabos_changed': set(current_zusatzabos) != set(future_zusatzabos),
             'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.abo.primary_loco.email),
             'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email,
             'next_extra_abo_date': Abo.next_extra_change_date(),
