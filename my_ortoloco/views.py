@@ -912,16 +912,17 @@ def pip_install(request):
     return res
 
 def mini_migrate_future_zusatzabos(request):
-    lst = []
-    Through = Abo.future_extra_abos.through
+    new_abo_future_extra = []
+    Throughclass = Abo.future_extra_abos.through
 
-    for abo in Abo.objects.filter(extra_abos_changed=False):
+    abos = Abo.objects.filter(extra_abos_changed=False)
+    for abo in abos:
         for extra in abo.extra_abos.all():
-            lst.append(Through(extraabotype=extra, abo=abo))
+            new_abo_future_extra.append(Throughclass(extraabotype=extra, abo=abo))
 
-    Through.objects.bulk_create(lst)
-    Abo.objects.filter(extra_abos_changed=False).update(extra_abos_changed=True)
-    return HttpResponse("See console!")
+    Throughclass.objects.bulk_create(new_abo_future_extra)
+    abos.update(extra_abos_changed=True)
+    return HttpResponse("Done!")
 
 def test_filters(request):
     lst = Filter.get_all()
