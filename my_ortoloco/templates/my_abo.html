@@ -65,18 +65,21 @@
                 {{ loco.abo.depot.name }} > <a href="/my/depot/{{ loco.abo.depot.id }}">Weitere Infos zum Depot</a>
             </dd>
 
-            {% if zusatzabos|length > 0 %}
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
                 <dt>Zusatzabos</dt>
                 <dd>
-                    <ul>
-                        {% for zusatzabo in zusatzabos %}
-                            <li>{{ zusatzabo.name }}</li>
-                        {% endfor %}
-                    </ul>
+                    {% if zusatzabos|length == 0 %}
+                        Du hast im Moment keine Zusatzabos. > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
+                    {% else %}
+                        <ul>
+                            {% for zusatzabo in zusatzabos %}
+                                <li>{{ zusatzabo.name }}</li>
+                            {% endfor %}
+                        </ul>
+                        > <a href="/static/others/Infoblatt_Zusatzabos.pdf">Weitere Infos zu den Zusatzabos</a>
+                    {% endif %}
                 </dd>
-            {% endif %}
             {% if andere_zusatzabos and loco.abo.extra_abos_changed %}
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
