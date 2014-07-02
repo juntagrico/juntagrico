@@ -368,8 +368,10 @@ class Job(models.Model):
             return "erbse_fast_voll.png"
         elif pctfull >= 50:
             return "erbse_halb.png"
-        else:
+        elif pctfull >= 25:
             return "erbse_fast_leer.png"
+        else:
+            return "erbse_leer.png"
 
     class Meta:
         verbose_name = 'Job'
