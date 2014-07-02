@@ -37,7 +37,7 @@ When the database structure changes, you must perform a new migration:
 
 ## Test server
 
-Run following command to launch a server on [`http://localhost:8000`](http://localhost:8000):
+Run following command to launch a server on <http://localhost:8000>:
 
     ./manage.py runserver
 
@@ -47,8 +47,8 @@ The first time you try to login with the initial admin user you will
 encouter an error like `User has no Loco`. To create a `Loco` for this
 user, you have to activate a secret :) URL in [`url.py`](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/urls.py#L58) and call it from the browser:
 
-- [`http://localhost:8000/my/createlocoforsuperuserifnotexist`](http://localhost:8000/my/createlocoforsuperuserifnotexist)
+- <http://localhost:8000/my/createlocoforsuperuserifnotexist>
 
 Afterwards, you might have to logout with following URL:
 
-- [`http://localhost:8000/logout`](http://localhost:8000/logout)
+- <http://localhost:8000/logout>
