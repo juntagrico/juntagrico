@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<h3>Links</h3>
-	<table class="table">
-		{% for link in links %}
-			<tr>
-				<th class="link">
-					<div class="link">
-          	<a href="{{link.link}}" target="_blank">{{link.titel}} ({{link.link}})</a>
-					</div>
-					<div class="desc">
-						{{link.description}}
-					</div>
-				</th>
-			</tr>
-		{% endfor %}
-	</table>
+    <h3>Links</h3>
+    <table class="table">
+        {% for link in links %}
+            <tr>
+                <th class="link">
+                    <div class="link">
+                        <a href="{{ link.link }}" target="_blank">{{ link.titel }} ({{ link.link }})</a>
+                    </div>
+                    <div class="desc">
+                        {{ link.description }}
+                    </div>
+                </th>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
