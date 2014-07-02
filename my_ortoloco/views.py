@@ -875,12 +875,14 @@ def my_createlocoforsuperuserifnotexist(request):
     """
     just a helper to create a loco for superuser
     """
-    if request.user.is_superuser and len(Loco.objects.filter(email=request.user.email)) is 0:
+    if request.user.is_superuser:
+        signals.post_save.disconnect(Loco.create, sender=Loco)
         loco = Loco.objects.create(user=request.user, first_name="super", last_name="duper", email=request.user.email, addr_street="superstreet", addr_zipcode="8000",
                                    addr_location="SuperCity", phone="012345678")
         loco.save()
         request.user.loco = loco
         request.user.save()
+        signals.post_save.connect(Loco.create, sender=Loco)
 
 
     # we do just nothing if its not a superuser or he has already a loco
