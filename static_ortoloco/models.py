@@ -37,7 +37,6 @@ class Media(models.Model):
         verbose_name = "Media"
         verbose_name_plural = "Medien"
 
-
 class Download(models.Model):
     """
     All the downloads available on ortoloco.ch
@@ -58,11 +57,12 @@ class Link(models.Model):
     """
     All the links that are mentioned on ortoloco.ch
     """
-    name = models.CharField("Link", max_length=200)
+    titel = models.CharField("Titel", max_length=200, default="Beispieltitel")
+    link = models.CharField("Link", max_length=200, default="http://example.ch")
     description = models.CharField("Beschreibung", max_length=400)
 
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s" % (self.titel)
 
     class Meta:
         verbose_name = "Link"
