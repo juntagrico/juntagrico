@@ -19,14 +19,25 @@ Following instructions work for MacOS.
 
 ## Create DB from scratch
 
-In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (loco_app, south, photologue).
+In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (loco_app, south, photologue). Then
+run following command:
 
     ./manage.py syncdb
 
-Then, reactivate the outcommented apps above.
+Reactivate the outcommented apps above and run following commands:
 
     ./manage.py syncdb
     ./manage.py migrate
+
+You might be guided through these steps with `make createdb`.
+
+### Backup and restore local dev database
+
+With `make savedb` you can easily make a snapshot of the current local
+database file (if using `SQLite`), and restore it (i.e. the last db
+snapshot file) with `make restoredb`.
+
+You might want to look at the [`Makefile`](https://github.com/ortoloco/ortoloco/blob/master/Makefile) for more details.
 
 ### Create new migration
 
@@ -35,17 +46,22 @@ When the database structure changes, you must perform a new migration:
     ./manage.py schemamigration loco_app --auto
     ./manage.py migrate loco_app
 
+You might be guided through these steps with `make migratedb`.
+
 ## Test server
 
 Run following command to launch a server on <http://localhost:8000>:
 
     ./manage.py runserver
 
+You might run this with `make`, which will additionally open the URL
+on your browser.
+
 ### Create loco for admin user
 
 The first time you try to login with the initial admin user you will
 encouter an error like `User has no Loco`. To create a `Loco` for this
-user, you have to activate a secret :) URL in [`url.py`](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/urls.py#L58) and call it from the browser:
+user, you have to activate a secret :smile: URL in [`url.py`](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/urls.py#L58) and call it from the browser:
 
 - <http://localhost:8000/my/createlocoforsuperuserifnotexist>
 
