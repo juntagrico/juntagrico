@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from datetime import date
+from collections import defaultdict
 from StringIO import StringIO
 import string
 import random
@@ -242,7 +243,7 @@ def my_abo(request):
 
     current_zusatzabos = request.user.loco.abo.extra_abos.all()
     future_zusatzabos = request.user.loco.abo.future_extra_abos.all()
-    zusatzabos_changed = (request.user.loco.abo.extra_abos_changed and 
+    zusatzabos_changed = (request.user.loco.abo.extra_abos_changed and
                           set(current_zusatzabos) != set(future_zusatzabos))
 
     if request.user.loco.abo:
@@ -769,13 +770,25 @@ def my_mails(request):
     })
     return render(request, 'mail_sender.html', renderdict)
 
+def current_year_boehlis():
+    return Boehnli.objects.filter(job__time__year=datetime.date.today().year)
+
+def current_year_boehnlis_per_loco():
+    boehnlis = current_year_boehlis()
+    boehnlis_per_loco = defaultdict(int)
+    for boehnli in boehnlis:
+        boehnlis_per_loco[boehnli.loco] += 1
+    return boehnlis_per_loco
 
 @staff_member_required
 def my_filters(request):
-    renderdict = getBohnenDict(request)
-    renderdict.update({
-        'locos': Loco.objects.all()
-    })
+    locos = Loco.objects.all()
+    boehnlis = current_year_boehnlis_per_loco()
+    for loco in locos:
+        loco.boehnlis = boehnlis[loco]
+    renderdict = {
+        'locos': locos
+    }
     return render(request, 'filters.html', renderdict)
 
 

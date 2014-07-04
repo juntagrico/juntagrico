@@ -13,6 +13,7 @@
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Boehnlis</th>
                 <th>Taetigkeitsbereiche</th>
                 <th>Depot</th>
                 <th>Email <a data-clipboard-text="Copy Me!" id="copy-emails" href="#">alle kopieren</a></th>
@@ -24,6 +25,7 @@
             {% for loco in locos %}
                 <tr>
                     <td>{{ loco.first_name }} {{ loco.last_name }}</td>
+                    <td>{{ loco.boehnlis }}</td>
                     <td>
                         {% for bereich in loco.get_taetigkeitsbereiche %}
                             {{ bereich.name }},
