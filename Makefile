@@ -48,8 +48,8 @@ listdbs:
 	ls -lG $(DB_SQLITE_FILENAME)*
 
 migratedb: checkvenv
-	./manage.py schemamigration loco_app --auto
-	./manage.py migrate loco_app
+	./manage.py schemamigration my_ortoloco --auto
+	./manage.py migrate my_ortoloco
 
 checkdbfile:
 ifneq ("$(DB_SQLITE_FILE_PRESENT)","ok")
@@ -61,6 +61,3 @@ ifndef VIRTUAL_ENV
 	$(warning venv is not yet set up correctly for this shell)
 	$(error Run following command to enable it: source venv/bin/activate)
 endif
-
-
-# @ [ -f $(DB_SQLITE_FILENAME) ] || { echo "DB file $(DB_SQLITE_FILENAME) missing..." 1>&2; exit 1; }
