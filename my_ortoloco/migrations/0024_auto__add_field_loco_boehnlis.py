@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Loco.boehnlis'
         db.add_column(u'my_ortoloco_loco', 'boehnlis',
-                      self.gf('django.db.models.fields.DateField')(max_length=3, null=True, blank=True),
+                      self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0),
                       keep_default=False)
 
 
@@ -137,7 +137,7 @@ class Migration(SchemaMigration):
             'addr_street': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'addr_zipcode': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
             'birthday': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'boehnlis': ('django.db.models.fields.DateField', [], {'max_length': '3', 'null': 'True', 'blank': 'True'}),
+            'boehnlis': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'confirmed': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '75'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30'}),

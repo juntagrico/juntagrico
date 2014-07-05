@@ -229,7 +229,7 @@ class Loco(models.Model):
     addr_zipcode = models.CharField("PLZ", max_length=10)
     addr_location = models.CharField("Ort", max_length=50)
     birthday = models.DateField("Geburtsdatum", null=True, blank=True)
-    boehnlis = models.DateField("Boehnlis", max_length=3, null=True, blank=True)
+    boehnlis = models.PositiveSmallIntegerField("Boehnlis", default=0)
     phone = models.CharField("Telefonnr", max_length=50)
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
