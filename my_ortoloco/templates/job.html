@@ -25,7 +25,10 @@
     <br/>
     <div class="row">
         <div class="span3">Ort:</div>
-        <div class="span5">{{ job.typ.location }}</div>
+        <div class="span5">
+            {{ job.typ.location }}
+            (<a href="https://www.google.ch/maps/place/{{ job.typ.location }}" target="_blank">Karte</a>)
+        </div>
     </div>
     <br/>
     <div class="row">
