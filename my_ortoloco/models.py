@@ -369,7 +369,7 @@ class Job(models.Model):
             return "erbse_fast_voll.png"
         elif pctfull >= 50:
             return "erbse_halb.png"
-        elif pctfull >= 25:
+        elif pctfull > 0:
             return "erbse_fast_leer.png"
         else:
             return "erbse_leer.png"
