@@ -113,11 +113,16 @@ def my_job(request, job_id):
         if bohne.loco is not None:
             participants.append(bohne.loco)
 
+    slotrange = range(0, job.slots)
+    allowed_additional_participants = range(1, 1 + job.slots - len(participants))
+
     renderdict = getBohnenDict(request)
     renderdict.update({
         'participants': participants,
         'job': job,
-        'slotrange': range(0, job.slots),
+        'slotrange': slotrange,
+        'allowed_additional_participants': allowed_additional_participants,
+        'job_fully_booked': len(allowed_additional_participants) == 0,
         'error': error
     });
     return render(request, "job.html", renderdict)

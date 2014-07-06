@@ -33,25 +33,60 @@
     <div class="row">
         <div class="span3">Dabei sind:</div>
         <div class="span5">
-            <ul>
-                {% for participant in participants %}
-                    <li>{{ participant.first_name }} {{ participant.last_name }}</li>
-                {% endfor %}
-            </ul>
+            {% if participants|length == 0 %}
+                Noch niemand :(
+            {% else %}
+                <ul>
+                    {% for participant in participants %}
+                        <li>{{ participant.first_name }} {{ participant.last_name }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </div>
     </div>
     <br/>
     {% if error %}
         <div class="alert alert-error">{{ error }}</div>
     {% endif %}
-    <div class="row">
-        <div class="span3">Ich will auch:</div>
-        <div class="span5">
-            <form action="" method="POST" class="form-inline">
-                {% csrf_token %}
-                 <input type="text" class="span1" name="jobs"/> <button type="submit" class="btn btn-success">Ich schreib mich ein</button>
-            </form>
-            <div class="help-block">Anzahl Personen eintragen, die zum Einsatz kommen, z.B: 1, 2 oder 3</div>
+
+    {% if job_fully_booked %}
+        <div class="alert alert-success">Der Job ist ausgebucht, danke! Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
+    {% else %}
+        <div class="row">
+            <div class="span3">Ich trage mich ein:</div>
+            <div class="span5">
+                <form action=""
+                    method="POST"
+                    class="form-inline"
+                    onsubmit="return confirm('Möchtest du dich sicher für diesen Job verbindlich eintragen?')">
+                    {% csrf_token %}
+                    {% if allowed_additional_participants|length > 1 %}
+                        <div>
+                            <select name="jobs">
+                                {% for i in allowed_additional_participants %}
+                                    {% if i = 1 %}
+                                        <option value="1">Unbegleitet</option>
+                                    {% elif i = 2 %}
+                                        <option value="2">Zu Zweit</option>
+                                    {% elif i = 3 %}
+                                        <option value="3">Zu Dritt</option>
+                                    {% elif i = 4 %}
+                                        <option value="4">Zu Viert</option>
+                                    {% elif i < 16 %}
+                                        <option value="{{ i }}">{{ i|add:"-1" }} weitere Personen und ich</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                    {% else %}
+                        <input type="hidden" name="jobs" value="1">
+                    {% endif %}
+                    <div>
+                        <button type="submit" class="btn btn-success">Bestätigen</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}
