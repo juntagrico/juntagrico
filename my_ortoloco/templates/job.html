@@ -11,10 +11,10 @@
         <div class="span3">Status:</div>
         <div class="span5">
             {% for i in slotrange %}
-                {% if i < participants|length %}
-                    <img class="jobstatus" src="/static/img/erbse_voll.png" title="{{ participants|length }} von {{ job.slots }} gebucht"/>
+                {% if i < number_of_participants %}
+                    <img class="jobstatus" src="/static/img/erbse_voll.png" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% else %}
-                    <img class="jobstatus" src="/static/img/erbse_leer.png" title="{{ participants|length }} von {{ job.slots }} gebucht"/>
+                    <img class="jobstatus" src="/static/img/erbse_leer.png" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% endif %}
             {% endfor %}
             </div>
@@ -33,12 +33,12 @@
     <div class="row">
         <div class="span3">Dabei sind:</div>
         <div class="span5">
-            {% if participants|length == 0 %}
+            {% if number_of_participants == 0 %}
                 Noch niemand :(
             {% else %}
                 <ul>
-                    {% for participant in participants %}
-                        <li>{{ participant.first_name }} {{ participant.last_name }}</li>
+                    {% for participant in participants_summary %}
+                        <li>{{ participant }}</li>
                     {% endfor %}
                 </ul>
             {% endif %}

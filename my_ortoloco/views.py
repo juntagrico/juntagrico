@@ -82,7 +82,6 @@ def my_home(request):
 
     return render(request, "myhome.html", renderdict)
 
-
 @login_required
 def my_job(request, job_id):
     """
@@ -108,17 +107,32 @@ def my_job(request, job_id):
         else:
             error = "Ungueltige Anzahl Einschreibungen"
 
-    participants = []
-    for bohne in Boehnli.objects.filter(job_id=job.id):
-        if bohne.loco is not None:
-            participants.append(bohne.loco)
+    participants_dict = defaultdict(int)
+    boehnlis = Boehnli.objects.filter(job_id=job.id)
+    number_of_participants = len(boehnlis)
+    for boehnli in boehnlis:
+        if boehnli.loco is not None:
+            participants_dict[boehnli.loco.first_name + ' ' +  boehnli.loco.last_name] += 1
+
+    participants_summary = []
+    for loco_name, number_of_companions in participants_dict.iteritems():
+        if number_of_companions == 1:
+            participants_summary.append(loco_name)
+        elif number_of_companions == 2:
+            participants_summary.append(loco_name
+                                + ' (mit einer weiteren Person)')
+        else:
+            participants_summary.append(loco_name
+                                + ' (mit ' + str(number_of_companions - 1)
+                                + ' weiteren Personen)')
 
     slotrange = range(0, job.slots)
-    allowed_additional_participants = range(1, 1 + job.slots - len(participants))
+    allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
 
     renderdict = getBohnenDict(request)
     renderdict.update({
-        'participants': participants,
+        'number_of_participants': number_of_participants,
+        'participants_summary': participants_summary,
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
