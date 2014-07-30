@@ -238,13 +238,6 @@ class Loco(models.Model):
 
     confirmed = models.BooleanField("bestätigt", default=True)
 
-    def get_taetigkeitsbereiche(self):
-        tbs = []
-        for tb in Taetigkeitsbereich.objects.all():
-            if tb.locos.all().filter(id=self.id).__len__() > 0:
-                tbs.append(tb)
-        return tbs
-
     def __unicode__(self):
         return self.get_name()
 
