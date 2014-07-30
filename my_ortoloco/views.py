@@ -778,7 +778,8 @@ def my_mails(request):
     return render(request, 'mail_sender.html', renderdict)
 
 def current_year_boehlis():
-    return Boehnli.objects.filter(job__time__year=datetime.date.today().year)
+    now = datetime.date.today()
+    return Boehnli.objects.filter(job__time__year=now.year, job__time__lt=now)
 
 def current_year_boehnlis_per_loco():
     boehnlis = current_year_boehlis()
