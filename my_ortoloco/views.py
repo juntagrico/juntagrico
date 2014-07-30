@@ -82,6 +82,7 @@ def my_home(request):
 
     return render(request, "myhome.html", renderdict)
 
+
 @login_required
 def my_job(request, job_id):
     """
@@ -102,7 +103,7 @@ def my_job(request, job_id):
     number_of_participants = len(boehnlis)
     for boehnli in boehnlis:
         if boehnli.loco is not None:
-            participants_dict[boehnli.loco.first_name + ' ' +  boehnli.loco.last_name] += 1
+            participants_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name] += 1
 
     participants_summary = []
     for loco_name, number_of_companions in participants_dict.iteritems():
@@ -112,8 +113,8 @@ def my_job(request, job_id):
             participants_summary.append(loco_name + ' (mit einer weiteren Person)')
         else:
             participants_summary.append(loco_name
-                                + ' (mit ' + str(number_of_companions - 1)
-                                + ' weiteren Personen)')
+                                        + ' (mit ' + str(number_of_companions - 1)
+                                        + ' weiteren Personen)')
 
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
@@ -777,9 +778,11 @@ def my_mails(request):
     })
     return render(request, 'mail_sender.html', renderdict)
 
+
 def current_year_boehlis():
     now = datetime.date.today()
     return Boehnli.objects.filter(job__time__year=now.year, job__time__lt=now)
+
 
 def current_year_boehnlis_per_loco():
     boehnlis = current_year_boehlis()
@@ -788,15 +791,18 @@ def current_year_boehnlis_per_loco():
         boehnlis_per_loco[boehnli.loco] += 1
     return boehnlis_per_loco
 
+
 @staff_member_required
 def my_filters(request):
     locos = Loco.objects.all()
     boehnlis = current_year_boehnlis_per_loco()
     for loco in locos:
         loco.boehnlis = boehnlis[loco]
-    renderdict = {
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
         'locos': locos
-    }
+    })
     return render(request, 'filters.html', renderdict)
 
 
@@ -934,6 +940,7 @@ def pip_install(request):
     res = run_in_shell(request, command)
     return res
 
+
 def mini_migrate_future_zusatzabos(request):
     new_abo_future_extra = []
     Throughclass = Abo.future_extra_abos.through
@@ -946,6 +953,7 @@ def mini_migrate_future_zusatzabos(request):
     Throughclass.objects.bulk_create(new_abo_future_extra)
     abos.update(extra_abos_changed=True)
     return HttpResponse("Done!")
+
 
 def test_filters(request):
     lst = Filter.get_all()
