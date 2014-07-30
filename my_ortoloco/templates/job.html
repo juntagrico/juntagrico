@@ -51,10 +51,6 @@
         </div>
     </div>
     <br/>
-    {% if error %}
-        <div class="alert alert-error">{{ error }}</div>
-    {% endif %}
-
     {% if job_fully_booked %}
         <div class="alert alert-success">Der Job ist ausgebucht, danke! Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
     {% else %}

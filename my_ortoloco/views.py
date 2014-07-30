@@ -90,22 +90,12 @@ def my_job(request, job_id):
     loco = request.user.loco
     job = get_object_or_404(Job, id=int(job_id))
 
-    def check_int(s):
-        if s[0] in ('-', '+'):
-            return s[1:].isdigit()
-        return s.isdigit()
-
-    error = None
     if request.method == 'POST':
         num = request.POST.get("jobs")
-        my_bohnen = job.boehnli_set.all().filter(loco=loco)
-        if check_int(num) and 0 < int(num) <= job.freie_plaetze():
-            # adding participants
-            add = int(num)
-            for i in range(add):
-                bohne = Boehnli.objects.create(loco=loco, job=job)
-        else:
-            error = "Ungueltige Anzahl Einschreibungen"
+        # adding participants
+        add = int(num)
+        for i in range(add):
+            Boehnli.objects.create(loco=loco, job=job)
 
     participants_dict = defaultdict(int)
     boehnlis = Boehnli.objects.filter(job_id=job.id)
@@ -119,8 +109,7 @@ def my_job(request, job_id):
         if number_of_companions == 1:
             participants_summary.append(loco_name)
         elif number_of_companions == 2:
-            participants_summary.append(loco_name
-                                + ' (mit einer weiteren Person)')
+            participants_summary.append(loco_name + ' (mit einer weiteren Person)')
         else:
             participants_summary.append(loco_name
                                 + ' (mit ' + str(number_of_companions - 1)
@@ -136,8 +125,7 @@ def my_job(request, job_id):
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
-        'job_fully_booked': len(allowed_additional_participants) == 0,
-        'error': error
+        'job_fully_booked': len(allowed_additional_participants) == 0
     });
     return render(request, "job.html", renderdict)
 
