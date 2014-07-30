@@ -29,6 +29,8 @@
                     <td>
                         {% for bereich in loco.get_taetigkeitsbereiche %}
                             {{ bereich.name }},
+                        {% empty %}
+                            -Kein Tätigkeitsbereich-
                         {% endfor %}
                     </td>
                     <td>{{ loco.abo.depot.name }}</td>
@@ -46,8 +48,10 @@
     <script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
     <script type="text/javascript">
         var dable = new Dable("filter-locos");
+
         dable.UpdateDisplayedRows();        // Update the table
         dable.UpdateStyle();                // Reapply our styles
+
 
         var client = new ZeroClipboard(document.getElementById("copy-emails"), {
             moviePath: "/static/others/ZeroClipboard.swf"
