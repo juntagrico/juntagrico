@@ -27,7 +27,7 @@
                     <td>{{ loco.first_name }} {{ loco.last_name }}</td>
                     <td>{{ loco.boehnlis }}</td>
                     <td>
-                        {% for bereich in loco.get_taetigkeitsbereiche %}
+                        {% for bereich in loco.taetigkeitsbereich_set.all %}
                             {{ bereich.name }},
                         {% empty %}
                             -Kein Tätigkeitsbereich-
@@ -65,7 +65,7 @@
         setInterval(function () {
             var emails = [];
             $("#filter-locos tr").each(function () {
-                var txt = $("td:eq(3)", this).text();
+                var txt = $("td:eq(4)", this).text();
                 if (txt)
                     emails.push(txt);
             });
