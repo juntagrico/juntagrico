@@ -24,6 +24,7 @@ urlpatterns = patterns('',
 	url('^galerie$', RedirectView.as_view(url='/photologue/gallery/page/1/')),
     url('^medien$', 'static_ortoloco.views.media'),
     url('^links$', 'static_ortoloco.views.links'),
+    url('^dokumente$', 'static_ortoloco.views.documents'),
     url('^kontakt$', 'static_ortoloco.views.contact'),
 
     #url('^myortoloco/', 'my_ortoloco.views.myortoloco_home'),

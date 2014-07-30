@@ -156,6 +156,22 @@ def links(request):
     return render(request, "links.html", renderdict)
 
 
+def documents(request):
+    """
+    Documents of Ortoloco
+    """
+    documents_list = Document.objects.all().reverse()
+
+    renderdict = {
+        'menu': {
+            'documents': 'active'
+        },
+        'documents': documents_list,
+    }
+
+    return render(request, "documents.html", renderdict)
+
+
 def downloads(request):
     """
     Downloads available

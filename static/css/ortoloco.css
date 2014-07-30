@@ -210,7 +210,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 }
 
 /* links */
-.link .desc {
+.link .desc, .document .desc {
     padding-top: 5px;
     padding-left: 35px;
     background: url(/static/img/erbse_y.png) no-repeat left -88px;

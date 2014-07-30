@@ -69,6 +69,22 @@ class Link(models.Model):
         verbose_name_plural = "Links"
 
 
+class Document(models.Model):
+    """
+    All the documents that are available on ortoloco.ch
+    """
+    title = models.CharField("Titel", max_length=200, default="Beispieltitel")
+    document = models.FileField("Dokument", upload_to='documents')
+    description = models.CharField("Beschreibung", max_length=400)
+
+    def __unicode__(self):
+        return u"%s" % (self.title)
+
+    class Meta:
+        verbose_name = "Dokument"
+        verbose_name_plural = "Dokumente"
+
+
 class Politoloco(models.Model):
     email = models.EmailField("E-Mail Adresse")
 
