@@ -27,7 +27,7 @@
                     <td>{{ loco.first_name }} {{ loco.last_name }}</td>
                     <td>{{ loco.boehnlis }}</td>
                     <td>
-                        {% for bereich in loco.taetigkeitsbereich_set.all %}
+                        {% for bereich in loco.areas.all %}
                             {{ bereich.name }},
                         {% empty %}
                             -Kein Tätigkeitsbereich-
