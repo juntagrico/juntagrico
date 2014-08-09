@@ -6,6 +6,15 @@ from static_ortoloco.models import *
 
 # Create your views here.
 
+
+def getBaseDict(request):
+    return {
+        'hasDocuments': Document.objects.count() > 0,
+        'hasLinks': Link.objects.count() > 0,
+        'hasMedias': Link.objects.count() > 0
+    }
+
+
 def home(request):
     """
     Homepage of "static" page
@@ -17,13 +26,14 @@ def home(request):
     if StaticContent.objects.all().filter(name='Willkommen').__len__() > 0:
         welcome_text = StaticContent.objects.all().filter(name='Willkommen')[0].content
 
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'submenu': submenu,
         'welcomeText': welcome_text,
         'menu': {
             'home': 'active'
         }
-    }
+    })
 
     return render(request, "home.html", renderdict)
 
@@ -33,12 +43,13 @@ def about(request):
     About ortoloco of "static" page
     """
 
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'about': 'active',
             'aboutChild': 'active'
         }
-    }
+    })
 
     return render(request, "about.html", renderdict)
 
@@ -47,12 +58,13 @@ def portrait(request):
     """
     About ortoloco of "static" page
     """
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'about': 'active',
             'portrait': 'active'
         }
-    }
+    })
 
     return render(request, "portrait.html", renderdict)
 
@@ -61,12 +73,13 @@ def background(request):
     """
     About ortoloco of "static" page
     """
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'about': 'active',
             'background': 'active'
         }
-    }
+    })
 
     return render(request, "background.html", renderdict)
 
@@ -75,12 +88,13 @@ def abo(request):
     """
     About ortoloco of "static" page
     """
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'about': 'active',
             'abo': 'active'
         }
-    }
+    })
 
     return render(request, "abo.html", renderdict)
 
@@ -89,12 +103,13 @@ def faq(request):
     """
     FAQ ortoloco of "static" page
     """
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'about': 'active',
             'faq': 'active'
         }
-    }
+    })
 
     return render(request, "faq.html", renderdict)
 
@@ -103,11 +118,12 @@ def join(request):
     """
     About ortoloco of "static" page
     """
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'join': 'active'
         }
-    }
+    })
 
     return render(request, "join.html", renderdict)
 
@@ -130,12 +146,13 @@ def media(request):
             first = False
             first_year = media.year
 
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'media': 'active'
         },
         'medias': medias_list,
-    }
+    })
 
     return render(request, "media.html", renderdict)
 
@@ -146,12 +163,13 @@ def links(request):
     """
     links_list = Link.objects.all().reverse()
 
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'links': 'active'
         },
         'links': links_list,
-    }
+    })
 
     return render(request, "links.html", renderdict)
 
@@ -162,12 +180,13 @@ def documents(request):
     """
     documents_list = Document.objects.all().reverse()
 
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'documents': 'active'
         },
         'documents': documents_list,
-    }
+    })
 
     return render(request, "documents.html", renderdict)
 
@@ -178,12 +197,13 @@ def downloads(request):
     """
     download_list = Download.objects.all().reverse()
 
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'downloads': 'active'
         },
         'downloads': download_list,
-    }
+    })
 
     return render(request, "downloads.html", renderdict)
 
@@ -213,7 +233,8 @@ def contact(request):
             failure = 1
             message = 'E-Mail Adresse ungueltig'
 
-    renderdict = {
+    renderdict = getBaseDict(request)
+    renderdict.update({
         'menu': {
             'contact': 'active',
         },
@@ -221,6 +242,6 @@ def contact(request):
         'success': success,
         'failure': failure,
         'message': message
-    }
+    })
 
     return render(request, "contact.html", renderdict)

@@ -32,8 +32,8 @@
                                     <span class="activeItem">&lt;</span></a></li>
                                 <li class="{{ menu.abo }}"><a href="/abo">&raquo; Das Gemüse-Abo <span
                                         class="activeItem">&lt;</span></a></li>
-                                <li class="{{ menu.faq }}"><a href="/faq">&raquo; Häufige Fragen <span
-                                        class="activeItem">&lt;</span></a></li>
+                                {#                                <li class="{{ menu.faq }}"><a href="/faq">&raquo; Häufige Fragen <span#}
+                                {#                                        class="activeItem">&lt;</span></a></li>#}
                             </ul>
                         {% endif %}
                     </li>
@@ -43,15 +43,21 @@
                     <li class="{{ menu.gallery }}">
                         <a href="/galerie">Bilder <span class="activeItem">&lt;</span></a>
                     </li>
-                    <li class="{{ menu.media }}">
-                        <a href="/medien">Medienecho <span class="activeItem">&lt;</span></a>
-                    </li>
-                    <li class="{{ menu.links }}">
-                        <a href="/links">Links <span class="activeItem">&lt;</span></a>
-                    </li>
-                    <li class="{{ menu.documents }}">
-                        <a href="/dokumente">Dokumente <span class="activeItem">&lt;</span></a>
-                    </li>
+                    {% if hasMedias %}
+                        <li class="{{ menu.media }}">
+                            <a href="/medien">Medienecho <span class="activeItem">&lt;</span></a>
+                        </li>
+                    {% endif %}
+                    {% if hasLinks %}
+                        <li class="{{ menu.links }}">
+                            <a href="/links">Links <span class="activeItem">&lt;</span></a>
+                        </li>
+                    {% endif %}
+                    {% if hasDocuments %}
+                        <li class="{{ menu.documents }}">
+                            <a href="/dokumente">Dokumente <span class="activeItem">&lt;</span></a>
+                        </li>
+                    {% endif %}
                     <li class="{{ menu.contact }}">
                         <a href="/kontakt">Kontakt <span class="activeItem">&lt;</span></a>
                     </li>
