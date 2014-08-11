@@ -28,7 +28,7 @@
                     <td>{{ abo.abo.depot.name }}</td>
                     <td>{{ abo.boehnlis }} <img alt="Status Erbse" src="/static/img/{{ abo.icon }}"/> {{ abo.text }}</td>
                     <td>{% if abo.abo.active %}<img alt="Volle Erbse" src="/static/img/erbse_voll.png"/> Aktiv{% else %}<img alt="Volle Erbse" src="/static/img/erbse_leer.png"/> Wartend{% endif %}</td>
-                    <td>{% for bezieher in abo.abo.bezieher_locos %}{{ bezieher.user.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td>{% for bezieher in abo.abo.bezieher_locos %}{{ bezieher.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>
             {% endfor %}
             </tbody>

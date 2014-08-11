@@ -118,7 +118,7 @@ def get_status_bean(percent=0):
 
 def get_status_bean_text(percent=0):
         if percent >= 100:
-            return "Voll"
+            return "Fertig"
         elif percent >= 75:
             return "Dreiviertel"
         elif percent >= 50:

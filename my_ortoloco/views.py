@@ -814,11 +814,12 @@ def my_abos(request):
         boehnlis = 0
         for loco in abo.bezieher_locos():
             boehnlis += boehnli_map[loco]
+
         abos.append({
             'abo': abo,
-            'text': get_status_bean_text(100 / (abo.groesse * 10) * boehnlis),
+            'text': get_status_bean_text(100 / (abo.groesse * 10) * boehnlis if abo.groesse > 0 else 0),
             'boehnlis': boehnlis,
-            'icon': helpers.get_status_bean(100 / (abo.groesse * 10) * boehnlis)
+            'icon': helpers.get_status_bean(100 / (abo.groesse * 10) * boehnlis if abo.groesse > 0 else 0)
         })
 
     renderdict = getBohnenDict(request)
