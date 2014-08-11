@@ -807,6 +807,29 @@ def my_filters(request):
 
 
 @staff_member_required
+def my_abos(request):
+    boehnli_map = current_year_boehnlis_per_loco()
+    abos = []
+    for abo in Abo.objects.filter():
+        boehnlis = 0
+        for loco in abo.bezieher_locos():
+            boehnlis += boehnli_map[loco]
+        abos.append({
+            'abo': abo,
+            'text': get_status_bean_text(100 / (abo.groesse * 10) * boehnlis),
+            'boehnlis': boehnlis,
+            'icon': helpers.get_status_bean(100 / (abo.groesse * 10) * boehnlis)
+        })
+
+    renderdict = getBohnenDict(request)
+    renderdict.update({
+        'abos': abos
+    })
+
+    return render(request, 'abos.html', renderdict)
+
+
+@staff_member_required
 def my_depotlisten(request):
     return alldepots_list(request, "")
 

@@ -104,4 +104,26 @@ def run_in_shell(request, command_string, input=None):
            "%s\n") % (command_string, out, err)
     return HttpResponse(res, content_type="text/plain")
 
+def get_status_bean(percent=0):
+        if percent >= 100:
+            return "erbse_voll.png"
+        elif percent >= 75:
+            return "erbse_fast_voll.png"
+        elif percent >= 50:
+            return "erbse_halb.png"
+        elif percent > 0:
+            return "erbse_fast_leer.png"
+        else:
+            return "erbse_leer.png"
 
+def get_status_bean_text(percent=0):
+        if percent >= 100:
+            return "Voll"
+        elif percent >= 75:
+            return "Dreiviertel"
+        elif percent >= 50:
+            return "Halb"
+        elif percent > 0:
+            return "Angefangen"
+        else:
+            return "Nix"

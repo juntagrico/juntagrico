@@ -1,7 +1,7 @@
 {% extends "mybase.html" %}
 
 {% block content %}
-    <h3>Alle locas und locos im Überblick</h3>
+    <h3>Alle Abos im Überblick</h3>
     <style>
         .container {
             width: 1200px;
@@ -12,31 +12,23 @@
         <table class="list" style="display: table;">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Boehnlis</th>
-                <th>Taetigkeitsbereiche</th>
+                <th>Hauptloco</th>
+                <th>Weitere Locos</th>
                 <th>Depot</th>
-                <th>Email <a data-clipboard-text="Copy Me!" id="copy-emails" href="#">alle kopieren</a></th>
-                <th>Telefon</th>
-                <th>Mobile</th>
+                <th>Bohnen</th>
+                <th>Aktiv</th>
+                <th>Emails <a data-clipboard-text="Copy Me!" id="copy-emails" href="#">alle kopieren</a></th>
             </tr>
             </thead>
             <tbody>
-            {% for loco in locos %}
+            {% for abo in abos %}
                 <tr>
-                    <td>{{ loco.first_name }} {{ loco.last_name }}</td>
-                    <td>{{ loco.boehnlis }}</td>
-                    <td>
-                        {% for bereich in loco.areas.all %}
-                            {{ bereich.name }},
-                        {% empty %}
-                            -Kein Tätigkeitsbereich-
-                        {% endfor %}
-                    </td>
-                    <td>{{ loco.abo.depot.name }}</td>
-                    <td class="email">{{ loco.email }}</td>
-                    <td>{{ loco.phone }}</td>
-                    <td>{{ loco.mobile_phone }}</td>
+                    <td>{{ abo.abo.primary_loco.first_name }} {{ abo.abo.primary_loco.last_name }}</td>
+                    <td>{{ abo.abo.bezieher }}</td>
+                    <td>{{ abo.abo.depot.name }}</td>
+                    <td>{{ abo.boehnlis }} <img alt="Status Erbse" src="/static/img/{{ abo.icon }}"/> {{ abo.text }}</td>
+                    <td>{% if abo.abo.active %}<img alt="Volle Erbse" src="/static/img/erbse_voll.png"/> Aktiv{% else %}<img alt="Volle Erbse" src="/static/img/erbse_leer.png"/> Wartend{% endif %}</td>
+                    <td>{% for bezieher in abo.abo.bezieher_locos %}{{ bezieher.user.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -65,7 +57,7 @@
         setInterval(function () {
             var emails = [];
             $("#filter-table tr").each(function () {
-                var txt = $("td:eq(4)", this).text();
+                var txt = $("td:eq(5)", this).text();
                 if (txt)
                     emails.push(txt);
             });

@@ -5,7 +5,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
 from django.core import validators
-from django.core.exceptions import ValidationError
 import time
 from django.db.models import Q
 
@@ -354,18 +353,7 @@ class Job(models.Model):
 
     def get_status_bohne(self):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
-        participants = boehnlis.count()
-        pctfull = participants * 100 / self.slots
-        if pctfull >= 100:
-            return "erbse_voll.png"
-        elif pctfull >= 75:
-            return "erbse_fast_voll.png"
-        elif pctfull >= 50:
-            return "erbse_halb.png"
-        elif pctfull > 0:
-            return "erbse_fast_leer.png"
-        else:
-            return "erbse_leer.png"
+        return helpers.get_status_bean(boehnlis.count() * 100 / self.slots)
 
     class Meta:
         verbose_name = 'Job'
