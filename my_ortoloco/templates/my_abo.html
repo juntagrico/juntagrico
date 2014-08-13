@@ -8,7 +8,7 @@
         <dl class="dl-horizontal">
             <dt>Abogrösse</dt>
             <dd>
-                {{ loco.abo.groesse_name }}
+                {{ loco.abo.size_name }}
             </dd>
             <dt>&nbsp;</dt>
             <dd>&nbsp;</dd>
@@ -97,13 +97,13 @@
                 </dd>
             {% endif %}
 
-            {% if loco.abo.groesse != loco.abo.future_groesse %}
+            {% if loco.abo.size != loco.abo.future_size %}
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
                 <dt>Neue Abogrösse</dt>
                 <dd>
                     (Die Änderung tritt am {{ next_extra_abo_date |date:"d.m.Y" }} in Kraft)<br>
-                    {{ loco.abo.future_groesse_name }}
+                    {{ loco.abo.future_size_name }}
                 </dd>
             {% endif %}
         </dl>

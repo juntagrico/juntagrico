@@ -512,7 +512,7 @@ class Command(BaseCommand):
                                 "end "
                                 "end "
                                 "end "
-                                "end as groesse, "
+                                "end as size, "
                                 "p1.name as abomitname, "
                                 "p1.vorname as abomitvorname, "
                                 "p1.email as abomitemail "
@@ -534,7 +534,7 @@ class Command(BaseCommand):
 
         for row in query:
             abopid, anteilschein, abostr, abomitpid, timestamp, last_name, first_name, email, \
-            description, groesse, abomitname, abomitvorname, abomitemail = self.decode_row(row)
+            description, size, abomitname, abomitvorname, abomitemail = self.decode_row(row)
 
             if abomitemail is not None:
                 primary_to_all[email].append(abomitemail)
@@ -556,7 +556,7 @@ class Command(BaseCommand):
 
             abo = Abo(depot_id=depotidlookup.id,
                       primary_loco_id=locoidlookup.id,
-                      groesse=groesse,
+                      size=size,
                       active=True)
 
             new_abos.append(abo)

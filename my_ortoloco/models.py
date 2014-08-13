@@ -41,10 +41,10 @@ class Depot(models.Model):
         return day
 
     def small_abos(self):
-        return len(self.active_abos().filter(Q(groesse=1) | Q(groesse=3)))
+        return len(self.active_abos().filter(Q(size=1) | Q(size=3)))
 
     def big_abos(self):
-        return len(self.active_abos().filter(Q(groesse=2) | Q(groesse=3) | Q(groesse=4))) + len(self.active_abos().filter(groesse=4))
+        return len(self.active_abos().filter(Q(size=2) | Q(size=3) | Q(size=4))) + len(self.active_abos().filter(size=4))
 
     def vier_eier(self):
         eier = 0
@@ -113,8 +113,8 @@ class Abo(models.Model):
     One Abo that may be shared among several people.
     """
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
-    groesse = models.PositiveIntegerField(default=1)
-    future_groesse = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
+    size = models.PositiveIntegerField(default=1)
+    future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
     extra_abos_changed = models.BooleanField(default=False)
     future_extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True, related_name="future_extra_abos")
@@ -123,7 +123,7 @@ class Abo(models.Model):
     active = models.BooleanField(default=False)
 
     def __unicode__(self):
-        namelist = ["1 Einheit" if self.groesse == 1 else "%d Einheiten" % self.groesse]
+        namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.name for extra in self.extra_abos.all())
         return u"Abo (%s) %s" % (" + ".join(namelist), self.id)
 
@@ -143,10 +143,10 @@ class Abo(models.Model):
         return unicode(loco) if loco is not None else ""
 
     def haus_abos(self):
-        return int(self.groesse / 10)
+        return int(self.size / 10)
 
     def grosse_abos(self):
-        return int((self.groesse % 10) / 2)
+        return int((self.size % 10) / 2)
 
     @staticmethod
     def next_extra_change_date():
@@ -176,14 +176,14 @@ class Abo(models.Model):
         else:
             return "Kein Abo"
 
-    def groesse_name(self):
-        return Abo.size_name(self.groesse)
+    def size_name(self):
+        return Abo.size_name(self.size)
 
-    def future_groesse_name(self):
-        return Abo.size_name(self.future_groesse)
+    def future_size_name(self):
+        return Abo.size_name(self.future_size)
 
     def kleine_abos(self):
-        return self.groesse % 2
+        return self.size % 2
 
     def vier_eier(self):
         return len(self.extra_abos.all().filter(description="Eier 4er Pack")) > 0

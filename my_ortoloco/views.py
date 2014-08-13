@@ -40,7 +40,7 @@ def getBohnenDict(request):
         for bohne in allebohnen:
             if bohne.job.time.year == date.today().year and bohne.job.time < datetime.datetime.now():
                 userbohnen.append(bohne)
-        bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.groesse * 10 / loco.abo.locos.count()))
+        bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.size * 10 / loco.abo.locos.count()))
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
             if bohne.job.time > datetime.datetime.now():
@@ -555,9 +555,9 @@ def my_createabo(request):
     """
     loco = request.user.loco
     scheineerror = False
-    if loco.abo is None or loco.abo.groesse is 1:
+    if loco.abo is None or loco.abo.size is 1:
         selectedabo = "small"
-    elif loco.abo.groesse is 2:
+    elif loco.abo.size is 2:
         selectedabo = "big"
     else:
         selectedabo = "house"
@@ -586,7 +586,7 @@ def my_createabo(request):
             if loco.abo is None:
                 loco.abo = Abo.objects.create(groesse=groesse, primary_loco=loco, depot=depot)
             else:
-                loco.abo.groesse = groesse
+                loco.abo.size = groesse
                 loco.abo.depot = depot
             loco.abo.save()
             loco.save()
@@ -817,9 +817,9 @@ def my_abos(request):
 
         abos.append({
             'abo': abo,
-            'text': get_status_bean_text(100 / (abo.groesse * 10) * boehnlis if abo.groesse > 0 else 0),
+            'text': get_status_bean_text(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0),
             'boehnlis': boehnlis,
-            'icon': helpers.get_status_bean(100 / (abo.groesse * 10) * boehnlis if abo.groesse > 0 else 0)
+            'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
         })
 
     renderdict = getBohnenDict(request)
