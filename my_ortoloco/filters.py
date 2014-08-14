@@ -74,9 +74,9 @@ Filter("Anteilscheinbesitzer",
 Filter("Nicht Anteilscheinbesitzer",
        lambda loco: not loco.user.anteilschein_set.exists())
 
-Filter("kleines Abo", lambda loco: loco.abo.kleine_abos())
-Filter("grosses Abo", lambda loco: loco.abo.grosse_abos())
-Filter("Hausabo", lambda loco: loco.abo.haus_abos())
+Filter("kleines Abo", lambda loco: loco.abo.small_abos())
+Filter("grosses Abo", lambda loco: loco.abo.big_abos())
+Filter("Hausabo", lambda loco: loco.abo.house_abos())
 
 
 FilterGen(lambda za: u"Zusatzabo {0}".format(za.name),

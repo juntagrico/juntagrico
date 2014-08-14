@@ -138,15 +138,18 @@ class Abo(models.Model):
     def bezieher_locos(self):
         return self.locos.all()
 
-    def verantwortlicher_bezieher(self):
+    def primary_loco_nullsave(self):
         loco = self.primary_loco
         return unicode(loco) if loco is not None else ""
 
-    def haus_abos(self):
-        return int(self.size / 10)
+    def small_abos(self):
+        return self.size % 2
 
-    def grosse_abos(self):
+    def big_abos(self):
         return int((self.size % 10) / 2)
+
+    def house_abos(self):
+        return int(self.size / 10)
 
     @staticmethod
     def next_extra_change_date():
@@ -162,7 +165,7 @@ class Abo(models.Model):
         return datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
 
     @staticmethod
-    def size_name(size):
+    def get_size_name(size=0):
         if size == 1:
             return "Kleines Abo"
         elif size == 2:
@@ -177,13 +180,10 @@ class Abo(models.Model):
             return "Kein Abo"
 
     def size_name(self):
-        return Abo.size_name(self.size)
+        return Abo.get_size_name(size=self.size)
 
     def future_size_name(self):
-        return Abo.size_name(self.future_size)
-
-    def kleine_abos(self):
-        return self.size % 2
+        return Abo.get_size_name(size=self.future_size)
 
     def vier_eier(self):
         return len(self.extra_abos.all().filter(description="Eier 4er Pack")) > 0
