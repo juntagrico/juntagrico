@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         # delete in correct order to avoid triggering protection
         Job.objects.all().delete()
-        JobTyp.objects.all().delete()
+        JobType.objects.all().delete()
         Taetigkeitsbereich.objects.all().delete()
 
         # delete all users except super

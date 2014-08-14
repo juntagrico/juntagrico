@@ -319,5 +319,5 @@ admin.site.register(Anteilschein, AnteilscheinAdmin)
 # Not adding this because it can and should be edited from Job, 
 # where integrity constraints are checked
 #admin.site.register(Boehnli, BoehnliAdmin)
-admin.site.register(JobTyp)
+admin.site.register(JobType)
 admin.site.register(Job, JobAdmin)

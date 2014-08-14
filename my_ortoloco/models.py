@@ -300,7 +300,7 @@ class Taetigkeitsbereich(models.Model):
         verbose_name_plural = 'Tätigkeitsbereiche'
 
 
-class JobTyp(models.Model):
+class JobType(models.Model):
     """
     Recurring type of job.
     """
@@ -325,7 +325,7 @@ class JobTyp(models.Model):
 
 
 class Job(models.Model):
-    typ = models.ForeignKey(JobTyp, on_delete=models.PROTECT)
+    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
     pinned = models.BooleanField(default=False)

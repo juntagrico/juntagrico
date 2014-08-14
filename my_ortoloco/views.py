@@ -386,7 +386,7 @@ def my_team(request, bereich_id):
     Details for a team
     """
 
-    job_types = JobTyp.objects.all().filter(bereich=bereich_id)
+    job_types = JobType.objects.all().filter(bereich=bereich_id)
 
     jobs = get_current_jobs().filter(typ=job_types)
 

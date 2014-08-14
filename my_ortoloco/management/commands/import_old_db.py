@@ -422,7 +422,7 @@ class Command(BaseCommand):
             start = datetime.datetime.fromtimestamp(int(start))
 
             try:
-                typ = JobTyp.objects.get(name__iexact=name)
+                typ = JobType.objects.get(name__iexact=name)
             except Exception:
                 print "No jobtyp with name %s" % name
                 continue

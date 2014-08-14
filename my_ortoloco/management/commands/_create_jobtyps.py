@@ -127,5 +127,5 @@ jobtyps = [
 def create_jobtyps():
     for d in jobtyps:
         d["bereich"] = Taetigkeitsbereich.objects.get(name=d["bereich"])
-        obj = JobTyp(**d)
+        obj = JobType(**d)
         obj.save()
