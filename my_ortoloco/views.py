@@ -40,7 +40,9 @@ def getBohnenDict(request):
         for bohne in allebohnen:
             if bohne.job.time.year == date.today().year and bohne.job.time < datetime.datetime.now():
                 userbohnen.append(bohne)
-        bohnenrange = range(0, max(userbohnen.__len__(), loco.abo.size * 10 / loco.abo.locos.count()))
+        # amount of beans shown => round up if needed never down
+        bohnenrange = range(0, max(userbohnen.__len__(), int(round(loco.abo.size * 10 / loco.abo.locos.count() + 0.5))))
+        print loco.abo.size
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
             if bohne.job.time > datetime.datetime.now():
@@ -314,13 +316,13 @@ def my_size_change(request, abo_id):
     """
     saved = False
     if request.method == "POST":
-        request.user.loco.abo.future_groesse = int(request.POST.get("abo"))
+        request.user.loco.abo.future_size = int(request.POST.get("abo"))
         request.user.loco.abo.save()
         saved = True
     renderdict = getBohnenDict(request)
     renderdict.update({
         'saved': saved,
-        'groesse': request.user.loco.abo.future_groesse
+        'size': request.user.loco.abo.future_size
     })
     return render(request, "my_size_change.html", renderdict)
 

@@ -7,7 +7,6 @@
             width: 1200px;
         }
     </style>
-    <script src="../../static/js/ZeroClipboard.min.js" type="text/javascript"></script>
     <div id="filter-table">
         <table class="list" style="display: table;">
             <thead>
@@ -36,32 +35,11 @@
     </div>
     <br/><br/>
 
-    <script type="text/javascript" src="/static/js/dable.js"></script>
-    <script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
-    <script type="text/javascript">
-        var dable = new Dable("filter-table");
+{% endblock %}
 
-        dable.UpdateDisplayedRows();        // Update the table
-        dable.UpdateStyle();                // Reapply our styles
-
-
-        var client = new ZeroClipboard(document.getElementById("copy-emails"), {
-            moviePath: "/static/others/ZeroClipboard.swf"
-        });
-
-        client.on("load", function (client) {
-            client.on("complete", function (client, args) {
-                alert("Copied text to clipboard: " + args.text);
-            });
-        });
-        setInterval(function () {
-            var emails = [];
-            $("#filter-table tr").each(function () {
-                var txt = $("td:eq(5)", this).text();
-                if (txt)
-                    emails.push(txt);
-            });
-            client.setText(emails.join(", "));
-        }, 200);
-    </script>
+{% block scripts %}
+    <script src="../../static/js/libs/ZeroClipboard.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/static/js/libs/dable.js"></script>
+    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyAbos.js"></script>
 {% endblock %}

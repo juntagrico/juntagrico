@@ -6,25 +6,6 @@
     {% if sent > 0 %}
         <div class="alert alert-success">Email wurde an {{ sent }} Empfänger verschickt.</div>
     {% else %}
-        <script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
-        <script type="text/javascript" src="/static/js/attachment_appender.js"></script>
-        <script type="text/javascript" src="/static/js/tinymce/tinymce.min.js"></script>
-        <script type="text/javascript">
-            tinymce.init({
-                selector: "textarea",
-                'theme': "modern",
-                'plugins': 'link',
-                'relative_urls': false,
-                "valid_styles": {
-                    '*': 'color,text-align,font-size,font-weight,font-style,text-decoration'
-                },
-                menu: {
-                    edit: {title: 'Edit', items: 'undo redo | cut copy paste | selectall'},
-                    insert: {title: 'Insert', items: 'link'},
-                    format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'}
-                }
-            });
-        </script>
         <form action="/my/mails" method="POST" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="control-group">
@@ -88,14 +69,14 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-success">Nachricht verschicken</button>
-                <script type="text/javascript">
-                    $("button.btn-success").click(function () {
-                        var editor = tinyMCE.get('message');
-                        editor.selection.select(editor.getBody(), true);
-                        $("#textMessage").val(editor.selection.getContent({format: 'text'}));
-                    })
-                </script>
             </div>
         </form>
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/attachment_appender.js"></script>
+    <script type="text/javascript" src="/static/js/libs/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyMailer.js"></script>
 {% endblock %}

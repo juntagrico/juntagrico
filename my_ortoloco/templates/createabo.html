@@ -112,23 +112,6 @@
 
                         <input type="text" name="scheine" id="scheine" class="span1"/><br/>
                         Du kannst unbeschränkt und jederzeit Anteilscheine erwerben. Allerdings brauchst du je nach Abogrösse ein Minimum, um zu starten.
-
-                        <script type="text/javascript" src="/static/js/jquery-1.9.0.min.js"></script>
-                        <script type="text/javascript">
-                            $("input[type=radio]").change(function () {
-                                if ($(":checked").val() === "small") {
-                                    $("#scheine").val(Math.max(2 - {{ loco_scheine }}, 0));
-                                } else if ($(":checked").val() === "big") {
-                                    $("#scheine").val(Math.max(4 - {{ loco_scheine }}, 0));
-                                } else if ($(":checked").val() === "house") {
-                                    $("#scheine").val(Math.max(20 - {{ loco_scheine }}, 0));
-                                }
-                                else {
-                                    $("#scheine").val(1);
-                                }
-                            });
-                            $("input[type=radio]").change();
-                        </script>
                     </label>
                     {% if scheineerror %}
                         <div class="alert alert-error">Du brauchst mehr Anteilscheine für das gewählte Abo</div>
@@ -141,95 +124,36 @@
             </div>
         </form>
     </div>
-    <script>
-        $("#add-loco").click(function () {
-            $(this).after($('<input type="hidden" id="add-loco-value" name="add_loco" value="true"/>'));
-            $(this).closest("form").off("submit").submit();
-        });
-        $("form").submit(function () {
-            $("#add-loco-value").remove();
-        });
-        $("#depot").val({{ selected_depot.id }})
-    </script>
 
+{% endblock %}
 
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-    <script>
-        function initialize() {
-            var mapOptions = {
-                zoom: 11,
-                center: new google.maps.LatLng(47.3825462, 8.4653627)
-            }
-            var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-            var createDepotMap = function (name, addr, zip, city, lat, long) {
-                var depot = new google.maps.Marker({
-                    position: new google.maps.LatLng(lat, long),
-                    map: map,
-                    title: '{{ depot.name }}'
-                });
-                google.maps.event.addListener(depot, 'click', function () {
-                    new google.maps.InfoWindow({
-                        content: "<h1>" + name + "</h1>" + addr + "<br/>" + zip + " " + city
-                    }).open(map, depot);
-                });
-            };
-
-            {% for depot in depots %}
-                {% if depot.latitude %}
-                    createDepotMap("{{ depot.name }}", "{{ depot.addr_street }}", "{{ depot.addr_zipcode }}", "{{ depot.addr_location }}", {{ depot.latitude }}, {{ depot.longitude }})
-                {% endif %}
-            {% endfor %}
-        }
-        google.maps.event.addDomListener(window, 'load', initialize);
-
-        // sort the depots for their distance
+{% block scripts %}
+    <script type="text/javascript">
+        var loco_scheine = {{ loco_scheine }};
+        var depot_id = {{ selected_depot.id }};
+        var loco_addr = '{{ loco.addr_street }}+{{ loco.addr_zipcode }}+{{ loco.addr_location }}';
 
         var destinations = [];
         var depots = [];
         {% for depot in depots %}
             {% if depot.latitude %}
                 destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}")
-                depots.push({code: "{{ depot.code }}"});
+                depots.push({
+                    name: '{{ depot.name }}',
+                    addr_street: '{{ depot.addr_street }}',
+                    addr_zipcode: '{{ depot.addr_zipcode }}',
+                    addr_location: '{{ depot.addr_location }}',
+                    latitude: '{{ depot.latitude }}',
+                    longitude: '{{ depot.longitude }}',
+                    code: '{{ depot.code }}'
+                });
             {% endif %}
         {% endfor %}
 
-
-        function calculateDistances() {
-            var service = new google.maps.DistanceMatrixService();
-            service.getDistanceMatrix({
-                origins: ["{{ loco.addr_street }}+{{ loco.addr_zipcode }}+{{ loco.addr_location }}"],
-                destinations: destinations,
-                travelMode: google.maps.TravelMode.WALKING,
-                unitSystem: google.maps.UnitSystem.METRIC
-            }, callback);
-        }
-
-        function callback(response, status) {
-            if (status == google.maps.DistanceMatrixStatus.OK) {
-                var origins = response.originAddresses;
-                var destinations = response.destinationAddresses;
-
-                for (var i = 0; i < origins.length; i++) {
-                    var results = response.rows[i].elements;
-                    for (var j = 0; j < results.length; j++) {
-                        $("#depot" + depots[j].code).append(" (" + Math.round(results[j].duration.value / 60) + " Minuten zu Fuss)");
-                        depots[j].duration = Math.round(results[j].duration.value / 60)
-                    }
-                }
-            }
-
-            // reorder the depots now according to distances
-            var options = $("#depot");
-            depots = depots.sort(function (a, b) {
-                return a.duration - b.duration;
-            })
-            $.each(depots, function (i, d) {
-                $("#depot").append(options.find("#depot" + d.code).addClass("sorted"));
-            });
-            $("#depot option").not(".sorted").remove();
-
-        }
-        calculateDistances();
     </script>
-
+    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/attachment_appender.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type="text/javascript" src="/static/js/libs/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyCreateAbo.js"></script>
 {% endblock %}

@@ -28,22 +28,9 @@
     {% if show_all %}
         <a href="/my/einsaetze/alle">Auch vergangene Jobs anzeigen</a>
     {% endif %}
+{% endblock %}
 
-    <script type="text/javascript" src="/static/js/dable.js"></script>
-    <script type="text/javascript">
-        var dable = new Dable("jobs");
-        dable.columnData[0].CustomRendering = function (cellValue) {
-            return cellValue.split("||")[0];
-        }
-        dable.columnData[0].CustomSortFunc = function (columnIndex, ascending, currentRows) {
-            currentRows.sort(function (a, b) {
-                var a = a[0].split("||")[1];
-                var b = b[0].split("||")[1];
-                return ascending ? a-b : b-a;
-            });
-            return currentRows;
-        }
-        dable.UpdateDisplayedRows();        // Update the table
-        dable.UpdateStyle();                // Reapply our styles
-    </script>
+{% block scripts %}
+    <script type="text/javascript" src="/static/js/libs/dable.js"></script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyJobs.js"></script>
 {% endblock %}

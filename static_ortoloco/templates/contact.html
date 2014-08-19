@@ -45,20 +45,9 @@ info@ortoloco.ch
 		  <button type="submit" class="btn btn-success">Abonnieren</button>
 		</div>
 	</form>
+{% endblock %}
 
+{% block scripts %}
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=false"></script>
-	<script>
-	var map;
-	function initialize() {
-	  var mapOptions = {
-	    zoom: 14,
-	    center: new google.maps.LatLng(47.4099048,8.3823588),
-	    mapTypeId: google.maps.MapTypeId.ROADMAP
-	  };
-	  map = new google.maps.Map(document.getElementById('map-canvas'),
-	      mapOptions);
-	}
-
-	google.maps.event.addDomListener(window, 'load', initialize);
-	</script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initContact.js"></script>
 {% endblock %}

@@ -176,7 +176,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     position: absolute;
     right: 25px;
     bottom: 80px;
-    width: 19px;
+    width: 18px;
     height: 140px;
     display: inline-block;
     background: url(/static/img/myortoloco_link.png) 0px 0px no-repeat;
