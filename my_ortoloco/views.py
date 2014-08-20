@@ -8,7 +8,7 @@ import random
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
@@ -30,7 +30,7 @@ from decorators import primary_loco_of_abo
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
 
-def getBohnenDict(request):
+def get_menu_dict(request):
     loco = request.user.loco
     next_jobs = set()
     if loco.abo is not None:
@@ -40,6 +40,7 @@ def getBohnenDict(request):
         for bohne in allebohnen:
             if bohne.job.time.year == date.today().year and bohne.job.time < datetime.datetime.now():
                 userbohnen.append(bohne)
+
         # amount of beans shown => round up if needed never down
         bohnenrange = range(0, max(userbohnen.__len__(), int(round(loco.abo.size * 10 / loco.abo.locos.count() + 0.5))))
         print loco.abo.size
@@ -74,7 +75,7 @@ def my_home(request):
     next_jobs = set(get_current_jobs()[:7])
     pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=datetime.datetime.now()))
     next_aktionstage = set(Job.objects.filter(typ__name="Aktionstag", time__gte=datetime.datetime.now()).order_by("time")[:2])
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_aktionstage), key=lambda job: job.time),
         'teams': Taetigkeitsbereich.objects.filter(hidden=False),
@@ -121,7 +122,7 @@ def my_job(request, job_id):
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
@@ -129,7 +130,7 @@ def my_job(request, job_id):
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
         'job_fully_booked': len(allowed_additional_participants) == 0
-    });
+    })
     return render(request, "job.html", renderdict)
 
 
@@ -140,10 +141,10 @@ def my_depot(request, depot_id):
     """
     depot = get_object_or_404(Depot, id=int(depot_id))
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'depot': depot
-    });
+    })
     return render(request, "depot.html", renderdict)
 
 
@@ -178,7 +179,7 @@ def my_participation(request):
             'coordinator': area.coordinator
         })
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'areas': my_areas,
         'success': success
@@ -200,7 +201,7 @@ def my_pastjobs(request):
         if bohne.job.time < datetime.datetime.now():
             past_bohnen.append(bohne)
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'bohnen': past_bohnen
     })
@@ -234,7 +235,7 @@ def send_politoloco(request):
 
         send_politoloco_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
         sent = len(emails)
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'politolocos': Politoloco.objects.count(),
         'ortolocos': Loco.objects.count(),
@@ -248,7 +249,7 @@ def my_abo(request):
     """
     Details for an abo of a loco
     """
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     gleiche_zusatzabos = request.user.loco.abo.extra_abos.count() is request.user.loco.abo.future_extra_abos.count()
 
     current_zusatzabos = request.user.loco.abo.extra_abos.all()
@@ -280,7 +281,7 @@ def my_abo_change(request, abo_id):
     Ein Abo ändern
     """
     month = int(time.strftime("%m"))
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'loco': request.user.loco,
         'change_size': month <= 10,
@@ -300,7 +301,7 @@ def my_depot_change(request, abo_id):
         request.user.loco.abo.depot = get_object_or_404(Depot, id=int(request.POST.get("depot")))
         request.user.loco.abo.save()
         saved = True
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'loco': request.user.loco,
@@ -319,7 +320,7 @@ def my_size_change(request, abo_id):
         request.user.loco.abo.future_size = int(request.POST.get("abo"))
         request.user.loco.abo.save()
         saved = True
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'size': request.user.loco.abo.future_size
@@ -373,7 +374,7 @@ def my_extra_change(request, abo_id):
                     'id': abo.id,
                     'name': abo.name
                 })
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'loco': request.user.loco,
@@ -392,7 +393,7 @@ def my_team(request, bereich_id):
 
     jobs = get_current_jobs().filter(typ=job_types)
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'team': get_object_or_404(Taetigkeitsbereich, id=int(bereich_id)),
         'jobs': jobs,
@@ -405,9 +406,9 @@ def my_einsaetze(request):
     """
     All jobs to be sorted etc.
     """
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
 
-    jobs = get_current_jobs();
+    jobs = get_current_jobs()
     renderdict.update({
         'jobs': jobs,
         'show_all': True
@@ -421,7 +422,7 @@ def my_einsaetze_all(request):
     """
     All jobs to be sorted etc.
     """
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     jobs = Job.objects.all().order_by("time")
     renderdict.update({
         'jobs': jobs,
@@ -578,17 +579,17 @@ def my_createabo(request):
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
-            groesse = 1
+            size = 1
             if request.POST.get("abo") == "house":
-                groesse = 10
+                size = 10
             elif request.POST.get("abo") == "big":
-                groesse = 2
+                size = 2
             else:
-                groesse = 1
+                size = 1
             if loco.abo is None:
-                loco.abo = Abo.objects.create(groesse=groesse, primary_loco=loco, depot=depot)
+                loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot)
             else:
-                loco.abo.size = groesse
+                loco.abo.size = size
                 loco.abo.depot = depot
             loco.abo.save()
             loco.save()
@@ -637,7 +638,7 @@ def my_welcome(request):
     Willkommen
     """
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': get_current_jobs()[:7],
         'teams': Taetigkeitsbereich.objects.filter(hidden=False),
@@ -671,7 +672,7 @@ def my_contact(request):
         # send mail to bg
         send_contact_form(request.POST.get("subject"), request.POST.get("message"), loco, request.POST.get("copy"))
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">"
     })
@@ -700,7 +701,7 @@ def my_profile(request):
     else:
         locoform = ProfileLocoForm(instance=loco)
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'locoform': locoform,
         'success': success
@@ -720,7 +721,7 @@ def my_change_password(request):
     else:
         form = PasswordForm()
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'form': form,
         'success': success
@@ -774,7 +775,7 @@ def my_mails(request):
         if len(emails) > 0:
             send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
             sent = len(emails)
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'sent': sent
     })
@@ -801,7 +802,7 @@ def my_filters(request):
     for loco in locos:
         loco.boehnlis = boehnlis[loco]
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'locos': locos
     })
@@ -824,7 +825,7 @@ def my_abos(request):
             'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
         })
 
-    renderdict = getBohnenDict(request)
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'abos': abos
     })

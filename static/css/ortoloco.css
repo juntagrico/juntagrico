@@ -219,8 +219,8 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 /* contact */
 #map-canvas {
     display: inline-block;
-    width: 400px;
-    height: 200px;
+    width: 600px;
+    height: 300px;
 }
 
 .addresses {

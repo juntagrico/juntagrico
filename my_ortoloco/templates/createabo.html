@@ -21,9 +21,8 @@
                         <input type="radio" name="abo" value="small" id="small" {% if selected_abo == "small" %}checked="checked"{% endif %}/>
                         <strong>Kleines Abo</strong>
 
-                        <div>
-                            Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilscheine.
-                        </div>
+                        <br/>
+                        Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilscheine.
                     </label>
                 </div>
             </div>
@@ -35,9 +34,8 @@
                         <input type="radio" name="abo" value="big" id="big" {% if selected_abo == "big" %}checked="checked"{% endif %}/>
                         <strong>Grosses Abo</strong>
 
-                        <div>
-                            Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilscheine.
-                        </div>
+                        <br/>
+                        Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilscheine.
                     </label>
                 </div>
             </div>
@@ -49,9 +47,8 @@
                         <input type="radio" name="abo" value="house" id="house" {% if selected_abo == "house" %}checked="checked"{% endif %}/>
                         <strong>Haus-Abo</strong>
 
-                        <div>
-                            Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.
-                        </div>
+                        <br/>
+                        Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.
                     </label>
                 </div>
             </div>
@@ -63,9 +60,8 @@
                         <input type="radio" name="abo" value="none" id="none"/>
                         <strong>Kein Abo</strong>
 
-                        <div>
-                            Du kannst auch ohne Gemüseabo ortoloco-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
-                        </div>
+                        <br/>
+                        Du kannst auch ohne Gemüseabo ortoloco-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
                     </label>
                 </div>
             </div>
@@ -130,14 +126,13 @@
 {% block scripts %}
     <script type="text/javascript">
         var loco_scheine = {{ loco_scheine }};
-        var depot_id = {{ selected_depot.id }};
         var loco_addr = '{{ loco.addr_street }}+{{ loco.addr_zipcode }}+{{ loco.addr_location }}';
 
         var destinations = [];
         var depots = [];
         {% for depot in depots %}
             {% if depot.latitude %}
-                destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}")
+                destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}");
                 depots.push({
                     name: '{{ depot.name }}',
                     addr_street: '{{ depot.addr_street }}',

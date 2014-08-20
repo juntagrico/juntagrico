@@ -1,6 +1,19 @@
 /*global google */
 define([], function () {
 
+    var createDepotOnMap = function (map, name, addr, zip, city, lat, long) {
+        var depot = new google.maps.Marker({
+            position: new google.maps.LatLng(lat, long),
+            map: map,
+            title: name
+        });
+        google.maps.event.addListener(depot, 'click', function () {
+            new google.maps.InfoWindow({
+                content: "<h1>" + name + "</h1>" + addr + "<br/>" + zip + " " + city
+            }).open(map, depot);
+        });
+    };
+
     // google map
     var initialize = function () {
         var mapOptions = {
@@ -8,21 +21,9 @@ define([], function () {
             center: new google.maps.LatLng(47.3825462, 8.4653627)
         };
         var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-        var createDepotMap = function (name, addr, zip, city, lat, long) {
-            var depot = new google.maps.Marker({
-                position: new google.maps.LatLng(lat, long),
-                map: map,
-                title: name
-            });
-            google.maps.event.addListener(depot, 'click', function () {
-                new google.maps.InfoWindow({
-                    content: "<h1>" + name + "</h1>" + addr + "<br/>" + zip + " " + city
-                }).open(map, depot);
-            });
-        };
 
         $.each(depots, function (i, depot) {
-                createDepotMap(depot.name, depot.addr_street, depot.addr_zipcode, depot.addr_location, depot.latitude, depot.longitude);
+                createDepotOnMap(map, depot.name, depot.addr_street, depot.addr_zipcode, depot.addr_location, depot.latitude, depot.longitude);
             }
         );
     };
@@ -33,8 +34,6 @@ define([], function () {
         var callback = function (response, status) {
             if (status == google.maps.DistanceMatrixStatus.OK) {
                 var origins = response.originAddresses;
-                // FIXME seems not to be needed => remove
-                // var destinations = response.destinationAddresses;
 
                 for (var i = 0; i < origins.length; i++) {
                     var results = response.rows[i].elements;
@@ -72,6 +71,8 @@ define([], function () {
 
     return {
         // needs "#map-canvas" and "#depot" to be present in the dom
-        calculate: calculateDistances
+        calculate: calculateDistances,
+        // creates a tip on the map
+        createDepotOnMap: createDepotOnMap
     }
 });
