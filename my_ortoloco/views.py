@@ -5,6 +5,7 @@ from collections import defaultdict
 from StringIO import StringIO
 import string
 import random
+import math
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
@@ -42,7 +43,7 @@ def get_menu_dict(request):
                 userbohnen.append(bohne)
 
         # amount of beans shown => round up if needed never down
-        bohnenrange = range(0, max(userbohnen.__len__(), int(round(loco.abo.size * 10 / loco.abo.locos.count() + 0.5))))
+        bohnenrange = range(0, max(userbohnen.__len__(), int(math.ceil(loco.abo.size * 10 / loco.abo.locos.count()))))
         print loco.abo.size
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
