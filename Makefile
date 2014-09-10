@@ -48,8 +48,10 @@ listdbs:
 	ls -lG $(DB_SQLITE_FILENAME)*
 
 migratedb: checkvenv
-	./manage.py schemamigration my_ortoloco --auto
-	./manage.py migrate my_ortoloco
+	./manage.py schemamigration my_ortoloco --auto || true
+	./manage.py migrate my_ortoloco || true
+	./manage.py schemamigration static_ortoloco --auto || true
+	./manage.py migrate static_ortoloco || true
 
 checkdbfile:
 ifneq ("$(DB_SQLITE_FILE_PRESENT)","ok")
