@@ -68,3 +68,7 @@ user, you have to activate a secret :smile: URL in [`url.py`](https://github.com
 Afterwards, you might have to logout with following URL:
 
 - <http://localhost:8000/logout>
+
+### Change password for super user ('admin' is the username)
+
+    ./manage.py changepassword admin

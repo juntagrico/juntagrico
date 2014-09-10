@@ -136,3 +136,27 @@
 #filter-table table {
     font-size: 10px;
 }
+
+.nav li.inline a {
+    display: inline-block;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+}
+
+.nav li.inline a:hover {
+    background: none;
+}
+
+table.future {
+    width: 100%;
+    margin-top: 50px;
+}
+
+table.future th{
+    text-align: left;
+}
+
+table.future td{
+    line-height: 30px;
+}

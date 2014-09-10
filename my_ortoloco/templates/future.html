@@ -1,0 +1,44 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Hier siehst du die Zukunft von ortoloco</h3>
+    <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte ortoloco die folgenden Abos und Zusatzabos.</div>
+
+    <table class="future">
+        <tr>
+            <th></th>
+            <th>Aktuell</th>
+            <th>Zukunft</th>
+        </tr>
+        <tr>
+            <td>Haus Abos</td>
+            <td>{{ house_abos }}</td>
+            <td>{{ house_abos_future }}</td>
+        </tr>
+        <tr>
+            <td>Grosse Abos</td>
+            <td>{{ big_abos }}</td>
+            <td>{{ big_abos_future }}</td>
+        </tr>
+        <tr>
+            <td>Kleine Abos</td>
+            <td>{{ small_abos }}</td>
+            <td>{{ small_abos_future }}</td>
+            <td></td>
+        </tr>
+        {% for extra in extras %}
+        <tr>
+            <td>{{ extra.name }}</td>
+            <td>{{ extra.now }}</td>
+            <td>{{ extra.future }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    <script src="../../static/js/libs/ZeroClipboard.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/static/js/libs/dable.js"></script>
+    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyAbos.js"></script>
+{% endblock %}
