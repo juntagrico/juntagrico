@@ -5,22 +5,21 @@ define([], function () {
     dable.UpdateDisplayedRows();        // Update the table
     dable.UpdateStyle();                // Reapply our styles
 
-    var client = new ZeroClipboard(document.getElementById("copy-emails"), {
-        moviePath: "/static/others/ZeroClipboard.swf"
-    });
-
-    client.on("load", function (client) {
-        client.on("complete", function (client, args) {
-            alert("Copied text to clipboard: " + args.text);
-        });
-    });
-    setInterval(function () {
+    $("#emailSender").submit(function( event ) {
         var emails = [];
         $("#filter-table").find("tr").each(function () {
-            var txt = $("td:eq(5)", this).text();
-            if (txt)
-                emails.push(txt);
+            var txt = $("td:eq(5)", this).text().trim();
+            if (txt.length > 0) {
+                // Each Abo might have a comma-separated list of email addresses
+                multiple_emails = txt.split(",");
+                for (var i = multiple_emails.length - 1; i >= 0; i--) {
+                    emails.push(multiple_emails[i].trim());
+                }
+            }
         });
-        client.setText(emails.join(", "));
-    }, 200);
+        $("#recipients").val(emails.join("\n"));
+        $("#recipients_count").val(emails.length);
+        $("#filter_value").val($("#filter-table_search").val());
+        return;
+    });
 });

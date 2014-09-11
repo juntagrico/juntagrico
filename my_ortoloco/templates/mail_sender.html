@@ -1,23 +1,31 @@
 {% extends "mybase.html" %}
 
 {% block content %}
-    <h3>Mails verschicken</h3>
-    <br/>
-    {% if sent > 0 %}
-        <div class="alert alert-success">Email wurde an {{ sent }} Empfänger verschickt.</div>
+    {% if recipients %}
+        <h3>Mail an {{ recipients_count }} {{ recipient_type }} verschicken</h3>
+        <h5>Der Filter, um diese {{ recipients_count }} E-Mail-Adressen auszuwählen, war: "{{ filter_value }}"</h5>
     {% else %}
-        <form action="/my/mails" method="POST" class="form-horizontal" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="control-group">
-                <label class="control-label">Absender</label>
-
-                <div class="controls text-label">
-                    info@ortoloco.ch
-                </div>
+        <h3>Mails verschicken</h3>
+    {% endif %}
+    <br/>
+    <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="control-group">
+            <label class="control-label">Absender</label>
+            <div class="controls text-label">
+                info@ortoloco.ch
             </div>
+        </div>
+        {% if recipients %}
             <div class="control-group">
                 <label class="control-label">Empfänger</label>
-
+                <div class="controls text-label">
+                    <textarea name="recipients" id="recipients" class="span5" rows="12" disabled="disabled">{{ recipients }}</textarea>
+                </div>
+            </div>
+        {% else %}
+            <div class="control-group">
+                <label class="control-label">Empfänger</label>
                 <div class="controls text-label">
                     Wähle mind. eine der folgenden Gruppen:
                     <label class="checkbox high-label" for="allabo">
@@ -38,40 +46,40 @@
                     </label>
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="subject">Betreff</label>
+        {% endif %}
+        <div class="control-group">
+            <label class="control-label" for="subject">Betreff</label>
 
-                <div class="controls">
-                    <input type="text" name="subject" id="subject" placeholder="Betreff" class="span5"/>
-                </div>
+            <div class="controls">
+                <input type="text" name="subject" id="subject" placeholder="Betreff" class="span5"/>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="message">Mitteilung</label>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="message">Mitteilung</label>
 
-                <div class="controls">
-                    <textarea name="message" id="message" class="span5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
-                    <input type="hidden" id="textMessage" name="textMessage"/>
-                </div>
+            <div class="controls">
+                <textarea name="message" id="message" class="span5 mailer" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+                <input type="hidden" id="textMessage" name="textMessage"/>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="attachements">Anhänge</label>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="attachements">Anhänge</label>
 
-                <div class="controls" id="attachements">
-                    <div class="file-upload">
-                        <div class="file-upload-button">
-                            <input type="file" name="image-1">
-                            <button class="btn">Datei auswählen</button>
-                        </div>
+            <div class="controls" id="attachements">
+                <div class="file-upload">
+                    <div class="file-upload-button">
+                        <input type="file" name="image-1">
+                        <button class="btn">Datei auswählen</button>
                     </div>
                 </div>
             </div>
+        </div>
 
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">Nachricht verschicken</button>
-            </div>
-        </form>
-    {% endif %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Nachricht verschicken</button>
+        </div>
+    </form>
 {% endblock %}
 
 {% block scripts %}

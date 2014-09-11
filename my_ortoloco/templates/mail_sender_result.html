@@ -1,0 +1,16 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Mails verschickt!</h3>
+    <br/>
+    <div class="alert alert-success">Email wurde an {{ sent }} Empfänger verschickt.</div>
+    <div>(Bitte, auf diese Seite nicht auf "Reload" oder "Refresh" clicken.)</div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/attachment_appender.js"></script>
+    <script type="text/javascript" src="/static/js/libs/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyMailer.js"></script>
+{% endblock %}

@@ -7,6 +7,14 @@
             width: 1200px;
         }
     </style>
+    <form id="emailSender" action="/my/mails" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="recipient_type" id="recipient_type" value="Abo-Einhaber"/>
+        <input type="hidden" name="recipients" id="recipients"/>
+        <input type="hidden" name="recipients_count" id="recipients_count"/>
+        <input type="hidden" name="filter_value" id="filter_value"/>
+        <button type="submit" class="btn btn-success" id="send-emails">Email an diese Abo-Einhaber senden</button>
+    </form>
     <div id="filter-table">
         <table class="list" style="display: table;">
             <thead>
@@ -16,7 +24,7 @@
                 <th>Depot</th>
                 <th>Bohnen</th>
                 <th>Aktiv</th>
-                <th>Emails <a data-clipboard-text="Copy Me!" id="copy-emails" href="#">alle kopieren</a></th>
+                <th>Emails</th>
             </tr>
             </thead>
             <tbody>
@@ -38,7 +46,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="../../static/js/libs/ZeroClipboard.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="/static/js/libs/dable.js"></script>
     <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
     <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyAbos.js"></script>

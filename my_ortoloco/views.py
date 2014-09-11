@@ -5,8 +5,9 @@ from collections import defaultdict
 from StringIO import StringIO
 import string
 import random
+import re
 import math
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required, permission_required
@@ -749,36 +750,61 @@ def my_new_password(request):
 
 
 @staff_member_required
-def my_mails(request):
+def send_email(request):
     sent = 0
-    if request.method == 'POST':
-        emails = set()
-        if request.POST.get("allabo") == "on":
-            for loco in Loco.objects.exclude(abo=None):
+    if request.method != 'POST':
+        raise Http404
+    emails = set()
+    if request.POST.get("allabo") == "on":
+        for loco in Loco.objects.exclude(abo=None):
+            emails.add(loco.email)
+    if request.POST.get("allanteilsschein") == "on":
+        for loco in Loco.objects.all():
+            if loco.anteilschein_set.count() > 0:
                 emails.add(loco.email)
-        if request.POST.get("allanteilsschein") == "on":
-            for loco in Loco.objects.all():
-                if loco.anteilschein_set.count() > 0:
-                    emails.add(loco.email)
-        if request.POST.get("all") == "on":
-            for loco in Loco.objects.all():
-                emails.add(loco.email)
+    if request.POST.get("all") == "on":
+        for loco in Loco.objects.all():
+            emails.add(loco.email)
+    if request.POST.get("recipients"):
+        recipients = re.split(r"\s*,?\s*", request.POST.get("recipients"))
+        for recipient in recipients:
+            emails.add(recipient)
+    if request.POST.get("allsingleemail"):
+        emails.add(request.POST.get("singleemail"))
 
-        if request.POST.get("allsingleemail"):
-            emails.add(request.POST.get("singleemail"))
+    index = 1
+    attachements = []
+    while request.FILES.get("image-" + str(index)) is not None:
+        attachements.append(request.FILES.get("image-" + str(index)))
+        index += 1
 
-        index = 1
-        attachements = []
-        while request.FILES.get("image-" + str(index)) is not None:
-            attachements.append(request.FILES.get("image-" + str(index)))
-            index += 1
-
-        if len(emails) > 0:
-            send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
-            sent = len(emails)
+    if len(emails) > 0:
+        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
+        sent = len(emails)
     renderdict = get_menu_dict(request)
     renderdict.update({
         'sent': sent
+    })
+    return render(request, 'mail_sender_result.html', renderdict)
+
+@staff_member_required
+def my_mails(request):
+    recipient_type = ""
+    recipients = ""
+    recipients_count = 0
+    filter_value = ""
+    if request.method == 'POST':
+        recipient_type = request.POST.get("recipient_type")
+        recipients = request.POST.get("recipients")
+        recipients_count = request.POST.get("recipients_count")
+        filter_value = request.POST.get("filter_value")
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'recipients': recipients,
+        'recipient_type': recipient_type,
+        'recipients': recipients,
+        'recipients_count': recipients_count,
+        'filter_value': filter_value
     })
     return render(request, 'mail_sender.html', renderdict)
 

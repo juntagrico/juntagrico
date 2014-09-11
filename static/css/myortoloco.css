@@ -136,3 +136,9 @@
 #filter-table table {
     font-size: 10px;
 }
+
+textarea#recipients {
+    background: transparent;
+    border: none;
+    cursor: default;
+}

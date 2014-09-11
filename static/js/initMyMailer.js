@@ -2,7 +2,7 @@
 define([], function () {
 
     tinymce.init({
-        selector: "textarea",
+        selector: "textarea.mailer",
         'theme': "modern",
         'plugins': 'link',
         'relative_urls': false,
@@ -19,5 +19,10 @@ define([], function () {
         var editor = tinyMCE.get('message');
         editor.selection.select(editor.getBody(), true);
         $("#textMessage").val(editor.selection.getContent({format: 'text'}));
-    })
+    });
+    $("form").submit(function () {
+        // If the textarea remains disabled, the content is not submitted in the request
+        $("textarea#recipients").removeAttr("disabled");
+        return;
+    });
 });
