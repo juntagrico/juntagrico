@@ -17,8 +17,13 @@ define([], function () {
                 }
             }
         });
+        var abo_count = $("#filter-table").find("tr").length - 1;
+        var email_count = emails.length;
+        $("#recipient_type_detail").val("Sie entsprechen die Haupt- und Mitinhaber von " +
+            abo_count +
+            " Abos.");
         $("#recipients").val(emails.join("\n"));
-        $("#recipients_count").val(emails.length);
+        $("#recipients_count").val(email_count);
         $("#filter_value").val($("#filter-table_search").val());
         return;
     });

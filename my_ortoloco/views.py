@@ -789,22 +789,13 @@ def send_email(request):
 
 @staff_member_required
 def my_mails(request):
-    recipient_type = ""
-    recipients = ""
-    recipients_count = 0
-    filter_value = ""
-    if request.method == 'POST':
-        recipient_type = request.POST.get("recipient_type")
-        recipients = request.POST.get("recipients")
-        recipients_count = request.POST.get("recipients_count")
-        filter_value = request.POST.get("filter_value")
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'recipients': recipients,
-        'recipient_type': recipient_type,
-        'recipients': recipients,
-        'recipients_count': recipients_count,
-        'filter_value': filter_value
+        'recipient_type': request.POST.get("recipient_type"),
+        'recipient_type_detail': request.POST.get("recipient_type_detail"),
+        'recipients': request.POST.get("recipients"),
+        'recipients_count': request.POST.get("recipients_count"),
+        'filter_value': request.POST.get("filter_value")
     })
     return render(request, 'mail_sender.html', renderdict)
 

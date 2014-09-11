@@ -137,8 +137,18 @@
     font-size: 10px;
 }
 
-textarea#recipients {
+textarea#recipients[disabled=disabled] {
     background: transparent;
     border: none;
     cursor: default;
+}
+
+#edit-recipients-action {
+    font-size: smaller;
+}
+#edit-recipients-action::before {
+    content : "(";
+}
+#edit-recipients-action::after {
+    content : ")";
 }

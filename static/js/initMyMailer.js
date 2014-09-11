@@ -25,4 +25,8 @@ define([], function () {
         $("textarea#recipients").removeAttr("disabled");
         return;
     });
+    $("#edit-recipients-action").on("click", function () {
+        $("textarea#recipients").removeAttr("disabled");
+        $(".recipients-info-detail").remove();
+    });
 });
