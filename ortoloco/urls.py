@@ -56,6 +56,7 @@ urlpatterns = patterns('',
     url('^my/politoloco$', 'my_ortoloco.views.send_politoloco'),
     url('^my/filters', 'my_ortoloco.views.my_filters'),
     url('^my/abos', 'my_ortoloco.views.my_abos'),
+    url('^my/zukunft', 'my_ortoloco.views.my_future'),
 
     url(r'^impersonate/', include('impersonate.urls')),
 

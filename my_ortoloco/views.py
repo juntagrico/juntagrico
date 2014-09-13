@@ -592,6 +592,7 @@ def my_createabo(request):
                 loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot)
             else:
                 loco.abo.size = size
+                loco.abo.future_size = size
                 loco.abo.depot = depot
             loco.abo.save()
             loco.save()
@@ -959,6 +960,45 @@ def my_createlocoforsuperuserifnotexist(request):
 
     # we do just nothing if its not a superuser or he has already a loco
     return redirect("/my/home")
+
+
+@staff_member_required
+def my_future(request):
+    renderdict = get_menu_dict(request)
+
+    small_abos = 0
+    big_abos = 0
+    house_abos = 0
+    small_abos_future = 0
+    big_abos_future = 0
+    house_abos_future = 0
+
+    for abo in Abo.objects.all():
+        small_abos += abo.size % 2
+        big_abos += int(abo.size % 10 / 2)
+        house_abos += int(abo.size / 10)
+        small_abos_future += abo.future_size % 2
+        big_abos_future += int(abo.future_size % 10 / 2)
+        house_abos_future += int(abo.future_size / 10)
+
+    extras = []
+    for extra_abo in ExtraAboType.objects.all():
+        extras.append({
+            'name': extra_abo.name,
+            'future': extra_abo.future_extra_abos.count(),
+            'now': extra_abo.extra_abos.count()
+        })
+
+        renderdict.update({
+            'big_abos': big_abos,
+            'house_abos': house_abos,
+            'small_abos': small_abos,
+            'big_abos_future': big_abos_future,
+            'house_abos_future': house_abos_future,
+            'small_abos_future': small_abos_future,
+            'extras': extras
+        })
+    return render(request, 'future.html', renderdict)
 
 
 @staff_member_required

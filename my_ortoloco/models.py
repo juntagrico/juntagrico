@@ -115,7 +115,7 @@ class Abo(models.Model):
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
-    extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True)
+    extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True, related_name="extra_abos")
     extra_abos_changed = models.BooleanField(default=False)
     future_extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True, related_name="future_extra_abos")
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
