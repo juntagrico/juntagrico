@@ -7,13 +7,13 @@
             width: 1200px;
         }
     </style>
-    <form id="emailSender" action="/my/mails" method="POST">
+    <form id="email-sender" action="/my/mails" method="POST">
         {% csrf_token %}
         <input type="hidden" name="recipient_type" id="recipient_type" value="Locos"/>
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden" name="recipients_count" id="recipients_count"/>
         <input type="hidden" name="filter_value" id="filter_value"/>
-        <button type="submit" class="btn btn-success" id="send-emails">Email an diese Locos senden</button>
+        <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
     </form>
     <div id="filter-table">
         <table class="list" style="display: table;">
