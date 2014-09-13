@@ -28,5 +28,6 @@ define([], function () {
     $("#edit-recipients-action").on("click", function () {
         $("textarea#recipients").removeAttr("disabled");
         $(".recipients-info-detail").remove();
+        $("#edit-recipients-action").remove();
     });
 });
