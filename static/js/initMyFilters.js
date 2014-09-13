@@ -24,6 +24,9 @@ define([], function () {
         }
     }
 
+    // Move the "Send email" button (and the corresponding form) to the same level as the filter input
+    $("form#email-sender").appendTo("#filter-table_header div:first-child");
+
     dable.UpdateDisplayedRows();        // Update the table
     dable.UpdateStyle();                // Reapply our styles
 
