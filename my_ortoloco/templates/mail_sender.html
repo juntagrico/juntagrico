@@ -19,6 +19,7 @@
         {% csrf_token %}
         <div class="control-group">
             <label class="control-label">Absender</label>
+
             <div class="controls text-label">
                 info@ortoloco.ch
             </div>
@@ -26,13 +27,16 @@
         {% if recipients %}
             <div class="control-group">
                 <label class="control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
+
                 <div class="controls text-label">
-                    <textarea name="recipients" id="recipients" class="span5" rows="12" disabled="disabled">{{ recipients }}</textarea>
+                    <textarea name="recipients" id="recipients" class="span5" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}"
+                              disabled="disabled">{{ recipients }}</textarea>
                 </div>
             </div>
         {% else %}
             <div class="control-group">
                 <label class="control-label">Empfänger</label>
+
                 <div class="controls text-label">
                     Wähle mind. eine der folgenden Gruppen:
                     <label class="checkbox high-label" for="allabo">
