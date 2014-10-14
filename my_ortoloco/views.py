@@ -795,7 +795,7 @@ def my_mails(request):
         'recipient_type': request.POST.get("recipient_type"),
         'recipient_type_detail': request.POST.get("recipient_type_detail"),
         'recipients': request.POST.get("recipients"),
-        'recipients_count': int(request.POST.get("recipients_count")),
+        'recipients_count': int(request.POST.get("recipients_count") or 0),
         'filter_value': request.POST.get("filter_value")
     })
     return render(request, 'mail_sender.html', renderdict)
