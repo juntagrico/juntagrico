@@ -57,6 +57,13 @@ Run following command to launch a server on <http://localhost:8000>:
 You might run this with `make`, which will additionally open the URL
 on your browser.
 
+### Create admin user
+
+Use following command to create a super user, if not yet available:
+
+    manage.py createsuperuser
+
+
 ### Create loco for admin user
 
 The first time you try to login with the initial admin user you will
