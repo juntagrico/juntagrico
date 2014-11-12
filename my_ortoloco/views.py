@@ -317,7 +317,7 @@ def my_size_change(request, abo_id):
     Eine Abo-Grösse ändern
     """
     saved = False
-    if request.method == "POST":
+    if request.method == "POST" and int(time.strftime("%m")) <=10:
         request.user.loco.abo.future_size = int(request.POST.get("abo"))
         request.user.loco.abo.save()
         saved = True
