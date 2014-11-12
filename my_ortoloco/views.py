@@ -125,13 +125,15 @@ def my_job(request, job_id):
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
 
     renderdict = get_menu_dict(request)
+    jobendtime = job.end_time()
     renderdict.update({
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
-        'job_fully_booked': len(allowed_additional_participants) == 0
+        'job_fully_booked': len(allowed_additional_participants) == 0,
+        'job_is_in_past': job.end_time() < datetime.datetime.now()
     })
     return render(request, "job.html", renderdict)
 
