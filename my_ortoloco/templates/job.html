@@ -44,7 +44,11 @@
             {% else %}
                 <ul>
                     {% for participant in participants_summary %}
-                        <li>{{ participant }}</li>
+                        <li>
+                            <a class="job-participant" loco-id="{{ participant }}" href="#">
+                                {{ participant }}
+                            </a>
+                        </li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -90,5 +94,34 @@
                 </form>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="locoMessageModal" tabindex="-1" role="dialog" aria-labelledby="locoMessageModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="locoMessageModalLabel">Nachricht wegen des {{ job.typ.name }} Einsatzes vom {{ job.time |date:"d. M" }}</h4>
+              </div>
+              <div class="modal-body">
+                <textarea class="form-control" rows="8" style="width: 100%" placeholder="Deine Nachricht">A propos vom kommenden {{ job.typ.name }} Einsatz vom {{ job.time |date:"d. F, \u\m H:i" }}...
+
+Merci vielmals,
+
+{{ user.loco.first_name }}</textarea>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-success btn-message-send">Nachricht senden</button>
+              </div>
+            </div>
+          </div>
+        </div>
     {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/bootstrap-3.2.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyJobLocoMessaging.js"></script>
 {% endblock %}
