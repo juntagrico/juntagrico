@@ -75,7 +75,7 @@
             <a href="/my/abo/{{ loco.abo.id }}/aendern/depot" class="btn btn-success">Depot ändern</a>
         </div>
         <div class="span3">
-            <a href="/my/abo/{{ loco.abo.id }}/aendern/groesse" class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
+            <a {% if change_size %}href="/my/abo/{{ loco.abo.id }}/aendern/groesse"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
             {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
         </div>
         <div class="span3">
