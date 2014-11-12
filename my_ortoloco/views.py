@@ -45,7 +45,6 @@ def get_menu_dict(request):
 
         # amount of beans shown => round up if needed never down
         bohnenrange = range(0, max(userbohnen.__len__(), int(math.ceil(loco.abo.size * 10 / loco.abo.locos.count()))))
-        print loco.abo.size
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
             if bohne.job.time > datetime.datetime.now():
@@ -788,6 +787,7 @@ def send_email(request):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
+
 @staff_member_required
 def my_mails(request):
     renderdict = get_menu_dict(request)
@@ -973,6 +973,14 @@ def my_future(request):
     big_abos_future = 0
     house_abos_future = 0
 
+    extra_abos = dict({})
+    for extra_abo in ExtraAboType.objects.all():
+        extra_abos[extra_abo.id] = {
+            'name': extra_abo.name,
+            'future': 0,
+            'now': str(extra_abo.extra_abos.count())
+        }
+
     for abo in Abo.objects.all():
         small_abos += abo.size % 2
         big_abos += int(abo.size % 10 / 2)
@@ -981,23 +989,22 @@ def my_future(request):
         big_abos_future += int(abo.future_size % 10 / 2)
         house_abos_future += int(abo.future_size / 10)
 
-    extras = []
-    for extra_abo in ExtraAboType.objects.all():
-        extras.append({
-            'name': extra_abo.name,
-            'future': extra_abo.future_extra_abos.count(),
-            'now': extra_abo.extra_abos.count()
-        })
+        if abo.extra_abos_changed:
+            for users_abo in abo.future_extra_abos.all():
+                extra_abos[users_abo.id]['future'] += 1
+        else:
+            for users_abo in abo.extra_abos.all():
+                extra_abos[users_abo.id]['future'] += 1
 
-        renderdict.update({
-            'big_abos': big_abos,
-            'house_abos': house_abos,
-            'small_abos': small_abos,
-            'big_abos_future': big_abos_future,
-            'house_abos_future': house_abos_future,
-            'small_abos_future': small_abos_future,
-            'extras': extras
-        })
+    renderdict.update({
+        'big_abos': big_abos,
+        'house_abos': house_abos,
+        'small_abos': small_abos,
+        'big_abos_future': big_abos_future,
+        'house_abos_future': house_abos_future,
+        'small_abos_future': small_abos_future,
+        'extras': extra_abos.itervalues()
+    })
     return render(request, 'future.html', renderdict)
 
 
