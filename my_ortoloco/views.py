@@ -820,13 +820,23 @@ def current_year_boehnlis_per_loco():
         boehnlis_per_loco[boehnli.loco] += 1
     return boehnlis_per_loco
 
+def current_year_kernbereich_boehnlis_per_loco():
+    boehnlis = current_year_boehlis()
+    boehnlis_per_loco = defaultdict(int)
+    for boehnli in boehnlis:
+        if boehnli.is_in_kernbereich():
+            boehnlis_per_loco[boehnli.loco] += 1
+    return boehnlis_per_loco
+
 
 @staff_member_required
 def my_filters(request):
     locos = Loco.objects.all()
     boehnlis = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
     for loco in locos:
         loco.boehnlis = boehnlis[loco]
+        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -838,16 +848,20 @@ def my_filters(request):
 @staff_member_required
 def my_abos(request):
     boehnli_map = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
     abos = []
     for abo in Abo.objects.filter():
         boehnlis = 0
+        boehnlis_kernbereich = 0
         for loco in abo.bezieher_locos():
             boehnlis += boehnli_map[loco]
+            boehnlis_kernbereich += boehnlis_kernbereich_map[loco]
 
         abos.append({
             'abo': abo,
             'text': get_status_bean_text(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0),
             'boehnlis': boehnlis,
+            'boehnlis_kernbereich': boehnlis_kernbereich,
             'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
         })
 

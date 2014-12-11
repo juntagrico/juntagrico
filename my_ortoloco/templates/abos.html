@@ -24,6 +24,7 @@
                 <th>Weitere Locos</th>
                 <th>Depot</th>
                 <th>Bohnen</th>
+                <th>Bohnen Kernbereich</th>
                 <th>Aktiv</th>
                 <th>Emails</th>
             </tr>
@@ -35,6 +36,7 @@
                     <td>{{ abo.abo.bezieher }}</td>
                     <td>{{ abo.abo.depot.name }}</td>
                     <td>{{ abo.boehnlis }} <img alt="Status Erbse" src="/static/img/{{ abo.icon }}"/> {{ abo.text }}</td>
+                    <td>{{ abo.boehnlis_kernbereich }}</td>
                     <td>{% if abo.abo.active %}<img alt="Volle Erbse" src="/static/img/erbse_voll.png"/> Aktiv{% else %}<img alt="Volle Erbse" src="/static/img/erbse_leer.png"/> Wartend{% endif %}</td>
                     <td>{% for bezieher in abo.abo.bezieher_locos %}{{ bezieher.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>
