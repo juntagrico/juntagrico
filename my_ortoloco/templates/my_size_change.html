@@ -55,22 +55,26 @@
             </div>
             <div class="control-group">
                 <label class="control-label"></label>
-
-                <div class="controls">
-                    <label class="radio" for="none">
-                        <input type="radio" name="abo" value="0" id="none" {% if size == 0 %}checked="checked"{% endif %}/>
-                        <strong>Kein Abo</strong>
-
-                        <div>
-                            Du kannst auch ohne Gemüseabo ortoloco-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
-                        </div>
-                    </label>
-                </div>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-success">Abogrösse ändern</button>
             </div>
-        </form>
+
+    <div class="control-group">
+        <label class="control-label">Abo kündigen</label>
+        <div class="controls">
+            <label>
+                <div>
+                    Du willst ab nächstem Jahr kein ortoloco-Abo mehr? Dann schicke bitte deine Kündigung
+                    bis spätestens Ende Oktober an <a href="mailto:info@ortoloco.ch?subject=Kündigung Abo ortoloco.ch">info@ortoloco.ch</a>.
+                    Weitere Infos zur Kündigung des Abos und der Mitgliedschaft findest du im
+                    <a href="/medias/documents/Betriebsreglement_ortoloco_Stand_Okt._2014.pdf">Betriebsreglement</a>.
+                </div>
+            </label>
+        </div>
+
+    </div>
+    </form>
     {% endif %}
 
 {% endblock %}
