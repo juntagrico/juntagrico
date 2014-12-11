@@ -355,6 +355,9 @@ class Job(models.Model):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
         return helpers.get_status_bean(boehnlis.count() * 100 / self.slots)
 
+    def is_in_kernbereich(self):
+        return self.typ.bereich.core
+
     class Meta:
         verbose_name = 'Job'
         verbose_name_plural = 'Jobs'
@@ -372,6 +375,9 @@ class Boehnli(models.Model):
 
     def zeit(self):
         return self.job.time
+
+    def is_in_kernbereich(self):
+        return self.job.typ.bereich.core
 
     class Meta:
         verbose_name = 'Böhnli'
