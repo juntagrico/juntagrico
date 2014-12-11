@@ -176,3 +176,7 @@ table.future th{
 table.future td{
     line-height: 30px;
 }
+
+.loco-job-comments {
+    font-style: italic;
+}

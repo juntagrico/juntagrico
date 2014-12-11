@@ -106,20 +106,47 @@ def my_job(request, job_id):
     participants_dict = defaultdict(int)
     boehnlis = Boehnli.objects.filter(job_id=job.id)
     number_of_participants = len(boehnlis)
+
+    participants_new_dict = defaultdict(dict)
     for boehnli in boehnlis:
         if boehnli.loco is not None:
-            participants_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name] += 1
+            loco_info = participants_new_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name]
+            current_count = loco_info.get("count", 0)
+            current_msg = loco_info.get("msg", [])
+            loco_info["count"] = current_count + 1
+            current_msg.append("boehnli.comment")
+            loco_info["msg"] = current_msg
+    print participants_new_dict
 
     participants_summary = []
-    for loco_name, number_of_companions in participants_dict.iteritems():
-        if number_of_companions == 1:
-            participants_summary.append(loco_name)
-        elif number_of_companions == 2:
-            participants_summary.append(loco_name + ' (mit einer weiteren Person)')
+    for loco_name, loco_dict in participants_new_dict.iteritems():
+        # print loco_name, loco_dict
+        count = loco_dict.get("count")
+        msg = loco_dict.get("msg")
+        # msg = ", ".join(loco_dict.get("msg"))
+        if count == 1:
+            participants_summary.append((loco_name, None))
+        elif count == 2:
+            participants_summary.append((loco_name + ' (mit einer weiteren Person)', msg))
         else:
-            participants_summary.append(loco_name
-                                        + ' (mit ' + str(number_of_companions - 1)
-                                        + ' weiteren Personen)')
+            participants_summary.append((loco_name
+                                                    + ' (mit ' + str(count - 1)
+                                                    + ' weiteren Personen)', msg))
+
+    # for boehnli in boehnlis:
+    #     if boehnli.loco is not None:
+    #         participants_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name] += 1
+
+    # participants_summary = []
+    # for loco_name, number_of_companions in participants_dict.iteritems():
+    #     if number_of_companions == 1:
+    #         participants_summary.append(loco_name)
+    #     elif number_of_companions == 2:
+    #         participants_summary.append(loco_name + ' (mit einer weiteren Person)')
+    #     else:
+    #         participants_summary.append(loco_name
+    #                                     + ' (mit ' + str(number_of_companions - 1)
+    #                                     + ' weiteren Personen)')
 
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
@@ -127,6 +154,7 @@ def my_job(request, job_id):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'number_of_participants': number_of_participants,
+        'participants_summary': participants_summary,
         'participants_summary': participants_summary,
         'job': job,
         'slotrange': slotrange,

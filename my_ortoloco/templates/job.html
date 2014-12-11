@@ -43,11 +43,17 @@
                 Noch niemand :(
             {% else %}
                 <ul>
-                    {% for participant in participants_summary %}
+                    {% for participant, comments in participants_summary %}
                         <li>
                             <a class="job-participant" loco-id="{{ participant }}" href="#">
                                 {{ participant }}
                             </a>
+                            <br>
+                            {% for comment in comments %}
+                                <span class="loco-job-comments">Hinweis: {{ comment }}</span>
+                                <br>
+                            {% endfor %}
+                            <br>
                         </li>
                     {% endfor %}
                 </ul>
