@@ -319,12 +319,12 @@ def my_depot_change(request, abo_id):
 
 
 @primary_loco_of_abo
-def my_size_change(request, abo_id):
+def my_size_change(request):
     """
     Eine Abo-Grösse ändern
     """
     saved = False
-    if request.method == "POST" and int(time.strftime("%m")) <=10:
+    if request.method == "POST" and int(time.strftime("%m")) <=10 and int(request.POST.get("abo")) > 0:
         request.user.loco.abo.future_size = int(request.POST.get("abo"))
         request.user.loco.abo.save()
         saved = True
