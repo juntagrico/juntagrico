@@ -49,6 +49,15 @@
                     <li class="{{ menu.ortoloco }}">
                         <a href="/aktuelles">ortoloco.ch</a>
                     </li>
+                    {% if is_depot_admin %}
+                        <li>
+                            <hr>
+                            <a href="/my/mails">Mails verschicken</a>
+                        </li>
+                        <li class="inline">
+                            Filtern <a href="/my/filters">Locos</a> | <a href="/my/abos">Abos</a>
+                        </li>
+                    {% endif %}
                     {% if staff_user %}
                         <li>
                             <hr>

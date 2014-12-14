@@ -31,7 +31,6 @@ from decorators import primary_loco_of_abo
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
-
 def get_menu_dict(request):
     loco = request.user.loco
     next_jobs = set()
@@ -756,7 +755,7 @@ def my_new_password(request):
     return render(request, 'my_newpassword.html', renderdict)
 
 
-@staff_member_required
+#@staff_member_required
 def send_email(request):
     sent = 0
     if request.method != 'POST':
@@ -765,6 +764,14 @@ def send_email(request):
     if request.POST.get("allabo") == "on":
         for loco in Loco.objects.exclude(abo=None):
             emails.add(loco.email)
+    if request.POST.get("depotOnly") == "on":
+        for d in request.POST.get("depotOnly"):
+            
+            if d == "o":
+                x = request.POST.get(d)
+                for loco in Depot.get(request.POST.get(d)).locos.all:
+                    emails.add(loco.email)
+                    xxx
     if request.POST.get("allanteilsschein") == "on":
         for loco in Loco.objects.all():
             if loco.anteilschein_set.count() > 0:
@@ -795,7 +802,7 @@ def send_email(request):
     return render(request, 'mail_sender_result.html', renderdict)
 
 
-@staff_member_required
+#@staff_member_required
 def my_mails(request):
     renderdict = get_menu_dict(request)
     renderdict.update({

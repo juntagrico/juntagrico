@@ -34,29 +34,45 @@
                 </div>
             </div>
         {% else %}
-            <div class="control-group">
-                <label class="control-label">Empfänger</label>
-
-                <div class="controls text-label">
-                    Wähle mind. eine der folgenden Gruppen:
-                    <label class="checkbox high-label" for="allabo">
-                        <input type="checkbox" id="allabo" name="allabo">
-                        Alle Abonnenten (inkl. MitabonnentInnen)
-                    </label>
-                    <label class="checkbox high-label" for="allanteilsschein">
-                        <input type="checkbox" id="allanteilsschein" name="allanteilsschein">
-                        Alle Genossenschafter
-                    </label>
-                    <label class="checkbox high-label" for="all">
-                        <input type="checkbox" id="all" name="all">
-                        Alle (im System)
-                    </label>
-                    <label class="checkbox high-label" for="allsingleemail">
-                        <input type="checkbox" id="allsingleemail" name="allsingleemail">
-                        Nur an diese Email: <input type="text" id="singleemail" name="singleemail"/>
-                    </label>
+            {% if depot_admin|length > 0 %}
+                <div class="control-group">
+                    <label class="control-label">Empfänger</label>
+                    <input type="hidden" id="depotOnly" name="depotOnly" value="on">
+                    <div class="controls text-label">
+                        Wähle mind. eine der folgenden Gruppen:
+                        {% for depot in depot_admin %}
+                            <label class="checkbox high-label" for="depot">
+                                <input type="checkbox" id="{{ depot.id }}" name="depot">
+                                {{ depot.name }}
+                            </label>
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="control-group">
+                    <label class="control-label">Empfänger</label>
+
+                    <div class="controls text-label">
+                        Wähle mind. eine der folgenden Gruppen:
+                        <label class="checkbox high-label" for="allabo">
+                            <input type="checkbox" id="allabo" name="allabo">
+                            Alle Abonnenten (inkl. MitabonnentInnen)
+                        </label>
+                        <label class="checkbox high-label" for="allanteilsschein">
+                            <input type="checkbox" id="allanteilsschein" name="allanteilsschein">
+                            Alle Genossenschafter
+                        </label>
+                        <label class="checkbox high-label" for="all">
+                            <input type="checkbox" id="all" name="all">
+                            Alle (im System)
+                        </label>
+                        <label class="checkbox high-label" for="allsingleemail">
+                            <input type="checkbox" id="allsingleemail" name="allsingleemail">
+                            Nur an diese Email: <input type="text" id="singleemail" name="singleemail"/>
+                        </label>
+                    </div>
+                </div>
+            {% endif %}
         {% endif %}
         <div class="control-group">
             <label class="control-label" for="subject">Betreff</label>
