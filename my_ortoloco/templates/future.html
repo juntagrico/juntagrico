@@ -2,6 +2,10 @@
 
 {% block content %}
     <h3>Hier siehst du die Zukunft von ortoloco</h3>
+    {% if changed %}
+        <div class="alert alert-success">Abos wurden geändert</div>
+    {% endif %}
+
     <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte ortoloco die folgenden Abos und Zusatzabos.</div>
 
     <table class="future">
@@ -34,6 +38,10 @@
         </tr>
         {% endfor %}
     </table>
+    <br/><br/>
+    ACHTUNG! Dies darf nur am 1.1. und am 1.7. des Jahres gedrückt werden!
+    <a href="/my/wechsel/zusatzabos" class="btn btn-success" >Switch to future extra abos</a><br/><br/>
+    <a href="/my/wechsel/abos" class="btn btn-success">Switch to future abos</a>
 {% endblock %}
 
 {% block scripts %}

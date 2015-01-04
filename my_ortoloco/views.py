@@ -1018,6 +1018,7 @@ def my_future(request):
                 extra_abos[users_abo.id]['future'] += 1
 
     renderdict.update({
+        'changed': request.GET.get("changed"),
         'big_abos': big_abos,
         'house_abos': house_abos,
         'small_abos': small_abos,
@@ -1027,6 +1028,45 @@ def my_future(request):
         'extras': extra_abos.itervalues()
     })
     return render(request, 'future.html', renderdict)
+
+
+@staff_member_required
+def my_switch_extras(request):
+    renderdict = get_menu_dict(request)
+
+    for abo in Abo.objects.all():
+        if abo.extra_abos_changed:
+            abo.extra_abos = []
+            for extra in abo.future_extra_abos.all():
+                abo.extra_abos.add(extra)
+
+            abo.extra_abos_changed = False
+            abo.save()
+
+
+    renderdict.update({
+    })
+
+    return redirect('/my/zukunft?changed=true')
+
+@staff_member_required
+def my_switch_abos(request):
+    renderdict = get_menu_dict(request)
+
+    for abo in Abo.objects.all():
+        if abo.size is not abo.future_size:
+            if abo.future_size is 0:
+                abo.active = False
+            if abo.size is 0:
+                abo.active = True
+            abo.size = abo.future_size
+            abo.save()
+
+
+    renderdict.update({
+    })
+
+    return redirect('/my/zukunft?changed=true')
 
 
 @staff_member_required
