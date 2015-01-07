@@ -895,6 +895,7 @@ def my_filters(request):
     return render(request, 'filters.html', renderdict)
 
 
+@permission_required('my_ortoloco.is_depot_admin')
 def my_filters_depot(request):
     depots = Depot.objects.filter(contact=request.user)
     locos = get_locos_for_depots(depots)
@@ -939,6 +940,7 @@ def my_abos(request):
     return render(request, 'abos.html', renderdict)
 
 
+@permission_required('my_ortoloco.is_depot_admin')
 def my_abos_depot(request):
     boehnli_map = current_year_boehnlis_per_loco()
     boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
