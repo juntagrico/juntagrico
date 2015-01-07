@@ -2,9 +2,10 @@
 define([], function () {
 
     $(".job-participant").click( function() {
-        var vorname = $(this).text().trim().split(" ")[0];
-        $("#locoMessageModal textarea").prepend("Hoi " + vorname + "\n\n");
-        $("#locoMessageModal .btn-message-send").text("Nachricht an " + $(this).text() + " senden");
+        var firstName = $(this).text().trim().split(" ")[0],
+            newGreeting = $("#locoMessageModal textarea").text().replace(/Hoi.*/, "Hoi " + firstName);
+        $("#locoMessageModal textarea").text(newGreeting);
+        $("#locoMessageModal .btn-message-send").text("Nachricht an " + firstName + " senden");
         $("#locoMessageModal").modal("show");
     });
 

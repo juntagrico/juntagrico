@@ -5,19 +5,19 @@
     Welchen Teil deines Abos möchtest du ändern?<br/><br/>
     <br/>
     <div class="row">
-        <div class="span3">
+        <div class="col-md-3">
             <h3>Depot</h3>
             <br/>
             Das Depot kann jederzeit geändert werden. Die Änderung wird berücksichtigt,
             falls sie bis am Sonntag Abend vor der Zustellung gemacht wurde.
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             <h3>Grösse</h3>
             <br/>
             Die Grösse eines Abos (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende Oktober gemacht werden,
             damit die Änderung auf Anfang Januar in Kraft tritt.
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             <h3>Zusatz-Abos</h3>
             <br/>
             Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
@@ -27,28 +27,28 @@
     </div>
     <br/>
     <div class="row">
-        <div class="span3">
+        <div class="col-md-3">
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             Nächstmögliches Datum:
             {{ next_size_date |date:"d.m.Y" }}
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             Nächstmögliches Datum:
             {{ next_extra_abo_date |date:"d.m.Y" }}
         </div>
     </div>
     <br/>
     <div class="row">
-        <div class="span3">
+        <div class="col-md-3">
             <h5>Momentanes Depot:</h5>
             {{ loco.abo.depot.name }}
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             <h5>Zukünftige Grösse:</h5>
             {{ loco.abo.future_size_name }}
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             <h5>Zukünftige Zusatz-Abos:</h5>
             {% if not loco.abo.extra_abos_changed %}
                 {% if loco.abo.extra_abos.all|length == 0 %}
@@ -71,14 +71,14 @@
     </div>
     <br/>
     <div class="row">
-        <div class="span3">
+        <div class="col-md-3">
             <a href="/my/abo/{{ loco.abo.id }}/aendern/depot" class="btn btn-success">Depot ändern</a>
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             <a {% if change_size %}href="/my/abo/{{ loco.abo.id }}/aendern/groesse"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
             {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
         </div>
-        <div class="span3">
+        <div class="col-md-3">
             <a href="/my/abo/{{ loco.abo.id }}/aendern/extra" class="btn btn-success">Zusatz-Abos ändern</a>
         </div>
     </div>

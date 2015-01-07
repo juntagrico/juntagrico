@@ -1,8 +1,8 @@
 {% extends "mybase.html" %}
 
 {% block allcontent %}
-    <div class="span2"></div>
-    <div class="span8">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
         <h3>Wähle dein Abo</h3>
         <br/>
 
@@ -13,7 +13,7 @@
 
         <form action="" method="post" class="form-horizontal createabo">
             {% csrf_token %}
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label">Abogrösse</label>
 
                 <div class="controls">
@@ -26,7 +26,7 @@
                     </label>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label"></label>
 
                 <div class="controls">
@@ -39,7 +39,7 @@
                     </label>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label"></label>
 
                 <div class="controls">
@@ -52,7 +52,7 @@
                     </label>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label"></label>
 
                 <div class="controls">
@@ -65,7 +65,7 @@
                     </label>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="depot">Depot</label>
 
                 <div class="controls">
@@ -83,7 +83,7 @@
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label">MitabonnentInnen</label>
 
                 <div class="controls">
@@ -100,13 +100,13 @@
                     <br/><br/>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label">Anteilscheine</label>
 
                 <div class="controls">
                     <label for="scheine">
 
-                        <input type="text" name="scheine" id="scheine" class="span1"/><br/>
+                        <input type="text" name="scheine" id="scheine" class="col-md-1"/><br/>
                         Du kannst unbeschränkt und jederzeit Anteilscheine erwerben. Allerdings brauchst du je nach Abogrösse ein Minimum, um zu starten.
                     </label>
                     {% if scheineerror %}
@@ -146,9 +146,8 @@
         {% endfor %}
 
     </script>
-    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
-    <script type="text/javascript" src="/static/js/libs/attachment_appender.js"></script>
+    <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-    <script type="text/javascript" src="/static/js/libs/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyCreateAbo.js"></script>
+    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyCreateAbo.js"></script>
 {% endblock %}

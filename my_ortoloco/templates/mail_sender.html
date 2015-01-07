@@ -17,7 +17,7 @@
     <br/>
     <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label">Absender</label>
 
             <div class="controls text-label">
@@ -25,16 +25,16 @@
             </div>
         </div>
         {% if recipients %}
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
 
                 <div class="controls text-label">
-                    <textarea name="recipients" id="recipients" class="span5" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}"
+                    <textarea name="recipients" id="recipients" class="col-md-5" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}"
                               disabled="disabled">{{ recipients }}</textarea>
                 </div>
             </div>
         {% else %}
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label">Empfänger</label>
 
                 <div class="controls text-label">
@@ -59,22 +59,22 @@
                 </div>
             </div>
         {% endif %}
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="subject">Betreff</label>
 
             <div class="controls">
-                <input type="text" name="subject" id="subject" placeholder="Betreff" class="span5"/>
+                <input type="text" name="subject" id="subject" placeholder="Betreff" class="col-md-5"/>
             </div>
         </div>
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="message">Mitteilung</label>
 
             <div class="controls">
-                <textarea name="message" id="message" class="span5 mailer" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+                <textarea name="message" id="message" class="col-md-5 mailer" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
                 <input type="hidden" id="textMessage" name="textMessage"/>
             </div>
         </div>
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="attachements">Anhänge</label>
 
             <div class="controls" id="attachements">
@@ -95,8 +95,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
-    <script type="text/javascript" src="/static/js/libs/attachment_appender.js"></script>
-    <script type="text/javascript" src="/static/js/libs/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyMailer.js"></script>
+    <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
+    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyMailer.js"></script>
 {% endblock %}

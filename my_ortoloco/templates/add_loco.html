@@ -1,14 +1,14 @@
 {% extends "mybase.html" %}
 
 {% block allcontent %}
-    <div class="span2"></div>
-    <div class="span8">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
         <h3>MitabonnentIn hinzufügen</h3>
         <br/>
 
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
-            <div class="control-group {% if locoform.last_name.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.last_name.errors %}error{% endif %}">
                 <label class="control-label" for="id_last_name">Name *</label>
 
                 <div class="controls">
@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.first_name.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.first_name.errors %}error{% endif %}">
                 <label class="control-label" for="id_first_name">Vorname *</label>
 
                 <div class="controls">
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.addr_street.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.addr_street.errors %}error{% endif %}">
                 <label class="control-label" for="id_addr_street">{{ locoform.addr_street.label }} *</label>
 
                 <div class="controls">
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
                 <label class="control-label" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }} *</label>
 
                 <div class="controls">
@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.addr_location.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.addr_location.errors %}error{% endif %}">
                 <label class="control-label" for="id_addr_location">{{ locoform.addr_location.label }} *</label>
 
                 <div class="controls">
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.phone.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.phone.errors %}error{% endif %}">
                 <label class="control-label" for="id_phone">{{ locoform.phone.label }} *</label>
 
                 <div class="controls">
@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.mobile_phone.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.mobile_phone.errors %}error{% endif %}">
                 <label class="control-label" for="id_mobile_phone">{{ locoform.mobile_phone.label }} &nbsp;</label>
 
                 <div class="controls">
@@ -85,7 +85,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.email.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.email.errors %}error{% endif %}">
                 <label class="control-label" for="id_email">E-Mail Adresse *</label>
 
                 <div class="controls">
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <div class="control-group {% if locoform.birthday.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.birthday.errors %}error{% endif %}">
                 <label class="control-label" for="birthday">Geburtstag &nbsp;</label>
 
                 <div class="controls">
@@ -108,11 +108,11 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if scheineerror %}error{% endif %}">
+            <div class="form-group {% if scheineerror %}error{% endif %}">
                 <label class="control-label" for="id_anteilscheine">Anteilscheine</label>
 
                 <div class="controls">
-                    <input type="text" class="span1" name="anteilscheine" id="id_anteilscheine" value="{{ scheine }}">
+                    <input type="text" class="col-md-1" name="anteilscheine" id="id_anteilscheine" value="{{ scheine }}">
 
                     {% if scheineerror %}
                         <span class="help-inline">Bitte positive Zahl eingeben</span>
