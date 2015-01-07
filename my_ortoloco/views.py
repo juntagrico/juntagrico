@@ -801,6 +801,15 @@ def send_email(request):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
+def get_locos_for_depots(depots):
+    abos = Abo.objects.filter(depot = depots)
+    res = []
+    for a in abos:
+        locos = Loco.objects.filter(abo = a)
+        for loco in locos:
+            res.append(loco)
+    return res
+
 def send_email_to_depot(request):
     sent = 0
     if request.method != 'POST':
@@ -811,11 +820,9 @@ def send_email_to_depot(request):
     for d in depotIdsAr:
         depotInput = request.POST.get(d)
         if depotInput == "on":
-            abos = Abo.objects.filter(depot = d)
-            for a in abos:
-                locos = Loco.objects.filter(abo = a)
-                for loco in locos:
-                    emails.add(loco.email)
+            locos = get_locos_for_depots(d);
+            for loco in locos:
+                emails.add(loco.email)
     
     index = 1
     attachements = []
@@ -888,12 +895,56 @@ def my_filters(request):
     return render(request, 'filters.html', renderdict)
 
 
+def my_filters_depot(request):
+    depots = Depot.objects.filter(contact=request.user)
+    locos = get_locos_for_depots(depots)
+    boehnlis = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
+    for loco in locos:
+        loco.boehnlis = boehnlis[loco]
+        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
+
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'locos': locos
+    })
+    return render(request, 'filters.html', renderdict)
+
+
 @staff_member_required
 def my_abos(request):
     boehnli_map = current_year_boehnlis_per_loco()
     boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
     abos = []
     for abo in Abo.objects.filter():
+        boehnlis = 0
+        boehnlis_kernbereich = 0
+        for loco in abo.bezieher_locos():
+            boehnlis += boehnli_map[loco]
+            boehnlis_kernbereich += boehnlis_kernbereich_map[loco]
+
+        abos.append({
+            'abo': abo,
+            'text': get_status_bean_text(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0),
+            'boehnlis': boehnlis,
+            'boehnlis_kernbereich': boehnlis_kernbereich,
+            'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
+        })
+
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'abos': abos
+    })
+
+    return render(request, 'abos.html', renderdict)
+
+
+def my_abos_depot(request):
+    boehnli_map = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
+    abos = []
+    depots = Depot.objects.filter(contact=request.user)
+    for abo in Abo.objects.filter(depot = depots):
         boehnlis = 0
         boehnlis_kernbereich = 0
         for loco in abo.bezieher_locos():
