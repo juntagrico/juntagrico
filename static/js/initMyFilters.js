@@ -33,7 +33,7 @@ define([], function () {
     $("form#email-sender").submit(function( event ) {
         var emails = [];
         $("#filter-table").find("tr").each(function () {
-            var txt = $("td:eq(4)", this).text().trim();
+            var txt = $("td:eq(5)", this).text().trim();
             if (txt.length > 0)
                 emails.push(txt);
         });

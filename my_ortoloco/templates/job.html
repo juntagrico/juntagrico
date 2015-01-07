@@ -6,7 +6,11 @@
         <div class="span3">Zeitpunkt:</div>
         <div class="span5">
             {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }} <br>
+            {% if job_is_in_past %}
+            (vor {{ job.time|timesince }})
+            {% else %}
             (in {{ job.time|timeuntil }})
+            {% endif %}
         </div>
     </div>
     <br/>
@@ -63,6 +67,8 @@
     <br/>
     {% if job_fully_booked %}
         <div class="alert alert-success">Der Job ist ausgebucht, danke! Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
+    {% elif job_is_in_past %}
+        <div class="alert alert-success">Der Job ist schon vorbei! Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
     {% else %}
         <div class="row">
             <div class="span3">Ich trage mich ein:</div>

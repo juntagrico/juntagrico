@@ -21,6 +21,7 @@
             <tr>
                 <th>Name</th>
                 <th>Boehnlis</th>
+                <th>Boehnlis Kernbereich</th>
                 <th>Taetigkeitsbereiche</th>
                 <th>Depot</th>
                 <th>Email</th>
@@ -33,6 +34,7 @@
                 <tr>
                     <td>{{ loco.first_name }} {{ loco.last_name }}</td>
                     <td>{{ loco.boehnlis }}</td>
+                    <td>{{ loco.boehnlis_kernbereich }}</td>
                     <td>
                         {% for bereich in loco.areas.all %}
                             {{ bereich.name }},

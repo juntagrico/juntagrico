@@ -10,3 +10,4 @@ static/medias/photologue/temp
 settings_local.py
 *.bak
 ssl/*
+my_settings_local.py

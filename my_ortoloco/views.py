@@ -45,7 +45,6 @@ def get_menu_dict(request):
 
         # amount of beans shown => round up if needed never down
         bohnenrange = range(0, max(userbohnen.__len__(), int(math.ceil(loco.abo.size * 10 / loco.abo.locos.count()))))
-        print loco.abo.size
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
             if bohne.job.time > datetime.datetime.now():
@@ -53,14 +52,19 @@ def get_menu_dict(request):
     else:
         bohnenrange = None
         userbohnen = []
+        userbohnen_kernbereich = []
         next_jobs = set()
+
+    depot_admin = Depot.objects.filter(contact=request.user)
 
     return {
         'user': request.user,
         'bohnenrange': bohnenrange,
-        'userbohnen': len(userbohnen),
+        'userbohnen_total': len(userbohnen),
+        'userbohnen_kernbereich': len([bohne for bohne in userbohnen if bohne.is_in_kernbereich()]),
         'next_jobs': next_jobs,
         'staff_user': request.user.is_staff,
+        'depot_admin': depot_admin,
         'politoloco': request.user.has_perm('static_ortoloco.can_send_newsletter')
     }
 
@@ -152,6 +156,7 @@ def my_job(request, job_id):
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
 
     renderdict = get_menu_dict(request)
+    jobendtime = job.end_time()
     renderdict.update({
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
@@ -159,7 +164,8 @@ def my_job(request, job_id):
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
-        'job_fully_booked': len(allowed_additional_participants) == 0
+        'job_fully_booked': len(allowed_additional_participants) == 0,
+        'job_is_in_past': job.end_time() < datetime.datetime.now()
     })
     return render(request, "job.html", renderdict)
 
@@ -341,12 +347,12 @@ def my_depot_change(request, abo_id):
 
 
 @primary_loco_of_abo
-def my_size_change(request, abo_id):
+def my_size_change(request):
     """
     Eine Abo-Grösse ändern
     """
     saved = False
-    if request.method == "POST":
+    if request.method == "POST" and int(time.strftime("%m")) <=10 and int(request.POST.get("abo")) > 0:
         request.user.loco.abo.future_size = int(request.POST.get("abo"))
         request.user.loco.abo.save()
         saved = True
@@ -816,6 +822,7 @@ def send_email(request):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
+
 @staff_member_required
 def my_mails(request):
     renderdict = get_menu_dict(request)
@@ -841,13 +848,23 @@ def current_year_boehnlis_per_loco():
         boehnlis_per_loco[boehnli.loco] += 1
     return boehnlis_per_loco
 
+def current_year_kernbereich_boehnlis_per_loco():
+    boehnlis = current_year_boehlis()
+    boehnlis_per_loco = defaultdict(int)
+    for boehnli in boehnlis:
+        if boehnli.is_in_kernbereich():
+            boehnlis_per_loco[boehnli.loco] += 1
+    return boehnlis_per_loco
+
 
 @staff_member_required
 def my_filters(request):
     locos = Loco.objects.all()
     boehnlis = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
     for loco in locos:
         loco.boehnlis = boehnlis[loco]
+        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -859,16 +876,20 @@ def my_filters(request):
 @staff_member_required
 def my_abos(request):
     boehnli_map = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
     abos = []
     for abo in Abo.objects.filter():
         boehnlis = 0
+        boehnlis_kernbereich = 0
         for loco in abo.bezieher_locos():
             boehnlis += boehnli_map[loco]
+            boehnlis_kernbereich += boehnlis_kernbereich_map[loco]
 
         abos.append({
             'abo': abo,
             'text': get_status_bean_text(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0),
             'boehnlis': boehnlis,
+            'boehnlis_kernbereich': boehnlis_kernbereich,
             'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
         })
 
@@ -1001,6 +1022,14 @@ def my_future(request):
     big_abos_future = 0
     house_abos_future = 0
 
+    extra_abos = dict({})
+    for extra_abo in ExtraAboType.objects.all():
+        extra_abos[extra_abo.id] = {
+            'name': extra_abo.name,
+            'future': 0,
+            'now': str(extra_abo.extra_abos.count())
+        }
+
     for abo in Abo.objects.all():
         small_abos += abo.size % 2
         big_abos += int(abo.size % 10 / 2)
@@ -1009,24 +1038,63 @@ def my_future(request):
         big_abos_future += int(abo.future_size % 10 / 2)
         house_abos_future += int(abo.future_size / 10)
 
-    extras = []
-    for extra_abo in ExtraAboType.objects.all():
-        extras.append({
-            'name': extra_abo.name,
-            'future': extra_abo.future_extra_abos.count(),
-            'now': extra_abo.extra_abos.count()
-        })
+        if abo.extra_abos_changed:
+            for users_abo in abo.future_extra_abos.all():
+                extra_abos[users_abo.id]['future'] += 1
+        else:
+            for users_abo in abo.extra_abos.all():
+                extra_abos[users_abo.id]['future'] += 1
 
-        renderdict.update({
-            'big_abos': big_abos,
-            'house_abos': house_abos,
-            'small_abos': small_abos,
-            'big_abos_future': big_abos_future,
-            'house_abos_future': house_abos_future,
-            'small_abos_future': small_abos_future,
-            'extras': extras
-        })
+    renderdict.update({
+        'changed': request.GET.get("changed"),
+        'big_abos': big_abos,
+        'house_abos': house_abos,
+        'small_abos': small_abos,
+        'big_abos_future': big_abos_future,
+        'house_abos_future': house_abos_future,
+        'small_abos_future': small_abos_future,
+        'extras': extra_abos.itervalues()
+    })
     return render(request, 'future.html', renderdict)
+
+
+@staff_member_required
+def my_switch_extras(request):
+    renderdict = get_menu_dict(request)
+
+    for abo in Abo.objects.all():
+        if abo.extra_abos_changed:
+            abo.extra_abos = []
+            for extra in abo.future_extra_abos.all():
+                abo.extra_abos.add(extra)
+
+            abo.extra_abos_changed = False
+            abo.save()
+
+
+    renderdict.update({
+    })
+
+    return redirect('/my/zukunft?changed=true')
+
+@staff_member_required
+def my_switch_abos(request):
+    renderdict = get_menu_dict(request)
+
+    for abo in Abo.objects.all():
+        if abo.size is not abo.future_size:
+            if abo.future_size is 0:
+                abo.active = False
+            if abo.size is 0:
+                abo.active = True
+            abo.size = abo.future_size
+            abo.save()
+
+
+    renderdict.update({
+    })
+
+    return redirect('/my/zukunft?changed=true')
 
 
 @staff_member_required
