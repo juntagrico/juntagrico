@@ -15,8 +15,6 @@
         <h3>Mails verschicken</h3>
     {% endif %}
     <br/>
-    <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
-        {% csrf_token %}
         <div class="control-group">
             <label class="control-label">Absender</label>
 
@@ -25,6 +23,8 @@
             </div>
         </div>
         {% if recipients %}
+        <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
             <div class="control-group">
                 <label class="control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
 
@@ -35,20 +35,25 @@
             </div>
         {% else %}
             {% if depot_admin|length > 0 %}
+                <form action="/my/mails/send_to_depot" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="control-group">
                     <label class="control-label">Empfänger</label>
                     <input type="hidden" id="depotOnly" name="depotOnly" value="on">
+                    <input type="hidden" id="depotIds" name="depotIds" value="{% for depot in depot_admin %}{{ depot.id }},{% endfor %}"/>
                     <div class="controls text-label">
                         Wähle mind. eine der folgenden Gruppen:
                         {% for depot in depot_admin %}
                             <label class="checkbox high-label" for="depot">
-                                <input type="checkbox" id="{{ depot.id }}" name="depot">
+                                <input type="checkbox" id="{{ depot.id }}" name="{{ depot.id }}">
                                 {{ depot.name }}
                             </label>
                         {% endfor %}
                     </div>
                 </div>
             {% else %}
+                <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                {% csrf_token %}
                 <div class="control-group">
                     <label class="control-label">Empfänger</label>
 

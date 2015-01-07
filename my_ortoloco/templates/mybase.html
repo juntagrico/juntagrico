@@ -49,10 +49,10 @@
                     <li class="{{ menu.ortoloco }}">
                         <a href="/aktuelles">ortoloco.ch</a>
                     </li>
-                    {% if is_depot_admin %}
+                    {% if is_depot_admin|length > 0 %}
                         <li>
                             <hr>
-                            <a href="/my/mails">Mails verschicken</a>
+                            <a href="/my/mails_depot">Mails verschicken</a>
                         </li>
                         <li class="inline">
                             Filtern <a href="/my/filters">Locos</a> | <a href="/my/abos">Abos</a>

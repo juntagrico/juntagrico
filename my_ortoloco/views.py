@@ -755,7 +755,7 @@ def my_new_password(request):
     return render(request, 'my_newpassword.html', renderdict)
 
 
-#@staff_member_required
+@staff_member_required
 def send_email(request):
     sent = 0
     if request.method != 'POST':
@@ -801,8 +801,39 @@ def send_email(request):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
+def send_email_to_depot(request):
+    sent = 0
+    if request.method != 'POST':
+        raise Http404
+    emails = set()
+    depotIds = request.POST.get("depotIds")
+    depotIdsAr = depotIds.split(",")
+    for d in depotIdsAr:
+        depotInput = request.POST.get(d)
+        if depotInput == "on":
+            abos = Abo.objects.filter(depot = d)
+            for a in abos:
+                locos = Loco.objects.filter(abo = a)
+                for loco in locos:
+                    emails.add(loco.email)
+    
+    index = 1
+    attachements = []
+    while request.FILES.get("image-" + str(index)) is not None:
+        attachements.append(request.FILES.get("image-" + str(index)))
+        index += 1
 
-#@staff_member_required
+    if len(emails) > 0:
+        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
+        sent = len(emails)
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'sent': sent
+    })
+    return render(request, 'mail_sender_result.html', renderdict)
+
+
+@staff_member_required
 def my_mails(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -812,6 +843,11 @@ def my_mails(request):
         'recipients_count': int(request.POST.get("recipients_count") or 0),
         'filter_value': request.POST.get("filter_value")
     })
+    return render(request, 'mail_sender.html', renderdict)
+
+
+def my_mails_depot(request):
+    renderdict = get_menu_dict(request)
     return render(request, 'mail_sender.html', renderdict)
 
 
