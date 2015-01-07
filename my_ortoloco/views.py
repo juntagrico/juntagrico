@@ -1045,6 +1045,9 @@ def my_future(request):
             for users_abo in abo.extra_abos.all():
                 extra_abos[users_abo.id]['future'] += 1
 
+    month = int(time.strftime("%m"))
+    day = int(time.strftime("%d"))
+
     renderdict.update({
         'changed': request.GET.get("changed"),
         'big_abos': big_abos,
@@ -1053,7 +1056,8 @@ def my_future(request):
         'big_abos_future': big_abos_future,
         'house_abos_future': house_abos_future,
         'small_abos_future': small_abos_future,
-        'extras': extra_abos.itervalues()
+        'extras': extra_abos.itervalues(),
+        'abo_change_enabled': month is 12 or (month is 1 and day <= 6)
     })
     return render(request, 'future.html', renderdict)
 
