@@ -91,6 +91,7 @@ class Depot(models.Model):
     class Meta:
         verbose_name = "Depot"
         verbose_name_plural = "Depots"
+        permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)
 
 
 class ExtraAboType(models.Model):

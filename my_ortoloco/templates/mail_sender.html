@@ -15,8 +15,6 @@
         <h3>Mails verschicken</h3>
     {% endif %}
     <br/>
-    <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
-        {% csrf_token %}
         <div class="form-group">
             <label class="control-label">Absender</label>
 
@@ -25,7 +23,8 @@
             </div>
         </div>
         {% if recipients %}
-            <div class="form-group">
+        <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
                 <label class="control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
 
                 <div class="controls text-label">
@@ -34,30 +33,51 @@
                 </div>
             </div>
         {% else %}
-            <div class="form-group">
-                <label class="control-label">Empfänger</label>
-
-                <div class="controls text-label">
-                    Wähle mind. eine der folgenden Gruppen:
-                    <label class="checkbox high-label" for="allabo">
-                        <input type="checkbox" id="allabo" name="allabo">
-                        Alle Abonnenten (inkl. MitabonnentInnen)
-                    </label>
-                    <label class="checkbox high-label" for="allanteilsschein">
-                        <input type="checkbox" id="allanteilsschein" name="allanteilsschein">
-                        Alle Genossenschafter
-                    </label>
-                    <label class="checkbox high-label" for="all">
-                        <input type="checkbox" id="all" name="all">
-                        Alle (im System)
-                    </label>
-                    <label class="checkbox high-label" for="allsingleemail">
-                        <input type="checkbox" id="allsingleemail" name="allsingleemail">
-                        Nur an diese Email:
-                    </label>
-                    <input type="text" id="singleemail" name="singleemail"/>
+            {% if depot_admin|length > 0 %}
+                <form action="/my/mails/send_to_depot" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="control-group">
+                    <label class="control-label">Empfänger</label>
+                    <input type="hidden" id="depotOnly" name="depotOnly" value="on">
+                    <input type="hidden" id="depotIds" name="depotIds" value="{% for depot in depot_admin %}{{ depot.id }},{% endfor %}"/>
+                    <div class="controls text-label">
+                        Wähle mind. eine der folgenden Gruppen:
+                        {% for depot in depot_admin %}
+                            <label class="checkbox high-label" for="depot">
+                                <input type="checkbox" id="{{ depot.id }}" name="{{ depot.id }}">
+                                {{ depot.name }}
+                            </label>
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="control-group">
+                    <label class="control-label">Empfänger</label>
+
+                    <div class="controls text-label">
+                        Wähle mind. eine der folgenden Gruppen:
+                        <label class="checkbox high-label" for="allabo">
+                            <input type="checkbox" id="allabo" name="allabo">
+                            Alle Abonnenten (inkl. MitabonnentInnen)
+                        </label>
+                        <label class="checkbox high-label" for="allanteilsschein">
+                            <input type="checkbox" id="allanteilsschein" name="allanteilsschein">
+                            Alle Genossenschafter
+                        </label>
+                        <label class="checkbox high-label" for="all">
+                            <input type="checkbox" id="all" name="all">
+                            Alle (im System)
+                        </label>
+                        <label class="checkbox high-label" for="allsingleemail">
+                            <input type="checkbox" id="allsingleemail" name="allsingleemail">
+                        Nur an diese Email:
+                        </label>
+                    <input type="text" id="singleemail" name="singleemail"/>
+                    </div>
+                </div>
+            {% endif %}
         {% endif %}
         <div class="form-group">
             <label class="control-label" for="subject">Betreff</label>

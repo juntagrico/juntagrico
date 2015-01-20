@@ -31,7 +31,6 @@ from decorators import primary_loco_of_abo
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
-
 def get_menu_dict(request):
     loco = request.user.loco
     next_jobs = set()
@@ -793,6 +792,14 @@ def send_email(request):
     if request.POST.get("allabo") == "on":
         for loco in Loco.objects.exclude(abo=None):
             emails.add(loco.email)
+    if request.POST.get("depotOnly") == "on":
+        for d in request.POST.get("depotOnly"):
+            
+            if d == "o":
+                x = request.POST.get(d)
+                for loco in Depot.get(request.POST.get(d)).locos.all:
+                    emails.add(loco.email)
+                    xxx
     if request.POST.get("allanteilsschein") == "on":
         for loco in Loco.objects.all():
             if loco.anteilschein_set.count() > 0:
@@ -822,6 +829,44 @@ def send_email(request):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
+def get_locos_for_depots(depots):
+    abos = Abo.objects.filter(depot = depots)
+    res = []
+    for a in abos:
+        locos = Loco.objects.filter(abo = a)
+        for loco in locos:
+            res.append(loco)
+    return res
+
+def send_email_to_depot(request):
+    sent = 0
+    if request.method != 'POST':
+        raise Http404
+    emails = set()
+    depotIds = request.POST.get("depotIds")
+    depotIdsAr = depotIds.split(",")
+    for d in depotIdsAr:
+        depotInput = request.POST.get(d)
+        if depotInput == "on":
+            locos = get_locos_for_depots(d);
+            for loco in locos:
+                emails.add(loco.email)
+    
+    index = 1
+    attachements = []
+    while request.FILES.get("image-" + str(index)) is not None:
+        attachements.append(request.FILES.get("image-" + str(index)))
+        index += 1
+
+    if len(emails) > 0:
+        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
+        sent = len(emails)
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'sent': sent
+    })
+    return render(request, 'mail_sender_result.html', renderdict)
+
 
 @staff_member_required
 def my_mails(request):
@@ -833,6 +878,11 @@ def my_mails(request):
         'recipients_count': int(request.POST.get("recipients_count") or 0),
         'filter_value': request.POST.get("filter_value")
     })
+    return render(request, 'mail_sender.html', renderdict)
+
+
+def my_mails_depot(request):
+    renderdict = get_menu_dict(request)
     return render(request, 'mail_sender.html', renderdict)
 
 
@@ -873,12 +923,58 @@ def my_filters(request):
     return render(request, 'filters.html', renderdict)
 
 
+@permission_required('my_ortoloco.is_depot_admin')
+def my_filters_depot(request):
+    depots = Depot.objects.filter(contact=request.user)
+    locos = get_locos_for_depots(depots)
+    boehnlis = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
+    for loco in locos:
+        loco.boehnlis = boehnlis[loco]
+        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
+
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'locos': locos
+    })
+    return render(request, 'filters.html', renderdict)
+
+
 @staff_member_required
 def my_abos(request):
     boehnli_map = current_year_boehnlis_per_loco()
     boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
     abos = []
     for abo in Abo.objects.filter():
+        boehnlis = 0
+        boehnlis_kernbereich = 0
+        for loco in abo.bezieher_locos():
+            boehnlis += boehnli_map[loco]
+            boehnlis_kernbereich += boehnlis_kernbereich_map[loco]
+
+        abos.append({
+            'abo': abo,
+            'text': get_status_bean_text(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0),
+            'boehnlis': boehnlis,
+            'boehnlis_kernbereich': boehnlis_kernbereich,
+            'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
+        })
+
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'abos': abos
+    })
+
+    return render(request, 'abos.html', renderdict)
+
+
+@permission_required('my_ortoloco.is_depot_admin')
+def my_abos_depot(request):
+    boehnli_map = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
+    abos = []
+    depots = Depot.objects.filter(contact=request.user)
+    for abo in Abo.objects.filter(depot = depots):
         boehnlis = 0
         boehnlis_kernbereich = 0
         for loco in abo.bezieher_locos():
