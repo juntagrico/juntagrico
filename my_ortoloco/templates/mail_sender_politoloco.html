@@ -8,14 +8,14 @@
     {% else %}
         <form method="POST" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label">Absender</label>
 
                 <div class="controls text-label">
                     info@ortoloco.ch
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label">Empfänger</label>
 
                 <div class="controls text-label">
@@ -34,25 +34,25 @@
                     </label>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="subject">Betreff</label>
 
                 <div class="controls">
-                    <input type="text" name="subject" id="subject" placeholder="Betreff" class="span5"/>
+                    <input type="text" name="subject" id="subject" placeholder="Betreff" class="col-md-5"/>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="message">Mitteilung</label>
 
                 <div class="controls">
                     <div class="row">
-                        <div class="span6 politoloco"></div>
+                        <div class="col-md-6 politoloco"></div>
                     </div>
-                    <textarea name="message" id="message" class="span5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+                    <textarea name="message" id="message" class="col-md-5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
                     <input type="hidden" id="textMessage" name="textMessage"/>
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="attachements">Anhänge</label>
 
                 <div class="controls" id="attachements">
@@ -65,7 +65,7 @@
                     <br/><br/>
 
                     <div class="row">
-                        <div class="span6 politoloco"></div>
+                        <div class="col-md-6 politoloco"></div>
                     </div>
                 </div>
             </div>
@@ -78,8 +78,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
-    <script type="text/javascript" src="/static/js/libs/attachment_appender.js"></script>
-    <script type="text/javascript" src="/static/js/libs/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyMailer.js"></script>
+    <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
+    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyMailer.js"></script>
 {% endblock %}

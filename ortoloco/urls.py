@@ -61,6 +61,8 @@ urlpatterns = patterns('',
     url('^my/abos$', 'my_ortoloco.views.my_abos'),
     url('^my/abos_depot', 'my_ortoloco.views.my_abos_depot'),
     url('^my/zukunft', 'my_ortoloco.views.my_future'),
+    url('^my/wechsel/zusatzabos', 'my_ortoloco.views.my_switch_extras'),
+    url('^my/wechsel/abos', 'my_ortoloco.views.my_switch_abos'),
 
     url(r'^impersonate/', include('impersonate.urls')),
 

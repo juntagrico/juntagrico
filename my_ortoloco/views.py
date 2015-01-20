@@ -109,20 +109,47 @@ def my_job(request, job_id):
     participants_dict = defaultdict(int)
     boehnlis = Boehnli.objects.filter(job_id=job.id)
     number_of_participants = len(boehnlis)
+
+    participants_new_dict = defaultdict(dict)
     for boehnli in boehnlis:
         if boehnli.loco is not None:
-            participants_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name] += 1
+            loco_info = participants_new_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name]
+            current_count = loco_info.get("count", 0)
+            current_msg = loco_info.get("msg", [])
+            loco_info["count"] = current_count + 1
+            current_msg.append("boehnli.comment")
+            loco_info["msg"] = current_msg
+    print participants_new_dict
 
     participants_summary = []
-    for loco_name, number_of_companions in participants_dict.iteritems():
-        if number_of_companions == 1:
-            participants_summary.append(loco_name)
-        elif number_of_companions == 2:
-            participants_summary.append(loco_name + ' (mit einer weiteren Person)')
+    for loco_name, loco_dict in participants_new_dict.iteritems():
+        # print loco_name, loco_dict
+        count = loco_dict.get("count")
+        msg = loco_dict.get("msg")
+        # msg = ", ".join(loco_dict.get("msg"))
+        if count == 1:
+            participants_summary.append((loco_name, None))
+        elif count == 2:
+            participants_summary.append((loco_name + ' (mit einer weiteren Person)', msg))
         else:
-            participants_summary.append(loco_name
-                                        + ' (mit ' + str(number_of_companions - 1)
-                                        + ' weiteren Personen)')
+            participants_summary.append((loco_name
+                                                    + ' (mit ' + str(count - 1)
+                                                    + ' weiteren Personen)', msg))
+
+    # for boehnli in boehnlis:
+    #     if boehnli.loco is not None:
+    #         participants_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name] += 1
+
+    # participants_summary = []
+    # for loco_name, number_of_companions in participants_dict.iteritems():
+    #     if number_of_companions == 1:
+    #         participants_summary.append(loco_name)
+    #     elif number_of_companions == 2:
+    #         participants_summary.append(loco_name + ' (mit einer weiteren Person)')
+    #     else:
+    #         participants_summary.append(loco_name
+    #                                     + ' (mit ' + str(number_of_companions - 1)
+    #                                     + ' weiteren Personen)')
 
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
@@ -131,6 +158,7 @@ def my_job(request, job_id):
     jobendtime = job.end_time()
     renderdict.update({
         'number_of_participants': number_of_participants,
+        'participants_summary': participants_summary,
         'participants_summary': participants_summary,
         'job': job,
         'slotrange': slotrange,
@@ -318,12 +346,12 @@ def my_depot_change(request, abo_id):
 
 
 @primary_loco_of_abo
-def my_size_change(request, abo_id):
+def my_size_change(request):
     """
     Eine Abo-Grösse ändern
     """
     saved = False
-    if request.method == "POST" and int(time.strftime("%m")) <=10:
+    if request.method == "POST" and int(time.strftime("%m")) <=10 and int(request.POST.get("abo")) > 0:
         request.user.loco.abo.future_size = int(request.POST.get("abo"))
         request.user.loco.abo.save()
         saved = True
@@ -1113,16 +1141,60 @@ def my_future(request):
             for users_abo in abo.extra_abos.all():
                 extra_abos[users_abo.id]['future'] += 1
 
+    month = int(time.strftime("%m"))
+    day = int(time.strftime("%d"))
+
     renderdict.update({
+        'changed': request.GET.get("changed"),
         'big_abos': big_abos,
         'house_abos': house_abos,
         'small_abos': small_abos,
         'big_abos_future': big_abos_future,
         'house_abos_future': house_abos_future,
         'small_abos_future': small_abos_future,
-        'extras': extra_abos.itervalues()
+        'extras': extra_abos.itervalues(),
+        'abo_change_enabled': month is 12 or (month is 1 and day <= 6)
     })
     return render(request, 'future.html', renderdict)
+
+
+@staff_member_required
+def my_switch_extras(request):
+    renderdict = get_menu_dict(request)
+
+    for abo in Abo.objects.all():
+        if abo.extra_abos_changed:
+            abo.extra_abos = []
+            for extra in abo.future_extra_abos.all():
+                abo.extra_abos.add(extra)
+
+            abo.extra_abos_changed = False
+            abo.save()
+
+
+    renderdict.update({
+    })
+
+    return redirect('/my/zukunft?changed=true')
+
+@staff_member_required
+def my_switch_abos(request):
+    renderdict = get_menu_dict(request)
+
+    for abo in Abo.objects.all():
+        if abo.size is not abo.future_size:
+            if abo.future_size is 0:
+                abo.active = False
+            if abo.size is 0:
+                abo.active = True
+            abo.size = abo.future_size
+            abo.save()
+
+
+    renderdict.update({
+    })
+
+    return redirect('/my/zukunft?changed=true')
 
 
 @staff_member_required

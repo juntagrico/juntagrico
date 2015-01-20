@@ -10,14 +10,14 @@
     {% else %}
         <form method="post" class="form-horizontal createabo">
             {% csrf_token %}
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="depot">Altes Depot</label>
 
                 <div class="controls text-label">
                     {{ loco.abo.depot.name }}
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <label class="control-label" for="depot">Neues Depot</label>
 
                 <div class="controls">
@@ -65,7 +65,6 @@
 
 {% endblock %}
 {% block scripts %}
-<script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-<script type="text/javascript" src="/static/js/libs/require.min.js" data-main="/static/js/initMyChangeDepot.js"></script>
+<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyChangeDepot.js"></script>
 {% endblock %}

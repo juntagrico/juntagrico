@@ -3,8 +3,8 @@
 {% block content %}
     <h3>{{ job.typ.name }}</h3>
     <div class="row">
-        <div class="span3">Zeitpunkt:</div>
-        <div class="span5">
+        <div class="col-md-3">Zeitpunkt:</div>
+        <div class="col-md-5">
             {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }} <br>
             {% if job_is_in_past %}
             (vor {{ job.time|timesince }})
@@ -15,8 +15,8 @@
     </div>
     <br/>
     <div class="row">
-        <div class="span3">Status:</div>
-        <div class="span5">
+        <div class="col-md-3">Status:</div>
+        <div class="col-md-5">
             {% for i in slotrange %}
                 {% if i < number_of_participants %}
                     <img class="jobstatus" src="/static/img/erbse_voll.png" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
@@ -28,27 +28,37 @@
     </div>
     <br/>
     <div class="row">
-        <div class="span3">Ort:</div>
-        <div class="span5">
+        <div class="col-md-3">Ort:</div>
+        <div class="col-md-5">
             {{ job.typ.location }}
             (<a href="https://www.google.ch/maps/place/{{ job.typ.location }}" target="_blank">Karte</a>)
         </div>
     </div>
     <br/>
     <div class="row">
-        <div class="span3">Beschreibung:</div>
-        <div class="span5">{{ job.typ.description }}</div>
+        <div class="col-md-3">Beschreibung:</div>
+        <div class="col-md-5">{{ job.typ.description }}</div>
     </div>
     <br/>
     <div class="row">
-        <div class="span3">Dabei sind:</div>
-        <div class="span5">
+        <div class="col-md-3">Dabei sind:</div>
+        <div class="col-md-5">
             {% if number_of_participants == 0 %}
                 Noch niemand :(
             {% else %}
                 <ul>
-                    {% for participant in participants_summary %}
-                        <li>{{ participant }}</li>
+                    {% for participant, comments in participants_summary %}
+                        <li>
+                            <a class="job-participant" loco-id="{{ participant }}" href="#">
+                                {{ participant }}
+                            </a>
+                            <br>
+                            {% for comment in comments %}
+                                <span class="loco-job-comments">Hinweis: {{ comment }}</span>
+                                <br>
+                            {% endfor %}
+                            <br>
+                        </li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -61,8 +71,8 @@
         <div class="alert alert-success">Der Job ist schon vorbei! Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
     {% else %}
         <div class="row">
-            <div class="span3">Ich trage mich ein:</div>
-            <div class="span5">
+            <div class="col-md-3">Ich trage mich ein:</div>
+            <div class="col-md-5">
                 <form action=""
                     method="POST"
                     class="form-inline"
@@ -96,5 +106,40 @@
                 </form>
             </div>
         </div>
+
     {% endif %}
+
+        <!-- Modal -->
+<!-- 
+        <div class="modal fade" id="locoMessageModal" tabindex="-1" role="dialog" aria-labelledby="locoMessageModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="locoMessageModalLabel">Nachricht wegen des {{ job.typ.name }} Einsatzes vom {{ job.time |date:"d. M" }}</h4>
+              </div>
+              <div class="modal-body">
+                <textarea class="form-control" rows="16" style="width: 100%" placeholder="Deine Nachricht">Hoi
+
+A propos vom kommenden {{ job.typ.name }} Einsatz vom {{ job.time |date:"d. F, \u\m H:i" }}:
+
+...
+
+Merci vielmals,
+
+{{ user.loco.first_name }}</textarea>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-success btn-message-send">Nachricht senden</button>
+              </div>
+            </div>
+          </div>
+        </div>
+-->
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyJobLocoMessaging.js"></script>
 {% endblock %}

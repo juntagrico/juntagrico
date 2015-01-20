@@ -5,32 +5,32 @@
     <br/>
     <form action="/my/kontakt" method="POST" class="form-horizontal">
         {% csrf_token %}
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label">Absender</label>
             <div class="controls text-label">
                 {{ usernameAndEmail }}
             </div>
         </div>
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label">Empfänger</label>
             <div class="controls text-label">
                 info@ortoloco.ch
             </div>
         </div>
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="subject">Betreff</label>
             <div class="controls">
-                <input type="text" name="subject" id="subject" placeholder="Betreff" class="span5"/>
+                <input type="text" name="subject" id="subject" placeholder="Betreff" class="col-md-5"/>
             </div>
         </div>
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label" for="message">Mitteilung</label>
             <div class="controls">
-                <textarea name="message" id="message" class="span5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+                <textarea name="message" id="message" class="col-md-5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
             </div>
         </div>
 
-        <div class="control-group">
+        <div class="form-group">
             <div class="controls">
                 <label for="copy" class="checkbox">
                     <input type="checkbox" name="copy" id="copy">

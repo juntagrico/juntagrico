@@ -5,15 +5,15 @@
 
 {% block content %}
 <link href="/static/css/jquery.fancybox.css" rel="stylesheet">	
-<script type="text/javascript" src="/static/js/libs/jquery-1.9.0.min.js"></script>
-<script type="text/javascript" src="/static/js/libs/jquery.fancybox.pack.js"></script>
+<script type="text/javascript" src="/static/external/jquery-1.9.0.min.js"></script>
+<script type="text/javascript" src="/static/external/jquery.fancybox.pack.js"></script>
 
 <h3>{{ object.title }}</h3>
 <div class="galleryDate">Galerie vom {{ object.date_added|date:"d.m.Y" }}</div>
 {% if object.description %}<p>{{ object.description }}</p>{% endif %}
 <ul class="thumbnails photo-gallery">
     {% for photo in object.public.reverse %}
-    <li class="gallery-photo span2">
+    <li class="gallery-photo col-md-2">
         <a class="thumbnail" rel="{{object.title_slug}}" href="{{ photo.image.url }}" title="{{photo.caption}}">
         	<img src="{{ photo.get_thumbnail_url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/>
         </a>

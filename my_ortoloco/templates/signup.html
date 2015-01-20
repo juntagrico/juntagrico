@@ -1,14 +1,14 @@
 {% extends "mybase.html" %}
 
 {% block allcontent %}
-    <div class="span2"></div>
-    <div class="span8">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
         <h3>Werde ein ortoloco - Personalien</h3>
         <br/>
 
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
-            <div class="control-group {% if locoform.last_name.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.last_name.errors %}error{% endif %}">
                 <label class="control-label" for="name">Name *</label>
 
                 <div class="controls">
@@ -18,7 +18,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.first_name.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.first_name.errors %}error{% endif %}">
                 <label class="control-label" for="prename">Vorname *</label>
 
                 <div class="controls">
@@ -28,7 +28,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.addr_street.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.addr_street.errors %}error{% endif %}">
                 <label class="control-label" for="street">Strasse/Nr. *</label>
 
                 <div class="controls">
@@ -38,7 +38,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
                 <label class="control-label" for="zip">PLZ *</label>
 
                 <div class="controls">
@@ -48,7 +48,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.addr_location.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.addr_location.errors %}error{% endif %}">
                 <label class="control-label" for="city">Ort *</label>
 
                 <div class="controls">
@@ -58,7 +58,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.phone.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.phone.errors %}error{% endif %}">
                 <label class="control-label" for="phone">Telefon *</label>
 
                 <div class="controls">
@@ -68,7 +68,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.mobile_phone.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.mobile_phone.errors %}error{% endif %}">
                 <label class="control-label" for="mobile">Mobile &nbsp;</label>
 
                 <div class="controls">
@@ -78,7 +78,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.email.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.email.errors %}error{% endif %}">
                 <label class="control-label" for="email">E-Mail Adresse *</label>
 
                 <div class="controls">
@@ -88,7 +88,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group {% if locoform.birthday.errors %}error{% endif %}">
+            <div class="form-group {% if locoform.birthday.errors %}error{% endif %}">
                 <label class="control-label" for="birthday">Geburtstag &nbsp;</label>
 
                 <div class="controls">
@@ -98,7 +98,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 <div class="controls">
                     <label class="checkbox">
                         {{ locoform.agb }}

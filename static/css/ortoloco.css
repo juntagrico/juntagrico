@@ -16,6 +16,7 @@ a:hover, a:focus {
 }
 
 html, body {
+    font-family: "Courier New", monospace;
     font-size: 16px;
     background-color: #fffff7;
     height: 100%;
