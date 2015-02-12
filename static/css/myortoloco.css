@@ -180,3 +180,11 @@ table.future td{
 .loco-job-comments {
     font-style: italic;
 }
+
+#filter-table {
+    width: 100%;
+}
+
+#filter-table table {
+    width: 100%;
+}

@@ -346,7 +346,7 @@ def my_depot_change(request, abo_id):
 
 
 @primary_loco_of_abo
-def my_size_change(request):
+def my_size_change(request, abo_id):
     """
     Eine Abo-Grösse ändern
     """
