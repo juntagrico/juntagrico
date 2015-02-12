@@ -17,7 +17,7 @@ define([], function () {
         } else if (count == 1) {
             $("button#send-email")
                 .prop('disabled', false)
-                .text("Email an diesem Loco senden");
+                .text("Email an diesen Loco senden");
         } else {
             $("button#send-email")
                 .prop('disabled', false)
