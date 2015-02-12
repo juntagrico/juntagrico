@@ -104,11 +104,15 @@
 }
 
 .high-label {
-    line-height: 40px;
+    line-height: 35px;
 }
 
 .high-label input[type=checkbox] {
-    margin-top: 15px;
+    margin-top: 9px;
+}
+
+.form-group > div {
+    padding-top: 7px;
 }
 
 .file-upload {
@@ -137,6 +141,9 @@
     font-size: 10px;
 }
 
+textarea#recipients {
+    width: 100%;
+}
 textarea#recipients[disabled=disabled] {
     background: transparent;
     border: none;
