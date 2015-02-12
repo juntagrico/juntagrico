@@ -881,6 +881,7 @@ def my_mails(request):
     return render(request, 'mail_sender.html', renderdict)
 
 
+@permission_required('my_ortoloco.is_depot_admin')
 def my_mails_depot(request):
     renderdict = get_menu_dict(request)
     return render(request, 'mail_sender.html', renderdict)
