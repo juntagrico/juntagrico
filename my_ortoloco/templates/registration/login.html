@@ -9,23 +9,25 @@
                 {% csrf_token %}
                 <br/><br/>
                 <div class="form-group">
-                    <label class="control-label" for="username">Email</label>
-                    <div class="controls">
-                        <input type="text" name="username" id="username" placeholder="Email-Adresse">
+                    <label class="control-label col-xs-2" for="username">Email</label>
+                    <div class="col-xs-10">
+                        <input type="text" class="form-control" name="username" id="username" placeholder="Email-Adresse">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="password">Passwort</label>
-                    <div class="controls">
-                        <input type="password" name="password" id="password" placeholder="Passwort">
+                    <label class="control-label col-xs-2" for="password">Passwort</label>
+                    <div class="col-xs-10">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Passwort">
                     </div>
                 </div>
                 {% if form.errors %}
                     <div class="alert alert-error">Sorry, das ist kein gültiges Login</div>
                 {% endif %}
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success">Anmelden</button><br/><br/>
-                    <a href="/my/neuespasswort">Neues Passwort anfordern</a>
+                <div class="form-group">
+                    <div class="col-xs-offset-2 col-xs-10">
+                        <button type="submit" class="btn btn-success">Anmelden</button><br/><br/>
+                        <a href="/my/neuespasswort">Neues Passwort anfordern</a>
+                    </div>
                 </div>
                 <input type="hidden" name="next" value="{{ next|escape }}"/>
             </form>

@@ -2,6 +2,12 @@
 
 {% block content %}
 	<h3>Kontakt</h3>
+    {% if success == 1  %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+    {% if failure == 1 %}
+        <div class="alert alert-error">{{ message }}</div>
+    {% endif %}
 	<div>Das ortoloco-Gemüsefeld befindet sich am Stadtrand von Dietikon im Zürcher Limmattal</div>
 	<div id="map-canvas"></div>
     <br/>
@@ -11,10 +17,10 @@
 	<div class="addresses row">
 		<div class="col-md-4">
 			<strong>Adresse Gemüsebetrieb</strong><br/>
-ortoloco - Die regionale Gartenkooperative<br/>
-Spreitenbacherstrasse 35<br/>
-8953 Dietikon<br/>
-info@ortoloco.ch
+            ortoloco - Die regionale Gartenkooperative<br/>
+            Spreitenbacherstrasse 35<br/>
+            8953 Dietikon<br/>
+            info@ortoloco.ch
 		</div>
 		<div class="col-md-4">
 			<strong>Adresse Administration</strong><br/>
@@ -27,20 +33,19 @@ info@ortoloco.ch
 	<h3>Newsletter abonnieren</h3>
 	<form class="form" action="{{ request.path }}" method="POST">
         {% csrf_token %}
-		<label class="checkbox">
-		  <input type="checkbox" name="polit" value="subscribe">
-		  Ich möchte den unregelmässig erscheinenden Polit-Newsletter zu aktuellen Themen und Veranstaltungen der Alternativ-Kultur abonnieren.
-		</label>
+        <div class="checkbox">
+            <label>
+              <input type="checkbox" name="polit" value="subscribe">
+              Ich möchte den unregelmässig erscheinenden Polit-Newsletter zu aktuellen Themen und Veranstaltungen der Alternativ-Kultur abonnieren.
+            </label>
+        </div>
 		<div class="email form-inline">
-			<label for="email">Meine Email-Adresse:</label>
-			<input id="email" name="email" type="text" placeholder="hans@muster.ch">
-		</div>
-        {% if success == 1  %}
-            <div class="alert alert-success">{{ message }}</div>
-        {% endif %}
-        {% if failure == 1 %}
-            <div class="alert alert-error">{{ message }}</div>
-        {% endif %}
+            <div class="form-group">
+                <label for="email">Meine Email-Adresse:</label>
+                <input id="email" class="form-control" name="email" type="text" placeholder="hans@muster.ch">
+            </div>
+        </div>
+        <br/>
 		<div class="form-actions">
 		  <button type="submit" class="btn btn-success">Abonnieren</button>
 		</div>

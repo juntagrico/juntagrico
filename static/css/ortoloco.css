@@ -122,7 +122,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 }
 
 /* menu */
-.nav-pills > .active > a {
+.nav-pills > li.active > a {
     color: #4c9434;
     background-color: transparent;
 }
@@ -131,7 +131,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     background-color: transparent;
 }
 
-.nav-pills > .active > a:hover, .nav-pills > .active > a:focus {
+.nav-pills > li.active > a:hover, .nav-pills > .active > a:focus {
     color: #315f21;
     background-color: transparent;
 }
@@ -227,10 +227,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 .addresses {
     padding-top: 20px;
     padding-bottom: 40px;
-}
-
-.email {
-    padding-top: 20px;
 }
 
 /* gallery */
