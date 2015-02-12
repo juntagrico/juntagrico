@@ -15,7 +15,7 @@ Following instructions work for MacOS.
     pip install virtualenv
     virtualenv --distribute venv
     source ./venv/bin/activate
-    pip install -r requirements.txt
+    pip install --upgrade -r requirements.txt
 
 ## Create DB from scratch
 
