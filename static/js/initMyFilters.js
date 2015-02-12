@@ -1,5 +1,6 @@
 /*global define, Dable */
 define([], function () {
+
     var dable = new Dable("filter-table");
 
     var OriginalUpdateDisplayedRows = dable.UpdateDisplayedRows;
