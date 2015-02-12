@@ -790,7 +790,7 @@ def send_email(request):
         raise Http404
     emails = set()
     if request.POST.get("allabo") == "on":
-        for loco in Loco.objects.exclude(abo=None):
+        for loco in Loco.objects.exclude(abo=None).filter(abo__active=True):
             emails.add(loco.email)
     if request.POST.get("depotOnly") == "on":
         for d in request.POST.get("depotOnly"):
