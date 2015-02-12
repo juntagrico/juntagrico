@@ -782,9 +782,15 @@ def my_new_password(request):
     }
     return render(request, 'my_newpassword.html', renderdict)
 
-
 @staff_member_required
 def send_email(request):
+    return send_email_intern(request)
+
+@permission_required('my_ortoloco.is_depot_admin')
+def send_email_depot(request):
+    return send_email_intern(request)
+
+def send_email_intern(request):
     sent = 0
     if request.method != 'POST':
         raise Http404
@@ -794,7 +800,6 @@ def send_email(request):
             emails.add(loco.email)
     if request.POST.get("depotOnly") == "on":
         for d in request.POST.get("depotOnly"):
-            
             if d == "o":
                 x = request.POST.get(d)
                 for loco in Depot.get(request.POST.get(d)).locos.all:
@@ -870,6 +875,13 @@ def send_email_to_depot(request):
 
 @staff_member_required
 def my_mails(request):
+    return my_mails_intern(request)
+
+@permission_required('my_ortoloco.is_depot_admin')
+def my_mails_depot(request):
+    return my_mails_intern(request)
+
+def my_mails_intern(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'recipient_type': request.POST.get("recipient_type"),
@@ -879,13 +891,6 @@ def my_mails(request):
         'filter_value': request.POST.get("filter_value")
     })
     return render(request, 'mail_sender.html', renderdict)
-
-
-@permission_required('my_ortoloco.is_depot_admin')
-def my_mails_depot(request):
-    renderdict = get_menu_dict(request)
-    return render(request, 'mail_sender.html', renderdict)
-
 
 def current_year_boehlis():
     now = datetime.date.today()

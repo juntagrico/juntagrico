@@ -16,31 +16,30 @@
     {% endif %}
     <br/>
         {% if recipients %}
+            <form action="/my/mails/send{% if depot_admin|length > 0 %}_depot{% endif %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
             {% csrf_token %}
-            <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="sender-email" class="col-sm-2 control-label">Absender</label>
                 <div class="col-sm-10" id="sender-email">
                     info@ortoloco.ch
                 </div>
             </div>
-                <div class="form-group">
-                  <label for="recipients" class="col-sm-2 control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
-                  <div class="col-sm-10">
-                    <!-- <input type="email" class="form-control" id="inputEmail3" placeholder="Email"> -->
-                    <textarea name="recipients" id="recipients" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}" disabled="disabled">{{ recipients }}</textarea>
-                  </div>
-                </div>
+            <div class="form-group">
+              <label for="recipients" class="col-sm-2 control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
+              <div class="col-sm-10">
+                <textarea name="recipients" id="recipients" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}" disabled="disabled">{{ recipients }}</textarea>
+              </div>
+            </div>
         {% else %}
-            {% if depot_admin|length > 0 %}
-                {% csrf_token %}
-                <form action="/my/mails/send_to_depot" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="sender-email" class="col-sm-2 control-label">Absender</label>
-                    <div class="col-sm-10" id="sender-email">
-                        info@ortoloco.ch
-                    </div>
+            <form action="/my/mails/send{% if depot_admin|length > 0 %}_to_depot{% endif %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="sender-email" class="col-sm-2 control-label">Absender</label>
+                <div class="col-sm-10" id="sender-email">
+                    info@ortoloco.ch
                 </div>
+            </div>
+            {% if depot_admin|length > 0 %}
                 <div class="form-group">
                     <label for="sender-email" class="col-sm-2 control-label">Empfänger</label>
                     <input type="hidden" id="depotOnly" name="depotOnly" value="on">
@@ -57,14 +56,6 @@
                     </div>
                 </div>
             {% else %}
-                <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="sender-email" class="col-sm-2 control-label">Absender</label>
-                    <div class="col-sm-10" id="sender-email">
-                        info@ortoloco.ch
-                    </div>
-                </div>
                 <div class="form-group">
                     <label for="sender-email--" class="col-sm-2 control-label">Empfänger</label>
                     <div class="col-sm-10">
