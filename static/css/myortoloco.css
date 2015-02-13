@@ -83,6 +83,10 @@
     font-weight: bold;
 }
 
+.createabo label {
+    font-weight: normal;
+}
+
 .createabo #depot {
     margin-bottom: 3px;
 }

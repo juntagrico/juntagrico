@@ -14,9 +14,9 @@
         <form action="" method="post" class="form-horizontal createabo">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label">Abogrösse</label>
+                <label class="col-md-4 control-label">Abogrösse</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     <label class="radio" for="small">
                         <input type="radio" name="abo" value="small" id="small" {% if selected_abo == "small" %}checked="checked"{% endif %}/>
                         <strong>Kleines Abo</strong>
@@ -27,9 +27,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
+                <label class="col-md-4 control-label"></label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     <label class="radio" for="big">
                         <input type="radio" name="abo" value="big" id="big" {% if selected_abo == "big" %}checked="checked"{% endif %}/>
                         <strong>Grosses Abo</strong>
@@ -40,9 +40,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
+                <label class="col-md-4 control-label"></label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     <label class="radio" for="house">
                         <input type="radio" name="abo" value="house" id="house" {% if selected_abo == "house" %}checked="checked"{% endif %}/>
                         <strong>Haus-Abo</strong>
@@ -53,9 +53,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
+                <label class="col-md-4 control-label"></label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     <label class="radio" for="none">
                         <input type="radio" name="abo" value="none" id="none"/>
                         <strong>Kein Abo</strong>
@@ -66,10 +66,10 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label" for="depot">Depot</label>
+                <label class="col-md-4 control-label" for="depot">Depot</label>
 
-                <div class="controls">
-                    <select name="depot" id="depot">
+                <div class="col-md-8 controls">
+                    <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
                         {% endfor %}
@@ -84,9 +84,9 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label">MitabonnentInnen</label>
+                <label class="col-md-4 control-label">MitabonnentInnen</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {% if 0 == mit_locos|length %}
                         <div>Bisher hast du keine MitabonnentInnen eingetragen.</div>
                     {% else %}
@@ -101,12 +101,12 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label">Anteilscheine</label>
+                <label class="col-md-4 control-label">Anteilscheine</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     <label for="scheine">
 
-                        <input type="text" name="scheine" id="scheine" class="col-md-1"/><br/>
+                        <input type="text" name="scheine" id="scheine" class="col-md-1 form-control"/><br/>
                         Du kannst unbeschränkt und jederzeit Anteilscheine erwerben. Allerdings brauchst du je nach Abogrösse ein Minimum, um zu starten.
                     </label>
                     {% if scheineerror %}
@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <div class="form-actions">
+            <div class="col-md-offset-4 form-actions">
                 <button type="submit" class="btn btn-success">Abo erstellen</button>
             </div>
         </form>

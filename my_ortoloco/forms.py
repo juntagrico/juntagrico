@@ -21,15 +21,15 @@ class ProfileLocoForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone']
         widgets = {
-            'first_name': TextInput(attrs={'placeholder': 'Berta'}),
-            'last_name': TextInput(attrs={'placeholder': 'Muster'}),
-            'addr_street': TextInput(attrs={'placeholder': 'Zürcherstrasse 123'}),
-            'addr_zipcode': TextInput(attrs={'placeholder': '8000', 'class': 'span2'}),
-            'addr_location': TextInput(attrs={'placeholder': 'Zürich'}),
-            'birthday': TextInput(attrs={'placeholder': '01.12.1956'}),
-            'phone': TextInput(attrs={'placeholder': '044 123 45 67'}),
-            'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67'}),
-            'email': TextInput(attrs={'placeholder': 'beate@muster.ch'}),
+            'first_name': TextInput(attrs={'placeholder': 'Berta', 'class': 'form-control'}),
+            'last_name': TextInput(attrs={'placeholder': 'Muster', 'class': 'form-control'}),
+            'addr_street': TextInput(attrs={'placeholder': 'Zürcherstrasse 123', 'class': 'form-control'}),
+            'addr_zipcode': TextInput(attrs={'placeholder': '8000', 'class': 'form-control'}),
+            'addr_location': TextInput(attrs={'placeholder': 'Zürich', 'class': 'form-control'}),
+            'birthday': TextInput(attrs={'placeholder': '01.12.1956', 'class': 'form-control'}),
+            'phone': TextInput(attrs={'placeholder': '044 123 45 67', 'class': 'form-control'}),
+            'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67', 'class': 'form-control'}),
+            'email': TextInput(attrs={'placeholder': 'beate@muster.ch', 'class': 'form-control'}),
         }
 
 
@@ -50,13 +50,13 @@ class RegisterLocoForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone']
         widgets = {
-            'first_name': TextInput(attrs={'placeholder': 'Berta'}),
-            'last_name': TextInput(attrs={'placeholder': 'Muster'}),
-            'addr_street': TextInput(attrs={'placeholder': 'Zürcherstrasse 123'}),
-            'addr_zipcode': TextInput(attrs={'placeholder': '8000', 'class': 'span2'}),
-            'addr_location': TextInput(attrs={'placeholder': 'Zürich'}),
-            'birthday': TextInput(attrs={'placeholder': '01.12.1956'}),
-            'phone': TextInput(attrs={'placeholder': '044 123 45 67'}),
-            'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67'}),
-            'email': TextInput(attrs={'placeholder': 'beate@muster.ch'})
+            'first_name': TextInput(attrs={'placeholder': 'Berta', 'class': 'form-control'}),
+            'last_name': TextInput(attrs={'placeholder': 'Muster', 'class': 'form-control'}),
+            'addr_street': TextInput(attrs={'placeholder': 'Zürcherstrasse 123', 'class': 'form-control'}),
+            'addr_zipcode': TextInput(attrs={'placeholder': '8000', 'class': 'col-xs-2'}),
+            'addr_location': TextInput(attrs={'placeholder': 'Zürich', 'class': 'form-control'}),
+            'birthday': TextInput(attrs={'placeholder': '01.12.1956', 'class': 'form-control'}),
+            'phone': TextInput(attrs={'placeholder': '044 123 45 67', 'class': 'form-control'}),
+            'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67', 'class': 'form-control'}),
+            'email': TextInput(attrs={'placeholder': 'beate@muster.ch', 'class': 'form-control'})
         }

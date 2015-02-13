@@ -8,108 +8,110 @@
 
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
-            <div class="form-group {% if locoform.last_name.errors %}error{% endif %}">
-                <label class="control-label" for="name">Name *</label>
+            <div class="form-group {% if locoform.last_name.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_last_name">Name *</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.last_name }}
                     {% if locoform.last_name.errors %}
-                        <div class="help-inline">Name ungültig</div>
+                        <div class="help-block">Name ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.first_name.errors %}error{% endif %}">
-                <label class="control-label" for="prename">Vorname *</label>
+            <div class="form-group {% if locoform.first_name.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_first_name">Vorname *</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.first_name }}
                     {% if locoform.first_name.errors %}
-                        <div class="help-inline">Vorname ungültig</div>
+                        <div class="help-block">Vorname ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.addr_street.errors %}error{% endif %}">
-                <label class="control-label" for="street">Strasse/Nr. *</label>
+            <div class="form-group {% if locoform.addr_street.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_addr_street">Strasse/Nr. *</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.addr_street }}
                     {% if locoform.addr_street.errors %}
-                        <div class="help-inline">Strasse ungültig</div>
+                        <div class="help-block">Strasse ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
-                <label class="control-label" for="zip">PLZ *</label>
+            <div class="form-group {% if locoform.addr_zipcode.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_addr_zipcode">PLZ *</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.addr_zipcode }}
                     {% if locoform.addr_zipcode.errors %}
-                        <div class="help-inline">PLZ ungültig</div>
+                        <div class="help-block">PLZ ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.addr_location.errors %}error{% endif %}">
-                <label class="control-label" for="city">Ort *</label>
+            <div class="form-group {% if locoform.addr_location.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_addr_location">Ort *</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.addr_location }}
                     {% if locoform.addr_location.errors %}
-                        <div class="help-inline">Ort ungültig</div>
+                        <div class="help-block">Ort ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.phone.errors %}error{% endif %}">
-                <label class="control-label" for="phone">Telefon *</label>
+            <div class="form-group {% if locoform.phone.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_phone">Telefon *</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.phone }}
                     {% if locoform.phone.errors %}
-                        <div class="help-inline">Telefon ungültig</div>
+                        <div class="help-block">Telefon ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.mobile_phone.errors %}error{% endif %}">
-                <label class="control-label" for="mobile">Mobile &nbsp;</label>
+            <div class="form-group {% if locoform.mobile_phone.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_mobile_phone">Mobile &nbsp;</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.mobile_phone }}
                     {% if locoform.mobile_phone.errors %}
-                        <div class="help-inline">Mobile ungültig</div>
+                        <div class="help-block">Mobile ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.email.errors %}error{% endif %}">
-                <label class="control-label" for="email">E-Mail Adresse *</label>
+            <div class="form-group {% if locoform.email.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_email">E-Mail Adresse *</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.email }}
                     {% if locoform.email.errors %}
-                        <div class="help-inline">E-Mail ungültig</div>
+                        <div class="help-block">E-Mail ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.birthday.errors %}error{% endif %}">
-                <label class="control-label" for="birthday">Geburtstag &nbsp;</label>
+            <div class="form-group {% if locoform.birthday.errors %}has-error{% endif %}">
+                <label class="col-md-4 control-label" for="id_birthday">Geburtstag &nbsp;</label>
 
-                <div class="controls">
+                <div class="col-md-8 controls">
                     {{ locoform.birthday }}
                     {% if locoform.birthday.errors %}
-                        <div class="help-inline">Geburtstag ungültig</div>
+                        <div class="help-block">Geburtstag ungültig</div>
                     {% endif %}
                 </div>
             </div>
             <div class="form-group">
-                <div class="controls">
-                    <label class="checkbox">
-                        {{ locoform.agb }}
-                        <input type="checkbox" name="agb" id="agb" {% if agbchecked %}checked="checked"{% endif %}>
-                        Ich habe <a target="_blank" href="/static/others/131129_Statuten_ortoloco.pdf">die Statuten</a> und <a target="_blank" href="/static/others/131129_Betriebsreglement_ortoloco.pdf">das Betriebsreglement</a> gelesen und erkläre meinen Willen, der "Genossenschaft ortoloco - Die regionale Gartenkooperative"
-                        beizutreten. Hiermit beantrage ich meine Aufnahme.
+                <div class="col-md-offset-4 col-md-8">
+                    <div class="checkbox">
+                        <label>
+                            {{ locoform.agb }}
+                            <input type="checkbox" name="agb" id="agb" {% if agbchecked %}checked="checked"{% endif %}>
+                            Ich habe <a target="_blank" href="/static/others/131129_Statuten_ortoloco.pdf">die Statuten</a> und <a target="_blank" href="/static/others/131129_Betriebsreglement_ortoloco.pdf">das Betriebsreglement</a> gelesen und erkläre meinen Willen, der "Genossenschaft ortoloco - Die regionale Gartenkooperative"
+                            beizutreten. Hiermit beantrage ich meine Aufnahme.
 
-                        {% if agberror %}
-                            <div class="alert alert-error">Statuten müssen angenommen werden</div>
-                        {% endif %}
-                    </label>
+                            {% if agberror %}
+                                <div class="alert alert-error">Statuten müssen angenommen werden</div>
+                            {% endif %}
+                        </label>
+                    </div>
                 </div>
             </div>
             {% if userexists %}
@@ -120,7 +122,7 @@
             {% endif %}
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-success">Anmelden</button>
+                <button type="submit" class="col-md-offset-4 btn btn-success">Anmelden</button>
             </div>
             <input type="hidden" name="next" value="{{ next|escape }}"/>
         </form>
