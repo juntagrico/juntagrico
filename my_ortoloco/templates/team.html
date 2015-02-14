@@ -3,13 +3,13 @@
 {% block content %}
     <h3>{{ team.name }}</h3>
     <div class="row">
-        <div class="col-md-3">Beschreibung:</div>
-        <div class="col-md-5">{{ team.description }}</div>
+        <div class="col-md-4"><strong>Beschreibung:</strong></div>
+        <div class="col-md-8">{{ team.description }}</div>
     </div>
     <br/>
     <div class="row">
-        <div class="col-md-3">Verantwortlicher:</div>
-        <div class="col-md-5">{{ team.coordinator.first_name }} {{ team.coordinator.last_name }}<br/><a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.email }}</a></div>
+        <div class="col-md-4"><strong>Verantwortlicher:</strong></div>
+        <div class="col-md-8">{{ team.coordinator.first_name }} {{ team.coordinator.last_name }}<br/><a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.email }}</a></div>
     </div>
     <br/>
     <h4>Kommende Termine</h4>
@@ -25,6 +25,4 @@
     {% if jobs|length <= 0 %}
         Keine Jobs ausgeschrieben
     {% endif %}
-    <br/><br/>
-    <a class="btn" href="javascript:history.back()">zurück</a>
 {% endblock %}

@@ -9,9 +9,9 @@
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
             <div class="form-group {% if locoform.last_name.errors %}error{% endif %}">
-                <label class="col-sm-2 control-label" for="id_last_name">Name *</label>
+                <label class="col-sm-4 control-label" for="id_last_name">Name *</label>
 
-                <div class="col-sm-10">
+                <div class="controls col-sm-8">
                     {{ locoform.last_name }}
                     {% if locoform.last_name.errors %}
                         <span class="help-inline">Name ungültig</span>
@@ -20,9 +20,9 @@
             </div>
 
             <div class="form-group {% if locoform.first_name.errors %}error{% endif %}">
-                <label class="control-label" for="id_first_name">Vorname *</label>
+                <label class="col-sm-4 control-label" for="id_first_name">Vorname *</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.first_name }}
                     {% if locoform.first_name.errors %}
                         <span class="help-inline">Vorname ungültig</span>
@@ -31,9 +31,9 @@
             </div>
 
             <div class="form-group {% if locoform.addr_street.errors %}error{% endif %}">
-                <label class="control-label" for="id_addr_street">{{ locoform.addr_street.label }} *</label>
+                <label class="col-sm-4 control-label" for="id_addr_street">{{ locoform.addr_street.label }} *</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.addr_street }}
                     {% if locoform.addr_street.errors %}
                         <span class="help-inline">Strasse ungültig</span>
@@ -42,9 +42,9 @@
             </div>
 
             <div class="form-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
-                <label class="control-label" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }} *</label>
+                <label class="col-sm-4 control-label" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }} *</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.addr_zipcode }}
                     {% if locoform.addr_zipcode.errors %}
                         <span class="help-inline">PLZ ungültig</span>
@@ -53,9 +53,9 @@
             </div>
 
             <div class="form-group {% if locoform.addr_location.errors %}error{% endif %}">
-                <label class="control-label" for="id_addr_location">{{ locoform.addr_location.label }} *</label>
+                <label class="col-sm-4 control-label" for="id_addr_location">{{ locoform.addr_location.label }} *</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.addr_location }}
                     {% if locoform.addr_location.errors %}
                         <span class="help-inline">Ort ungültig</span>
@@ -64,9 +64,9 @@
             </div>
 
             <div class="form-group {% if locoform.phone.errors %}error{% endif %}">
-                <label class="control-label" for="id_phone">{{ locoform.phone.label }} *</label>
+                <label class="col-sm-4 control-label" for="id_phone">{{ locoform.phone.label }} *</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.phone }}
                     {% if locoform.phone.errors %}
                         <span class="help-inline">Telefon ungültig</span>
@@ -75,9 +75,9 @@
             </div>
 
             <div class="form-group {% if locoform.mobile_phone.errors %}error{% endif %}">
-                <label class="control-label" for="id_mobile_phone">{{ locoform.mobile_phone.label }} &nbsp;</label>
+                <label class="col-sm-4 control-label" for="id_mobile_phone">{{ locoform.mobile_phone.label }} &nbsp;</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.mobile_phone }}
                     {% if locoform.mobile_phone.errors %}
                         <span class="help-inline">Mobile ungültig</span>
@@ -86,9 +86,9 @@
             </div>
 
             <div class="form-group {% if locoform.email.errors %}error{% endif %}">
-                <label class="control-label" for="id_email">E-Mail Adresse *</label>
+                <label class="col-sm-4 control-label" for="id_email">E-Mail Adresse *</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.email }}
 
                     {% if locoform.email.errors %}
@@ -98,9 +98,9 @@
             </div>
 
             <div class="form-group {% if locoform.birthday.errors %}error{% endif %}">
-                <label class="control-label" for="birthday">Geburtstag &nbsp;</label>
+                <label class="col-sm-4 control-label" for="birthday">Geburtstag &nbsp;</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {{ locoform.birthday }}
 
                     {% if locoform.birthday.errors %}
@@ -109,9 +109,9 @@
                 </div>
             </div>
             <div class="form-group {% if scheineerror %}error{% endif %}">
-                <label class="control-label" for="id_anteilscheine">Anteilscheine</label>
+                <label class="col-sm-4 control-label" for="id_anteilscheine">Anteilscheine</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     <input type="text" class="col-md-1" name="anteilscheine" id="id_anteilscheine" value="{{ scheine }}">
 
                     {% if scheineerror %}
@@ -124,7 +124,7 @@
                     Diese Email-Adresse existiert bereits im System. Bitte meldet euch bei <a href="mailto:info@ortoloco.ch">info@ortoloco.ch</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
                 </div>
             {% endif %}
-            <div class="form-actions">
+            <div class="form-actions col-sm-offset-4">
                 <button type="submit" class="btn btn-success">MitabonnentIn hinzufügen</button>
                 <a href="/my/aboerstellen" class="btn">Abbrechen</a>
             </div>

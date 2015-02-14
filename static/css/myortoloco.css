@@ -199,3 +199,8 @@ table.future td{
 #filter-table table {
     width: 100%;
 }
+
+.main-menu {
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+}

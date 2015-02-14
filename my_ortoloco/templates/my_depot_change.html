@@ -11,16 +11,16 @@
         <form method="post" class="form-horizontal createabo">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label" for="depot">Altes Depot</label>
+                <label class="control-label col-sm-4" for="depot">Altes Depot</label>
 
-                <div class="controls text-label">
+                <div class="controls text-label col-sm-8">
                     {{ loco.abo.depot.name }}
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label" for="depot">Neues Depot</label>
+                <label class="control-label col-sm-4" for="depot">Neues Depot</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     <select name="depot" id="depot">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
@@ -31,10 +31,10 @@
                         Wähle ein Depot aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
                     </label>
 
-                    <div id="map-canvas" style="width:520px;"></div>
+                    <div class="" id="map-canvas" style="width:440px;"></div>
                 </div>
             </div>
-            <div class="form-actions">
+            <div class="col-sm-offset-4 form-actions">
                 Achtung! Dies ändert das Depot ohne weitere Rückmeldung.<br/><br/>
                 <button type="submit" class="btn btn-success">Depot ändern</button>
             </div>

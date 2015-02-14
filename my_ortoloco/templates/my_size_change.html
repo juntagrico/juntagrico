@@ -12,68 +12,75 @@
         <form method="post" class="form-horizontal createabo">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label">Abogrösse</label>
+                <label class="control-label col-sm-4">Abogrösse</label>
 
-                <div class="controls">
-                    <label class="radio" for="small">
-                        <input type="radio" name="abo" value="1" id="small" {% if size == 1 %}checked="checked"{% endif %}/>
-                        <strong>Kleines Abo</strong>
+                <div class="controls col-sm-8">
+                    <div class="radio">
+                        <label class="radio" for="small">
+                            <input type="radio" name="abo" value="1" id="small" {% if size == 1 %}checked="checked"{% endif %}/>
+                            <strong>Kleines Abo</strong>
 
-                        <div>
-                            Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilscheine.
-                        </div>
-                    </label>
+                            <div>
+                                Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilscheine.
+                            </div>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
+                <label class="control-label col-sm-4"></label>
 
-                <div class="controls">
-                    <label class="radio" for="big">
-                        <input type="radio" name="abo" value="2" id="big" {% if size == 2 %}checked="checked"{% endif %}/>
-                        <strong>Grosses Abo</strong>
+                <div class="controls col-sm-8">
+                    <div class="radio">
+                        <label for="big">
+                            <input type="radio" name="abo" value="2" id="big" {% if size == 2 %}checked="checked"{% endif %}/>
+                            <strong>Grosses Abo</strong>
 
-                        <div>
-                            Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilscheine.
-                        </div>
-                    </label>
+                            <div>
+                                Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilscheine.
+                            </div>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
+                <label class="control-label col-sm-4"></label>
 
-                <div class="controls">
-                    <label class="radio" for="house">
-                        <input type="radio" name="abo" value="10" id="house" {% if size == 10 %}checked="checked"{% endif %}/>
-                        <strong>Haus-Abo</strong>
+                <div class="controls col-sm-8">
+                    <div class="radio">
+                        <label for="house">
+                            <input type="radio" name="abo" value="10" id="house" {% if size == 10 %}checked="checked"{% endif %}/>
+                            <strong>Haus-Abo</strong>
 
-                        <div>
-                            Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.
-                        </div>
-                    </label>
+                            <div>
+                                Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.
+                            </div>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label"></label>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">Abogrösse ändern</button>
-            </div>
-
-    <div class="form-group">
-        <label class="control-label">Abo kündigen</label>
-        <div class="controls">
-            <label>
-                <div>
-                    Du willst ab nächstem Jahr kein ortoloco-Abo mehr? Dann schicke bitte deine Kündigung
-                    bis spätestens Ende Oktober an <a href="mailto:info@ortoloco.ch?subject=Kündigung Abo ortoloco.ch">info@ortoloco.ch</a>.
-                    Weitere Infos zur Kündigung des Abos und der Mitgliedschaft findest du im
-                    <a href="/medias/documents/Betriebsreglement_ortoloco_Stand_Okt._2014.pdf">Betriebsreglement</a>.
+                <label class="control-label col-sm-4"></label>
+                <div class="controls col-sm-8">
+                    <button type="submit" class="btn btn-success">Abogrösse ändern</button>
                 </div>
-            </label>
+            </div>
+            <div class="form-actions col-sm-8">
+            </div>
+            <br/>
+            <div class="form-group">
+            <label class="control-label col-sm-4">Abo kündigen</label>
+            <div class="controls col-sm-8">
+                <label>
+                    <div>
+                        Du willst ab nächstem Jahr kein ortoloco-Abo mehr? Dann schicke bitte deine Kündigung
+                        bis spätestens Ende Oktober an <a href="mailto:info@ortoloco.ch?subject=Kündigung Abo ortoloco.ch">info@ortoloco.ch</a>.
+                        Weitere Infos zur Kündigung des Abos und der Mitgliedschaft findest du im
+                        <a href="/medias/documents/Betriebsreglement_ortoloco_Stand_Okt._2014.pdf">Betriebsreglement</a>.
+                    </div>
+                </label>
+            </div>
         </div>
-
-    </div>
     </form>
     {% endif %}
 

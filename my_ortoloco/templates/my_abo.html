@@ -106,12 +106,17 @@
                     {{ loco.abo.future_size_name }}
                 </dd>
             {% endif %}
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>&nbsp;</dt>
+            <dd>
+                <div class="form-actions">
+                    <a href="/my/abo/{{ loco.abo.id }}/aendern" class="btn btn-success">Abo ändern</a>
+                    {% if not primary %}
+                        * Das Abo kann nur der Hauptabonnent ändern.
+                    {% endif %}
+                </div>
+            </dd>
         </dl>
-        <div class="form-actions">
-            <a href="/my/abo/{{ loco.abo.id }}/aendern" class="btn btn-success">Abo ändern</a>
-            {% if not primary %}
-                * Das Abo kann nur der Hauptabonnent ändern.
-            {% endif %}
-        </div>
     {% endif %}
 {% endblock %}

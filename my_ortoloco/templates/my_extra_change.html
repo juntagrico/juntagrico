@@ -12,17 +12,19 @@
         <form method="post" class="form-horizontal createabo">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label" for="depot">Deine Abos</label>
+                <label class="control-label col-sm-4" for="depot">Deine Abos</label>
 
-                <div class="controls">
+                <div class="controls col-sm-8">
                     {% for extra in extras %}
-                        <label class="checkbox" for="abo{{ extra.id }}">
-                            <input type="checkbox" value="{{ extra.id }}" name="abo{{ extra.id }}" id="abo{{ extra.id }}" {% if extra.selected %}checked="checked"{% endif %} />{{ extra.name }}
-                        </label>
+                        <div class="checkbox">
+                            <label for="abo{{ extra.id }}">
+                                <input type="checkbox" value="{{ extra.id }}" name="abo{{ extra.id }}" id="abo{{ extra.id }}" {% if extra.selected %}checked="checked"{% endif %} />{{ extra.name }}
+                            </label>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
-            <div class="form-actions">
+            <div class="form-actions col-sm-offset-4">
                 <button type="submit" class="btn btn-success">Extra-Abos ändern</button>
             </div>
         </form>

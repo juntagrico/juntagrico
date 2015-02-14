@@ -6,43 +6,48 @@
     <form action="/my/kontakt" method="POST" class="form-horizontal">
         {% csrf_token %}
         <div class="form-group">
-            <label class="control-label">Absender</label>
-            <div class="controls text-label">
+            <label class="control-label col-sm-4">Absender</label>
+            <div class="controls text-label col-sm-8">
                 {{ usernameAndEmail }}
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label">Empfänger</label>
-            <div class="controls text-label">
+            <label class="control-label col-sm-4">Empfänger</label>
+            <div class="controls text-label col-sm-8">
                 info@ortoloco.ch
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label" for="subject">Betreff</label>
-            <div class="controls">
-                <input type="text" name="subject" id="subject" placeholder="Betreff" class="col-md-5"/>
+            <label class="control-label col-sm-4" for="subject">Betreff</label>
+            <div class="controls col-sm-8">
+                <input type="text" name="subject" id="subject" placeholder="Betreff" class="form-control"/>
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label" for="message">Mitteilung</label>
-            <div class="controls">
-                <textarea name="message" id="message" class="col-md-5" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+            <label class="control-label col-sm-4" for="message">Mitteilung</label>
+            <div class="controls col-sm-8">
+                <textarea name="message" id="message" class="form-control" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
             </div>
         </div>
 
         <div class="form-group">
-            <div class="controls">
-                <label for="copy" class="checkbox">
-                    <input type="checkbox" name="copy" id="copy">
-                    Kopie an mich
-                </label>
+            <div class="control-label col-sm-4"></div>
+            <div class="controls col-sm-8">
+                <div class="checkbox">
+                    <label for="copy">
+                        <input type="checkbox" name="copy" id="copy">
+                        Kopie an mich
+                    </label>
+                </div>
             </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions col-sm-offset-4">
             <button type="submit" class="btn btn-success">Nachricht verschicken</button>
         </div>
     </form>
+    <br/>
+    <br/>
     ortoloco c/o albizke, Albisriederstr. 203b, 8047 Zürich<br/>
     info@ortoloco.ch
 {% endblock %}
