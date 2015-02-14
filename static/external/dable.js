@@ -22,7 +22,7 @@
                 asyncStart: 0,
                 asyncLength: 1000,
                 style: 'none',
-                evenRowColor: 'rgba(76, 148, 52, 0.1)',
+                evenRowColor: '#ecf4e1',
                 oddRowColor: '#fffff7'
             };
 
