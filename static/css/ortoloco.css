@@ -11,6 +11,10 @@ a {
     color: #4c9434;
 }
 
+ul {
+    padding-left: 20px;
+}
+
 a:hover, a:focus {
     color: #315f21;
 }
@@ -60,7 +64,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 .container {
     min-height: 100%;
     position: relative;
-    padding: 0px 80px 0 80px;
+    padding: 0px 40px 0 40px;
 }
 
 .ortoloco {
@@ -142,8 +146,8 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     line-height: 22px;
     padding-top: 6px;
     padding-bottom: 6px;
-    margin-left: -25px;
-    padding-left: 25px;
+    margin-left: -20px;
+    padding-left: 20px;
 }
 
 .nav-pills.nav-stacked > li > a, .nav-pills ul.nav-pills.nav-stacked > li:last-child > a {
@@ -223,7 +227,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 /* contact */
 #map-canvas {
     display: inline-block;
-    width: 600px;
+    width: 560px;
     height: 300px;
 }
 
@@ -244,8 +248,14 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     text-align: center;
 }
 
+.photo-gallery {
+    display: block;
+    clear: both;
+}
+
 .gallery-photo {
     text-align: center;
+    list-style: none;
 }
 
 .galleryDate {

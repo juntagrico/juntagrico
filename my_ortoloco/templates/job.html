@@ -44,7 +44,7 @@
         <div class="col-md-3">Dabei sind:</div>
         <div class="col-md-5">
             {% if number_of_participants == 0 %}
-                Noch niemand :(
+                Noch niemand :-(
             {% else %}
                 <ul>
                     {% for participant, comments in participants_summary %}
@@ -80,7 +80,7 @@
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}
                         <div>
-                            <select name="jobs">
+                            <select name="jobs" class="form-control">
                                 {% for i in allowed_additional_participants %}
                                     {% if i = 1 %}
                                         <option value="1">Unbegleitet</option>

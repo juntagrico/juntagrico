@@ -8,8 +8,9 @@ TEMPLATE_DEBUG = DEBUG
 WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "omg@doodle.com", "orto@xiala.net", "oliver.ganz+.*@gmail.com"]
 
 ADMINS = (
-# ('Your Name', 'your_email@example.com'),
+    ('Oli', 'oliver.ganz@gmail.com'),
 )
+SERVER_EMAIL="server@ortoloco.ch"
 
 
 # let the users login with their emails
