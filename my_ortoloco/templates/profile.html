@@ -16,7 +16,7 @@
                 </div>
             </div>
             {% if locoform.first_name.errors %}
-                <div class="alert alert-error">Vorname ungültig</div>
+                <div class="alert alert-danger">Vorname ungültig</div>
             {% endif %}
 
             <div class="form-group {% if locoform.last_name.errors %}error{% endif %}">
@@ -27,7 +27,7 @@
                 </div>
             </div>
             {% if locoform.last_name.errors %}
-                <div class="alert alert-error">Nachname ungültig</div>
+                <div class="alert alert-danger">Nachname ungültig</div>
             {% endif %}
 
             <div class="form-group {% if locoform.addr_street.errors %}error{% endif %}">
@@ -38,7 +38,7 @@
                 </div>
             </div>
             {% if locoform.addr_street.errors %}
-                <div class="alert alert-error">Strasse ungültig</div>
+                <div class="alert alert-danger">Strasse ungültig</div>
             {% endif %}
 
             <div class="form-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
@@ -49,7 +49,7 @@
                 </div>
             </div>
             {% if locoform.addr_zipcode.errors %}
-                <div class="alert alert-error">PLZ ungültig</div>
+                <div class="alert alert-danger">PLZ ungültig</div>
             {% endif %}
 
             <div class="form-group {% if locoform.addr_location.errors %}error{% endif %}">
@@ -60,7 +60,7 @@
                 </div>
             </div>
             {% if locoform.addr_location.errors %}
-                <div class="alert alert-error">Ort ungültig</div>
+                <div class="alert alert-danger">Ort ungültig</div>
             {% endif %}
 
             <div class="form-group {% if locoform.phone.errors %}error{% endif %}">
@@ -71,7 +71,7 @@
                 </div>
             </div>
             {% if locoform.phone.errors %}
-                <div class="alert alert-error">Telefon ungültig</div>
+                <div class="alert alert-danger">Telefon ungültig</div>
             {% endif %}
 
             <div class="form-group {% if locoform.mobile_phone.errors %}error{% endif %}">
@@ -82,7 +82,7 @@
                 </div>
             </div>
             {% if locoform.mobile_phone.errors %}
-                <div class="alert alert-error">Mobile ungültig</div>
+                <div class="alert alert-danger">Mobile ungültig</div>
             {% endif %}
 
             <div class="form-group {% if locoform.email.errors %}error{% endif %}">
@@ -96,7 +96,7 @@
                 <label class="control-label col-sm-4"></label>
 
                 {% if locoform.email.errors %}
-                    <div class="alert alert-error">E-Mail ungültig</div>
+                    <div class="alert alert-danger">E-Mail ungültig</div>
                 {% endif %}
                 <div class="controls col-sm-8">
                     <a href="/my/passwort">hier kannst du dein Passwort ändern</a>

@@ -111,8 +111,8 @@
             <div class="form-group {% if scheineerror %}error{% endif %}">
                 <label class="col-sm-4 control-label" for="id_anteilscheine">Anteilscheine</label>
 
-                <div class="controls col-sm-8">
-                    <input type="text" class="col-md-1" name="anteilscheine" id="id_anteilscheine" value="{{ scheine }}">
+                <div class="controls col-sm-2">
+                    <input type="text" class="form-control" name="anteilscheine" id="id_anteilscheine" value="{{ scheine }}">
 
                     {% if scheineerror %}
                         <span class="help-inline">Bitte positive Zahl eingeben</span>
@@ -120,13 +120,13 @@
                 </div>
             </div>
             {% if userexists %}
-                <div class="alert alert-error">
+                <div class="alert alert-danger">
                     Diese Email-Adresse existiert bereits im System. Bitte meldet euch bei <a href="mailto:info@ortoloco.ch">info@ortoloco.ch</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
                 </div>
             {% endif %}
             <div class="form-actions col-sm-offset-4">
                 <button type="submit" class="btn btn-success">MitabonnentIn hinzufügen</button>
-                <a href="/my/aboerstellen" class="btn">Abbrechen</a>
+                <a href="{{ cancelUrl }}" class="btn">Abbrechen</a>
             </div>
         </form>
     </div>

@@ -20,7 +20,7 @@
     {% if user.is_impersonate %}
         <div class="row impersonate">
             <div class="col-md-12">
-                <div class="alert alert-block">
+                <div class="alert alert-warning">
                     Du imitierst derzeit den Benutzer “{{ user.loco.first_name }} {{ user.loco.last_name }}”. <a href="/impersonate/stop">Beende dies hier</a>.
                 </div>
             </div>

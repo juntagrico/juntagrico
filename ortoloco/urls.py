@@ -71,7 +71,6 @@ urlpatterns = patterns('',
     #url('^my/startmigrationonceassuperadmin$', 'my_ortoloco.views.my_startmigration'),
     url('^my/migratedbtonewestversion', 'my_ortoloco.views.migrate_apps'),
     url('^pipinstallrrequirements', 'my_ortoloco.views.pip_install'),
-    url('^mini_migrate_future_zusatzabos', 'my_ortoloco.views.mini_migrate_future_zusatzabos'),
 
 
     (r'^accounts/login/$',  login),

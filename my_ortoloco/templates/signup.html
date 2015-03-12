@@ -108,14 +108,14 @@
                             beizutreten. Hiermit beantrage ich meine Aufnahme.
 
                             {% if agberror %}
-                                <div class="alert alert-error">Statuten müssen angenommen werden</div>
+                                <div class="alert alert-danger">Statuten müssen angenommen werden</div>
                             {% endif %}
                         </label>
                     </div>
                 </div>
             </div>
             {% if userexists %}
-                <div class="alert alert-error">
+                <div class="alert alert-danger">
                     Diese Email-Adresse existiert bereits im System. <br/>
                     <a href="/my/home">Hier gehts zum Login</a>
                 </div>
