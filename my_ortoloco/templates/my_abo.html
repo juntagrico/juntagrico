@@ -111,7 +111,7 @@
             <dt>&nbsp;</dt>
             <dd>
                 <div class="form-actions">
-                    <a href="/my/abo/{{ loco.abo.id }}/aendern" class="btn btn-success">Abo ändern</a>
+                    <a href="{% if primary %}/my/abo/{{ loco.abo.id }}/aendern{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
                     {% if not primary %}
                         * Das Abo kann nur der Hauptabonnent ändern.
                     {% endif %}
