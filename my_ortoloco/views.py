@@ -297,7 +297,7 @@ def my_abo(request):
                 'zusatzabos': current_zusatzabos,
                 'future_zusatzabos': future_zusatzabos,
                 'zusatzabos_changed': zusatzabos_changed,
-                'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.abo.primary_loco.email),
+                'mitabonnenten': request.user.loco.abo.bezieher_locos().exclude(email=request.user.loco.email),
                 'primary': request.user.loco.abo.primary_loco.email == request.user.loco.email,
                 'next_extra_abo_date': Abo.next_extra_change_date(),
                 'next_size_date': Abo.next_size_change_date()
