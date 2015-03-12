@@ -150,6 +150,10 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     padding-left: 20px;
 }
 
+.nav-pills.nav-stacked > li {
+    width: 280px;
+}
+
 .nav-pills.nav-stacked > li > a, .nav-pills ul.nav-pills.nav-stacked > li:last-child > a {
     margin-bottom: 0;
 }
@@ -167,7 +171,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     display: inline-block;
     font-size: 50px;
     float: right;
-	margin-right:35px;
+	margin-right:-15px;
 	margin-top:-3px
 }
 
