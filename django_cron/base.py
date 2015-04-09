@@ -72,6 +72,10 @@ class CronScheduler(object):
         job, created = models.Job.objects.get_or_create(name=str(job_instance.__class__))
         if created:
             job.instance = cPickle.dumps(job_instance)
+
+        # When registering the job again, force it to be queued
+        job.queued = True
+
         job.args = cPickle.dumps(args)
         job.kwargs = cPickle.dumps(kwargs)
         job.run_frequency = job_instance.run_every
