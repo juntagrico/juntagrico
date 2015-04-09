@@ -17,6 +17,12 @@ Following instructions work for MacOS.
     source ./venv/bin/activate
     pip install --upgrade -r requirements.txt
 
+**NOTE:** All requirements are not _easily installable_ on Mac OS X. If you encounter some issues (i.e. `EnvironmentError: mysql_config not found` or `pg_config executable not found`) you might remove following packages from the requirements:
+  - MySQL-python==1.2.5
+  - django-toolbelt==0.0.1
+  - psycopg2==2.5.1
+
+
 ## Create DB from scratch
 
 In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (loco_app, south, photologue). Then
