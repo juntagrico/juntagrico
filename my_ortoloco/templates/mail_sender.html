@@ -3,6 +3,9 @@
 {% block content %}
     {% if recipients %}
         <h3>Mail an {{ recipient_type }} verschicken</h3>
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">{{error_message}}</div>
+        {% endif %}
         {% if filter_value %}
             <h5 class="recipients-info-detail" id="filter-info">Der Filter, um diese {{ recipients_count }} E-Mail-Adressen auszuwählen, war: "{{ filter_value }}"</h5>
         {% else %}
@@ -21,7 +24,13 @@
             <div class="form-group">
                 <label for="sender-email" class="col-sm-2 control-label">Absender</label>
                 <div class="col-sm-10" id="sender-email">
-                    info@ortoloco.ch
+                    <select name="sender">
+                        <option value="none">--Bitte wählen--</option>
+                        <option value="info">info@ortoloco.ch</option>
+                        <option value="ernte">ernte@ortoloco.ch</option>
+                        <option value="abpacken">abpacken@ortoloco.ch</option>
+                        <option value="verteilen">verteilen@ortoloco.ch</option>
+                    </select>
                 </div>
             </div>
             <div class="form-group">
@@ -88,13 +97,13 @@
         <div class="form-group">
             <label for="subject" class="col-sm-2 control-label">Betreff</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control"  name="subject" id="subject" placeholder="Betreff"/>
+                <input type="text" class="form-control"  name="subject" id="subject" placeholder="Betreff" {% if mail_subject %} value="{{mail_subject}}" {% endif %}/>
             </div>
         </div>
         <div class="form-group">
             <label for="message" class="col-sm-2 control-label">Mitteilung</label>
             <div class="col-sm-10">
-                <textarea name="message" id="message" class="mailer" rows="12" placeholder="Nachricht hier eingeben"></textarea>
+                <textarea name="message" id="message" class="mailer" rows="12" placeholder="Nachricht hier eingeben">{% if mail_message %} {{ mail_message }} {% endif %}</textarea>
                 <input type="hidden" id="textMessage" name="textMessage"/>
             </div>
         </div>

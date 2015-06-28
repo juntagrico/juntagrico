@@ -795,6 +795,9 @@ def send_email_intern(request):
     if request.method != 'POST':
         raise Http404
     emails = set()
+    sender = request.POST.get("sender")
+    if sender not in ["info", "ernte", "abpacken", "verteilen"]:
+        return my_mails_intern(request, error_message="Bitte wähle eine Absender Adresse aus.")
     if request.POST.get("allabo") == "on":
         for loco in Loco.objects.exclude(abo=None).filter(abo__active=True):
             emails.add(loco.email)
@@ -826,7 +829,7 @@ def send_email_intern(request):
         index += 1
 
     if len(emails) > 0:
-        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
+        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements, sender=sender)
         sent = len(emails)
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -881,14 +884,17 @@ def my_mails(request):
 def my_mails_depot(request):
     return my_mails_intern(request)
 
-def my_mails_intern(request):
+def my_mails_intern(request, error_message=None):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'recipient_type': request.POST.get("recipient_type"),
         'recipient_type_detail': request.POST.get("recipient_type_detail"),
         'recipients': request.POST.get("recipients"),
         'recipients_count': int(request.POST.get("recipients_count") or 0),
-        'filter_value': request.POST.get("filter_value")
+        'filter_value': request.POST.get("filter_value"),
+        'mail_subject': request.POST.get("subject"),
+        'mail_message': request.POST.get("message"),
+        'error_message': error_message
     })
     return render(request, 'mail_sender.html', renderdict)
 
