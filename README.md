@@ -10,9 +10,17 @@ farm as a group of about ~400 persons.
 
 Following instructions work for MacOS.
 
+
+
 ## Installing requirements
 
-    pip install virtualenv
+#Clone repository on you machine
+
+    cd ortoloco
+
+
+    sudo easy_install pip
+    sudo pip install virtualenv
     virtualenv --distribute venv
     source ./venv/bin/activate
     pip install --upgrade -r requirements.txt
@@ -22,6 +30,7 @@ Following instructions work for MacOS.
   - django-toolbelt==0.0.1
   - psycopg2==2.5.1
 
+**NOTE:** You might be able to install "brew install mysql" and "brew install postgresql" and "brew install pg" instead (before)
 
 ## Create DB from scratch
 
