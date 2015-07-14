@@ -14,10 +14,11 @@ Following instructions work for MacOS.
 
 ## Installing requirements
 
-#Clone repository on you machine
+### Clone repository on you machine and enter the directory
 
     cd ortoloco
-
+    
+### Now start installing
 
     sudo easy_install pip
     sudo pip install virtualenv
