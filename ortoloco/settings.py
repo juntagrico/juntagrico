@@ -36,8 +36,8 @@ DATABASES = {
 EMAIL_HOST = os.environ.get('ORTOLOCO_EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('ORTOLOCO_EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('ORTOLOCO_EMAIL_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_PORT = os.environ.get('ORTOLOCO_EMAIL_PORT', 587)
+EMAIL_USE_TLS = os.environ.get('ORTOLOCO_EMAIL_TLS', True)
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
