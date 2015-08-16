@@ -28,10 +28,15 @@ Following instructions work for MacOS.
     source ./venv/bin/activate
     pip install --upgrade -r requirements.txt
 
-**NOTE:** All requirements are not _easily installable_ on Mac OS X. If you encounter some issues (i.e. `EnvironmentError: mysql_config not found` or `pg_config executable not found`) you might remove following packages from the requirements:
-  - MySQL-python==1.2.5
-  - django-toolbelt==0.0.1
-  - psycopg2==2.5.1
+**NOTE:** All requirements are not _easily installable_ on Mac OS X. If you encounter some issues (i.e. `EnvironmentError: mysql_config not found` or `pg_config executable not found`) you might run instead:
+
+    pip install --upgrade -r requirements-mac.txt
+
+wich removes following packages from the requirements:
+
+    MySQL-python==1.2.5
+    django-toolbelt==0.0.1
+    psycopg2==2.5.1
 
 **NOTE:** You might be able to install "brew install mysql" and "brew install postgresql" and "brew install pg" instead (before)
 
