@@ -58,8 +58,18 @@ ifneq ("$(DB_SQLITE_FILE_PRESENT)","ok")
 	$(error DB file $(DB_SQLITE_FILENAME) missing...)
 endif
 
-checkvenv:
+checkvenv: checkdbenvvariables
 ifndef VIRTUAL_ENV
 	$(warning venv is not yet set up correctly for this shell)
 	$(error Run following command to enable it: source venv/bin/activate)
+endif
+
+checkdbenvvariables:
+ifndef ORTOLOCO_DATABASE_ENGINE
+	$(info FIX => export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3)
+	$(error ORTOLOCO_DATABASE_ENGINE is not defined.)
+endif
+ifndef ORTOLOCO_DATABASE_NAME
+	$(info FIX => export ORTOLOCO_DATABASE_NAME=db.sqlite)
+	$(error ORTOLOCO_DATABASE_NAME is not defined.)
 endif
