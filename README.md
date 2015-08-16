@@ -121,8 +121,10 @@ psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
 
 ### How to move the live-data to dev
 
-Between Heroku apps:
+#### Between Heroku apps
 
     SOURCE_APP=ortoloco
     TARGET_APP=ortoloco-dev
     heroku pg:backups restore $(heroku pg:backups public-url --app $SOURCE_APP) DATABASE_URL --app $TARGET_APP
+
+See: [Importing and Exporting Heroku Postgres Databases with PG Backups](https://devcenter.heroku.com/articles/heroku-postgres-import-export)
