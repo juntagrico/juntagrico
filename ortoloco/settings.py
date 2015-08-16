@@ -5,7 +5,7 @@ import dj_database_url
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "omg@doodle.com", "orto@xiala.net", "oliver.ganz+.*@gmail.com"]
+WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "orto@xiala.net", "oliver.ganz+.*@gmail.com"]
 
 ADMINS = (
     ('Oli', 'oliver.ganz@gmail.com'),
@@ -24,11 +24,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3', # Add , 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'ortoloco', # 'db.sqlite',                      # Or path to database file if using sqlite3.
-        'USER': 'ortoloco', # The following settings are not used with sqlite3:
-        'PASSWORD': 'ortoloco',
-        'HOST': 'localhost', # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '', # Set to empty string for default.
+        'NAME': os.environ.get('DATABASE_NAME'), #''ortoloco', # 'db.sqlite',                      # Or path to database file if using sqlite3.
+        'USER': os.environ.get('DATABASE_USER'), #''ortoloco', # The following settings are not used with sqlite3:
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'), #''ortoloco',
+        'HOST': os.environ.get('DATABASE_HOST'), #'localhost', # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': os.environ.get('DATABASE_PORT', False), #''', # Set to empty string for default.
     }
 }
 #DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}

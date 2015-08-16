@@ -1,0 +1,1 @@
+web: gunicorn ortoloco.wsgi --log-level debug
