@@ -77,7 +77,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/medias/')
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = '/medias/'
 
-
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -86,7 +85,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = '/static/'
+STATIC_URL = os.environ.get('ORTOLOCO_STATIC_PATH', '/static/tosomeNotWorkingUrl/')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -189,27 +188,37 @@ INSTALLED_APPS = (
     'impersonate'
 )
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
+# logging config - copied from here: http://stackoverflow.com/questions/18920428/django-logging-on-heroku
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': ('%(asctime)s [%(process)d] [%(levelname)s] ' +
+                       'pathname=%(pathname)s lineno=%(lineno)s ' +
+                       'funcname=%(funcName)s %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
     'handlers': {
-        'ortoloco.ch_python.log': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(os.path.dirname(BASE_DIR), 'logs/ortoloco.ch_python.log'),#'/Users/og/Stuff/ortoloco/orltoloco.log',
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+            },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         }
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['ortoloco.ch_python.log'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        }
     }
 }
 
