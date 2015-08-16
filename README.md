@@ -13,20 +13,21 @@ farm as a group of about ~400 persons.
 Following instructions work for MacOS.
 
 ## Set your environment variables
+
 This should do it for your local setup:
 
     export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
     export ORTOLOCO_DATABASE_NAME=db.sqlite
     export ORTOLOCO_EMAIL_HOST=smtp.gmail.com
-    export ORTOLOCO_EMAIL_PASSWORD=<your-gmail-app-password>
-    export ORTOLOCO_EMAIL_USER=<you>@gmail.com
+    export ORTOLOCO_EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
+    export ORTOLOCO_EMAIL_USER=YOUR_EMAIL@gmail.com
 
 ## Installing requirements
 
 ### Clone repository on you machine and enter the directory
 
     cd ortoloco
-    
+
 ### Now start installing
 
     sudo easy_install pip
@@ -119,3 +120,9 @@ Then import the data into the heroku-db (find the values here: https://postgres.
 psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
 
 ### How to move the live-data to dev
+
+Between Heroku apps:
+
+    SOURCE_APP=ortoloco
+    TARGET_APP=ortoloco-dev
+    heroku pg:backups restore $(heroku pg:backups public-url --app $SOURCE_APP) DATABASE_URL --app $TARGET_APP
