@@ -2,7 +2,6 @@
 import os
 import dj_database_url
 
-DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "orto@xiala.net", "oliver.ganz+.*@gmail.com"]
@@ -21,17 +20,24 @@ AUTHENTICATION_BACKENDS = (
 
 MANAGERS = ADMINS
 
+DEBUG = os.environ.get("ORTOLOCO_DEBUG", True)
+
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DATABASE_ENGINE'), # 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3', # Add , 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.environ.get('DATABASE_NAME'), #''ortoloco', # 'db.sqlite',                      # Or path to database file if using sqlite3.
-        'USER': os.environ.get('DATABASE_USER'), #''ortoloco', # The following settings are not used with sqlite3:
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'), #''ortoloco',
-        'HOST': os.environ.get('DATABASE_HOST'), #'localhost', # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': os.environ.get('DATABASE_PORT', False), #''', # Set to empty string for default.
+        'ENGINE': os.environ.get('ORTOLOCO_DATABASE_ENGINE'), # 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3', # Add , 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.environ.get('ORTOLOCO_DATABASE_NAME'), #''ortoloco', # 'db.sqlite',                      # Or path to database file if using sqlite3.
+        'USER': os.environ.get('ORTOLOCO_DATABASE_USER'), #''ortoloco', # The following settings are not used with sqlite3:
+        'PASSWORD': os.environ.get('ORTOLOCO_DATABASE_PASSWORD'), #''ortoloco',
+        'HOST': os.environ.get('ORTOLOCO_DATABASE_HOST'), #'localhost', # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': os.environ.get('ORTOLOCO_DATABASE_PORT', False), #''', # Set to empty string for default.
     }
 }
-#DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+
+EMAIL_HOST = os.environ.get('ORTOLOCO_EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('ORTOLOCO_EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('ORTOLOCO_EMAIL_PASSWORD')
+EMAIL_PORT = os.environ.get('ORTOLOCO_EMAIL_PORT', 587)
+EMAIL_USE_TLS = os.environ.get('ORTOLOCO_EMAIL_TLS', True)
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts

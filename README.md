@@ -12,7 +12,14 @@ farm as a group of about ~400 persons.
 
 Following instructions work for MacOS.
 
+## Set your environment variables
+This should do it for your local setup:
 
+    export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
+    export ORTOLOCO_DATABASE_NAME=db.sqlite
+    export ORTOLOCO_EMAIL_HOST=smtp.gmail.com
+    export ORTOLOCO_EMAIL_PASSWORD=<your-gmail-app-password>
+    export ORTOLOCO_EMAIL_USER=<you>@gmail.com
 
 ## Installing requirements
 
@@ -102,3 +109,13 @@ Afterwards, you might have to logout with following URL:
 ### Change password for super user ('admin' is the username)
 
     ./manage.py changepassword admin
+
+
+### How to migrate from mysql to postgres-sql
+First read this:
+https://github.com/lanyrd/mysql-postgresql-converter
+
+Then import the data into the heroku-db (find the values here: https://postgres.heroku.com/databases/ortoloco-database)
+psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
+
+### How to move the live-data to dev
