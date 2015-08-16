@@ -11,7 +11,7 @@ script: pwd
 deploy:
   provider: heroku
   api_key:
-    secure: FlyJKecT/qXAWcUiBBNIadO7DLFnVgsd2g6Hf6j+D1ad4Flgk9YlWMDYlS/bsgbjOGVeIbpPN4nvQZ6B3zMlxEOFr4G+WwrshH1L9/aAjqJt10u6dVHRwFAp87S3my7QhzM0cx4heyhkb4NACPHhDSd7wyzvKvEV+tBNMHjJ7H0=
+    secure: FZVEYY6x+3arWN0GZ5Ho0ZcUJ0nwTOVqcnY6T/qaEQsp7ezL4NdJQ5SV/YCj9kDpMbqtDlSHk7QqkulIZEdGDE/J0gbcblMHHrFD3OwlT7WSGOK9F+4blDX1+0jIzfVVBby/LQMQs7if5Qflxe+qRdNOZC9XmtzqmJOuwTqcmI0=
   app:
     master: ortoloco-dev
     # The live branch is not automatically deployed.
