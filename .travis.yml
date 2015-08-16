@@ -14,6 +14,7 @@ deploy:
     secure: FlyJKecT/qXAWcUiBBNIadO7DLFnVgsd2g6Hf6j+D1ad4Flgk9YlWMDYlS/bsgbjOGVeIbpPN4nvQZ6B3zMlxEOFr4G+WwrshH1L9/aAjqJt10u6dVHRwFAp87S3my7QhzM0cx4heyhkb4NACPHhDSd7wyzvKvEV+tBNMHjJ7H0=
   app:
     master: ortoloco-dev
-    live: ortoloco
+    # The live branch is not automatically deployed.
+    # live: ortoloco
   on:
     repo: ortoloco/ortoloco
