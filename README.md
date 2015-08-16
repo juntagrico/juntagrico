@@ -1,6 +1,8 @@
 ortoloco.ch
 ===========
 
+[![Build Status](https://travis-ci.org/ortoloco/ortoloco.svg?branch=master)](https://travis-ci.org/ortoloco/ortoloco)
+
 **die regionale gartenkooperative**
 
 We implement a "specific" web solution to organize all the work on a
