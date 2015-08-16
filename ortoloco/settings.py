@@ -23,7 +23,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3', # Add , 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': os.environ.get('DATABASE_ENGINE'), # 'django.db.backends.postgresql_psycopg2', #'django.db.backends.sqlite3', # Add , 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.environ.get('DATABASE_NAME'), #''ortoloco', # 'db.sqlite',                      # Or path to database file if using sqlite3.
         'USER': os.environ.get('DATABASE_USER'), #''ortoloco', # The following settings are not used with sqlite3:
         'PASSWORD': os.environ.get('DATABASE_PASSWORD'), #''ortoloco',
