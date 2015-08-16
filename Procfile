@@ -1,1 +1,1 @@
-web: gunicorn index.wsgi --log-file -
+web: gunicorn ortoloco.wsgi --log-level debug
