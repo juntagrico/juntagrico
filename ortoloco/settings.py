@@ -2,6 +2,8 @@
 import os
 import dj_database_url
 
+DEBUG = os.environ.get("ORTOLOCO_DEBUG", True)
+
 TEMPLATE_DEBUG = DEBUG
 
 WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "orto@xiala.net", "oliver.ganz+.*@gmail.com"]
@@ -19,8 +21,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 MANAGERS = ADMINS
-
-DEBUG = os.environ.get("ORTOLOCO_DEBUG", True)
 
 DATABASES = {
     'default': {
