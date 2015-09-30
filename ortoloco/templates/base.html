@@ -3,9 +3,7 @@
 <head>
     <title>ortoloco.ch - Die regionale Gartenkooperative</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
     <link rel="shortcut icon" href="/static/img/favicon.ico">
-
     <link href="/static/external/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/ortoloco.css" rel="stylesheet">
 </head>
@@ -14,70 +12,18 @@
     <div class="erbsetop hidden-xs"></div>
     <div class="erbseleft hidden-xs"></div>
     <div class="erbseright hidden-xs"></div>
-    <!--<div class="erbsebottom"></div>-->
-    <div class="ortoloco {% if menu.home == 'active' %} home {% endif %}">
-        <div class="row">
-            <div class="col-md-4">
-                <a href="/aktuelles"><span class="logo"></span></a>
-                <ul class="nav nav-pills nav-stacked main-menu">
-                    <li class="{{ menu.about }}">
-                        <a href="/idee">Das ist ortoloco</a>
-                        {% if menu.about == 'active' %}
-                            <ul class="nav nav-pills nav-stacked">
-                                <li class="{{ menu.aboutChild }}"><a href="/idee">&raquo; Die Idee <span
-                                        class="activeItem">&lt;</span></a></li>
-                                <li class="{{ menu.portrait }}"><a href="/portrait">&raquo; Das Portrait <span
-                                        class="activeItem">&lt;</span></a></li>
-                                <li class="{{ menu.background }}"><a href="/hintergrund">&raquo; Der Hintergrund
-                                    <span class="activeItem">&lt;</span></a></li>
-                                <li class="{{ menu.abo }}"><a href="/abo">&raquo; Das Gemüse-Abo <span
-                                        class="activeItem">&lt;</span></a></li>
-                                {#                                <li class="{{ menu.faq }}"><a href="/faq">&raquo; Häufige Fragen <span#}
-                                {#                                        class="activeItem">&lt;</span></a></li>#}
-                            </ul>
-                        {% endif %}
-                    </li>
-                    <li class="{{ menu.join }}">
-                        <a href="/mitmachen">GenossenschafterIn werden <span class="activeItem">&lt;</span></a>
-                    </li>
-                    <li class="{{ menu.contact }}">
-                        <a href="/kontakt">Kontakt <span class="activeItem">&lt;</span></a>
-                    </li>
-					
-  				  	<li><br/><br/></li>
+    <div class="erbsebottom"></div>
 
-                    <li class="{{ menu.media }}">
-                            <a href="/medien">Medienecho <span class="activeItem">&lt;</span></a>
-                    </li>
-                    <li class="{{ menu.links }}">
-                            <a href="/links">Links <span class="activeItem">&lt;</span></a>
-                    </li>
-                    <li class="{{ menu.documents }}">
-                            <a href="/dokumente">Dokumente <span class="activeItem">&lt;</span></a>
-                    </li>
-	                <li class="{{ menu.gallery }}">
-	                        <a href="/galerie">Bilder <span class="activeItem">&lt;</span></a>
-	                </li>
- 
-                </ul>
-                {% block submenu %}
-                {% endblock %}
-            </div>
-            <div class="col-md-8">
-                {% block content %}
-                {% endblock %}
-            </div>
-        </div>
-        <a href="/my/home" class="myortoloco_link"></a>
-
-        <div class="ortoloco_gemuese"></div>
+    <div>
+        Liebe ortoloc@s,
+    </div>
+    <div>
+        Das IT-Team ist gerade hart am Schaffen.
+        Wir müssen für ein paar Stunden my.ortoloco ausschalten.
+        Morgen früh ist alles wieder Gesund.
+    </div>
+    <div>
+        euer liebes IT-Team
     </div>
 </div>
-
-<script type="text/javascript" src="/static/external/jquery-1.11.2/jquery-1.11.2.min.js"></script>
-<script type="text/javascript" src="/static/external/bootstrap-3.3.1/js/bootstrap.min.js"></script>
-
-{% block scripts %}
-    {# no scripts by default #}
-{% endblock %}
 </body>
