@@ -128,3 +128,15 @@ psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
     heroku pg:backups restore $(heroku pg:backups public-url --app $SOURCE_APP) DATABASE_URL --app $TARGET_APP
 
 See: [Importing and Exporting Heroku Postgres Databases with PG Backups](https://devcenter.heroku.com/articles/heroku-postgres-import-export)
+
+### How to deploy to ortoloco-dev.herokuapp.com
+
+Obviously, you need the rights to do this, then:
+
+    heroku git:remote -a ortoloco-dev -r heroku-dev
+    git push heroku-dev master
+
+On live you do this:
+
+    heroku git:remote -a ortoloco -r heroku-live
+    git push heroku-live live
