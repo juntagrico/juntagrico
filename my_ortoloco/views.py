@@ -51,10 +51,10 @@ def get_menu_dict(request):
     else:
         bohnenrange = None
         userbohnen = []
-        userbohnen_kernbereich = []
         next_jobs = set()
 
     depot_admin = Depot.objects.filter(contact=request.user)
+    area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user)
 
     return {
         'user': request.user,
@@ -64,6 +64,7 @@ def get_menu_dict(request):
         'next_jobs': next_jobs,
         'staff_user': request.user.is_staff,
         'depot_admin': depot_admin,
+        'area_admin': area_admin,
         'politoloco': request.user.has_perm('static_ortoloco.can_send_newsletter')
     }
 
@@ -837,6 +838,7 @@ def send_email_intern(request):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
+
 def get_locos_for_depots(depots):
     abos = Abo.objects.filter(depot = depots)
     res = []
@@ -845,6 +847,15 @@ def get_locos_for_depots(depots):
         for loco in locos:
             res.append(loco)
     return res
+
+
+def get_locos_for_areas(areas):
+    res = []
+    for area in areas:
+        for loco in area.locos.all():
+            res.append(loco)
+    return res
+
 
 def send_email_to_depot(request):
     sent = 0
@@ -877,14 +888,18 @@ def send_email_to_depot(request):
 
 
 @staff_member_required
-def my_mails(request):
-    return my_mails_intern(request)
+def my_mails(request, enhanced=None):
+    return my_mails_intern(request, enhanced)
 
 @permission_required('my_ortoloco.is_depot_admin')
 def my_mails_depot(request):
-    return my_mails_intern(request)
+    return my_mails_intern(request, "depot")
 
-def my_mails_intern(request, error_message=None):
+@permission_required('my_ortoloco.is_area_admin')
+def my_mails_area(request):
+    return my_mails_intern(request, "area")
+
+def my_mails_intern(request, enhanced, error_message=None):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'recipient_type': request.POST.get("recipient_type"),
@@ -894,6 +909,8 @@ def my_mails_intern(request, error_message=None):
         'filter_value': request.POST.get("filter_value"),
         'mail_subject': request.POST.get("subject"),
         'mail_message': request.POST.get("message"),
+        'enhanced': enhanced,
+        'email': request.user.loco.email,
         'error_message': error_message
     })
     return render(request, 'mail_sender.html', renderdict)
@@ -947,7 +964,25 @@ def my_filters_depot(request):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'locos': locos
+        'locos': locos,
+        'enhanced': "depot"
+    })
+    return render(request, 'filters.html', renderdict)
+
+@permission_required('my_ortoloco.is_area_admin')
+def my_filters_area(request):
+    areas = Taetigkeitsbereich.objects.filter(coordinator=request.user)
+    locos = get_locos_for_areas(areas)
+    boehnlis = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
+    for loco in locos:
+        loco.boehnlis = boehnlis[loco]
+        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
+
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'locos': locos,
+        'enhanced': "area"
     })
     return render(request, 'filters.html', renderdict)
 

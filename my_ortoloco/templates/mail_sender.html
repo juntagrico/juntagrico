@@ -1,98 +1,64 @@
 {% extends "mybase.html" %}
 
 {% block content %}
-    {% if recipients %}
-        <h3>Mail an {{ recipient_type }} verschicken</h3>
-        {% if error_message %}
-            <div class="alert alert-danger" role="alert">{{error_message}}</div>
-        {% endif %}
-        {% if filter_value %}
-            <h5 class="recipients-info-detail" id="filter-info">Der Filter, um diese {{ recipients_count }} E-Mail-Adressen auszuwählen, war: "{{ filter_value }}"</h5>
-        {% else %}
-            <h5 class="recipients-info-detail" id="filter-info">Diese {{ recipients_count }} E-Mail-Adressen entsprechen alle {{ recipient_type }}.</h5>
-        {% endif %}
-        {% if recipient_type_detail %}
-            <h5 class="recipients-info-detail" id="recipient-type-detail">{{ recipient_type_detail }}</h5>
-        {% endif %}
-    {% else %}
-        <h3>Mails verschicken</h3>
-    {% endif %}
+    <h3>Mails verschicken</h3>
     <br/>
-        {% if recipients %}
-            <form action="/my/mails/send{% if depot_admin|length > 0 %}_depot{% endif %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="sender-email" class="col-sm-2 control-label">Absender</label>
-                <div class="col-sm-10" id="sender-email">
-                    <select name="sender">
-                        <option value="none">--Bitte wählen--</option>
-                        <option value="info">info@ortoloco.ch</option>
-                        <option value="ernte">ernte@ortoloco.ch</option>
-                        <option value="abpacken">abpacken@ortoloco.ch</option>
-                        <option value="verteilen">verteilen@ortoloco.ch</option>
-                    </select>
-                </div>
+        <form action="/my/mails/send" method="POST" class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="sender-email" class="col-sm-2 control-label">Absender</label>
+            <div class="col-sm-10" id="sender-email">
+                <select name="sender">
+                <option value="info@ortoloco.ch">info@ortoloco.ch</option>
+                <option value="{{ email }}">{{ email }}</option>
+            </select>
             </div>
+        </div>
+
+        {% if depot_admin|length > 0 %}
             <div class="form-group">
-              <label for="recipients" class="col-sm-2 control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
-              <div class="col-sm-10">
-                <textarea name="recipients" id="recipients" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}" disabled="disabled">{{ recipients }}</textarea>
-              </div>
+                <label for="sender-email" class="col-sm-2 control-label">Empfänger</label>
+                <input type="hidden" id="depotOnly" name="depotOnly" value="on">
+                <input type="hidden" id="depotIds" name="depotIds" value="{% for depot in depot_admin %}{{ depot.id }},{% endfor %}"/>
+                <div class="col-sm-10">
+                    Wähle mind. eine der folgenden Gruppen:
+                    {% for depot in depot_admin %}
+                        <div class="checkbox">
+                            <label class="high-label">
+                                <input type="checkbox" id="{{ depot.id }}" name="{{ depot.id }}"> {{ depot.name }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         {% else %}
-            <form action="/my/mails/send{% if depot_admin|length > 0 %}_to_depot{% endif %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
-            {% csrf_token %}
             <div class="form-group">
-                <label for="sender-email" class="col-sm-2 control-label">Absender</label>
-                <div class="col-sm-10" id="sender-email">
-                    info@ortoloco.ch
+                <label for="sender-email--" class="col-sm-2 control-label">Empfänger</label>
+                <div class="col-sm-10">
+                    Wähle mind. eine der folgenden Gruppen:
+                    <div class="checkbox">
+                        <label class="high-label" for="allabo">
+                            <input type="checkbox" id="allabo" name="allabo"> Alle Abonnenten (inkl. MitabonnentInnen)
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label class="high-label" for="allanteilsschein">
+                            <input type="checkbox" id="allanteilsschein" name="allanteilsschein"> Alle Genossenschafter
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label class="high-label" for="all">
+                            <input class="checkbox-inline" type="checkbox" id="all" name="all"> Alle (im System)
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label class="high-label" for="allsingleemail">
+                            <input type="checkbox" id="allsingleemail" name="allsingleemail"> Nur an diese Email:
+                        </label>
+                        <input type="text" class="form-control" id="singleemail" name="singleemail" placeholder="Nur an diese Email"/>
+                    </div>
                 </div>
             </div>
-            {% if depot_admin|length > 0 %}
-                <div class="form-group">
-                    <label for="sender-email" class="col-sm-2 control-label">Empfänger</label>
-                    <input type="hidden" id="depotOnly" name="depotOnly" value="on">
-                    <input type="hidden" id="depotIds" name="depotIds" value="{% for depot in depot_admin %}{{ depot.id }},{% endfor %}"/>
-                    <div class="col-sm-10">
-                        Wähle mind. eine der folgenden Gruppen:
-                        {% for depot in depot_admin %}
-                            <div class="checkbox">
-                                <label class="high-label">
-                                    <input type="checkbox" id="{{ depot.id }}" name="{{ depot.id }}"> {{ depot.name }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% else %}
-                <div class="form-group">
-                    <label for="sender-email--" class="col-sm-2 control-label">Empfänger</label>
-                    <div class="col-sm-10">
-                        Wähle mind. eine der folgenden Gruppen:
-                        <div class="checkbox">
-                            <label class="high-label" for="allabo">
-                                <input type="checkbox" id="allabo" name="allabo"> Alle Abonnenten (inkl. MitabonnentInnen)
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label class="high-label" for="allanteilsschein">
-                                <input type="checkbox" id="allanteilsschein" name="allanteilsschein"> Alle Genossenschafter
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label class="high-label" for="all">
-                                <input class="checkbox-inline" type="checkbox" id="all" name="all"> Alle (im System)
-                            </label>
-                        </div>
-                        <div class="checkbox">
-                            <label class="high-label" for="allsingleemail">
-                                <input type="checkbox" id="allsingleemail" name="allsingleemail"> Nur an diese Email:
-                            </label>
-                            <input type="text" class="form-control" id="singleemail" name="singleemail" placeholder="Nur an diese Email"/>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
         {% endif %}
         <div class="form-group">
             <label for="subject" class="col-sm-2 control-label">Betreff</label>
