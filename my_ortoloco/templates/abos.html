@@ -7,7 +7,7 @@
             width: 1200px;
         }
     </style>
-        <form id="email-sender" action="/my/mails{% if depot_admin|length > 0 %}_depot{% endif %}" method="POST">
+        <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="recipient_type" id="recipient_type" value="Abo-Inhaber"/>
         <input type="hidden" name="recipient_type_detail" id="recipient_type_detail"/>
