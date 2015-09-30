@@ -299,6 +299,7 @@ class Taetigkeitsbereich(models.Model):
     class Meta:
         verbose_name = 'Tätigkeitsbereich'
         verbose_name_plural = 'Tätigkeitsbereiche'
+        permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 
 class JobType(models.Model):
