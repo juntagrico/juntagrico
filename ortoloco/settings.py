@@ -13,7 +13,6 @@ ADMINS = (
 )
 SERVER_EMAIL="server@ortoloco.ch"
 
-
 # let the users login with their emails
 AUTHENTICATION_BACKENDS = (
     'my_ortoloco.helpers.AuthenticateWithEmail',
