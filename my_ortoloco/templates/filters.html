@@ -7,7 +7,7 @@
             width: 95%;
         }
     </style>
-        <form id="email-sender" action="/my/mails{% if enhanced %}_{{ enhanced }}{% endif %}" method="POST">
+        <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="recipient_type" id="recipient_type" value="Locos"/>
         <input type="hidden" name="recipients" id="recipients"/>

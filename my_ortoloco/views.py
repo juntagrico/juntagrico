@@ -53,8 +53,17 @@ def get_menu_dict(request):
         userbohnen = []
         next_jobs = set()
 
-    depot_admin = Depot.objects.filter(contact=request.user)
-    area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user)
+    depot_admin = Depot.objects.filter(contact=request.user.loco)
+    if len(depot_admin) > 0:
+        depot_admin_of = Depot.objects.filter(contact=request.user.loco)[0].name
+    else:
+        depot_admin_of = ""
+
+    area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
+    if len(area_admin) > 0:
+        area_admin_of = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)[0].name
+    else:
+        area_admin_of = ""
 
     return {
         'user': request.user,
@@ -64,7 +73,9 @@ def get_menu_dict(request):
         'next_jobs': next_jobs,
         'staff_user': request.user.is_staff,
         'depot_admin': depot_admin,
+        'depot_admin_of': depot_admin_of,
         'area_admin': area_admin,
+        'area_admin_of': area_admin_of,
         'politoloco': request.user.has_perm('static_ortoloco.can_send_newsletter')
     }
 
@@ -791,24 +802,19 @@ def send_email(request):
 def send_email_depot(request):
     return send_email_intern(request)
 
+@permission_required('my_ortoloco.is_area_admin')
+def send_email_area(request):
+    return send_email_intern(request)
+
 def send_email_intern(request):
     sent = 0
     if request.method != 'POST':
         raise Http404
     emails = set()
     sender = request.POST.get("sender")
-    if sender not in ["info", "ernte", "abpacken", "verteilen"]:
-        return my_mails_intern(request, error_message="Bitte wähle eine Absender Adresse aus.")
     if request.POST.get("allabo") == "on":
         for loco in Loco.objects.exclude(abo=None).filter(abo__active=True):
             emails.add(loco.email)
-    if request.POST.get("depotOnly") == "on":
-        for d in request.POST.get("depotOnly"):
-            if d == "o":
-                x = request.POST.get(d)
-                for loco in Depot.get(request.POST.get(d)).locos.all:
-                    emails.add(loco.email)
-                    xxx
     if request.POST.get("allanteilsschein") == "on":
         for loco in Loco.objects.all():
             if loco.anteilschein_set.count() > 0:
@@ -821,7 +827,7 @@ def send_email_intern(request):
         for recipient in recipients:
             emails.add(recipient)
     if request.POST.get("allsingleemail"):
-        emails.add(request.POST.get("singleemail"))
+        emails.add(request.POST.get("sing   leemail"))
 
     index = 1
     attachements = []
@@ -855,37 +861,6 @@ def get_locos_for_areas(areas):
         for loco in area.locos.all():
             res.append(loco)
     return res
-
-
-def send_email_to_depot(request):
-    sent = 0
-    if request.method != 'POST':
-        raise Http404
-    emails = set()
-    depotIds = request.POST.get("depotIds")
-    depotIdsAr = depotIds.split(",")
-    for d in depotIdsAr:
-        depotInput = request.POST.get(d)
-        if depotInput == "on":
-            locos = get_locos_for_depots(d);
-            for loco in locos:
-                emails.add(loco.email)
-    
-    index = 1
-    attachements = []
-    while request.FILES.get("image-" + str(index)) is not None:
-        attachements.append(request.FILES.get("image-" + str(index)))
-        index += 1
-
-    if len(emails) > 0:
-        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
-        sent = len(emails)
-    renderdict = get_menu_dict(request)
-    renderdict.update({
-        'sent': sent
-    })
-    return render(request, 'mail_sender_result.html', renderdict)
-
 
 @staff_member_required
 def my_mails(request, enhanced=None):
@@ -954,7 +929,7 @@ def my_filters(request):
 
 @permission_required('my_ortoloco.is_depot_admin')
 def my_filters_depot(request):
-    depots = Depot.objects.filter(contact=request.user)
+    depots = Depot.objects.filter(contact=request.user.loco)
     locos = get_locos_for_depots(depots)
     boehnlis = current_year_boehnlis_per_loco()
     boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()

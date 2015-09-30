@@ -51,14 +51,18 @@
                         <a href="/aktuelles">ortoloco.ch</a>
                     </li>
                     {% if depot_admin|length > 0 %}
-                        <li>
-                            <hr>
-                            <a href="/my/mails_depot">Mails verschicken</a>
-                        </li>
                         <li class="inline">
-                            Filtern <a href="/my/filters_depot">Locos</a> | <a href="/my/abos_depot">Abos</a>
+                            <hr>
+                            <a href="/my/filters/depot">Locos</a> | <a href="/my/abos/depot">Abos</a> im Depot {{ depot_admin_of }}
                         </li>
                     {% endif %}
+                    {% if area_admin|length > 0 %}
+                        <li>
+                            <hr>
+                            <a href="/my/filters/area">Locos in {{ area_admin_of }}</a>
+                        </li>
+                    {% endif %}
+
                     {% if staff_user %}
                         <li>
                             <hr>
