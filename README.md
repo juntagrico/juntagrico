@@ -22,6 +22,26 @@ This should do it for your local setup:
     export ORTOLOCO_EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
     export ORTOLOCO_EMAIL_USER=YOUR_EMAIL@gmail.com
 
+### Email troubleshooting
+
+In case the `gmail` credentials refuse to work, it might be that Google
+is blocking the logging because is it comming from an unknown location.
+This can easily be the case if using e.g. [`c9.io`](https://c9.io/).
+Try the solutions listed in this [Gmail Help](https://support.google.com/mail/answer/78754)
+document. The first three of them are listed here for reference:
+
+> - If you've turned on 2-Step Verification for your account, you might
+  need to enter an App password.
+> - Sign in to your account from the web version of Gmail at
+  <https://mail.google.com>. Afterwards try accessing your messages in
+  your mail app again.
+> - If you're still having problems, visit
+  <http://www.google.com/accounts/DisplayUnlockCaptcha> and sign in with
+  your Gmail username and password. If necessary, enter the letters in
+  the distorted picture.
+
+
+
 ## Installing requirements
 
 ### Clone repository on you machine and enter the directory
