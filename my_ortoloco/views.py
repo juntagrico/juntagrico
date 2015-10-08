@@ -622,24 +622,21 @@ def my_createabo(request):
         selectedabo = request.POST.get("abo")
 
         scheine += loco_scheine
-        if (scheine < 4 and request.POST.get("abo") == "big") or (scheine < 20 and request.POST.get("abo") == "house") or (scheine < 2 and request.POST.get("abo") == "small" ) or (scheine == 0):
+        min_anzahl_scheine = {"none": 1, "small": 2, "big": 4, "house": 20}.get(request.POST.get("abo"))
+        if scheine < min_anzahl_scheine:
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
-            size = 1
-            if request.POST.get("abo") == "house":
-                size = 10
-            elif request.POST.get("abo") == "big":
-                size = 2
-            else:
-                size = 1
-            if loco.abo is None:
-                loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot)
-            else:
-                loco.abo.size = size
-                loco.abo.future_size = size
-                loco.abo.depot = depot
-            loco.abo.save()
+            size = {"none": 0, "small": 1, "big": 2, "house": 10}.get(request.POST.get("abo"))
+
+            if size > 0:
+                if loco.abo is None:
+                    loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot)
+                else:
+                    loco.abo.size = size
+                    loco.abo.future_size = size
+                    loco.abo.depot = depot
+                loco.abo.save()
             loco.save()
 
             if loco.anteilschein_set.count() < int(request.POST.get("scheine")):
