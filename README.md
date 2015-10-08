@@ -21,6 +21,7 @@ This should do it for your local setup:
     export ORTOLOCO_EMAIL_HOST=smtp.gmail.com
     export ORTOLOCO_EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
     export ORTOLOCO_EMAIL_USER=YOUR_EMAIL@gmail.com
+    export ORTOLOCO_EMAIL_USER_GENERIC=YOUR_EMAIL+.*@gmail.com 
 
 ### Email troubleshooting
 
@@ -102,8 +103,8 @@ ers defined.
 Would you like to create one now? (yes/no): yes
 Username (leave blank to use 'ubuntu'): admin
 Email address: admin@example.org
-Password: 
-Password (again): 
+Password:
+Password (again):
 Superuser created successfully.
 Installing custom SQL ...
 Installing indexes ...
