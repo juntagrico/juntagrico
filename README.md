@@ -55,12 +55,48 @@ run following command:
 
     ./manage.py syncdb
 
+Here you will be asked to create a `superuser` for the local dev app.
+Reply `yes` and create a test superuser named e.g. `admin` with the
+(indeed very secure) password `admin`. The output should look similar
+to the following:
+
+```
+(...)
+
+Creating tables ...
+Creating table django_cron_job
+Creating table django_cron_cron
+Creating table auth_permission
+Creating table auth_group_permissions
+Creating table auth_group
+Creating table auth_user_groups
+Creating table auth_user_user_permissions
+Creating table auth_user
+Creating table django_content_type
+Creating table django_session
+Creating table django_site
+Creating table django_admin_log
+
+You just installed Django's auth system, which means you don't have any superus
+ers defined.
+Would you like to create one now? (yes/no): yes
+Username (leave blank to use 'ubuntu'): admin
+Email address: admin@example.org
+Password: 
+Password (again): 
+Superuser created successfully.
+Installing custom SQL ...
+Installing indexes ...
+Installed 0 object(s) from 0 fixture(s)
+
+```
+
 Reactivate the outcommented apps above and run following commands:
 
     ./manage.py syncdb
     ./manage.py migrate
 
-You might be guided through these steps with `make createdb`.
+You might be guided through the steps above with `make createdb`.
 
 ### Backup and restore local dev database
 

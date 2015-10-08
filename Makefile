@@ -5,13 +5,20 @@
 DB_SQLITE_FILENAME=db.sqlite
 DB_SQLITE_FILE_PRESENT=$(shell [ -f $(DB_SQLITE_FILENAME) ] && echo ok || echo missing )
 
+
 run: openurl runserver
 
 runserver: checkvenv checkdbfile
+ifdef C9_USER
+	./manage.py runserver 0.0.0.0:8080
+else
 	./manage.py runserver
+endif
 
 openurl: checkvenv checkdbfile
+ifndef C9_USER
 	(sleep 1; open http://localhost:8000)&
+endif
 
 createdb: checkvenv
 	$(info At the bottom of file 'settings.py', comment out all non-django apps)
