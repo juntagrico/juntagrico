@@ -16,12 +16,14 @@ Following instructions work for MacOS.
 
 This should do it for your local setup:
 
+``` bash
     export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
     export ORTOLOCO_DATABASE_NAME=db.sqlite
     export ORTOLOCO_EMAIL_HOST=smtp.gmail.com
     export ORTOLOCO_EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
     export ORTOLOCO_EMAIL_USER=YOUR_EMAIL@gmail.com
-    export ORTOLOCO_EMAIL_USER_GENERIC=YOUR_EMAIL+.*@gmail.com 
+    export ORTOLOCO_EMAIL_WHITELISTED_1=A_SECOND_WHITELISTED_EMAIL@gmail.com # optional
+```
 
 ### Email troubleshooting
 

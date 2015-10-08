@@ -6,7 +6,16 @@ DEBUG = os.environ.get("ORTOLOCO_DEBUG", "True") == "True"
 
 TEMPLATE_DEBUG = DEBUG
 
-WHITELIST_EMAILS = ["ORTOLOCO_EMAIL_USER","ORTOLOCO_EMAIL_USER_GENERIC"]
+WHITELIST_EMAILS = []
+
+def whitelist_email_from_env(var_env_name):
+    email = os.environ.get(var_env_name)
+    if email:
+        WHITELIST_EMAILS.append(email.replace('@gmail.com', '(\+\S+)?@gmail.com'))
+
+whitelist_email_from_env("ORTOLOCO_EMAIL_USER")
+whitelist_email_from_env("ORTOLOCO_EMAIL_WHITELISTED_1")
+whitelist_email_from_env("ORTOLOCO_EMAIL_WHITELISTED_2")
 
 ADMINS = (
     ('Oli', 'oliver.ganz@gmail.com'),
