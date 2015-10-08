@@ -6,7 +6,7 @@ DEBUG = os.environ.get("ORTOLOCO_DEBUG", "True") == "True"
 
 TEMPLATE_DEBUG = DEBUG
 
-WHITELIST_EMAILS = ["oliver.ganz@gmail.com", "orto@xiala.net", "oliver.ganz+.*@gmail.com"]
+WHITELIST_EMAILS = ["ORTOLOCO_EMAIL_USER","ORTOLOCO_EMAIL_USER_GENERIC"]
 
 ADMINS = (
     ('Oli', 'oliver.ganz@gmail.com'),
