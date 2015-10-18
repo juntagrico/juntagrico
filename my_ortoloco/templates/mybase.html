@@ -55,7 +55,7 @@
                     {% endif %}
                     {% for depot in depot_admin %}
                         <li class="inline">
-                            <a href="/my/filters/depot/{{ depot.id }}">Locos</a> | <a href="/my/abos/depot/{{ depot.id }}">Abos</a> im Depot {{ depot.name }}
+                            <a href="/my/filters/depot/{{ depot.id }}">Locos</a> | <a href="/my/abos/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
                         </li>
                     {% endfor %}
                     {% for area in area_admin %}
