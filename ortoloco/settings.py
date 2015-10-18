@@ -193,7 +193,8 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'tinymce',
-    'impersonate'
+    'impersonate',
+    'storages'
 )
 
 # logging config - copied from here: http://stackoverflow.com/questions/18920428/django-logging-on-heroku
