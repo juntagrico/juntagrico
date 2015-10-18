@@ -50,22 +50,25 @@
                     <li class="{{ menu.ortoloco }}">
                         <a href="/aktuelles">ortoloco.ch</a>
                     </li>
-                    {% if depot_admin|length > 0 %}
-                        <li class="inline">
-                            <hr>
-                            <a href="/my/filters/depot">Locos</a> | <a href="/my/abos/depot">Abos</a> im Depot {{ depot_admin_of }}
-                        </li>
+                    {% if depot_admin|length > 0 or area_admin|length > 0 %}
+                        <li><hr></li>
                     {% endif %}
-                    {% if area_admin|length > 0 %}
-                        <li>
-                            <hr>
-                            <a href="/my/filters/area">Locos in {{ area_admin_of }}</a>
+                    {% for depot in depot_admin %}
+                        <li class="inline">
+                            <a href="/my/filters/depot/{{ depot.id }}">Locos</a> | <a href="/my/abos/depot/{{ depot.id }}">Abos</a> im Depot {{ depot.name }}
                         </li>
+                    {% endfor %}
+                    {% for area in area_admin %}
+                        <li>
+                            <a href="/my/filters/area/{{ area.id }}">Locos in {{ area.name }}</a>
+                        </li>
+                    {% endfor %}
+                    {% if  depot_admin|length > 0 or area_admin|length > 0 and not staff_user%}
+                        <li><hr></li>
                     {% endif %}
 
                     {% if staff_user %}
                         <li>
-                            <hr>
                             <a href="/my/mails">Mails verschicken</a>
                         </li>
                         <li>

@@ -54,17 +54,7 @@ def get_menu_dict(request):
         next_jobs = set()
 
     depot_admin = Depot.objects.filter(contact=request.user.loco)
-    if len(depot_admin) > 0:
-        depot_admin_of = Depot.objects.filter(contact=request.user.loco)[0].name
-    else:
-        depot_admin_of = ""
-
     area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
-    if len(area_admin) > 0:
-        area_admin_of = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)[0].name
-    else:
-        area_admin_of = ""
-
     return {
         'user': request.user,
         'bohnenrange': bohnenrange,
@@ -73,9 +63,7 @@ def get_menu_dict(request):
         'next_jobs': next_jobs,
         'staff_user': request.user.is_staff,
         'depot_admin': depot_admin,
-        'depot_admin_of': depot_admin_of,
         'area_admin': area_admin,
-        'area_admin_of': area_admin_of,
         'politoloco': request.user.has_perm('static_ortoloco.can_send_newsletter')
     }
 
@@ -842,23 +830,6 @@ def send_email_intern(request):
     return render(request, 'mail_sender_result.html', renderdict)
 
 
-def get_locos_for_depots(depots):
-    abos = Abo.objects.filter(depot = depots)
-    res = []
-    for a in abos:
-        locos = Loco.objects.filter(abo = a)
-        for loco in locos:
-            res.append(loco)
-    return res
-
-
-def get_locos_for_areas(areas):
-    res = []
-    for area in areas:
-        for loco in area.locos.all():
-            res.append(loco)
-    return res
-
 @staff_member_required
 def my_mails(request, enhanced=None):
     return my_mails_intern(request, enhanced)
@@ -925,9 +896,9 @@ def my_filters(request):
 
 
 @permission_required('my_ortoloco.is_depot_admin')
-def my_filters_depot(request):
-    depots = Depot.objects.filter(contact=request.user.loco)
-    locos = get_locos_for_depots(depots)
+def my_filters_depot(request, depot_id):
+    depot = get_object_or_404(Depot, id=int(depot_id))
+    locos = get_locos_for_depot(depot)
     boehnlis = current_year_boehnlis_per_loco()
     boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
     for loco in locos:
@@ -941,10 +912,19 @@ def my_filters_depot(request):
     })
     return render(request, 'filters.html', renderdict)
 
+def get_locos_for_depot(depot):
+    abos = Abo.objects.filter(depot = depot)
+    res = []
+    for a in abos:
+        locos = Loco.objects.filter(abo = a)
+        for loco in locos:
+            res.append(loco)
+    return res
+
 @permission_required('my_ortoloco.is_area_admin')
-def my_filters_area(request):
-    areas = Taetigkeitsbereich.objects.filter(coordinator=request.user)
-    locos = get_locos_for_areas(areas)
+def my_filters_area(request, area_id):
+    area = get_object_or_404(Taetigkeitsbereich, id=int(area_id))
+    locos = area.locos.all()
     boehnlis = current_year_boehnlis_per_loco()
     boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
     for loco in locos:
@@ -988,12 +968,12 @@ def my_abos(request):
 
 
 @permission_required('my_ortoloco.is_depot_admin')
-def my_abos_depot(request):
+def my_abos_depot(request, depot_id):
     boehnli_map = current_year_boehnlis_per_loco()
     boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
     abos = []
-    depots = Depot.objects.filter(contact=request.user)
-    for abo in Abo.objects.filter(depot = depots):
+    depot = get_object_or_404(Depot, id=int(depot_id))
+    for abo in Abo.objects.filter(depot = depot):
         boehnlis = 0
         boehnlis_kernbereich = 0
         for loco in abo.bezieher_locos():
