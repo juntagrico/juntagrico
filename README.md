@@ -16,11 +16,34 @@ Following instructions work for MacOS.
 
 This should do it for your local setup:
 
+``` bash
     export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
     export ORTOLOCO_DATABASE_NAME=db.sqlite
     export ORTOLOCO_EMAIL_HOST=smtp.gmail.com
     export ORTOLOCO_EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
     export ORTOLOCO_EMAIL_USER=YOUR_EMAIL@gmail.com
+    export ORTOLOCO_EMAIL_WHITELISTED_1=A_SECOND_WHITELISTED_EMAIL@gmail.com # optional
+```
+
+### Email troubleshooting
+
+In case the `gmail` credentials refuse to work, it might be that Google
+is blocking the logging because is it comming from an unknown location.
+This can easily be the case if using e.g. [`c9.io`](https://c9.io/).
+Try the solutions listed in this [Gmail Help](https://support.google.com/mail/answer/78754)
+document. The first three of them are listed here for reference:
+
+> - If you've turned on 2-Step Verification for your account, you might
+  need to enter an App password.
+> - Sign in to your account from the web version of Gmail at
+  <https://mail.google.com>. Afterwards try accessing your messages in
+  your mail app again.
+> - If you're still having problems, visit
+  <http://www.google.com/accounts/DisplayUnlockCaptcha> and sign in with
+  your Gmail username and password. If necessary, enter the letters in
+  the distorted picture.
+
+
 
 ## Installing requirements
 
@@ -55,12 +78,48 @@ run following command:
 
     ./manage.py syncdb
 
+Here you will be asked to create a `superuser` for the local dev app.
+Reply `yes` and create a test superuser named e.g. `admin` with the
+(indeed very secure) password `admin`. The output should look similar
+to the following:
+
+```
+(...)
+
+Creating tables ...
+Creating table django_cron_job
+Creating table django_cron_cron
+Creating table auth_permission
+Creating table auth_group_permissions
+Creating table auth_group
+Creating table auth_user_groups
+Creating table auth_user_user_permissions
+Creating table auth_user
+Creating table django_content_type
+Creating table django_session
+Creating table django_site
+Creating table django_admin_log
+
+You just installed Django's auth system, which means you don't have any superus
+ers defined.
+Would you like to create one now? (yes/no): yes
+Username (leave blank to use 'ubuntu'): admin
+Email address: admin@example.org
+Password:
+Password (again):
+Superuser created successfully.
+Installing custom SQL ...
+Installing indexes ...
+Installed 0 object(s) from 0 fixture(s)
+
+```
+
 Reactivate the outcommented apps above and run following commands:
 
     ./manage.py syncdb
     ./manage.py migrate
 
-You might be guided through these steps with `make createdb`.
+You might be guided through the steps above with `make createdb`.
 
 ### Backup and restore local dev database
 
