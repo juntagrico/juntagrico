@@ -27,6 +27,8 @@ class Depot(models.Model):
     addr_zipcode = models.CharField("PLZ", max_length=10)
     addr_location = models.CharField("Ort", max_length=50)
 
+    description = models.TextField("Beschreibung", max_length=1000, default="")
+
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
 
