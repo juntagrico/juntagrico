@@ -251,8 +251,8 @@ except KeyError:
 # Default Django Storage API behavior - don't overwrite files with same name
 AWS_S3_FILE_OVERWRITE = False
 
-MEDIA_ROOT = 'medias'
-MEDIA_URL = 'https://s3.amazonaws.com/%s/' % AWS_STORAGE_BUCKET_NAME
+MEDIA_ROOT = 'media'
+MEDIA_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 
 #STATIC_ROOT = '/static/'
 #STATIC_URL = 'http://%s.s3.amazonaws.com/static/' % AWS_STORAGE_BUCKET_NAME
