@@ -1,15 +1,27 @@
 {% extends "mails/email.html" %}
 {% block content %}
-    Wir freuen uns, dich bei ortoloco begrüssen zu dürfen.
+    Willkommen bei ortoloco
     <br/><br/>
-    Unter <a href="http://my.ortoloco.ch">my.ortoloco.ch</a> kannst du dich ab sofort für Arbeitseinsätze anmelden und vieles mehr.
+    Wir freuen uns, dich bei ortoloco zu begrüssen.
     <br/><br/>
+    ortoloco ist ein genossenschaftlich organisierter Garten – 500 Leute produzieren gemeinsam ihr feines Bio-Gemüse. Jedes Mitglied der Genossenschaft kauft mindestens einen Anteilschein à 250 Franken. Damit finanziert ortoloco die Infrastruktur. Somit bist du MiteigentümerIn des Gemüsebetriebs und kannst bei vielen Entscheidungen mitbestimmen. Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet.
+    <br/><br/>
+    Bitte zahle den Betrag für den/die Anteilschein/e auf das folgende Konto ein:<br/>
+    ortoloco<br/>
+    c/o Albizke<br/>
+    Albisriederstr. 203 B<br/>
+    8047 Zürich<br/>
+    Postkonto-Nummer: 85-199010-5<br/>
+    IBAN: CH72 0900 0000 8519 9010 5<br/>
+    BIC: POFICHBEXXX
+    <br/><br/>
+    Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
+    <br/><br/>
+    Gerne darfst du schon vorher im Garten schnuppern kommen – schau dich auf der Online-Plattform <a href="{{ serverurl }}/my/home">www.ortoloco.ch/my/home</a> um und melde dich für einen Einsatz an, wenn du Lust hast. Dein Login:<br/>
     Email: {{ username }}<br/>
     Passwort: {{ password }} (bitte setze dir <a href="{{ serverurl }}/my/passwort">hier</a> gleich ein neues Passwort)
     <br/><br/>
-    Weitere Infos wirst du bald erhalten. Bei Fragen oder Unklarheiten einfach melden: <br/>
-    <a href="mailto:info@ortoloco.ch">info@ortoloco.ch</a>
+    Für weitere Fragen schaust du in den <a href="{{ serverurl }}/medias/documents/FAQ_ortoloco_14.pdf">FAQ</a> nach oder schreibst eine Mail an <a href="mailto:info@ortoloco.ch">info@ortoloco.ch</a>.
     <br/><br/>
-    Herzlich grüsst,<br/>
-    die ortoloco-Betriebsgruppe
+    Bis bald und liebe Grüsse die ortoloco-Betriebsgruppe
 {% endblock %}
