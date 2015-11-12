@@ -1,4 +1,4 @@
-{% extends "templates/photologue/gallery_list.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 
@@ -7,11 +7,11 @@
 {% if object_list %}
     {% for gallery in object_list %}
     <div class="photo-gallery">
-        <h4><a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a></h4>
+        <h4><a href="{{ photo.image.url }}">{{ gallery.title }}</a></h4>
         <ul class="thumbnails">
         {% for photo in gallery.sample %}
         <li class="col-md-4 gallery-photo">
-            <a href="{{ gallery.get_absolute_url }}" class="thumbnail"><img src="{{ photo.get_thumbnail_url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/></a>
+            <a href="{{ photo.image.url }}" class="thumbnail"><img src="{{ photo.image.url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/></a>
         </li>
         {% endfor %}
     	</ul>
