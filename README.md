@@ -19,6 +19,12 @@ This should do it for your local setup:
 ``` bash
     export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
     export ORTOLOCO_DATABASE_NAME=db.sqlite
+    
+    export ORTOLOCO_AWS_KEY_ID=
+    export ORTOLOCO_AWS_KEY=
+    export ORTOLOCO_AWS_BUCKET_NAME=
+
+    # Optional, nur wenn emails von lokal gesendet werden sollen:
     export ORTOLOCO_EMAIL_HOST=smtp.gmail.com
     export ORTOLOCO_EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
     export ORTOLOCO_EMAIL_USER=YOUR_EMAIL@gmail.com
@@ -73,7 +79,9 @@ wich removes following packages from the requirements:
 
 ## Create DB from scratch
 
-In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (loco_app ,my_ortoloco,static_ortoloco, south, photologue). Then
+You can (probably) be guided through the steps above with `make createdb`. If that doesn't work, read on...
+
+In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (my_ortoloco,static_ortoloco, south, photologue). Then
 run following command:
 
     ./manage.py syncdb
@@ -105,8 +113,8 @@ ers defined.
 Would you like to create one now? (yes/no): yes
 Username (leave blank to use 'ubuntu'): admin
 Email address: admin@example.org
-Password:
-Password (again):
+Password: <admin>
+Password (again): <admin>
 Superuser created successfully.
 Installing custom SQL ...
 Installing indexes ...
@@ -119,7 +127,6 @@ Reactivate the outcommented apps above and run following commands:
     ./manage.py syncdb
     ./manage.py migrate
 
-You might be guided through the steps above with `make createdb`.
 
 ### Backup and restore local dev database
 
@@ -151,8 +158,9 @@ on your browser.
 
 Use following command to create a super user, if not yet available:
 
-    manage.py createsuperuser
+    ./manage.py createsuperuser
 
+Hint: the super user used in the db on slack is name ´super´, password ´super´.
 
 ### Create loco for admin user
 
