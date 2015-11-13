@@ -352,6 +352,9 @@ class Job(models.Model):
     def end_time(self):
         return self.time + datetime.timedelta(hours=self.typ.duration)
 
+    def start_time(self):
+        return self.time
+
     def besetzte_plaetze(self):
         return self.boehnli_set.count()
 
