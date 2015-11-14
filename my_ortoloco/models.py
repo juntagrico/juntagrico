@@ -237,6 +237,7 @@ class Loco(models.Model):
                             on_delete=models.SET_NULL)
 
     confirmed = models.BooleanField("bestätigt", default=True)
+    reachable_by_email = models.BooleanField("reachable_by_email", default=False)
 
     def __unicode__(self):
         return self.get_name()
