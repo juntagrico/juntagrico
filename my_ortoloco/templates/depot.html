@@ -17,6 +17,12 @@
             <dd>&nbsp;</dd>
             <dt>Kontaktperson</dt>
             <dd>{{ depot.contact.first_name }} {{ depot.contact.last_name }} <a href="mailto:{{ depot.contact.email }}">{{ depot.contact.email }}</a></dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            {% if depot.description %}
+            <dt>Beschreibung</dt>
+            <dd>{{ depot.description | linebreaksbr }}</dd>
+            {% endif %}
         </dl>
         <div id="map-canvas">
         </div>

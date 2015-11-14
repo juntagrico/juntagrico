@@ -1,10 +1,8 @@
-{% extends "templates/photologue/gallery_detail.html" %}
-{% load url from future %}
-
-{% block title %}{{ object.title }}{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-<link href="/static/css/jquery.fancybox.css" rel="stylesheet">	
+<link href="/static/css/jquery.fancybox.css" rel="stylesheet">
+<script type="text/javascript" src="/static/external/jquery-1.11.2/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="/static/external/jquery.fancybox.pack.js"></script>
 
 <h3>{{ object.title }}</h3>
@@ -14,7 +12,7 @@
     {% for photo in object.public.reverse %}
     <li class="gallery-photo col-md-4">
         <a class="thumbnail" rel="{{object.title_slug}}" href="{{ photo.image.url }}" title="{{photo.caption}}">
-        	<img src="{{ photo.get_thumbnail_url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/>
+        	<img src="{{ photo.image.url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/>
         </a>
     </li>
     {% endfor %}
