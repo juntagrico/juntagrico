@@ -19,7 +19,7 @@ class ProfileLocoForm(ModelForm):
         model = Loco
         fields = ['first_name', 'last_name', 'email',
                   'addr_street', 'addr_zipcode', 'addr_location',
-                  'birthday', 'phone', 'mobile_phone']
+                  'birthday', 'phone', 'mobile_phone','reachable_by_email']
         widgets = {
             'first_name': TextInput(attrs={'placeholder': 'Berta', 'class': 'form-control'}),
             'last_name': TextInput(attrs={'placeholder': 'Muster', 'class': 'form-control'}),
@@ -30,6 +30,7 @@ class ProfileLocoForm(ModelForm):
             'phone': TextInput(attrs={'placeholder': '044 123 45 67', 'class': 'form-control'}),
             'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67', 'class': 'form-control'}),
             'email': TextInput(attrs={'placeholder': 'beate@muster.ch', 'class': 'form-control'}),
+            'reachable_by_email': CheckboxInput(attrs={'class': 'form-control'}),
         }
 
 
