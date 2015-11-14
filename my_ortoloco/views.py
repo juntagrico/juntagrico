@@ -169,7 +169,8 @@ def my_job(request, job_id):
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
         'job_fully_booked': len(allowed_additional_participants) == 0,
-        'job_is_in_past': job.end_time() < datetime.datetime.now()
+        'job_is_in_past': job.end_time() < datetime.datetime.now(),
+        'job_is_running': job.start_time() < datetime.datetime.now()
     })
     return render(request, "job.html", renderdict)
 
