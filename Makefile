@@ -67,6 +67,12 @@ heroku_download_last_db_backup:
 	$(info Downloading last backup from heroku app '$(HEROKU_APP)'...)
 	curl '$(HEROKU_LAST_BACKUP_PUBLIC_URL)' --create-dirs -o git-untracked/.heroku_db_backups/$(HEROKU_APP)/$(shell date +"%Y%m%d%H%M%S")_$(HEROKU_LAST_BACKUP_ID).bak
 
+HEROKU_SOURCE_APP ?= ortoloco
+HEROKU_TARGET_APP = ortoloco-dev
+heroku_refresh_dev_db:
+	$(info Copying last backup from heroku app '$(HEROKU_SOURCE_APP)' into app '$(HEROKU_TARGET_APP)'...)
+    heroku pg:backups restore '$(shell heroku pg:backups public-url --app $(HEROKU_SOURCE_APP))' DATABASE_URL --app $(HEROKU_TARGET_APP)
+
 checkdbfile:
 ifneq ("$(DB_SQLITE_FILE_PRESENT)","ok")
 	$(error DB file $(DB_SQLITE_FILENAME) missing...)

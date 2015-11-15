@@ -186,9 +186,14 @@ https://github.com/lanyrd/mysql-postgresql-converter
 Then import the data into the heroku-db (find the values here: https://postgres.heroku.com/databases/ortoloco-database)
 psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
 
-### How to move the live-data to dev
+### How to copy the live-data to dev
 
-#### Between Heroku apps
+To copy the last backup from the _production_ DB (i.e. heroku app `ortoloco`)
+into the dev app (i.e. heroku app `ortoloco-dev`) execute
+
+    make heroku_refresh_dev_db
+
+For reference, this `make` target executes following commands:
 
     SOURCE_APP=ortoloco
     TARGET_APP=ortoloco-dev
