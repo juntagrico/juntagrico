@@ -2,7 +2,6 @@
 
 {% block content %}
 <link href="/static/css/jquery.fancybox.css" rel="stylesheet">
-<script type="text/javascript" src="/static/external/jquery-1.11.2/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="/static/external/jquery.fancybox.pack.js"></script>
 
 <h3>{{ object.title }}</h3>
@@ -11,14 +10,16 @@
 <ul class="thumbnails photo-gallery">
     {% for photo in object.public.reverse %}
     <li class="gallery-photo col-md-4">
-        <a class="thumbnail" rel="{{object.title_slug}}" href="{{ photo.image.url }}" title="{{photo.caption}}">
+        <a class="thumbnail fancybox" rel="{{object.title_slug}}" href="{{ photo.image.url }}" title="{{photo.caption}}">
         	<img src="{{ photo.image.url }}" class="{% block gallery-photo-class %}{% endblock %}" alt="{{ photo.title }}"/>
         </a>
     </li>
     {% endfor %}
 </ul>
 <br/>
-<div><a href="{% url 'pl-gallery-list' 1 %}">Zurück zu allen Galerien</a></div>
+<div>
+	<a href="{% url 'pl-gallery-list' 1 %}">Zurück zu allen Galerien</a>
+</div>
 
 <script type="text/javascript">
 	$(document).ready(function() {
