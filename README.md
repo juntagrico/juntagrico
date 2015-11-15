@@ -19,7 +19,7 @@ This should do it for your local setup:
 ``` bash
     export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
     export ORTOLOCO_DATABASE_NAME=db.sqlite
-    
+
     export ORTOLOCO_AWS_KEY_ID=
     export ORTOLOCO_AWS_KEY=
     export ORTOLOCO_AWS_BUCKET_NAME=
@@ -195,6 +195,21 @@ psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
     heroku pg:backups restore $(heroku pg:backups public-url --app $SOURCE_APP) DATABASE_URL --app $TARGET_APP
 
 See: [Importing and Exporting Heroku Postgres Databases with PG Backups](https://devcenter.heroku.com/articles/heroku-postgres-import-export)
+
+### How to download last backup
+
+To download the last backup from the _production_ DB (i.e. heroku app `ortoloco`)
+execute
+
+    make heroku_download_last_db_backup
+
+For reference, this `make` target executes following commands:
+
+    HEROKU_APP=ortoloco
+    HEROKU_LAST_BACKUP_ID=$(heroku pg:backups --app ${HEROKU_APP} | grep Completed | head -1 | sed "s/\(\S\S*\)\s.*/\1/")
+    HEROKU_LAST_BACKUP_PUBLIC_URL = $(heroku pg:backups public-url --app ${HEROKU_APP} | cat)
+    curl "${HEROKU_LAST_BACKUP_PUBLIC_URL}" --create-dirs -o git-untracked/.heroku_db_backups/${HEROKU_APP}/$(date +"%Y%m%d%H%M%S")_${HEROKU_LAST_BACKUP_ID}.bak
+
 
 ### How to deploy to ortoloco-dev.herokuapp.com
 
