@@ -60,16 +60,37 @@ migratedb: checkvenv
 	./manage.py schemamigration static_ortoloco --auto || true
 	./manage.py migrate static_ortoloco || true
 
-HEROKU_APP ?= ortoloco
+HEROKU_APP = ortoloco-dev
+# DOC: https://devcenter.heroku.com/articles/heroku-postgres-backups
+# DOC: https://devcenter.heroku.com/articles/getting-started-with-django
+
 HEROKU_LAST_BACKUP_ID = $(shell heroku pg:backups --app $(HEROKU_APP) | grep Completed | head -1 | sed "s/\(\S\S*\)\s.*/\1/")
 HEROKU_LAST_BACKUP_PUBLIC_URL = $(shell heroku pg:backups public-url --app $(HEROKU_APP) | cat)
-heroku_download_last_db_backup:
+heroku_download_last_db_backup_dev:
 	$(info Downloading last backup from heroku app '$(HEROKU_APP)'...)
 	curl '$(HEROKU_LAST_BACKUP_PUBLIC_URL)' --create-dirs -o git-untracked/.heroku_db_backups/$(HEROKU_APP)/$(shell date +"%Y%m%d%H%M%S")_$(HEROKU_LAST_BACKUP_ID).bak
 
+heroku_download_last_db_backup_live: HEROKU_APP = ortoloco
+heroku_download_last_db_backup_live: heroku_download_last_db_backup_dev
+
+heroku_create_db_backup_dev:
+	$(info Applying 'manage.py syncdb' and 'manage.py migrate' on Heroku app 'ortoloco')
+	heroku pg:backups --app $(HEROKU_APP) capture
+
+heroku_create_db_backup_live: HEROKU_APP = ortoloco
+heroku_create_db_backup_live: heroku_create_db_backup_dev
+
+heroku_migrate_db_dev: heroku_create_db_backup_dev
+	$(info Applying 'manage.py syncdb' and 'manage.py migrate' on Heroku app 'ortoloco')
+	heroku run --app $(HEROKU_APP) python manage.py syncdb
+	heroku run --app $(HEROKU_APP) python manage.py migrate
+
+heroku_migrate_db_live: HEROKU_APP = ortoloco
+heroku_migrate_db_live: heroku_migrate_db
+
 HEROKU_SOURCE_APP ?= ortoloco
 HEROKU_TARGET_APP = ortoloco-dev
-heroku_refresh_dev_db:
+heroku_refresh_db_dev:
 	$(info Copying last backup from heroku app '$(HEROKU_SOURCE_APP)' into app '$(HEROKU_TARGET_APP)'...)
 	heroku pg:backups restore '$(shell heroku pg:backups public-url --app $(HEROKU_SOURCE_APP))' DATABASE_URL --app $(HEROKU_TARGET_APP
 
