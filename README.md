@@ -180,18 +180,58 @@ Afterwards, you might have to logout with following URL:
 
 
 ### How to migrate from mysql to postgres-sql
-First read this:
-https://github.com/lanyrd/mysql-postgresql-converter
+
+First read this: https://github.com/lanyrd/mysql-postgresql-converter
 
 Then import the data into the heroku-db (find the values here: https://postgres.heroku.com/databases/ortoloco-database)
 psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
+
+### How to create a DB backup
+
+You can trigger a DB backup on the web interface of heroku at
+
+- Live: <https://postgres.heroku.com/databases/ortoloco-heroku-postgresql-rose#snapshots>
+- Dev: <https://postgres.heroku.com/databases/ortoloco-dev-database#snapshots>
+
+Or you can trigger it directly from the command line with
+
+    make heroku_create_db_backup_dev
+    # or for the live app
+    # make heroku_create_db_backup_live
+
+For reference, this `make` target executes following commands:
+
+    heroku pg:backups --app ortoloco-dev capture
+
+You can read more about it in the [heroku doc about Postgres backups].
+
+[heroku doc about Postgres backups]: https://devcenter.heroku.com/articles/heroku-postgres-backups
+
+### How to migrate the DB on Heroku
+
+In the case that a migration must be executed on a Heroku app (live or dev), you
+can execute following `make` target, which previously creates a DB backup with the
+`target` described [above](#how-to-create-a-db-backup):
+
+    make heroku_migrate_db_dev
+    # or for the live app
+    # make heroku_migrate_db_live
+
+For reference, this `make` target executes following commands:
+
+    heroku run --app ortoloco-dev python manage.py syncdb
+    heroku run --app ortoloco-dev python manage.py migrate
+
+You can read more about it in the [heroku doc about Django].
+
+[heroku doc about Django]: https://devcenter.heroku.com/articles/getting-started-with-django
 
 ### How to copy the live-data to dev
 
 To copy the last backup from the _production_ DB (i.e. heroku app `ortoloco`)
 into the dev app (i.e. heroku app `ortoloco-dev`) execute
 
-    make heroku_refresh_dev_db
+    make heroku_refresh_db_dev
 
 For reference, this `make` target executes following commands:
 
@@ -215,6 +255,7 @@ For reference, this `make` target executes following commands:
     HEROKU_LAST_BACKUP_PUBLIC_URL = $(heroku pg:backups public-url --app ${HEROKU_APP} | cat)
     curl "${HEROKU_LAST_BACKUP_PUBLIC_URL}" --create-dirs -o git-untracked/.heroku_db_backups/${HEROKU_APP}/$(date +"%Y%m%d%H%M%S")_${HEROKU_LAST_BACKUP_ID}.bak
 
+You can read more about it in the [heroku doc about Postgres backups].
 
 ### How to deploy to ortoloco-dev.herokuapp.com
 
