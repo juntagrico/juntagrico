@@ -5,7 +5,6 @@ argparse==1.2.1
 distribute==0.7.3
 dj-database-url==0.2.2
 dj-static==0.0.5
-# django-photologue==2.6.1
 git+git://github.com/petry/django-photologue.git
 django-tinymce==1.5.1
 gunicorn==17.5
