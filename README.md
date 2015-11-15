@@ -19,6 +19,12 @@ This should do it for your local setup:
 ``` bash
     export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
     export ORTOLOCO_DATABASE_NAME=db.sqlite
+
+    export ORTOLOCO_AWS_KEY_ID=
+    export ORTOLOCO_AWS_KEY=
+    export ORTOLOCO_AWS_BUCKET_NAME=
+
+    # Optional, nur wenn emails von lokal gesendet werden sollen:
     export ORTOLOCO_EMAIL_HOST=smtp.gmail.com
     export ORTOLOCO_EMAIL_PASSWORD=YOUR_GMAIL_APP_PASSWORD
     export ORTOLOCO_EMAIL_USER=YOUR_EMAIL@gmail.com
@@ -73,7 +79,9 @@ wich removes following packages from the requirements:
 
 ## Create DB from scratch
 
-In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (loco_app ,my_ortoloco,static_ortoloco, south, photologue). Then
+You can (probably) be guided through the steps above with `make createdb`. If that doesn't work, read on...
+
+In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (my_ortoloco,static_ortoloco, south, photologue). Then
 run following command:
 
     ./manage.py syncdb
@@ -105,8 +113,8 @@ ers defined.
 Would you like to create one now? (yes/no): yes
 Username (leave blank to use 'ubuntu'): admin
 Email address: admin@example.org
-Password:
-Password (again):
+Password: <admin>
+Password (again): <admin>
 Superuser created successfully.
 Installing custom SQL ...
 Installing indexes ...
@@ -119,7 +127,6 @@ Reactivate the outcommented apps above and run following commands:
     ./manage.py syncdb
     ./manage.py migrate
 
-You might be guided through the steps above with `make createdb`.
 
 ### Backup and restore local dev database
 
@@ -151,8 +158,9 @@ on your browser.
 
 Use following command to create a super user, if not yet available:
 
-    manage.py createsuperuser
+    ./manage.py createsuperuser
 
+Hint: the super user used in the db on slack is name ´super´, password ´super´.
 
 ### Create loco for admin user
 
@@ -178,15 +186,35 @@ https://github.com/lanyrd/mysql-postgresql-converter
 Then import the data into the heroku-db (find the values here: https://postgres.heroku.com/databases/ortoloco-database)
 psql -U <username> -d <database> -h <host-of-db-server> -f path/to/postgres.sql
 
-### How to move the live-data to dev
+### How to copy the live-data to dev
 
-#### Between Heroku apps
+To copy the last backup from the _production_ DB (i.e. heroku app `ortoloco`)
+into the dev app (i.e. heroku app `ortoloco-dev`) execute
+
+    make heroku_refresh_dev_db
+
+For reference, this `make` target executes following commands:
 
     SOURCE_APP=ortoloco
     TARGET_APP=ortoloco-dev
     heroku pg:backups restore $(heroku pg:backups public-url --app $SOURCE_APP) DATABASE_URL --app $TARGET_APP
 
 See: [Importing and Exporting Heroku Postgres Databases with PG Backups](https://devcenter.heroku.com/articles/heroku-postgres-import-export)
+
+### How to download last backup
+
+To download the last backup from the _production_ DB (i.e. heroku app `ortoloco`)
+execute
+
+    make heroku_download_last_db_backup
+
+For reference, this `make` target executes following commands:
+
+    HEROKU_APP=ortoloco
+    HEROKU_LAST_BACKUP_ID=$(heroku pg:backups --app ${HEROKU_APP} | grep Completed | head -1 | sed "s/\(\S\S*\)\s.*/\1/")
+    HEROKU_LAST_BACKUP_PUBLIC_URL = $(heroku pg:backups public-url --app ${HEROKU_APP} | cat)
+    curl "${HEROKU_LAST_BACKUP_PUBLIC_URL}" --create-dirs -o git-untracked/.heroku_db_backups/${HEROKU_APP}/$(date +"%Y%m%d%H%M%S")_${HEROKU_LAST_BACKUP_ID}.bak
+
 
 ### How to deploy to ortoloco-dev.herokuapp.com
 

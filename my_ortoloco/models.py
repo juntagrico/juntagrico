@@ -27,6 +27,8 @@ class Depot(models.Model):
     addr_zipcode = models.CharField("PLZ", max_length=10)
     addr_location = models.CharField("Ort", max_length=50)
 
+    description = models.TextField("Beschreibung", max_length=1000, default="")
+
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
 
@@ -237,6 +239,7 @@ class Loco(models.Model):
                             on_delete=models.SET_NULL)
 
     confirmed = models.BooleanField("bestätigt", default=True)
+    reachable_by_email = models.BooleanField("reachable_by_email", default=False)
 
     def __unicode__(self):
         return self.get_name()
@@ -349,6 +352,9 @@ class Job(models.Model):
 
     def end_time(self):
         return self.time + datetime.timedelta(hours=self.typ.duration)
+
+    def start_time(self):
+        return self.time
 
     def besetzte_plaetze(self):
         return self.boehnli_set.count()
