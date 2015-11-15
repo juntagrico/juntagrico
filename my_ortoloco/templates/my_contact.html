@@ -1,6 +1,9 @@
 {% extends "mybase.html" %}
 
 {% block content %}
+	{% if is_sent %}
+        <div class="alert alert-success">Nachricht gesandt></div>
+	{% else %}
     <h3>Kontakt</h3>
     <br/>
     <form action="/my/kontakt" method="POST" class="form-horizontal">
@@ -46,6 +49,7 @@
             <button type="submit" class="btn btn-success">Nachricht verschicken</button>
         </div>
     </form>
+    {% endif %}
     <br/>
     <br/>
     ortoloco c/o albizke, Albisriederstr. 203b, 8047 Zürich<br/>
