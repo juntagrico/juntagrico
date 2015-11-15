@@ -71,7 +71,7 @@ HEROKU_SOURCE_APP ?= ortoloco
 HEROKU_TARGET_APP = ortoloco-dev
 heroku_refresh_dev_db:
 	$(info Copying last backup from heroku app '$(HEROKU_SOURCE_APP)' into app '$(HEROKU_TARGET_APP)'...)
-    heroku pg:backups restore '$(shell heroku pg:backups public-url --app $(HEROKU_SOURCE_APP))' DATABASE_URL --app $(HEROKU_TARGET_APP)
+	heroku pg:backups restore '$(shell heroku pg:backups public-url --app $(HEROKU_SOURCE_APP))' DATABASE_URL --app $(HEROKU_TARGET_APP
 
 checkdbfile:
 ifneq ("$(DB_SQLITE_FILE_PRESENT)","ok")
