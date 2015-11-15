@@ -706,14 +706,17 @@ def my_contact(request):
     Kontaktformular
     """
     loco = request.user.loco
+    is_sent = False
 
     if request.method == "POST":
         # send mail to bg
         send_contact_form(request.POST.get("subject"), request.POST.get("message"), loco, request.POST.get("copy"))
+        is_sent = True
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">"
+        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">",
+        'is_sent': is_sent
     })
     return render(request, "my_contact.html", renderdict)
 
