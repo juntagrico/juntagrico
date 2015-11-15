@@ -62,6 +62,11 @@ def send_contact_form(subject, message, loco, copy_to_loco):
     send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, ['info@ortoloco.ch'])
     if copy_to_loco:
         send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, [loco.email])
+		
+def send_contact_loco_form(subject, message, loco, contact_loco, copy_to_loco):
+    send_mail('Nachricht per my.ortoloco: ' + subject, message, loco.email, [contact_loco.email])
+    if copy_to_loco:
+        send_mail('Nachricht per my.ortoloco: ' + subject, message, loco.email, [loco.email])
 
 
 def send_welcome_mail(email, password, server):

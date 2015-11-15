@@ -21,7 +21,8 @@
         <div class="row impersonate">
             <div class="col-md-12">
                 <div class="alert alert-warning">
-                    Du imitierst derzeit den Benutzer “{{ user.loco.first_name }} {{ user.loco.last_name }}”. <a href="/impersonate/stop">Beende dies hier</a>.
+                    Du imitierst derzeit den Benutzer “{{ user.loco.first_name }} {{ user.loco.last_name }}”. <a
+                        href="/impersonate/stop">Beende dies hier</a>.
                 </div>
             </div>
         </div>
@@ -51,7 +52,9 @@
                         <a href="/aktuelles">ortoloco.ch</a>
                     </li>
                     {% if depot_admin|length > 0 or area_admin|length > 0 %}
-                        <li><hr></li>
+                        <li>
+                            <hr>
+                        </li>
                     {% endif %}
                     {% for depot in depot_admin %}
                         <li class="inline">
@@ -63,12 +66,17 @@
                             <a href="/my/filters/area/{{ area.id }}">Locos in {{ area.name }}</a>
                         </li>
                     {% endfor %}
-                    {% if  depot_admin|length > 0 or area_admin|length > 0 and not staff_user%}
-                        <li><hr></li>
+                    {% if depot_admin|length > 0 or area_admin|length > 0 %}
+                        {% if not staff_user %}
+                            <li>
+                                <hr>
+                            </li>
+                        {% endif %}
                     {% endif %}
 
                     {% if staff_user %}
                         <li>
+                            <hr>
                             <a href="/my/mails">Mails verschicken</a>
                         </li>
                         <li>
@@ -103,9 +111,11 @@
                         <h5>Dein Böhnli-Konto</h5>
                         {% for i in bohnenrange %}
                             {% if i < userbohnen_kernbereich %}
-                                <img alt="Kernbereich" title="Kernbereich" class="jobstatus" src="/static/img/erbse_voll_kernbereich.png"/>
+                                <img alt="Kernbereich" title="Kernbereich" class="jobstatus"
+                                     src="/static/img/erbse_voll_kernbereich.png"/>
                             {% elif i < userbohnen_total %}
-                                <img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/erbse_voll.png"/>
+                                <img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich" class="jobstatus"
+                                     src="/static/img/erbse_voll.png"/>
                             {% else %}
                                 <img alt="Leere Erbse" class="jobstatus" src="/static/img/erbse_leer.png"/>
                             {% endif %}

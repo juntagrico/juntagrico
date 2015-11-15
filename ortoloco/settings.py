@@ -78,12 +78,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/medias/')
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'static/medias/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = '/medias/'
+# MEDIA_URL = '/medias/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -166,11 +166,11 @@ ROOT_URLCONF = 'ortoloco.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'ortoloco.wsgi.application'
 
-from photologue import PHOTOLOGUE_TEMPLATE_DIR
+#from photologue import PHOTOLOGUE_TEMPLATE_DIR
 
 TEMPLATE_DIRS = (
     'ortoloco/templates',
-    PHOTOLOGUE_TEMPLATE_DIR
+    # PHOTOLOGUE_TEMPLATE_DIR
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -193,7 +193,8 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'tinymce',
-    'impersonate'
+    'impersonate',
+    'storages'
 )
 
 # logging config - copied from here: http://stackoverflow.com/questions/18920428/django-logging-on-heroku
@@ -230,4 +231,22 @@ LOGGING = {
     }
 }
 
-GALLERY_SAMPLE_SIZE = 4
+PHOTOLOGUE_GALLERY_SAMPLE_SIZE = 3
+
+DEFAULT_FILE_STORAGE = 'ortoloco.utils.MediaS3BotoStorage'
+
+try:
+    AWS_ACCESS_KEY_ID = os.environ['ORTOLOCO_AWS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['ORTOLOCO_AWS_KEY']
+    AWS_STORAGE_BUCKET_NAME = os.environ['ORTOLOCO_AWS_BUCKET_NAME']
+except KeyError:
+    raise KeyError('Need to define AWS environment variables: ' +
+                   'AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_STORAGE_BUCKET_NAME')
+
+# Default Django Storage API behavior - don't overwrite files with same name
+AWS_S3_FILE_OVERWRITE = False
+
+MEDIA_ROOT = 'media'
+MEDIA_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'

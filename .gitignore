@@ -11,3 +11,4 @@ settings_local.py
 *.bak
 ssl/*
 my_settings_local.py
+/.project
