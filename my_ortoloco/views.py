@@ -763,7 +763,6 @@ def my_profile(request):
             loco.mobile_phone = locoform.cleaned_data['mobile_phone']
             loco.reachable_by_email = locoform.cleaned_data['reachable_by_email']
             loco.save()
-
             success = True
     else:
         locoform = ProfileLocoForm(instance=loco)
