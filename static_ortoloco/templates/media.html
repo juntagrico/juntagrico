@@ -14,7 +14,7 @@
                     {% endifchanged %}
 	  			</td>
                 {% if media.shown %}
-	  			    <td><a target="_blank" href="{{ MEDIA_URL }}/medias/{{media.mediafile}}">{{media.name}}</a></td>
+	  			    <td><a target="_blank" href="{{ MEDIA_URL }}media/{{media.mediafile}}">{{media.name}}</a></td>
                 {% endif %}
                 {% if not media.shown %}
 	  			    <td><a href="/medien?year={{ media.year }}">dieses Jahr anzeigen</a></td>

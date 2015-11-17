@@ -84,20 +84,28 @@
             {% if locoform.mobile_phone.errors %}
                 <div class="alert alert-danger">Mobile ungültig</div>
             {% endif %}
-
-            <div class="form-group {% if locoform.email.errors %}error{% endif %}">
+			
+			<div class="form-group {% if locoform.email.errors %}error{% endif %}">
                 <label class="control-label col-sm-4" for="id_email">E-Mail Adresse</label>
-
-                <div class="controls col-sm-8">
-                    {{ locoform.email }}
-                </div>
-            </div>
-            <div class="form-group {% if locoform.email.errors %}error{% endif %}">
-                <label class="control-label col-sm-4"></label>
-
+				
+				<div class="controls col-sm-8">
+						{{ locoform.email }}
+				</div>
+			</div>
                 {% if locoform.email.errors %}
                     <div class="alert alert-danger">E-Mail ungültig</div>
                 {% endif %}
+			
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="id_reachable_by_email">sollen andere Locos Sie via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
+
+                <div class="controls col-sm-1">
+                    {{ locoform.reachable_by_email }}
+                </div>
+            </div>
+			
+            <div class="form-group">
+                <label class="control-label col-sm-4"></label>    
                 <div class="controls col-sm-8">
                     <a href="/my/passwort">hier kannst du dein Passwort ändern</a>
                 </div>

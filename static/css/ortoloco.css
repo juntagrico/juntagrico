@@ -264,6 +264,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 .photo-gallery {
     display: block;
     clear: both;
+    overflow: auto;
 }
 
 .gallery-photo {
