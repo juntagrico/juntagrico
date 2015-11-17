@@ -120,6 +120,10 @@ def my_job(request, job_id):
             loco_info["count"] = current_count + 1
             #current_msg.append("boehnli.comment")
             loco_info["msg"] = current_msg
+            if boehnli.loco.reachable_by_email==True:
+                loco_info["url"] = "/my/kontakt/loco/" + str(boehnli.loco.id) + "/" +str(job_id) + "/"
+            else:
+                loco_info["url"] = "#"
     print participants_new_dict
 
     participants_summary = []
@@ -127,15 +131,16 @@ def my_job(request, job_id):
         # print loco_name, loco_dict
         count = loco_dict.get("count")
         msg = loco_dict.get("msg")
+        url = loco_dict.get("url")
         # msg = ", ".join(loco_dict.get("msg"))
         if count == 1:
-            participants_summary.append((loco_name, None))
+            participants_summary.append((loco_name, None, url))
         elif count == 2:
-            participants_summary.append((loco_name + ' (mit einer weiteren Person)', msg))
+            participants_summary.append((loco_name + ' (mit einer weiteren Person)', msg, url))
         else:
             participants_summary.append((loco_name
                                                     + ' (mit ' + str(count - 1)
-                                                    + ' weiteren Personen)', msg))
+                                                    + ' weiteren Personen)', msg, url))
 
     # for boehnli in boehnlis:
     #     if boehnli.loco is not None:
@@ -703,16 +708,43 @@ def my_contact(request):
     Kontaktformular
     """
     loco = request.user.loco
+    is_sent = False
 
     if request.method == "POST":
         # send mail to bg
         send_contact_form(request.POST.get("subject"), request.POST.get("message"), loco, request.POST.get("copy"))
+        is_sent = True
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">"
+        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">",
+        'is_sent': is_sent
     })
     return render(request, "my_contact.html", renderdict)
+
+@login_required
+def my_contact_loco(request, loco_id, job_id):
+    """
+    Kontaktformular Locos
+    """
+    loco = request.user.loco
+    contact_loco = get_object_or_404(Loco, id=int(loco_id))#Loco.objects.all().filter(id = loco_id)
+    is_sent = False
+
+    if request.method == "POST":
+        # send mail to loco
+        send_contact_loco_form(request.POST.get("subject"), request.POST.get("message"), loco, contact_loco, request.POST.get("copy"))
+        is_sent = True
+
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">",
+        'loco_id': loco_id,
+        'loco_name': contact_loco.first_name + " " + contact_loco.last_name,
+        'is_sent': is_sent,
+        'job_id': job_id
+    })
+    return render(request, "my_contact_loco.html", renderdict)
 
 
 @login_required
@@ -731,8 +763,8 @@ def my_profile(request):
             loco.addr_location = locoform.cleaned_data['addr_location']
             loco.phone = locoform.cleaned_data['phone']
             loco.mobile_phone = locoform.cleaned_data['mobile_phone']
+            loco.reachable_by_email = locoform.cleaned_data['reachable_by_email']
             loco.save()
-
             success = True
     else:
         locoform = ProfileLocoForm(instance=loco)

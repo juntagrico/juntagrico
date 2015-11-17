@@ -2,11 +2,11 @@
 
 {% block content %}
 	{% if is_sent %}
-        <div class="alert alert-success">Nachricht gesandt></div>
+        <div class="alert alert-success">Nachricht gesandt <a href="/my/jobs/{{job_id}}/" style="text-decoration: underline">zur&uuml;ck zum Einsatz</a></div>
 	{% else %}
     <h3>Kontakt</h3>
     <br/>
-    <form action="/my/kontakt" method="POST" class="form-horizontal">
+    <form action="/my/kontakt/loco/{{loco_id}}/{{job_id}}/" method="POST" class="form-horizontal">
         {% csrf_token %}
         <div class="form-group">
             <label class="control-label col-sm-4">Absender</label>
@@ -17,7 +17,7 @@
         <div class="form-group">
             <label class="control-label col-sm-4">Empfänger</label>
             <div class="controls col-sm-8">
-                info@ortoloco.ch
+                {{loco_name}}
             </div>
         </div>
         <div class="form-group">
@@ -49,7 +49,7 @@
             <button type="submit" class="btn btn-success">Nachricht verschicken</button>
         </div>
     </form>
-    {% endif %}
+	{% endif %}
     <br/>
     <br/>
     ortoloco c/o albizke, Albisriederstr. 203b, 8047 Zürich<br/>

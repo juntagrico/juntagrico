@@ -7,7 +7,7 @@
             <tr>
                 <th class="document">
                     <div class="document">
-                        <a href="/medias/{{ document.document }}" target="_blank">{{ document.title }}</a>
+                        <a href="{{ MEDIA_URL }}media/{{ document.document }}" target="_blank">{{ document.title }}</a>
                     </div>
                     <div class="desc">
                         {{ document.description }}
