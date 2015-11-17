@@ -11,6 +11,15 @@ a {
     color: #4c9434;
 }
 
+a.canceled {
+    color: #A94442;
+    text-decoration: line-through;
+}
+
+a.canceled:hover, a.canceled:focus {
+    color: #A94442;
+}
+
 ul {
     padding-left: 20px;
 }

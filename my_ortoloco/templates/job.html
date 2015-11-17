@@ -45,7 +45,7 @@
     <div class="row">
         <div class="col-md-3">Dabei sind:</div>
         <div class="col-md-5">
-            {% if number_of_participants == 0 %}
+            {% if number_of_participants == 0 and not job_fully_booked %}
                 Noch niemand :-(
             {% else %}
                 <ul>
@@ -67,7 +67,9 @@
         </div>
     </div>
     <br/>
-    {% if job_fully_booked %}
+    {% if job_canceled %}
+        <div class="alert alert-danger">Der Job wurde abgesagt! Entschuldige die Umstände. Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
+    {% elif job_fully_booked %}
         <div class="alert alert-success">Der Job ist ausgebucht, danke! Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
     {% elif job_is_in_past %}
         <div class="alert alert-success">Der Job hat schon angefangen! Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>

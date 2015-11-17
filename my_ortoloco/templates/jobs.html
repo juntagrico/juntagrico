@@ -18,7 +18,7 @@
                 <tr>
                     <td>{% if job.typ.bereich.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/erbse_voll_kernbereich.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/erbse_voll.png"/>{% endif %}</td>
                     <td>{{ job.wochentag }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}||{{ job.time_stamp }}</td>
-                    <td><a href="/my/jobs/{{ job.id }}">{{ job.typ.get_name }}</a></td>
+                    <td><a href="/my/jobs/{{ job.id }}" {% if job.canceled %} class="canceled" {% endif %}]>{{ job.typ.get_name }}</a></td>
                     <td><img alt="Job-Status: {{ job.get_status_bohne }}" src="/static/img/{{ job.get_status_bohne }}"/></td>
                     <td>{{ job.typ.location }}</td>
                 </tr>
