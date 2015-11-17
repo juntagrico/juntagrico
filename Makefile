@@ -86,7 +86,7 @@ heroku_migrate_db_dev: heroku_create_db_backup_dev
 	heroku run --app $(HEROKU_APP) python manage.py migrate
 
 heroku_migrate_db_live: HEROKU_APP = ortoloco
-heroku_migrate_db_live: heroku_migrate_db
+heroku_migrate_db_live: heroku_migrate_db_dev
 
 HEROKU_SOURCE_APP ?= ortoloco
 HEROKU_TARGET_APP = ortoloco-dev
