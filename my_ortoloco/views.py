@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
+import xlsxwriter
 
 from my_ortoloco.models import *
 from my_ortoloco.forms import *
@@ -896,6 +897,7 @@ def my_filters(request):
     return render(request, 'filters.html', renderdict)
 
 
+
 @permission_required('my_ortoloco.is_depot_admin')
 def my_filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
@@ -1196,6 +1198,56 @@ def my_switch_abos(request):
 
     return redirect('/my/zukunft?changed=true')
 
+
+@staff_member_required
+def my_excel_export(request):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
+    output = StringIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet_s = workbook.add_worksheet("Locos")
+    
+    worksheet_s.write_string(0, 0, unicode("Name", "utf-8"))
+    worksheet_s.write_string(0, 1, unicode("Boehnlis", "utf-8"))
+    worksheet_s.write_string(0, 2, unicode("Boehnlis Kernbereich", "utf-8"))
+    worksheet_s.write_string(0, 3, unicode("Taetigkeitsbereiche", "utf-8"))
+    worksheet_s.write_string(0, 4, unicode("Depot", "utf-8"))
+    worksheet_s.write_string(0, 5, unicode("Email", "utf-8"))
+    worksheet_s.write_string(0, 6, unicode("Telefon", "utf-8"))
+    worksheet_s.write_string(0, 7, unicode("Mobile", "utf-8"))
+    
+    locos = Loco.objects.all()
+    boehnlis = current_year_boehnlis_per_loco()
+    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
+    row = 1
+    for loco in locos:
+        loco.boehnlis = boehnlis[loco]
+        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
+        loco.bereiche = ""
+        for bereich in loco.areas.all():
+            loco.bereiche = loco.bereiche + bereich.name +" "
+        if loco.bereiche == "":
+            loco.bereiche = unicode("-Kein Tätigkeitsbereich-", "utf-8")
+        
+        loco.depot_name = unicode("Kein Depot definiert", "utf-8")
+        if loco.abo is not None:
+            loco.depot_name=loco.abo.depot.name
+        looco_full_name = loco.first_name + " " + loco.last_name
+        worksheet_s.write_string(row, 0, looco_full_name)
+        worksheet_s.write(row, 1, loco.boehnlis)
+        worksheet_s.write(row, 2, loco.boehnlis_kernbereich)
+        worksheet_s.write_string(row, 3, loco.bereiche)
+        worksheet_s.write_string(row, 4, loco.depot_name)
+        worksheet_s.write_string(row, 5, loco.email)
+        worksheet_s.write_string(row, 6, loco.phone)
+        if loco.mobile_phone is not None: 
+            worksheet_s.write_string(row, 7, loco.mobile_phone)
+        row = row + 1
+
+    workbook.close()
+    xlsx_data = output.getvalue()
+    response.write(xlsx_data)
+    return response
 
 @staff_member_required
 def my_startmigration(request):
