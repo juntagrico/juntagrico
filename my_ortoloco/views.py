@@ -118,29 +118,35 @@ def my_job(request, job_id):
             current_count = loco_info.get("count", 0)
             current_msg = loco_info.get("msg", [])
             loco_info["count"] = current_count + 1
+            loco_info["email"] = boehnli.loco.email
             #current_msg.append("boehnli.comment")
             loco_info["msg"] = current_msg
-            if boehnli.loco.reachable_by_email==True:
+            if boehnli.loco.reachable_by_email==True or request.user.is_staff or job.typ.bereich.coordinator==loco:
                 loco_info["url"] = "/my/kontakt/loco/" + str(boehnli.loco.id) + "/" +str(job_id) + "/"
+                loco_info["reachable"] = True;
             else:
-                loco_info["url"] = "#"
+                loco_info["url"] = ""
+                loco_info["reachable"] = False;
     print participants_new_dict
 
     participants_summary = []
+    emails = []
     for loco_name, loco_dict in participants_new_dict.iteritems():
         # print loco_name, loco_dict
         count = loco_dict.get("count")
         msg = loco_dict.get("msg")
         url = loco_dict.get("url")
+        reachable = loco_dict.get("reachable")
+        emails.append(loco_dict.get("email"))
         # msg = ", ".join(loco_dict.get("msg"))
         if count == 1:
-            participants_summary.append((loco_name, None, url))
+            participants_summary.append((loco_name, None, url, reachable))
         elif count == 2:
-            participants_summary.append((loco_name + ' (mit einer weiteren Person)', msg, url))
+            participants_summary.append((loco_name + ' (mit einer weiteren Person)', msg, url, reachable))
         else:
             participants_summary.append((loco_name
                                                     + ' (mit ' + str(count - 1)
-                                                    + ' weiteren Personen)', msg, url))
+                                                    + ' weiteren Personen)', msg, url, reachable))
 
     # for boehnli in boehnlis:
     #     if boehnli.loco is not None:
@@ -159,20 +165,28 @@ def my_job(request, job_id):
 
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
-
+    job_fully_booked = len(allowed_additional_participants) == 0
+    job_is_in_past = job.end_time() < datetime.datetime.now()
+    job_is_running = job.start_time() < datetime.datetime.now()
+    job_canceled = job.canceled
+    can_subscribe = not(job_fully_booked or job_is_in_past or job_is_running or job_canceled)
+    
     renderdict = get_menu_dict(request)
     jobendtime = job.end_time()
     renderdict.update({
+        'admin': request.user.is_staff or job.typ.bereich.coordinator==loco,
+        'emails': "\n".join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
         'participants_summary': participants_summary,
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
-        'job_fully_booked': len(allowed_additional_participants) == 0,
-        'job_is_in_past': job.end_time() < datetime.datetime.now(),
-        'job_is_running': job.start_time() < datetime.datetime.now(),
-        'job_canceled': job.canceled
+        'job_fully_booked': job_fully_booked,
+        'job_is_in_past': job_is_in_past,
+        'job_is_running': job_is_running,
+        'job_canceled': job_canceled,
+        'can_subscribe': can_subscribe
     })
     return render(request, "job.html", renderdict)
 
