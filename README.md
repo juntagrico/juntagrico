@@ -268,3 +268,19 @@ On live you do this:
 
     heroku git:remote -a ortoloco -r heroku-live
     git push heroku-live live
+
+
+### How to deal with duplicate migrations
+
+If e.g. the migration `0028` and `0029` are the same, delete the first one and
+run:
+
+    ./manage.py migrate my_ortoloco 0028 --fake --delete-ghost-migrations
+
+Or direct on the heroku dev application:
+
+    heroku run --app ortoloco-dev python manage.py migrate my_ortoloco 0028 --fake --delete-ghost-migrations
+
+And then run a normal `syncdb` and `migrate`.
+
+For further reference: http://stackoverflow.com/a/8875541
