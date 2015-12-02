@@ -335,6 +335,7 @@ class Job(models.Model):
     time = models.DateTimeField()
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
+    canceled = models.BooleanField("abgesagt", default=False)
 
     def __unicode__(self):
         return u'Job #%s' % (self.id)
@@ -361,6 +362,8 @@ class Job(models.Model):
 
     def get_status_bohne(self):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
+	if self.slots < 1:
+             return helpers.get_status_bean(100)
         return helpers.get_status_bean(boehnlis.count() * 100 / self.slots)
 
     def is_in_kernbereich(self):
