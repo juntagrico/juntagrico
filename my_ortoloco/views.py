@@ -861,7 +861,7 @@ def send_email_intern(request):
         for recipient in recipients:
             emails.add(recipient)
     if request.POST.get("allsingleemail"):
-        emails.add(request.POST.get("singleemail"))
+        emails |= set(request.POST.get("singleemail").split(' '))
 
     index = 1
     attachements = []
