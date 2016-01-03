@@ -5,11 +5,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
 from django.core import validators
+from django.core.exceptions import ValidationError
 import time
 from django.db.models import Q
 
 import model_audit
 import helpers
+
+from my_ortoloco.mailer import *
 
 
 class Depot(models.Model):
@@ -363,7 +366,8 @@ class Job(models.Model):
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
-
+    old_canceled = False;
+    
     def __unicode__(self):
         return u'Job #%s' % (self.id)
 
@@ -389,12 +393,36 @@ class Job(models.Model):
 
     def get_status_bohne(self):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
-	if self.slots < 1:
+        if self.slots < 1:
              return helpers.get_status_bean(100)
         return helpers.get_status_bean(boehnlis.count() * 100 / self.slots)
 
     def is_in_kernbereich(self):
         return self.typ.bereich.core
+        
+    def clean(self):
+        if(self.old_canceled != self.canceled and self.old_canceled == True):
+            raise ValidationError(u'Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
+    
+    
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        if(instance.old_canceled != instance.canceled and instance.old_canceled==False):
+            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            emails = set()
+            for boehnli in boehnlis:
+                emails.add(boehnli.loco.email)
+            instance.slots=0
+            if(len(emails)>0):
+                send_job_canceled(emails, instance)
+        
+    
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        instance.old_canceled=instance.canceled;
+        if(instance.canceled==True):
+            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            boehnlis.delete()
 
     class Meta:
         verbose_name = 'Job'
@@ -429,4 +457,6 @@ model_audit.fk(Anteilschein.loco)
 
 signals.post_save.connect(Loco.create, sender=Loco)
 signals.post_delete.connect(Loco.post_delete, sender=Loco)
+signals.pre_save.connect(Job.pre_save, sender=Job)
+signals.post_init.connect(Job.post_init, sender=Job)
 
