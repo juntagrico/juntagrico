@@ -80,7 +80,7 @@ def my_home(request):
 
     next_jobs = set(get_current_jobs()[:7])
     pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=datetime.datetime.now()))
-    next_aktionstage = set(Job.objects.filter(typ__name="Aktionstag", time__gte=datetime.datetime.now()).order_by("time")[:2])
+    next_aktionstage = set(RecuringJob.objects.filter(typ__name="Aktionstag", time__gte=datetime.datetime.now()).order_by("time")[:2])
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_aktionstage), key=lambda job: job.time),
@@ -1357,6 +1357,7 @@ def test_filters_post(request):
     data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" % (loco, loco.email))
     res.extend(data)
     return HttpResponse("<br>".join(res))
+
 
 
 

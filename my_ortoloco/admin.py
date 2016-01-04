@@ -59,7 +59,7 @@ class AboAdminForm(forms.ModelForm):
 
 class JobCopyForm(forms.ModelForm):
     class Meta:
-        model = Job
+        model = RecuringJob
         fields = ["typ", "slots"]
 
     weekdays = forms.MultipleChoiceField(label="Wochentage", choices=helpers.weekday_choices,
@@ -320,4 +320,5 @@ admin.site.register(Anteilschein, AnteilscheinAdmin)
 # where integrity constraints are checked
 #admin.site.register(Boehnli, BoehnliAdmin)
 admin.site.register(JobType)
-admin.site.register(Job, JobAdmin)
+admin.site.register(RecuringJob, JobAdmin)
+admin.site.register(OneTimeJob, JobAdmin)
