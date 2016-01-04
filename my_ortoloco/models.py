@@ -8,6 +8,9 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 import time
 from django.db.models import Q
+from polymorphic.models import PolymorphicModel
+
+
 
 import model_audit
 import helpers
@@ -359,14 +362,17 @@ class JobType(models.Model):
         verbose_name_plural = 'Jobarten'
 
 
-class Job(models.Model):
-    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
+class Job(PolymorphicModel):
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
     old_canceled = False;
+    
+    @property
+    def typ(self):
+        raise NotImplementedError
     
     def __unicode__(self):
         return u'Job #%s' % (self.id)
@@ -425,10 +431,42 @@ class Job(models.Model):
             boehnlis.delete()
 
     class Meta:
+        verbose_name = 'AbstractJob'
+        verbose_name_plural = 'AbstractJobs'
+
+class RecuringJob(Job):
+    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
+
+    class Meta:
         verbose_name = 'Job'
         verbose_name_plural = 'Jobs'
 
+class OneTimeJob(Job):
+    """
+    One time job.
+    """
+    name = models.CharField("Name", max_length=100, unique=True)
+    displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
+    description = models.TextField("Beschreibung", max_length=1000, default="")
+    bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
+    duration = models.PositiveIntegerField("Dauer in Stunden")
+    location = models.CharField("Ort", max_length=100, default="")
 
+    @property
+    def typ(self):
+        result = JobType()
+        result.name= self.name
+        result.displayed_name = self.displayed_name
+        result.description = self.description
+        result.bereich = self.bereich
+        result.duration = self.duration
+        result.location = self.location
+        return result
+
+    class Meta:
+        verbose_name = 'EinzelJob'
+        verbose_name_plural = 'EinzelJobs'
+        
 class Boehnli(models.Model):
     """
     Single boehnli (work unit).
