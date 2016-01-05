@@ -338,9 +338,9 @@ class Taetigkeitsbereich(models.Model):
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 
-class JobType(models.Model):
+class AbstractJobType(models.Model):
     """
-    Recurring type of job.
+    Abstract type of job.
     """
     name = models.CharField("Name", max_length=100, unique=True)
     displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
@@ -356,6 +356,15 @@ class JobType(models.Model):
         if self.displayed_name is not None:
             return self.displayed_name
         return self.name
+
+    class Meta:
+        verbose_name = 'AbstractJobart'
+        verbose_name_plural = 'AbstractJobarten'
+        
+class JobType(AbstractJobType):
+    """
+    Recuring type of job. do not add field here do it in the parent
+    """
 
     class Meta:
         verbose_name = 'Jobart'
@@ -441,27 +450,15 @@ class RecuringJob(Job):
         verbose_name = 'Job'
         verbose_name_plural = 'Jobs'
 
-class OneTimeJob(Job):
+class OneTimeJob(Job, AbstractJobType):
     """
-    One time job.
+    One time job. Do not add Field here do it in the Parent class
     """
-    name = models.CharField("Name", max_length=100, unique=True)
-    displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
-    description = models.TextField("Beschreibung", max_length=1000, default="")
-    bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
-    duration = models.PositiveIntegerField("Dauer in Stunden")
-    location = models.CharField("Ort", max_length=100, default="")
+   
 
     @property
     def typ(self):
-        result = JobType()
-        result.name= self.name
-        result.displayed_name = self.displayed_name
-        result.description = self.description
-        result.bereich = self.bereich
-        result.duration = self.duration
-        result.location = self.location
-        return result
+        return self
 
     class Meta:
         verbose_name = 'EinzelJob'
