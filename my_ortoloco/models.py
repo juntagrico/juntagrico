@@ -8,6 +8,9 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 import time
 from django.db.models import Q
+from polymorphic.models import PolymorphicModel
+
+
 
 import model_audit
 import helpers
@@ -335,9 +338,9 @@ class Taetigkeitsbereich(models.Model):
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 
-class JobType(models.Model):
+class AbstractJobType(models.Model):
     """
-    Recurring type of job.
+    Abstract type of job.
     """
     name = models.CharField("Name", max_length=100, unique=True)
     displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
@@ -355,18 +358,30 @@ class JobType(models.Model):
         return self.name
 
     class Meta:
+        verbose_name = 'AbstractJobart'
+        verbose_name_plural = 'AbstractJobarten'
+        
+class JobType(AbstractJobType):
+    """
+    Recuring type of job. do not add field here do it in the parent
+    """
+
+    class Meta:
         verbose_name = 'Jobart'
         verbose_name_plural = 'Jobarten'
 
 
-class Job(models.Model):
-    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
+class Job(PolymorphicModel):
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
     old_canceled = False;
+    
+    @property
+    def typ(self):
+        raise NotImplementedError
     
     def __unicode__(self):
         return u'Job #%s' % (self.id)
@@ -425,10 +440,30 @@ class Job(models.Model):
             boehnlis.delete()
 
     class Meta:
+        verbose_name = 'AbstractJob'
+        verbose_name_plural = 'AbstractJobs'
+
+class RecuringJob(Job):
+    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
+
+    class Meta:
         verbose_name = 'Job'
         verbose_name_plural = 'Jobs'
 
+class OneTimeJob(Job, AbstractJobType):
+    """
+    One time job. Do not add Field here do it in the Parent class
+    """
+   
 
+    @property
+    def typ(self):
+        return self
+
+    class Meta:
+        verbose_name = 'EinzelJob'
+        verbose_name_plural = 'EinzelJobs'
+        
 class Boehnli(models.Model):
     """
     Single boehnli (work unit).
