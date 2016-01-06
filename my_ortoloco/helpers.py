@@ -127,3 +127,13 @@ def get_status_bean_text(percent=0):
             return "Angefangen"
         else:
             return "Nix"
+          
+"""
+    Copys the user defined attributes of a model into another model. It will only copy the fields with are present in both
+"""
+def attribute_copy(source, target):
+    for field in target._meta.fields:
+                if(field.auto_created==False and field.editable==True and field.attname in source.__dict__ and field.attname in target.__dict__):
+                    target.__dict__[field.attname] = source.__dict__[field.attname]
+                    
+            
