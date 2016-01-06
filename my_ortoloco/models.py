@@ -338,7 +338,7 @@ class Taetigkeitsbereich(models.Model):
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 
-class AbstractJobType(models.Model):
+class AbstractJobType(PolymorphicModel):
     """
     Abstract type of job.
     """
