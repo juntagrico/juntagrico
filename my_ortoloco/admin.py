@@ -186,7 +186,7 @@ class JobAdmin(admin.ModelAdmin):
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = Job(typ=inst.typ, slots=inst.slots, time=inst.time)
+            newjob = RecuringJob(typ=inst.typ, slots=inst.slots, time=inst.time)
             newjob.save()
 
     copy_job.short_description = "Jobs kopieren"
@@ -225,7 +225,57 @@ class JobAdmin(admin.ModelAdmin):
             return ""
         return admin.ModelAdmin.construct_change_message(self, request, form, formsets)
 
+class OneTimeJobAdmin(admin.ModelAdmin):
+    list_display = ["__unicode__", "typ", "time", "slots", "freie_plaetze"]
+    actions = ["transform_job"]
+    search_fields = ["typ__name", "typ__bereich__name"]
+    
+    inlines = [BoehnliInline]
+    readonly_fields = ["freie_plaetze"]
+    
+    def transform_job(self, request, queryset):
+        for inst in queryset.all():
+            t = JobType()
+            rj = RecuringJob()
+            helpers.attribute_copy(inst,t)
+            helpers.attribute_copy(inst,rj)
+            name = t.name
+            t.name="something temporal which possibly is never used"
+            t.save()
+            rj.typ=t
+            rj.save()    
+            for b in Boehnli.objects.filter(job_id=inst.id):
+                b.job = rj
+                b.save()
+            inst.delete()
+            t.name = name
+            t.save()
 
+    transform_job.short_description = "EinzelJobs in Jobart konvertieren"
+
+class JobTypeAdmin(admin.ModelAdmin):
+    list_display = ["__unicode__"]
+    actions = ["transform_job_type"]
+    
+    def transform_job_type(self, request, queryset):
+        for inst in queryset.all():
+            i=0
+            for rj in RecuringJob.objects.filter(typ_id = inst.id):
+                oj = OneTimeJob()
+                helpers.attribute_copy(inst,oj)
+                helpers.attribute_copy(rj,oj)
+                oj.name = oj.name + str(i)
+                i = i+1
+                print oj.__dict__
+                oj.save()    
+                for b in Boehnli.objects.filter(job_id=rj.id):
+                    b.job = oj
+                    b.save()
+                rj.delete()
+            inst.delete()
+
+    transform_job_type.short_description = "Jobart in EinzelJobs konvertieren"
+    
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
     list_display = ["__unicode__", "bezieher", "primary_loco_nullsave", "depot", "active"]
@@ -319,6 +369,6 @@ admin.site.register(Anteilschein, AnteilscheinAdmin)
 # Not adding this because it can and should be edited from Job, 
 # where integrity constraints are checked
 #admin.site.register(Boehnli, BoehnliAdmin)
-admin.site.register(JobType)
+admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
-admin.site.register(OneTimeJob, JobAdmin)
+admin.site.register(OneTimeJob, OneTimeJobAdmin)
