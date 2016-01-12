@@ -48,20 +48,20 @@ class Depot(models.Model):
             day = helpers.weekdays[self.weekday]
         return day
 
-    def small_abos(self):
-        return self.small_abos(self, self.active_abos())
-
+    def small_abos_t(self):
+        return self.small_abos(self.active_abos())
+        
     def small_abos(self, abos):
         return len(abos.filter(Q(size=1) | Q(size=3)))
 
-    def big_abos(self):
-        return self.big_abos(self, self.active_abos())
+    def big_abos_t(self):
+        return self.big_abos(self.active_abos())
 
     def big_abos(self, abos):
         return len(self.active_abos().filter(Q(size=2) | Q(size=3) | Q(size=4))) + len(self.active_abos().filter(size=4))
 
-    def vier_eier(self):
-        return self.vier_eier(self, self.active_abos())
+    def vier_eier_t(self):
+        return self.vier_eier(self.active_abos())
 
     def vier_eier(self, abos):
         eier = 0
@@ -69,8 +69,8 @@ class Depot(models.Model):
             eier += len(abo.extra_abos.all().filter(description="Eier 4er Pack"))
         return eier
 
-    def sechs_eier(self):
-        return self.active_abos()
+    def sechs_eier_t(self):
+        return self.sechs_eier(self.active_abos())
 
     def sechs_eier(self, abos):
         eier = 0
@@ -78,8 +78,8 @@ class Depot(models.Model):
             eier += len(abo.extra_abos.all().filter(description="Eier 6er Pack"))
         return eier
 
-    def kaese_ganz(self):
-        return self.kaese_ganz(self, self.active_abos())
+    def kaese_ganz_t(self):
+        return self.kaese_ganz(self.active_abos())
 
     def kaese_ganz(self, abos):
         kaese = 0
@@ -87,8 +87,8 @@ class Depot(models.Model):
             kaese += len(abo.extra_abos.all().filter(description="Käse ganz"))
         return kaese
 
-    def kaese_halb(self):
-        return self.kaese_halb(self, self.active_abos())
+    def kaese_halb_t(self):
+        return self.kaese_halb(self.active_abos())
 
     def kaese_halb(self, abos):
         kaese = 0
@@ -96,8 +96,8 @@ class Depot(models.Model):
             kaese += len(abo.extra_abos.all().filter(description="Käse halb"))
         return kaese
 
-    def kaese_viertel(self):
-        return self.kaese_viertel(self, self.active_abos())
+    def kaese_viertel_t(self):
+        return self.kaese_viertel(self.active_abos())
 
     def kaese_viertel(self, abos):
         kaese = 0
@@ -105,8 +105,8 @@ class Depot(models.Model):
             kaese += len(abo.extra_abos.all().filter(description="Käse viertel"))
         return kaese
 
-    def big_obst(self):
-        return self.big_obst(self, self.active_abos())
+    def big_obst_t(self):
+        return self.big_obst(self.active_abos())
 
     def big_obst(self, abos):
         obst = 0
@@ -114,8 +114,8 @@ class Depot(models.Model):
             obst += len(abo.extra_abos.all().filter(description="Obst gr. (2kg)"))
         return obst
 
-    def small_obst(self):
-        return self.small_abos(self, self.active_abos())
+    def small_obst_t(self):
+        return self.small_obst(self.active_abos())
 
     def small_obst(self, abos):
         obst = 0
