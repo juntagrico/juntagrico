@@ -211,6 +211,47 @@
                 <td class="top-border left-border right-border"></td>
             </tr>
         {% endfor %}
+        {% if depot.active_abos.all|length > 15 %}
+        <tr>
+            <th>Name</th>
+            <th>Abo mit</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th style="text-align: right;">abgeholt</th>
+            <th style="text-align: right;">Tasche retour</th>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="small left-border bottom-border">klein</td>
+            <td class="small bottom-border right-border">gross</td>
+            <td class="small bottom-border">4er</td>
+            <td class="small bottom-border right-border">6er</td>
+            <td class="small bottom-border">ganz</td>
+            <td class="small bottom-border">halb</td>
+            <td class="small bottom-border right-border">viertel</td>
+            <td class="small bottom-border">gross</td>
+            <td class="small bottom-border right-border">klein</td>
+            <td></td>
+            <td class="small bottom-border right-border"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <th colspan="2" class="top-border left-border right-border">ABO</th>
+            <th colspan="2" class="top-border right-border">EIER</th>
+            <th colspan="3" class="top-border right-border">KÄSE<br/><span style="font-size:11px">1x Anfang Monat!</span></th>
+            <th colspan="2" class="top-border right-border">OBST</th>
+            <th colspan="2" class="top-border right-border"></th>
+        </tr>
+        {% endif%}
     </table>
     Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
     <div class="page-break"></div>
