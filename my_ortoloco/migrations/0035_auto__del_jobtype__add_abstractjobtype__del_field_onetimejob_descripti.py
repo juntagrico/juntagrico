@@ -31,7 +31,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'OneTimeJob.abstractjobtype_ptr'
         db.add_column(u'my_ortoloco_onetimejob', u'abstractjobtype_ptr',
-                      self.gf('django.db.models.fields.related.OneToOneField')(default='', to=orm['my_ortoloco.AbstractJobType'], unique=True),
+                      self.gf('django.db.models.fields.related.OneToOneField')(to=orm['my_ortoloco.AbstractJobType'], unique=True),
                       keep_default=False)
 
 
