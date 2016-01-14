@@ -5,11 +5,17 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
 from django.core import validators
+from django.core.exceptions import ValidationError
 import time
 from django.db.models import Q
+from polymorphic.models import PolymorphicModel
+
+
 
 import model_audit
 import helpers
+
+from my_ortoloco.mailer import *
 
 
 class Depot(models.Model):
@@ -42,20 +48,20 @@ class Depot(models.Model):
             day = helpers.weekdays[self.weekday]
         return day
 
-    def small_abos(self):
-        return self.small_abos(self, self.active_abos())
-
+    def small_abos_t(self):
+        return self.small_abos(self.active_abos())
+        
     def small_abos(self, abos):
         return len(abos.filter(Q(size=1) | Q(size=3)))
 
-    def big_abos(self):
-        return self.big_abos(self, self.active_abos())
+    def big_abos_t(self):
+        return self.big_abos(self.active_abos())
 
     def big_abos(self, abos):
         return len(self.active_abos().filter(Q(size=2) | Q(size=3) | Q(size=4))) + len(self.active_abos().filter(size=4))
 
-    def vier_eier(self):
-        return self.vier_eier(self, self.active_abos())
+    def vier_eier_t(self):
+        return self.vier_eier(self.active_abos())
 
     def vier_eier(self, abos):
         eier = 0
@@ -63,8 +69,8 @@ class Depot(models.Model):
             eier += len(abo.extra_abos.all().filter(description="Eier 4er Pack"))
         return eier
 
-    def sechs_eier(self):
-        return self.active_abos()
+    def sechs_eier_t(self):
+        return self.sechs_eier(self.active_abos())
 
     def sechs_eier(self, abos):
         eier = 0
@@ -72,8 +78,8 @@ class Depot(models.Model):
             eier += len(abo.extra_abos.all().filter(description="Eier 6er Pack"))
         return eier
 
-    def kaese_ganz(self):
-        return self.kaese_ganz(self, self.active_abos())
+    def kaese_ganz_t(self):
+        return self.kaese_ganz(self.active_abos())
 
     def kaese_ganz(self, abos):
         kaese = 0
@@ -81,8 +87,8 @@ class Depot(models.Model):
             kaese += len(abo.extra_abos.all().filter(description="Käse ganz"))
         return kaese
 
-    def kaese_halb(self):
-        return self.kaese_halb(self, self.active_abos())
+    def kaese_halb_t(self):
+        return self.kaese_halb(self.active_abos())
 
     def kaese_halb(self, abos):
         kaese = 0
@@ -90,8 +96,8 @@ class Depot(models.Model):
             kaese += len(abo.extra_abos.all().filter(description="Käse halb"))
         return kaese
 
-    def kaese_viertel(self):
-        return self.kaese_viertel(self, self.active_abos())
+    def kaese_viertel_t(self):
+        return self.kaese_viertel(self.active_abos())
 
     def kaese_viertel(self, abos):
         kaese = 0
@@ -99,8 +105,8 @@ class Depot(models.Model):
             kaese += len(abo.extra_abos.all().filter(description="Käse viertel"))
         return kaese
 
-    def big_obst(self):
-        return self.big_obst(self, self.active_abos())
+    def big_obst_t(self):
+        return self.big_obst(self.active_abos())
 
     def big_obst(self, abos):
         obst = 0
@@ -108,8 +114,8 @@ class Depot(models.Model):
             obst += len(abo.extra_abos.all().filter(description="Obst gr. (2kg)"))
         return obst
 
-    def small_obst(self):
-        return self.small_abos(self, self.active_abos())
+    def small_obst_t(self):
+        return self.small_obst(self.active_abos())
 
     def small_obst(self, abos):
         obst = 0
@@ -332,9 +338,9 @@ class Taetigkeitsbereich(models.Model):
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 
-class JobType(models.Model):
+class AbstractJobType(PolymorphicModel):
     """
-    Recurring type of job.
+    Abstract type of job.
     """
     name = models.CharField("Name", max_length=100, unique=True)
     displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
@@ -352,18 +358,31 @@ class JobType(models.Model):
         return self.name
 
     class Meta:
+        verbose_name = 'AbstractJobart'
+        verbose_name_plural = 'AbstractJobarten'
+        
+class JobType(AbstractJobType):
+    """
+    Recuring type of job. do not add field here do it in the parent
+    """
+
+    class Meta:
         verbose_name = 'Jobart'
         verbose_name_plural = 'Jobarten'
 
 
-class Job(models.Model):
-    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
+class Job(PolymorphicModel):
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
-
+    old_canceled = False;
+    
+    @property
+    def typ(self):
+        raise NotImplementedError
+    
     def __unicode__(self):
         return u'Job #%s' % (self.id)
 
@@ -389,18 +408,62 @@ class Job(models.Model):
 
     def get_status_bohne(self):
         boehnlis = Boehnli.objects.filter(job_id=self.id)
-	if self.slots < 1:
+        if self.slots < 1:
              return helpers.get_status_bean(100)
         return helpers.get_status_bean(boehnlis.count() * 100 / self.slots)
 
     def is_in_kernbereich(self):
         return self.typ.bereich.core
+        
+    def clean(self):
+        if(self.old_canceled != self.canceled and self.old_canceled == True):
+            raise ValidationError(u'Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
+    
+    
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        if(instance.old_canceled != instance.canceled and instance.old_canceled==False):
+            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            emails = set()
+            for boehnli in boehnlis:
+                emails.add(boehnli.loco.email)
+            instance.slots=0
+            if(len(emails)>0):
+                send_job_canceled(emails, instance)
+        
+    
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        instance.old_canceled=instance.canceled;
+        if(instance.canceled==True):
+            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            boehnlis.delete()
+
+    class Meta:
+        verbose_name = 'AbstractJob'
+        verbose_name_plural = 'AbstractJobs'
+
+class RecuringJob(Job):
+    typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'Job'
         verbose_name_plural = 'Jobs'
 
+class OneTimeJob(Job, AbstractJobType):
+    """
+    One time job. Do not add Field here do it in the Parent class
+    """
+   
 
+    @property
+    def typ(self):
+        return self
+
+    class Meta:
+        verbose_name = 'EinzelJob'
+        verbose_name_plural = 'EinzelJobs'
+        
 class Boehnli(models.Model):
     """
     Single boehnli (work unit).
@@ -429,4 +492,6 @@ model_audit.fk(Anteilschein.loco)
 
 signals.post_save.connect(Loco.create, sender=Loco)
 signals.post_delete.connect(Loco.post_delete, sender=Loco)
+signals.pre_save.connect(Job.pre_save, sender=Job)
+signals.post_init.connect(Job.post_init, sender=Job)
 
