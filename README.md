@@ -264,11 +264,12 @@ Obviously, you need the rights to do this, then:
     heroku git:remote -a ortoloco-dev -r heroku-dev
     git push heroku-dev master
 
-On live you do this:
+On live you do this (see [heroku doc]):
 
     heroku git:remote -a ortoloco -r heroku-live
-    git push heroku-live live
+    git push heroku-live live:master
 
+[heroku doc]: https://devcenter.heroku.com/articles/git#deploying-code
 
 ### How to deal with duplicate migrations
 
