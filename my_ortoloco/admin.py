@@ -5,7 +5,7 @@ from django.contrib import admin, messages
 from django import forms
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.conf.urls import patterns
+from django.conf.urls import url
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 
@@ -18,7 +18,8 @@ from my_ortoloco import admin_helpers
 class AboAdminForm(forms.ModelForm):
     class Meta:
         model = Abo
-
+        fields = '__all__'
+        
     abo_locos = forms.ModelMultipleChoiceField(queryset=Loco.objects.all(), required=False,
                                                widget=admin.widgets.FilteredSelectMultiple("Locos", False))
 
@@ -200,9 +201,9 @@ class JobAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super(JobAdmin, self).get_urls()
-        my_urls = patterns("",
-                           (r"^copy_job/(?P<jobid>.*?)/$", self.admin_site.admin_view(self.copy_job_view))
-        )
+        my_urls = [
+                           url(r"^copy_job/(?P<jobid>.*?)/$", self.admin_site.admin_view(self.copy_job_view))
+        ]
         return my_urls + urls
 
 
@@ -317,7 +318,7 @@ class BoehnliAdmin(admin.ModelAdmin):
 class LocoAdminForm(forms.ModelForm):
     class Meta:
         model = Loco
-
+        fields = '__all__'
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
