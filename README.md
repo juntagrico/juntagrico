@@ -53,6 +53,8 @@ document. The first three of them are listed here for reference:
 
 ## Installing requirements
 
+### Windows users have to install Python 2.7 by downloading it and add it toi the path variable.
+
 ### Clone repository on you machine and enter the directory
 
     cd ortoloco
@@ -63,6 +65,12 @@ document. The first three of them are listed here for reference:
     sudo pip install virtualenv
     virtualenv --distribute venv
     source ./venv/bin/activate
+    pip install --upgrade -r requirements.txt
+### Windows
+    
+    pip install virtualenv
+    virtualenv --distribute venv
+    venv/Scripts/activate.bat
     pip install --upgrade -r requirements.txt
 
 **NOTE:** All requirements are not _easily installable_ on Mac OS X. If you encounter some issues (i.e. `EnvironmentError: mysql_config not found` or `pg_config executable not found`) you might run instead:
@@ -77,6 +85,8 @@ wich removes following packages from the requirements:
 
 **NOTE:** You might be able to install "brew install mysql" and "brew install postgresql" and "brew install pg" instead (before)
 
+**NOTE:** On Windows you cannot run ./manage.py something something as seen from now on. It goes like this python -m manage something something.
+
 ## Create DB from scratch
 
 You can (probably) be guided through the steps above with `make createdb`. If that doesn't work, read on...
@@ -84,7 +94,8 @@ You can (probably) be guided through the steps above with `make createdb`. If th
 In [ortoloco/settings.py](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/settings.py#L166-L169), comment out all non-django apps (my_ortoloco,static_ortoloco, south, photologue). Then
 run following command:
 
-    ./manage.py syncdb
+    ./manage.py makemigrations
+    ./manage.py migrate
 
 Here you will be asked to create a `superuser` for the local dev app.
 Reply `yes` and create a test superuser named e.g. `admin` with the
@@ -124,7 +135,7 @@ Installed 0 object(s) from 0 fixture(s)
 
 Reactivate the outcommented apps above and run following commands:
 
-    ./manage.py syncdb
+    ./manage.py makemigrations
     ./manage.py migrate
 
 
@@ -140,10 +151,14 @@ You might want to look at the [`Makefile`](https://github.com/ortoloco/ortoloco/
 
 When the database structure changes, you must perform a new migration:
 
-    ./manage.py schemamigration loco_app --auto
+    ./manage.py makemigrations loco_app --auto
     ./manage.py migrate loco_app
 
 You might be guided through these steps with `make migratedb`.
+
+### Upgrading your local setup to Django 1.9.1
+
+    ./manage.py migrate --fake-initial 
 
 ## Test server
 
@@ -281,6 +296,6 @@ Or direct on the heroku dev application:
 
     heroku run --app ortoloco-dev python manage.py migrate my_ortoloco 0028 --fake --delete-ghost-migrations
 
-And then run a normal `syncdb` and `migrate`.
+And then run a normal `makemigrations` and `migrate`.
 
 For further reference: http://stackoverflow.com/a/8875541
