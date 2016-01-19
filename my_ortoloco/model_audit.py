@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import signals
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class Audit(models.Model):
@@ -12,11 +12,11 @@ class Audit(models.Model):
 
     source_type = models.ForeignKey(ContentType, related_name="source_set")
     source_id = models.PositiveIntegerField()
-    source_object = generic.GenericForeignKey('source_type', 'source_id')
+    source_object = GenericForeignKey('source_type', 'source_id')
 
     target_type = models.ForeignKey(ContentType, related_name="target_set", null=True, blank=True)
     target_id = models.PositiveIntegerField(null=True, blank=True)
-    target_object = generic.GenericForeignKey('target_type', 'target_id')
+    target_object = GenericForeignKey('target_type', 'target_id')
 
 
 

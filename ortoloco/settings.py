@@ -4,8 +4,6 @@ import dj_database_url
 
 DEBUG = os.environ.get("ORTOLOCO_DEBUG", "True") == "True"
 
-TEMPLATE_DEBUG = DEBUG
-
 WHITELIST_EMAILS = []
 
 def whitelist_email_from_env(var_env_name):
@@ -89,19 +87,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = '/static/tosomeNotWorkingUrl/'
+STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (
-#"/static/",
-# Put strings here, like "/home/html/static" or "C:/www/django/static".
-# Always use forward slashes, even on Windows.
-# Don't forget to use absolute paths, not relative paths.
-)
+STATICFILES_DIRS = (BASE_DIR, 'static')
 
 
 # List of finder classes that know how to find static files in
@@ -141,12 +134,33 @@ TINYMCE_DEFAULT_CONFIG = {
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'd3w=vyfqpqmcj#&ge1d0$ch#ff7$qt#6z)lzqt=9pg8wg%d^%s'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    #     'django.template.loaders.eggs.Loader',
-)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            'ortoloco/templates'
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader'
+            ],
+            'debug' : True
+        },
+    },
+]
 
 IMPERSONATE_REDIRECT_URL = "/my/profil"
 
@@ -166,22 +180,14 @@ ROOT_URLCONF = 'ortoloco.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'ortoloco.wsgi.application'
 
-#from photologue import PHOTOLOGUE_TEMPLATE_DIR
 
-TEMPLATE_DIRS = (
-    'ortoloco/templates',
-    # PHOTOLOGUE_TEMPLATE_DIR
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
 
 INSTALLED_APPS = (
     'my_ortoloco',
     'static_ortoloco',
     'photologue',
-    'south',
-    'django_cron',
+    #'south',
+    #'django_cron',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

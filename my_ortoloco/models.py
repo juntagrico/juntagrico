@@ -151,9 +151,9 @@ class Abo(models.Model):
     depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
-    extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True, related_name="extra_abos")
+    extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="extra_abos")
     extra_abos_changed = models.BooleanField(default=False)
-    future_extra_abos = models.ManyToManyField(ExtraAboType, null=True, blank=True, related_name="future_extra_abos")
+    future_extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="future_extra_abos")
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
@@ -327,7 +327,7 @@ class Taetigkeitsbereich(models.Model):
     core = models.BooleanField("Kernbereich", default=False)
     hidden = models.BooleanField("versteckt", default=False)
     coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
-    locos = models.ManyToManyField(Loco, related_name="areas", blank=True, null=True)
+    locos = models.ManyToManyField(Loco, related_name="areas", blank=True)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -338,7 +338,7 @@ class Taetigkeitsbereich(models.Model):
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 
-class AbstractJobType(PolymorphicModel):
+class AbstractJobType(models.Model):
     """
     Abstract type of job.
     """
@@ -360,6 +360,7 @@ class AbstractJobType(PolymorphicModel):
     class Meta:
         verbose_name = 'AbstractJobart'
         verbose_name_plural = 'AbstractJobarten'
+        abstract = True
         
 class JobType(AbstractJobType):
     """
