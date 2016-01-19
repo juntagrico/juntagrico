@@ -55,9 +55,9 @@ listdbs:
 	ls -lG $(DB_SQLITE_FILENAME)*
 
 migratedb: checkvenv
-	./manage.py schemamigration my_ortoloco --auto || true
+	./manage.py makemigrations my_ortoloco || true
 	./manage.py migrate my_ortoloco || true
-	./manage.py schemamigration static_ortoloco --auto || true
+	./manage.py makemigrations static_ortoloco || true
 	./manage.py migrate static_ortoloco || true
 
 HEROKU_APP = ortoloco-dev
@@ -82,7 +82,7 @@ heroku_create_db_backup_live: heroku_create_db_backup_dev
 
 heroku_migrate_db_dev: heroku_create_db_backup_dev
 	$(info Applying 'manage.py syncdb' and 'manage.py migrate' on Heroku app 'ortoloco')
-	heroku run --app $(HEROKU_APP) python manage.py syncdb
+	heroku run --app $(HEROKU_APP) python manage.py makemigrations
 	heroku run --app $(HEROKU_APP) python manage.py migrate
 
 heroku_migrate_db_live: HEROKU_APP = ortoloco
