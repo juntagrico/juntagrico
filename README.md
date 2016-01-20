@@ -158,7 +158,10 @@ You might be guided through these steps with `make migratedb`.
 
 ### Upgrading your local setup to Django 1.9.1
 
-    ./manage.py migrate --fake-initial 
+    ./manage.py migrate my_ortoloco --fake-initial 
+    ./manage.py migrate static_ortoloco --fake-initial
+    ./manage.py migrate photologue --fake-initial
+    ./manage.py migrate     
 
 ## Test server
 

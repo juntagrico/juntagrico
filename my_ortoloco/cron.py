@@ -28,16 +28,6 @@ class Send_Job_Reminders(CronJobBase):
 
 
 
-class Alive(CronJobBase):
-    RUN_EVERY_MINS = 1 
-    
-    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
-    code = 'my_ortoloco.alive'    # a unique code
-    
-    def do(self):
-        now = datetime.datetime.now()
-        print "django cron alive and kicking"
-
 
 
 
