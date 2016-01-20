@@ -53,7 +53,7 @@ document. The first three of them are listed here for reference:
 
 ## Installing requirements
 
-### Windows users have to install Python 2.7 by downloading it and add it toi the path variable.
+Windows users have to install Python 2.7 by downloading it and add it toi the path variable.
 
 ### Clone repository on you machine and enter the directory
 
