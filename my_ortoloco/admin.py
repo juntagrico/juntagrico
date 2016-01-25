@@ -105,9 +105,9 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = Job.objects.create(typ=inst.typ, slots=inst.slots, time=dt)
+            job = RecuringJob.objects.create(typ=inst.typ, slots=inst.slots, time=dt)
             newjobs.append(job)
-            job.save()
+            print job.__dict__
 
         # create new objects
         # HACK: admin expects a saveable object to be returned when commit=False
