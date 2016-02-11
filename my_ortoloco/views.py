@@ -452,7 +452,7 @@ def my_team(request, bereich_id):
     rjobs = get_current_recuring_jobs().filter(typ=job_types)
     jobs = list(rjobs)
 
-    if otjobs.len()>0:
+    if len(otjobs) > 0:
         jobs.extend(list(otjobs))
         jobs.sort(key=lambda job: job.time)
 
