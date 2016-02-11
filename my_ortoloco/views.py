@@ -448,7 +448,15 @@ def my_team(request, bereich_id):
 
     job_types = JobType.objects.all().filter(bereich=bereich_id)
 
-    jobs = get_current_jobs().filter(typ=job_types)
+    otjobs = get_current_one_time_jobs().filter(bereich=bereich_id)
+    rjobs = get_current_recuring_jobs().filter(typ=job_types)
+    jobs = list(rjobs)
+
+    if len(otjobs) > 0:
+        jobs.extend(list(otjobs))
+        jobs.sort(key=lambda job: job.time)
+
+
 
     renderdict = get_menu_dict(request)
     renderdict.update({

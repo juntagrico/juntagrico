@@ -73,15 +73,18 @@ heroku_download_last_db_backup_dev:
 heroku_download_last_db_backup_live: HEROKU_APP = ortoloco
 heroku_download_last_db_backup_live: heroku_download_last_db_backup_dev
 
+HEROKU_BACKUP_DB ?= true
 heroku_create_db_backup_dev:
-	$(info Applying 'manage.py syncdb' and 'manage.py migrate' on Heroku app 'ortoloco')
+ifeq ("$(HEROKU_BACKUP_DB)","true")
+	$(info Capturing new backup on Heroku app '$(HEROKU_APP)')
 	heroku pg:backups --app $(HEROKU_APP) capture
+endif
 
 heroku_create_db_backup_live: HEROKU_APP = ortoloco
 heroku_create_db_backup_live: heroku_create_db_backup_dev
 
 heroku_migrate_db_dev: heroku_create_db_backup_dev
-	$(info Applying 'manage.py syncdb' and 'manage.py migrate' on Heroku app 'ortoloco')
+	$(info Applying 'manage.py syncdb' and 'manage.py migrate' on Heroku app '$(HEROKU_APP)')
 	heroku run --app $(HEROKU_APP) python manage.py syncdb
 	heroku run --app $(HEROKU_APP) python manage.py migrate
 
