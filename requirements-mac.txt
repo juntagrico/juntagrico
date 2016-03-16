@@ -1,4 +1,4 @@
-Django==1.9.1
+Django==1.9.3
 Pillow==3.1.0
 argparse==1.4.0
 distribute==0.7.3
@@ -13,7 +13,7 @@ six==1.10.0
 static==1.1.1
 wsgiref==0.1.2
 xhtml2pdf==0.0.6
-django-impersonate==0.9.2
+django-impersonate==1.0
 boto>=2.29.1
 django-storages>=1.1.8
 XlsxWriter==0.8.4
