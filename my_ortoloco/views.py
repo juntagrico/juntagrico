@@ -611,7 +611,8 @@ def my_add_loco(request, abo_id):
         'scheineerror': scheineerror,
         'locoform': locoform,
         "loco": request.user.loco,
-        "depots": Depot.objects.all()
+        "depots": Depot.objects.all(),
+        "cancelUrl": request.GET.get("return")
     }
     return render(request, "add_loco.html", renderdict)
 
