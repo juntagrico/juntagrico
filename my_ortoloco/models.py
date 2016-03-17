@@ -396,8 +396,10 @@ class Job(PolymorphicModel):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
     def freie_plaetze(self):
-        return self.slots - self.besetzte_plaetze()
-
+        if not (self.slots is None):
+	    return self.slots - self.besetzte_plaetze()
+        else:
+            return 0
     def end_time(self):
         return self.time + datetime.timedelta(hours=self.typ.duration)
 
