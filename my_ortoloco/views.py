@@ -239,7 +239,8 @@ def my_participation(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'areas': my_areas,
-        'success': success
+        'success': success,
+        'menu': {'participation': 'active'},
     })
     return render(request, "participation.html", renderdict)
 
@@ -260,7 +261,8 @@ def my_pastjobs(request):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'bohnen': past_bohnen
+        'bohnen': past_bohnen,
+        'menu': {'participation': 'active'},
     })
     return render(request, "my_pastjobs.html", renderdict)
 
@@ -328,6 +330,7 @@ def my_abo(request):
         'loco': request.user.loco,
         'scheine': request.user.loco.anteilschein_set.count(),
         'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid=False).count(),
+        'menu': {'abonnement': 'active'},
     })
     return render(request, "my_abo.html", renderdict)
 
@@ -476,7 +479,8 @@ def my_einsaetze(request):
     jobs = get_current_jobs()
     renderdict.update({
         'jobs': jobs,
-        'show_all': True
+        'show_all': True,
+        'menu': {'jobs': 'active'},
     })
 
     return render(request, "jobs.html", renderdict)
@@ -491,6 +495,7 @@ def my_einsaetze_all(request):
     jobs = Job.objects.all().order_by("time")
     renderdict.update({
         'jobs': jobs,
+        'menu': {'jobs': 'active'},
     })
 
     return render(request, "jobs.html", renderdict)
@@ -742,7 +747,8 @@ def my_contact(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">",
-        'is_sent': is_sent
+        'is_sent': is_sent,
+        'menu': {'contact': 'active'},
     })
     return render(request, "my_contact.html", renderdict)
 
@@ -796,7 +802,8 @@ def my_profile(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'locoform': locoform,
-        'success': success
+        'success': success,
+        'menu': {'personalInfo': 'active'},
     })
     return render(request, "profile.html", renderdict)
 

@@ -42,20 +42,27 @@
                     <li class="{{ menu.participation }}">
                         <a href="/my/mitarbeit">Mitarbeit</a>
                     </li>
-                    <li class="{{ menu.participation }}">
+                    <li class="{{ menu.jobs }}">
                         <a href="/my/einsaetze">Einsätze</a>
+                    </li>
+                    <li class="{{ menu.personalInfo }}">
+                        <a href="/my/profil">Personalien</a>
                     </li>
                     <li class="{{ menu.contact }}">
                         <a href="/my/kontakt">Kontakt</a>
                     </li>
+                    <li class="separator"></li>
                     <li class="{{ menu.ortoloco }}">
                         <a href="/aktuelles">ortoloco.ch</a>
                     </li>
-                    {% if depot_admin|length > 0 or area_admin|length > 0 %}
-                        <li>
-                            <hr>
-                        </li>
-                    {% endif %}
+                    <li class="{{ menu.logout }}">
+                        <a href="/logout">Abmelden</a>
+                    </li>
+                </ul>
+                {% if depot_admin|length > 0 or area_admin|length > 0 or staff_user or politoloco%}
+                <hr>
+                <h5>Administration</h5>
+                <ul class="nav nav-pills nav-stacked admin-menu">
                     {% for depot in depot_admin %}
                         <li class="inline">
                             <a href="/my/filters/depot/{{ depot.id }}">Locos</a> | <a
@@ -67,17 +74,8 @@
                             <a href="/my/filters/area/{{ area.id }}">Locos in {{ area.name }}</a>
                         </li>
                     {% endfor %}
-                    {% if depot_admin|length > 0 or area_admin|length > 0 %}
-                        {% if not staff_user %}
-                            <li>
-                                <hr>
-                            </li>
-                        {% endif %}
-                    {% endif %}
-
                     {% if staff_user %}
                         <li>
-                            <hr>
                             <a href="/my/mails">Mails verschicken</a>
                         </li>
                         <li>
@@ -95,20 +93,12 @@
                     {% endif %}
                     {% if politoloco %}
                         <li>
-                            {% if not staff_user %}
-                                <hr>
-                            {% endif %}
                             <a href="/my/politoloco">politoloco versenden</a>
                         </li>
                     {% endif %}
-                    <li class="{{ menu.personalInfo }}">
-                        <hr>
-                        <a href="/my/profil">Personalien</a>
-                    </li>
-                    <li class="{{ menu.logout }}">
-                        <a href="/logout">Abmelden</a>
-                    </li>
                 </ul>
+                {% endif %}
+
                 <hr>
                 <div class="bohnen">
                     {% block bohnen %}
