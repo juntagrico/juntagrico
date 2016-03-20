@@ -544,7 +544,8 @@ def my_signup(request):
         'success': success,
         'agberror': agberror,
         'agbchecked': agbchecked,
-        'userexists': userexists
+        'userexists': userexists,
+        'menu': {'join': 'active'},
     }
     return render(request, "signup.html", renderdict)
 
