@@ -107,6 +107,9 @@ def my_job(request, job_id):
         add = int(num)
         for i in range(add):
             Boehnli.objects.create(loco=loco, job=job)
+        # redirect to same page such that refresh in the browser or back
+        # button does not trigger a resubmission of the form
+        return HttpResponseRedirect('my/jobs')
     
     
     all_participants = Loco.objects.filter(boehnli__job=job)
