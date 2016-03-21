@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
+from django.db.models import Count
 import xlsxwriter
 
 from my_ortoloco.models import *
@@ -106,63 +107,26 @@ def my_job(request, job_id):
         add = int(num)
         for i in range(add):
             Boehnli.objects.create(loco=loco, job=job)
-
-    participants_dict = defaultdict(int)
-    boehnlis = Boehnli.objects.filter(job_id=job.id)
-    number_of_participants = len(boehnlis)
-
-    participants_new_dict = defaultdict(dict)
-    for boehnli in boehnlis:
-        if boehnli.loco is not None:
-            loco_info = participants_new_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name]
-            current_count = loco_info.get("count", 0)
-            current_msg = loco_info.get("msg", [])
-            loco_info["count"] = current_count + 1
-            loco_info["email"] = boehnli.loco.email
-            #current_msg.append("boehnli.comment")
-            loco_info["msg"] = current_msg
-            if boehnli.loco.reachable_by_email==True or request.user.is_staff or job.typ.bereich.coordinator==loco:
-                loco_info["url"] = "/my/kontakt/loco/" + str(boehnli.loco.id) + "/" +str(job_id) + "/"
-                loco_info["reachable"] = True;
-            else:
-                loco_info["url"] = ""
-                loco_info["reachable"] = False;
-    print participants_new_dict
+    
+    
+    all_participants = Loco.objects.filter(boehnli__job=job)
+    number_of_participants = len(all_participants)
+    unique_participants = all_participants.annotate(boehnli_for_job=Count('id')).distinct()
 
     participants_summary = []
     emails = []
-    for loco_name, loco_dict in participants_new_dict.iteritems():
-        # print loco_name, loco_dict
-        count = loco_dict.get("count")
-        msg = loco_dict.get("msg")
-        url = loco_dict.get("url")
-        reachable = loco_dict.get("reachable")
-        emails.append(loco_dict.get("email"))
-        # msg = ", ".join(loco_dict.get("msg"))
-        if count == 1:
-            participants_summary.append((loco_name, None, url, reachable))
-        elif count == 2:
-            participants_summary.append((loco_name + ' (mit einer weiteren Person)', msg, url, reachable))
-        else:
-            participants_summary.append((loco_name
-                                                    + ' (mit ' + str(count - 1)
-                                                    + ' weiteren Personen)', msg, url, reachable))
-
-    # for boehnli in boehnlis:
-    #     if boehnli.loco is not None:
-    #         participants_dict[boehnli.loco.first_name + ' ' + boehnli.loco.last_name] += 1
-
-    # participants_summary = []
-    # for loco_name, number_of_companions in participants_dict.iteritems():
-    #     if number_of_companions == 1:
-    #         participants_summary.append(loco_name)
-    #     elif number_of_companions == 2:
-    #         participants_summary.append(loco_name + ' (mit einer weiteren Person)')
-    #     else:
-    #         participants_summary.append(loco_name
-    #                                     + ' (mit ' + str(number_of_companions - 1)
-    #                                     + ' weiteren Personen)')
-
+    for loco in unique_participants:
+        name = '{} {}'.format(loco.first_name, loco.last_name)
+        if loco.boehnli_for_job == 2:
+            name = name + ' (mit einer weiteren Person)'
+        elif loco.boehnli_for_job > 2:
+            name = name + ' (mit {} weiteren Personen)'.format(loco.boehnli_for_job - 1)
+        contact_url = '/my/kontakt/loco/{}/{}/'.format(loco.id, job_id)
+        reachable = loco.reachable_by_email==True or request.user.is_staff or job.typ.bereich.coordinator==loco
+        participants_summary.append((name, None, contact_url, reachable))
+        emails.append(loco.email)
+        
+        
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
     job_fully_booked = len(allowed_additional_participants) == 0
