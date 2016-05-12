@@ -80,5 +80,11 @@ class Migration(migrations.Migration):
             field=models.CharField(default=b'', max_length=100, verbose_name=b'Name'),
             preserve_default=False,
         ),
+        migrations.AddField(
+            model_name='jobtype',
+            name='id',
+            field=models.PositiveIntegerField(default=1, verbose_name=b'Dauer in Stunden'),
+            preserve_default=False,
+        ),
         
     ]

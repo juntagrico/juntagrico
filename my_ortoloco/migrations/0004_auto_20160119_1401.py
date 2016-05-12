@@ -88,12 +88,6 @@ class Migration(migrations.Migration):
             old_name='namep',
             new_name='name',
         ),
-        migrations.AddField(
-            model_name='jobtype',
-            name='id',
-            field=models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
-            preserve_default=False,
-        ),
         migrations.AlterField(
             model_name='jobtype',
             name='name',
@@ -108,5 +102,12 @@ class Migration(migrations.Migration):
         ),
         migrations.DeleteModel(
             name='AbstractJobType',
+        ),
+        
+        migrations.AlterField(
+            model_name='jobtype',
+            name='id',
+            field=models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            preserve_default=False,
         ),
     ]
