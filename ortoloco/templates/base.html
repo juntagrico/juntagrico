@@ -10,7 +10,7 @@
     <script type="text/javascript" src="/static/external/bootstrap-3.3.1/js/bootstrap.min.js"></script>
 
     <link href="/static/external/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/ortoloco.css" rel="stylesheet">
+    <link href="{{ STATIC_URL }}css/ortoloco.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
@@ -23,44 +23,39 @@
             <div class="col-md-4">
                 <a href="/aktuelles"><span class="logo"></span></a>
                 <ul class="nav nav-pills nav-stacked main-menu">
-                    <li class="{{ menu.about }}">
+                    <li>
                         <a href="/idee">Das ist ortoloco</a>
                         {% if menu.about == 'active' %}
                             <ul class="nav nav-pills nav-stacked">
-                                <li class="{{ menu.aboutChild }}"><a href="/idee">&raquo; Die Idee <span
-                                        class="activeItem">&lt;</span></a></li>
-                                <li class="{{ menu.portrait }}"><a href="/portrait">&raquo; Das Portrait <span
-                                        class="activeItem">&lt;</span></a></li>
-                                <li class="{{ menu.background }}"><a href="/hintergrund">&raquo; Der Hintergrund
-                                    <span class="activeItem">&lt;</span></a></li>
-                                <li class="{{ menu.abo }}"><a href="/abo">&raquo; Das Gemüse-Abo <span
-                                        class="activeItem">&lt;</span></a></li>
-                                {#                                <li class="{{ menu.faq }}"><a href="/faq">&raquo; Häufige Fragen <span#}
-                                {#                                        class="activeItem">&lt;</span></a></li>#}
+                                <li class="{{ menu.aboutChild }}"><a href="/idee">&raquo; Die Idee</a></li>
+                                <li class="{{ menu.portrait }}"><a href="/portrait">&raquo; Das Portrait</a></li>
+                                <li class="{{ menu.background }}"><a href="/hintergrund">&raquo; Der Hintergrund</a></li>
+                                <li class="{{ menu.abo }}"><a href="/abo">&raquo; Das Gemüse-Abo</a></li>
+                                {# <li class="{{ menu.faq }}"><a href="/faq">&raquo; Häufige Fragen</a></li> #}
                             </ul>
                         {% endif %}
                     </li>
                     <li class="{{ menu.join }}">
-                        <a href="/my/anmelden">GenossenschafterIn werden <span class="activeItem">&lt;</span></a>
+                        <a href="/my/anmelden">GenossenschafterIn werden</a>
                     </li>
                     <li class="{{ menu.contact }}">
-                        <a href="/kontakt">Kontakt <span class="activeItem">&lt;</span></a>
+                        <a href="/kontakt">Kontakt</a>
                     </li>
 
-  				  	<li><br/><br/></li>
+                    <li><br/><br/></li>
 
                     <li class="{{ menu.media }}">
-                            <a href="/medien">Medienecho <span class="activeItem">&lt;</span></a>
+                            <a href="/medien">Medienecho</a>
                     </li>
                     <li class="{{ menu.links }}">
-                            <a href="/links">Links <span class="activeItem">&lt;</span></a>
+                            <a href="/links">Links</a>
                     </li>
                     <li class="{{ menu.documents }}">
-                            <a href="/dokumente">Dokumente <span class="activeItem">&lt;</span></a>
+                            <a href="/dokumente">Dokumente</a>
                     </li>
-	                <li class="{{ menu.gallery }}">
-	                        <a href="/galerie">Bilder <span class="activeItem">&lt;</span></a>
-	                </li>
+                    <li class="{{ menu.gallery }}">
+                            <a href="/galerie">Bilder</a>
+                    </li>
 
                 </ul>
                 {% block submenu %}

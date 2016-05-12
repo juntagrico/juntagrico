@@ -136,7 +136,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 
 /* menu */
 .nav-pills > li.active > a {
-    color: #4c9434;
+    color: black;
     background-color: transparent;
 }
 
@@ -145,7 +145,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 }
 
 .nav-pills > li.active > a:hover, .nav-pills > .active > a:focus {
-    color: #315f21;
+    color: black;
     background-color: transparent;
 }
 
@@ -168,20 +168,11 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 }
 
 .nav-pills a:hover {
-    background: url(/static/img/erbse_y.png) no-repeat left -88px;
-    text-decoration: underline !important;
+    color: #315f21;
 }
 
 .activeItem {
     display: none;
-}
-
-.active > a > .activeItem {
-    display: inline-block;
-    font-size: 50px;
-    float: right;
-	margin-right:-15px;
-	margin-top:-3px
 }
 
 .nav-pills ul {
