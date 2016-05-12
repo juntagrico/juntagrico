@@ -253,6 +253,7 @@ except KeyError:
 AWS_S3_FILE_OVERWRITE = False
 
 MEDIA_ROOT = 'media'
+
 MEDIA_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
