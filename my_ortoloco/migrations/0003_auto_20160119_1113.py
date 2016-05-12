@@ -10,7 +10,8 @@ def forward(apps, schema_editor):
     OneTimeJob = apps.get_model("my_ortoloco", "OneTimeJob")
     for jt in JobType.objects.all():
         ajt = AbstractJobType.objects.filter(id = jt.abstractjobtype_ptr_id)[0]
-        print ajt.__dict__
+        #print ajt.__dict__
+        jt.bereicht = ajt.bereich
         jt.namet =ajt.name
         jt.displayed_namet =ajt.displayed_name
         jt.descriptiont =ajt.description
@@ -19,6 +20,7 @@ def forward(apps, schema_editor):
         jt.save()
     for jt in OneTimeJob.objects.all():
         ajt = AbstractJobType.objects.filter(id = jt.abstractjobtype_ptr_id)[0]
+        jt.bereichp = ajt.bereich
         jt.namep =ajt.name
         jt.displayed_namep =ajt.displayed_name
         jt.descriptionp =ajt.description
