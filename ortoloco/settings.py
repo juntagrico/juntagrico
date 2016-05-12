@@ -91,7 +91,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = '/static/wtf'
+STATIC_URL = '/static'
 
 # Additional locations of static files
 STATICFILES_DIRS = (BASE_DIR, 'static')
