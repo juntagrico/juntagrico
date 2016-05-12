@@ -106,7 +106,7 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = Job.objects.create(typ=inst.typ, slots=inst.slots, time=dt)
+            job = RecuringJob.objects.create(typ=inst.typ, slots=inst.slots, time=dt)
             newjobs.append(job)
             job.save()
 
@@ -173,7 +173,6 @@ class JobAdmin(admin.ModelAdmin):
     inlines = [BoehnliInline]
     readonly_fields = ["freie_plaetze"]
 
-
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
             self.message_user(request, u"Genau 1 Job auswählen!", level=messages.ERROR)
@@ -217,7 +216,7 @@ class JobAdmin(admin.ModelAdmin):
         self.readonly_fields = tmp_readonly
         self.inlines = tmp_inlines
         return res
-
+'''
 
     def construct_change_message(self, request, form, formsets):
         # As of django 1.6 the automatic logging of changes triggered by the change view behaves badly
@@ -225,7 +224,7 @@ class JobAdmin(admin.ModelAdmin):
         if "copy_job" in request.path:
             return ""
         return admin.ModelAdmin.construct_change_message(self, request, form, formsets)
-
+'''
 class OneTimeJobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "typ", "time", "slots", "freie_plaetze"]
     actions = ["transform_job"]
