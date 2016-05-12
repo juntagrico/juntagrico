@@ -65,6 +65,15 @@ def get_current_jobs():
 
     return Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
 
+def get_current_one_time_jobs():
+    from models import OneTimeJob
+
+    return OneTimeJob.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
+
+def get_current_recuring_jobs():
+    from models import RecuringJob
+
+    return RecuringJob.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
 
 class Swapstd(object):
     def __init__(self, f=None, g=None):
