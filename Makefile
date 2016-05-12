@@ -55,9 +55,9 @@ listdbs:
 	ls -lG $(DB_SQLITE_FILENAME)*
 
 migratedb: checkvenv
-	./manage.py schemamigration my_ortoloco --auto || true
+	./manage.py makemigrations my_ortoloco || true
 	./manage.py migrate my_ortoloco || true
-	./manage.py schemamigration static_ortoloco --auto || true
+	./manage.py makemigrations static_ortoloco || true
 	./manage.py migrate static_ortoloco || true
 
 HEROKU_APP = ortoloco-dev
