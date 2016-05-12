@@ -119,12 +119,12 @@ def my_job(request, job_id):
     participants_summary = []
     emails = []
     for loco in unique_participants:
-        name = '{} {}'.format(loco.first_name, loco.last_name)
+        name = u'{} {}'.format(loco.first_name, loco.last_name)
         if loco.boehnli_for_job == 2:
-            name = name + ' (mit einer weiteren Person)'
+            name = name + u' (mit einer weiteren Person)'
         elif loco.boehnli_for_job > 2:
-            name = name + ' (mit {} weiteren Personen)'.format(loco.boehnli_for_job - 1)
-        contact_url = '/my/kontakt/loco/{}/{}/'.format(loco.id, job_id)
+            name = name + u' (mit {} weiteren Personen)'.format(loco.boehnli_for_job - 1)
+        contact_url = u'/my/kontakt/loco/{}/{}/'.format(loco.id, job_id)
         reachable = loco.reachable_by_email==True or request.user.is_staff or job.typ.bereich.coordinator==loco
         participants_summary.append((name, None, contact_url, reachable))
         emails.append(loco.email)
