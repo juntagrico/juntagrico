@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='jobtype',
             name='id',
-            field=models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            field=models.PositiveIntegerField(default=1, verbose_name=b'Dauer in Stunden'),
             preserve_default=False,
         ),
         

@@ -103,4 +103,11 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='AbstractJobType',
         ),
+        
+        migrations.AlterField(
+            model_name='jobtype',
+            name='id',
+            field=models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            preserve_default=False,
+        ),
     ]
