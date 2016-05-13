@@ -5,6 +5,7 @@ distribute==0.7.3
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-tinymce==2.2.0
+django-subdomains==2.1.0
 gunicorn==19.4.5
 html5lib==1.0b3
 pyPdf==1.13

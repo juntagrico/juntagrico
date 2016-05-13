@@ -166,6 +166,7 @@ IMPERSONATE_REDIRECT_URL = "/my/profil"
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'subdomains.middleware.SubdomainURLRoutingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -175,7 +176,7 @@ MIDDLEWARE_CLASSES = (
     'impersonate.middleware.ImpersonateMiddleware'
 )
 
-ROOT_URLCONF = 'ortoloco.urls'
+
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'ortoloco.wsgi.application'
@@ -263,3 +264,13 @@ CRON_CLASSES = [
     "my_ortoloco.cron.Alive",
     # ...
 ]
+
+ROOT_URLCONF = 'ortoloco.urls'
+
+# A dictionary of urlconf module paths, keyed by their subdomain.
+SUBDOMAIN_URLCONFS = {
+    None: 'ortoloco.urls',  # no subdomain, e.g. ``example.com``
+    'www': 'ortoloco.urls',
+    'my': 'ortoloco.myurlsredirect',
+}
+
