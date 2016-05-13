@@ -251,8 +251,8 @@ def myredirect(request):
     redirects to my home if you enter by my.ortoloco whatever
     """
     print "my redirect"
-    path=request.get_full_path()
-    path.replace("my","www")
-    path += "/my/home" 
+    from django.contrib.sites.models import Site
+    domain = Site.objects.get_current().domain
+    path = "www."+domain+"/my/home" 
     print path
     return redirect(path)
