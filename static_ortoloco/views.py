@@ -254,6 +254,6 @@ def myredirect(request):
     from django.contrib.sites.models import Site
     from django.shortcuts import redirect
     domain = Site.objects.get_current().domain
-    path = "www."+domain+"/my/home" 
+    path = "http://www."+domain+"/my/home/" 
     print path
     return redirect(path)
