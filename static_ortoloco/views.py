@@ -245,3 +245,15 @@ def contact(request):
     })
 
     return render(request, "contact.html", renderdict)
+
+def myredirect(request):
+    """
+    redirects to my home if you enter by my.ortoloco whatever
+    """
+    print "my redirect"
+    from django.contrib.sites.models import Site
+    from django.shortcuts import redirect
+    domain = Site.objects.get_current().domain
+    path = "http://www."+domain+"/my/home" 
+    print path
+    return redirect(path)
