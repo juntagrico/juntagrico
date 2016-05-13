@@ -250,7 +250,9 @@ def myredirect(request):
     """
     redirects to my home if you enter by my.ortoloco whatever
     """
+    print "my redirect"
     path=request.get_full_path()
     path.replace("my","www")
     path += "/my/home" 
+    print path
     return redirect(path)

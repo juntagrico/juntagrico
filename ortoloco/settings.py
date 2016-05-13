@@ -269,7 +269,7 @@ ROOT_URLCONF = 'ortoloco.urls'
 
 # A dictionary of urlconf module paths, keyed by their subdomain.
 SUBDOMAIN_URLCONFS = {
-    None: 'ortoloco.urls',  # no subdomain, e.g. ``example.com``
+    None: 'ortoloco.urls', 
     'www': 'ortoloco.urls',
     'my': 'ortoloco.myurlsredirect',
 }
