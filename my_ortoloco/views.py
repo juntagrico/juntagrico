@@ -420,6 +420,7 @@ def my_team(request, bereich_id):
 
     otjobs = get_current_one_time_jobs().filter(bereich=bereich_id)
     rjobs = get_current_recuring_jobs().filter(typ=job_types)
+    
     jobs = list(rjobs)
 
     if len(otjobs) > 0:
