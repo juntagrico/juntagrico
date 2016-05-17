@@ -21,7 +21,6 @@ XlsxWriter==0.8.4
 django-polymorphic>=0.8.1
 git+git://github.com/ortoloco/django-photologue.git
 django-imagekit==3.3
-django-cron==0.4.6
 django-toolbelt==0.0.1
 MySQL-python==1.2.5
 psycopg2==2.5.1
