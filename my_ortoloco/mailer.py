@@ -192,11 +192,11 @@ def send_job_reminder(emails, job, participants, server):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
 
-    d = Context({
+    d = {
         'job': job,
         'participants': participants,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
