@@ -188,7 +188,6 @@ INSTALLED_APPS = (
     'static_ortoloco',
     'photologue',
     #'south',
-    #'django_cron',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -259,11 +258,6 @@ MEDIA_URL = 'https://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
 
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-CRON_CLASSES = [
-    "my_ortoloco.cron.Send_Job_Reminders",
-    "my_ortoloco.cron.Alive",
-    # ...
-]
 
 ROOT_URLCONF = 'ortoloco.urls'
 
