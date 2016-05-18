@@ -209,9 +209,9 @@ def send_job_canceled(emails, job):
     plaintext = get_template('mails/job_canceled_mail.txt')
     htmly = get_template('mails/job_canceled_mail.html')
 
-    d = Context({
+    d = {
         'job': job
-    })
+    }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
