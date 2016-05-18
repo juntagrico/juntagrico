@@ -449,6 +449,14 @@ class Job(PolymorphicModel):
 class RecuringJob(Job):
     typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
 
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        Job.pre_save(sender, instance)
+    
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        Job.post_init(sender, instance)
+        
     class Meta:
         verbose_name = 'Job'
         verbose_name_plural = 'Jobs'
@@ -463,6 +471,14 @@ class OneTimeJob(Job, AbstractJobType):
     def typ(self):
         return self
 
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        Job.pre_save(sender, instance)
+    
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        Job.post_init(sender, instance)    
+    
     class Meta:
         verbose_name = 'EinzelJob'
         verbose_name_plural = 'EinzelJobs'
@@ -497,4 +513,8 @@ signals.post_save.connect(Loco.create, sender=Loco)
 signals.post_delete.connect(Loco.post_delete, sender=Loco)
 signals.pre_save.connect(Job.pre_save, sender=Job)
 signals.post_init.connect(Job.post_init, sender=Job)
+signals.pre_save.connect(RecuringJob.pre_save, sender=RecuringJob)
+signals.post_init.connect(RecuringJob.post_init, sender=RecuringJob)
+signals.pre_save.connect(OneTimeJob.pre_save, sender=OneTimeJob)
+signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 
