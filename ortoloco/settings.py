@@ -12,8 +12,12 @@ def whitelist_email_from_env(var_env_name):
         WHITELIST_EMAILS.append(email.replace('@gmail.com', '(\+\S+)?@gmail.com'))
 
 whitelist_email_from_env("ORTOLOCO_EMAIL_USER")
-whitelist_email_from_env("ORTOLOCO_EMAIL_WHITELISTED_1")
-whitelist_email_from_env("ORTOLOCO_EMAIL_WHITELISTED_2")
+
+if DEBUG is True:
+    for key in os.environ.keys():
+        if key.startswith("ORTOLOCO_EMAIL_WHITELISTED"):
+            whitelist_email_from_env(key)
+
 
 ADMINS = (
     ('Oli', 'oliver.ganz@gmail.com'),
