@@ -167,21 +167,15 @@ def send_mail_password_reset(email, password, server):
     htmly = get_template('mails/password_reset_mail.html')
     subject = 'Dein neues ortoloco Passwort'
 
-    htmld = Context({
+    d = {
         'subject': subject,
         'email': email,
         'password': password,
         'serverurl': "http://" + server
-    })
-    textd = Context({
-        'subject': subject,
-        'email': email,
-        'password': password,
-        'serverurl': "http://" + server
-    })
+    }
 
-    text_content = plaintext.render(textd)
-    html_content = htmly.render(htmld)
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
 
     msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', [email])
     msg.attach_alternative(html_content, "text/html")
