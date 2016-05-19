@@ -225,6 +225,6 @@ def send_job_time_changed(emails, job):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives("ortoloco - Job-Abgesagt", text_content, 'info@ortoloco.ch', emails)
+    msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
