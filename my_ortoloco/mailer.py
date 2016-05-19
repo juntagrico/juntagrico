@@ -185,11 +185,14 @@ def send_mail_password_reset(email, password, server):
 def send_job_reminder(emails, job, participants, server):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
-
+    coordinator = job.typ.bereich.coordinator
+    contact = coordinator.first_name + " " + coordinator.last_name + ": " + job.typ.bereich.contact
+    
     d = {
         'job': job,
         'participants': participants,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + server,
+        'contact' : contact
     }
 
     text_content = plaintext.render(d)
