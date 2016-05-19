@@ -434,6 +434,13 @@ class Job(PolymorphicModel):
             instance.slots=0
             if(len(emails)>0):
                 send_job_canceled(emails, instance)
+        if(instance.old_time != instance.time):
+            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            emails = set()
+            for boehnli in boehnlis:
+                emails.add(boehnli.loco.email)
+            if(len(emails)>0):
+                send_job_time_changed(emails, instance)
         
     
     @classmethod
