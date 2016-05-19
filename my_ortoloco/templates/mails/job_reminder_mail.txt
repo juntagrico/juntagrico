@@ -9,7 +9,7 @@ Details:
 Job:             {{ job.typ.description }}
 Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 mitlocos:        {{ participants }}
-Ort:             {{ job.typ.location }}
+Verantwortlich:  {{ contact }}
 
 Wir freuen uns, dich zu sehen und zählen auf dich!
 
