@@ -141,16 +141,16 @@ def send_politoloco_mail(subject, message, text_message, emails, server, attachm
     plaintext = get_template('mails/politoloco.txt')
     htmly = get_template('mails/politoloco.html')
 
-    htmld = Context({
+    htmld = {
         'subject': subject,
         'content': message,
         'serverurl': "http://" + server
-    })
-    textd = Context({
+    }
+    textd = {
         'subject': subject,
         'content': text_message,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(textd)
     html_content = htmly.render(htmld)
