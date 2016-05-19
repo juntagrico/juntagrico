@@ -379,6 +379,7 @@ class Job(PolymorphicModel):
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
     old_canceled = False;
+    old_time = False;
     
     @property
     def typ(self):
