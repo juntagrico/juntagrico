@@ -213,3 +213,18 @@ def send_job_canceled(emails, job):
     msg = EmailMultiAlternatives("ortoloco - Job-Abgesagt", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
+
+def send_job_time_changed(emails, job):
+    plaintext = get_template('mails/job_time_changed_mail.txt')
+    htmly = get_template('mails/job_time_changed_mail.html')
+
+    d = {
+        'job': job
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives("ortoloco - Job-Abgesagt", text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
