@@ -332,6 +332,12 @@ class Taetigkeitsbereich(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
+    
+    def contact(self):
+        if self.show_coordinator_phonenumber is True:
+            return self.coordinator.phone + "   " + self.coordinator.mobile_phone
+        else:
+            return self.coordinator.email
 
     class Meta:
         verbose_name = 'Tätigkeitsbereich'
