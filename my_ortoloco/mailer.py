@@ -94,7 +94,7 @@ def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
     htmly = get_template('mails/welcome_added_mail.html')
 
     # reset password so we can send it to him
-    d = Context({
+    d = {
         'subject': 'Willkommen bei ortoloco',
         'username': email,
         'name': name,
@@ -102,7 +102,7 @@ def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
         'hash': hash,
         'anteilsscheine': anteilsscheine,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
