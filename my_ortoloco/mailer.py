@@ -74,12 +74,12 @@ def send_welcome_mail(email, password, server):
     htmly = get_template('mails/welcome_mail.html')
 
     # reset password so we can send it to him
-    d = Context({
+    d = {
         'subject': 'Willkommen bei ortoloco',
         'username': email,
         'password': password,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
