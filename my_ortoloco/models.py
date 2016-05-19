@@ -328,6 +328,7 @@ class Taetigkeitsbereich(models.Model):
     hidden = models.BooleanField("versteckt", default=False)
     coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
     locos = models.ManyToManyField(Loco, related_name="areas", blank=True)
+    show_coordinator_phonenumber = models.BooleanField("Koordinator Tel Nr Veröffentlichen", default=False)
 
     def __unicode__(self):
         return u'%s' % self.name
