@@ -445,6 +445,7 @@ class Job(PolymorphicModel):
     
     @classmethod
     def post_init(cls, sender, instance, **kwds):
+        instance.old_time=instance.time;
         instance.old_canceled=instance.canceled;
         if(instance.canceled==True):
             boehnlis = Boehnli.objects.filter(job_id=instance.id)
