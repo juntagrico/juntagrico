@@ -4,6 +4,7 @@ from my_ortoloco.models import *
 from django.utils import timezone
 import datetime
 from my_ortoloco.mailer import send_job_reminder
+from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -11,7 +12,7 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
 
-        now = datetime.datetime.now()
+        now = timezone.now()
         end = now + datetime.timedelta(days=1)
         for job in Job.objects.filter(time__range=(now, end), reminder_sent__exact=False):
             participants = []

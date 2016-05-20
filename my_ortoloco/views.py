@@ -15,6 +15,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
 from django.db.models import Count
+from django.utils import timezone
+
 import xlsxwriter
 
 from my_ortoloco.models import *
@@ -41,14 +43,14 @@ def get_menu_dict(request):
         userbohnen = []
 
         for bohne in allebohnen:
-            if bohne.job.time.year == date.today().year and bohne.job.time < datetime.datetime.now():
+            if bohne.job.time.year == date.today().year and bohne.job.time < timezone.now():
                 userbohnen.append(bohne)
 
         # amount of beans shown => round up if needed never down
         bohnenrange = range(0, max(userbohnen.__len__(), int(math.ceil(loco.abo.size * 10 / loco.abo.locos.count()))))
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
-            if bohne.job.time > datetime.datetime.now():
+            if bohne.job.time > timezone.now():
                 next_jobs.add(bohne.job)
     else:
         bohnenrange = None
@@ -80,8 +82,8 @@ def my_home(request):
         announcement = u"<h3>Ankündigungen:</h3>" + StaticContent.objects.all().filter(name='my.ortoloco')[0].content + "</br>"
 
     next_jobs = set(get_current_jobs()[:7])
-    pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=datetime.datetime.now()))
-    next_aktionstage = set(RecuringJob.objects.filter(typ__name="Aktionstag", time__gte=datetime.datetime.now()).order_by("time")[:2])
+    pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=timezone.now()))
+    next_aktionstage = set(RecuringJob.objects.filter(typ__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_aktionstage), key=lambda job: job.time),
@@ -133,8 +135,8 @@ def my_job(request, job_id):
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
     job_fully_booked = len(allowed_additional_participants) == 0
-    job_is_in_past = job.end_time() < datetime.datetime.now()
-    job_is_running = job.start_time() < datetime.datetime.now()
+    job_is_in_past = job.end_time() < timezone.now()
+    job_is_running = job.start_time() < timezone.now()
     job_canceled = job.canceled
     can_subscribe = not(job_fully_booked or job_is_in_past or job_is_running or job_canceled)
     
@@ -223,7 +225,7 @@ def my_pastjobs(request):
     past_bohnen = []
 
     for bohne in allebohnen:
-        if bohne.job.time < datetime.datetime.now():
+        if bohne.job.time < timezone.now():
             past_bohnen.append(bohne)
 
     renderdict = get_menu_dict(request)
@@ -1122,7 +1124,7 @@ def alldepots_list(request, name):
     renderdict = {
         "overview": overview,
         "depots": depots,
-        "datum": datetime.datetime.now()
+        "datum": timezone.now()
     }
 
     return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')
