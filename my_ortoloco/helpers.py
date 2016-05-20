@@ -9,6 +9,8 @@ from django.template.loader import get_template
 from django.template import Context
 from django.template.defaultfilters import slugify
 
+from django.utils import timezone
+
 from xhtml2pdf import pisa
 
 from django.contrib.auth.models import User
@@ -63,17 +65,17 @@ weekdays = dict(weekday_choices)
 def get_current_jobs():
     from models import Job
 
-    return Job.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
+    return Job.objects.filter(time__gte=timezone.now()).order_by("time")
 
 def get_current_one_time_jobs():
     from models import OneTimeJob
 
-    return OneTimeJob.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
+    return OneTimeJob.objects.filter(time__gte=timezone.now()).order_by("time")
 
 def get_current_recuring_jobs():
     from models import RecuringJob
 
-    return RecuringJob.objects.filter(time__gte=datetime.datetime.now()).order_by("time")
+    return RecuringJob.objects.filter(time__gte=timezone.now()).order_by("time")
 
 class Swapstd(object):
     def __init__(self, f=None, g=None):
