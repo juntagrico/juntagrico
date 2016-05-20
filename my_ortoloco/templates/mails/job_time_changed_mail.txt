@@ -1,15 +1,15 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-Nicht vergessen:
+Achtung:
 
-Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein ortoloco-Arbeitseinsatz "{{ job.typ.displayed_name }}" statt.
+Dein ortoloco-Arbeitseinsatz "{{ job.typ.displayed_name }}" findet neu um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} statt.
 
 Details:
 
 Job:             {{ job.typ.description }}
 Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 mitlocos:        {{ participants }}
-Verantwortlich:  {{ contact }}
+Ort:             {{ job.typ.location }}
 
 Wir freuen uns, dich zu sehen und zählen auf dich!
 

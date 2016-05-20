@@ -74,12 +74,12 @@ def send_welcome_mail(email, password, server):
     htmly = get_template('mails/welcome_mail.html')
 
     # reset password so we can send it to him
-    d = Context({
+    d = {
         'subject': 'Willkommen bei ortoloco',
         'username': email,
         'password': password,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
@@ -94,7 +94,7 @@ def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
     htmly = get_template('mails/welcome_added_mail.html')
 
     # reset password so we can send it to him
-    d = Context({
+    d = {
         'subject': 'Willkommen bei ortoloco',
         'username': email,
         'name': name,
@@ -102,7 +102,7 @@ def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
         'hash': hash,
         'anteilsscheine': anteilsscheine,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
@@ -116,16 +116,16 @@ def send_filtered_mail(subject, message, text_message, emails, server, attachmen
     plaintext = get_template('mails/filtered_mail.txt')
     htmly = get_template('mails/filtered_mail.html')
 
-    htmld = Context({
+    htmld = {
         'subject': subject,
         'content': message,
         'serverurl': "http://" + server
-    })
-    textd = Context({
+    }
+    textd = {
         'subject': subject,
         'content': text_message,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(textd)
     html_content = htmly.render(htmld)
@@ -141,16 +141,16 @@ def send_politoloco_mail(subject, message, text_message, emails, server, attachm
     plaintext = get_template('mails/politoloco.txt')
     htmly = get_template('mails/politoloco.html')
 
-    htmld = Context({
+    htmld = {
         'subject': subject,
         'content': message,
         'serverurl': "http://" + server
-    })
-    textd = Context({
+    }
+    textd = {
         'subject': subject,
         'content': text_message,
         'serverurl': "http://" + server
-    })
+    }
 
     text_content = plaintext.render(textd)
     html_content = htmly.render(htmld)
@@ -167,21 +167,15 @@ def send_mail_password_reset(email, password, server):
     htmly = get_template('mails/password_reset_mail.html')
     subject = 'Dein neues ortoloco Passwort'
 
-    htmld = Context({
+    d = {
         'subject': subject,
         'email': email,
         'password': password,
         'serverurl': "http://" + server
-    })
-    textd = Context({
-        'subject': subject,
-        'email': email,
-        'password': password,
-        'serverurl': "http://" + server
-    })
+    }
 
-    text_content = plaintext.render(textd)
-    html_content = htmly.render(htmld)
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
 
     msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', [email])
     msg.attach_alternative(html_content, "text/html")
@@ -191,11 +185,14 @@ def send_mail_password_reset(email, password, server):
 def send_job_reminder(emails, job, participants, server):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
-
+    coordinator = job.typ.bereich.coordinator
+    contact = coordinator.first_name + " " + coordinator.last_name + ": " + job.typ.bereich.contact()
+    
     d = {
         'job': job,
         'participants': participants,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + server,
+        'contact' : contact
     }
 
     text_content = plaintext.render(d)
@@ -209,13 +206,28 @@ def send_job_canceled(emails, job):
     plaintext = get_template('mails/job_canceled_mail.txt')
     htmly = get_template('mails/job_canceled_mail.html')
 
-    d = Context({
+    d = {
         'job': job
-    })
+    }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
     msg = EmailMultiAlternatives("ortoloco - Job-Abgesagt", text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
+
+def send_job_time_changed(emails, job):
+    plaintext = get_template('mails/job_time_changed_mail.txt')
+    htmly = get_template('mails/job_time_changed_mail.html')
+
+    d = {
+        'job': job
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)

@@ -34,6 +34,9 @@ class Depot(models.Model):
     addr_location = models.CharField("Ort", max_length=50)
 
     description = models.TextField("Beschreibung", max_length=1000, default="")
+    
+    overview_cache = None
+    abo_cache = None
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
@@ -122,6 +125,22 @@ class Depot(models.Model):
         for abo in abos.all():
             obst += len(abo.extra_abos.all().filter(description="Obst kl. (1kg)"))
         return obst
+    
+    def fill_overview_cache(self):
+        self.fill_active_abo_cache()
+        self.overview_cache = {}
+        self.overview_cache["small_abos_t"] = int(self.small_abos(self.abo_cache))
+        self.overview_cache["big_abos_t"] = self.big_abos(self.abo_cache)
+        self.overview_cache["vier_eier_t"] = self.vier_eier(self.abo_cache)
+        self.overview_cache["sechs_eier_t"] = self.sechs_eier(self.abo_cache)
+        self.overview_cache["kaese_ganz_t"] = self.kaese_ganz(self.abo_cache)
+        self.overview_cache["kaese_halb_t"] = self.kaese_halb(self.abo_cache)
+        self.overview_cache["kaese_viertel_t"] = self.kaese_viertel(self.abo_cache)
+        self.overview_cache["big_obst_t"] = self.big_obst(self.abo_cache)
+        self.overview_cache["small_obst_t"] = self.small_obst(self.abo_cache)
+        
+    def fill_active_abo_cache(self):
+        self.abo_cache = self.active_abos()
 
     class Meta:
         verbose_name = "Depot"
@@ -328,9 +347,16 @@ class Taetigkeitsbereich(models.Model):
     hidden = models.BooleanField("versteckt", default=False)
     coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
     locos = models.ManyToManyField(Loco, related_name="areas", blank=True)
+    show_coordinator_phonenumber = models.BooleanField("Koordinator Tel Nr Veröffentlichen", default=False)
 
     def __unicode__(self):
         return u'%s' % self.name
+    
+    def contact(self):
+        if self.show_coordinator_phonenumber is True:
+            return self.coordinator.phone + "   " + self.coordinator.mobile_phone
+        else:
+            return self.coordinator.email
 
     class Meta:
         verbose_name = 'Tätigkeitsbereich'
@@ -379,6 +405,7 @@ class Job(PolymorphicModel):
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
     old_canceled = False;
+    old_time = False;
     
     @property
     def typ(self):
@@ -433,10 +460,18 @@ class Job(PolymorphicModel):
             instance.slots=0
             if(len(emails)>0):
                 send_job_canceled(emails, instance)
+        if(instance.old_time != instance.time):
+            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            emails = set()
+            for boehnli in boehnlis:
+                emails.add(boehnli.loco.email)
+            if(len(emails)>0):
+                send_job_time_changed(emails, instance)
         
     
     @classmethod
     def post_init(cls, sender, instance, **kwds):
+        instance.old_time=instance.time;
         instance.old_canceled=instance.canceled;
         if(instance.canceled==True):
             boehnlis = Boehnli.objects.filter(job_id=instance.id)
@@ -449,6 +484,14 @@ class Job(PolymorphicModel):
 class RecuringJob(Job):
     typ = models.ForeignKey(JobType, on_delete=models.PROTECT)
 
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        Job.pre_save(sender, instance)
+    
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        Job.post_init(sender, instance)
+        
     class Meta:
         verbose_name = 'Job'
         verbose_name_plural = 'Jobs'
@@ -463,6 +506,14 @@ class OneTimeJob(Job, AbstractJobType):
     def typ(self):
         return self
 
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        Job.pre_save(sender, instance)
+    
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        Job.post_init(sender, instance)    
+    
     class Meta:
         verbose_name = 'EinzelJob'
         verbose_name_plural = 'EinzelJobs'
@@ -497,4 +548,8 @@ signals.post_save.connect(Loco.create, sender=Loco)
 signals.post_delete.connect(Loco.post_delete, sender=Loco)
 signals.pre_save.connect(Job.pre_save, sender=Job)
 signals.post_init.connect(Job.post_init, sender=Job)
+signals.pre_save.connect(RecuringJob.pre_save, sender=RecuringJob)
+signals.post_init.connect(RecuringJob.post_init, sender=RecuringJob)
+signals.pre_save.connect(OneTimeJob.pre_save, sender=OneTimeJob)
+signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 

@@ -167,15 +167,15 @@
         <tr>
             <td style="width:180px;"></td>
             <td style="width:180px; text-align:right;">TOTAL</td>
-            <td style="width:40px; text-align:right;">{{ depot.small_abos_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.big_abos_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.vier_eier_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.sechs_eier_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_ganz_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_halb_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_viertel_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.big_obst_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.small_obst_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.small_abos_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_abos_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.vier_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.sechs_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_ganz_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_halb_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_viertel_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_obst_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.small_obst_t }}</td>
             <td style="width:60px;"></td>
             <td style="width:60px;"></td>
         </tr>
@@ -194,7 +194,7 @@
             <th style="text-align: right;">abgeholt</th>
             <th style="text-align: right;">Tasche retour</th>
         </tr>
-        {% for abo in depot.active_abos.all %}
+        {% for abo in depot.abo_cache.all %}
             <tr>
                 <td style="text-align:right" class="top-border left-border">{{ abo.primary_loco.get_name }}</td>
                 <td style="text-align:right" class="top-border left-border">{{ abo.andere_bezieher }}</td>
@@ -254,6 +254,52 @@
         {% endif%}
     </table>
     Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
+    <div class="page-break"></div>
+{% endfor %}
+{% for i in "xx" %}
+    <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
+        <tr>
+            <td></td>
+            <td></td>
+            <th colspan="2" class="top-border left-border right-border">ABO</th>
+            <th colspan="2" class="top-border right-border">EIER</th>
+            <th colspan="3" class="top-border right-border">KÄSE<br/><span style="font-size:11px">1x Anfang Monat!</span></th>
+            <th colspan="2" class="top-border right-border">OBST</th>
+            <th colspan="2" class="top-border right-border"></th>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td class="small left-border bottom-border">klein</td>
+            <td class="small bottom-border right-border">gross</td>
+            <td class="small bottom-border">4er</td>
+            <td class="small bottom-border right-border">6er</td>
+            <td class="small bottom-border">ganz</td>
+            <td class="small bottom-border">halb</td>
+            <td class="small bottom-border right-border">viertel</td>
+            <td class="small bottom-border">gross</td>
+            <td class="small bottom-border right-border">klein</td>
+            <td></td>
+            <td class="small bottom-border right-border"></td>
+        </tr>
+        {% for depot in depots %}
+        <tr>
+            <td style="width:180px;"></td>
+            <td style="width:180px; text-align:right;">{{ depot.wochentag }} - {{ depot.name }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.small_abos_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_abos_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.vier_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.sechs_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_ganz_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_halb_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_viertel_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_obst_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.small_obst_t }}</td>
+            <td style="width:60px;"></td>
+            <td style="width:60px;"></td>
+        </tr>
+        {% endfor %}
+    </table>
     <div class="page-break"></div>
 {% endfor %}
 </body>

@@ -1,8 +1,8 @@
 {% extends "mails/email.html" %}
 {% block content %}
-    Nicht vergessen: <br/>
+    Achtung: <br/>
 
-    Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein ortoloco-Arbeitseinsatz <b>"{{ job.typ.displayed_name }}"</b> statt.
+    Dein ortoloco-Arbeitseinsatz <b>"{{ job.typ.displayed_name }}"</b> findet neu zu folgenden Zeiten <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> statt.
     <br/><br/>
     Details:
     <table cellspacing="0" cellpadding="0">
@@ -21,10 +21,6 @@
         <tr>
             <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Ort:</th>
             <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ job.typ.location }}</td>
-        </tr>
-        <tr>
-            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Verantwortlich:</th>
-            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ contact }}</td>
         </tr>
     </table><br/>
 
