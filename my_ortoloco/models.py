@@ -35,7 +35,7 @@ class Depot(models.Model):
 
     description = models.TextField("Beschreibung", max_length=1000, default="")
     
-    overview_cache ={}
+    overview_cache = None
     abo_cache = None
 
     def __unicode__(self):
@@ -128,6 +128,7 @@ class Depot(models.Model):
     
     def fill_overview_cache(self):
         self.fill_active_abo_cache()
+        self.overview_cache = {}
         self.overview_cache["small_abos_t"] = int(self.small_abos(self.abo_cache))
         self.overview_cache["big_abos_t"] = self.big_abos(self.abo_cache)
         self.overview_cache["vier_eier_t"] = self.vier_eier(self.abo_cache)
