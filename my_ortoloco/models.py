@@ -52,8 +52,7 @@ class Depot(models.Model):
         return day
 
     def small_abos_t(self):
-        print self.overview_cache["small_abos_t"]
-        return self.overview_cache["small_abos_t"]
+        return self.small_abos(self.active_abos())
         
     def small_abos(self, abos):
         return len(abos.filter(Q(size=1) | Q(size=3)))
@@ -129,8 +128,7 @@ class Depot(models.Model):
     
     def fill_overview_cache(self):
         self.fill_active_abo_cache()
-        self.overview_cache["small_abos_t"] = self.small_abos(self.abo_cache)
-        print self.overview_cache["small_abos_t"]
+        self.overview_cache["small_abos_t"] = int(self.small_abos(self.abo_cache))
         self.overview_cache["big_abos_t"] = self.big_abos(self.abo_cache)
         self.overview_cache["vier_eier_t"] = self.vier_eier(self.abo_cache)
         self.overview_cache["sechs_eier_t"] = self.sechs_eier(self.abo_cache)
