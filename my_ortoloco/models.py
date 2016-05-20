@@ -137,9 +137,7 @@ class Depot(models.Model):
         self.overview_cache["kaese_halb_t"] = self.kaese_halb(self.abo_cache)
         self.overview_cache["kaese_viertel_t"] = self.kaese_viertel(self.abo_cache)
         self.overview_cache["big_obst_t"] = self.big_obst(self.abo_cache)
-        self.overview_cache["small_obst_t"] = self.small_abos(self.abo_cache)
-        print "self:" +str(id(self))
-        print "self.overview_cache" + str(id(self.overview_cache))
+        self.overview_cache["small_obst_t"] = self.small_obst(self.abo_cache)
         
     def fill_active_abo_cache(self):
         self.abo_cache = self.active_abos()
