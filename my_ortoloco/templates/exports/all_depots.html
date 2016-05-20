@@ -168,14 +168,14 @@
             <td style="width:180px;"></td>
             <td style="width:180px; text-align:right;">TOTAL</td>
             <td style="width:40px; text-align:right;">{{ depot.small_abos_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.big_abos_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.vier_eier_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.sechs_eier_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_ganz_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_halb_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_viertel_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.big_obst_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.small_obst_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_abos_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.vier_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.sechs_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_ganz_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_halb_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_viertel_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_obst_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.small_obst_t }}</td>
             <td style="width:60px;"></td>
             <td style="width:60px;"></td>
         </tr>
@@ -194,7 +194,7 @@
             <th style="text-align: right;">abgeholt</th>
             <th style="text-align: right;">Tasche retour</th>
         </tr>
-        {% for abo in depot.active_abos.all %}
+        {% for abo in depot.abo_cache.all %}
             <tr>
                 <td style="text-align:right" class="top-border left-border">{{ abo.primary_loco.get_name }}</td>
                 <td style="text-align:right" class="top-border left-border">{{ abo.andere_bezieher }}</td>
@@ -286,15 +286,15 @@
         <tr>
             <td style="width:180px;"></td>
             <td style="width:180px; text-align:right;">{{ depot.wochentag }} - {{ depot.name }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.small_abos_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.big_abos_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.vier_eier_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.sechs_eier_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_ganz_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_halb_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.kaese_viertel_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.big_obst_t }}</td>
-            <td style="width:40px; text-align:right;">{{ depot.small_obst_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.small_abos_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_abos_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.vier_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.sechs_eier_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_ganz_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_halb_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.kaese_viertel_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.big_obst_t }}</td>
+            <td style="width:40px; text-align:right;">{{ depot.overview_cache.small_obst_t }}</td>
             <td style="width:60px;"></td>
             <td style="width:60px;"></td>
         </tr>

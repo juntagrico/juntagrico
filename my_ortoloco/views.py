@@ -1090,29 +1090,33 @@ def alldepots_list(request, name):
     }
 
     for depot in depots:
+        depot.fill_overview_cache()
+        depot.fill_active_abo_cache()
         row = overview.get(depot.get_weekday_display())
-        all = overview.get('all')
-        actives = depot.active_abos()
-        row['small_abo'] += depot.small_abos(actives)
-        row['big_abo'] += depot.big_abos(actives)
-        row['entities'] += 2 * depot.big_abos(actives) + depot.small_abos(actives)
-        row['egg4'] += depot.vier_eier(actives)
-        row['egg6'] += depot.sechs_eier(actives)
-        row['cheesefull'] += depot.kaese_ganz(actives)
-        row['cheesehalf'] += depot.kaese_halb(actives)
-        row['cheesequarter'] += depot.kaese_viertel(actives)
-        row['bigobst'] += depot.big_obst(actives)
-        row['smallobst'] += depot.small_obst(actives)
-        all['small_abo'] += depot.small_abos(actives)
-        all['big_abo'] += depot.big_abos(actives)
-        all['entities'] += 2 * depot.big_abos(actives) + depot.small_abos(actives)
-        all['egg4'] += depot.vier_eier(actives)
-        all['egg6'] += depot.sechs_eier(actives)
-        all['cheesefull'] += depot.kaese_ganz(actives)
-        all['cheesehalf'] += depot.kaese_halb(actives)
-        all['cheesequarter'] += depot.kaese_viertel(actives)
-        all['bigobst'] += depot.big_obst(actives)
-        all['smallobst'] += depot.small_obst(actives)
+        row['small_abo'] += depot.overview_cache['small_abos_t']
+        row['big_abo'] += depot.overview_cache['big_abos_t']
+        row['entities'] += 2 * depot.overview_cache['big_abos_t'] + depot.overview_cache['small_abos_t']
+        row['egg4'] += depot.overview_cache['vier_eier_t']
+        row['egg6'] += depot.overview_cache['sechs_eier_t']
+        row['cheesefull'] += depot.overview_cache['kaese_ganz_t']
+        row['cheesehalf'] += depot.overview_cache['kaese_halb_t']
+        row['cheesequarter'] += depot.overview_cache['kaese_viertel_t']
+        row['bigobst'] += depot.overview_cache['big_obst_t']
+        row['smallobst'] += depot.overview_cache['small_obst_t']
+        
+    all = overview.get('all')
+    di = overview.get('Dienstag')
+    do = overview.get('Donnerstag')
+    all['small_abo'] = di['small_abo'] + do['small_abo']
+    all['big_abo'] = di['big_abo'] + do['big_abo']
+    all['entities'] = di['entities'] + do['entities']
+    all['egg4'] = di['egg4'] + do['egg4']
+    all['egg6'] = di['egg6'] + do['egg6']
+    all['cheesefull'] = di['cheesefull'] + do['cheesefull']
+    all['cheesehalf'] = di['cheesehalf'] + do['cheesehalf']
+    all['cheesequarter'] = di['cheesequarter'] + do['cheesequarter']
+    all['bigobst'] = di['bigobst'] + do['bigobst']
+    all['smallobst'] = di['smallobst'] + do['smallobst']
 
     renderdict = {
         "overview": overview,

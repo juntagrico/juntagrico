@@ -34,6 +34,9 @@ class Depot(models.Model):
     addr_location = models.CharField("Ort", max_length=50)
 
     description = models.TextField("Beschreibung", max_length=1000, default="")
+    
+    overview_cache ={}
+    abo_cache = None
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
@@ -49,7 +52,8 @@ class Depot(models.Model):
         return day
 
     def small_abos_t(self):
-        return self.small_abos(self.active_abos())
+        print self.overview_cache["small_abos_t"]
+        return self.overview_cache["small_abos_t"]
         
     def small_abos(self, abos):
         return len(abos.filter(Q(size=1) | Q(size=3)))
@@ -122,6 +126,22 @@ class Depot(models.Model):
         for abo in abos.all():
             obst += len(abo.extra_abos.all().filter(description="Obst kl. (1kg)"))
         return obst
+    
+    def fill_overview_cache(self):
+        self.fill_active_abo_cache()
+        self.overview_cache["small_abos_t"] = self.small_abos(self.abo_cache)
+        print self.overview_cache["small_abos_t"]
+        self.overview_cache["big_abos_t"] = self.big_abos(self.abo_cache)
+        self.overview_cache["vier_eier_t"] = self.vier_eier(self.abo_cache)
+        self.overview_cache["sechs_eier_t"] = self.sechs_eier(self.abo_cache)
+        self.overview_cache["kaese_ganz_t"] = self.kaese_ganz(self.abo_cache)
+        self.overview_cache["kaese_halb_t"] = self.kaese_halb(self.abo_cache)
+        self.overview_cache["kaese_viertel_t"] = self.kaese_viertel(self.abo_cache)
+        self.overview_cache["big_obst_t"] = self.big_obst(self.abo_cache)
+        self.overview_cache["small_obst_t"] = self.small_abos(self.abo_cache)
+        
+    def fill_active_abo_cache(self):
+        self.abo_cache = self.active_abos()
 
     class Meta:
         verbose_name = "Depot"
