@@ -122,7 +122,7 @@
                         {% if next_jobs|length > 0 %}
                             <ul class="unstyled next-jobs">
                                 {% for job in next_jobs %}
-                                    <li><a href="/my/jobs/{{ job.id }}">{{ job.typ.name }}</a><br/>
+                                    <li><a href="/my/jobs/{{ job.id }}" {% if job.canceled %} class="canceled"{% endif %}>{{ job.typ.name }}</a><br/>
 
                                         <div class="time">{{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}</div>
                                     </li>
