@@ -834,14 +834,14 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get("sender")
     if request.POST.get("allabo") == "on":
-        for loco in Loco.objects.exclude(abo=None).filter(abo__active=True):
+        for loco in Loco.objects.exclude(abo=None).filter(abo__active=True).exclude(block_emails=True):
             emails.add(loco.email)
     if request.POST.get("allanteilsschein") == "on":
-        for loco in Loco.objects.all():
+        for loco in Loco.objects.exclude(block_emails=True):
             if loco.anteilschein_set.count() > 0:
                 emails.add(loco.email)
     if request.POST.get("all") == "on":
-        for loco in Loco.objects.all():
+        for loco in Loco.objects.exclude(block_emails=True):
             emails.add(loco.email)
     if request.POST.get("recipients"):
         recipients = re.split(r"\s*,?\s*", request.POST.get("recipients"))
