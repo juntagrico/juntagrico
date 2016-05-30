@@ -292,6 +292,7 @@ class Loco(models.Model):
 
     confirmed = models.BooleanField("bestätigt", default=True)
     reachable_by_email = models.BooleanField("reachable_by_email", default=False)
+    block_emails = models.BooleanField("keine emails", default=False)
 
     def __unicode__(self):
         return self.get_name()
