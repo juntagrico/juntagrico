@@ -733,11 +733,17 @@ def my_contact_loco(request, loco_id, job_id):
 
     if request.method == "POST":
         # send mail to loco
-        send_contact_loco_form(request.POST.get("subject"), request.POST.get("message"), loco, contact_loco, request.POST.get("copy"))
+        index = 1
+        attachements = []
+        while request.FILES.get("image-" + str(index)) is not None:
+            attachements.append(request.FILES.get("image-" + str(index)))
+            index += 1
+        send_contact_loco_form(request.POST.get("subject"), request.POST.get("message"), loco, contact_loco, request.POST.get("copy"),attachements)
         is_sent = True
 
     renderdict = get_menu_dict(request)
-    renderdict.update({
+    renderdict.update({        
+        'admin': request.user.is_staff or job.typ.bereich.coordinator==loco,
         'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">",
         'loco_id': loco_id,
         'loco_name': contact_loco.first_name + " " + contact_loco.last_name,

@@ -63,8 +63,11 @@ def send_contact_form(subject, message, loco, copy_to_loco):
     if copy_to_loco:
         send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, [loco.email])
 		
-def send_contact_loco_form(subject, message, loco, contact_loco, copy_to_loco):
-    send_mail('Nachricht per my.ortoloco: ' + subject, message, loco.email, [contact_loco.email])
+def send_contact_loco_form(subject, message, loco, contact_loco, copy_to_loco, attachment):
+    msg = EmailMultiAlternatives('Nachricht per my.ortoloco: ' + subject, message, loco.email, [contact_loco.email], headers={'Reply-To': loco.email})
+    for attachment in attachments:
+        msg.attach(attachment.name, attachment.read())
+    send_mail_multi(msg)
     if copy_to_loco:
         send_mail('Nachricht per my.ortoloco: ' + subject, message, loco.email, [loco.email])
 

@@ -44,14 +44,27 @@
                 </div>
             </div>
         </div>
-
+        {% if admin %}
+        <div class="form-group">
+            <label for="attachements" class="col-sm-2 control-label">Anhänge</label>
+            <div class="col-sm-10">
+                <div class="controls" id="attachements">
+                    <div class="file-upload">
+                        <div class="file-upload-button">
+                            <input type="file" name="image-1">
+                            <button class="btn">Datei auswählen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         <div class="form-actions col-sm-offset-4">
             <button type="submit" class="btn btn-success">Nachricht verschicken</button>
         </div>
     </form>
 	{% endif %}
-    <br/>
-    <br/>
-    ortoloco c/o albizke, Albisriederstr. 203b, 8047 Zürich<br/>
-    info@ortoloco.ch
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
 {% endblock %}
