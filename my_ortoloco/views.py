@@ -87,7 +87,7 @@ def my_home(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_aktionstage), key=lambda job: job.time),
-        'teams': Taetigkeitsbereich.objects.filter(hidden=False),
+        'teams': Taetigkeitsbereich.objects.filter(hidden=False).order_by("core", "name"),
         'no_abo': request.user.loco.abo is None,
         'announcement': announcement
     })
