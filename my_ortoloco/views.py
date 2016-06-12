@@ -37,7 +37,7 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 
 def get_menu_dict(request):
     loco = request.user.loco
-    next_jobs = set()
+    next_jobs = []
     if loco.abo is not None:
         allebohnen = Boehnli.objects.filter(loco=loco)
         userbohnen = []
@@ -51,11 +51,11 @@ def get_menu_dict(request):
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
             if bohne.job.time > timezone.now():
-                next_jobs.add(bohne.job)
+                next_jobs.append(bohne.job)
     else:
         bohnenrange = None
         userbohnen = []
-        next_jobs = set()
+        next_jobs = []
 
     depot_admin = Depot.objects.filter(contact=request.user.loco)
     area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
