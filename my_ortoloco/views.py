@@ -868,10 +868,10 @@ def send_email_intern(request):
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
 @staff_member_required
-def send_email_result(request):
+def send_email_result(request, numsent):
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'sent': len
+        'sent': numsent
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
