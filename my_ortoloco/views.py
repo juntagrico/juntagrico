@@ -865,12 +865,15 @@ def send_email_intern(request):
     if len(emails) > 0:
         send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements, sender=sender)
         sent = len(emails)
+    return redirect("/my/mails/send/result/"+str(sent)+"/") 
+
+@staff_member_required
+def send_email_result(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'sent': sent
+        'sent': len
     })
     return render(request, 'mail_sender_result.html', renderdict)
-
 
 @staff_member_required
 def my_mails(request, enhanced=None):

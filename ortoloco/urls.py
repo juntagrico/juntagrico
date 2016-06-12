@@ -56,6 +56,7 @@ urlpatterns = [
     url('^my/mails/depot$', my_ortoloco.my_mails_depot),
     url('^my/mails/area$', my_ortoloco.my_mails_area),
     url('^my/mails/send$', my_ortoloco.send_email),
+    url('^my/mails/send/result/(?P<len>.*?)/', my_ortoloco.send_email_result),
     url('^my/mails/send/depot$', my_ortoloco.send_email_depot),
     url('^my/mails/send/area$', my_ortoloco.send_email_area),
     url('^my/depotlisten', my_ortoloco.my_depotlisten),
