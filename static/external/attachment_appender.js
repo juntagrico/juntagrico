@@ -8,6 +8,8 @@ $(function () {
         // add a second one
         var $clone = $fileUpload.clone();
         $clone.find("button").text("Weitere Datei anhängen");
+        $clone.find("input[type=file]").remove();
+        $clone.find(".file-upload-button").append("<input type=\"file\">")
         $clone.find("input[type=file]").change(additionalFile).attr("name", "image-" + ($("input[type=file]").size() + 1));
         $fileUpload.after($clone);
 
