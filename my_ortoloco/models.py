@@ -260,6 +260,12 @@ class Abo(models.Model):
 
     def klein_obst(self):
         return len(self.extra_abos.all().filter(description="Obst kl. (1kg)")) > 0
+        
+    @classmethod
+    def pre_delete(cls, sender, instance, **kwds):
+        for loco in instance.bezieher_locos():
+            loco.abo=None
+            loco.save()
 
     class Meta:
         verbose_name = "Abo"
@@ -293,6 +299,8 @@ class Loco(models.Model):
     confirmed = models.BooleanField("bestätigt", default=True)
     reachable_by_email = models.BooleanField("reachable_by_email", default=False)
     block_emails = models.BooleanField("keine emails", default=False)
+    
+    old_abo=None
 
     def __unicode__(self):
         return self.get_name()
@@ -314,7 +322,15 @@ class Loco(models.Model):
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
-
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        if instance.old_abo!=instance.abo and instance.abo is None:
+            instance.areas = ()
+       
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        instance.old_abo=instance.abo
+        
     class Meta:
         verbose_name = "Loco"
         verbose_name_plural = "Locos"
@@ -405,8 +421,8 @@ class Job(PolymorphicModel):
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
-    old_canceled = False;
-    old_time = False;
+    old_canceled = None;
+    old_time = None;
     
     @property
     def typ(self):
@@ -547,10 +563,13 @@ model_audit.fk(Anteilschein.loco)
 
 signals.post_save.connect(Loco.create, sender=Loco)
 signals.post_delete.connect(Loco.post_delete, sender=Loco)
+signals.pre_save.connect(Loco.pre_save, sender=Loco)
+signals.post_init.connect(Loco.post_init, sender=Loco)
 signals.pre_save.connect(Job.pre_save, sender=Job)
 signals.post_init.connect(Job.post_init, sender=Job)
 signals.pre_save.connect(RecuringJob.pre_save, sender=RecuringJob)
 signals.post_init.connect(RecuringJob.post_init, sender=RecuringJob)
 signals.pre_save.connect(OneTimeJob.pre_save, sender=OneTimeJob)
 signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
+signals.pre_delete.connect(Abo.pre_delete, sender=Abo)
 
