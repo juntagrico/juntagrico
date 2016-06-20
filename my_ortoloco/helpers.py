@@ -184,7 +184,6 @@ def generate_excell(fields, model_instance):
             while(count<len(parts)):
                 fieldvalue = getattr(fieldvalue, parts[count])
                 count = count + 1
-            print fieldvalue
             if fieldvalue is not None:
                 if isinstance(fieldvalue,unicode):
                     worksheet_s.write_string(row, col, fieldvalue)
