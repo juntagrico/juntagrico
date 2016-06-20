@@ -181,7 +181,7 @@ def generate_excell(fields, model_instance):
             parts = field.split('.')
 	    count =1
             fieldvalue = getattr(instance, parts[0])
-            while(count<len(parts)):
+            while(count<len(parts) and fieldvalue is not None):
                 fieldvalue = getattr(fieldvalue, parts[count])
                 count = count + 1
             if fieldvalue is not None:
