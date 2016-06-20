@@ -16,6 +16,8 @@ from xhtml2pdf import pisa
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 
+import xlsxwriter
+from StringIO import StringIO
 
 class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
@@ -146,5 +148,54 @@ def attribute_copy(source, target):
     for field in target._meta.fields:
                 if(field.auto_created==False and field.editable==True and field.attname in source.__dict__ and field.attname in target.__dict__):
                     target.__dict__[field.attname] = source.__dict__[field.attname]
+
+
+"""
+    Generates excell for a defined set of fields and a model
+"""
+def generate_excell(fields, model_instance):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
+    output = StringIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet_s = workbook.add_worksheet("Locos")
+    
+        
+    col = 0
+    for field in fields:
+	parts = field.split('.')
+	count =1
+        dbfield = model_instance._meta.get_field(parts[0])
+        while(count<len(parts)):
+            dbfield = dbfield.related_model._meta.get_field(parts[count])
+            count = count + 1
+        worksheet_s.write_string(0, col, unicode(str(dbfield.verbose_name),"utf-8"))
+        col = col + 1
+        
+    instances = model_instance.objects.all()
+    
+    row = 1
+    for instance in instances:
+        col =0
+        for field in fields:
+            parts = field.split('.')
+	    count =1
+            fieldvalue = getattr(instance, parts[0])
+            while(count<len(parts)):
+                fieldvalue = getattr(fieldvalue, parts[count])
+                count = count + 1
+            print fieldvalue
+            if fieldvalue is not None:
+                if isinstance(fieldvalue,unicode):
+                    worksheet_s.write_string(row, col, fieldvalue)
+                else:
+                    worksheet_s.write_string(row, col, unicode(str(fieldvalue),"utf-8"))
+            col = col + 1
+        row = row + 1
+    
+    workbook.close()
+    xlsx_data = output.getvalue()
+    response.write(xlsx_data)
+    return response
                     
             

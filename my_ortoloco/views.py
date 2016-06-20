@@ -1300,12 +1300,6 @@ def my_excel_export_locos_filter(request):
 
 @staff_member_required
 def my_excel_export_locos(request):
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
-    output = StringIO()
-    workbook = xlsxwriter.Workbook(output)
-    worksheet_s = workbook.add_worksheet("Locos")
-    
     fields = [
     u'first_name',
     u'last_name',
@@ -1320,61 +1314,22 @@ def my_excel_export_locos(request):
     u'reachable_by_email',
     u'block_emails',
     ]
-    
-    col = 0
-    for field in fields:
-        dbfield = Loco._meta.get_field(field)
-        worksheet_s.write_string(0, col, unicode(str(dbfield.verbose_name),"utf-8"))
-        col = col + 1
-    
-    
-    locos = Loco.objects.all()
-    
-    row = 1
-    for loco in locos:
-        col =0
-        for field in fields:
-            fieldvalue = getattr(loco, field)
-            print fieldvalue
-            if fieldvalue is not None:
-                if isinstance(fieldvalue,unicode):
-                    worksheet_s.write_string(row, col, fieldvalue)
-                else:
-                    worksheet_s.write_string(row, col, unicode(str(fieldvalue),"utf-8"))
-            col = col + 1
-        row = row + 1
-    
-    workbook.close()
-    xlsx_data = output.getvalue()
-    response.write(xlsx_data)
-    return response
+    return generate_excell(fields, Loco)
     
 @staff_member_required
 def my_excel_export_shares(request):
-    response = HttpResponse(content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
-    output = StringIO()
-    workbook = xlsxwriter.Workbook(output)
-    worksheet_s = workbook.add_worksheet("Locos")
-    
-    worksheet_s.write_string(0, 0, unicode("Name", "utf-8"))
-    
-    
-    locos = Loco.objects.all()
-    
-    row = 1
-    for loco in locos:
-        
-        worksheet_s.write_string(row, 0, looco_full_name)
-        
-        if loco.mobile_phone is not None: 
-            worksheet_s.write_string(row, 7, loco.mobile_phone)
-        row = row + 1
-
-    workbook.close()
-    xlsx_data = output.getvalue()
-    response.write(xlsx_data)
-    return response
+    fields = [
+    u'number',
+    u'paid',
+    u'paid_date',
+    u'canceled',
+    u'canceled_date',
+    u'notes',
+    u'loco.first_name',
+    u'loco.last_name',
+    u'loco.email',
+    ]
+    return generate_excell(fields, Anteilschein)
 
 @staff_member_required
 def my_export(request):
