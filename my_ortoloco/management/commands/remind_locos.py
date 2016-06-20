@@ -13,7 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         now = timezone.now()
-        end = now + datetime.timedelta(days=1)
+        end = now + datetime.timedelta(days=2)
         for job in Job.objects.filter(time__range=(now, end), reminder_sent__exact=False):
             participants = []
             emails = []
