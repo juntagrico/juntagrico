@@ -15,6 +15,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
 from django.db.models import Count
+from django.db import models
 from django.utils import timezone
 
 import xlsxwriter
@@ -1248,7 +1249,7 @@ def my_switch_abos(request):
 
 
 @staff_member_required
-def my_excel_export(request):
+def my_excel_export_locos_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = StringIO()
@@ -1297,6 +1298,89 @@ def my_excel_export(request):
     response.write(xlsx_data)
     return response
 
+@staff_member_required
+def my_excel_export_locos(request):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
+    output = StringIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet_s = workbook.add_worksheet("Locos")
+    
+    fields = [
+    u'first_name',
+    u'last_name',
+    u'email',
+    u'addr_street',
+    u'addr_zipcode',
+    u'addr_location',
+    u'birthday',
+    u'phone',
+    u'mobile_phone',
+    u'confirmed',
+    u'reachable_by_email',
+    u'block_emails',
+    ]
+    
+    col = 0
+    for field in fields:
+        dbfield = Loco._meta.get_field(field)
+        worksheet_s.write_string(0, col, unicode(str(dbfield.verbose_name),"utf-8"))
+        col = col + 1
+    
+    
+    locos = Loco.objects.all()
+    
+    row = 1
+    for loco in locos:
+        col =0
+        for field in fields:
+            fieldvalue = getattr(loco, field)
+            print fieldvalue
+            if fieldvalue is not None:
+                if isinstance(fieldvalue,unicode):
+                    worksheet_s.write_string(row, col, fieldvalue)
+                else:
+                    worksheet_s.write_string(row, col, unicode(str(fieldvalue),"utf-8"))
+            col = col + 1
+        row = row + 1
+    
+    workbook.close()
+    xlsx_data = output.getvalue()
+    response.write(xlsx_data)
+    return response
+    
+@staff_member_required
+def my_excel_export_shares(request):
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
+    output = StringIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet_s = workbook.add_worksheet("Locos")
+    
+    worksheet_s.write_string(0, 0, unicode("Name", "utf-8"))
+    
+    
+    locos = Loco.objects.all()
+    
+    row = 1
+    for loco in locos:
+        
+        worksheet_s.write_string(row, 0, looco_full_name)
+        
+        if loco.mobile_phone is not None: 
+            worksheet_s.write_string(row, 7, loco.mobile_phone)
+        row = row + 1
+
+    workbook.close()
+    xlsx_data = output.getvalue()
+    response.write(xlsx_data)
+    return response
+
+@staff_member_required
+def my_export(request):
+    renderdict = get_menu_dict(request)
+    return render(request, 'export.html', renderdict)
+    
 @staff_member_required
 def my_startmigration(request):
     f = StringIO()

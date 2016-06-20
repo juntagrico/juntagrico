@@ -348,6 +348,10 @@ class Anteilschein(models.Model):
     loco = models.ForeignKey(Loco, null=True, blank=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
     canceled = models.BooleanField(default=False)
+    paid_date = models.DateField("Bezahlt am",null=True);
+    canceled_date = models.DateField("Canceled am",null=True);
+    number = models.IntegerField("Anteilschein nummer",null=True);
+    notes = models.TextField("Notizen", max_length=1000, default="")
 
     def __unicode__(self):
         return u"Anteilschein #%s" % (self.id)
