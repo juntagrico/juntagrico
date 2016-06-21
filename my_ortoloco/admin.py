@@ -226,9 +226,9 @@ class JobAdmin(admin.ModelAdmin):
         return admin.ModelAdmin.construct_change_message(self, request, form, formsets)
 '''
 class OneTimeJobAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "typ", "time", "slots", "freie_plaetze"]
+    list_display = ["__unicode__", "time", "slots", "freie_plaetze"]
     actions = ["transform_job"]
-    search_fields = ["typ__name", "typ__bereich__name"]
+    search_fields = ["name", "bereich__name"]
     
     inlines = [BoehnliInline]
     readonly_fields = ["freie_plaetze"]

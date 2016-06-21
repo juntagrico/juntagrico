@@ -527,6 +527,10 @@ class OneTimeJob(Job, AbstractJobType):
     def typ(self):
         return self
 
+        
+    def __unicode__(self):
+        return u'%s - %s' % (self.bereich, self.get_name())
+        
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         Job.pre_save(sender, instance)
