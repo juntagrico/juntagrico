@@ -169,7 +169,7 @@ class JobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "typ", "time", "slots", "freie_plaetze"]
     actions = ["copy_job", "mass_copy_job"]
     search_fields = ["typ__name", "typ__bereich__name"]
-
+    exclude = ["reminder_sent"]
     inlines = [BoehnliInline]
     readonly_fields = ["freie_plaetze"]
 
@@ -229,6 +229,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "time", "slots", "freie_plaetze"]
     actions = ["transform_job"]
     search_fields = ["name", "bereich__name"]
+    exclude = ["reminder_sent"]
     
     inlines = [BoehnliInline]
     readonly_fields = ["freie_plaetze"]
