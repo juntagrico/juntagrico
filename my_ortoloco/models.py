@@ -297,7 +297,7 @@ class Loco(models.Model):
                             on_delete=models.SET_NULL)
 
     confirmed = models.BooleanField("bestätigt", default=True)
-    reachable_by_email = models.BooleanField("reachable_by_email", default=False)
+    reachable_by_email = models.BooleanField("Kontaktierbar von der Job Seite aus", default=False)
     block_emails = models.BooleanField("keine emails", default=False)
     
     old_abo=None
