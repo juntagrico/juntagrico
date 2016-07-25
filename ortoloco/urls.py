@@ -79,8 +79,6 @@ urlpatterns = [
     url(r'^impersonate/', include('impersonate.urls')),
 
     url('^my/createlocoforsuperuserifnotexist$', my_ortoloco.my_createlocoforsuperuserifnotexist),
-    url('^my/migratedbtonewestversion', my_ortoloco.migrate_apps),
-    url('^pipinstallrrequirements', my_ortoloco.pip_install),
 
 
     url(r'^accounts/login/$',  login),

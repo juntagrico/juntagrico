@@ -1312,20 +1312,6 @@ def my_export(request):
     return render(request, 'export.html', renderdict)
     
 
-@staff_member_required
-def migrate_apps(request):
-    f = StringIO()
-    with Swapstd(f):
-        call_command('migrate', 'my_ortoloco')
-        call_command('migrate', 'static_ortoloco')
-    return HttpResponse(f.getvalue(), content_type="text/plain")
-
-
-@staff_member_required
-def pip_install(request):
-    command = "pip install -r requirements.txt"
-    res = run_in_shell(request, command)
-    return res
 
 
 def mini_migrate_future_zusatzabos(request):
