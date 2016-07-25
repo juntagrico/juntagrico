@@ -78,7 +78,6 @@ urlpatterns = [
 
     url(r'^impersonate/', include('impersonate.urls')),
 
-    url('^my/createlocoforsuperuserifnotexist$', my_ortoloco.my_createlocoforsuperuserifnotexist),
 
 
     url(r'^accounts/login/$',  login),

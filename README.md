@@ -177,20 +177,10 @@ on your browser.
 Use following command to create a super user, if not yet available:
 
     ./manage.py createsuperuser
+    ./manage.py create_loco_for_superusers
 
 Hint: the super user used in the db on slack is name ´super´, password ´super´.
 
-### Create loco for admin user
-
-The first time you try to login with the initial admin user you will
-encouter an error like `User has no Loco`. To create a `Loco` for this
-user, you have to activate a secret :smile: URL in [`url.py`](https://github.com/ortoloco/ortoloco/blob/5b8bf329e6d01fc6b6f4215a514c8fa456e09cf7/ortoloco/urls.py#L58) and call it from the browser:
-
-- <http://localhost:8000/my/createlocoforsuperuserifnotexist>
-
-Afterwards, you might have to logout with following URL:
-
-- <http://localhost:8000/logout>
 
 ### Change password for super user ('admin' is the username)
 

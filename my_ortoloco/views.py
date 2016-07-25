@@ -1115,24 +1115,6 @@ def alldepots_list(request, name):
     return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')
 
 
-def my_createlocoforsuperuserifnotexist(request):
-    """
-    just a helper to create a loco for superuser
-    """
-    if request.user.is_superuser:
-        signals.post_save.disconnect(Loco.create, sender=Loco)
-        loco = Loco.objects.create(user=request.user, first_name="super", last_name="duper", email=request.user.email, addr_street="superstreet", addr_zipcode="8000",
-                                   addr_location="SuperCity", phone="012345678")
-        loco.save()
-        request.user.loco = loco
-        request.user.save()
-        signals.post_save.connect(Loco.create, sender=Loco)
-
-
-    # we do just nothing if its not a superuser or he has already a loco
-    return redirect("/my/home")
-
-
 @staff_member_required
 def my_future(request):
     renderdict = get_menu_dict(request)
