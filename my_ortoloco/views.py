@@ -1082,14 +1082,15 @@ def alldepots_list(request, name):
             categories.append(cat)    
     
     overview = {
-        'Dienstag': [0,0],
-        'Donnerstag': [0,0],
-        'all': [0,0]
+        'Dienstag': None,
+        'Donnerstag': None,
+        'all': None
     }
-    for type in types:
-        overview["Dienstag"].append(0)
-        overview["Donnerstag"].append(0)
-        overview["all"].append(0)
+    
+    count = len(types)+2
+    overview["Dienstag"] = [0]*count
+    overview["Donnerstag"] = [0]*count
+    overview["all"] = [0]*count
         
     all = overview.get('all')
     
@@ -1101,7 +1102,8 @@ def alldepots_list(request, name):
         while count < len(row):
             row[count] += depot.overview_cache[count]
             all[count] += depot.overview_cache[count]
-            count+=1;    
+            count+=1; 
+            
     renderdict = {
         "overview": overview,
         "depots": depots,
