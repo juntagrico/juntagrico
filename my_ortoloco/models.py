@@ -63,81 +63,21 @@ class Depot(models.Model):
     def big_abos(self, abos):
         return len(self.active_abos().filter(Q(size=2) | Q(size=3) | Q(size=4))) + len(self.active_abos().filter(size=4))
 
-    def vier_eier_t(self):
-        return self.vier_eier(self.active_abos())
-
-    def vier_eier(self, abos):
-        eier = 0
+    def extra_abo(self, abos, code):
+        amount = 0
         for abo in abos.all():
-            eier += len(abo.extra_abos.all().filter(description="Eier 4er Pack"))
-        return eier
-
-    def sechs_eier_t(self):
-        return self.sechs_eier(self.active_abos())
-
-    def sechs_eier(self, abos):
-        eier = 0
-        for abo in abos.all():
-            eier += len(abo.extra_abos.all().filter(description="Eier 6er Pack"))
-        return eier
-
-    def kaese_ganz_t(self):
-        return self.kaese_ganz(self.active_abos())
-
-    def kaese_ganz(self, abos):
-        kaese = 0
-        for abo in abos.all():
-            kaese += len(abo.extra_abos.all().filter(description="Käse ganz"))
-        return kaese
-
-    def kaese_halb_t(self):
-        return self.kaese_halb(self.active_abos())
-
-    def kaese_halb(self, abos):
-        kaese = 0
-        for abo in abos.all():
-            kaese += len(abo.extra_abos.all().filter(description="Käse halb"))
-        return kaese
-
-    def kaese_viertel_t(self):
-        return self.kaese_viertel(self.active_abos())
-
-    def kaese_viertel(self, abos):
-        kaese = 0
-        for abo in abos.all():
-            kaese += len(abo.extra_abos.all().filter(description="Käse viertel"))
-        return kaese
-
-    def big_obst_t(self):
-        return self.big_obst(self.active_abos())
-
-    def big_obst(self, abos):
-        obst = 0
-        for abo in abos.all():
-            obst += len(abo.extra_abos.all().filter(description="Obst gr. (2kg)"))
-        return obst
-
-    def small_obst_t(self):
-        return self.small_obst(self.active_abos())
-
-    def small_obst(self, abos):
-        obst = 0
-        for abo in abos.all():
-            obst += len(abo.extra_abos.all().filter(description="Obst kl. (1kg)"))
-        return obst
+            amount += len(abo.extra_abos.all().filter(name=code))
+        return amount   
     
     def fill_overview_cache(self):
         self.fill_active_abo_cache()
-        self.overview_cache = {}
-        self.overview_cache["small_abos_t"] = int(self.small_abos(self.abo_cache))
-        self.overview_cache["big_abos_t"] = self.big_abos(self.abo_cache)
-        self.overview_cache["vier_eier_t"] = self.vier_eier(self.abo_cache)
-        self.overview_cache["sechs_eier_t"] = self.sechs_eier(self.abo_cache)
-        self.overview_cache["kaese_ganz_t"] = self.kaese_ganz(self.abo_cache)
-        self.overview_cache["kaese_halb_t"] = self.kaese_halb(self.abo_cache)
-        self.overview_cache["kaese_viertel_t"] = self.kaese_viertel(self.abo_cache)
-        self.overview_cache["big_obst_t"] = self.big_obst(self.abo_cache)
-        self.overview_cache["small_obst_t"] = self.small_obst(self.abo_cache)
+        self.overview_cache = []
+        self.overview_cache.append(int(self.small_abos(self.abo_cache)))
+        self.overview_cache.append(self.big_abos(self.abo_cache))
+        for category in ExtraAboCategory.objects.all().order_by("sort_order"):
+            for extra_abo in ExtraAboType.objects.all().filter(category = category).order_by("sort_order"):
+                code = extra_abo.name
+                self.overview_cache.append(self.extra_abo(self.abo_cache, code))
         
     def fill_active_abo_cache(self):
         self.abo_cache = self.active_abos()
@@ -153,7 +93,11 @@ class ExtraAboType(models.Model):
     Types of extra abos, e.g. eggs, cheese, fruit
     """
     name = models.CharField("Name", max_length=100, unique=True)
-    description = models.TextField("Beschreibung", max_length=1000)
+    size = models.CharField("Groesse (gross,4, ...)", max_length=100, default="")
+    description = models.TextField("Beschreibung", max_length=1000)    
+    sort_order = models.FloatField("Groesse zum Sortieren", default=1.0)
+    category = models.ForeignKey("ExtraAboCategory", related_name="category", null=True, blank=True,
+                                     on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
@@ -162,6 +106,21 @@ class ExtraAboType(models.Model):
         verbose_name = "Zusatz-Abo"
         verbose_name_plural = "Zusatz-Abos"
 
+
+class ExtraAboCategory(models.Model):
+    """
+    Types of extra abos, e.g. eggs, cheese, fruit
+    """
+    name = models.CharField("Name", max_length=100, unique=True)
+    description = models.TextField("Beschreibung", max_length=1000, blank=True)    
+    sort_order = models.FloatField("Nummer zum Sortieren", default=1.0)
+
+    def __unicode__(self):
+        return u"%s %s" % (self.id, self.name)
+
+    class Meta:
+        verbose_name = "Zusatz-Abo-Kategorie"
+        verbose_name_plural = "Zusatz-Abo-Kategorien"
 
 class Abo(models.Model):
     """
@@ -240,26 +199,9 @@ class Abo(models.Model):
     def future_size_name(self):
         return Abo.get_size_name(size=self.future_size)
 
-    def vier_eier(self):
-        return len(self.extra_abos.all().filter(description="Eier 4er Pack")) > 0
+    def extra_abo(self, code):
+        return len(self.extra_abos.all().filter(name=code)) > 0
 
-    def sechs_eier(self):
-        return len(self.extra_abos.all().filter(description="Eier 6er Pack")) > 0
-
-    def ganze_kaese(self):
-        return len(self.extra_abos.all().filter(description="Käse ganz")) > 0
-
-    def halbe_kaese(self):
-        return len(self.extra_abos.all().filter(description="Käse halb")) > 0
-
-    def viertel_kaese(self):
-        return len(self.extra_abos.all().filter(description="Käse viertel")) > 0
-
-    def gross_obst(self):
-        return len(self.extra_abos.all().filter(description="Obst gr. (2kg)")) > 0
-
-    def klein_obst(self):
-        return len(self.extra_abos.all().filter(description="Obst kl. (1kg)")) > 0
         
     @classmethod
     def pre_delete(cls, sender, instance, **kwds):

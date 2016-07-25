@@ -1063,77 +1063,50 @@ def alldepots_list(request, name):
     else:
         depots = [get_object_or_404(Depot, code__iexact=name)]
 
+    categories = []
+    types =[]
+    for category in ExtraAboCategory.objects.all().order_by("sort_order"):
+            cat={}
+            cat["name"]= category.name
+            cat["description"] = category.description
+            count = 0
+            for extra_abo in ExtraAboType.objects.all().filter(category = category).order_by("sort_order"):
+                count+=1
+                type={}
+                type["name"] = extra_abo.name
+                type["size"] = extra_abo.size
+                type["last"]=False
+                types.append(type)
+            type["last"]=True
+            cat["count"] = count
+            categories.append(cat)    
+    
     overview = {
-        'Dienstag': {
-            'small_abo': 0,
-            'big_abo': 0,
-            'entities': 0,
-            'egg4': 0,
-            'egg6': 0,
-            'cheesefull': 0,
-            'cheesehalf': 0,
-            'cheesequarter': 0,
-            'bigobst': 0,
-            'smallobst': 0
-        },
-        'Donnerstag': {
-            'small_abo': 0,
-            'big_abo': 0,
-            'entities': 0,
-            'egg4': 0,
-            'egg6': 0,
-            'cheesefull': 0,
-            'cheesehalf': 0,
-            'cheesequarter': 0,
-            'bigobst': 0,
-            'smallobst': 0
-        },
-        'all': {
-            'small_abo': 0,
-            'big_abo': 0,
-            'entities': 0,
-            'egg4': 0,
-            'egg6': 0,
-            'cheesefull': 0,
-            'cheesehalf': 0,
-            'cheesequarter': 0,
-            'bigobst': 0,
-            'smallobst': 0
-        }
+        'Dienstag': [0,0],
+        'Donnerstag': [0,0],
+        'all': [0,0]
     }
-
+    for type in types:
+        overview["Dienstag"].append(0)
+        overview["Donnerstag"].append(0)
+        overview["all"].append(0)
+        
+    all = overview.get('all')
+    
     for depot in depots:
         depot.fill_overview_cache()
         depot.fill_active_abo_cache()
         row = overview.get(depot.get_weekday_display())
-        row['small_abo'] += depot.overview_cache['small_abos_t']
-        row['big_abo'] += depot.overview_cache['big_abos_t']
-        row['entities'] += 2 * depot.overview_cache['big_abos_t'] + depot.overview_cache['small_abos_t']
-        row['egg4'] += depot.overview_cache['vier_eier_t']
-        row['egg6'] += depot.overview_cache['sechs_eier_t']
-        row['cheesefull'] += depot.overview_cache['kaese_ganz_t']
-        row['cheesehalf'] += depot.overview_cache['kaese_halb_t']
-        row['cheesequarter'] += depot.overview_cache['kaese_viertel_t']
-        row['bigobst'] += depot.overview_cache['big_obst_t']
-        row['smallobst'] += depot.overview_cache['small_obst_t']
-        
-    all = overview.get('all')
-    di = overview.get('Dienstag')
-    do = overview.get('Donnerstag')
-    all['small_abo'] = di['small_abo'] + do['small_abo']
-    all['big_abo'] = di['big_abo'] + do['big_abo']
-    all['entities'] = di['entities'] + do['entities']
-    all['egg4'] = di['egg4'] + do['egg4']
-    all['egg6'] = di['egg6'] + do['egg6']
-    all['cheesefull'] = di['cheesefull'] + do['cheesefull']
-    all['cheesehalf'] = di['cheesehalf'] + do['cheesehalf']
-    all['cheesequarter'] = di['cheesequarter'] + do['cheesequarter']
-    all['bigobst'] = di['bigobst'] + do['bigobst']
-    all['smallobst'] = di['smallobst'] + do['smallobst']
-
+        count=0
+        while count < len(row):
+            row[count] += depot.overview_cache[count]
+            all[count] += depot.overview_cache[count]
+            count+=1;    
     renderdict = {
         "overview": overview,
         "depots": depots,
+        "categories" : categories,
+        "types" : types,
         "datum": timezone.now()
     }
 

@@ -358,6 +358,7 @@ class LocoAdmin(admin.ModelAdmin):
 
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraAboType)
+admin.site.register(ExtraAboCategory)
 admin.site.register(Boehnli)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco, LocoAdmin)
