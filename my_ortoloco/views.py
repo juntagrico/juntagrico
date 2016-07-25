@@ -1311,14 +1311,6 @@ def my_export(request):
     renderdict = get_menu_dict(request)
     return render(request, 'export.html', renderdict)
     
-@staff_member_required
-def my_startmigration(request):
-    f = StringIO()
-    with Swapstd(f):
-        call_command('clean_db')
-        call_command('import_old_db', request.GET.get("username"), request.GET.get("password"))
-    return HttpResponse(f.getvalue(), content_type="text/plain")
-
 
 @staff_member_required
 def migrate_apps(request):
