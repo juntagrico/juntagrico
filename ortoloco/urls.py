@@ -8,6 +8,8 @@ from django.contrib.auth.views import login, logout
 from django.views.generic import RedirectView
 from static_ortoloco import views as static_ortoloco
 from my_ortoloco import views as my_ortoloco
+from my_ortoloco import views_abo as my_ortoloco_abo
+from my_ortoloco import views_admin as my_ortoloco_admin
 
 import django
 #import django_cron
@@ -29,15 +31,10 @@ urlpatterns = [
     url('^links$', static_ortoloco.links),
     url('^dokumente$', static_ortoloco.documents),
     url('^kontakt$', static_ortoloco.contact),
-
-    #url('^myortoloco/', my_ortoloco.myortoloco_home),
+    
+    #general my ortoloco stuff
     url('^my/home$', my_ortoloco.my_home),
-    url('^my/passwort$', my_ortoloco.my_change_password),
-    url('^my/abo$', my_ortoloco.my_abo),
-    url('^my/abo/(?P<abo_id>.*?)/aendern$', my_ortoloco.my_abo_change),
-    #url('^my/abo/(?P<abo_id>.*?)/aendern/depot$', my_ortoloco.my_depot_change),
-    url('^my/abo/(?P<abo_id>.*?)/aendern/extra$', my_ortoloco.my_extra_change),
-    url('^my/abo/(?P<abo_id>.*?)/aendern/groesse$', my_ortoloco.my_size_change),
+    url('^my/passwort$', my_ortoloco.my_change_password),    
     url('^my/jobs/(?P<job_id>.*?)/', my_ortoloco.my_job),
     url('^my/teams/(?P<bereich_id>.*?)/', my_ortoloco.my_team),
     url('^my/profil$', my_ortoloco.my_profile),
@@ -46,46 +43,54 @@ urlpatterns = [
     url('^my/kontakt/loco/(?P<loco_id>.*?)/(?P<job_id>.*?)/', my_ortoloco.my_contact_loco),
     url('^my/einsaetze$', my_ortoloco.my_einsaetze),
     url('^my/einsaetze/alle$', my_ortoloco.my_einsaetze_all),
-    url('^my/anmelden$', my_ortoloco.my_signup),
-    url('^my/aboerstellen$', my_ortoloco.my_createabo),
-    url('^my/willkommen$', my_ortoloco.my_welcome),
     url('^my/vergangenejobs$', my_ortoloco.my_pastjobs),
-    url('^my/abonnent/(?P<abo_id>.*?)/', my_ortoloco.my_add_loco),
     url('^my/depot/(?P<depot_id>.*?)/', my_ortoloco.my_depot),
-    url('^my/mails$', my_ortoloco.my_mails),
-    url('^my/mails/depot$', my_ortoloco.my_mails_depot),
-    url('^my/mails/area$', my_ortoloco.my_mails_area),
-    url('^my/mails/send$', my_ortoloco.send_email),
-    url('^my/mails/send/result/(?P<numsent>.*?)/', my_ortoloco.send_email_result),
-    url('^my/mails/send/depot$', my_ortoloco.send_email_depot),
-    url('^my/mails/send/area$', my_ortoloco.send_email_area),
-    url('^my/depotlisten', my_ortoloco.my_depotlisten),
-    url('^my/export$', my_ortoloco.my_export),
-    url('^my/export/locosfilter$', my_ortoloco.my_excel_export_locos_filter),
-    url('^my/export/locos', my_ortoloco.my_excel_export_locos),
-    url('^my/export/shares$', my_ortoloco.my_excel_export_shares),
     url('^my/neuespasswort$', my_ortoloco.my_new_password),
-    url('^my/bestaetigung/(?P<hash>.*?)/', my_ortoloco.my_confirm),
-    url('^my/politoloco$', my_ortoloco.send_politoloco),
-    url('^my/filters$', my_ortoloco.my_filters),
-    url('^my/filters/depot/(?P<depot_id>.*?)/', my_ortoloco.my_filters_depot),
-    url('^my/filters/area/(?P<area_id>.*?)/', my_ortoloco.my_filters_area),
-    url('^my/abos$', my_ortoloco.my_abos),
-    url('^my/abos/depot/(?P<depot_id>.*?)/', my_ortoloco.my_abos_depot),
-    url('^my/zukunft', my_ortoloco.my_future),
-    url('^my/wechsel/zusatzabos', my_ortoloco.my_switch_extras),
-    url('^my/wechsel/abos', my_ortoloco.my_switch_abos),
-
+    url(r'^logout/$', my_ortoloco.logout_view),
+    
+    # abo related my ortoloco stuff
+    url('^my/abo$', my_ortoloco_abo.my_abo),
+    url('^my/abo/(?P<abo_id>.*?)/aendern$', my_ortoloco_abo.my_abo_change),
+    #url('^my/abo/(?P<abo_id>.*?)/aendern/depot$', my_ortoloco_abo.my_depot_change),
+    url('^my/abo/(?P<abo_id>.*?)/aendern/groesse$', my_ortoloco_abo.my_size_change),
+    url('^my/abo/(?P<abo_id>.*?)/aendern/extra$', my_ortoloco_abo.my_extra_change),
+    url('^my/anmelden$', my_ortoloco_abo.my_signup),
+    url('^my/abonnent/(?P<abo_id>.*?)/', my_ortoloco_abo.my_add_loco),
+    url('^my/aboerstellen$', my_ortoloco_abo.my_createabo),
+    url('^my/willkommen$', my_ortoloco_abo.my_welcome),
+    url('^my/bestaetigung/(?P<hash>.*?)/', my_ortoloco_abo.my_confirm),
+    
+    # admin related my ortoloco stuff
+    url('^my/politoloco$', my_ortoloco_admin.send_politoloco),
+    url('^my/mails/send/depot$', my_ortoloco_admin.send_email_depot),
+    url('^my/mails/send/area$', my_ortoloco_admin.send_email_area),
+    url('^my/mails/send$', my_ortoloco_admin.send_email),
+    url('^my/mails/send/result/(?P<numsent>.*?)/', my_ortoloco_admin.send_email_result),
+    url('^my/mails$', my_ortoloco_admin.my_mails),
+    url('^my/mails/depot$', my_ortoloco_admin.my_mails_depot),
+    url('^my/mails/area$', my_ortoloco_admin.my_mails_area),
+    url('^my/filters$', my_ortoloco_admin.my_filters),
+    url('^my/filters/depot/(?P<depot_id>.*?)/', my_ortoloco_admin.my_filters_depot),
+    url('^my/filters/area/(?P<area_id>.*?)/', my_ortoloco_admin.my_filters_area),
+    url('^my/abos$', my_ortoloco_admin.my_abos),
+    url('^my/abos/depot/(?P<depot_id>.*?)/', my_ortoloco_admin.my_abos_depot),
+    url('^my/depotlisten', my_ortoloco_admin.my_depotlisten),
+    url('^exports/depotlisten/(?P<name>.*)', my_ortoloco_admin.alldepots_list),
+    url('^my/zukunft', my_ortoloco_admin.my_future),
+    url('^my/wechsel/zusatzabos', my_ortoloco_admin.my_switch_extras),
+    url('^my/wechsel/abos', my_ortoloco_admin.my_switch_abos),    
+    url('^my/export$', my_ortoloco_admin.my_export),
+    url('^my/export/locosfilter$', my_ortoloco_admin.my_excel_export_locos_filter),
+    url('^my/export/locos', my_ortoloco_admin.my_excel_export_locos),
+    url('^my/export/shares$', my_ortoloco_admin.my_excel_export_shares),
+    
     url(r'^impersonate/', include('impersonate.urls')),
 
-
-
     url(r'^accounts/login/$',  login),
-    url(r'^logout/$', my_ortoloco.logout_view),
 
     url(r'^photologue/', include('photologue.urls')),
 
-    url('^exports/depotlisten/(?P<name>.*)', my_ortoloco.alldepots_list),
+    
     #url('^test_filters/$', my_ortoloco.test_filters),
     #url('^test_filters_post/$', my_ortoloco.test_filters_post),
 
