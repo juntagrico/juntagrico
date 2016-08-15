@@ -280,7 +280,7 @@ class JobTypeAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
-            return qs.filter(bereich.coordinator=request.user.loco)
+            return qs.filter(bereich__coordinator=request.user.loco)
 	return qs
     
 class AboAdmin(admin.ModelAdmin):
