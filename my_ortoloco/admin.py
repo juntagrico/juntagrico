@@ -309,7 +309,7 @@ class BereichAdmin(admin.ModelAdmin):
     raw_id_fields = ["coordinator"]
     list_display = ["name", "core", "hidden", "coordinator"]
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         qs = super(MyModelAdmin, self).queryset(request)
         print request.user
         print request.user.has_perm("Taetigkeitsbereich.is_area_admin")
