@@ -59,7 +59,7 @@
                         <a href="/logout">Abmelden</a>
                     </li>
                 </ul>
-                {% if depot_admin|length > 0 or area_admin|length > 0 or staff_user or politoloco%}
+                {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group or politoloco%}
                 <hr>
                 <h5>Administration</h5>
                 <ul class="nav nav-pills nav-stacked admin-menu">
@@ -73,7 +73,7 @@
                             <a href="/my/filters/area/{{ area.id }}">Locos in {{ area.name }}</a>
                         </li>
                     {% endfor %}
-                    {% if staff_user %}
+                    {% if operation_group %}
                         <li>
                             <a href="/my/mails">Mails verschicken</a>
                         </li>

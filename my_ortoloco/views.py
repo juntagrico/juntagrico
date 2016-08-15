@@ -57,18 +57,16 @@ def get_menu_dict(request):
         bohnenrange = None
         userbohnen = []
         next_jobs = []
-
-    depot_admin = Depot.objects.filter(contact=request.user.loco)
-    area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
+    
     return {
         'user': request.user,
         'bohnenrange': bohnenrange,
         'userbohnen_total': len(userbohnen),
         'userbohnen_kernbereich': len([bohne for bohne in userbohnen if bohne.is_in_kernbereich()]),
         'next_jobs': next_jobs,
-        'staff_user': request.user.is_staff,
-        'depot_admin': depot_admin,
-        'area_admin': area_admin,
+        'operation_group': request.user.has_perm('my_ortoloco.is_operations_group'),
+        'depot_admin': request.user.has_perm('my_ortoloco.is_depot_admin'),
+        'area_admin': request.user.has_perm('my_ortoloco.is_area_admin'),
         'politoloco': request.user.has_perm('static_ortoloco.can_send_newsletter')
     }
 
