@@ -464,7 +464,6 @@ class OneTimeJob(Job, AbstractJobType):
     One time job. Do not add Field here do it in the Parent class
     """
    
-
     @property
     def typ(self):
         return self
