@@ -277,6 +277,12 @@ class JobTypeAdmin(admin.ModelAdmin):
 
     transform_job_type.short_description = "Jobart in EinzelJobs konvertieren"
     
+    def get_queryset(self, request):
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
+        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+            return qs.filter(bereich.coordinator=request.user.loco)
+	return qs
+    
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
     list_display = ["__unicode__", "bezieher", "primary_loco_nullsave", "depot", "active"]
@@ -311,11 +317,6 @@ class BereichAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
-        print request.user
-        print request.user.has_perm("my_ortoloco.is_area_admin")
-        print request.user.is_superuser
-        print request.user.has_perm("my_ortoloco.is_operations_group")
-        print request.user.loco
         if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
             return qs.filter(coordinator=request.user.loco)
 	return qs
