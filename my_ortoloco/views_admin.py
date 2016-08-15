@@ -70,7 +70,7 @@ def send_politoloco(request):
     return render(request, 'mail_sender_politoloco.html', renderdict)
 
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def send_email(request):
     return send_email_intern(request)
 
@@ -116,7 +116,7 @@ def send_email_intern(request):
         sent = len(emails)
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def send_email_result(request, numsent):
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -124,7 +124,7 @@ def send_email_result(request, numsent):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_mails(request, enhanced=None):
     return my_mails_intern(request, enhanced)
 
@@ -173,7 +173,7 @@ def current_year_kernbereich_boehnlis_per_loco():
     return boehnlis_per_loco
 
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_filters(request):
     locos = Loco.objects.all()
     boehnlis = current_year_boehnlis_per_loco()
@@ -234,7 +234,7 @@ def my_filters_area(request, area_id):
     return render(request, 'filters.html', renderdict)
 
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_abos(request):
     boehnli_map = current_year_boehnlis_per_loco()
     boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
@@ -290,11 +290,11 @@ def my_abos_depot(request, depot_id):
 
     return render(request, 'abos.html', renderdict)
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_depotlisten(request):
     return alldepots_list(request, "")
     
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def alldepots_list(request, name):
     """
     Printable list of all depots to check on get gemüse
@@ -356,7 +356,7 @@ def alldepots_list(request, name):
     return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')
 
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_future(request):
     renderdict = get_menu_dict(request)
 
@@ -407,7 +407,7 @@ def my_future(request):
     return render(request, 'future.html', renderdict)
 
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_switch_extras(request):
     renderdict = get_menu_dict(request)
 
@@ -426,7 +426,7 @@ def my_switch_extras(request):
 
     return redirect('/my/zukunft?changed=true')
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_switch_abos(request):
     renderdict = get_menu_dict(request)
 
@@ -446,7 +446,7 @@ def my_switch_abos(request):
     return redirect('/my/zukunft?changed=true')
 
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_excel_export_locos_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
@@ -496,7 +496,7 @@ def my_excel_export_locos_filter(request):
     response.write(xlsx_data)
     return response
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_excel_export_locos(request):
     fields = [
     u'first_name',
@@ -514,7 +514,7 @@ def my_excel_export_locos(request):
     ]
     return generate_excell(fields, Loco)
     
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_excel_export_shares(request):
     fields = [
     u'number',
@@ -529,7 +529,7 @@ def my_excel_export_shares(request):
     ]
     return generate_excell(fields, Anteilschein)
 
-@staff_member_required
+@permission_required('my_ortoloco.is_operations_group')
 def my_export(request):
     renderdict = get_menu_dict(request)
     return render(request, 'export.html', renderdict)
