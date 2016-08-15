@@ -216,15 +216,19 @@ class JobAdmin(admin.ModelAdmin):
         self.readonly_fields = tmp_readonly
         self.inlines = tmp_inlines
         return res
-'''
+    
+    def get_queryset(self, request):
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
+        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+            return qs.filter(typ__bereich__coordinator=request.user.loco)
+	return qs
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "typ" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+            kwargs["queryset"] = JobType.objects.filter(bereich__coordinator=request.user.loco)
+        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def construct_change_message(self, request, form, formsets):
-        # As of django 1.6 the automatic logging of changes triggered by the change view behaves badly
-        # when custom forms are used. This is a workaround.
-        if "copy_job" in request.path:
-            return ""
-        return admin.ModelAdmin.construct_change_message(self, request, form, formsets)
-'''
+
 class OneTimeJobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "time", "slots", "freie_plaetze"]
     actions = ["transform_job"]
