@@ -300,6 +300,8 @@ class AnteilscheinAdmin(admin.ModelAdmin):
 class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ["contact"]
     list_display = ["name", "code", "weekday", "contact"]
+    
+    
 
 
 class BereichAdmin(admin.ModelAdmin):
@@ -307,6 +309,11 @@ class BereichAdmin(admin.ModelAdmin):
     raw_id_fields = ["coordinator"]
     list_display = ["name", "core", "hidden", "coordinator"]
 
+    def queryset(self, request):
+        qs = super(MyModelAdmin, self).queryset(request)
+        if  request.user.has_perm("Taetigkeitsbereich.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("SpecialRoles.is_operations_group"))):
+            return qs.filter(coordinator=request.user.loco)
+	return qs
 
 """
 class BoehnliAdmin(admin.ModelAdmin):

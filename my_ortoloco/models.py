@@ -505,6 +505,15 @@ class Boehnli(models.Model):
         verbose_name = 'Böhnli'
         verbose_name_plural = 'Böhnlis'
 
+class SpecialRoles(models.Model):
+    """
+    No instances should be created of this class it i just the place to create permissions
+    like bookkeeper or operation group
+    """   
+    
+    class Meta:
+        permissions = (('is_operations_group', 'Benutzer ist in der BG'),
+        ('is_book_keeper', 'Benutzer ist Buchhalter'),)
 
 #model_audit.m2m(Abo.users)
 model_audit.m2m(Abo.extra_abos)
