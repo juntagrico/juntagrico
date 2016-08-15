@@ -283,6 +283,12 @@ class JobTypeAdmin(admin.ModelAdmin):
             return qs.filter(bereich__coordinator=request.user.loco)
 	return qs
     
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "bereich" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+            kwargs["queryset"] = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
+        return super(MyModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
     list_display = ["__unicode__", "bezieher", "primary_loco_nullsave", "depot", "active"]
