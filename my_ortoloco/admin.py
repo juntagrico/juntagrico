@@ -312,11 +312,11 @@ class BereichAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         print request.user
-        print request.user.has_perm("Taetigkeitsbereich.is_area_admin")
+        print request.user.has_perm("my_ortoloco.Taetigkeitsbereich.is_area_admin")
         print request.user.is_superuser
-        print request.user.has_perm("SpecialRoles.is_operations_group")
+        print request.user.has_perm("my_ortoloco.SpecialRoles.is_operations_group")
         print request.user.loco
-        if  request.user.has_perm("Taetigkeitsbereich.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("SpecialRoles.is_operations_group"))):
+        if  request.user.has_perm("my_ortoloco.Taetigkeitsbereich.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.SpecialRoles.is_operations_group"))):
             return qs.filter(coordinator=request.user.loco)
 	return qs
 
