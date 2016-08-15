@@ -265,7 +265,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "typ" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if db_field.name == "bereich" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
             kwargs["queryset"] = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
