@@ -311,6 +311,11 @@ class BereichAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
         qs = super(MyModelAdmin, self).queryset(request)
+        print request.user
+        print request.user.has_perm("Taetigkeitsbereich.is_area_admin")
+        print request.user.is_superuser
+        print request.user.has_perm("SpecialRoles.is_operations_group")
+        print request.user.loco
         if  request.user.has_perm("Taetigkeitsbereich.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("SpecialRoles.is_operations_group"))):
             return qs.filter(coordinator=request.user.loco)
 	return qs
