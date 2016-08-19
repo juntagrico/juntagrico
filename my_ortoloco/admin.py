@@ -398,6 +398,7 @@ admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco, LocoAdmin)
 admin.site.register(Taetigkeitsbereich, BereichAdmin)
 admin.site.register(Anteilschein, AnteilscheinAdmin)
+admin.site.register(MailTemplate)
 
 # This is only added to admin for debugging
 #admin.site.register(model_audit.Audit, AuditAdmin)

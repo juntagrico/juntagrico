@@ -3,6 +3,17 @@
 {% block content %}
     <h3>Mails verschicken</h3>
     <br/>
+    <div class="form-group">
+            <label for="templates" class="col-sm-2 control-label">Templates</label>
+            <div class="col-sm-10">
+               <select id="template-list">
+		{% for template in templates %}
+		<option value="{{template.id}}">{{template.name}}</option>
+  		{% endfor %}
+	       </select>
+               <button id="template" class="btn btn-success">Template laden</button>
+            </div>
+    </div>
     <form action="/my/mails/send{% if enhanced != None %}/{{ enhanced }}{% endif %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
@@ -76,17 +87,18 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>	
         <hr>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-success">Nachricht verschicken</button>
+                <button id="sendmail" type="submit" class="btn btn-success">Nachricht verschicken</button>
             </div>
         </div>
     </form>
 {% endblock %}
 
 {% block scripts %}
+    <script type="text/javascript" src="/static/external/template_loader.js"></script>
     <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
     <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyMailer.js"></script>

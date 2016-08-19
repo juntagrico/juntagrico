@@ -504,6 +504,23 @@ class Boehnli(models.Model):
         verbose_name = 'Böhnli'
         verbose_name_plural = 'Böhnlis'
 
+
+        
+class MailTemplate(models.Model):
+    """
+    Mail template for rendering
+    """
+    name = models.CharField("Name", max_length=100, unique=True)
+    template = models.TextField("Template", max_length=1000, default="")
+    code = models.TextField("Code", max_length=1000, default="")
+    
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'MailTemplate'
+        verbose_name_plural = 'MailTemplates'
+
 class SpecialRoles(models.Model):
     """
     No instances should be created of this class it i just the place to create permissions

@@ -15,7 +15,7 @@ define([], function () {
             format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'}
         }
     });
-    $("button.btn-success").click(function () {
+    $("#sendmail").click(function () {
         var editor = tinyMCE.get('message');
         editor.selection.select(editor.getBody(), true);
         $("#textMessage").val(editor.selection.getContent({format: 'text'}));
@@ -30,4 +30,13 @@ define([], function () {
         $(".recipients-info-detail").remove();
         $("#edit-recipients-action").remove();
     });
+    $("#template").click(function () {
+	$.ajax({
+    		type: 'GET',
+    		url: '/my/mailtemplate/'+$('#template-list').val()+'/',
+    		success: function (file_html) {        		
+        		tinyMCE.get('message').setContent(tinyMCE.get('message').getContent()+file_html);
+    		}
+	});
+     });
 });

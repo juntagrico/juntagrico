@@ -17,6 +17,7 @@ from django.core.management import call_command
 from django.db.models import Count
 from django.db import models
 from django.utils import timezone
+from django.template import Template, Context
 
 import xlsxwriter
 
@@ -148,7 +149,8 @@ def my_mails_intern(request, enhanced, error_message=None):
         'mail_message': request.POST.get("message"),
         'enhanced': enhanced,
         'email': request.user.loco.email,
-        'error_message': error_message
+        'error_message': error_message,
+        'templates': MailTemplate.objects.all()
     })
     return render(request, 'mail_sender.html', renderdict)
 
@@ -444,6 +446,18 @@ def my_switch_abos(request):
     })
 
     return redirect('/my/zukunft?changed=true')
+
+@permission_required('my_ortoloco.is_operations_group')
+def my_get_mail_template(request, template_id):
+    renderdict = {}
+
+    template = MailTemplate.objects.filter(id = template_id)[0]
+    exec(template.code)
+    t = Template(template.template)
+    c = Context(renderdict)
+    result = t.render(c)
+    return HttpResponse(result)
+    
 
 
 @permission_required('my_ortoloco.is_operations_group')
