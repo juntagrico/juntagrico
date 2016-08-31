@@ -1,10 +1,7 @@
 db.sqlite
 venv/*
 *.pyc
-static/medias/medias
-static/medias/downloads
-static/medias/photologue/photos
-static/admin/*
+static/*
 .idea
 static/medias/photologue/temp
 settings_local.py
