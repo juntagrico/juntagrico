@@ -25,6 +25,7 @@ from my_ortoloco.forms import *
 from my_ortoloco.helpers import *
 from my_ortoloco.filters import Filter
 from my_ortoloco.mailer import *
+from my_ortoloco.personalisation.personal_utils import enrich_menu_dict
 
 from static_ortoloco.models import StaticContent
 
@@ -60,7 +61,7 @@ def get_menu_dict(request):
 
     depot_admin = Depot.objects.filter(contact=request.user.loco)
     area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
-    return {
+    menu_dict = {
         'user': request.user,
         'bohnenrange': bohnenrange,
         'userbohnen_total': len(userbohnen),
@@ -69,8 +70,9 @@ def get_menu_dict(request):
         'operation_group': request.user.has_perm('my_ortoloco.is_operations_group'),
         'depot_admin': depot_admin,
         'area_admin': area_admin,
-        'politoloco': request.user.has_perm('static_ortoloco.can_send_newsletter')
     }
+    enrich_menu_dict(request,menu_dict)
+    return menu_dict
 
 
 @login_required

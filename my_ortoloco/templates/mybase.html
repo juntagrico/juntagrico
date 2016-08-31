@@ -8,6 +8,7 @@
     <link href="/static/external/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/ortoloco.css" rel="stylesheet">
     <link href="/static/css/myortoloco.css" rel="stylesheet">
+    <link href="/static/css/personal.css" rel="stylesheet">
 
 </head>
 <body>
@@ -90,11 +91,7 @@
                             <a href="/my/zukunft">Zukunftsblick</a>
                         </li>
                     {% endif %}
-                    {% if politoloco %}
-                        <li>
-                            <a href="/my/politoloco">politoloco versenden</a>
-                        </li>
-                    {% endif %}
+                    {% include "personal_menu.html" %}
                 </ul>
                 {% endif %}
 

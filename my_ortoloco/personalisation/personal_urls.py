@@ -1,0 +1,6 @@
+from django.conf.urls import patterns, include, url
+from my_ortoloco.personalisation import personal_views as my_ortoloco_personal
+
+urlpatterns = [
+    url('^my/politoloco$', my_ortoloco_personal.send_politoloco),
+]

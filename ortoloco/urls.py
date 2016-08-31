@@ -10,10 +10,9 @@ from static_ortoloco import views as static_ortoloco
 from my_ortoloco import views as my_ortoloco
 from my_ortoloco import views_abo as my_ortoloco_abo
 from my_ortoloco import views_admin as my_ortoloco_admin
+from my_ortoloco.personalisation import personal_urls
 
 import django
-#import django_cron
-#django_cron.autodiscover()
 
 
 
@@ -61,7 +60,6 @@ urlpatterns = [
     url('^my/bestaetigung/(?P<hash>.*?)/', my_ortoloco_abo.my_confirm),
     
     # admin related my ortoloco stuff
-    url('^my/politoloco$', my_ortoloco_admin.send_politoloco),
     url('^my/mails/send/depot$', my_ortoloco_admin.send_email_depot),
     url('^my/mails/send/area$', my_ortoloco_admin.send_email_area),
     url('^my/mails/send$', my_ortoloco_admin.send_email),
@@ -86,6 +84,7 @@ urlpatterns = [
     url('^my/mailtemplate/(?P<template_id>.*?)/', my_ortoloco_admin.my_get_mail_template),
     
     url(r'^impersonate/', include('impersonate.urls')),
+    url(r'^', include(personal_urls)),
 
     url(r'^accounts/login/$',  login),
 
