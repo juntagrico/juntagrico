@@ -84,11 +84,9 @@ urlpatterns = [
     url('^my/mailtemplate/(?P<template_id>.*?)/', my_ortoloco_admin.my_get_mail_template),
     
     url(r'^impersonate/', include('impersonate.urls')),
-    url(r'^', include(personal_urls)),
 
     url(r'^accounts/login/$',  login),
 
-    url(r'^photologue/', include('photologue.urls')),
 
     
     #url('^test_filters/$', my_ortoloco.test_filters),
@@ -107,4 +105,7 @@ urlpatterns = [
     #url(r'^static/(?P<path>.*)$', django.views.static.serve, {
     #   'document_root': settings.STATIC_ROOT,
     #})
+    
+    
+    url(r'^', include(personal_urls)),
 ]

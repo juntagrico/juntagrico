@@ -19,5 +19,5 @@ boto>=2.29.1
 django-storages>=1.1.8
 XlsxWriter>=0.9.2
 django-polymorphic>=0.8.1
-git+git://github.com/ortoloco/django-photologue.git
 django-imagekit>=3.3
+-r my_ortoloco/personalisation/personal_requirements_upgrade.txt
