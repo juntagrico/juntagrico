@@ -261,4 +261,4 @@ SUBDOMAIN_URLCONFS = {
 }
 
 #needs to be at the end
-import personal_settings
+import my_ortoloco.personalisation.personal_settings
