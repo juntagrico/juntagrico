@@ -271,7 +271,7 @@ def my_add_loco(request, abo_id):
             for num in range(0, scheine):
                 anteilschein = Anteilschein(loco=loco, paid=False)
                 anteilschein.save()
-
+                send_anteilschein_created_mail(anteilschein, request.META["HTTP_HOST"])
             send_been_added_to_abo(loco.email, pw, request.user.loco.get_name(), scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
 
             loco.save()
