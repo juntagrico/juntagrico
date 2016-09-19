@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from my_ortoloco.personalisation import personal_views as my_ortoloco_personal
 
 urlpatterns = [
