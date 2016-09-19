@@ -5,6 +5,8 @@ from django.core import mail
 from django.template.loader import get_template
 from django.template import Context
 from django.core.mail import EmailMultiAlternatives
+from django.db.models import Q
+from django.contrib.auth.models import User, Permission
 import re
 
 
@@ -91,6 +93,27 @@ def send_welcome_mail(email, password, server):
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
+    
+def send_anteilschein_created_mail(anteilschein, server):
+    plaintext = get_template('mails/anteilschein_created_mail.txt')
+    htmly = get_template('mails/anteilschein_created_mail.html')
+
+    # reset password so we can send it to him
+    d = {
+        'loco': anteilschein.loco,
+        'anteilschein': anteilschein,
+        'serverurl': "http://" + server
+    }
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+    perm = Permission.objects.get(codename='blogger')
+    users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm) ).distinct()
+    emails = []
+    for user in users:
+        emails.append(user.loco.email)
+    msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
 
 def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
     plaintext = get_template('mails/welcome_added_mail.txt')

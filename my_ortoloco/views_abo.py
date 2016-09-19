@@ -345,7 +345,7 @@ def my_createabo(request):
                 for num in range(0, toadd):
                     anteilschein = Anteilschein(loco=loco, paid=False)
                     anteilschein.save()
-
+                    send_anteilschein_created_mail(anteilschein, request.META["HTTP_HOST"])
             if request.POST.get("add_loco"):
                 return redirect("/my/abonnent/" + str(loco.abo_id))
             else:

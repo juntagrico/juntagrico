@@ -1,0 +1,16 @@
+{% extends "mails/email.txt" %}
+{% block content %}
+Hallo lieber Buchhalter
+
+Folgender Loco hat einen Anteilschein Bestellt
+{{loco.get_name}}
+{{loco.addr_street}}
+{{loco.addr_zipcode}} {{loco.addr_location}}
+{{loco.email}}
+{{loco.get_phone}}
+
+Bitte sobald er bezahlt und ausgestellt ist bitte hier eintragen
+{{serverurl}}/admin/my_ortoloco/anteilschein/{{anteilschein.id}}/change/
+
+Viel Spass beim Erfassen
+{% endblock %}
