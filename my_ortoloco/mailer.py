@@ -106,7 +106,7 @@ def send_anteilschein_created_mail(anteilschein, server):
     }
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
-    perm = Permission.objects.get(codename='blogger')
+    perm = Permission.objects.get(codename='my_ortoloco.is_book_keeper')
     users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm) ).distinct()
     emails = []
     for user in users:
