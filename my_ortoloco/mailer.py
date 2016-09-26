@@ -203,12 +203,13 @@ def send_job_reminder(emails, job, participants, server):
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
-def send_job_canceled(emails, job):
+def send_job_canceled(emails, job, server):
     plaintext = get_template('mails/job_canceled_mail.txt')
     htmly = get_template('mails/job_canceled_mail.html')
 
     d = {
         'job': job
+        'serverurl': "http://" + server,
     }
 
     text_content = plaintext.render(d)
@@ -218,12 +219,13 @@ def send_job_canceled(emails, job):
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
-def send_job_time_changed(emails, job):
+def send_job_time_changed(emails, job, server):
     plaintext = get_template('mails/job_time_changed_mail.txt')
     htmly = get_template('mails/job_time_changed_mail.html')
 
     d = {
         'job': job
+        'serverurl': "http://" + server,
     }
 
     text_content = plaintext.render(d)
