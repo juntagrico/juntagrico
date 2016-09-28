@@ -208,8 +208,8 @@ def send_job_canceled(emails, job, server):
     htmly = get_template('mails/job_canceled_mail.html')
 
     d = {
-        'job': job
-        'serverurl': "http://" + server,
+        'job': job,
+        'serverurl': "http://" + server
     }
 
     text_content = plaintext.render(d)
@@ -224,8 +224,8 @@ def send_job_time_changed(emails, job, server):
     htmly = get_template('mails/job_time_changed_mail.html')
 
     d = {
-        'job': job
-        'serverurl': "http://" + server,
+        'job': job,
+        'serverurl': "http://" + server
     }
 
     text_content = plaintext.render(d)
