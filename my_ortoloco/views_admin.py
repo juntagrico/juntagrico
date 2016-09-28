@@ -190,8 +190,8 @@ def my_filters_area(request, area_id):
     boehnlis = current_year_boehnlis_per_loco()
     boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
     for loco in locos:
-        loco.boehnlis = boehnlis[loco]
-        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
+        loco.boehnlis = 0
+        loco.boehnlis_kernbereich = 0
 
     renderdict = get_menu_dict(request)
     renderdict.update({
