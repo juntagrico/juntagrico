@@ -66,10 +66,10 @@
 <body>
 
 <div id="header_content">
-    Gedruckt am {{ datum |date:"d.m.Y" }}
+    Erstellt am {{ datum |date:"d.m.Y H:i" }}
 </div>
 
-{% for i in "xx" %}
+{% for i in cover_sheets %}
 <div>
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
@@ -213,7 +213,7 @@
     Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
     <div class="page-break"></div>
 {% endfor %}
-{% for i in "xx" %}
+{% for i in depot_overviews %}
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
             <td></td>

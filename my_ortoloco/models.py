@@ -126,7 +126,8 @@ class Abo(models.Model):
     """
     One Abo that may be shared among several people.
     """
-    depot = models.ForeignKey(Depot, on_delete=models.PROTECT)
+    depot = models.ForeignKey(Depot, on_delete=models.PROTECT, related_name="abo_set")
+    future_depot = models.ForeignKey(Depot, on_delete=models.PROTECT, related_name="future_abo_set", null=True, blank=True,)
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
     extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="extra_abos")

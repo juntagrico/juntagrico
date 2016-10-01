@@ -1,0 +1,34 @@
+{% extends "mails/email.html" %}
+{% block content %}
+    Achtung: <br/>
+
+    Dein ortoloco-Depot hat wie von dir gewünscht gewechselt. 
+    <br/><br/>
+    Details:
+    <table cellspacing="0" cellpadding="0">
+        <tr>
+            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Name:</th>
+            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ depot.name }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Ort:</th>
+            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Wochentag:</th>
+            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ depot.wochentag}}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Depotbetreuung:</th>
+            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}</td>
+        </tr>
+        <tr>
+            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Beschreibung:</th>
+            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ depot.description }}</td>
+        </tr>
+    </table><br/>
+
+
+    Herzlich grüsst,<br/>
+    dein ortoloco-Team
+{% endblock %}

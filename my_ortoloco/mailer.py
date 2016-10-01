@@ -234,3 +234,19 @@ def send_job_time_changed(emails, job, server):
     msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
+    
+def send_depot_changed(emails, depot, server):
+    plaintext = get_template('mails/depot_changed_mail.txt')
+    htmly = get_template('mails/depot_changed_mail.html')
+
+    d = {
+        'depot': depot,
+        'serverurl': "http://" + server
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives("ortoloco - Depot geändert", text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)

@@ -50,7 +50,7 @@ urlpatterns = [
     # abo related my ortoloco stuff
     url('^my/abo$', my_ortoloco_abo.my_abo),
     url('^my/abo/(?P<abo_id>.*?)/aendern$', my_ortoloco_abo.my_abo_change),
-    #url('^my/abo/(?P<abo_id>.*?)/aendern/depot$', my_ortoloco_abo.my_depot_change),
+    url('^my/abo/(?P<abo_id>.*?)/aendern/depot$', my_ortoloco_abo.my_depot_change),
     url('^my/abo/(?P<abo_id>.*?)/aendern/groesse$', my_ortoloco_abo.my_size_change),
     url('^my/abo/(?P<abo_id>.*?)/aendern/extra$', my_ortoloco_abo.my_extra_change),
     url('^my/anmelden$', my_ortoloco_abo.my_signup),
@@ -72,7 +72,7 @@ urlpatterns = [
     url('^my/filters/area/(?P<area_id>.*?)/', my_ortoloco_admin.my_filters_area),
     url('^my/abos$', my_ortoloco_admin.my_abos),
     url('^my/abos/depot/(?P<depot_id>.*?)/', my_ortoloco_admin.my_abos_depot),
-    url('^my/depotlisten', my_ortoloco_admin.my_depotlisten),
+    #url('^my/depotlisten', my_ortoloco_admin.my_depotlisten),
     url('^exports/depotlisten/(?P<name>.*)', my_ortoloco_admin.alldepots_list),
     url('^my/zukunft', my_ortoloco_admin.my_future),
     url('^my/wechsel/zusatzabos', my_ortoloco_admin.my_switch_extras),

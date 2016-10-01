@@ -19,6 +19,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 import xlsxwriter
 from StringIO import StringIO
 
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
 class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
         from models import Loco
@@ -37,9 +40,9 @@ class AuthenticateWithEmail(object):
             return None
 
 
-def render_to_pdf(request, template_name, renderdict, filename):
+def render_to_pdf_http(request, template_name, renderdict, filename):
     """
-    Take a string of rendered html and pack it into a pdf.
+    Take a string of rendered html and pack it into a pdfand return it thtough http
     """
     rendered_html = get_template(template_name).render(renderdict)
 
@@ -51,6 +54,17 @@ def render_to_pdf(request, template_name, renderdict, filename):
     if not success:
         return HttpResponseServerError()
     return response
+def render_to_pdf_storage(template_name, renderdict, filename):
+    """
+    Take a string of rendered html and pack it into a pdfand save it
+    """
+    if default_storage.exists(filename):
+        default_storage.delete(filename)
+    rendered_html = get_template(template_name).render(renderdict)
+    pdf = StringIO()
+    pisa.CreatePDF(rendered_html, dest=pdf)
+    default_storage.save(filename, ContentFile(pdf.getvalue()))
+    
 
 
 weekday_choices = ((1, "Montag"),

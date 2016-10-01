@@ -92,7 +92,7 @@ def my_depot_change(request, abo_id):
     """
     saved = False
     if request.method == "POST":
-        request.user.loco.abo.depot = get_object_or_404(Depot, id=int(request.POST.get("depot")))
+        request.user.loco.abo.future_depot = get_object_or_404(Depot, id=int(request.POST.get("depot")))
         request.user.loco.abo.save()
         saved = True
     renderdict = get_menu_dict(request)

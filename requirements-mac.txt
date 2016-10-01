@@ -15,7 +15,7 @@ static==1.1.1
 wsgiref==0.1.2
 xhtml2pdf==0.0.6
 django-impersonate==1.0.1
-boto==2.29.1
+boto==2.42.0
 django-storages==1.5.1
 XlsxWriter==0.9.3
 django-polymorphic==1.0.1

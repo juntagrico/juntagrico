@@ -324,7 +324,7 @@ def alldepots_list(request, name):
         "datum": timezone.now()
     }
 
-    return render_to_pdf(request, "exports/all_depots.html", renderdict, 'Depotlisten')
+    return render_to_pdf_http(request, "exports/all_depots.html", renderdict, 'Depotlisten')
 
 
 @permission_required('my_ortoloco.is_operations_group')

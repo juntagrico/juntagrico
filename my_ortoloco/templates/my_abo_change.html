@@ -9,7 +9,7 @@
             <h3>Depot</h3>
             <br/>
              Du bist umgezogen oder möchtest aus einem anderen Grund dein Gemüse in einem anderen Quartierdepot abholen? 
-			 Du kannst das Depot jederzeit wechseln - nimm mit uns Kontakt auf, wo du in Zukunft deine Gemüsetasche abholen möchtest.
+			 Du kannst das Depot jederzeit wechseln - die Änderung wird sobald aktiv von uns kommuniziert.
         </div>
         <div class="col-md-4">
             <h3>Grösse</h3>
@@ -72,7 +72,7 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <a href="/my/kontakt" class="btn btn-success">Kontakt</a>
+            <a href="/my/abo/{{ loco.abo.id }}/aendern/depot" class="btn btn-success">Kontakt</a>
         </div>
         <div class="col-md-4">
             <a {% if change_size %}href="/my/abo/{{ loco.abo.id }}/aendern/groesse"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>

@@ -4,7 +4,7 @@
     <h3>Abo ändern</h3>
     {% if saved %}
         <div class="alert alert-success">
-            Das Depot wurde erfolgreich geändert.<br/>
+            !!!Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Solange keine Email an {{loco.abo.primary_loco.email}} mit der Bestätigung für das neue Depot gesendet wurde ist noch das alte Depot {{loco.abo.depot.name}} aktiv!!!<br/>
             <a href="/my/abo">Zurück zur Abo-Übersicht</a>
         </div>
     {% else %}
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="col-sm-offset-4 form-actions">
-                Achtung! Dies ändert das Depot ohne weitere Rückmeldung.<br/><br/>
+                Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Du wirst darüber informiert wenn dein Depot ändert.<br/><br/>
                 <button type="submit" class="btn btn-success">Depot ändern</button>
             </div>
         </form>

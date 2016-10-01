@@ -17,6 +17,7 @@ from django.core.management import call_command
 from django.db.models import Count
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 import xlsxwriter
 
@@ -70,6 +71,7 @@ def get_menu_dict(request):
         'operation_group': request.user.has_perm('my_ortoloco.is_operations_group'),
         'depot_admin': depot_admin,
         'area_admin': area_admin,
+        'depot_list_url': settings.MEDIA_URL+ settings.MEDIA_ROOT +"/dpl.pdf",
     }
     enrich_menu_dict(request,menu_dict)
     return menu_dict
