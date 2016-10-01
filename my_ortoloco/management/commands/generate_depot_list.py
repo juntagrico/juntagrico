@@ -42,7 +42,10 @@ class Command(BaseCommand):
                 abo.depot=abo.future_depot
                 abo.future_depot=None
                 abo.save()
-                send_depot_changed([abo.primary_loco.email],abo.depot,"www.ortoloco.ch")
+                emails = []
+                for loco in abo.bezieher_locos():
+                    emails.append(loco.email)
+                send_depot_changed(emails,abo.depot,"www.ortoloco.ch")
         
         if options['force'] and not options['future']:
             print "future depots ignored, use --future to override"
