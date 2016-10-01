@@ -311,7 +311,11 @@ def alldepots_list(request, name):
             row[count] += depot.overview_cache[count]
             all[count] += depot.overview_cache[count]
             count+=1; 
-            
+        
+    overview["Dienstag"].insert(2, overview["Dienstag"][0]+2*overview["Dienstag"][1])
+    overview["Donnerstag"].insert(2, overview["Donnerstag"][0]+2*overview["Donnerstag"][1])
+    overview["all"].insert(2, overview["all"][0]+2*overview["all"][1])
+        
     renderdict = {
         "overview": overview,
         "depots": depots,

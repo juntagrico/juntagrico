@@ -74,7 +74,7 @@
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
             <td style="width:200px"></td>
-            <th colspan="2" class="top-border left-border right-border">ABO</th>
+            <th colspan="3" class="top-border left-border right-border">ABO</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}
@@ -82,7 +82,8 @@
         <tr>
             <td></td>
             <td class="small left-border bottom-border">klein</td>
-            <td class="small bottom-border right-border">gross</td>
+            <td class="small bottom-border ">gross</td>
+            <td class="small bottom-border right-border">Einheiten</td>
             {% for type in types %}
                 <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}
