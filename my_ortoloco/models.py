@@ -491,6 +491,7 @@ class Boehnli(models.Model):
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     loco = models.ForeignKey(Loco, on_delete=models.PROTECT)
+    core_cache = models.BooleanField("Kernbereich", default=False)
 
     def __unicode__(self):
         return u'Boehnli #%s' % self.id
@@ -500,7 +501,11 @@ class Boehnli(models.Model):
 
     def is_in_kernbereich(self):
         return self.job.typ.bereich.core
-
+        
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        instance.core_cache = instance.is_in_kernbereich()
+    
     class Meta:
         verbose_name = 'Böhnli'
         verbose_name_plural = 'Böhnlis'
@@ -548,4 +553,5 @@ signals.post_init.connect(RecuringJob.post_init, sender=RecuringJob)
 signals.pre_save.connect(OneTimeJob.pre_save, sender=OneTimeJob)
 signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 signals.pre_delete.connect(Abo.pre_delete, sender=Abo)
+signals.pre_save.connect(Boehnli.pre_save, sender=Boehnli)
 
