@@ -33,8 +33,8 @@
             {% for loco in locos %}
                 <tr>
                     <td>{{ loco.first_name }} {{ loco.last_name }}</td>
-                    <td>{{ loco.boehnlis }}</td>
-                    <td>{{ loco.boehnlis_kernbereich }}</td>
+                    <td>{{ loco.boehnli_count }}</td>
+                    <td>{{ loco.core_boehnli_count }}</td>
                     <td>
                         {% for bereich in loco.areas.all %}
                             {{ bereich.name }},

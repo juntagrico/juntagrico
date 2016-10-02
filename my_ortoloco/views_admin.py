@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login
 from django.core.management import call_command
-from django.db.models import Count
+from django.db.models import Count, Case, When
 from django.db import models
 from django.utils import timezone
 from django.template import Template, Context
@@ -119,36 +119,10 @@ def my_mails_intern(request, enhanced, error_message=None):
     })
     return render(request, 'mail_sender.html', renderdict)
 
-def current_year_boehlis():
-    now = datetime.date.today()
-    return Boehnli.objects.filter(job__time__year=now.year, job__time__lt=now)
-
-
-def current_year_boehnlis_per_loco():
-    boehnlis = current_year_boehlis()
-    boehnlis_per_loco = defaultdict(int)
-    for boehnli in boehnlis:
-        boehnlis_per_loco[boehnli.loco] += 1
-    return boehnlis_per_loco
-
-def current_year_kernbereich_boehnlis_per_loco():
-    boehnlis = current_year_boehlis()
-    boehnlis_per_loco = defaultdict(int)
-    for boehnli in boehnlis:
-        if boehnli.is_in_kernbereich():
-            boehnlis_per_loco[boehnli.loco] += 1
-    return boehnlis_per_loco
-
-
 @permission_required('my_ortoloco.is_operations_group')
 def my_filters(request):
-    locos = Loco.objects.all()
-    boehnlis = current_year_boehnlis_per_loco()
-    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
-    for loco in locos:
-        loco.boehnlis = boehnlis[loco]
-        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
-
+    now = timezone.now()
+    locos = Loco.objects.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict.update({
         'locos': locos
@@ -159,14 +133,9 @@ def my_filters(request):
 
 @permission_required('my_ortoloco.is_depot_admin')
 def my_filters_depot(request, depot_id):
+    now = timezone.now()
     depot = get_object_or_404(Depot, id=int(depot_id))
-    locos = get_locos_for_depot(depot)
-    boehnlis = current_year_boehnlis_per_loco()
-    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
-    for loco in locos:
-        loco.boehnlis = boehnlis[loco]
-        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
-
+    locos = Loco.objects.filter(abo__depot = depot).annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict.update({
         'locos': locos,
@@ -174,25 +143,11 @@ def my_filters_depot(request, depot_id):
     })
     return render(request, 'filters.html', renderdict)
 
-def get_locos_for_depot(depot):
-    abos = Abo.objects.filter(depot = depot)
-    res = []
-    for a in abos:
-        locos = Loco.objects.filter(abo = a)
-        for loco in locos:
-            res.append(loco)
-    return res
-
 @permission_required('my_ortoloco.is_area_admin')
 def my_filters_area(request, area_id):
+    now = timezone.now()
     area = get_object_or_404(Taetigkeitsbereich, id=int(area_id))
-    locos = area.locos.all()
-    boehnlis = current_year_boehnlis_per_loco()
-    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
-    for loco in locos:
-        loco.boehnlis = 0
-        loco.boehnlis_kernbereich = 0
-
+    locos = area.locos.all().annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict.update({
         'locos': locos,
@@ -203,15 +158,14 @@ def my_filters_area(request, area_id):
 
 @permission_required('my_ortoloco.is_operations_group')
 def my_abos(request):
-    boehnli_map = current_year_boehnlis_per_loco()
-    boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
+    now = timezone.now()
     abos = []
     for abo in Abo.objects.filter():
         boehnlis = 0
         boehnlis_kernbereich = 0
-        for loco in abo.bezieher_locos():
-            boehnlis += boehnli_map[loco]
-            boehnlis_kernbereich += boehnlis_kernbereich_map[loco]
+        for loco in abo.locos.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1)))):
+            boehnlis += loco.boehnli_count
+            boehnlis_kernbereich += loco.core_boehnli_count
 
         abos.append({
             'abo': abo,
@@ -231,16 +185,15 @@ def my_abos(request):
 
 @permission_required('my_ortoloco.is_depot_admin')
 def my_abos_depot(request, depot_id):
-    boehnli_map = current_year_boehnlis_per_loco()
-    boehnlis_kernbereich_map = current_year_kernbereich_boehnlis_per_loco()
+    now = timezone.now()
     abos = []
     depot = get_object_or_404(Depot, id=int(depot_id))
     for abo in Abo.objects.filter(depot = depot):
         boehnlis = 0
         boehnlis_kernbereich = 0
-        for loco in abo.bezieher_locos():
-            boehnlis += boehnli_map[loco]
-            boehnlis_kernbereich += boehnlis_kernbereich_map[loco]
+        for loco in abo.locos.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=d.year, boehnli__job__time__lt=d, boehnli__core_cache=True, then=1)))):
+            boehnlis += loco.boehnli_count
+            boehnlis_kernbereich += loco.core_boehnli_count
 
         abos.append({
             'abo': abo,
