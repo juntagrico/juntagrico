@@ -347,16 +347,16 @@ class BoehnliAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
-            otjidlist= OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True)
-            rjidlist= RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True)
+            otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True))
+            rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True))
             jidlist = otjidlist + rjidlist
             return qs.filter(job__id__in=jidlist)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "job" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
-            otjidlist= OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True)
-            rjidlist= RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True)
+            otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True))
+            rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True))
             jidlist = otjidlist + rjidlist
             kwargs["queryset"] = Job.objects.filter(id__in=jidlist)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
