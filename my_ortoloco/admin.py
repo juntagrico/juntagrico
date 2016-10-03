@@ -342,6 +342,17 @@ class BereichAdmin(admin.ModelAdmin):
             return qs.filter(coordinator=request.user.loco)
 	return qs
 
+class BoehnliAdmin(admin.ModelAdmin):
+
+    def get_queryset(self, request):
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
+        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+            otjidlist= OneTimeJob.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True)
+            rjidlist= RecuringJob.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True)
+            jidlist = otjidlist + rjidlist
+            return qs.filter(job__id__in=jidlist)
+	return qs
+
 """
 class BoehnliAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "job", "zeit", "loco"]
