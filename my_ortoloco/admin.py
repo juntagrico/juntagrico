@@ -352,6 +352,14 @@ class BoehnliAdmin(admin.ModelAdmin):
             jidlist = otjidlist + rjidlist
             return qs.filter(job__id__in=jidlist)
 	return qs
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "job" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+            otjidlist= OneTimeJob.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True)
+            rjidlist= RecuringJob.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True)
+            jidlist = otjidlist + rjidlist
+            kwargs["queryset"] = Job.objects.filter(id__in=jidlist)
+        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 """
 class BoehnliAdmin(admin.ModelAdmin):
@@ -404,7 +412,7 @@ class LocoAdmin(admin.ModelAdmin):
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraAboType)
 admin.site.register(ExtraAboCategory)
-admin.site.register(Boehnli)
+admin.site.register(Boehnli,BoehnliAdmin)
 admin.site.register(Abo, AboAdmin)
 admin.site.register(Loco, LocoAdmin)
 admin.site.register(Taetigkeitsbereich, BereichAdmin)
