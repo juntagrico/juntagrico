@@ -505,6 +505,7 @@ class Boehnli(models.Model):
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         instance.core_cache = instance.is_in_kernbereich()
+        print instance.core_cache
     
     class Meta:
         verbose_name = 'Böhnli'
