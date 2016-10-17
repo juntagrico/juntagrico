@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import signals
 from django.core import validators
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 import time
 from django.db.models import Q
 from polymorphic.models import PolymorphicModel
@@ -136,6 +137,9 @@ class Abo(models.Model):
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
+    activation_date= models.DateField("Aktivierungssdatum", null=True, blank=True)
+    deactivation_date= models.DateField("Deaktivierungssdatum", null=True, blank=True)
+    old_active=None
 
     def __unicode__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
@@ -202,7 +206,21 @@ class Abo(models.Model):
 
     def extra_abo(self, code):
         return len(self.extra_abos.all().filter(name=code)) > 0
+        
+    def clean(self):
+        if(self.old_active != self.active and self.deactivation_date != None):
+            raise ValidationError(u'Deaktivierte Abos koennen nicht wieder aktiviert werden', code='invalid')
 
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        if(instance.old_active != instance.active and instance.old_active==False and instance.deactivation_date==None):
+            instance.activation_date=timezone.now().date()
+        elif(instance.old_active != instance.active and instance.old_active==True and instance.deactivation_date==None):
+            instance.deactivation_date=timezone.now().date()           
+    
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        instance.old_active = instance.active
         
     @classmethod
     def pre_delete(cls, sender, instance, **kwds):
@@ -553,5 +571,7 @@ signals.post_init.connect(RecuringJob.post_init, sender=RecuringJob)
 signals.pre_save.connect(OneTimeJob.pre_save, sender=OneTimeJob)
 signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 signals.pre_delete.connect(Abo.pre_delete, sender=Abo)
+signals.pre_save.connect(Abo.pre_save, sender=Abo)
+signals.post_init.connect(Abo.post_init, sender=Abo)
 signals.pre_save.connect(Boehnli.pre_save, sender=Boehnli)
 
