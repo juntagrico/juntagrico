@@ -74,19 +74,31 @@
                             <a href="/my/filters/area/{{ area.id }}">Locos in {{ area.name }}</a>
                         </li>
                     {% endfor %}
-                    {% if operation_group %}
+                    {% if can_send_mails %}
                         <li>
                             <a href="/my/mails">Mails verschicken</a>
                         </li>
+                    {% endif %}
+                    {% if operation_group %}
                         <li>
                             <a href="{{depot_list_url}}">Depotlisten</a>
                         </li>
                         <li>
                             <a href="/my/export">Exporte</a>
                         </li>
+                    {% endif %}
+                    {% if can_filter_locos or can_filter_abos %}
                         <li class="inline">
-                            Filtern <a href="/my/filters">Locos</a> | <a href="/my/abos">Abos</a>
+                            Filtern 
+                            {% if can_filter_locos %}
+                            <a href="/my/filters">Locos</a> | 
+                            {% endif %}
+                            {% if can_filter_abos %}
+                            <a href="/my/abos">Abos</a>
+                            {% endif %}
                         </li>
+                    {% endif %}
+                    {% if operation_group %}
                         <li>
                             <a href="/my/zukunft">Zukunftsblick</a>
                         </li>

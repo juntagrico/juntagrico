@@ -13,7 +13,9 @@
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden" name="recipients_count" id="recipients_count"/>
         <input type="hidden" name="filter_value" id="filter_value"/>
+        {% if can_send_mails %}
         <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
+        {% endif %}
     </form>
     <div id="filter-table">
         <table class="list" style="display: table;">
