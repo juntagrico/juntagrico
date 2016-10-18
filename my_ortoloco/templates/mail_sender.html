@@ -20,7 +20,9 @@
             <label for="sender-email" class="col-sm-2 control-label">Absender</label>
             <div class="col-sm-10" id="sender-email">
                 <select name="sender" class="form-control">
+                {% if can_use_general_email %}
                     <option value="info@ortoloco.ch">info@ortoloco.ch</option>
+                {% endif %}    
                     <option value="{{ email }}">{{ email }}</option>
                 </select>
             </div>

@@ -270,7 +270,7 @@ class Abo(models.Model):
     class Meta:
         verbose_name = "Abo"
         verbose_name_plural = "Abos"
-
+        permissions = (('can_filter_abos', 'Benutzer kann Abos filtern'),)
 
 class Loco(models.Model):
     """
@@ -334,6 +334,7 @@ class Loco(models.Model):
     class Meta:
         verbose_name = "Loco"
         verbose_name_plural = "Locos"
+        permissions = (('can_filter_locos', 'Benutzer kann locos filtern'),)
 
     def get_name(self):
         return u"%s %s" % (self.first_name, self.last_name)
@@ -593,7 +594,10 @@ class SpecialRoles(models.Model):
 
     class Meta:
         permissions = (('is_operations_group', 'Benutzer ist in der BG'),
-                       ('is_book_keeper', 'Benutzer ist Buchhalter'),)
+        ('is_book_keeper', 'Benutzer ist Buchhalter'),
+        ('can_send_mails', 'Benutzer kann im System Emails versenden'),
+        ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
+
 
 
 # model_audit.m2m(Abo.users)

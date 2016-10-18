@@ -36,7 +36,7 @@ from static_ortoloco.models import Politoloco
 from decorators import primary_loco_of_abo
 
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('my_ortoloco.can_send_mails')
 def send_email(request):
     return send_email_intern(request)
 
@@ -82,7 +82,7 @@ def send_email_intern(request):
         sent = len(emails)
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('my_ortoloco.can_send_mails')
 def send_email_result(request, numsent):
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -90,7 +90,7 @@ def send_email_result(request, numsent):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('my_ortoloco.can_send_mails')
 def my_mails(request, enhanced=None):
     return my_mails_intern(request, enhanced)
 
@@ -115,11 +115,12 @@ def my_mails_intern(request, enhanced, error_message=None):
         'enhanced': enhanced,
         'email': request.user.loco.email,
         'error_message': error_message,
-        'templates': MailTemplate.objects.all()
+        'templates': MailTemplate.objects.all(),
+        'can_use_general_email': request.user.has_perm('my_ortoloco.can_use_general_email')
     })
     return render(request, 'mail_sender.html', renderdict)
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('my_ortoloco.can_filter_locos')
 def my_filters(request):
     now = timezone.now()
     locos = Loco.objects.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
@@ -156,7 +157,7 @@ def my_filters_area(request, area_id):
     return render(request, 'filters.html', renderdict)
 
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('my_ortoloco.can_filter_abos')
 def my_abos(request):
     now = timezone.now()
     abos = []
