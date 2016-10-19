@@ -129,14 +129,6 @@
     opacity: 0;
 }
 
-#filter-table {
-    width: 1000px;
-}
-
-#filter-table table {
-    font-size: 10px;
-}
-
 textarea#recipients {
     width: 100%;
 }
@@ -184,12 +176,17 @@ table.future td{
     font-style: italic;
 }
 
-#filter-table {
+#filter {
     width: 100%;
 }
 
-#filter-table table {
+#filter table {
     width: 100%;
+    font-size: 10px;
+}
+
+#filter-table .odd {
+    background-color: #ecf4e1
 }
 
 .main-menu {

@@ -17,8 +17,8 @@
         <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
         {% endif %}
     </form>
-    <div id="filter-table">
-        <table class="list" style="display: table;">
+    <div id="filter">
+        <table id="filter-table" class="list table" style="display: table;">
             <thead>
             <tr>
                 <th>Name</th>
@@ -30,7 +30,18 @@
                 <th>Telefon</th>
                 <th>Mobile</th>
             </tr>
-            </thead>
+            <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Boehnlis</th>
+                <th>Boehnlis Kernbereich</th>
+                <th>Taetigkeitsbereiche</th>
+                <th>Depot</th>
+                <th>Email</th>
+                <th>Telefon</th>
+                <th>Mobile</th>
+            </tr>
+            </tfoot>
             <tbody>
             {% for loco in locos %}
                 <tr>
@@ -57,6 +68,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/dable.js"></script>
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
     <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyFilters.js"></script>
 {% endblock %}
