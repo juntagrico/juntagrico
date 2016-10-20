@@ -18,8 +18,8 @@
         <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
         {% endif %}
     </form>
-    <div id="filter-table">
-        <table class="list" style="display: table;">
+   <div id="filter">
+        <table id="filter-table" class="list table" style="display: table;">
             <thead>
             <tr>
                 <th>Hauptloco</th>
@@ -31,6 +31,17 @@
                 <th>Emails</th>
             </tr>
             </thead>
+            <foot>
+            <tr>
+                <th>Hauptloco</th>
+                <th>Weitere Locos</th>
+                <th>Depot</th>
+                <th>Bohnen</th>
+                <th>Bohnen Kernbereich</th>
+                <th>Aktiv</th>
+                <th>Emails</th>
+            </tr>
+            </foot>
             <tbody>
             {% for abo in abos %}
                 <tr>
@@ -51,6 +62,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/dable.js"></script>
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
     <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyAbos.js"></script>
 {% endblock %}

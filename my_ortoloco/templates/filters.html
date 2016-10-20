@@ -29,6 +29,7 @@
                 <th>Email</th>
                 <th>Telefon</th>
                 <th>Mobile</th>
+                <th>Abo</th>
             </tr>
             <tfoot>
             <tr>
@@ -40,6 +41,7 @@
                 <th>Email</th>
                 <th>Telefon</th>
                 <th>Mobile</th>
+                <th>Abo</th>
             </tr>
             </tfoot>
             <tbody>
@@ -59,6 +61,12 @@
                     <td class="email">{{ loco.email }}</td>
                     <td>{{ loco.phone }}</td>
                     <td>{{ loco.mobile_phone }}</td>
+                    <td>{% if loco.abo != None and loco.abo.active %}
+			{{ loco.abo.overview }}
+			{% else %}
+			Kein Abo
+			{% endif %}
+		</td>
                 </tr>
             {% endfor %}
             </tbody>
