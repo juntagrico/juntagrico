@@ -97,15 +97,15 @@ class ExtraAboType(models.Model):
     size = models.CharField("Groesse (gross,4, ...)", max_length=100, default="")
     description = models.TextField("Beschreibung", max_length=1000)
     sort_order = models.FloatField("Groesse zum Sortieren", default=1.0)
-    category = models.ForeignKey("ExtraAboCategory", related_name="category", null=True, blank=True,
+    category = models.ForeignKey(ExtraAboCategory, related_name="category", null=True, blank=True,
                                  on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
 
     class Meta:
-        verbose_name = "Zusatz-Abo"
-        verbose_name_plural = "Zusatz-Abos"
+        verbose_name = "Zusatz-Abo-Typ"
+        verbose_name_plural = "Zusatz-Abo-Typen"
 
 
 class ExtraAboCategory(models.Model):
@@ -123,6 +123,40 @@ class ExtraAboCategory(models.Model):
         verbose_name = "Zusatz-Abo-Kategorie"
         verbose_name_plural = "Zusatz-Abo-Kategorien"
 
+class ExtraAbo(models.Model):
+    """
+    Types of extra abos, e.g. eggs, cheese, fruit
+    """
+    abo = models.ForeignKey(Abo, related_name="extra_abos", null=False, blank=False,
+                                 on_delete=models.PROTECT)
+    abo_future = models.ForeignKey(Abo, related_name="future_extra_abos", null=False, blank=False,
+                                 on_delete=models.PROTECT)
+    active = models.BooleanField(default=False)
+    activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
+    deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
+    type = models.ForeignKey(ExtraAboType, related_name="type", null=False, blank=False,
+                                 on_delete=models.PROTECT)
+
+
+    @classmethod
+    def pre_save(cls, sender, instance, **kwds):
+        if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
+            instance.activation_date = timezone.now().date()
+        elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
+            instance.deactivation_date = timezone.now().date()
+    old_active = None
+
+    @classmethod
+    def post_init(cls, sender, instance, **kwds):
+        instance.old_active = instance.active
+
+    def __unicode__(self):
+        return u"%s %s" % (self.id, self.name)
+
+    class Meta:
+        verbose_name = "Zusatz-Abo"
+        verbose_name_plural = "Zusatz-Abos"
+
 
 class Abo(models.Model):
     """
@@ -133,9 +167,9 @@ class Abo(models.Model):
                                      blank=True, )
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
-    extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="extra_abos")
+    extra_abos = models.On(ExtraAbo, blank=True, related_name="extra_abos")
     extra_abos_changed = models.BooleanField(default=False)
-    future_extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="future_extra_abos")
+    future_extra_abos = models.ManyToManyField(ExtraAbo, blank=True, related_name="future_extra_abos")
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
@@ -163,6 +197,7 @@ class Abo(models.Model):
         loco = self.primary_loco
         return unicode(loco) if loco is not None else ""
 
+    @property
     def small_abos(self):
         return self.size % 2
 
@@ -217,9 +252,9 @@ class Abo(models.Model):
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
-        if instance.old_active != instance.active and instance.old_active == False and instance.deactivation_date is None:
+        if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
-        elif instance.old_active != instance.active and instance.old_active == True and instance.deactivation_date is None:
+        elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
 
     @classmethod
@@ -433,12 +468,12 @@ class Job(PolymorphicModel):
         return self.typ.bereich.core
 
     def clean(self):
-        if self.old_canceled != self.canceled and self.old_canceled == True:
+        if self.old_canceled != self.canceled and self.old_canceled is True:
             raise ValidationError(u'Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
-        if instance.old_canceled != instance.canceled and instance.old_canceled == False:
+        if instance.old_canceled != instance.canceled and instance.old_canceled is False:
             boehnlis = Boehnli.objects.filter(job_id=instance.id)
             emails = set()
             for boehnli in boehnlis:
