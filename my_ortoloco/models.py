@@ -142,6 +142,11 @@ class Abo(models.Model):
         namelist.extend(extra.name for extra in self.extra_abos.all())
         return u"Abo (%s) %s" % (" + ".join(namelist), self.id)
 
+    def overview(self):
+        namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
+        namelist.extend(extra.name for extra in self.extra_abos.all())
+        return u"%s" % (" + ".join(namelist))
+
     def bezieher(self):
         locos = self.locos.all()
         return ", ".join(unicode(loco) for loco in locos)
