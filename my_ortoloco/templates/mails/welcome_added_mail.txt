@@ -3,8 +3,8 @@
 Wir freuen uns, dich bei ortoloco begrüssen zu dürfen. Soeben hat dich '{{name}}' zu ihrem/seinem Gemüseabo hinzugefügt und für dich {{ anteilsscheine }} Anteilschein(e) erworben. Wenn du damit einverstanden bist, ortoloco-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
 Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
 
-Statuten: {{ serverurl }}/static/others/131129_Statuten_ortoloco.pdf
-Betriebsreglement: {{ serverurl }}/static/others/131129_Betriebsreglement_ortoloco.pdf
+Statuten: {{ serverurl }}/static/others/160910_-_Statuten_ortoloco.pdf
+Betriebsreglement: {{ serverurl }}/static/others/160910_-_Betriebsreglement_ortoloco.pdf
 
 
 Unter my.ortoloco.ch kannst du dich ab sofort für Jobs anmelden und vieles mehr.

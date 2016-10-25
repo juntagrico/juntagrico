@@ -161,7 +161,7 @@ def links(request):
     """
     Links to partners
     """
-    links_list = Link.objects.all().reverse()
+    links_list = Link.objects.all().order_by('sort_order','-id')
 
     renderdict = getBaseDict(request)
     renderdict.update({
@@ -178,7 +178,7 @@ def documents(request):
     """
     Documents of Ortoloco
     """
-    documents_list = Document.objects.all().reverse()
+    documents_list = Document.objects.all().order_by('sort_order','-id')
 
     renderdict = getBaseDict(request)
     renderdict.update({
@@ -195,7 +195,7 @@ def downloads(request):
     """
     Downloads available
     """
-    download_list = Download.objects.all().reverse()
+    download_list = Download.objects.all().order_by('sort_order','-id')
 
     renderdict = getBaseDict(request)
     renderdict.update({
