@@ -340,7 +340,8 @@ def my_switch_extras(request):
         if abo.extra_abos_changed:
             abo.extra_abos = []
             for extra in abo.future_extra_abos.all():
-                abo.extra_abos.add(extra)
+                extra.active=True
+                extra.save()
 
             abo.extra_abos_changed = False
             abo.save()
