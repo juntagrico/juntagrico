@@ -129,8 +129,6 @@ class ExtraAbo(models.Model):
     """
     abo = models.ForeignKey("Abo", related_name="extra_abo_set", null=False, blank=False,
                                  on_delete=models.PROTECT)
-    abo_future = models.ForeignKey("Abo", related_name="future_extra_abos_t", null=False, blank=False,
-                                 on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
@@ -167,9 +165,7 @@ class Abo(models.Model):
                                      blank=True, )
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
-    extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="extra_abos")
     extra_abos_changed = models.BooleanField(default=False)
-    future_extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="future_extra_abos")
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
@@ -196,6 +192,12 @@ class Abo(models.Model):
     def primary_loco_nullsave(self):
         loco = self.primary_loco
         return unicode(loco) if loco is not None else ""
+        
+    def extra_abos(self):
+        return self.extra_abo_set.filter(active==True)
+    
+    def future_extra_abos(self):
+        return self.extra_abo_set.filter(active==False, deactivation_date==None)
 
     @property
     def small_abos(self):
