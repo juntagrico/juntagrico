@@ -21,7 +21,6 @@ class Migration(migrations.Migration):
                 ('activation_date', models.DateField(blank=True, null=True, verbose_name=b'Aktivierungssdatum')),
                 ('deactivation_date', models.DateField(blank=True, null=True, verbose_name=b'Deaktivierungssdatum')),
                 ('abo', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='extra_abo_set', to='my_ortoloco.Abo')),
-                ('abo_future', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='future_extra_abos_t', to='my_ortoloco.Abo')),
             ],
             options={
                 'verbose_name': 'Zusatz-Abo',
