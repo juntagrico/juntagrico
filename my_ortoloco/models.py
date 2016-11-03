@@ -67,7 +67,7 @@ class Depot(models.Model):
     def extra_abo(abos, code):
         amount = 0
         for abo in abos.all():
-            amount += len(abo.extra_abos().all().filter(type__name=code))
+            amount += len(abo.extra_abos.all().filter(type__name=code))
         return amount
 
     def fill_overview_cache(self):
@@ -175,7 +175,7 @@ class Abo(models.Model):
 
     def __unicode__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
-        namelist.extend(extra.type.name for extra in self.extra_abos().all())
+        namelist.extend(extra.type.name for extra in self.extra_abos.all())
         return u"Abo (%s) %s" % (" + ".join(namelist), self.id)
 
     def bezieher(self):
@@ -193,9 +193,11 @@ class Abo(models.Model):
         loco = self.primary_loco
         return unicode(loco) if loco is not None else ""
         
+    @property    
     def extra_abos(self):
         return self.extra_abo_set.filter(active==True)
-    
+        
+    @property
     def future_extra_abos(self):
         return self.extra_abo_set.filter(active==False, deactivation_date==None)
 
