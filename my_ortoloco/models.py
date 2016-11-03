@@ -248,7 +248,7 @@ class Abo(models.Model):
         return Abo.get_size_name(size=self.future_size)
 
     def extra_abo(self, code):
-        return len(self.extra_abos.all().filter(name=code)) > 0
+        return len(self.extra_abos.all().filter(type__name=code)) > 0
 
     def clean(self):
         if self.old_active != self.active and self.deactivation_date is not None:
