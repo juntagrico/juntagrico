@@ -310,7 +310,7 @@ def my_future(request):
 
         if abo.extra_abos_changed:
             for users_abo in abo.future_extra_abos.all():
-                extra_abos[users_abo.id]['future'] += 1
+                extra_abos[users_abo.type.id]['future'] += 1
         else:
             for users_abo in abo.extra_abos.all():
                 extra_abos[users_abo.id]['future'] += 1
