@@ -97,7 +97,7 @@ class ExtraAboType(models.Model):
     size = models.CharField("Groesse (gross,4, ...)", max_length=100, default="")
     description = models.TextField("Beschreibung", max_length=1000)
     sort_order = models.FloatField("Groesse zum Sortieren", default=1.0)
-    category = models.ForeignKey(ExtraAboCategory, related_name="category", null=True, blank=True,
+    category = models.ForeignKey("ExtraAboCategory", related_name="category", null=True, blank=True,
                                  on_delete=models.PROTECT)
 
     def __unicode__(self):
@@ -127,9 +127,9 @@ class ExtraAbo(models.Model):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
     """
-    abo = models.ForeignKey(Abo, related_name="extra_abos", null=False, blank=False,
+    abo = models.ForeignKey("Abo", related_name="extra_abo_set", null=False, blank=False,
                                  on_delete=models.PROTECT)
-    abo_future = models.ForeignKey(Abo, related_name="future_extra_abos", null=False, blank=False,
+    abo_future = models.ForeignKey("Abo", related_name="future_extra_abos_t", null=False, blank=False,
                                  on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
@@ -167,9 +167,9 @@ class Abo(models.Model):
                                      blank=True, )
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
-    extra_abos = models.On(ExtraAbo, blank=True, related_name="extra_abos")
+    extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="extra_abos")
     extra_abos_changed = models.BooleanField(default=False)
-    future_extra_abos = models.ManyToManyField(ExtraAbo, blank=True, related_name="future_extra_abos")
+    future_extra_abos = models.ManyToManyField(ExtraAboType, blank=True, related_name="future_extra_abos")
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
