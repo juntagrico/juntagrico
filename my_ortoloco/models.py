@@ -67,7 +67,7 @@ class Depot(models.Model):
     def extra_abo(abos, code):
         amount = 0
         for abo in abos.all():
-            amount += len(abo.extra_abos.all().filter(name=code))
+            amount += len(abo.extra_abos.all().filter(type__name=code))
         return amount
 
     def fill_overview_cache(self):
