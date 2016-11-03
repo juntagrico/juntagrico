@@ -603,7 +603,6 @@ class SpecialRoles(models.Model):
 
 
 # model_audit.m2m(Abo.users)
-model_audit.m2m(Abo.extra_abos)
 model_audit.fk(Abo.depot)
 model_audit.fk(Anteilschein.loco)
 
