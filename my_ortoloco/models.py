@@ -88,6 +88,14 @@ class Depot(models.Model):
         verbose_name_plural = "Depots"
         permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)
 
+class Billable(models.Model):
+    """
+    Abstract type for billables.
+    """
+    class Meta:
+        verbose_name = 'Verrechenbar'
+        verbose_name_plural = 'Verrechenbare'
+        abstract = True
 
 class ExtraAboType(models.Model):
     """
@@ -123,7 +131,7 @@ class ExtraAboCategory(models.Model):
         verbose_name = "Zusatz-Abo-Kategorie"
         verbose_name_plural = "Zusatz-Abo-Kategorien"
 
-class ExtraAbo(models.Model):
+class ExtraAbo(Billable):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
     """
@@ -157,7 +165,7 @@ class ExtraAbo(models.Model):
         verbose_name_plural = "Zusatz-Abos"
 
 
-class Abo(models.Model):
+class Abo(Billable):
     """
     One Abo that may be shared among several people.
     """
@@ -350,7 +358,7 @@ class Loco(models.Model):
         return self.phone
 
 
-class Anteilschein(models.Model):
+class Anteilschein(Billable):
     loco = models.ForeignKey(Loco, null=True, blank=True, on_delete=models.SET_NULL)
     paid = models.BooleanField(default=False)
     canceled = models.BooleanField(default=False)
