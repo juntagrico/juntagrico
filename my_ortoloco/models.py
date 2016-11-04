@@ -130,6 +130,7 @@ class ExtraAbo(models.Model):
     abo = models.ForeignKey("Abo", related_name="extra_abo_set", null=False, blank=False,
                                  on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
+    canceled = models.BooleanField("gekündigt",default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     type = models.ForeignKey(ExtraAboType, related_name="extra_abos", null=False, blank=False,
