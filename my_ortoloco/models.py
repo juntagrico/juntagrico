@@ -108,7 +108,7 @@ class Bill(models.Model):
     ref_number = models.CharField("Referenznummer", max_length=30, unique=True)
     amount = models.FloatField("Betrag", null=False, blank=False)
     
-        def __unicode__(self):
+    def __unicode__(self):
         return u"%s %s" % (self.ref_number)
 
     class Meta:
