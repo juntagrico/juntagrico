@@ -103,7 +103,7 @@ class Bill(models.Model):
     """
     billable = models.ForeignKey(Billable, related_name="bills", null=False, blank=False,
                                  on_delete=models.PROTECT)
-    paid = models.BooleanField("bezahlt"default=False)
+    paid = models.BooleanField("bezahlt",default=False)
     bill_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     ref_number = models.CharField("Referenznummer", max_length=30, unique=True)
     amount = models.FloatField("Betrag", null=False, blank=False)
