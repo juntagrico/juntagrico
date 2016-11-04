@@ -130,43 +130,53 @@ def my_extra_change(request, abo_id):
     saved = False
     if request.method == "POST":
         for extra_abo in ExtraAboType.objects.all():
+            existing = request.user.loco.abo.extra_abos.filter(type__id=abo.id)
             if request.POST.get("abo" + str(extra_abo.id)) == str(extra_abo.id):
-                request.user.loco.abo.future_extra_abos.add(extra_abo)
-                extra_abo.future_extra_abos.add(request.user.loco.abo)
+		if existing.count()==0:
+                    future_extra_abo = ExtraAbo.create()
+                    future_extra_abo.abo = request.user.loco.abo
+                    future_extra_abo.type = extra_abo
+                    future_extra_abo.active = False
+                    future_extra_abo.save()
+                    request.user.loco.abo.extra_abos_changed = True
+                else:
+                    for canceled_extra_abo in existing:
+                        canceled_extra_abo.canceled=False;
+                        canceled_extra_abo.save();
             else:
-                request.user.loco.abo.future_extra_abos.remove(extra_abo)
-                extra_abo.future_extra_abos.remove(request.user.loco.abo)
-            request.user.loco.abo.extra_abos_changed = True
-            request.user.loco.abo.save()
-            extra_abo.save()
-
+                if existing.count()>0:
+                    for canceled_extra_abo in existing:
+                        canceled_extra_abo.canceled=True;
+                        canceled_extra_abo.save();
+                    request.user.loco.abo.extra_abos_changed = True
+        request.user.loco.abo.save()
         saved = True
 
     abos = []
     for abo in ExtraAboType.objects.all():
         if request.user.loco.abo.extra_abos_changed:
-            if abo in request.user.loco.abo.future_extra_abos.all():
+            if request.user.loco.abo.future_extra_abos.filter(type__id=abo.id).count()>0:
                 abos.append({
-                    'id': abo.id,
-                    'name': abo.name,
+                    'id': abo.type.id,
+                    'name': abo.type.name,
                     'selected': True
                 })
             else:
                 abos.append({
-                    'id': abo.id,
-                    'name': abo.name
+                    'id': abo.type.id,
+                    'name': abo.type.name
                 })
         else:
-            if abo in request.user.loco.abo.extra_abos.all():
+            if request.user.loco.abo.extra_abos.filter(type__id=abo.id).count()>0:
                 abos.append({
-                    'id': abo.id,
-                    'name': abo.name,
+                    'id': abo.type.id,
+                    'name': abo.type.name,
                     'selected': True
                 })
             else:
                 abos.append({
-                    'id': abo.id,
-                    'name': abo.name
+                    'id': abo.type.id,
+                    'name': abo.type.name
                 })
     renderdict = get_menu_dict(request)
     renderdict.update({
