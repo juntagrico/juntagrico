@@ -97,6 +97,24 @@ class Billable(models.Model):
         verbose_name_plural = 'Verrechenbare'
         abstract = True
 
+class Bill(models.Model):
+    """
+    Actuall Bill for billables
+    """
+    billable = models.ForeignKey(Billable, related_name="bills", null=False, blank=False,
+                                 on_delete=models.PROTECT)
+    paid = models.BooleanField("bezahlt"default=False)
+    bill_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
+    ref_number = models.CharField("Referenznummer", max_length=30, unique=True)
+    amount = models.FloatField("Betrag", null=False, blank=False)
+    
+        def __unicode__(self):
+        return u"%s %s" % (self.ref_number)
+
+    class Meta:
+        verbose_name = "Rechnung"
+        verbose_name_plural = "Rechnungen"
+
 class ExtraAboType(models.Model):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
