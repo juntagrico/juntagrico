@@ -6,7 +6,7 @@ import time
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import signals
+from django.db.models import signals, Q
 from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 
@@ -200,7 +200,7 @@ class Abo(models.Model):
         
     @property
     def future_extra_abos(self):
-        return self.extra_abo_set.filter(active==False, deactivation_date==None)
+        return self.extra_abo_set.filter(Q(active==False, deactivation_date==None) | Q(active==True, canceled==False))
 
     @property
     def small_abos(self):
