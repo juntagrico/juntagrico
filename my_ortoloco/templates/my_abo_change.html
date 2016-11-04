@@ -55,7 +55,7 @@
                     Keine Zusatz-Abos
                 {% else %}
                     {% for zusatzabo in loco.abo.extra_abos.all %}
-                        <li>{{ zusatzabo.name }}</li>
+                        <li>{{ zusatzabo.type.name }}</li>
                     {% endfor %}
                 {% endif %}
             {% else %}
@@ -63,7 +63,7 @@
                     Keine Zusatz-Abos
                 {% else %}
                     {% for zusatzabo in loco.abo.future_extra_abos.all %}
-                        <li>{{ zusatzabo.name }}</li>
+                        <li>{{ zusatzabo.type.name }}</li>
                     {% endfor %}
                 {% endif %}
             {% endif %}
