@@ -88,14 +88,13 @@ class Depot(models.Model):
         verbose_name_plural = "Depots"
         permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)
 
-class Billable(models.Model):
+class Billable(PolymorphicModel):
     """
-    Abstract type for billables.
+    Parent type for billables.
     """
     class Meta:
-        verbose_name = 'Verrechenbar'
-        verbose_name_plural = 'Verrechenbare'
-        abstract = True
+        verbose_name = 'Verrechenbare Einheit'
+        verbose_name_plural = 'Verrechenbare Einhaiten'
 
 class Bill(models.Model):
     """
@@ -153,7 +152,7 @@ class ExtraAbo(Billable):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
     """
-    abo = models.ForeignKey("Abo", related_name="extra_abo_set", null=False, blank=False,
+    main_abo = models.ForeignKey("Abo", related_name="extra_abo_set", null=False, blank=False,
                                  on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     canceled = models.BooleanField("gekündigt",default=False)
