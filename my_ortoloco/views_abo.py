@@ -63,7 +63,7 @@ def my_abo(request):
     renderdict.update({
         'loco': request.user.loco,
         'scheine': request.user.loco.anteilschein_set.count(),
-        'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid=False).count(),
+        'scheine_unpaid': request.user.loco.anteilschein_set.filter(paid_date=None).count(),
         'menu': {'abonnement': 'active'},
     })
     return render(request, "my_abo.html", renderdict)
@@ -269,7 +269,7 @@ def my_add_loco(request, abo_id):
             loco.user.save()
 
             for num in range(0, scheine):
-                anteilschein = Anteilschein(loco=loco, paid=False)
+                anteilschein = Anteilschein(loco=loco, paid_date=None)
                 anteilschein.save()
                 send_anteilschein_created_mail(anteilschein, request.META["HTTP_HOST"])
             send_been_added_to_abo(loco.email, pw, request.user.loco.get_name(), scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
@@ -343,7 +343,7 @@ def my_createabo(request):
             if loco.anteilschein_set.count() < int(request.POST.get("scheine")):
                 toadd = int(request.POST.get("scheine")) - loco.anteilschein_set.count()
                 for num in range(0, toadd):
-                    anteilschein = Anteilschein(loco=loco, paid=False)
+                    anteilschein = Anteilschein(loco=loco, paid_date=None)
                     anteilschein.save()
                     send_anteilschein_created_mail(anteilschein, request.META["HTTP_HOST"])
             if request.POST.get("add_loco"):
