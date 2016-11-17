@@ -456,10 +456,12 @@ def my_excel_export_locos(request):
 def my_excel_export_shares(request):
     fields = [
     u'number',
-    u'paid',
     u'paid_date',
-    u'canceled',
-    u'canceled_date',
+    u'issue_date',
+    u'booking_date',
+    u'cancelled_date',
+    u'termination_date',
+    u'payback_date',
     u'notes',
     u'loco.first_name',
     u'loco.last_name',
