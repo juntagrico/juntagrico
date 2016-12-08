@@ -8,9 +8,12 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.contrib.auth.models import User, Permission
 from django.contrib.sites.shortcuts import get_current_site
-import re
+import os, re
 
 def get_server(server):
+    site_from_env = os.getenv("ORTOLOCO_TEMPLATE_SERVERURL")
+    if site_from_env:
+        return site_from_env
     site_from_db = get_current_site(None).domain
     if site_from_db:
         return site_from_db
