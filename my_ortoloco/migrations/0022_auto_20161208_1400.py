@@ -26,6 +26,9 @@ class Migration(migrations.Migration):
             for loco in abo.locos.all():
                 loco.tmp_abo_id=billable.id
                 loco.save() 
+            for extra in abo.extra_abo_set.all():
+                extra.tmp_abo_id=billable.id
+                extra.save()
             abo.save()  
                 
         share_ct = ContentType.objects.filter(model='anteilschein')[0]
