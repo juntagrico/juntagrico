@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
-        ('my_ortoloco', '0019_auto_20161104_0811'),
+        ('my_ortoloco', '0020_auto_20161104_0811'),
     ]
 
     operations = [

@@ -25,7 +25,7 @@ def data_migration(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('my_ortoloco', '0016_auto_20161103_2038'),
+        ('my_ortoloco', '0017_auto_20161103_2038'),
     ]
 
     operations = [
