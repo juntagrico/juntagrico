@@ -307,6 +307,10 @@ class ExtraAboInline(admin.TabularInline):
     model = ExtraAbo
     fk_name = 'main_abo'
     
+    def get_extra(self, request, obj=None):
+        return 0
+    
+    
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
     list_display = ["__unicode__", "bezieher", "primary_loco_nullsave", "depot", "active"]
