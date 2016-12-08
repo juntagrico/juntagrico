@@ -20,6 +20,8 @@ This should do it for your local setup:
     export ORTOLOCO_DATABASE_ENGINE=django.db.backends.sqlite3
     export ORTOLOCO_DATABASE_NAME=db.sqlite
 
+    export ORTOLOCO_TEMPLATE_SERVERURL=ortoloco.ch
+
     export ORTOLOCO_AWS_KEY_ID=
     export ORTOLOCO_AWS_KEY=
     export ORTOLOCO_AWS_BUCKET_NAME=
