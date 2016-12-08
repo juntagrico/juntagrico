@@ -23,6 +23,9 @@ class Migration(migrations.Migration):
             billable.save()
             billable.refresh_from_db()
             abo.billable_ptr=billable.id
+            for loco in abo.locos.all():
+                loco.tmp_abo_id=billable.id
+                loco.save() 
             abo.save()  
                 
         share_ct = ContentType.objects.filter(model='anteilschein')[0]
@@ -42,10 +45,7 @@ class Migration(migrations.Migration):
             billable.refresh_from_db()
             extra.billable_ptr=billable.id
             extra.save()
-                    
-        for loco in Loco.objects.all():
-            loco.tmp_abo_id=loco.abo_id
-            loco.save()            
+                       
 
     dependencies = [
         ('my_ortoloco', '0021_auto_20161114_1248'),
