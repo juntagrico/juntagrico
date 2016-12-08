@@ -83,6 +83,7 @@ def send_email_intern(request):
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
 
+@permission_required('my_ortoloco.can_send_mails')
 def send_email_result(request, numsent):
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -312,10 +313,10 @@ def my_future(request):
 
         if abo.extra_abos_changed:
             for users_abo in abo.future_extra_abos.all():
-                extra_abos[users_abo.id]['future'] += 1
+                extra_abos[users_abo.type.id]['future'] += 1
         else:
             for users_abo in abo.extra_abos.all():
-                extra_abos[users_abo.id]['future'] += 1
+                extra_abos[users_abo.type.id]['future'] += 1
 
     month = int(time.strftime("%m"))
     day = int(time.strftime("%d"))
@@ -342,7 +343,8 @@ def my_switch_extras(request):
         if abo.extra_abos_changed:
             abo.extra_abos = []
             for extra in abo.future_extra_abos.all():
-                abo.extra_abos.add(extra)
+                extra.active=True
+                extra.save()
 
             abo.extra_abos_changed = False
             abo.save()
@@ -474,27 +476,3 @@ def my_excel_export_shares(request):
 def my_export(request):
     renderdict = get_menu_dict(request)
     return render(request, 'export.html', renderdict)
-    
-
-
-
-def mini_migrate_future_zusatzabos(request):
-    new_abo_future_extra = []
-    Throughclass = Abo.future_extra_abos.through
-
-    abos = Abo.objects.filter(extra_abos_changed=False)
-    for abo in abos:
-        for extra in abo.extra_abos.all():
-            new_abo_future_extra.append(Throughclass(extraabotype=extra, abo=abo))
-
-    Throughclass.objects.bulk_create(new_abo_future_extra)
-    abos.update(extra_abos_changed=True)
-    return HttpResponse("Done!")
-
-
-
-
-
-
-
-
