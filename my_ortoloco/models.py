@@ -220,6 +220,11 @@ class Abo(Billable):
         namelist.extend(extra.type.name for extra in self.extra_abos.all())
         return u"Abo (%s) %s" % (" + ".join(namelist), self.id)
 
+    def overview(self):
+        namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
+        namelist.extend(extra.name for extra in self.extra_abos.all())
+        return u"%s" % (" + ".join(namelist))
+
     def bezieher(self):
         locos = self.locos.all()
         return ", ".join(unicode(loco) for loco in locos)
@@ -645,7 +650,10 @@ class SpecialRoles(models.Model):
         ('is_book_keeper', 'Benutzer ist Buchhalter'),
         ('can_send_mails', 'Benutzer kann im System Emails versenden'),
         ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 
 
 # model_audit.m2m(Abo.users)

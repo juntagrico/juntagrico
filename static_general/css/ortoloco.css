@@ -271,3 +271,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     position: relative;
     top: 70px;
 }
+
+.jobs .core, .teams .core {
+    color: #780fff;
+}

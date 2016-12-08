@@ -115,7 +115,7 @@ STATICFILES_FINDERS = (
 )
 
 #tinyMCE
-TINYMCE_JS_URL = '/static/js/tinymce/tinymce.min.js'
+TINYMCE_JS_URL = '/static/external/tinymce/tinymce.min.js'
 
 TINYMCE_DEFAULT_CONFIG = {
     'theme': "modern",

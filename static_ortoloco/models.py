@@ -43,6 +43,7 @@ class Download(models.Model):
     """
     mediafile = models.FileField("Datei", upload_to='downloads')
     name = models.CharField("Titel", max_length=200)
+    sort_order = models.FloatField("Nummer zum Sortieren", default=1.0)
 
 
     def __unicode__(self):
@@ -60,6 +61,7 @@ class Link(models.Model):
     titel = models.CharField("Titel", max_length=200, default="Beispieltitel")
     link = models.CharField("Link", max_length=200, default="http://example.ch")
     description = models.CharField("Beschreibung", max_length=400)
+    sort_order = models.FloatField("Nummer zum Sortieren", default=1.0)
 
     def __unicode__(self):
         return u"%s" % (self.titel)
@@ -76,6 +78,7 @@ class Document(models.Model):
     title = models.CharField("Titel", max_length=200, default="Beispieltitel")
     document = models.FileField("Dokument", upload_to='documents')
     description = models.CharField("Beschreibung", max_length=400)
+    sort_order = models.FloatField("Nummer zum Sortieren", default=1.0)
 
     def __unicode__(self):
         return u"%s" % (self.title)

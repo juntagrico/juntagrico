@@ -82,6 +82,7 @@ def send_email_intern(request):
         sent = len(emails)
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
+
 @permission_required('my_ortoloco.can_send_mails')
 def send_email_result(request, numsent):
     renderdict = get_menu_dict(request)
@@ -138,6 +139,7 @@ def my_filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
     locos = Loco.objects.filter(abo__depot = depot).annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
+    renderdict['can_send_mails']=True
     renderdict.update({
         'locos': locos,
         'enhanced': "depot"
@@ -150,6 +152,7 @@ def my_filters_area(request, area_id):
     area = get_object_or_404(Taetigkeitsbereich, id=int(area_id))
     locos = area.locos.all().annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
+    renderdict['can_send_mails']=True
     renderdict.update({
         'locos': locos,
         'enhanced': "area"
