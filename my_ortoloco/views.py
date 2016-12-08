@@ -41,22 +41,33 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 def get_menu_dict(request):
     loco = request.user.loco
     next_jobs = []
-    if loco.abo is not None:
-        allebohnen = Boehnli.objects.filter(loco=loco)
-        userbohnen = []
 
-        for bohne in allebohnen:
+    def filter_to_past_boehnli(boehnli):
+        res = []
+        for bohne in boehnli:
             if bohne.job.time.year == date.today().year and bohne.job.time < timezone.now():
-                userbohnen.append(bohne)
+                res.append(bohne)
+        return res
+
+    if loco.abo is not None:
+        partner_bohnen = []
+        for abo_loco in loco.abo.bezieher_locos():
+            if abo_loco == loco: continue
+            partner_bohnen.extend(filter_to_past_boehnli(Boehnli.objects.filter(loco=abo_loco)))
+
+        userbohnen = filter_to_past_boehnli(Boehnli.objects.filter(loco=loco))
+        abo_size = loco.abo.size * 10
 
         # amount of beans shown => round up if needed never down
         bohnenrange = range(0, max(userbohnen.__len__(), int(math.ceil(loco.abo.size * 10 / loco.abo.locos.count()))))
+        bohnenrange = range(0, max(abo_size, len(userbohnen) + len(partner_bohnen)))
 
         for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
             if bohne.job.time > timezone.now():
                 next_jobs.append(bohne.job)
     else:
         bohnenrange = None
+        partner_bohnen = []
         userbohnen = []
         next_jobs = []
 
@@ -67,6 +78,9 @@ def get_menu_dict(request):
         'bohnenrange': bohnenrange,
         'userbohnen_total': len(userbohnen),
         'userbohnen_kernbereich': len([bohne for bohne in userbohnen if bohne.is_in_kernbereich()]),
+        'partner_bohnen_total': len(userbohnen) + len(partner_bohnen),
+        'partner_bohnen_kernbereich': len(userbohnen) + len([bohne for bohne in partner_bohnen if bohne.is_in_kernbereich()]),
+        'abo_size': abo_size,
         'next_jobs': next_jobs,
         'can_filter_locos': request.user.has_perm('my_ortoloco.can_filter_locos'),
         'can_filter_abos': request.user.has_perm('my_ortoloco.can_filter_abos'),
