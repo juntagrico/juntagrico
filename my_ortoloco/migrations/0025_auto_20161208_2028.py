@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             loco.save()
             
         for extra in ExtraAbo.objects.all():
-            extra.abo_id=extra.tmp_abo_id
+            extra.main_abo_id=extra.tmp_abo_id
             extra.save()
             
     dependencies = [
