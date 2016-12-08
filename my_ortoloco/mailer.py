@@ -7,8 +7,14 @@ from django.template import Context
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.contrib.auth.models import User, Permission
+from django.contrib.sites.shortcuts import get_current_site
 import re
 
+def get_server(server):
+    site_from_db = get_current_site(None).domain
+    if site_from_db:
+        return site_from_db
+    return server
 
 # sends mail only to specified email-addresses if dev mode
 def send_mail(subject, message, from_email, to_emails):
@@ -83,7 +89,7 @@ def send_welcome_mail(email, password, server):
         'subject': 'Willkommen bei ortoloco',
         'username': email,
         'password': password,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(d)
@@ -102,7 +108,7 @@ def send_anteilschein_created_mail(anteilschein, server):
     d = {
         'loco': anteilschein.loco,
         'anteilschein': anteilschein,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
@@ -127,7 +133,7 @@ def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
         'password': password,
         'hash': hash,
         'anteilsscheine': anteilsscheine,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(d)
@@ -145,12 +151,12 @@ def send_filtered_mail(subject, message, text_message, emails, server, attachmen
     htmld = {
         'subject': subject,
         'content': message,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
     textd = {
         'subject': subject,
         'content': text_message,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(textd)
@@ -172,7 +178,7 @@ def send_mail_password_reset(email, password, server):
         'subject': subject,
         'email': email,
         'password': password,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(d)
@@ -192,7 +198,7 @@ def send_job_reminder(emails, job, participants, server):
     d = {
         'job': job,
         'participants': participants,
-        'serverurl': "http://" + server,
+        'serverurl': "http://" + get_server(server),
         'contact' : contact
     }
 
@@ -209,7 +215,7 @@ def send_job_canceled(emails, job, server):
 
     d = {
         'job': job,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(d)
@@ -225,7 +231,7 @@ def send_job_time_changed(emails, job, server):
 
     d = {
         'job': job,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(d)
@@ -241,7 +247,7 @@ def send_depot_changed(emails, depot, server):
 
     d = {
         'depot': depot,
-        'serverurl': "http://" + server
+        'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(d)
