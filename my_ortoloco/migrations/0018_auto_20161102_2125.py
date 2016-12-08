@@ -9,16 +9,10 @@ def data_migration(apps, schema_editor):
     ExtraAbo = apps.get_model("my_ortoloco", "ExtraAbo")
     for abo in Abo.objects.all():
         for extra in abo.extra_abos.all():
-            extra_abo = ExtraAbo.create()
-            extra_abo.abo = abo
-            extra_abo.type = extra
-            extra_abo.active = True
+            extra_abo = ExtraAbo.objects.create(abo=abo,type=extra,active=True)
             extra_abo.save()
         for extra in abo.future_extra_abos.all():
-            extra_abo = ExtraAbo.create()
-            extra_abo.abo = abo
-            extra_abo.type = extra
-            extra_abo.active = False
+            extra_abo = ExtraAbo.objects.create(abo=abo,type=extra,active=False)
             extra_abo.save()
         
 

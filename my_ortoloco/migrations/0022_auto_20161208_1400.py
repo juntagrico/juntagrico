@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             billable.polymorphic_ctype_id = abo_ct.id
             billable.save()
             billable.refresh_from_db()
-            abo.billable_ptr_id=billable.id
+            abo.billable_ptr=billable.id
             abo.save()  
                 
         share_ct = ContentType.objects.filter(model='anteilschein')[0]
@@ -30,16 +30,16 @@ class Migration(migrations.Migration):
             billable.polymorphic_ctype_id = share_ct.id
             billable.save()
             billable.refresh_from_db()
-            share.billable_ptr_id=billable.id
+            share.billable_ptr=billable.id
             share.save()    
                      
         extra_ct = ContentType.objects.filter(model='extraabo')[0]
         for extra in ExtraAbo.objects.all():
             billable = Billable.objects.create()
-            billable.polymorphic_ctype_id = wextra_ct.id
+            billable.polymorphic_ctype_id = extra_ct.id
             billable.save()
             billable.refresh_from_db()
-            extra.billable_ptr_id=billable.id
+            extra.billable_ptr=billable.id
             extra.save()   
 
     dependencies = [

@@ -44,18 +44,6 @@ class Migration(migrations.Migration):
             old_name='abo',
             new_name='main_abo',
         ),
-        migrations.RemoveField(
-            model_name='abo',
-            name='id',
-        ),
-        migrations.RemoveField(
-            model_name='anteilschein',
-            name='id',
-        ),
-        migrations.RemoveField(
-            model_name='extraabo',
-            name='id',
-        ),
         migrations.AddField(
             model_name='bill',
             name='billable',
@@ -64,19 +52,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='abo',
             name='billable_ptr',
-            field=models.OneToOneField(auto_created=True, default=1, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='my_ortoloco.Billable'),
+            field=models.IntegerField(null=True),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='anteilschein',
             name='billable_ptr',
-            field=models.OneToOneField(auto_created=True, default=1, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='my_ortoloco.Billable'),
+            field=models.IntegerField(null=True),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='extraabo',
             name='billable_ptr',
-            field=models.OneToOneField(auto_created=True, default=1, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='my_ortoloco.Billable'),
+            field=models.IntegerField(null=True),
             preserve_default=False,
         ),
     ]
