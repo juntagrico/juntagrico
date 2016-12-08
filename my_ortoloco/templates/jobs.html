@@ -3,7 +3,7 @@
 {% block content %}
     <h3>Alle Einsätze im Überblick</h3>
     <div id="jobs">
-        <table class="list" style="display: table;">
+        <table id="filter-table" class="list table" style="display: table;">
             <thead>
             <tr>
                 <th>Kernb.</th>
@@ -17,7 +17,7 @@
             {% for job in jobs %}
                 <tr>
                     <td>{% if job.typ.bereich.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/erbse_voll_kernbereich.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/erbse_voll.png"/>{% endif %}</td>
-                    <td>{{ job.wochentag }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}||{{ job.time_stamp }}</td>
+                    <td>{{ job.wochentag }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}</td>
                     <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.typ.get_name }}</a></td>
                     <td><img alt="Job-Status: {{ job.get_status_bohne }}" src="/static/img/{{ job.get_status_bohne }}"/></td>
                     <td>{{ job.typ.location }}</td>
@@ -33,6 +33,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/dable.js"></script>
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
     <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyJobs.js"></script>
 {% endblock %}

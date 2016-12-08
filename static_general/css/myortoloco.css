@@ -47,11 +47,6 @@
     display: none !important;
 }
 
-#jobs th, #filter-locos th {
-    background-color: #4c9434;
-    color: white;
-}
-
 #jobs .table-sort {
     font-family: Arial;
     font-size: 12;
@@ -132,6 +127,7 @@
 textarea#recipients {
     width: 100%;
 }
+
 textarea#recipients[disabled=disabled] {
     background: transparent;
     border: none;
@@ -141,11 +137,13 @@ textarea#recipients[disabled=disabled] {
 #edit-recipients-action {
     font-size: smaller;
 }
+
 #edit-recipients-action::before {
-    content : "(";
+    content: "(";
 }
+
 #edit-recipients-action::after {
-    content : ")";
+    content: ")";
 }
 
 .nav li.inline a {
@@ -164,11 +162,11 @@ table.future {
     margin-top: 50px;
 }
 
-table.future th{
+table.future th {
     text-align: left;
 }
 
-table.future td{
+table.future td {
     line-height: 30px;
 }
 
@@ -213,4 +211,21 @@ table.future td{
 .section-title {
     font-size: 12px;
     margin-top: -20px;
+}
+
+.table th {
+    position: relative;
+}
+
+.table th:before {
+    position: absolute;
+    right: 10px;
+}
+
+.table th.sorting_asc:before {
+    content: "↓";
+}
+
+.table th.sorting_desc:before {
+    content: "↑";
 }
