@@ -114,6 +114,22 @@ class Bill(models.Model):
         verbose_name = "Rechnung"
         verbose_name_plural = "Rechnungen"
 
+class Payment(models.Model):
+    """
+    Payment for bill
+    """
+    bill = models.ForeignKey(Bill, related_name="payments", null=False, blank=False,
+                                 on_delete=models.PROTECT)
+    paid_date = models.DateField("Bezahldatum", null=True, blank=True)
+    amount = models.FloatField("Betrag", null=False, blank=False)
+    
+    def __unicode__(self):
+        return u"%s %s" % (self.ref_number)
+
+    class Meta:
+        verbose_name = "Zahlung"
+        verbose_name_plural = "Zahlung"
+
 class ExtraAboType(models.Model):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
