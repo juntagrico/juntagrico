@@ -237,7 +237,7 @@ class Abo(Billable):
         
     @property    
     def extra_abos(self):
-        return self.extra_abo_set.filter(active==True)
+        return self.extra_abo_set.filter(active=True)
         
     @property
     def future_extra_abos(self):
