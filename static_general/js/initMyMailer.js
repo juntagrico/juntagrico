@@ -39,4 +39,8 @@ define([], function () {
             }
         });
     });
+
+    $("#allsingleemail").change(function () {
+        $("#singleemail").toggle();
+    });
 });
