@@ -303,6 +303,9 @@ class JobTypeAdmin(admin.ModelAdmin):
             kwargs["queryset"] = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+class ExtraAboInline(admin.TabularInline):
+    model = ExtraAbo
+    fk_name = 'main_abo'
     
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
@@ -310,6 +313,7 @@ class AboAdmin(admin.ModelAdmin):
     #filter_horizontal = ["users"]
     search_fields = ["locos__user__username", "locos__first_name", "locos__last_name", "depot__name"]
     #raw_id_fields = ["primary_loco"]
+    inlines = [ExtraAboInline]
 
 
 class AuditAdmin(admin.ModelAdmin):
@@ -331,6 +335,7 @@ class DepotAdmin(admin.ModelAdmin):
 
 class ExtraAboAdmin(admin.ModelAdmin):
     raw_id_fields = ["main_abo"] 
+    
 
 
 class BereichAdmin(admin.ModelAdmin):

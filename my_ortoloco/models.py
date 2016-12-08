@@ -191,7 +191,7 @@ class ExtraAbo(Billable):
         instance.old_active = instance.active
 
     def __unicode__(self):
-        return u"%s %s" % (self.id, self.name)
+        return u"%s %s" % (self.id, self.type.name)
 
     class Meta:
         verbose_name = "Zusatz-Abo"
