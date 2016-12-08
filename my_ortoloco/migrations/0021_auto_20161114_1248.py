@@ -67,4 +67,10 @@ class Migration(migrations.Migration):
             field=models.IntegerField(null=True),
             preserve_default=False,
         ),
+        migrations.AddField(
+            model_name='loco',
+            name='tmp_abo_id',
+            field=models.IntegerField(null=True),
+            preserve_default=False,
+        ),
     ]

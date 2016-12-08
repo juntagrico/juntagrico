@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
         Anteilschein = apps.get_model("my_ortoloco", "Anteilschein")
         ExtraAbo = apps.get_model("my_ortoloco", "ExtraAbo")
         Billable = apps.get_model("my_ortoloco", "Billable")
+        Loco = apps.get_model("my_ortoloco", "Loco")
         
         ContentType = apps.get_model("contenttypes", "ContentType")
         
@@ -40,7 +41,11 @@ class Migration(migrations.Migration):
             billable.save()
             billable.refresh_from_db()
             extra.billable_ptr=billable.id
-            extra.save()   
+            extra.save()
+                    
+        for loco in Loco.objects.all():
+            loco.tmp_abo_id=loco.abo_id
+            loco.save()            
 
     dependencies = [
         ('my_ortoloco', '0021_auto_20161114_1248'),

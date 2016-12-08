@@ -375,7 +375,7 @@ class Loco(models.Model):
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
-        instance.old_abo = instance.abo
+        instance.old_abo = None#instance.abo
 
     class Meta:
         verbose_name = "Loco"
