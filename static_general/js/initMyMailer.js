@@ -31,12 +31,12 @@ define([], function () {
         $("#edit-recipients-action").remove();
     });
     $("#template").click(function () {
-	$.ajax({
-    		type: 'GET',
-    		url: '/my/mailtemplate/'+$('#template-list').val()+'/',
-    		success: function (file_html) {        		
-        		tinyMCE.get('message').setContent(tinyMCE.get('message').getContent()+file_html);
-    		}
-	});
-     });
+        $.ajax({
+            type: 'GET',
+            url: '/my/mailtemplate/' + $('#template-list').val() + '/',
+            success: function (file_html) {
+                tinyMCE.get('message').setContent(tinyMCE.get('message').getContent() + file_html);
+            }
+        });
+    });
 });
