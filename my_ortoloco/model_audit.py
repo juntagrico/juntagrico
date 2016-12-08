@@ -19,12 +19,10 @@ class Audit(models.Model):
     target_object = GenericForeignKey('target_type', 'target_id')
 
 
-
 def m2m(m2mrel):
-    source_model = m2mrel.field.model
     target_model = m2mrel.field.rel.to
     fieldname = m2mrel.field.name
-    #source_ct = ContentType.objects.get_for_model(source_model)
+    # source_ct = ContentType.objects.get_for_model(source_model)
     target_ct = ContentType.objects.get_for_model(target_model)
 
     def callback(instance, action, pk_set, **kwds):
@@ -33,15 +31,15 @@ def m2m(m2mrel):
         action = "m2m" + action[4:]
 
         if action == "m2m_clear":
-            Audit.objects.create(action=action, 
-                                 field=fieldname, 
-                                 source_object=instance, 
+            Audit.objects.create(action=action,
+                                 field=fieldname,
+                                 source_object=instance,
                                  target_type=target_ct)
         elif action in ("m2m_add", "m2m_delete"):
             for obj in target_model.objects.filter(pk__in=pk_set):
-                Audit.objects.create(action=action, 
-                                     field=fieldname, 
-                                     source_object=instance, 
+                Audit.objects.create(action=action,
+                                     field=fieldname,
+                                     source_object=instance,
                                      target_object=obj)
 
     # callback needs to have some reference to it, otherwise set weak=False in the connect call
@@ -66,4 +64,3 @@ def fk(rel):
         Audit.objects.create(**kwds)
 
     signals.post_save.connect(callback, sender=source_model, weak=False)
-

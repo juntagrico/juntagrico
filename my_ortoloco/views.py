@@ -432,21 +432,6 @@ def logout_view(request):
     # Redirect to a success page.
     return HttpResponseRedirect("/aktuelles")
 
-
-def mini_migrate_future_zusatzabos(request):
-    new_abo_future_extra = []
-    Throughclass = Abo.future_extra_abos.through
-
-    abos = Abo.objects.filter(extra_abos_changed=False)
-    for abo in abos:
-        for extra in abo.extra_abos.all():
-            new_abo_future_extra.append(Throughclass(extraabotype=extra, abo=abo))
-
-    Throughclass.objects.bulk_create(new_abo_future_extra)
-    abos.update(extra_abos_changed=True)
-    return HttpResponse("Done!")
-
-
 def test_filters(request):
     lst = Filter.get_all()
     res = []
