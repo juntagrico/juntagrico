@@ -327,8 +327,10 @@ class AnteilscheinAdmin(admin.ModelAdmin):
 class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ["contact"]
     list_display = ["name", "code", "weekday", "contact"]
-    
-    
+
+
+class ExtraAboAdmin(admin.ModelAdmin):
+    raw_id_fields = ["main_abo"] 
 
 
 class BereichAdmin(admin.ModelAdmin):
@@ -410,7 +412,7 @@ class LocoAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Depot, DepotAdmin)
-admin.site.register(ExtraAbo)
+admin.site.register(ExtraAbo, ExtraAboAdmin)
 admin.site.register(ExtraAboType)
 admin.site.register(ExtraAboCategory)
 admin.site.register(Boehnli,BoehnliAdmin)
