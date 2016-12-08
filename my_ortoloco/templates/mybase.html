@@ -112,7 +112,7 @@
                 <hr>
                 <div class="bohnen">
                     {% block bohnen %}
-                        <h5>Dein Böhnli-Konto</h5>
+                        <h5>Abo Böhnli-Konto</h5>
                         {% for i in bohnenrange %}
                             {% if i < userbohnen_kernbereich %}
                                 <img alt="Kernbereich" title="Kernbereich" class="jobstatus"
@@ -120,8 +120,15 @@
                             {% elif i < userbohnen_total %}
                                 <img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich" class="jobstatus"
                                      src="/static/img/erbse_voll.png"/>
+                            {% elif i < partner_bohnen_kernbereich %}
+                                <img alt="Kernbereich Partner" title="Kernbereich Partner" class="jobstatus"
+                                     src="/static/img/erbse_voll_kernbereich.png" style="opacity:0.5;"/>
+                            {% elif i < partner_bohnen_total %}
+                                <img alt="anderer Tätigkeitsbereich Partner" title="anderer Tätigkeitsbereich Partner" class="jobstatus"
+                                     src="/static/img/erbse_voll.png" style="opacity:0.5;"/>
                             {% else %}
-                                <img alt="Leere Erbse" class="jobstatus" src="/static/img/erbse_leer.png"/>
+                                <img alt="Leere Erbse (ganzes Abo)" class="jobstatus" src="/static/img/erbse_leer.png"
+                                     title="noch zu erledigen (ganzes Abo)"/>
                             {% endif %}
                         {% endfor %}
                     {% endblock %}
