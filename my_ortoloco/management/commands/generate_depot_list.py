@@ -49,9 +49,14 @@ class Command(BaseCommand):
         
         if options['force'] and not options['future']:
             print "future depots ignored, use --future to override"
+        Abo.fill_sizes_cache()
         
         depots = Depot.objects.all().order_by("code")
-
+        
+        abo_names = []
+        for abo_size in AboSize.objects.filter(depot_list=True).order_by('size'):
+            abo_names.append(abo_size.name)
+        
         categories = []
         types =[]
         for category in ExtraAboCategory.objects.all().order_by("sort_order"):
@@ -92,14 +97,23 @@ class Command(BaseCommand):
                 row[count] += depot.overview_cache[count]
                 all[count] += depot.overview_cache[count]
                 count+=1; 
-            
-        overview["Dienstag"].insert(2, overview["Dienstag"][0]+2*overview["Dienstag"][1])
-        overview["Donnerstag"].insert(2, overview["Donnerstag"][0]+2*overview["Donnerstag"][1])
-        overview["all"].insert(2, overview["all"][0]+2*overview["all"][1])
+        
+        insert_point = len(abo_names)
+        overview["Dienstag"].insert(insert_point, 0)
+        overview["Donnerstag"].insert(insert_point, 0)
+        overview["all"].insert(insert_point, 0)
+        
+        index=0
+        for abo_size in AboSize.objects.filter(depot_list=True).order_by('size'):
+            overview["Dienstag"][insert_point]=overview["Dienstag"][insert_point]+ abo_size.size*overview["Dienstag"][index]
+            overview["Donnerstag"][insert_point]=overview["Donnerstag"][insert_point]+ abo_size.size*overview["Donnerstag"][index]
+            overview["all"][insert_point]=overview["all"][insert_point]+ abo_size.size*overview["all"][index]
+            index+=1
             
         renderdict = {
             "overview": overview,
             "depots": depots,
+            "abo_names": abo_names,
             "categories" : categories,
             "types" : types,
             "datum": timezone.now(),

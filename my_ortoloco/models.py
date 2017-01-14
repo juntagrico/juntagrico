@@ -47,21 +47,13 @@ class Depot(models.Model):
         if 8 > self.weekday > 0:
             day = helpers.weekdays[self.weekday]
         return day
-
-    @property
-    def small_abos_t(self):
-        return self.small_abos(self.active_abos())
-
+    
     @staticmethod
-    def small_abos(abos):
-        return len(abos.filter(Q(size=1) | Q(size=3)))
-
-    def big_abos_t(self):
-        return self.big_abos(self.active_abos())
-
-    def big_abos(self, abos):
-        return len(abos.filter(Q(size=2) | Q(size=3) | Q(size=4))) + len(
-            self.active_abos().filter(size=4))
+    def abo_amounts(abos, name):
+        amount = 0
+        for abo in abos.all():
+            amount += abo.abo_amount(name)
+        return amount
 
     @staticmethod
     def extra_abo(abos, code):
@@ -73,8 +65,8 @@ class Depot(models.Model):
     def fill_overview_cache(self):
         self.fill_active_abo_cache()
         self.overview_cache = []
-        self.overview_cache.append(int(self.small_abos(self.abo_cache)))
-        self.overview_cache.append(self.big_abos(self.abo_cache))
+        for abo_size in AboSize.objects.filter(depot_list=True).order_by('size'):
+            self.overview_cache.append(self.abo_amounts(self.abo_cache,abo_size.name))
         for category in ExtraAboCategory.objects.all().order_by("sort_order"):
             for extra_abo in ExtraAboType.objects.all().filter(category=category).order_by("sort_order"):
                 code = extra_abo.name
@@ -198,6 +190,25 @@ class ExtraAbo(Billable):
         verbose_name_plural = "Zusatz-Abos"
 
 
+class AboSize(models.Model):
+    """
+    Mail template for rendering
+    """
+    name = models.CharField("Name", max_length=100, unique=True)
+    long_name = models.CharField("Langer Name", max_length=100, unique=True)
+    size = models.PositiveIntegerField("Grösse", unique=True)
+    shares = models.PositiveIntegerField("Anz benötigter Anteilsscheine")
+    depot_list = models.BooleanField('Sichtbar auf Depotliste',default=True)    
+    description = models.TextField("Beschreibung", max_length=1000, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Abo Grösse'
+        verbose_name_plural = 'Abo Grössen'        
+
+
 class Abo(Billable):
     """
     One Abo that may be shared among several people.
@@ -214,6 +225,7 @@ class Abo(Billable):
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     old_active = None
+    sizes_cache = {}
 
     def __unicode__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
@@ -248,16 +260,29 @@ class Abo(Billable):
     def future_extra_abos(self):
         return self.extra_abo_set.filter(Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
 
-    @property
-    def small_abos(self):
-        return self.size % 2
-
-    def big_abos(self):
-        return int((self.size % 10) / 2)
-
-    def house_abos(self):
-        return int(self.size / 10)
-
+    def abo_amount(self, abo_name):
+        if Abo.sizes_cache == {}:
+            fill_sizes_cache()
+        if Abo.sizes_cache['list'].__len__ == 1:
+            return self.size/Abo.sizes_cache['list'][0]
+        index=Abo.sizes_cache['map'][abo_name]
+        if index == len(Abo.sizes_cache['list'])-1:
+            return int(self.size /Abo.sizes_cache['list'][index])
+        return int((self.size % Abo.sizes_cache['list'][index+1])/Abo.sizes_cache['list'][index])
+    
+    @staticmethod
+    def fill_sizes_cache():
+        list=[]
+        map ={}
+        index=0
+        for size in AboSize.objects.order_by('size'):
+            list.append(size.size)
+            map[size.name]=index
+            index=index+1
+        Abo.sizes_cache={'list': list,
+            'map':map,
+        }
+    
     @staticmethod
     def next_extra_change_date():
         month = int(time.strftime("%m"))

@@ -316,12 +316,10 @@ def my_createabo(request):
     """
     loco = request.user.loco
     scheineerror = False
-    if loco.abo is None or loco.abo.size is 1:
-        selectedabo = "small"
-    elif loco.abo.size is 2:
-        selectedabo = "big"
+    if loco.abo is None:
+        selectedabo="none"
     else:
-        selectedabo = "house"
+        selectedabo = AboSize.objects.filter(size=loco.abo.size)[0].name
 
     loco_scheine = 0
     if loco.abo is not None:
@@ -333,12 +331,12 @@ def my_createabo(request):
         selectedabo = request.POST.get("abo")
 
         scheine += loco_scheine
-        min_anzahl_scheine = {"none": 1, "small": 2, "big": 4, "house": 20}.get(request.POST.get("abo"))
+        min_anzahl_scheine = next(iter(AboSize.objects.filter(name=selectedabo).values_list('shares', flat=True) or []), 1)
         if scheine < min_anzahl_scheine:
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
-            size = {"none": 0, "small": 1, "big": 2, "house": 10}.get(request.POST.get("abo"))
+            size = next(iter(AboSize.objects.filter(name=selectedabo).values_list('size', flat=True) or []), 0)
 
             if size > 0:
                 if loco.abo is None:
@@ -378,12 +376,13 @@ def my_createabo(request):
 
     renderdict = {
         'loco_scheine': loco_scheine,
-        "loco": request.user.loco,
-        "depots": Depot.objects.all(),
+        'loco': request.user.loco,
+        'abo_sizes': AboSize.objects.order_by('size'),
+        'depots': Depot.objects.all(),
         'selected_depot': selected_depot,
-        "selected_abo": selectedabo,
-        "scheineerror": scheineerror,
-        "mit_locos": mit_locos
+        'selected_abo': selectedabo,
+        'scheineerror': scheineerror,
+        'mit_locos': mit_locos
     }
     return render(request, "createabo.html", renderdict)
 

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <style>
         @page {
-            size: a4 portrait;
+            size: A4;
                 @frame content_frame {
         left: 50pt;
             width: 512pt;
@@ -81,8 +81,10 @@
         </tr>
         <tr>
             <td></td>
-            <td class="small left-border bottom-border">klein</td>
-            <td class="small bottom-border ">gross</td>
+            
+            {% for abo_name in abo_names %}
+                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border">{{ abo_name }}</td>
+            {% endfor %}
             <td class="small bottom-border right-border">Einheiten</td>
             {% for type in types %}
                 <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
@@ -127,8 +129,9 @@
         <tr>
             <td></td>
             <td></td>
-            <td class="small left-border bottom-border">klein</td>
-            <td class="small bottom-border right-border">gross</td>
+            {% for abo_name in abo_names %}
+                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ abo_name }}</td>
+            {% endfor %}
             {% for type in types %}
                 <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}
@@ -163,8 +166,9 @@
             <tr>
                 <td style="text-align:right" class="top-border left-border">{{ abo.primary_loco.get_name }}</td>
                 <td style="text-align:right" class="top-border left-border">{{ abo.andere_bezieher }}</td>
-                <td style="text-align:right" class="top-border left-border">{% if abo.small_abos %}{{ abo.small_abos }} {% endif %}</td>
-                <td style="text-align:right" class="top-border left-border">{% if abo.big_abos %}{{ abo.big_abos }} {% endif %}</td>
+                {% for abo_name in abo_names %}                    
+                    <td style="text-align:right" class="top-border left-border">{% if abo|abos_amount:abo_name %}{{ abo|abos_amount:abo_name }}{% endif %}</td>
+                {% endfor %}
                 {% for type in types %}                    
                     <td style="text-align:right" class="top-border left-border">{% if abo|extra_abo:type.name %}1{% endif %}</td>
                 {% endfor %}
@@ -190,9 +194,10 @@
         </tr>
         <tr>
             <td></td>
-            <td></td>
-            <td class="small left-border bottom-border">klein</td>
-            <td class="small bottom-border right-border">gross</td>
+            <td></td>            
+            {% for abo_name in abo_names %}
+                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ abo_name }}</td>
+            {% endfor %}
             {% for type in types %}
                 <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}
@@ -226,9 +231,10 @@
         </tr>
         <tr>
             <td></td>
-            <td></td>
-            <td class="small left-border bottom-border">klein</td>
-            <td class="small bottom-border right-border">gross</td>
+            <td></td>            
+            {% for abo_name in abo_names %}
+                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ abo_name }}</td>
+            {% endfor %}
             {% for type in types %}
                 <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}
