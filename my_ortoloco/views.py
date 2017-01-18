@@ -359,7 +359,7 @@ def my_contact_loco(request, loco_id, job_id):
             index += 1
         send_contact_loco_form(request.POST.get("subject"), request.POST.get("message"), loco, contact_loco, request.POST.get("copy"),attachements)
         is_sent = True
-
+    job = Job.objects.filter(id=job_id)[0]
     renderdict = get_menu_dict(request)
     renderdict.update({        
         'admin': request.user.is_staff or job.typ.bereich.coordinator==loco,
