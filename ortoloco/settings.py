@@ -20,7 +20,7 @@ if DEBUG is True:
 
 
 ADMINS = (
-    ('Oli', 'oliver.ganz@gmail.com'),
+    ('Admin', os.environ.get('ORTOLOCO_ADMIN_EMAIL')),
 )
 SERVER_EMAIL="server@ortoloco.ch"
 
