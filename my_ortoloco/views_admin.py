@@ -382,7 +382,17 @@ def my_get_mail_template(request, template_id):
     c = Context(renderdict)
     result = t.render(c)
     return HttpResponse(result)
-    
+
+
+@permission_required('my_ortoloco.is_operations_group')
+def my_maps(request):
+
+    renderdict = {
+        "depots": Depot.objects.all(),
+        "locos" : Loco.objects.all(),
+    }
+
+    return render(request, "maps.html", renderdict)
 
 
 @permission_required('my_ortoloco.is_operations_group')

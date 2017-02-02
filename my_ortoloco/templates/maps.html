@@ -1,0 +1,40 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <div id="maps">
+        <h3>Alle Depots und Locos</h3>
+
+        <div class="row">
+        </div>
+        <div id="map-canvas">
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript">
+        var depots = [
+        {% for depot in depots %}
+        {
+            name: '{{ depot.name }}',
+            addr_street: '{{ depot.addr_street }}',
+            addr_zipcode: '{{ depot.addr_zipcode }}',
+            addr_location: '{{ depot.addr_location }}',
+            latitude: '{{ depot.latitude }}',
+            longitude: '{{ depot.longitude }}',
+            code: '{{ depot.code }}'
+        },
+        {% endfor %}
+        ]
+        var locos = [
+        {% for loco in locos %}
+        '{{ loco.addr_street }} {{loco.addr_zipcode}} {{loco.addr_location}}',
+        {% endfor %}
+        ]
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyMaps.js"></script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwgHE65hyBkmTeUG178QxKXLhniRZ9J3s"
+        type="text/javascript"></script>
+{% endblock %}
