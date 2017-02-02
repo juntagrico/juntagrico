@@ -13,27 +13,37 @@ define([], function () {
                 map: map,
                 title: depot.name
             });
-            new google.maps.InfoWindow({
-                content: "<h3>" + depot.name + "</h3>" + depot.addr_street + "<br/>" + depot.addr_zipcode + " " + depot.addr_location
-            }).open(map, depotMarker);
         };
         var geocoder = new google.maps.Geocoder();
 
         for (var i = 0; i < locos.length; i++) {
-            geocoder.geocode({'address': locos[i]}, function (results, status) {
-                if (status === google.maps.GeocoderStatus.OK) {
-                    var locoMarker = new google.maps.Circle({
-                        strokeColor: '#4c9434',
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: '#4c9434',
-                        fillOpacity: 1,
-                        map: map,
-                        center: results[0].geometry.location,
-                        radius: 25
-                    });
-                }
-            });
+            var string = locos[i];
+            var addLoco = function (position) {
+                var locoMarker = new google.maps.Circle({
+                    strokeColor: '#4c9434',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#4c9434',
+                    fillOpacity: 1,
+                    map: map,
+                    center: position,
+                    radius: 25
+                });
+            }
+            if (localStorage.getItem(string + "lat") && localStorage.getItem(string + "lng")) {
+                addLoco({
+                    lat: parseFloat(localStorage.getItem(string + "lat")),
+                    lng: parseFloat(localStorage.getItem(string + "lng"))
+                });
+            } else {
+                geocoder.geocode({'address': locos[i]}, function (results, status) {
+                    if (status === google.maps.GeocoderStatus.OK) {
+                        addLoco(results[0].geometry.location);
+                        localStorage.setItem(string + "lat", results[0].geometry.location.lat());
+                        localStorage.setItem(string + "lng", results[0].geometry.location.lng());
+                    }
+                });
+            }
         }
 
         for (var i = 0; i < depots.length; i++) {

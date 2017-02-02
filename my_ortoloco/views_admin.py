@@ -391,7 +391,7 @@ def my_maps(request):
 
     renderdict = {
         "depots": Depot.objects.all(),
-        "locos" : Loco.objects.all(),
+        "abos" : Abo.objects.filter(active=True),
     }
 
     return render(request, "maps.html", renderdict)
