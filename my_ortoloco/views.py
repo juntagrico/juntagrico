@@ -48,7 +48,7 @@ def get_menu_dict(request):
             if bohne.job.time.year == date.today().year and bohne.job.time < timezone.now():
                 res.append(bohne)
         return res
-
+    abo_size=0
     if loco.abo is not None:
         partner_bohnen = []
         for abo_loco in loco.abo.bezieher_locos():
