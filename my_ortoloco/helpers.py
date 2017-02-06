@@ -227,6 +227,8 @@ def genecrate_ical_for_job(job):
     e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
     e.end = job.time.strftime('%Y%m%d %H:%M:%S')
     c.events.append(e)
-    return str(c)
+    return str(c).replace(r"\n", r"\r\n")
+
+
                     
             
