@@ -225,7 +225,7 @@ def genecrate_ical_for_job(job):
     e.location = job.typ.location
     e.description = job.typ.description
     e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
-    e.duration =({'hours':job.typ.duration})
+    e.end = job.time.strftime('%Y%m%d %H:%M:%S')
     c.events.append(e)
     return str(c)
                     
