@@ -131,6 +131,7 @@ def my_job(request, job_id):
         add = int(num)
         for i in range(add):
             Boehnli.objects.create(loco=loco, job=job)
+        send_job_signup([loco.email], job, request.META["HTTP_HOST"])
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
