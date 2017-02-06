@@ -11,6 +11,8 @@ from django.template.defaultfilters import slugify
 
 from django.utils import timezone
 
+from ics import Calendar, Event
+
 from xhtml2pdf import pisa
 
 from django.contrib.auth.models import User
@@ -21,6 +23,8 @@ from StringIO import StringIO
 
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+
+
 
 class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
