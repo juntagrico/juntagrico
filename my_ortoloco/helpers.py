@@ -210,5 +210,19 @@ def generate_excell(fields, model_instance):
     xlsx_data = output.getvalue()
     response.write(xlsx_data)
     return response
+
+"""
+    Create a ical string from an job
+"""
+def genecrate_ical_for_job(job):
+    c = Calendar()
+    e = Event()
+    e.name = 'ortoloco Einsatz:'+job.typ.name
+    e.location = job.typ.location
+    e.description = job.typ.description
+    e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
+    e.duration =({'hours':job.typ.duration})
+    c.events.append(e)
+    return str(c)
                     
             

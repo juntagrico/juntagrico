@@ -239,10 +239,33 @@ def send_job_time_changed(emails, job, server):
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
+    ical_content = genecrate_ical_for_job(job)
 
     msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(vcal_content, "text/calendar")
     send_mail_multi(msg)
+
+  
+
+def send_job_signup(emails, job, server):
+    plaintext = get_template('mails/job_signup_mail.txt')
+    htmly = get_template('mails/job_signup_mail.html')
+
+    d = {
+        'job': job,
+        'serverurl': "http://" + get_server(server)
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+    ical_content = genecrate_ical_for_job(job)
+
+    msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
+    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(vcal_content, "text/calendar")
+    send_mail_multi(msg)
+
     
 def send_depot_changed(emails, depot, server):
     plaintext = get_template('mails/depot_changed_mail.txt')

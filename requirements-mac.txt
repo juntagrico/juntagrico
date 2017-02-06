@@ -19,4 +19,5 @@ django-storages==1.5.2
 XlsxWriter==0.9.6
 django-polymorphic==1.0.2
 django-imagekit==3.3
+ics==0.3.1
 -r my_ortoloco/personalisation/personal_requirements.txt
