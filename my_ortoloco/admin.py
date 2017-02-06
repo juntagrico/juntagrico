@@ -319,8 +319,8 @@ class AuditAdmin(admin.ModelAdmin):
 
 
 class AnteilscheinAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "loco"]
-    search_fields = ["id", "loco__username", "loco__first_name", "loco__last_name"]
+    list_display = ["__unicode__", "loco", "number", "paid_date", "issue_date", "booking_date", "cancelled_date", "termination_date", "payback_date"]
+    search_fields = ["id", "loco__email", "loco__first_name", "loco__last_name", "number", "paid_date", "issue_date", "booking_date", "cancelled_date", "termination_date", "payback_date"]
     raw_id_fields = ["loco"]
 
 
