@@ -245,7 +245,7 @@ def send_job_time_changed(emails, job, server):
 
     msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
-    msg.attach_alternative(vcal_content, "text/calendar")
+    msg.attach_alternative(ical_content, "text/calendar")
     send_mail_multi(msg)
 
   
@@ -265,7 +265,7 @@ def send_job_signup(emails, job, server):
 
     msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
-    msg.attach_alternative(vcal_content, "text/calendar")
+    msg.attach_alternative(ical_content, "text/calendar")
     send_mail_multi(msg)
 
     
