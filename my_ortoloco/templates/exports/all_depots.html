@@ -115,7 +115,7 @@
 {% for depot in depots %}
     <h2 style="font-size: 18px;">{{ depot.wochentag }} - {{ depot.name }}</h2>
     <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
-
+    Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
             <td></td>
@@ -176,7 +176,7 @@
                 <td class="top-border left-border right-border"></td>
             </tr>
         {% endfor %}
-        {% if depot.active_abos.all|length > 15 %}
+        {% if depot.active_abos.all|length > 20 %}
         <tr>
             <th>Name</th>
             <th>Abo mit</th>
@@ -215,7 +215,6 @@
         </tr>
         {% endif%}
     </table>
-    Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
     <div class="page-break"></div>
 {% endfor %}
 {% for i in depot_overviews %}
