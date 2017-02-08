@@ -8,7 +8,25 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.contrib.auth.models import User, Permission
 from django.contrib.sites.shortcuts import get_current_site
-import os, re
+import os, re, sys
+
+def trace_calls(frame, event, arg):
+    if event != 'call':
+        return
+    co = frame.f_code
+    func_name = co.co_name
+    if func_name == 'write':
+        # Ignore write() calls from print statements
+        return
+    func_line_no = frame.f_lineno
+    func_filename = co.co_filename
+    caller = frame.f_back
+    caller_line_no = caller.f_lineno
+    caller_filename = caller.f_code.co_filename
+    print 'Call to %s on line %s of %s from line %s of %s' % \
+        (func_name, func_line_no, func_filename,
+         caller_line_no, caller_filename)
+    return
 
 from my_ortoloco.helpers import *
 
@@ -267,7 +285,9 @@ def send_job_signup(emails, job, server):
     msg = EmailMultiAlternatives("ortoloco - für Job Angemeldet", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
     msg.attach("einsatz.ics", ical_content, "text/calendar")
+    sys.settrace(trace_calls)
     send_mail_multi(msg)
+    sys.settrace(None)
 
     
 def send_depot_changed(emails, depot, server):
