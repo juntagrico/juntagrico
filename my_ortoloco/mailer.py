@@ -262,6 +262,7 @@ def send_job_signup(emails, job, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
     ical_content = genecrate_ical_for_job(job)
+    print repr(ical_content)
 
     msg = EmailMultiAlternatives("ortoloco - für Job Angemeldet", text_content, 'info@ortoloco.ch', emails)
     msg.attach_alternative(html_content, "text/html")
