@@ -194,7 +194,7 @@ def my_abos_depot(request, depot_id):
     for abo in Abo.objects.filter(depot = depot):
         boehnlis = 0
         boehnlis_kernbereich = 0
-        for loco in abo.locos.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=d.year, boehnli__job__time__lt=d, boehnli__core_cache=True, then=1)))):
+        for loco in abo.locos.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1)))):
             boehnlis += loco.boehnli_count
             boehnlis_kernbereich += loco.core_boehnli_count
 
