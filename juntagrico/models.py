@@ -12,7 +12,7 @@ from polymorphic.models import PolymorphicModel
 
 import helpers
 import model_audit
-from my_ortoloco.mailer import *
+from juntagrico.mailer import *
 
 
 class Depot(models.Model):

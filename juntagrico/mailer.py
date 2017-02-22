@@ -11,7 +11,7 @@ from django.contrib.sites.shortcuts import get_current_site
 import os, re
 
 
-from my_ortoloco.helpers import *
+from juntagrico.helpers import *
 
 def get_server(server):
     site_from_env = os.getenv("ORTOLOCO_TEMPLATE_SERVERURL")

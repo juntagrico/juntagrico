@@ -10,7 +10,7 @@ Folgender Loco hat einen Anteilschein Bestellt
 {{loco.get_phone}}
 
 Bitte sobald er bezahlt und ausgestellt ist bitte hier eintragen
-{{serverurl}}/admin/my_ortoloco/anteilschein/{{anteilschein.id}}/change/
+{{serverurl}}/admin/juntagrico/anteilschein/{{anteilschein.id}}/change/
 
 Viel Spass beim Erfassen
 {% endblock %}

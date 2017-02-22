@@ -20,12 +20,12 @@ from django.utils import timezone
 
 import xlsxwriter
 
-from my_ortoloco.models import *
-from my_ortoloco.forms import *
-from my_ortoloco.helpers import *
-from my_ortoloco.filters import Filter
-from my_ortoloco.mailer import *
-from my_ortoloco.views import get_menu_dict
+from juntagrico.models import *
+from juntagrico.forms import *
+from juntagrico.helpers import *
+from juntagrico.filters import Filter
+from juntagrico.mailer import *
+from juntagrico.views import get_menu_dict
 
 from static_ortoloco.models import StaticContent
 

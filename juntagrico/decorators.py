@@ -1,6 +1,6 @@
 from functools import wraps
 from django.shortcuts import get_object_or_404
-from my_ortoloco.models import Abo
+from juntagrico.models import Abo
 from django.http import HttpResponseRedirect
 
 

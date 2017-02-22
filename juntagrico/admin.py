@@ -9,9 +9,9 @@ from django.conf.urls import url
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 
-from my_ortoloco.models import *
-from my_ortoloco import helpers
-from my_ortoloco import admin_helpers
+from juntagrico.models import *
+from juntagrico import helpers
+from juntagrico import admin_helpers
 
 # This form exists to restrict primary user choice to users that have actually set the
 # current abo as their abo
@@ -219,12 +219,12 @@ class JobAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
-        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(typ__bereich__coordinator=request.user.loco)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "typ" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if db_field.name == "typ" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             kwargs["queryset"] = JobType.objects.filter(bereich__coordinator=request.user.loco)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -260,12 +260,12 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
-        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(bereich__coordinator=request.user.loco)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "bereich" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if db_field.name == "bereich" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             kwargs["queryset"] = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -294,12 +294,12 @@ class JobTypeAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
-        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(bereich__coordinator=request.user.loco)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "bereich" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if db_field.name == "bereich" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             kwargs["queryset"] = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -349,7 +349,7 @@ class BereichAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
-        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(coordinator=request.user.loco)
 	return qs
 
@@ -357,7 +357,7 @@ class BoehnliAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
-        if  request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True))
             rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True))
             jidlist = otjidlist + rjidlist
@@ -365,7 +365,7 @@ class BoehnliAdmin(admin.ModelAdmin):
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "job" and request.user.has_perm("my_ortoloco.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("my_ortoloco.is_operations_group"))):
+        if db_field.name == "job" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True))
             rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True))
             jidlist = otjidlist + rjidlist
@@ -390,7 +390,7 @@ class LocoAdminForm(forms.ModelForm):
         if loco is None:
             link = ""
         elif loco.abo:
-            url = reverse("admin:my_ortoloco_abo_change", args=(loco.abo.id,))
+            url = reverse("admin:juntagrico_abo_change", args=(loco.abo.id,))
             link = "<a href=%s>%s</a>" % (url, loco.abo)
         else:
             link = "Kein Abo"

@@ -1,6 +1,6 @@
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
-from my_ortoloco.mailer import send_mail_multi
+from juntagrico.mailer import send_mail_multi
 
 def send_politoloco_mail(subject, message, text_message, emails, server, attachments):
     plaintext = get_template('mails/politoloco.txt')

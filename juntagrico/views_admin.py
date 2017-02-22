@@ -21,12 +21,12 @@ from django.template import Template, Context
 
 import xlsxwriter
 
-from my_ortoloco.models import *
-from my_ortoloco.forms import *
-from my_ortoloco.helpers import *
-from my_ortoloco.filters import Filter
-from my_ortoloco.mailer import *
-from my_ortoloco.views import get_menu_dict
+from juntagrico.models import *
+from juntagrico.forms import *
+from juntagrico.helpers import *
+from juntagrico.filters import Filter
+from juntagrico.mailer import *
+from juntagrico.views import get_menu_dict
 
 from static_ortoloco.models import StaticContent
 
@@ -36,15 +36,15 @@ from static_ortoloco.models import Politoloco
 from decorators import primary_loco_of_abo
 
 
-@permission_required('my_ortoloco.can_send_mails')
+@permission_required('juntagrico.can_send_mails')
 def send_email(request):
     return send_email_intern(request)
 
-@permission_required('my_ortoloco.is_depot_admin')
+@permission_required('juntagrico.is_depot_admin')
 def send_email_depot(request):
     return send_email_intern(request)
 
-@permission_required('my_ortoloco.is_area_admin')
+@permission_required('juntagrico.is_area_admin')
 def send_email_area(request):
     return send_email_intern(request)
 
@@ -83,7 +83,7 @@ def send_email_intern(request):
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
 
-@permission_required('my_ortoloco.can_send_mails')
+@permission_required('juntagrico.can_send_mails')
 def send_email_result(request, numsent):
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -91,15 +91,15 @@ def send_email_result(request, numsent):
     })
     return render(request, 'mail_sender_result.html', renderdict)
 
-@permission_required('my_ortoloco.can_send_mails')
+@permission_required('juntagrico.can_send_mails')
 def my_mails(request, enhanced=None):
     return my_mails_intern(request, enhanced)
 
-@permission_required('my_ortoloco.is_depot_admin')
+@permission_required('juntagrico.is_depot_admin')
 def my_mails_depot(request):
     return my_mails_intern(request, "depot")
 
-@permission_required('my_ortoloco.is_area_admin')
+@permission_required('juntagrico.is_area_admin')
 def my_mails_area(request):
     return my_mails_intern(request, "area")
 
@@ -117,11 +117,11 @@ def my_mails_intern(request, enhanced, error_message=None):
         'email': request.user.loco.email,
         'error_message': error_message,
         'templates': MailTemplate.objects.all(),
-        'can_use_general_email': request.user.has_perm('my_ortoloco.can_use_general_email')
+        'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email')
     })
     return render(request, 'mail_sender.html', renderdict)
 
-@permission_required('my_ortoloco.can_filter_locos')
+@permission_required('juntagrico.can_filter_locos')
 def my_filters(request):
     now = timezone.now()
     locos = Loco.objects.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
@@ -133,7 +133,7 @@ def my_filters(request):
 
 
 
-@permission_required('my_ortoloco.is_depot_admin')
+@permission_required('juntagrico.is_depot_admin')
 def my_filters_depot(request, depot_id):
     now = timezone.now()
     depot = get_object_or_404(Depot, id=int(depot_id))
@@ -146,7 +146,7 @@ def my_filters_depot(request, depot_id):
     })
     return render(request, 'filters.html', renderdict)
 
-@permission_required('my_ortoloco.is_area_admin')
+@permission_required('juntagrico.is_area_admin')
 def my_filters_area(request, area_id):
     now = timezone.now()
     area = get_object_or_404(Taetigkeitsbereich, id=int(area_id))
@@ -160,7 +160,7 @@ def my_filters_area(request, area_id):
     return render(request, 'filters.html', renderdict)
 
 
-@permission_required('my_ortoloco.can_filter_abos')
+@permission_required('juntagrico.can_filter_abos')
 def my_abos(request):
     now = timezone.now()
     abos = []
@@ -187,7 +187,7 @@ def my_abos(request):
     return render(request, 'abos.html', renderdict)
 
 
-@permission_required('my_ortoloco.is_depot_admin')
+@permission_required('juntagrico.is_depot_admin')
 def my_abos_depot(request, depot_id):
     now = timezone.now()
     abos = []
@@ -214,11 +214,11 @@ def my_abos_depot(request, depot_id):
 
     return render(request, 'abos.html', renderdict)
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_depotlisten(request):
     return alldepots_list(request, "")
     
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def alldepots_list(request, name):
     """
     Printable list of all depots to check on get gemüse
@@ -284,7 +284,7 @@ def alldepots_list(request, name):
     return render_to_pdf_http(request, "exports/all_depots.html", renderdict, 'Depotlisten')
 
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_future(request):
     renderdict = get_menu_dict(request)
 
@@ -335,7 +335,7 @@ def my_future(request):
     return render(request, 'future.html', renderdict)
 
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_switch_extras(request):
     renderdict = get_menu_dict(request)
 
@@ -355,7 +355,7 @@ def my_switch_extras(request):
 
     return redirect('/my/zukunft?changed=true')
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_switch_abos(request):
     renderdict = get_menu_dict(request)
 
@@ -374,7 +374,7 @@ def my_switch_abos(request):
 
     return redirect('/my/zukunft?changed=true')
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_get_mail_template(request, template_id):
     renderdict = {}
 
@@ -386,7 +386,7 @@ def my_get_mail_template(request, template_id):
     return HttpResponse(result)
 
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_maps(request):
 
     renderdict = {
@@ -397,7 +397,7 @@ def my_maps(request):
     return render(request, "maps.html", renderdict)
 
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_excel_export_locos_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
@@ -447,7 +447,7 @@ def my_excel_export_locos_filter(request):
     response.write(xlsx_data)
     return response
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_excel_export_locos(request):
     fields = [
     u'first_name',
@@ -465,7 +465,7 @@ def my_excel_export_locos(request):
     ]
     return generate_excell(fields, Loco)
     
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_excel_export_shares(request):
     fields = [
     u'number',
@@ -482,7 +482,7 @@ def my_excel_export_shares(request):
     ]
     return generate_excell(fields, Anteilschein)
 
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def my_export(request):
     renderdict = get_menu_dict(request)
     return render(request, 'export.html', renderdict)

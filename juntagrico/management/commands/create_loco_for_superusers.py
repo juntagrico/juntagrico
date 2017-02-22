@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from my_ortoloco.models import *
+from juntagrico.models import *
 
 
 

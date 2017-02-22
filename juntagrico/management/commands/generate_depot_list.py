@@ -2,9 +2,9 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from django.conf import settings
 
-from my_ortoloco.models import *
-from my_ortoloco.helpers import *
-from my_ortoloco.mailer import *
+from juntagrico.models import *
+from juntagrico.helpers import *
+from juntagrico.mailer import *
 
 import datetime
 

@@ -2,7 +2,7 @@ from functools import partial
 
 #from django.db.models import Q
 
-from my_ortoloco.models import *
+from juntagrico.models import *
 
 
 class Filter(object):

@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from my_ortoloco.models import *
+from juntagrico.models import *
 from django.utils import timezone
 import datetime
-from my_ortoloco.mailer import send_job_reminder
+from juntagrico.mailer import send_job_reminder
 from django.utils import timezone
 
 

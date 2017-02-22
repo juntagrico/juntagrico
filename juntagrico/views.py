@@ -21,12 +21,12 @@ from django.conf import settings
 
 import xlsxwriter
 
-from my_ortoloco.models import *
-from my_ortoloco.forms import *
-from my_ortoloco.helpers import *
-from my_ortoloco.filters import Filter
-from my_ortoloco.mailer import *
-from my_ortoloco.personalisation.personal_utils import enrich_menu_dict
+from juntagrico.models import *
+from juntagrico.forms import *
+from juntagrico.helpers import *
+from juntagrico.filters import Filter
+from juntagrico.mailer import *
+from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 from static_ortoloco.models import StaticContent
 
@@ -82,10 +82,10 @@ def get_menu_dict(request):
         'partner_bohnen_kernbereich': len(userbohnen) + len([bohne for bohne in partner_bohnen if bohne.is_in_kernbereich()]),
         'abo_size': abo_size,
         'next_jobs': next_jobs,
-        'can_filter_locos': request.user.has_perm('my_ortoloco.can_filter_locos'),
-        'can_filter_abos': request.user.has_perm('my_ortoloco.can_filter_abos'),
-        'can_send_mails': request.user.has_perm('my_ortoloco.can_send_mails'),
-        'operation_group': request.user.has_perm('my_ortoloco.is_operations_group'),
+        'can_filter_locos': request.user.has_perm('juntagrico.can_filter_locos'),
+        'can_filter_abos': request.user.has_perm('juntagrico.can_filter_abos'),
+        'can_send_mails': request.user.has_perm('juntagrico.can_send_mails'),
+        'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
         'depot_admin': depot_admin,
         'area_admin': area_admin,
         'depot_list_url': settings.MEDIA_URL+ settings.MEDIA_ROOT +"/dpl.pdf",

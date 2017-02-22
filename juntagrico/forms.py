@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models.fields import DecimalField
 from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, Select, TextInput, ChoiceField, CheckboxInput
-from my_ortoloco.models import Loco, User
+from juntagrico.models import Loco, User
 
 
 class PasswordForm(Form):

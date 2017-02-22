@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
 
-from my_ortoloco.views import get_menu_dict
-from my_ortoloco.models import *
+from juntagrico.views import get_menu_dict
+from juntagrico.models import *
 
 from .personal_mailer import *
 
