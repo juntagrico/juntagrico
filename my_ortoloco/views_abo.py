@@ -46,9 +46,8 @@ def my_abo(request):
 
     if request.user.loco.abo != None:
         current_zusatzabos = request.user.loco.abo.extra_abos.all()
-        future_zusatzabos = request.user.loco.abo.future_extra_abos.all()
-        zusatzabos_changed = (request.user.loco.abo.extra_abos_changed and
-                              set(current_zusatzabos) != set(future_zusatzabos))
+        future_zusatzabos = request.user.loco.abo.future_extra_abos.filter(active=false)
+        zusatzabos_changed = set(current_zusatzabos) != set(future_zusatzabos)
 
         if request.user.loco.abo:
             renderdict.update({
@@ -170,7 +169,7 @@ def my_extra_change(request, abo_id):
 
     abos = []
     for abo in ExtraAboType.objects.all():
-        if request.user.loco.abo.extra_abos_changed:
+        if request.user.loco.abo.future_extra_abos.filter(type__id=abo.id).count()>0:
             abos.append({
                 'id': abo.type.id,
                 'name': abo.type.name,
