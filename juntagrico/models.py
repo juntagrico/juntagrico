@@ -169,6 +169,7 @@ class ExtraAbo(Billable):
     type = models.ForeignKey(ExtraAboType, related_name="extra_abos", null=False, blank=False,
                                  on_delete=models.PROTECT)
 
+    old_active = None
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -176,7 +177,7 @@ class ExtraAbo(Billable):
             instance.activation_date = timezone.now().date()
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
-    old_active = None
+    
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
@@ -192,7 +193,7 @@ class ExtraAbo(Billable):
 
 class AboSize(models.Model):
     """
-    Mail template for rendering
+    Abo sizes
     """
     name = models.CharField("Name", max_length=100, unique=True)
     long_name = models.CharField("Langer Name", max_length=100, unique=True)
@@ -218,7 +219,6 @@ class Abo(Billable):
                                      blank=True, )
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
-    extra_abos_changed = models.BooleanField(default=False)
     primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
@@ -234,7 +234,7 @@ class Abo(Billable):
 
     def overview(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
-        namelist.extend(extra.name for extra in self.extra_abos.all())
+        namelist.extend(extra.type.name for extra in self.extra_abos.all())
         return u"%s" % (" + ".join(namelist))
 
     def bezieher(self):
@@ -259,16 +259,6 @@ class Abo(Billable):
     @property
     def future_extra_abos(self):
         return self.extra_abo_set.filter(Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
-
-    def abo_amount(self, abo_name):
-        if Abo.sizes_cache == {}:
-            fill_sizes_cache()
-        if Abo.sizes_cache['list'].__len__ == 1:
-            return self.size/Abo.sizes_cache['list'][0]
-        index=Abo.sizes_cache['map'][abo_name]
-        if index == len(Abo.sizes_cache['list'])-1:
-            return int(self.size /Abo.sizes_cache['list'][index])
-        return int((self.size % Abo.sizes_cache['list'][index+1])/Abo.sizes_cache['list'][index])
     
     @staticmethod
     def fill_sizes_cache():
@@ -281,7 +271,27 @@ class Abo(Billable):
             index=index+1
         Abo.sizes_cache={'list': list,
             'map':map,
-        }
+        }  
+        
+    def abo_amount(self, abo_name):
+        if Abo.sizes_cache == {}:
+            Abo.fill_sizes_cache()
+        if Abo.sizes_cache['list'].__len__ == 1:
+            return self.size/Abo.sizes_cache['list'][0]
+        index=Abo.sizes_cache['map'][abo_name]
+        if index == len(Abo.sizes_cache['list'])-1:
+            return int(self.size /Abo.sizes_cache['list'][index])
+        return int((self.size % Abo.sizes_cache['list'][index+1])/Abo.sizes_cache['list'][index])
+
+    def abo_amount_future(self, abo_name):
+        if Abo.sizes_cache == {}:
+            Abo.fill_sizes_cache()
+        if Abo.sizes_cache['list'].__len__ == 1:
+            return self.future_size/Abo.sizes_cache['list'][0]
+        index=Abo.sizes_cache['map'][abo_name]
+        if index == len(Abo.sizes_cache['list'])-1:
+            return int(self.future_size /Abo.sizes_cache['list'][index])
+        return int((self.future_size % Abo.sizes_cache['list'][index+1])/Abo.sizes_cache['list'][index])
     
     @staticmethod
     def next_extra_change_date():

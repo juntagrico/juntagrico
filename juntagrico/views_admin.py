@@ -287,49 +287,39 @@ def alldepots_list(request, name):
 @permission_required('juntagrico.is_operations_group')
 def my_future(request):
     renderdict = get_menu_dict(request)
-
-    small_abos = 0
-    big_abos = 0
-    house_abos = 0
-    small_abos_future = 0
-    big_abos_future = 0
-    house_abos_future = 0
-
-    extra_abos = dict({})
+    
+    abosizes =[] 
+    abo_lines = dict({})    
+    extra_lines = dict({})
+    for abo_size in AboSize.objects.all():
+        abosizes.append(abo_size.name)
+        abo_lines[abo_size.name] = {
+            'name': abo_size.name,
+            'future': 0,
+            'now': 0
+        }
     for extra_abo in ExtraAboType.objects.all():
-        extra_abos[extra_abo.id] = {
+        extra_lines[extra_abo.name] = {
             'name': extra_abo.name,
             'future': 0,
-            'now': str(extra_abo.extra_abos.count())
+            'now': 0
         }
-
     for abo in Abo.objects.all():
-        small_abos += abo.size % 2
-        big_abos += int(abo.size % 10 / 2)
-        house_abos += int(abo.size / 10)
-        small_abos_future += abo.future_size % 2
-        big_abos_future += int(abo.future_size % 10 / 2)
-        house_abos_future += int(abo.future_size / 10)
-
-        if abo.extra_abos_changed:
-            for users_abo in abo.future_extra_abos.all():
-                extra_abos[users_abo.type.id]['future'] += 1
-        else:
-            for users_abo in abo.extra_abos.all():
-                extra_abos[users_abo.type.id]['future'] += 1
+        for abo_size in abosizes:
+            abo_lines[abo_size]['now'] += abo.abo_amount(abo_size)
+            abo_lines[abo_size]['future'] += abo.abo_amount_future(abo_size)
+        for users_abo in abo.future_extra_abos.all():
+            extra_lines[users_abo.type.name]['future'] += 1
+        for users_abo in abo.extra_abos.all():
+            extra_lines[users_abo.type.name]['now'] += 1
 
     month = int(time.strftime("%m"))
     day = int(time.strftime("%d"))
 
     renderdict.update({
         'changed': request.GET.get("changed"),
-        'big_abos': big_abos,
-        'house_abos': house_abos,
-        'small_abos': small_abos,
-        'big_abos_future': big_abos_future,
-        'house_abos_future': house_abos_future,
-        'small_abos_future': small_abos_future,
-        'extras': extra_abos.itervalues(),
+        'abo_lines': abo_lines.itervalues(),
+        'extra_lines': extra_lines.itervalues(),
         'abo_change_enabled': month is 12 or (month is 1 and day <= 6)
     })
     return render(request, 'future.html', renderdict)
@@ -337,21 +327,14 @@ def my_future(request):
 
 @permission_required('juntagrico.is_operations_group')
 def my_switch_extras(request):
-    renderdict = get_menu_dict(request)
-
     for abo in Abo.objects.all():
-        if abo.extra_abos_changed:
-            abo.extra_abos = []
-            for extra in abo.future_extra_abos.all():
+        for extra in abo.extra_abo_set:
+            if extra.active == True and extra.canceled == True:
+                extra.active=False
+                extra.save()
+            elif extra.active == False and extra.deactivation_date is None:
                 extra.active=True
                 extra.save()
-
-            abo.extra_abos_changed = False
-            abo.save()
-
-
-    renderdict.update({
-    })
 
     return redirect('/my/zukunft?changed=true')
 
