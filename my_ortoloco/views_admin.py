@@ -287,40 +287,39 @@ def alldepots_list(request, name):
 @permission_required('my_ortoloco.is_operations_group')
 def my_future(request):
     renderdict = get_menu_dict(request)
-
-    extra_abos = dict({})
+    
+    abosizes =[] 
+    abo_lines = dict({})    
+    extra_lines = dict({})
+    for abo_size in AboSize.objects.all():
+        abosizes.append(abo_size.name)
+        abo_lines[abo_size.name] = {
+            'name': abo_size.name,
+            'future': 0,
+            'now': 0
+        }
     for extra_abo in ExtraAboType.objects.all():
-        extra_abos[extra_abo.id] = {
+        extra_lines[extra_abo.name] = {
             'name': extra_abo.name,
             'future': 0,
-            'now': str(extra_abo.extra_abos.count())
+            'now': 0
         }
-    abosizes={}
-    future_abosizes={}
-    for abo_size in AboSize.objects.all():
-        abosizes[abo_size.name]=0;
-        future_abosizes[abo_size.name]=0;
-
     for abo in Abo.objects.all():
         for abo_size in abosizes:
-            abosizes[abo_size] += abo.abo_amount(abo_size)
-            future_abosizes[abo_size] += abo.abo_amount_future(abo_size)
-
-        if abo.extra_abos_changed:
-            for users_abo in abo.future_extra_abos.all():
-                extra_abos[users_abo.type.id]['future'] += 1
-        else:
-            for users_abo in abo.extra_abos.all():
-                extra_abos[users_abo.type.id]['future'] += 1
+            abo_lines[abo_size]['now'] += abo.abo_amount(abo_size)
+            abo_lines[abo_size]['future'] += abo.abo_amount_future(abo_size)
+        for users_abo in abo.future_extra_abos.all():
+            extra_lines[users_abo.type.name]['future'] += 1
+        for users_abo in abo.extra_abos.all():
+            extra_lines[users_abo.type.name]['now'] += 1
 
     month = int(time.strftime("%m"))
     day = int(time.strftime("%d"))
 
     renderdict.update({
         'changed': request.GET.get("changed"),
-        'abosizes': abosizes,
-        'future_abosizes': future_abosizes,
-        'extras': extra_abos.itervalues(),
+        'abo_lines': abo_lines.itervalues(),
+        'extra_lines': extra_lines.itervalues(),
         'abo_change_enabled': month is 12 or (month is 1 and day <= 6)
     })
     return render(request, 'future.html', renderdict)

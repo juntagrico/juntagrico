@@ -150,7 +150,7 @@ def my_extra_change(request, abo_id):
                              existing_extra_abo.save();
                              has_active=True
                         index+=1
-                     if not has_active:
+                    if not has_active:
                         future_extra_abo = ExtraAbo.create()
                         future_extra_abo.abo = request.user.loco.abo
                         future_extra_abo.type = extra_abo
