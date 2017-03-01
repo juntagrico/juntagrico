@@ -130,7 +130,7 @@ def my_extra_change(request, abo_id):
     saved = False
     if request.method == "POST":
         for extra_abo in ExtraAboType.objects.all():
-            existing = request.user.loco.abo.extra_abos.filter(type__id=abo.id)
+            existing = request.user.loco.abo.extra_abos.filter(type__id=extra_abo.id)
             if request.POST.get("abo" + str(extra_abo.id)) == str(extra_abo.id):
 		if existing.count()==0:
                     future_extra_abo = ExtraAbo.create()
@@ -138,46 +138,49 @@ def my_extra_change(request, abo_id):
                     future_extra_abo.type = extra_abo
                     future_extra_abo.active = False
                     future_extra_abo.save()
-                    request.user.loco.abo.extra_abos_changed = True
                 else:
-                    for canceled_extra_abo in existing:
-                        canceled_extra_abo.canceled=False;
-                        canceled_extra_abo.save();
+                    has_active=False
+                    index=0;
+                    while not has_active or index<existing.count():
+                        existing_extra_abo = exisitng[index]
+                        if existing_extra_abo.active == True:
+                             has_active=True
+                        elif existing_extra_abo.canceled==True and future_extra_abo.active==True:
+                             existing_extra_abo.canceled=False;
+                             existing_extra_abo.save();
+                             has_active=True
+                        index+=1
+                     if not has_active:
+                        future_extra_abo = ExtraAbo.create()
+                        future_extra_abo.abo = request.user.loco.abo
+                        future_extra_abo.type = extra_abo
+                        future_extra_abo.active = False
+                        future_extra_abo.save()
+
             else:
                 if existing.count()>0:
-                    for canceled_extra_abo in existing:
-                        canceled_extra_abo.canceled=True;
-                        canceled_extra_abo.save();
-                    request.user.loco.abo.extra_abos_changed = True
+                    for existing_extra_abo in existing:
+			if existing_extra_abo.canceled==False and future_extra_abo.active==True:
+                            existing_extra_abo.canceled=True;
+                            existing_extra_abo.save();
+                        elif existing_extra_abo.deactivation_date is None and future_extra_abo.active==False:
+                            existing_extra_abo.delete();
         request.user.loco.abo.save()
         saved = True
 
     abos = []
     for abo in ExtraAboType.objects.all():
         if request.user.loco.abo.extra_abos_changed:
-            if request.user.loco.abo.future_extra_abos.filter(type__id=abo.id).count()>0:
-                abos.append({
-                    'id': abo.type.id,
-                    'name': abo.type.name,
-                    'selected': True
-                })
-            else:
-                abos.append({
-                    'id': abo.type.id,
-                    'name': abo.type.name
-                })
+            abos.append({
+                'id': abo.type.id,
+                'name': abo.type.name,
+                'selected': True
+            })
         else:
-            if request.user.loco.abo.extra_abos.filter(type__id=abo.id).count()>0:
-                abos.append({
-                    'id': abo.type.id,
-                    'name': abo.type.name,
-                    'selected': True
-                })
-            else:
-                abos.append({
-                    'id': abo.type.id,
-                    'name': abo.type.name
-                })
+            abos.append({
+                'id': abo.type.id,
+                'name': abo.type.name
+            })
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
