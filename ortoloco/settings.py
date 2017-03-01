@@ -51,7 +51,7 @@ EMAIL_USE_TLS = os.environ.get('ORTOLOCO_EMAIL_TLS', True)
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['.orto.xiala.net', '.ortoloco.ch', 'localhost']
+ALLOWED_HOSTS = ['.orto.xiala.net', '.ortoloco.ch', 'localhost', 'ortoloco-dev.herokuapp.com']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

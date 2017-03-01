@@ -82,6 +82,7 @@ urlpatterns = [
     url('^my/export/locos', my_ortoloco_admin.my_excel_export_locos),
     url('^my/export/shares$', my_ortoloco_admin.my_excel_export_shares),
     url('^my/mailtemplate/(?P<template_id>.*?)/', my_ortoloco_admin.my_get_mail_template),
+    url('^my/maps', my_ortoloco_admin.my_maps),
     
     url(r'^impersonate/', include('impersonate.urls')),
 

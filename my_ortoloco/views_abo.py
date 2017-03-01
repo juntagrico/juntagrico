@@ -130,44 +130,57 @@ def my_extra_change(request, abo_id):
     saved = False
     if request.method == "POST":
         for extra_abo in ExtraAboType.objects.all():
+            existing = request.user.loco.abo.extra_abos.filter(type__id=extra_abo.id)
             if request.POST.get("abo" + str(extra_abo.id)) == str(extra_abo.id):
-                request.user.loco.abo.future_extra_abos.add(extra_abo)
-                extra_abo.future_extra_abos.add(request.user.loco.abo)
-            else:
-                request.user.loco.abo.future_extra_abos.remove(extra_abo)
-                extra_abo.future_extra_abos.remove(request.user.loco.abo)
-            request.user.loco.abo.extra_abos_changed = True
-            request.user.loco.abo.save()
-            extra_abo.save()
+		if existing.count()==0:
+                    future_extra_abo = ExtraAbo.create()
+                    future_extra_abo.abo = request.user.loco.abo
+                    future_extra_abo.type = extra_abo
+                    future_extra_abo.active = False
+                    future_extra_abo.save()
+                else:
+                    has_active=False
+                    index=0;
+                    while not has_active or index<existing.count():
+                        existing_extra_abo = exisitng[index]
+                        if existing_extra_abo.active == True:
+                             has_active=True
+                        elif existing_extra_abo.canceled==True and future_extra_abo.active==True:
+                             existing_extra_abo.canceled=False;
+                             existing_extra_abo.save();
+                             has_active=True
+                        index+=1
+                    if not has_active:
+                        future_extra_abo = ExtraAbo.create()
+                        future_extra_abo.abo = request.user.loco.abo
+                        future_extra_abo.type = extra_abo
+                        future_extra_abo.active = False
+                        future_extra_abo.save()
 
+            else:
+                if existing.count()>0:
+                    for existing_extra_abo in existing:
+			if existing_extra_abo.canceled==False and future_extra_abo.active==True:
+                            existing_extra_abo.canceled=True;
+                            existing_extra_abo.save();
+                        elif existing_extra_abo.deactivation_date is None and future_extra_abo.active==False:
+                            existing_extra_abo.delete();
+        request.user.loco.abo.save()
         saved = True
 
     abos = []
     for abo in ExtraAboType.objects.all():
         if request.user.loco.abo.extra_abos_changed:
-            if abo in request.user.loco.abo.future_extra_abos.all():
-                abos.append({
-                    'id': abo.id,
-                    'name': abo.name,
-                    'selected': True
-                })
-            else:
-                abos.append({
-                    'id': abo.id,
-                    'name': abo.name
-                })
+            abos.append({
+                'id': abo.type.id,
+                'name': abo.type.name,
+                'selected': True
+            })
         else:
-            if abo in request.user.loco.abo.extra_abos.all():
-                abos.append({
-                    'id': abo.id,
-                    'name': abo.name,
-                    'selected': True
-                })
-            else:
-                abos.append({
-                    'id': abo.id,
-                    'name': abo.name
-                })
+            abos.append({
+                'id': abo.type.id,
+                'name': abo.type.name
+            })
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
@@ -306,12 +319,10 @@ def my_createabo(request):
     """
     loco = request.user.loco
     scheineerror = False
-    if loco.abo is None or loco.abo.size is 1:
-        selectedabo = "small"
-    elif loco.abo.size is 2:
-        selectedabo = "big"
+    if loco.abo is None:
+        selectedabo="none"
     else:
-        selectedabo = "house"
+        selectedabo = AboSize.objects.filter(size=loco.abo.size)[0].name
 
     loco_scheine = 0
     if loco.abo is not None:
@@ -323,12 +334,12 @@ def my_createabo(request):
         selectedabo = request.POST.get("abo")
 
         scheine += loco_scheine
-        min_anzahl_scheine = {"none": 1, "small": 2, "big": 4, "house": 20}.get(request.POST.get("abo"))
+        min_anzahl_scheine = next(iter(AboSize.objects.filter(name=selectedabo).values_list('shares', flat=True) or []), 1)
         if scheine < min_anzahl_scheine:
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
-            size = {"none": 0, "small": 1, "big": 2, "house": 10}.get(request.POST.get("abo"))
+            size = next(iter(AboSize.objects.filter(name=selectedabo).values_list('size', flat=True) or []), 0)
 
             if size > 0:
                 if loco.abo is None:
@@ -368,12 +379,13 @@ def my_createabo(request):
 
     renderdict = {
         'loco_scheine': loco_scheine,
-        "loco": request.user.loco,
-        "depots": Depot.objects.all(),
+        'loco': request.user.loco,
+        'abo_sizes': AboSize.objects.order_by('size'),
+        'depots': Depot.objects.all(),
         'selected_depot': selected_depot,
-        "selected_abo": selectedabo,
-        "scheineerror": scheineerror,
-        "mit_locos": mit_locos
+        'selected_abo': selectedabo,
+        'scheineerror': scheineerror,
+        'mit_locos': mit_locos
     }
     return render(request, "createabo.html", renderdict)
 

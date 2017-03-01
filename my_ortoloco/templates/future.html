@@ -14,27 +14,18 @@
             <th>Aktuell</th>
             <th>Zukunft</th>
         </tr>
+        {% for line in abo_lines %}
         <tr>
-            <td>Haus Abos</td>
-            <td>{{ house_abos }}</td>
-            <td>{{ house_abos_future }}</td>
+            <td>{{ line.name }}</td>
+            <td>{{ line.now }}</td>
+            <td>{{ line.future }}</td>
         </tr>
+        {% endfor %}
+        {% for line in extra_lines %}
         <tr>
-            <td>Grosse Abos</td>
-            <td>{{ big_abos }}</td>
-            <td>{{ big_abos_future }}</td>
-        </tr>
-        <tr>
-            <td>Kleine Abos</td>
-            <td>{{ small_abos }}</td>
-            <td>{{ small_abos_future }}</td>
-            <td></td>
-        </tr>
-        {% for extra in extras %}
-        <tr>
-            <td>{{ extra.name }}</td>
-            <td>{{ extra.now }}</td>
-            <td>{{ extra.future }}</td>
+            <td>{{ line.name }}</td>
+            <td>{{ line.now }}</td>
+            <td>{{ line.future }}</td>
         </tr>
         {% endfor %}
     </table>

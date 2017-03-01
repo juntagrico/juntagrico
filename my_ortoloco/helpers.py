@@ -11,6 +11,8 @@ from django.template.defaultfilters import slugify
 
 from django.utils import timezone
 
+from ics import Calendar, Event
+
 from xhtml2pdf import pisa
 
 from django.contrib.auth.models import User
@@ -21,6 +23,8 @@ from StringIO import StringIO
 
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+
+
 
 class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
@@ -210,5 +214,21 @@ def generate_excell(fields, model_instance):
     xlsx_data = output.getvalue()
     response.write(xlsx_data)
     return response
+
+"""
+    Create a ical string from an job
+"""
+def genecrate_ical_for_job(job):
+    c = Calendar()
+    e = Event()
+    e.name = 'ortoloco Einsatz:'+job.typ.name
+    e.location = job.typ.location
+    e.description = job.typ.description
+    e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
+    e.end = job.time.strftime('%Y%m%d %H:%M:%S')
+    c.events.append(e)
+    return str(c).replace("\n","\r\n")+'\r\n'
+
+
                     
             

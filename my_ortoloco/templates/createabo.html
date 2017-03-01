@@ -13,51 +13,27 @@
 
         <form action="" method="post" class="form-horizontal createabo">
             {% csrf_token %}
+            {% for abo_size in abo_sizes %}
             <div class="form-group">
-                <label class="col-md-4 control-label">Abogrösse</label>
+                <label class="col-md-4 control-label">{% if foorloop.first %}Abogrösse{% endif %}</label>
 
                 <div class="col-md-8 controls">
-                    <label class="radio" for="small">
-                        <input type="radio" name="abo" value="small" id="small" {% if selected_abo == "small" %}checked="checked"{% endif %}/>
-                        <strong>Kleines Abo</strong>
+                    <label class="radio" for="{{ abo_size.name }}">
+                        <input type="radio" name="abo" value="{{ abo_size.name }}" id="{{ abo_size.name }}" {% if selected_abo == abo_size.name %}checked="checked"{% endif %}/>
+                        <strong>{{ abo_size.long_name }}</strong>
 
                         <br/>
-                        Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilscheine.
+                        {{ abo_size.description }}
                     </label>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="col-md-4 control-label"></label>
-
-                <div class="col-md-8 controls">
-                    <label class="radio" for="big">
-                        <input type="radio" name="abo" value="big" id="big" {% if selected_abo == "big" %}checked="checked"{% endif %}/>
-                        <strong>Grosses Abo</strong>
-
-                        <br/>
-                        Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilscheine.
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-md-4 control-label"></label>
-
-                <div class="col-md-8 controls">
-                    <label class="radio" for="house">
-                        <input type="radio" name="abo" value="house" id="house" {% if selected_abo == "house" %}checked="checked"{% endif %}/>
-                        <strong>Haus-Abo</strong>
-
-                        <br/>
-                        Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.
-                    </label>
-                </div>
-            </div>
+            {% endfor %}
             <div class="form-group">
                 <label class="col-md-4 control-label"></label>
 
                 <div class="col-md-8 controls">
                     <label class="radio" for="none">
-                        <input type="radio" name="abo" value="none" id="none"/>
+                        <input type="radio" name="abo" value="none" id="none" {% if selected_abo == "none" %}checked="checked"{% endif %}/>
                         <strong>Kein Abo</strong>
 
                         <br/>

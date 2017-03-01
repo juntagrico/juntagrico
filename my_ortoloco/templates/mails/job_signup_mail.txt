@@ -1,0 +1,18 @@
+{% extends "mails/email.txt" %}
+{% block content %}
+Achtung:
+
+Du hast dich für den ortoloco-Arbeitseinsatz "{{ job.typ.displayed_name }}" um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} eingeschrieben.
+
+Details:
+
+Job:             {{ job.typ.description }}
+Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+mitlocos:        {{ participants }}
+Ort:             {{ job.typ.location }}
+
+Wir freuen uns, dich zu sehen und zählen auf dich!
+
+Herzlich grüsst,
+dein ortoloco-Team
+{% endblock %}
