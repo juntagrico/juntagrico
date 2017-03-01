@@ -46,7 +46,7 @@ def my_abo(request):
 
     if request.user.loco.abo != None:
         current_zusatzabos = request.user.loco.abo.extra_abos.all()
-        future_zusatzabos = request.user.loco.abo.future_extra_abos.filter(active=false)
+        future_zusatzabos = request.user.loco.abo.future_extra_abos.filter(active=False)
         zusatzabos_changed = set(current_zusatzabos) != set(future_zusatzabos)
 
         if request.user.loco.abo:
