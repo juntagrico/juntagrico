@@ -41,7 +41,7 @@
                     </label>
                 </div>
             </div>
-            <div class="form-group">
+            <div id="start_date" class="form-group" style="display: none;">
                 <label class="col-md-4 control-label">Gewünschtes Startdatum</label>
 
                 <div class="col-md-8 controls">
@@ -50,7 +50,7 @@
                         {{ aboform.start_date }}
                         Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein Abo zum gewünschten Datum frei ist.
                     </label>
-                    {% if aboform.last_name.errors %}
+                    {% if aboform.start_date.errors %}
                         <div class="alert alert-danger">Das gewählte Startdatum ist nicht gültig</div>
                     {% endif %}
                 </div>
@@ -134,6 +134,12 @@
                 });
             {% endif %}
         {% endfor %}
+
+	var sizes={
+	{% for abo_size in abo_sizes %}
+            "{{ abo_size.name }}":"{{ abo_size.shares }}",
+        {% endfor %}
+	}
 
     </script>
     <script type="text/javascript" src="/static/external/attachment_appender.js"></script>

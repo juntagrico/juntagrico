@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
         AboSize = apps.get_model("my_ortoloco", "AboSize")
         klein = AboSize.objects.create(name='klein',long_name='Kleines Abo',size=1,shares=2,depot_list=True,description=u'Das kleine Abo ist für 2-3 Personen geeignet und benötigt mindestens zwei Anteilscheine.');
         gross = AboSize.objects.create(name='gross',long_name='Grosses Abo',size=2,shares=4,depot_list=True,description=u"Das grosse Abo empfiehlt sich für WG's oder Familien (ca. 4-6 Personen) und benötigt vier Anteilscheine.");
-        haus = AboSize.objects.create(name='haus',long_name='Haus-Abo',size=10,shares=10,depot_list=False,description=u'Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.');
+        haus = AboSize.objects.create(name='haus',long_name='Haus-Abo',size=10,shares=20,depot_list=False,description=u'Das Haus-Abo ist für ca. 10 Haushalte gedacht. Es müssen mindestens 20 Anteilscheine gezeichnet werden.');
         klein.save()
         gross.save()
         haus.save()

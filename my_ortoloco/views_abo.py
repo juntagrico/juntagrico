@@ -337,8 +337,8 @@ def my_createabo(request):
 
         scheine += loco_scheine
         min_anzahl_scheine = next(iter(AboSize.objects.filter(name=selectedabo).values_list('shares', flat=True) or []), 1)
-        if scheine < min_anzahl_scheine and not aboform.is_valid():
-            scheineerror = True
+        if scheine < min_anzahl_scheine or not aboform.is_valid():
+            scheineerror = scheine < min_anzahl_scheine
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
             size = next(iter(AboSize.objects.filter(name=selectedabo).values_list('size', flat=True) or []), 0)
@@ -347,6 +347,7 @@ def my_createabo(request):
                 if loco.abo is None:
                     loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot)
                 else:
+                    loco.abo.start_date=aboform.cleaned_data['start_date']
                     loco.abo.size = size
                     loco.abo.future_size = size
                     loco.abo.depot = depot
