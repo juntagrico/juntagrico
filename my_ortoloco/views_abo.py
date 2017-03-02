@@ -345,7 +345,7 @@ def my_createabo(request):
 
             if size > 0:
                 if loco.abo is None:
-                    loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot)
+                    loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot,start_date=aboform.cleaned_data['start_date'])
                 else:
                     loco.abo.start_date=aboform.cleaned_data['start_date']
                     loco.abo.size = size
