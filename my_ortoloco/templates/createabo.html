@@ -137,7 +137,7 @@
 
 	var sizes={
 	{% for abo_size in abo_sizes %}
-            "{{ abo_size.name }}":"{{ abo_size.shares }}",
+            "{{ abo_size.name }}":{{ abo_size.shares }},
         {% endfor %}
 	}
 
