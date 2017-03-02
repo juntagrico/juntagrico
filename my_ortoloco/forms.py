@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db.models.fields import DecimalField
-from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, Select, TextInput, ChoiceField, CheckboxInput, DateField
+from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, Select, TextInput, ChoiceField, CheckboxInput, DateInput
 from my_ortoloco.models import Loco, User, Abo
 
 
@@ -39,7 +39,7 @@ class AboForm(ModelForm):
         model = Abo
         fields = ['start_date']    
         widgets = {
-            'start_date': DateField(attrs={'input_formats': '%d.%m.%y', 'class': 'form-control'}),
+            'start_date': DateInput(attrs={'format': '%d.%m.%y', 'class': 'form-control'}),
         }
 
 
