@@ -39,7 +39,7 @@ class AboForm(ModelForm):
         model = Abo
         fields = ['start_date']    
         widgets = {
-            'start_date': TextInput(attrs={'placeholder': 'DD.MM.JJJJ', 'class': 'form-control'}),
+            'start_date': DateField(attrs={'input_formats': '%d.%m.%y', 'class': 'form-control'}),
         }
 
 
