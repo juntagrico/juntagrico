@@ -387,7 +387,7 @@ def my_createabo(request):
         'selected_depot': selected_depot,
         'selected_abo': selectedabo,
         'scheineerror': scheineerror,
-        'mit_locos': mit_locos
+        'mit_locos': mit_locos,
         'aboform': aboform
     }
     return render(request, "createabo.html", renderdict)
