@@ -224,6 +224,8 @@ class Abo(Billable):
     active = models.BooleanField(default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
+    creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
+    start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_year)
     old_active = None
     sizes_cache = {}
 

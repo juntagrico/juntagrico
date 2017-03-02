@@ -42,6 +42,20 @@
                 </div>
             </div>
             <div class="form-group">
+                <label class="col-md-4 control-label">Gewünschtes Startdatum</label>
+
+                <div class="col-md-8 controls">
+                    <label for="scheine">
+
+                        <input type="text" name="start_date" id="start_date" class="col-md-1 form-control"/><br/>
+                        Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein Abo zum gewünschten Datum frei ist.
+                    </label>
+                    {% if start_date_error %}
+                        <div class="alert alert-danger">Das gewählte Startdatum ist nicht gültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="col-md-4 control-label" for="depot">Depot</label>
 
                 <div class="col-md-8 controls">

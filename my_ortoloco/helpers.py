@@ -228,6 +228,15 @@ def genecrate_ical_for_job(job):
     e.end = job.time.strftime('%Y%m%d %H:%M:%S')
     c.events.append(e)
     return str(c).replace("\n","\r\n")+'\r\n'
+    
+def start_of_year():
+    year = timezone.now().year
+    return datetime.date(year, 1, 1)
+    
+def start_of_next_year():
+    year = timezone.now().year+1
+    return datetime.date(year, 1, 1)
+    
 
 
                     
