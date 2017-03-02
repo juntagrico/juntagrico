@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models.fields import DecimalField
 from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, Select, TextInput, ChoiceField, CheckboxInput
-from my_ortoloco.models import Loco, User
+from my_ortoloco.models import Loco, User, Abo
 
 
 class PasswordForm(Form):
@@ -34,14 +34,12 @@ class ProfileLocoForm(ModelForm):
         }
 
 
-class AboForm(Form):
-    anteilscheine = CharField(label='asdf', min_length=1)
-    anteilscheine_added = DecimalField(max_digits=2, decimal_places=0)
-    small_abos = DecimalField(max_digits=2, decimal_places=0)
-    big_abos = DecimalField(max_digits=2, decimal_places=0)
-    house_abos = DecimalField(max_digits=2, decimal_places=0)
-    depot = CharField(widget=Select)
-
+class AboForm(ModelForm):
+    class Meta:
+        model = Abo
+        fields = ['start_date']    
+        widgets = {
+            'start_date': TextInput(attrs={'placeholder': 'DD.MM.JJJJ', 'class': 'form-control'}),
 
 
 class RegisterLocoForm(ModelForm):

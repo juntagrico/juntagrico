@@ -318,6 +318,8 @@ def my_createabo(request):
     """
     loco = request.user.loco
     scheineerror = False
+    aboform = AboForm()
+
     if loco.abo is None:
         selectedabo="none"
     else:
@@ -331,10 +333,11 @@ def my_createabo(request):
     if request.method == "POST":
         scheine = int(request.POST.get("scheine"))
         selectedabo = request.POST.get("abo")
+        aboform = AboForm(request.POST)
 
         scheine += loco_scheine
         min_anzahl_scheine = next(iter(AboSize.objects.filter(name=selectedabo).values_list('shares', flat=True) or []), 1)
-        if scheine < min_anzahl_scheine:
+        if scheine < min_anzahl_scheine and not aboform.is_valid():
             scheineerror = True
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
@@ -385,6 +388,7 @@ def my_createabo(request):
         'selected_abo': selectedabo,
         'scheineerror': scheineerror,
         'mit_locos': mit_locos
+        'aboform': aboform
     }
     return render(request, "createabo.html", renderdict)
 
