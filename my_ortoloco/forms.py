@@ -40,6 +40,7 @@ class AboForm(ModelForm):
         fields = ['start_date']    
         widgets = {
             'start_date': TextInput(attrs={'placeholder': 'DD.MM.JJJJ', 'class': 'form-control'}),
+        }
 
 
 class RegisterLocoForm(ModelForm):
