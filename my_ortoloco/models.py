@@ -258,6 +258,10 @@ class Abo(Billable):
     def extra_abos(self):
         return self.extra_abo_set.filter(active=True)
         
+    @property    
+    def paid_shares(self):
+        return Anteilschein.objects.filter(loco__in=self.locos.all()).filter(paid_date__isnull=False).count()
+        
     @property
     def future_extra_abos(self):
         return self.extra_abo_set.filter(Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))

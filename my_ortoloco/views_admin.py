@@ -469,3 +469,12 @@ def my_excel_export_shares(request):
 def my_export(request):
     renderdict = get_menu_dict(request)
     return render(request, 'export.html', renderdict)
+    
+@permission_required('my_ortoloco.is_operations_group')
+def waitinglist(request):
+    renderdict = get_menu_dict(request)
+    waitinglist = Abo.objects.filter(active=False).filter(deactivation_date=None).order_by('start_date')
+    renderdict.update({
+        'waitinglist': waitinglist
+    })
+    return render(request, 'waitinglist.html', renderdict)

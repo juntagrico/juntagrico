@@ -105,6 +105,11 @@
                             <a href="/my/zukunft">Zukunftsblick</a>
                         </li>
                     {% endif %}
+                    {% if operation_group %}
+                        <li>
+                            <a href="/my/waitinglist">Warteliste</a>
+                        </li>
+                    {% endif %}
                     {% include "personal_menu.html" %}
                 </ul>
                 {% endif %}
