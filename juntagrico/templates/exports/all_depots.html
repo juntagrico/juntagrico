@@ -113,7 +113,7 @@
 </div>
 {% endfor %}
 {% for depot in depots %}
-    <h2 style="font-size: 18px;">{{ depot.wochentag }} - {{ depot.name }}</h2>
+    <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
     <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
     Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
@@ -164,8 +164,8 @@
         </tr>
         {% for abo in depot.abo_cache.all %}
             <tr>
-                <td style="text-align:right" class="top-border left-border">{{ abo.primary_loco.get_name }}</td>
-                <td style="text-align:right" class="top-border left-border">{{ abo.andere_bezieher }}</td>
+                <td style="text-align:right" class="top-border left-border">{{ abo.primary_member.get_name }}</td>
+                <td style="text-align:right" class="top-border left-border">{{ abo.other_recipients_names }}</td>
                 {% for abo_name in abo_names %}                    
                     <td style="text-align:right" class="top-border left-border">{% if abo|abos_amount:abo_name %}{{ abo|abos_amount:abo_name }}{% endif %}</td>
                 {% endfor %}
@@ -243,7 +243,7 @@
         {% for depot in depots %}
         <tr>
             <td style="width:180px;"></td>
-            <td style="width:180px; text-align:right;">{{ depot.wochentag }} - {{ depot.name }}</td>
+            <td style="width:180px; text-align:right;">{{ depot.weekday_name }} - {{ depot.name }}</td>
             {% for value in depot.overview_cache %}
                 <td style="width:40px; text-align:right;">{{ value }}</td>
             {% endfor %}

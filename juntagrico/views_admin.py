@@ -33,7 +33,7 @@ from static_ortoloco.models import StaticContent
 import hashlib
 from static_ortoloco.models import Politoloco
 
-from decorators import primary_loco_of_abo
+from decorators import primary_member_of_abo
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -55,14 +55,14 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get("sender")
     if request.POST.get("allabo") == "on":
-        for loco in Loco.objects.exclude(abo=None).filter(abo__active=True).exclude(block_emails=True):
+        for loco in Member.objects.exclude(abo=None).filter(abo__active=True).exclude(block_emails=True):
             emails.add(loco.email)
     if request.POST.get("allanteilsschein") == "on":
-        for loco in Loco.objects.exclude(block_emails=True):
-            if loco.anteilschein_set.count() > 0:
+        for loco in Member.objects.exclude(block_emails=True):
+            if loco.share_set.count() > 0:
                 emails.add(loco.email)
     if request.POST.get("all") == "on":
-        for loco in Loco.objects.exclude(block_emails=True):
+        for loco in Member.objects.exclude(block_emails=True):
             emails.add(loco.email)
     if request.POST.get("recipients"):
         recipients = re.split(r"\s*,?\s*", request.POST.get("recipients"))
@@ -114,7 +114,7 @@ def my_mails_intern(request, enhanced, error_message=None):
         'mail_subject': request.POST.get("subject"),
         'mail_message': request.POST.get("message"),
         'enhanced': enhanced,
-        'email': request.user.loco.email,
+        'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplate.objects.all(),
         'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email')
@@ -124,7 +124,7 @@ def my_mails_intern(request, enhanced, error_message=None):
 @permission_required('juntagrico.can_filter_locos')
 def my_filters(request):
     now = timezone.now()
-    locos = Loco.objects.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
+    locos = Member.objects.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict.update({
         'locos': locos
@@ -137,7 +137,7 @@ def my_filters(request):
 def my_filters_depot(request, depot_id):
     now = timezone.now()
     depot = get_object_or_404(Depot, id=int(depot_id))
-    locos = Loco.objects.filter(abo__depot = depot).annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
+    locos = Member.objects.filter(abo__depot = depot).annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails']=True
     renderdict.update({
@@ -149,7 +149,7 @@ def my_filters_depot(request, depot_id):
 @permission_required('juntagrico.is_area_admin')
 def my_filters_area(request, area_id):
     now = timezone.now()
-    area = get_object_or_404(Taetigkeitsbereich, id=int(area_id))
+    area = get_object_or_404(ActivityArea, id=int(area_id))
     locos = area.locos.all().annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails']=True
@@ -397,7 +397,7 @@ def my_excel_export_locos_filter(request):
     worksheet_s.write_string(0, 6, unicode("Telefon", "utf-8"))
     worksheet_s.write_string(0, 7, unicode("Mobile", "utf-8"))
     
-    locos = Loco.objects.all()
+    locos = Member.objects.all()
     boehnlis = current_year_boehnlis_per_loco()
     boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
     row = 1
@@ -463,14 +463,14 @@ def my_excel_export_shares(request):
     u'loco.last_name',
     u'loco.email',
     ]
-    return generate_excell(fields, Anteilschein)
+    return generate_excell(fields, Share)
 
 @permission_required('juntagrico.is_operations_group')
 def my_export(request):
     renderdict = get_menu_dict(request)
     return render(request, 'export.html', renderdict)
     
-@permission_required('my_ortoloco.is_operations_group')
+@permission_required('juntagrico.is_operations_group')
 def waitinglist(request):
     renderdict = get_menu_dict(request)
     waitinglist = Abo.objects.filter(active=False).filter(deactivation_date=None).order_by('start_date')

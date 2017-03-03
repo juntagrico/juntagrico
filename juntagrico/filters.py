@@ -42,7 +42,7 @@ class Filter(object):
 
         d = dict(cls.get_all())
         filter_funcs = [d[name] for name in names]
-        return [loco for loco in Loco.objects.all()
+        return [loco for loco in Member.objects.all()
                 if aggregate(f(loco) for f in filter_funcs)]
 
 
@@ -70,9 +70,9 @@ Filter("Alle mit Abo", lambda loco: loco.abo)
 Filter("Alle ohne Abo", lambda loco: not loco.abo)
 
 Filter("Anteilscheinbesitzer",
-       lambda loco: loco.user.anteilschein_set.exists())
+       lambda loco: loco.user.share_set.exists())
 Filter("Nicht Anteilscheinbesitzer",
-       lambda loco: not loco.user.anteilschein_set.exists())
+       lambda loco: not loco.user.share_set.exists())
 
 Filter("kleines Abo", lambda loco: loco.abo.small_abos)
 Filter("grosses Abo", lambda loco: loco.abo.big_abos())
@@ -85,4 +85,4 @@ FilterGen(lambda za: u"Zusatzabo {0}".format(za.name),
 
 FilterGen(lambda bereich: u"Taetigkeitsbereich {0}".format(bereich.name),
           lambda bereich, loco: bereich.users.filter(id=loco.user.id),
-          Taetigkeitsbereich.objects.all)
+          ActivityArea.objects.all)

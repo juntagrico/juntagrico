@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 abo.future_depot=None
                 abo.save()
                 emails = []
-                for loco in abo.bezieher_locos():
+                for loco in abo.recipients():
                     emails.append(loco.email)
                 send_depot_changed(emails,abo.depot,"www.ortoloco.ch")
         

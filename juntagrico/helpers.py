@@ -28,13 +28,13 @@ from django.core.files.base import ContentFile
 
 class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
-        from models import Loco
+        from models import Member
 
         try:
-            user = Loco.objects.get(**{'email': username}).user
+            user = Member.objects.get(**{'email': username}).user
             if user.check_password(password):
                 return user
-        except Loco.DoesNotExist:
+        except Member.DoesNotExist:
             return None
 
     def get_user(self, user_id):

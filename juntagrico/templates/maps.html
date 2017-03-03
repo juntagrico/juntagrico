@@ -29,7 +29,7 @@
         ]
         var locos = [
         {% for abo in abos %}
-        '{{ abo.primary_loco.addr_street }} {{abo.primary_loco.addr_zipcode}} {{abo.primary_loco.addr_location}}',
+        '{{ abo.primary_member.addr_street }} {{abo.primary_member.addr_zipcode}} {{abo.primary_member.addr_location}}',
         {% endfor %}
         ]
     </script>

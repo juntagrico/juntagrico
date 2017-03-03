@@ -33,13 +33,13 @@ from static_ortoloco.models import StaticContent
 import hashlib
 from static_ortoloco.models import Politoloco
 
-from decorators import primary_loco_of_abo
+from decorators import primary_member_of_abo
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
 def get_menu_dict(request):
-    loco = request.user.loco
+    loco = request.user.member
     next_jobs = []
 
     def filter_to_past_boehnli(boehnli):
@@ -51,18 +51,18 @@ def get_menu_dict(request):
     abo_size=0
     if loco.abo is not None:
         partner_bohnen = []
-        for abo_loco in loco.abo.bezieher_locos():
+        for abo_loco in loco.abo.recipients():
             if abo_loco == loco: continue
-            partner_bohnen.extend(filter_to_past_boehnli(Boehnli.objects.filter(loco=abo_loco)))
+            partner_bohnen.extend(filter_to_past_boehnli(Assignment.objects.filter(member=abo_loco)))
 
-        userbohnen = filter_to_past_boehnli(Boehnli.objects.filter(loco=loco))
+        userbohnen = filter_to_past_boehnli(Assignment.objects.filter(member=loco))
         abo_size = loco.abo.size * 10
 
         # amount of beans shown => round up if needed never down
         bohnenrange = range(0, max(userbohnen.__len__(), int(math.ceil(loco.abo.size * 10 / loco.abo.locos.count()))))
         bohnenrange = range(0, max(abo_size, len(userbohnen) + len(partner_bohnen)))
 
-        for bohne in Boehnli.objects.all().filter(loco=loco).order_by("job__time"):
+        for bohne in Assignment.objects.all().filter(member=loco).order_by("job__time"):
             if bohne.job.time > timezone.now():
                 next_jobs.append(bohne.job)
     else:
@@ -71,8 +71,8 @@ def get_menu_dict(request):
         userbohnen = []
         next_jobs = []
 
-    depot_admin = Depot.objects.filter(contact=request.user.loco)
-    area_admin = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
+    depot_admin = Depot.objects.filter(contact=request.user.member)
+    area_admin = ActivityArea.objects.filter(coordinator=request.user.member)
     menu_dict = {
         'user': request.user,
         'bohnenrange': bohnenrange,
@@ -109,8 +109,8 @@ def my_home(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_aktionstage), key=lambda job: job.time),
-        'teams': Taetigkeitsbereich.objects.filter(hidden=False).order_by("-core", "name"),
-        'no_abo': request.user.loco.abo is None,
+        'teams': ActivityArea.objects.filter(hidden=False).order_by("-core", "name"),
+        'no_abo': request.user.member.abo is None,
         'announcement': announcement
     })
 
@@ -122,7 +122,7 @@ def my_job(request, job_id):
     """
     Details for a job
     """
-    loco = request.user.loco
+    loco = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
 
     if request.method == 'POST':
@@ -130,14 +130,14 @@ def my_job(request, job_id):
         # adding participants
         add = int(num)
         for i in range(add):
-            Boehnli.objects.create(loco=loco, job=job)
+            Assignment.objects.create(member=loco, job=job)
         send_job_signup([loco.email], job, request.META["HTTP_HOST"])
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
     
     
-    all_participants = Loco.objects.filter(boehnli__job=job)
+    all_participants = Member.objects.filter(boehnli__job=job)
     number_of_participants = len(all_participants)
     unique_participants = all_participants.annotate(boehnli_for_job=Count('id')).distinct()
 
@@ -202,12 +202,12 @@ def my_participation(request):
     """
     Details for all areas a loco can participate
     """
-    loco = request.user.loco
+    loco = request.user.member
     my_areas = []
     success = False
     if request.method == 'POST':
         old_areas = set(loco.areas.all())
-        new_areas = set(area for area in Taetigkeitsbereich.objects.filter(hidden=False)
+        new_areas = set(area for area in ActivityArea.objects.filter(hidden=False)
                         if request.POST.get("area" + str(area.id)))
         if old_areas != new_areas:
             loco.areas = new_areas
@@ -217,7 +217,7 @@ def my_participation(request):
 
         success = True
 
-    for area in Taetigkeitsbereich.objects.filter(hidden=False):
+    for area in ActivityArea.objects.filter(hidden=False):
         if area.hidden:
             continue
         my_areas.append({
@@ -242,9 +242,9 @@ def my_pastjobs(request):
     """
     All past jobs of current user
     """
-    loco = request.user.loco
+    loco = request.user.member
 
-    allebohnen = Boehnli.objects.filter(loco=loco)
+    allebohnen = Assignment.objects.filter(member=loco)
     past_bohnen = []
 
     for bohne in allebohnen:
@@ -283,7 +283,7 @@ def my_team(request, bereich_id):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'team': get_object_or_404(Taetigkeitsbereich, id=int(bereich_id)),
+        'team': get_object_or_404(ActivityArea, id=int(bereich_id)),
         'jobs': jobs,
     })
     return render(request, "team.html", renderdict)
@@ -326,7 +326,7 @@ def my_contact(request):
     """
     Kontaktformular
     """
-    loco = request.user.loco
+    loco = request.user.member
     is_sent = False
 
     if request.method == "POST":
@@ -347,8 +347,8 @@ def my_contact_loco(request, loco_id, job_id):
     """
     Kontaktformular Locos
     """
-    loco = request.user.loco
-    contact_loco = get_object_or_404(Loco, id=int(loco_id))#Loco.objects.all().filter(id = loco_id)
+    loco = request.user.member
+    contact_loco = get_object_or_404(Member, id=int(loco_id))#Member.objects.all().filter(id = loco_id)
     is_sent = False
 
     if request.method == "POST":
@@ -376,9 +376,9 @@ def my_contact_loco(request, loco_id, job_id):
 @login_required
 def my_profile(request):
     success = False
-    loco = request.user.loco
+    loco = request.user.member
     if request.method == 'POST':
-        locoform = ProfileLocoForm(request.POST, instance=loco)
+        locoform = MemberProfileForm(request.POST, instance=loco)
         if locoform.is_valid():
             #set all fields of user
             loco.first_name = locoform.cleaned_data['first_name']
@@ -393,7 +393,7 @@ def my_profile(request):
             loco.save()
             success = True
     else:
-        locoform = ProfileLocoForm(instance=loco)
+        locoform = MemberProfileForm(instance=loco)
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -428,7 +428,7 @@ def my_new_password(request):
     sent = False
     if request.method == 'POST':
         sent = True
-        locos = Loco.objects.filter(email=request.POST.get('username'))
+        locos = Member.objects.filter(email=request.POST.get('username'))
         if len(locos) > 0:
             loco = locos[0]
             pw = password_generator()

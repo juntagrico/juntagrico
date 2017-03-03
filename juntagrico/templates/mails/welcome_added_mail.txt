@@ -1,6 +1,6 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-Wir freuen uns, dich bei ortoloco begrüssen zu dürfen. Soeben hat dich '{{name}}' zu ihrem/seinem Gemüseabo hinzugefügt und für dich {{ anteilsscheine }} Anteilschein(e) erworben. Wenn du damit einverstanden bist, ortoloco-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
+Wir freuen uns, dich bei ortoloco begrüssen zu dürfen. Soeben hat dich '{{name}}' zu ihrem/seinem Gemüseabo hinzugefügt und für dich {{ anteilsscheine }} Share(e) erworben. Wenn du damit einverstanden bist, ortoloco-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
 Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
 
 Statuten: {{ serverurl }}/static/others/160910_-_Statuten_ortoloco.pdf

@@ -11,6 +11,7 @@ from django.utils import timezone
 from polymorphic.models import PolymorphicModel
 
 import helpers
+from config import *
 import model_audit
 from juntagrico.mailer import *
 
@@ -21,7 +22,7 @@ class Depot(models.Model):
     """
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100, unique=True)
-    contact = models.ForeignKey("Loco", on_delete=models.PROTECT)
+    contact = models.ForeignKey("Member", on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField("Wochentag", choices=helpers.weekday_choices)
     latitude = models.CharField("Latitude", max_length=100, default="")
     longitude = models.CharField("Longitude", max_length=100, default="")
@@ -42,7 +43,7 @@ class Depot(models.Model):
         return self.abo_set.filter(active=True)
 
     @property
-    def wochentag(self):
+    def weekday_name(self):
         day = "Unbekannt"
         if 8 > self.weekday > 0:
             day = helpers.weekdays[self.weekday]
@@ -219,7 +220,7 @@ class Abo(Billable):
                                      blank=True, )
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
-    primary_loco = models.ForeignKey("Loco", related_name="abo_primary", null=True, blank=True,
+    primary_member = models.ForeignKey("Member", related_name="abo_primary", null=True, blank=True,
                                      on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
@@ -239,20 +240,20 @@ class Abo(Billable):
         namelist.extend(extra.type.name for extra in self.extra_abos.all())
         return u"%s" % (" + ".join(namelist))
 
-    def bezieher(self):
-        locos = self.locos.all()
-        return ", ".join(unicode(loco) for loco in locos)
+    def recipients_names(self):
+        members = self.members.all()
+        return ", ".join(unicode(member) for member in members)
 
-    def andere_bezieher(self):
-        locos = self.bezieher_locos().exclude(email=self.primary_loco.email)
-        return ", ".join(unicode(loco) for loco in locos)
+    def other_recipients_names(self):
+        members = self.recipients().exclude(email=self.primary_member.email)
+        return ", ".join(unicode(member) for member in members)
 
-    def bezieher_locos(self):
-        return self.locos.all()
+    def recipients(self):
+        return self.members.all()
 
-    def primary_loco_nullsave(self):
-        loco = self.primary_loco
-        return unicode(loco) if loco is not None else ""
+    def primary_member_nullsave(self):
+        member = self.primary_member
+        return unicode(member) if member is not None else ""
         
     @property    
     def extra_abos(self):
@@ -260,7 +261,7 @@ class Abo(Billable):
         
     @property    
     def paid_shares(self):
-        return Anteilschein.objects.filter(loco__in=self.locos.all()).filter(paid_date__isnull=False).filter(cancelled_date__isnull=True).count()
+        return Share.objects.filter(member__in=self.members.all()).filter(paid_date__isnull=False).filter(cancelled_date__isnull=True).count()
         
     @property
     def future_extra_abos(self):
@@ -355,23 +356,23 @@ class Abo(Billable):
 
     @classmethod
     def pre_delete(cls, sender, instance, **kwds):
-        for loco in instance.bezieher_locos():
-            loco.abo = None
-            loco.save()
+        for member in instance.recipients():
+            member.abo = None
+            member.save()
 
     class Meta:
         verbose_name = "Abo"
         verbose_name_plural = "Abos"
         permissions = (('can_filter_abos', 'Benutzer kann Abos filtern'),)
 
-class Loco(models.Model):
+class Member(models.Model):
     """
     Additional fields for Django's default user class.
     """
 
     # user class is only used for logins, permissions, and other builtin django stuff
-    # all user information should be stored in the Loco model
-    user = models.OneToOneField(User, related_name='loco', null=True, blank=True)
+    # all user information should be stored in the Member model
+    user = models.OneToOneField(User, related_name='member', null=True, blank=True)
 
     first_name = models.CharField("Vorname", max_length=30)
     last_name = models.CharField("Nachname", max_length=30)
@@ -381,11 +382,10 @@ class Loco(models.Model):
     addr_zipcode = models.CharField("PLZ", max_length=10)
     addr_location = models.CharField("Ort", max_length=50)
     birthday = models.DateField("Geburtsdatum", null=True, blank=True)
-    boehnlis = models.PositiveSmallIntegerField("Boehnlis", default=0)
     phone = models.CharField("Telefonnr", max_length=50)
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
-    abo = models.ForeignKey(Abo, related_name="locos", null=True, blank=True,
+    abo = models.ForeignKey(Abo, related_name="members", null=True, blank=True,
                             on_delete=models.SET_NULL)
 
     confirmed = models.BooleanField("bestätigt", default=True)
@@ -424,9 +424,9 @@ class Loco(models.Model):
         instance.old_abo = None#instance.abo
 
     class Meta:
-        verbose_name = "Loco"
-        verbose_name_plural = "Locos"
-        permissions = (('can_filter_locos', 'Benutzer kann locos filtern'),)
+        verbose_name = Config.member_string()
+        verbose_name_plural = Config.members_string()
+        permissions = (('can_filter_members', 'Benutzer kann '+Config.members_string()+' filtern'),)
 
     def get_name(self):
         return u"%s %s" % (self.first_name, self.last_name)
@@ -437,8 +437,8 @@ class Loco(models.Model):
         return self.phone
 
 
-class Anteilschein(Billable):
-    loco = models.ForeignKey(Loco, null=True, blank=True, on_delete=models.SET_NULL)
+class Share(Billable):
+    member = models.ForeignKey(Member, null=True, blank=True, on_delete=models.SET_NULL)
     paid_date = models.DateField("Bezahlt am",null=True,blank=True);
     issue_date = models.DateField("Ausgestellt am",null=True,blank=True);
     booking_date = models.DateField("Eingebucht am",null=True,blank=True);
@@ -456,13 +456,13 @@ class Anteilschein(Billable):
         verbose_name_plural = "Anteilscheine"
 
 
-class Taetigkeitsbereich(models.Model):
+class ActivityArea(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     core = models.BooleanField("Kernbereich", default=False)
     hidden = models.BooleanField("versteckt", default=False)
-    coordinator = models.ForeignKey(Loco, on_delete=models.PROTECT)
-    locos = models.ManyToManyField(Loco, related_name="areas", blank=True)
+    coordinator = models.ForeignKey(Member, on_delete=models.PROTECT)
+    members = models.ManyToManyField(Member, related_name="areas", blank=True)
     show_coordinator_phonenumber = models.BooleanField("Koordinator Tel Nr Veröffentlichen", default=False)
 
     def __unicode__(self):
@@ -487,7 +487,7 @@ class AbstractJobType(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
-    bereich = models.ForeignKey(Taetigkeitsbereich, on_delete=models.PROTECT)
+    bereich = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField("Dauer in Stunden")
     location = models.CharField("Ort", max_length=100, default="")
 
@@ -531,7 +531,7 @@ class Job(PolymorphicModel):
     def __unicode__(self):
         return u'Job #%s' % self.id
 
-    def wochentag(self):
+    def weekday_name(self):
         weekday = helpers.weekdays[self.time.isoweekday()]
         return weekday[:2]
 
@@ -554,7 +554,7 @@ class Job(PolymorphicModel):
         return self.boehnli_set.count()
 
     def get_status_bohne(self):
-        boehnlis = Boehnli.objects.filter(job_id=self.id)
+        boehnlis = Assignment.objects.filter(job_id=self.id)
         if self.slots < 1:
             return helpers.get_status_bean(100)
         return helpers.get_status_bean(boehnlis.count() * 100 / self.slots)
@@ -569,7 +569,7 @@ class Job(PolymorphicModel):
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_canceled != instance.canceled and instance.old_canceled is False:
-            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            boehnlis = Assignment.objects.filter(job_id=instance.id)
             emails = set()
             for boehnli in boehnlis:
                 emails.add(boehnli.loco.email)
@@ -577,7 +577,7 @@ class Job(PolymorphicModel):
             if len(emails) > 0:
                 send_job_canceled(emails, instance, "www.ortoloco.ch")
         if instance.old_time != instance.time:
-            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            boehnlis = Assignment.objects.filter(job_id=instance.id)
             emails = set()
             for boehnli in boehnlis:
                 emails.add(boehnli.loco.email)
@@ -589,7 +589,7 @@ class Job(PolymorphicModel):
         instance.old_time = instance.time
         instance.old_canceled = instance.canceled
         if instance.canceled:
-            boehnlis = Boehnli.objects.filter(job_id=instance.id)
+            boehnlis = Assignment.objects.filter(job_id=instance.id)
             boehnlis.delete()
 
     class Meta:
@@ -638,16 +638,16 @@ class OneTimeJob(Job, AbstractJobType):
         verbose_name_plural = 'EinzelJobs'
 
 
-class Boehnli(models.Model):
+class Assignment(models.Model):
     """
     Single boehnli (work unit).
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    loco = models.ForeignKey(Loco, on_delete=models.PROTECT)
+    member = models.ForeignKey(Member, on_delete=models.PROTECT)
     core_cache = models.BooleanField("Kernbereich", default=False)
 
     def __unicode__(self):
-        return u'Boehnli #%s' % self.id
+        return u'Assignment #%s' % self.id
 
     def zeit(self):
         return self.job.time
@@ -660,8 +660,8 @@ class Boehnli(models.Model):
         instance.core_cache = instance.is_in_kernbereich()
 
     class Meta:
-        verbose_name = 'Böhnli'
-        verbose_name_plural = 'Böhnlis'
+        verbose_name = Config.assignment_string()
+        verbose_name_plural = Config.assignments_string()
 
 
 class MailTemplate(models.Model):
@@ -695,12 +695,12 @@ class SpecialRoles(models.Model):
 
 # model_audit.m2m(Abo.users)
 model_audit.fk(Abo.depot)
-model_audit.fk(Anteilschein.loco)
+model_audit.fk(Share.member)
 
-signals.post_save.connect(Loco.create, sender=Loco)
-signals.post_delete.connect(Loco.post_delete, sender=Loco)
-signals.pre_save.connect(Loco.pre_save, sender=Loco)
-signals.post_init.connect(Loco.post_init, sender=Loco)
+signals.post_save.connect(Member.create, sender=Member)
+signals.post_delete.connect(Member.post_delete, sender=Member)
+signals.pre_save.connect(Member.pre_save, sender=Member)
+signals.post_init.connect(Member.post_init, sender=Member)
 signals.pre_save.connect(Job.pre_save, sender=Job)
 signals.post_init.connect(Job.post_init, sender=Job)
 signals.pre_save.connect(RecuringJob.pre_save, sender=RecuringJob)
@@ -710,4 +710,4 @@ signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 signals.pre_delete.connect(Abo.pre_delete, sender=Abo)
 signals.pre_save.connect(Abo.pre_save, sender=Abo)
 signals.post_init.connect(Abo.post_init, sender=Abo)
-signals.pre_save.connect(Boehnli.pre_save, sender=Boehnli)
+signals.pre_save.connect(Assignment.pre_save, sender=Assignment)

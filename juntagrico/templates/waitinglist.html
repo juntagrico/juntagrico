@@ -19,13 +19,13 @@
                 <tr>
                     <td>{{ abo.overview }}</td>
                     <td>{{ abo.start_date |date:"d.m.y" }}</td>
-                    <td>{{ abo.primary_loco.first_name }} {{ abo.primary_loco.last_name }}</td>
+                    <td>{{ abo.primary_member.first_name }} {{ abo.primary_member.last_name }}</td>
                     <td>
                         <form id="abo{{ abo.id }}" method="post" action="/my/mails"> 
                             {% csrf_token %}
-                            <input type="hidden" name="recipients" value="{{ abo.primary_loco.email }}"/>
+                            <input type="hidden" name="recipients" value="{{ abo.primary_member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#" onclick="$('#abo{{ abo.id }}').submit();">{{ abo.primary_loco.email }}</a>
+                            <a href="#" onclick="$('#abo{{ abo.id }}').submit();">{{ abo.primary_member.email }}</a>
                         </form>
                     </td>
                     <td>{{ abo.paid_shares }}</td>

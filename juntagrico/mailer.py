@@ -112,7 +112,7 @@ def send_anteilschein_created_mail(anteilschein, server):
 
     # reset password so we can send it to him
     d = {
-        'loco': anteilschein.loco,
+        'loco': anteilschein.member,
         'anteilschein': anteilschein,
         'serverurl': "http://" + get_server(server)
     }

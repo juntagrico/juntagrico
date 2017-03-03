@@ -22,7 +22,7 @@ def send_politoloco(request):
                 emails.add(loco.email)
 
         if request.POST.get("allortolocos"):
-            for loco in Loco.objects.all():
+            for loco in Member.objects.all():
                 emails.add(loco.email)
 
         if request.POST.get("allsingleemail"):
@@ -39,7 +39,7 @@ def send_politoloco(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'politolocos': Politoloco.objects.count(),
-        'ortolocos': Loco.objects.count(),
+        'ortolocos': Member.objects.count(),
         'sent': sent
     })
     return render(request, 'mail_sender_politoloco.html', renderdict)

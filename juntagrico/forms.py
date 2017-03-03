@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models.fields import DecimalField
 from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, Select, TextInput, ChoiceField, CheckboxInput, DateInput
-from juntagrico.models import Loco, User, Abo
+from juntagrico.models import Member, User, Abo
 
 
 class PasswordForm(Form):
@@ -14,9 +14,9 @@ class PasswordForm(Form):
         return self.data['passwordRepeat']
 
 
-class ProfileLocoForm(ModelForm):
+class MemberProfileForm(ModelForm):
     class Meta:
-        model = Loco
+        model = Member
         fields = ['first_name', 'last_name', 'email',
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone','reachable_by_email']
@@ -43,9 +43,9 @@ class AboForm(ModelForm):
         }
 
 
-class RegisterLocoForm(ModelForm):
+class RegisterMemberForm(ModelForm):
     class Meta:
-        model = Loco
+        model = Member
         fields = ['first_name', 'last_name', 'email',
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone']

@@ -82,7 +82,7 @@
                     {% else %}
                         <ul>
                             {% for loco in mit_locos %}
-                                <li>{{ loco.first_name }} {{ loco.last_name }} - {{ loco.anteilschein_set.all|length }} Anteilschein(e)</li>
+                                <li>{{ loco.first_name }} {{ loco.last_name }} - {{ loco.share_set.all|length }} Share(e)</li>
                             {% endfor %}
                         </ul>
                     {% endif %}

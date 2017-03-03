@@ -20,22 +20,22 @@ class AboAdminForm(forms.ModelForm):
         model = Abo
         fields = '__all__'
         
-    abo_locos = forms.ModelMultipleChoiceField(queryset=Loco.objects.all(), required=False,
-                                               widget=admin.widgets.FilteredSelectMultiple("Locos", False))
+    abo_locos = forms.ModelMultipleChoiceField(queryset=Member.objects.all(), required=False,
+                                               widget=admin.widgets.FilteredSelectMultiple("Member", False))
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        self.fields["primary_loco"].queryset = Loco.objects.filter(abo=self.instance)
-        self.fields["abo_locos"].queryset = Loco.objects.filter(Q(abo=None) | Q(abo=self.instance))
-        self.fields["abo_locos"].initial = Loco.objects.filter(abo=self.instance)
+        self.fields["primary_member"].queryset = Member.objects.filter(abo=self.instance)
+        self.fields["abo_members"].queryset = Member.objects.filter(Q(abo=None) | Q(abo=self.instance))
+        self.fields["abo_members"].initial = Member.objects.filter(abo=self.instance)
 
 
     def clean(self):
-        # enforce integrity constraint on primary_loco
-        locos = self.cleaned_data["abo_locos"]
-        primary = self.cleaned_data["primary_loco"]
+        # enforce integrity constraint on primary_member
+        locos = self.cleaned_data["abo_members"]
+        primary = self.cleaned_data["primary_member"]
         if primary not in locos:
-            self.cleaned_data["primary_loco"] = locos[0] if locos else None
+            self.cleaned_data["primary_member"] = locos[0] if locos else None
 
         return forms.ModelForm.clean(self)
 
@@ -48,8 +48,8 @@ class AboAdminForm(forms.ModelForm):
 
     def save_m2m(self):
         # update Abo-Loco many-to-one through foreign keys on Locos
-        old_locos = set(Loco.objects.filter(abo=self.instance))
-        new_locos = set(self.cleaned_data["abo_locos"])
+        old_locos = set(Member.objects.filter(abo=self.instance))
+        new_locos = set(self.cleaned_data["abo_members"])
         for obj in old_locos - new_locos:
             obj.abo = None
             obj.save()
@@ -138,10 +138,10 @@ class JobCopyForm(forms.ModelForm):
         return res
 
 
-class BoehnliInline(admin.TabularInline):
-    model = Boehnli
-    #readonly_fields = ["loco"]
-    raw_id_fields = ["loco"]
+class AssignmentInline(admin.TabularInline):
+    model = Assignment
+    #readonly_fields = ["member"]
+    raw_id_fields = ["member"]
 
     #can_delete = False
 
@@ -170,7 +170,7 @@ class JobAdmin(admin.ModelAdmin):
     actions = ["copy_job", "mass_copy_job"]
     search_fields = ["typ__name", "typ__bereich__name"]
     exclude = ["reminder_sent"]
-    inlines = [BoehnliInline]
+    inlines = [AssignmentInline]
     readonly_fields = ["freie_plaetze"]
 
     def mass_copy_job(self, request, queryset):
@@ -220,12 +220,12 @@ class JobAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            return qs.filter(typ__bereich__coordinator=request.user.loco)
+            return qs.filter(typ__bereich__coordinator=request.user.member)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "typ" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = JobType.objects.filter(bereich__coordinator=request.user.loco)
+            kwargs["queryset"] = JobType.objects.filter(bereich__coordinator=request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -235,7 +235,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     search_fields = ["name", "bereich__name"]
     exclude = ["reminder_sent"]
     
-    inlines = [BoehnliInline]
+    inlines = [AssignmentInline]
     readonly_fields = ["freie_plaetze"]
     
     def transform_job(self, request, queryset):
@@ -249,7 +249,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
             t.save()
             rj.typ=t
             rj.save()    
-            for b in Boehnli.objects.filter(job_id=inst.id):
+            for b in Assignment.objects.filter(job_id=inst.id):
                 b.job = rj
                 b.save()
             inst.delete()
@@ -261,12 +261,12 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            return qs.filter(bereich__coordinator=request.user.loco)
+            return qs.filter(bereich__coordinator=request.user.member)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "bereich" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
+            kwargs["queryset"] = ActivityArea.objects.filter(coordinator=request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class JobTypeAdmin(admin.ModelAdmin):
@@ -284,7 +284,7 @@ class JobTypeAdmin(admin.ModelAdmin):
                 i = i+1
                 print oj.__dict__
                 oj.save()    
-                for b in Boehnli.objects.filter(job_id=rj.id):
+                for b in Assignment.objects.filter(job_id=rj.id):
                     b.job = oj
                     b.save()
                 rj.delete()
@@ -295,12 +295,12 @@ class JobTypeAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            return qs.filter(bereich__coordinator=request.user.loco)
+            return qs.filter(bereich__coordinator=request.user.member)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "bereich" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = Taetigkeitsbereich.objects.filter(coordinator=request.user.loco)
+            kwargs["queryset"] = ActivityArea.objects.filter(coordinator=request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class ExtraAboInline(admin.TabularInline):
@@ -313,10 +313,10 @@ class ExtraAboInline(admin.TabularInline):
     
 class AboAdmin(admin.ModelAdmin):
     form = AboAdminForm
-    list_display = ["__unicode__", "bezieher", "primary_loco_nullsave", "depot", "active"]
+    list_display = ["__unicode__", "recipients_names", "primary_member_nullsave", "depot", "active"]
     #filter_horizontal = ["users"]
-    search_fields = ["locos__user__username", "locos__first_name", "locos__last_name", "depot__name"]
-    #raw_id_fields = ["primary_loco"]
+    search_fields = ["members__user__username", "members__first_name", "members__last_name", "depot__name"]
+    #raw_id_fields = ["primary_member"]
     inlines = [ExtraAboInline]
 
 
@@ -326,10 +326,10 @@ class AuditAdmin(admin.ModelAdmin):
     #can_delete = False
 
 
-class AnteilscheinAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "loco", "number", "paid_date", "issue_date", "booking_date", "cancelled_date", "termination_date", "payback_date"]
-    search_fields = ["id", "loco__email", "loco__first_name", "loco__last_name", "number", "paid_date", "issue_date", "booking_date", "cancelled_date", "termination_date", "payback_date"]
-    raw_id_fields = ["loco"]
+class ShareAdmin(admin.ModelAdmin):
+    list_display = ["__unicode__", "member", "number", "paid_date", "issue_date", "booking_date", "cancelled_date", "termination_date", "payback_date"]
+    search_fields = ["id", "member__email", "member__first_name", "member__last_name", "number", "paid_date", "issue_date", "booking_date", "cancelled_date", "termination_date", "payback_date"]
+    raw_id_fields = ["member"]
 
 
 class DepotAdmin(admin.ModelAdmin):
@@ -342,46 +342,46 @@ class ExtraAboAdmin(admin.ModelAdmin):
     
 
 
-class BereichAdmin(admin.ModelAdmin):
-    filter_horizontal = ["locos"]
+class AreaAdmin(admin.ModelAdmin):
+    filter_horizontal = ["members"]
     raw_id_fields = ["coordinator"]
     list_display = ["name", "core", "hidden", "coordinator"]
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            return qs.filter(coordinator=request.user.loco)
+            return qs.filter(coordinator=request.user.member)
 	return qs
 
-class BoehnliAdmin(admin.ModelAdmin):
+class AssignmentAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if  request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True))
-            rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True))
+            otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.member).values_list('id', flat=True))
+            rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.member).values_list('id', flat=True))
             jidlist = otjidlist + rjidlist
             return qs.filter(job__id__in=jidlist)
 	return qs
     
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "job" and request.user.has_perm("juntagrico.is_area_admin") and (not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.loco).values_list('id', flat=True))
-            rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.loco).values_list('id', flat=True))
+            otjidlist= list(OneTimeJob.objects.filter(bereich__coordinator=request.user.member).values_list('id', flat=True))
+            rjidlist= list(RecuringJob.objects.filter(typ__bereich__coordinator=request.user.member).values_list('id', flat=True))
             jidlist = otjidlist + rjidlist
             kwargs["queryset"] = Job.objects.filter(id__in=jidlist)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 """
-class BoehnliAdmin(admin.ModelAdmin):
+class AssignmentAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "job", "zeit", "loco"]
     raw_id_fields = ["job", "loco"]
 """
 
 
-class LocoAdminForm(forms.ModelForm):
+class MemberAdminForm(forms.ModelForm):
     class Meta:
-        model = Loco
+        model = Member
         fields = '__all__'
 
     def __init__(self, *a, **k):
@@ -400,8 +400,8 @@ class LocoAdminForm(forms.ModelForm):
                               label="Abo")
 
 
-class LocoAdmin(admin.ModelAdmin):
-    form = LocoAdminForm
+class MemberAdmin(admin.ModelAdmin):
+    form = MemberAdminForm
     list_display = ["email", "first_name", "last_name"]
     search_fields = ["first_name", "last_name", "email"]
     #raw_id_fields = ["abo"]
@@ -425,11 +425,11 @@ admin.site.register(ExtraAbo, ExtraAboAdmin)
 admin.site.register(ExtraAboType)
 admin.site.register(ExtraAboCategory)
 admin.site.register(AboSize)
-admin.site.register(Boehnli,BoehnliAdmin)
+admin.site.register(Assignment,AssignmentAdmin)
 admin.site.register(Abo, AboAdmin)
-admin.site.register(Loco, LocoAdmin)
-admin.site.register(Taetigkeitsbereich, BereichAdmin)
-admin.site.register(Anteilschein, AnteilscheinAdmin)
+admin.site.register(Member, MemberAdmin)
+admin.site.register(ActivityArea, AreaAdmin)
+admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
 
 # This is only added to admin for debugging
@@ -437,7 +437,7 @@ admin.site.register(MailTemplate)
 
 # Not adding this because it can and should be edited from Job, 
 # where integrity constraints are checked
-#admin.site.register(Boehnli, BoehnliAdmin)
+#admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
