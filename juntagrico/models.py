@@ -224,6 +224,8 @@ class Abo(Billable):
     active = models.BooleanField(default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
+    creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
+    start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_year)
     old_active = None
     sizes_cache = {}
 
@@ -255,6 +257,10 @@ class Abo(Billable):
     @property    
     def extra_abos(self):
         return self.extra_abo_set.filter(active=True)
+        
+    @property    
+    def paid_shares(self):
+        return Anteilschein.objects.filter(loco__in=self.locos.all()).filter(paid_date__isnull=False).filter(cancelled_date__isnull=True).count()
         
     @property
     def future_extra_abos(self):

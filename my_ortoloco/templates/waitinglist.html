@@ -1,0 +1,44 @@
+{% extends "mybase.html" %}
+
+{% block content %}
+    <h3>Warteliste</h3>
+    <div id="waitinglist">
+        <table id="filter-table" class="list table" style="display: table;">
+            <thead>
+            <tr>
+                <th>Abo</th>
+                <th>Start Datum</th>
+                <th>Kontakt</th>
+                <th>Email</th>
+                <th>Bezahlte Anteilsscheine</th>
+                <th>Bestelldatum</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for abo in waitinglist %}
+                <tr>
+                    <td>{{ abo.overview }}</td>
+                    <td>{{ abo.start_date |date:"d.m.y" }}</td>
+                    <td>{{ abo.primary_loco.first_name }} {{ abo.primary_loco.last_name }}</td>
+                    <td>
+                        <form id="abo{{ abo.id }}" method="post" action="/my/mails"> 
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients" value="{{ abo.primary_loco.email }}"/>
+                            <input type="hidden" name="recipients_count" value="1"/>
+                            <a href="#" onclick="$('#abo{{ abo.id }}').submit();">{{ abo.primary_loco.email }}</a>
+                        </form>
+                    </td>
+                    <td>{{ abo.paid_shares }}</td>
+                    <td>{{ abo.creation_date }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initWaitinglist.js"></script>
+{% endblock %}

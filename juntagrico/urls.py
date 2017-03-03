@@ -63,6 +63,7 @@ urls = [
     url('^/export/locos', juntagrico_admin.my_excel_export_locos),
     url('^/export/shares$', juntagrico_admin.my_excel_export_shares),
     url('^/mailtemplate/(?P<template_id>.*?)/', juntagrico_admin.my_get_mail_template),
+    url('^/waitinglist', my_ortoloco_admin.waitinglist),
     url('^/maps', juntagrico_admin.my_maps),
     
     url(r'^', include(personal_urls)),

@@ -4,15 +4,23 @@ define(['modules/depotDistance'], function (depotDistance) {
     // check for the amount of shares of the loco
     $("input[type=radio]").change(function () {
         var $checked = $(":checked");
-        if ($checked.val() === "small") {
-            $("#scheine").val(Math.max(2 - loco_scheine, 0));
-        } else if ($checked.val() === "big") {
-            $("#scheine").val(Math.max(4 - loco_scheine, 0));
-        } else if ($checked.val() === "house") {
-            $("#scheine").val(Math.max(20 - loco_scheine, 0));
-        }
-        else {
+        if ($checked.val() === "none") {
             $("#scheine").val(1);
+        } 
+        else {
+            $("#scheine").val(Math.max(sizes[$checked.val()] - loco_scheine, 0));
+        }
+    }).change();
+
+
+    // check for the amount of shares of the loco
+    $("input[type=radio]").change(function () {
+        var $checked = $(":checked");
+        if ($checked.val() === "none") {
+            $("#start_date").hide();
+}
+        else {
+            $("#start_date").show();
         }
     }).change();
 

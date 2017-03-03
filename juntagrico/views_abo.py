@@ -247,11 +247,17 @@ def my_signup(request):
 def my_add_loco(request, abo_id):
     scheineerror = False
     scheine = 1
-    userexists = False
+    memberexists = False
+    memberblocked = False
+    member = False
     if request.method == 'POST':
         locoform = ProfileLocoForm(request.POST)
-        if User.objects.filter(email=request.POST.get('email')).__len__() > 0:
-            userexists = True
+        members = Loco.objects.filter(email=request.POST.get('email'))
+        if members.count() > 0:
+            memberexists = True
+            member= members[0]
+            if member.abo is not None:
+                memberblocked=True
         try:
             scheine = int(request.POST.get("anteilscheine"))
             scheineerror = scheine < 0
@@ -259,26 +265,22 @@ def my_add_loco(request, abo_id):
             scheineerror = True
         except  ValueError:
             scheineerror = True
-        if locoform.is_valid() and scheineerror is False and userexists is False:
-            username = make_username(locoform.cleaned_data['first_name'],
-                                     locoform.cleaned_data['last_name'],
-                                     locoform.cleaned_data['email'])
+        if locoform.is_valid() and scheineerror is False and memberexists is False:
             pw = password_generator()
-            loco = Loco.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'], email=locoform.cleaned_data['email'])
-            loco.first_name = locoform.cleaned_data['first_name']
-            loco.last_name = locoform.cleaned_data['last_name']
-            loco.email = locoform.cleaned_data['email']
-            loco.addr_street = locoform.cleaned_data['addr_street']
-            loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
-            loco.addr_location = locoform.cleaned_data['addr_location']
-            loco.phone = locoform.cleaned_data['phone']
-            loco.mobile_phone = locoform.cleaned_data['mobile_phone']
-            loco.confirmed = False
-            loco.abo_id = abo_id
-            loco.save()
-
-            loco.user.set_password(pw)
-            loco.user.save()
+            member = Loco.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'], email=locoform.cleaned_data['email'])
+            member.first_name = locoform.cleaned_data['first_name']
+            member.last_name = locoform.cleaned_data['last_name']
+            member.email = locoform.cleaned_data['email']
+            member.addr_street = locoform.cleaned_data['addr_street']
+            member.addr_zipcode = locoform.cleaned_data['addr_zipcode']
+            member.addr_location = locoform.cleaned_data['addr_location']
+            member.phone = locoform.cleaned_data['phone']
+            member.mobile_phone = locoform.cleaned_data['mobile_phone']
+            member.confirmed = False
+            member.abo_id = abo_id
+            member.save()
+            member.user.set_password(pw)
+            member.user.save()
 
             for num in range(0, scheine):
                 anteilschein = Anteilschein(loco=loco, paid_date=None)
@@ -290,7 +292,12 @@ def my_add_loco(request, abo_id):
             if request.GET.get("return"):
                 return redirect(request.GET.get("return"))
             return redirect('/my/aboerstellen')
-
+        if  memberexists is True and memberblocked is False:
+            member.abo_id=abo_id
+            member.save()
+            if request.GET.get("return"):
+                return redirect(request.GET.get("return"))
+            return redirect('/my/aboerstellen')
     else:
         loco = request.user.loco
         initial = {"addr_street": loco.addr_street,
@@ -301,7 +308,8 @@ def my_add_loco(request, abo_id):
         locoform = ProfileLocoForm(initial=initial)
     renderdict = {
         'scheine': scheine,
-        'userexists': userexists,
+        'memberexists': memberexists,
+        'memberblocked': memberexists,
         'scheineerror': scheineerror,
         'locoform': locoform,
         "loco": request.user.loco,
@@ -318,6 +326,8 @@ def my_createabo(request):
     """
     loco = request.user.loco
     scheineerror = False
+    aboform = AboForm()
+
     if loco.abo is None:
         selectedabo="none"
     else:
@@ -331,19 +341,21 @@ def my_createabo(request):
     if request.method == "POST":
         scheine = int(request.POST.get("scheine"))
         selectedabo = request.POST.get("abo")
+        aboform = AboForm(request.POST)
 
         scheine += loco_scheine
         min_anzahl_scheine = next(iter(AboSize.objects.filter(name=selectedabo).values_list('shares', flat=True) or []), 1)
-        if scheine < min_anzahl_scheine:
-            scheineerror = True
+        if scheine < min_anzahl_scheine or not aboform.is_valid():
+            scheineerror = scheine < min_anzahl_scheine
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
             size = next(iter(AboSize.objects.filter(name=selectedabo).values_list('size', flat=True) or []), 0)
 
             if size > 0:
                 if loco.abo is None:
-                    loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot)
+                    loco.abo = Abo.objects.create(size=size, primary_loco=loco, depot=depot,start_date=aboform.cleaned_data['start_date'])
                 else:
+                    loco.abo.start_date=aboform.cleaned_data['start_date']
                     loco.abo.size = size
                     loco.abo.future_size = size
                     loco.abo.depot = depot
@@ -384,7 +396,8 @@ def my_createabo(request):
         'selected_depot': selected_depot,
         'selected_abo': selectedabo,
         'scheineerror': scheineerror,
-        'mit_locos': mit_locos
+        'mit_locos': mit_locos,
+        'aboform': aboform
     }
     return render(request, "createabo.html", renderdict)
 
