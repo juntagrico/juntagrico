@@ -12,6 +12,7 @@ import os, re
 
 
 from juntagrico.helpers import *
+from juntagrico.config import *
 
 def get_server(server):
     site_from_env = os.getenv("ORTOLOCO_TEMPLATE_SERVERURL")
@@ -67,23 +68,23 @@ def send_mail_multi(email_multi_message):
     return None
 
 
-def send_new_loco_in_taetigkeitsbereich_to_bg(area, loco):
+def send_new_member_in_activityarea_to_operations(area, member):
     send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + loco.first_name + " " + loco.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', 'info@ortoloco.ch', [area.coordinator.email])
+              'Soeben hat sich ' + member.first_name + " " + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', Config.info_email(), [area.coordinator.email])
 
 
-def send_contact_form(subject, message, loco, copy_to_loco):
-    send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, ['info@ortoloco.ch'])
-    if copy_to_loco:
-        send_mail('Anfrage per my.ortoloco: ' + subject, message, loco.email, [loco.email])
+def send_contact_form(subject, message, member, copy_to_member):
+    send_mail('Anfrage per '+Config.adminportal_name()+': ' + subject, message, member.email, [Config.info_email()])
+    if copy_to_member:
+        send_mail('Anfrage per '+Config.adminportal_name()+': ' + subject, message, member.email, [member.email])
 		
-def send_contact_loco_form(subject, message, loco, contact_loco, copy_to_loco, attachments):
-    msg = EmailMultiAlternatives('Nachricht per my.ortoloco: ' + subject, message, loco.email, [contact_loco.email], headers={'Reply-To': loco.email})
+def send_contact_member_form(subject, message, member, contact_member, copy_to_member, attachments):
+    msg = EmailMultiAlternatives('Nachricht per ' + Config.adminportal_name() +': ' + subject, message, member.email, [contact_member.email], headers={'Reply-To': member.email})
     for attachment in attachments:
         msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
-    if copy_to_loco:
-        send_mail('Nachricht per my.ortoloco: ' + subject, message, loco.email, [loco.email])
+    if copy_to_member:
+        send_mail('Nachricht per ' + Config.adminportal_name() +': ' + subject, message, member.email, [member.email])
 
 
 def send_welcome_mail(email, password, server):
@@ -92,7 +93,7 @@ def send_welcome_mail(email, password, server):
 
     # reset password so we can send it to him
     d = {
-        'subject': 'Willkommen bei ortoloco',
+        'subject': 'Willkommen bei '+Config.organisation_name(),
         'username': email,
         'password': password,
         'serverurl': "http://" + get_server(server)
@@ -101,19 +102,19 @@ def send_welcome_mail(email, password, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'info@ortoloco.ch', [email])
+    msg = EmailMultiAlternatives('Willkommen bei '+Config.organisation_name(), text_content, Config.info_email(), [email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
     
-def send_anteilschein_created_mail(anteilschein, server):
-    plaintext = get_template('mails/anteilschein_created_mail.txt')
-    htmly = get_template('mails/anteilschein_created_mail.html')
+def send_share_created_mail(share, server):
+    plaintext = get_template('mails/share_created_mail.txt')
+    htmly = get_template('mails/share_created_mail.html')
 
     # reset password so we can send it to him
     d = {
-        'loco': anteilschein.member,
-        'anteilschein': anteilschein,
+        'member': share.member,
+        'share': share,
         'serverurl': "http://" + get_server(server)
     }
     text_content = plaintext.render(d)
@@ -122,30 +123,30 @@ def send_anteilschein_created_mail(anteilschein, server):
     users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm) ).distinct()
     emails = []
     for user in users:
-        emails.append(user.loco.email)
-    msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', text_content, 'info@ortoloco.ch', emails)
+        emails.append(user.member.email)
+    msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', text_content, Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
-def send_been_added_to_abo(email, password, name, anteilsscheine, hash, server):
+def send_been_added_to_abo(email, password, name, shares, hash, server):
     plaintext = get_template('mails/welcome_added_mail.txt')
     htmly = get_template('mails/welcome_added_mail.html')
 
     # reset password so we can send it to him
     d = {
-        'subject': 'Willkommen bei ortoloco',
+        'subject': 'Willkommen bei '+Config.organisation_name(),
         'username': email,
         'name': name,
         'password': password,
         'hash': hash,
-        'anteilsscheine': anteilsscheine,
+        'shares': shares,
         'serverurl': "http://" + get_server(server)
     }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei ortoloco', text_content, 'info@ortoloco.ch', [email])
+    msg = EmailMultiAlternatives('Willkommen bei '+Config.organisation_name(), text_content, Config.info_email(), [email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
@@ -178,7 +179,7 @@ def send_filtered_mail(subject, message, text_message, emails, server, attachmen
 def send_mail_password_reset(email, password, server):
     plaintext = get_template('mails/password_reset_mail.txt')
     htmly = get_template('mails/password_reset_mail.html')
-    subject = 'Dein neues ortoloco Passwort'
+    subject = 'Dein neues '+Config.organisation_name()+' Passwort'
 
     d = {
         'subject': subject,
@@ -190,7 +191,7 @@ def send_mail_password_reset(email, password, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(subject, text_content, 'info@ortoloco.ch', [email])
+    msg = EmailMultiAlternatives(subject, text_content, Config.info_email(), [email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
@@ -198,8 +199,8 @@ def send_mail_password_reset(email, password, server):
 def send_job_reminder(emails, job, participants, server):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
-    coordinator = job.typ.bereich.coordinator
-    contact = coordinator.first_name + " " + coordinator.last_name + ": " + job.typ.bereich.contact()
+    coordinator = job.typ.activityarea.coordinator
+    contact = coordinator.first_name + " " + coordinator.last_name + ": " + job.typ.activityarea.contact()
     
     d = {
         'job': job,
@@ -211,7 +212,7 @@ def send_job_reminder(emails, job, participants, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives("ortoloco - Job-Erinnerung", text_content, 'info@ortoloco.ch', emails)
+    msg = EmailMultiAlternatives(Config.organisation_name()+" - Job-Erinnerung", text_content, Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
@@ -227,7 +228,7 @@ def send_job_canceled(emails, job, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives("ortoloco - Job-Abgesagt", text_content, 'info@ortoloco.ch', emails)
+    msg = EmailMultiAlternatives(Config.organisation_name()+" - Job-Abgesagt", text_content, Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
@@ -244,7 +245,7 @@ def send_job_time_changed(emails, job, server):
     html_content = htmly.render(d)
 #    ical_content = genecrate_ical_for_job(job)
 
-    msg = EmailMultiAlternatives("ortoloco - Job-Zeit geändert", text_content, 'info@ortoloco.ch', emails)
+    msg = EmailMultiAlternatives(Config.organisation_name()+" - Job-Zeit geändert", text_content, Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
  #   msg.attach("einsatz.ics", ical_content, "text/calendar")
     send_mail_multi(msg)
@@ -264,7 +265,7 @@ def send_job_signup(emails, job, server):
     html_content = htmly.render(d)
     ical_content = genecrate_ical_for_job(job)
 
-    msg = EmailMultiAlternatives("ortoloco - für Job Angemeldet", text_content, 'info@ortoloco.ch', emails)
+    msg = EmailMultiAlternatives(Config.organisation_name()+" - für Job Angemeldet", text_content, Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
     msg.attach("einsatz.ics", ical_content, "text/calendar")
     print repr(msg.message().as_string())
@@ -284,6 +285,6 @@ def send_depot_changed(emails, depot, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives("ortoloco - Depot geändert", text_content, 'info@ortoloco.ch', emails)
+    msg = EmailMultiAlternatives(Config.organisation_name()+" - Depot geändert", text_content, Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)

@@ -3,14 +3,14 @@
 Hallo lieber Buchhalter
 
 Folgender Loco hat einen Anteilschein Bestellt
-{{loco.get_name}}
-{{loco.addr_street}}
-{{loco.addr_zipcode}} {{loco.addr_location}}
-{{loco.email}}
-{{loco.get_phone}}
+{{member.get_name}}
+{{member.addr_street}}
+{{member.addr_zipcode}} {{member.addr_location}}
+{{member.email}}
+{{member.get_phone}}
 
 Bitte sobald er bezahlt und ausgestellt ist bitte hier eintragen
-{{serverurl}}/admin/juntagrico/anteilschein/{{anteilschein.id}}/change/
+{{serverurl}}/admin/juntagrico/anteilschein/{{share.id}}/change/
 
 Viel Spass beim Erfassen
 {% endblock %}

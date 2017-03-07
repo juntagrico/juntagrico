@@ -15,8 +15,8 @@
         {% for job in jobs %}
             <tr class="{% if job.status == "erbse_voll.png" %}full{% endif %}">
                 <td class="date">{{ job.time |date:"d.m H:i" }}</td>
-                <td><a href="/my/jobs/{{ job.id }}" class="{% if job.canceled %}canceled {% endif %}{% if job.is_in_kernbereich %}core {% endif %}">{{ job.typ.name }}</a></td>
-                <td class="status"><img alt="Job-Status: {{ job.get_status_bohne }}" src="/static/img/{{ job.get_status_bohne }}"/></td>
+                <td><a href="/my/jobs/{{ job.id }}" class="{% if job.canceled %}canceled {% endif %}{% if job.is_core %}core {% endif %}">{{ job.typ.name }}</a></td>
+                <td class="status"><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>
             </tr>
         {% endfor %}
     </table>

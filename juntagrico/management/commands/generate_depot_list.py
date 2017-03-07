@@ -5,6 +5,7 @@ from django.conf import settings
 from juntagrico.models import *
 from juntagrico.helpers import *
 from juntagrico.mailer import *
+from juntagrico.config import *
 
 import datetime
 
@@ -43,9 +44,9 @@ class Command(BaseCommand):
                 abo.future_depot=None
                 abo.save()
                 emails = []
-                for loco in abo.recipients():
-                    emails.append(loco.email)
-                send_depot_changed(emails,abo.depot,"www.ortoloco.ch")
+                for member in abo.recipients():
+                    emails.append(member.email)
+                send_depot_changed(emails,abo.depot,Config.server_url())
         
         if options['force'] and not options['future']:
             print "future depots ignored, use --future to override"

@@ -172,7 +172,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(default=b'', max_length=1000, verbose_name=b'Beschreibung')),
                 ('duration', models.PositiveIntegerField(verbose_name=b'Dauer in Stunden')),
                 ('location', models.CharField(default=b'', max_length=100, verbose_name=b'Ort')),
-                ('bereich', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.ActivityArea')),
+                ('activityarea', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.ActivityArea')),
             ],
             options={
                 'verbose_name': 'Jobart',
@@ -364,7 +364,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='onetimejob',
-            name='bereich',
+            name='activityarea',
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.ActivityArea'),
         ),
         migrations.AddField(

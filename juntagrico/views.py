@@ -28,10 +28,7 @@ from juntagrico.filters import Filter
 from juntagrico.mailer import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
-from static_ortoloco.models import StaticContent
-
 import hashlib
-from static_ortoloco.models import Politoloco
 
 from decorators import primary_member_of_abo
 
@@ -39,50 +36,50 @@ from decorators import primary_member_of_abo
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
 def get_menu_dict(request):
-    loco = request.user.member
+    member = request.user.member
     next_jobs = []
 
-    def filter_to_past_boehnli(boehnli):
+    def filter_to_past_assignments(assignments):
         res = []
-        for bohne in boehnli:
-            if bohne.job.time.year == date.today().year and bohne.job.time < timezone.now():
-                res.append(bohne)
+        for assignment in assignments:
+            if assignment.job.time.year == date.today().year and assignment.job.time < timezone.now():
+                res.append(assignment)
         return res
     abo_size=0
-    if loco.abo is not None:
-        partner_bohnen = []
-        for abo_loco in loco.abo.recipients():
-            if abo_loco == loco: continue
-            partner_bohnen.extend(filter_to_past_boehnli(Assignment.objects.filter(member=abo_loco)))
+    if member.abo is not None:
+        partner_assignments = []
+        for abo_member in member.abo.recipients():
+            if abo_member == member: continue
+            partner_assignments.extend(filter_to_past_assignments(Assignment.objects.filter(member=abo_member)))
 
-        userbohnen = filter_to_past_boehnli(Assignment.objects.filter(member=loco))
-        abo_size = loco.abo.size * 10
+        userassignments = filter_to_past_assignments(Assignment.objects.filter(member=member))
+        abo_size = member.abo.size * 10
 
-        # amount of beans shown => round up if needed never down
-        bohnenrange = range(0, max(userbohnen.__len__(), int(math.ceil(loco.abo.size * 10 / loco.abo.locos.count()))))
-        bohnenrange = range(0, max(abo_size, len(userbohnen) + len(partner_bohnen)))
+        # amount of assignments shown => round up if needed never down
+        assignmentsrange = range(0, max(userassignments.__len__(), int(math.ceil(member.abo.size * 10 / member.abo.members.count()))))
+        assignmentsrange = range(0, max(abo_size, len(userassignments) + len(partner_assignments)))
 
-        for bohne in Assignment.objects.all().filter(member=loco).order_by("job__time"):
-            if bohne.job.time > timezone.now():
-                next_jobs.append(bohne.job)
+        for assignment in Assignment.objects.all().filter(member=member).order_by("job__time"):
+            if assignment.job.time > timezone.now():
+                next_jobs.append(assignment.job)
     else:
-        bohnenrange = None
-        partner_bohnen = []
-        userbohnen = []
+        assignmentsrange = None
+        partner_assignments = []
+        userassignments = []
         next_jobs = []
 
     depot_admin = Depot.objects.filter(contact=request.user.member)
     area_admin = ActivityArea.objects.filter(coordinator=request.user.member)
     menu_dict = {
         'user': request.user,
-        'bohnenrange': bohnenrange,
-        'userbohnen_total': len(userbohnen),
-        'userbohnen_kernbereich': len([bohne for bohne in userbohnen if bohne.is_in_kernbereich()]),
-        'partner_bohnen_total': len(userbohnen) + len(partner_bohnen),
-        'partner_bohnen_kernbereich': len(userbohnen) + len([bohne for bohne in partner_bohnen if bohne.is_in_kernbereich()]),
+        'assignmentsrange': assignmentsrange,
+        'userassignments_total': len(userassignments),
+        'userassignemnts_core': len([assignment for assignment in userassignments if assignment.is_core()]),
+        'partner_assignments_total': len(userassignments) + len(partner_assignments),
+        'partner_assignments_core': len(userassignments) + len([assignment for assignment in partner_assignments if assignment.is_core()]),
         'abo_size': abo_size,
         'next_jobs': next_jobs,
-        'can_filter_locos': request.user.has_perm('juntagrico.can_filter_locos'),
+        'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
         'can_filter_abos': request.user.has_perm('juntagrico.can_filter_abos'),
         'can_send_mails': request.user.has_perm('juntagrico.can_send_mails'),
         'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
@@ -97,21 +94,17 @@ def get_menu_dict(request):
 @login_required
 def my_home(request):
     """
-    Overview on myortoloco
+    Overview on juntagrico
     """
-    announcement = ""
-    if StaticContent.objects.all().filter(name='my.ortoloco').__len__() > 0:
-        announcement = u"<h3>Ankündigungen:</h3>" + StaticContent.objects.all().filter(name='my.ortoloco')[0].content + "</br>"
 
     next_jobs = set(get_current_jobs()[:7])
     pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=timezone.now()))
-    next_aktionstage = set(RecuringJob.objects.filter(typ__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
+    next_activityday = set(RecuringJob.objects.filter(typ__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_aktionstage), key=lambda job: job.time),
+        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_activityday), key=lambda job: job.time),
         'teams': ActivityArea.objects.filter(hidden=False).order_by("-core", "name"),
         'no_abo': request.user.member.abo is None,
-        'announcement': announcement
     })
 
     return render(request, "myhome.html", renderdict)
@@ -122,7 +115,7 @@ def my_job(request, job_id):
     """
     Details for a job
     """
-    loco = request.user.member
+    member = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
 
     if request.method == 'POST':
@@ -130,29 +123,29 @@ def my_job(request, job_id):
         # adding participants
         add = int(num)
         for i in range(add):
-            Assignment.objects.create(member=loco, job=job)
-        send_job_signup([loco.email], job, request.META["HTTP_HOST"])
+            Assignment.objects.create(member=member, job=job)
+        send_job_signup([member.email], job, request.META["HTTP_HOST"])
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
     
     
-    all_participants = Member.objects.filter(boehnli__job=job)
+    all_participants = Member.objects.filter(assignment__job=job)
     number_of_participants = len(all_participants)
-    unique_participants = all_participants.annotate(boehnli_for_job=Count('id')).distinct()
+    unique_participants = all_participants.annotate(assignment_for_job=Count('id')).distinct()
 
     participants_summary = []
     emails = []
-    for loco in unique_participants:
-        name = u'{} {}'.format(loco.first_name, loco.last_name)
-        if loco.boehnli_for_job == 2:
+    for member in unique_participants:
+        name = u'{} {}'.format(member.first_name, member.last_name)
+        if member.assignment_for_job == 2:
             name = name + u' (mit einer weiteren Person)'
-        elif loco.boehnli_for_job > 2:
-            name = name + u' (mit {} weiteren Personen)'.format(loco.boehnli_for_job - 1)
-        contact_url = u'/my/kontakt/loco/{}/{}/'.format(loco.id, job_id)
-        reachable = loco.reachable_by_email==True or request.user.is_staff or job.typ.bereich.coordinator==loco
+        elif member.assignment_for_job > 2:
+            name = name + u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
+        contact_url = u'/my/kontakt/member/{}/{}/'.format(member.id, job_id)
+        reachable = member.reachable_by_email==True or request.user.is_staff or job.typ.activityarea.coordinator==member
         participants_summary.append((name, None, contact_url, reachable))
-        emails.append(loco.email)
+        emails.append(member.email)
         
         
     slotrange = range(0, job.slots)
@@ -166,7 +159,7 @@ def my_job(request, job_id):
     renderdict = get_menu_dict(request)
     jobendtime = job.end_time()
     renderdict.update({
-        'admin': request.user.is_staff or job.typ.bereich.coordinator==loco,
+        'admin': request.user.is_staff or job.typ.activityarea.coordinator==member,
         'emails': "\n".join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
@@ -200,20 +193,20 @@ def my_depot(request, depot_id):
 @login_required
 def my_participation(request):
     """
-    Details for all areas a loco can participate
+    Details for all areas a member can participate
     """
-    loco = request.user.member
+    member = request.user.member
     my_areas = []
     success = False
     if request.method == 'POST':
-        old_areas = set(loco.areas.all())
+        old_areas = set(member.areas.all())
         new_areas = set(area for area in ActivityArea.objects.filter(hidden=False)
                         if request.POST.get("area" + str(area.id)))
         if old_areas != new_areas:
-            loco.areas = new_areas
-            loco.save()
+            member.areas = new_areas
+            member.save()
             for area in new_areas - old_areas:
-                send_new_loco_in_taetigkeitsbereich_to_bg(area, loco)
+                send_new_member_in_activityarea_to_operations(area, member)
 
         success = True
 
@@ -222,7 +215,7 @@ def my_participation(request):
             continue
         my_areas.append({
             'name': area.name,
-            'checked': loco in area.locos.all(),
+            'checked': member in area.members.all(),
             'id': area.id,
             'core': area.core,
             'coordinator': area.coordinator
@@ -242,18 +235,18 @@ def my_pastjobs(request):
     """
     All past jobs of current user
     """
-    loco = request.user.member
+    member = request.user.member
 
-    allebohnen = Assignment.objects.filter(member=loco)
-    past_bohnen = []
+    allassignments = Assignment.objects.filter(member=member)
+    past_assingments = []
 
-    for bohne in allebohnen:
-        if bohne.job.time < timezone.now():
-            past_bohnen.append(bohne)
+    for assignment in allassignments:
+        if assignment.job.time < timezone.now():
+            past_assingments.append(assignment)
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'bohnen': past_bohnen,
+        'assignments': past_assingments,
         'menu': {'participation': 'active'},
     })
     return render(request, "my_pastjobs.html", renderdict)
@@ -263,14 +256,14 @@ def my_pastjobs(request):
 
 
 @login_required
-def my_team(request, bereich_id):
+def my_team(request, area_id):
     """
     Details for a team
     """
 
-    job_types = JobType.objects.all().filter(bereich=bereich_id)
+    job_types = JobType.objects.all().filter(activityarea=area_id)
 
-    otjobs = get_current_one_time_jobs().filter(bereich=bereich_id)
+    otjobs = get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = get_current_recuring_jobs().filter(typ__in=job_types)
     
     jobs = list(rjobs)
@@ -283,14 +276,14 @@ def my_team(request, bereich_id):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'team': get_object_or_404(ActivityArea, id=int(bereich_id)),
+        'team': get_object_or_404(ActivityArea, id=int(area_id)),
         'jobs': jobs,
     })
     return render(request, "team.html", renderdict)
 
 
 @login_required
-def my_einsaetze(request):
+def my_assignments(request):
     """
     All jobs to be sorted etc.
     """
@@ -307,7 +300,7 @@ def my_einsaetze(request):
 
 
 @login_required
-def my_einsaetze_all(request):
+def my_assingments_all(request):
     """
     All jobs to be sorted etc.
     """
@@ -324,80 +317,80 @@ def my_einsaetze_all(request):
 @login_required
 def my_contact(request):
     """
-    Kontaktformular
+    contact form
     """
-    loco = request.user.member
+    member = request.user.member
     is_sent = False
 
     if request.method == "POST":
         # send mail to bg
-        send_contact_form(request.POST.get("subject"), request.POST.get("message"), loco, request.POST.get("copy"))
+        send_contact_form(request.POST.get("subject"), request.POST.get("message"), member, request.POST.get("copy"))
         is_sent = True
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">",
+        'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
         'is_sent': is_sent,
         'menu': {'contact': 'active'},
     })
     return render(request, "my_contact.html", renderdict)
 
 @login_required
-def my_contact_loco(request, loco_id, job_id):
+def my_contact_member(request, member_id, job_id):
     """
-    Kontaktformular Locos
+    member contact form
     """
-    loco = request.user.member
-    contact_loco = get_object_or_404(Member, id=int(loco_id))#Member.objects.all().filter(id = loco_id)
+    member = request.user.member
+    contact_member = get_object_or_404(Member, id=int(member_id))#Member.objects.all().filter(id = member_id)
     is_sent = False
 
     if request.method == "POST":
-        # send mail to loco
+        # send mail to member
         index = 1
-        attachements = []
+        attachments = []
         while request.FILES.get("image-" + str(index)) is not None:
-            attachements.append(request.FILES.get("image-" + str(index)))
+            attachments.append(request.FILES.get("image-" + str(index)))
             index += 1
-        send_contact_loco_form(request.POST.get("subject"), request.POST.get("message"), loco, contact_loco, request.POST.get("copy"),attachements)
+        send_contact_member_form(request.POST.get("subject"), request.POST.get("message"), member, contact_member, request.POST.get("copy"), attachments)
         is_sent = True
     job = Job.objects.filter(id=job_id)[0]
     renderdict = get_menu_dict(request)
     renderdict.update({        
-        'admin': request.user.is_staff or job.typ.bereich.coordinator==loco,
-        'usernameAndEmail': loco.first_name + " " + loco.last_name + "<" + loco.email + ">",
-        'loco_id': loco_id,
-        'loco_name': contact_loco.first_name + " " + contact_loco.last_name,
+        'admin': request.user.is_staff or job.typ.activityarea.coordinator==member,
+        'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
+        'member_id': member_id,
+        'member_name': contact_member.first_name + " " + contact_member.last_name,
         'is_sent': is_sent,
         'job_id': job_id
     })
-    return render(request, "my_contact_loco.html", renderdict)
+    return render(request, "my_contact_member.html", renderdict)
 
 
 @login_required
 def my_profile(request):
     success = False
-    loco = request.user.member
+    member = request.user.member
     if request.method == 'POST':
-        locoform = MemberProfileForm(request.POST, instance=loco)
-        if locoform.is_valid():
+        memberform = MemberProfileForm(request.POST, instance=member)
+        if memberform.is_valid():
             #set all fields of user
-            loco.first_name = locoform.cleaned_data['first_name']
-            loco.last_name = locoform.cleaned_data['last_name']
-            loco.email = locoform.cleaned_data['email']
-            loco.addr_street = locoform.cleaned_data['addr_street']
-            loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
-            loco.addr_location = locoform.cleaned_data['addr_location']
-            loco.phone = locoform.cleaned_data['phone']
-            loco.mobile_phone = locoform.cleaned_data['mobile_phone']
-            loco.reachable_by_email = locoform.cleaned_data['reachable_by_email']
-            loco.save()
+            member.first_name = memberform.cleaned_data['first_name']
+            member.last_name = memberform.cleaned_data['last_name']
+            member.email = memberform.cleaned_data['email']
+            member.addr_street = memberform.cleaned_data['addr_street']
+            member.addr_zipcode = memberform.cleaned_data['addr_zipcode']
+            member.addr_location = memberform.cleaned_data['addr_location']
+            member.phone = memberform.cleaned_data['phone']
+            member.mobile_phone = memberform.cleaned_data['mobile_phone']
+            member.reachable_by_email = memberform.cleaned_data['reachable_by_email']
+            member.save()
             success = True
     else:
-        locoform = MemberProfileForm(instance=loco)
+        memberform = MemberProfileForm(instance=member)
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'locoform': locoform,
+        'memberform': memberform,
         'success': success,
         'menu': {'personalInfo': 'active'},
     })
@@ -428,13 +421,13 @@ def my_new_password(request):
     sent = False
     if request.method == 'POST':
         sent = True
-        locos = Member.objects.filter(email=request.POST.get('username'))
-        if len(locos) > 0:
-            loco = locos[0]
+        members = Member.objects.filter(email=request.POST.get('username'))
+        if len(members) > 0:
+            member = members[0]
             pw = password_generator()
-            loco.user.set_password(pw)
-            loco.user.save()
-            send_mail_password_reset(loco.email, pw, request.META["HTTP_HOST"])
+            member.user.set_password(pw)
+            member.user.save()
+            send_mail_password_reset(member.email, pw, request.META["HTTP_HOST"])
 
     renderdict = {
         'sent': sent
@@ -445,31 +438,4 @@ def my_new_password(request):
 def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
-    return HttpResponseRedirect("/aktuelles")
-
-def test_filters(request):
-    lst = Filter.get_all()
-    res = []
-    for name in Filter.get_names():
-        res.append("<br><br>%s:" % name)
-        tmp = Filter.execute([name], "OR")
-        data = Filter.format_data(tmp, unicode)
-        res.extend(data)
-    return HttpResponse("<br>".join(res))
-
-
-def test_filters_post(request):
-    # TODO: extract filter params from post request
-    # the full list of filters is obtained by Filter.get_names()
-    filters = ["Zusatzabo Eier", "Depot GZ Oerlikon"]
-    op = "AND"
-    res = ["Eier AND Oerlikon:<br>"]
-    locos = Filter.execute(filters, op)
-    data = Filter.format_data(locos, lambda loco: "%s! (email: %s)" % (loco, loco.email))
-    res.extend(data)
-    return HttpResponse("<br>".join(res))
-
-
-
-
-
+    return HttpResponseRedirect("")

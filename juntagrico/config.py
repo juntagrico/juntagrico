@@ -27,3 +27,27 @@ class Config:
         if hasattr(settings, 'ASSIGNMENTS_STRING'):
             return settings.ASSIGNMENTS_STRING
         return "Arbeitseinsätze"
+
+    @staticmethod
+    def organisation_name():
+        if hasattr(settings, 'ORGANISATION_NAME'):
+            return settings.ORGANISATION_NAME
+        return "Juntagrico"
+
+    @staticmethod
+    def info_email():
+        if hasattr(settings, 'INFO_EMAIL'):
+            return settings.INFO_EMAIL
+        return "info@juntagrico.juntagrico"
+
+    @staticmethod
+    def server_url():
+        if hasattr(settings, 'INFO_EMAIL'):
+            return settings.INFO_EMAIL
+        return "www.juntagrico.juntagrico"
+
+    @staticmethod
+    def adminportal_name():
+        if hasattr(settings, 'ADMINPORTAL_NAME'):
+            return settings.ADMINPORTAL_NAME
+        return "my_juntagrico"

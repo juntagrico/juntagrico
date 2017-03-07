@@ -48,7 +48,7 @@ class Depot(models.Model):
         if 8 > self.weekday > 0:
             day = helpers.weekdays[self.weekday]
         return day
-    
+
     @staticmethod
     def abo_amounts(abos, name):
         amount = 0
@@ -67,7 +67,7 @@ class Depot(models.Model):
         self.fill_active_abo_cache()
         self.overview_cache = []
         for abo_size in AboSize.objects.filter(depot_list=True).order_by('size'):
-            self.overview_cache.append(self.abo_amounts(self.abo_cache,abo_size.name))
+            self.overview_cache.append(self.abo_amounts(self.abo_cache, abo_size.name))
         for category in ExtraAboCategory.objects.all().order_by("sort_order"):
             for extra_abo in ExtraAboType.objects.all().filter(category=category).order_by("sort_order"):
                 code = extra_abo.name
@@ -81,13 +81,16 @@ class Depot(models.Model):
         verbose_name_plural = "Depots"
         permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)
 
+
 class Billable(PolymorphicModel):
     """
     Parent type for billables.
     """
+
     class Meta:
         verbose_name = 'Verrechenbare Einheit'
         verbose_name_plural = 'Verrechenbare Einhaiten'
+
 
 class Bill(models.Model):
     """
@@ -95,11 +98,11 @@ class Bill(models.Model):
     """
     billable = models.ForeignKey(Billable, related_name="bills", null=False, blank=False,
                                  on_delete=models.PROTECT)
-    paid = models.BooleanField("bezahlt",default=False)
+    paid = models.BooleanField("bezahlt", default=False)
     bill_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     ref_number = models.CharField("Referenznummer", max_length=30, unique=True)
     amount = models.FloatField("Betrag", null=False, blank=False)
-    
+
     def __unicode__(self):
         return u"%s %s" % (self.ref_number)
 
@@ -107,21 +110,23 @@ class Bill(models.Model):
         verbose_name = "Rechnung"
         verbose_name_plural = "Rechnungen"
 
+
 class Payment(models.Model):
     """
     Payment for bill
     """
     bill = models.ForeignKey(Bill, related_name="payments", null=False, blank=False,
-                                 on_delete=models.PROTECT)
+                             on_delete=models.PROTECT)
     paid_date = models.DateField("Bezahldatum", null=True, blank=True)
     amount = models.FloatField("Betrag", null=False, blank=False)
-    
+
     def __unicode__(self):
         return u"%s %s" % (self.ref_number)
 
     class Meta:
         verbose_name = "Zahlung"
         verbose_name_plural = "Zahlung"
+
 
 class ExtraAboType(models.Model):
     """
@@ -157,6 +162,7 @@ class ExtraAboCategory(models.Model):
         verbose_name = "Zusatz-Abo-Kategorie"
         verbose_name_plural = "Zusatz-Abo-Kategorien"
 
+
 class ExtraAbo(Billable):
     """
     Types of extra abos, e.g. eggs, cheese, fruit
@@ -164,11 +170,11 @@ class ExtraAbo(Billable):
     main_abo = models.ForeignKey("Abo", related_name="extra_abo_set", null=False, blank=False,
                                  on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
-    canceled = models.BooleanField("gekündigt",default=False)
+    canceled = models.BooleanField("gekündigt", default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     type = models.ForeignKey(ExtraAboType, related_name="extra_abos", null=False, blank=False,
-                                 on_delete=models.PROTECT)
+                             on_delete=models.PROTECT)
 
     old_active = None
 
@@ -178,7 +184,6 @@ class ExtraAbo(Billable):
             instance.activation_date = timezone.now().date()
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
-    
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
@@ -200,7 +205,7 @@ class AboSize(models.Model):
     long_name = models.CharField("Langer Name", max_length=100, unique=True)
     size = models.PositiveIntegerField("Grösse", unique=True)
     shares = models.PositiveIntegerField("Anz benötigter Anteilsscheine")
-    depot_list = models.BooleanField('Sichtbar auf Depotliste',default=True)    
+    depot_list = models.BooleanField('Sichtbar auf Depotliste', default=True)
     description = models.TextField("Beschreibung", max_length=1000, blank=True)
 
     def __unicode__(self):
@@ -208,7 +213,7 @@ class AboSize(models.Model):
 
     class Meta:
         verbose_name = 'Abo Grösse'
-        verbose_name_plural = 'Abo Grössen'        
+        verbose_name_plural = 'Abo Grössen'
 
 
 class Abo(Billable):
@@ -221,7 +226,7 @@ class Abo(Billable):
     size = models.PositiveIntegerField(default=1)
     future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
     primary_member = models.ForeignKey("Member", related_name="abo_primary", null=True, blank=True,
-                                     on_delete=models.PROTECT)
+                                       on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
@@ -254,52 +259,53 @@ class Abo(Billable):
     def primary_member_nullsave(self):
         member = self.primary_member
         return unicode(member) if member is not None else ""
-        
-    @property    
+
+    @property
     def extra_abos(self):
         return self.extra_abo_set.filter(active=True)
-        
-    @property    
+
+    @property
     def paid_shares(self):
-        return Share.objects.filter(member__in=self.members.all()).filter(paid_date__isnull=False).filter(cancelled_date__isnull=True).count()
-        
+        return Share.objects.filter(member__in=self.members.all()).filter(paid_date__isnull=False).filter(
+            cancelled_date__isnull=True).count()
+
     @property
     def future_extra_abos(self):
         return self.extra_abo_set.filter(Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
-    
+
     @staticmethod
     def fill_sizes_cache():
-        list=[]
-        map ={}
-        index=0
+        list = []
+        map = {}
+        index = 0
         for size in AboSize.objects.order_by('size'):
             list.append(size.size)
-            map[size.name]=index
-            index=index+1
-        Abo.sizes_cache={'list': list,
-            'map':map,
-        }  
-        
+            map[size.name] = index
+            index = index + 1
+        Abo.sizes_cache = {'list': list,
+                           'map': map,
+                           }
+
     def abo_amount(self, abo_name):
         if Abo.sizes_cache == {}:
             Abo.fill_sizes_cache()
         if Abo.sizes_cache['list'].__len__ == 1:
-            return self.size/Abo.sizes_cache['list'][0]
-        index=Abo.sizes_cache['map'][abo_name]
-        if index == len(Abo.sizes_cache['list'])-1:
-            return int(self.size /Abo.sizes_cache['list'][index])
-        return int((self.size % Abo.sizes_cache['list'][index+1])/Abo.sizes_cache['list'][index])
+            return self.size / Abo.sizes_cache['list'][0]
+        index = Abo.sizes_cache['map'][abo_name]
+        if index == len(Abo.sizes_cache['list']) - 1:
+            return int(self.size / Abo.sizes_cache['list'][index])
+        return int((self.size % Abo.sizes_cache['list'][index + 1]) / Abo.sizes_cache['list'][index])
 
     def abo_amount_future(self, abo_name):
         if Abo.sizes_cache == {}:
             Abo.fill_sizes_cache()
         if Abo.sizes_cache['list'].__len__ == 1:
-            return self.future_size/Abo.sizes_cache['list'][0]
-        index=Abo.sizes_cache['map'][abo_name]
-        if index == len(Abo.sizes_cache['list'])-1:
-            return int(self.future_size /Abo.sizes_cache['list'][index])
-        return int((self.future_size % Abo.sizes_cache['list'][index+1])/Abo.sizes_cache['list'][index])
-    
+            return self.future_size / Abo.sizes_cache['list'][0]
+        index = Abo.sizes_cache['map'][abo_name]
+        if index == len(Abo.sizes_cache['list']) - 1:
+            return int(self.future_size / Abo.sizes_cache['list'][index])
+        return int((self.future_size % Abo.sizes_cache['list'][index + 1]) / Abo.sizes_cache['list'][index])
+
     @staticmethod
     def next_extra_change_date():
         month = int(time.strftime("%m"))
@@ -365,6 +371,7 @@ class Abo(Billable):
         verbose_name_plural = "Abos"
         permissions = (('can_filter_abos', 'Benutzer kann Abos filtern'),)
 
+
 class Member(models.Model):
     """
     Additional fields for Django's default user class.
@@ -400,7 +407,7 @@ class Member(models.Model):
     @classmethod
     def create(cls, sender, instance, created, **kdws):
         """
-        Callback to create corresponding loco when new user is created.
+        Callback to create corresponding member when new user is created.
         """
         if created:
             username = helpers.make_username(instance.first_name, instance.last_name, instance.email)
@@ -421,12 +428,12 @@ class Member(models.Model):
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
-        instance.old_abo = None#instance.abo
+        instance.old_abo = None  # instance.abo
 
     class Meta:
         verbose_name = Config.member_string()
         verbose_name_plural = Config.members_string()
-        permissions = (('can_filter_members', 'Benutzer kann '+Config.members_string()+' filtern'),)
+        permissions = (('can_filter_members', 'Benutzer kann ' + Config.members_string() + ' filtern'),)
 
     def get_name(self):
         return u"%s %s" % (self.first_name, self.last_name)
@@ -439,14 +446,14 @@ class Member(models.Model):
 
 class Share(Billable):
     member = models.ForeignKey(Member, null=True, blank=True, on_delete=models.SET_NULL)
-    paid_date = models.DateField("Bezahlt am",null=True,blank=True);
-    issue_date = models.DateField("Ausgestellt am",null=True,blank=True);
-    booking_date = models.DateField("Eingebucht am",null=True,blank=True);
-    cancelled_date = models.DateField("Gekündigt am",null=True,blank=True);
-    termination_date = models.DateField("Gekündigt auf",null=True,blank=True);
-    payback_date = models.DateField("Zurückbezahlt am",null=True,blank=True);
-    number = models.IntegerField("Anteilschein Nummer",null=True,blank=True);
-    notes = models.TextField("Notizen", max_length=1000, default="",blank=True)
+    paid_date = models.DateField("Bezahlt am", null=True, blank=True);
+    issue_date = models.DateField("Ausgestellt am", null=True, blank=True);
+    booking_date = models.DateField("Eingebucht am", null=True, blank=True);
+    cancelled_date = models.DateField("Gekündigt am", null=True, blank=True);
+    termination_date = models.DateField("Gekündigt auf", null=True, blank=True);
+    payback_date = models.DateField("Zurückbezahlt am", null=True, blank=True);
+    number = models.IntegerField("Anteilschein Nummer", null=True, blank=True);
+    notes = models.TextField("Notizen", max_length=1000, default="", blank=True)
 
     def __unicode__(self):
         return u"Anteilschein #%s" % self.id
@@ -487,12 +494,12 @@ class AbstractJobType(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
-    bereich = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
+    activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField("Dauer in Stunden")
     location = models.CharField("Ort", max_length=100, default="")
 
     def __unicode__(self):
-        return u'%s - %s' % (self.bereich, self.get_name())
+        return u'%s - %s' % (self.activityarea, self.get_name())
 
     def get_name(self):
         if self.displayed_name is not None:
@@ -540,7 +547,7 @@ class Job(PolymorphicModel):
 
     def freie_plaetze(self):
         if not (self.slots is None):
-            return self.slots - self.besetzte_plaetze()
+            return self.slots - self.occupied_places()
         else:
             return 0
 
@@ -550,17 +557,17 @@ class Job(PolymorphicModel):
     def start_time(self):
         return self.time
 
-    def besetzte_plaetze(self):
-        return self.boehnli_set.count()
+    def occupied_places(self):
+        return self.assignments_set.count()
 
-    def get_status_bohne(self):
-        boehnlis = Assignment.objects.filter(job_id=self.id)
+    def get_status_percentage(self):
+        assignments = Assignment.objects.filter(job_id=self.id)
         if self.slots < 1:
             return helpers.get_status_bean(100)
-        return helpers.get_status_bean(boehnlis.count() * 100 / self.slots)
+        return helpers.get_status_bean(assignments.count() * 100 / self.slots)
 
-    def is_in_kernbereich(self):
-        return self.typ.bereich.core
+    def is_core(self):
+        return self.typ.activityarea.core
 
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:
@@ -569,28 +576,28 @@ class Job(PolymorphicModel):
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_canceled != instance.canceled and instance.old_canceled is False:
-            boehnlis = Assignment.objects.filter(job_id=instance.id)
+            assignments = Assignment.objects.filter(job_id=instance.id)
             emails = set()
-            for boehnli in boehnlis:
-                emails.add(boehnli.loco.email)
+            for assignment in assignments:
+                emails.add(assignment.member.email)
             instance.slots = 0
             if len(emails) > 0:
-                send_job_canceled(emails, instance, "www.ortoloco.ch")
+                send_job_canceled(emails, instance, Config.server_url())
         if instance.old_time != instance.time:
-            boehnlis = Assignment.objects.filter(job_id=instance.id)
+            assignments = Assignment.objects.filter(job_id=instance.id)
             emails = set()
-            for boehnli in boehnlis:
-                emails.add(boehnli.loco.email)
+            for assignment in assignments:
+                emails.add(assignment.member.email)
             if len(emails) > 0:
-                send_job_time_changed(emails, instance, "www.ortoloco.ch")
+                send_job_time_changed(emails, instance, Config.server_url())
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
         instance.old_time = instance.time
         instance.old_canceled = instance.canceled
         if instance.canceled:
-            boehnlis = Assignment.objects.filter(job_id=instance.id)
-            boehnlis.delete()
+            assignments = Assignment.objects.filter(job_id=instance.id)
+            assignments.delete()
 
     class Meta:
         verbose_name = 'AbstractJob'
@@ -623,7 +630,7 @@ class OneTimeJob(Job, AbstractJobType):
         return self
 
     def __unicode__(self):
-        return u'%s - %s' % (self.bereich, self.get_name())
+        return u'%s - %s' % (self.activityarea, self.get_name())
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -640,7 +647,7 @@ class OneTimeJob(Job, AbstractJobType):
 
 class Assignment(models.Model):
     """
-    Single boehnli (work unit).
+    Single assignment (work unit).
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     member = models.ForeignKey(Member, on_delete=models.PROTECT)
@@ -649,15 +656,15 @@ class Assignment(models.Model):
     def __unicode__(self):
         return u'Assignment #%s' % self.id
 
-    def zeit(self):
+    def time(self):
         return self.job.time
 
-    def is_in_kernbereich(self):
-        return self.job.typ.bereich.core
+    def is_core(self):
+        return self.job.typ.activityarea.core
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
-        instance.core_cache = instance.is_in_kernbereich()
+        instance.core_cache = instance.is_core()
 
     class Meta:
         verbose_name = Config.assignment_string()
@@ -688,9 +695,9 @@ class SpecialRoles(models.Model):
 
     class Meta:
         permissions = (('is_operations_group', 'Benutzer ist in der BG'),
-        ('is_book_keeper', 'Benutzer ist Buchhalter'),
-        ('can_send_mails', 'Benutzer kann im System Emails versenden'),
-        ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
+                       ('is_book_keeper', 'Benutzer ist Buchhalter'),
+                       ('can_send_mails', 'Benutzer kann im System Emails versenden'),
+                       ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
 
 
 # model_audit.m2m(Abo.users)

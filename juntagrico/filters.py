@@ -1,7 +1,5 @@
 from functools import partial
 
-#from django.db.models import Q
-
 from juntagrico.models import *
 
 
@@ -42,8 +40,8 @@ class Filter(object):
 
         d = dict(cls.get_all())
         filter_funcs = [d[name] for name in names]
-        return [loco for loco in Member.objects.all()
-                if aggregate(f(loco) for f in filter_funcs)]
+        return [member for member in Member.objects.all()
+                if aggregate(f(member) for f in filter_funcs)]
 
 
     @classmethod
@@ -63,26 +61,26 @@ class FilterGen(Filter):
 
 
 FilterGen(lambda depot: u"Depot {0}".format(depot.name),
-          lambda depot, loco: loco.abo.depot==depot,
+          lambda depot, member: member.abo.depot == depot,
           Depot.objects.all)
 
-Filter("Alle mit Abo", lambda loco: loco.abo)
-Filter("Alle ohne Abo", lambda loco: not loco.abo)
+Filter("Alle mit Abo", lambda member: member.abo)
+Filter("Alle ohne Abo", lambda member: not member.abo)
 
 Filter("Anteilscheinbesitzer",
-       lambda loco: loco.user.share_set.exists())
+       lambda member: member.user.share_set.exists())
 Filter("Nicht Anteilscheinbesitzer",
-       lambda loco: not loco.user.share_set.exists())
+       lambda member: not member.user.share_set.exists())
 
-Filter("kleines Abo", lambda loco: loco.abo.small_abos)
-Filter("grosses Abo", lambda loco: loco.abo.big_abos())
-Filter("Hausabo", lambda loco: loco.abo.house_abos())
+Filter("kleines Abo", lambda member: member.abo.small_abos)
+Filter("grosses Abo", lambda member: member.abo.big_abos())
+Filter("Hausabo", lambda member: member.abo.house_abos())
 
 
 FilterGen(lambda za: u"Zusatzabo {0}".format(za.name),
-          lambda za, loco: za.abo_set.filter(id=loco.abo.id),
+          lambda za, member: za.abo_set.filter(id=member.abo.id),
           ExtraAboType.objects.all)
 
-FilterGen(lambda bereich: u"Taetigkeitsbereich {0}".format(bereich.name),
-          lambda bereich, loco: bereich.users.filter(id=loco.user.id),
+FilterGen(lambda activityarea: u"Taetigkeitsbereich {0}".format(activityarea.name),
+          lambda activityarea, member: activityarea.users.filter(id=member.user.id),
           ActivityArea.objects.all)

@@ -26,11 +26,8 @@ from juntagrico.helpers import *
 from juntagrico.filters import Filter
 from juntagrico.mailer import *
 from juntagrico.views import get_menu_dict
-
-from static_ortoloco.models import StaticContent
-
+from juntagrico.config import *
 import hashlib
-from static_ortoloco.models import Politoloco
 
 from decorators import primary_member_of_abo
 
@@ -40,29 +37,29 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 @login_required
 def my_abo(request):
     """
-    Details for an abo of a loco
+    Details for an abo of a member
     """
     renderdict = get_menu_dict(request)
 
     if request.user.member.abo != None:
-        current_zusatzabos = request.user.member.abo.extra_abos.all()
-        future_zusatzabos = request.user.member.abo.future_extra_abos.filter(active=False)
-        zusatzabos_changed = set(current_zusatzabos) != set(future_zusatzabos)
+        current_extraabos = request.user.member.abo.extra_abos.all()
+        future_extraabos = request.user.member.abo.future_extra_abos.filter(active=False)
+        extraabos_changed = set(current_extraabos) != set(future_extraabos)
 
         if request.user.member.abo:
             renderdict.update({
-                'zusatzabos': current_zusatzabos,
-                'future_zusatzabos': future_zusatzabos,
-                'zusatzabos_changed': zusatzabos_changed,
-                'mitabonnenten': request.user.member.abo.recipients().exclude(email=request.user.member.email),
+                'extraabos': current_extraabos,
+                'future_extraabos': future_extraabos,
+                'extraabos_changed': extraabos_changed,
+                'abomembers': request.user.member.abo.recipients().exclude(email=request.user.member.email),
                 'primary': request.user.member.abo.primary_member.email == request.user.member.email,
                 'next_extra_abo_date': Abo.next_extra_change_date(),
                 'next_size_date': Abo.next_size_change_date()
             })
     renderdict.update({
-        'loco': request.user.member,
-        'scheine': request.user.member.share_set.count(),
-        'scheine_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
+        'member': request.user.member,
+        'shares': request.user.member.share_set.count(),
+        'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
         'menu': {'abonnement': 'active'},
     })
     return render(request, "my_abo.html", renderdict)
@@ -71,12 +68,12 @@ def my_abo(request):
 @primary_member_of_abo
 def my_abo_change(request, abo_id):
     """
-    Ein Abo ändern
+    change an abo
     """
     month = int(time.strftime("%m"))
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'loco': request.user.member,
+        'member': request.user.member,
         'change_size': month <= 10,
         'next_extra_abo_date': Abo.next_extra_change_date(),
         'next_size_date': Abo.next_size_change_date()
@@ -87,7 +84,7 @@ def my_abo_change(request, abo_id):
 @primary_member_of_abo
 def my_depot_change(request, abo_id):
     """
-    Ein Abo-Depot ändern
+    change a depot
     """
     saved = False
     if request.method == "POST":
@@ -97,7 +94,7 @@ def my_depot_change(request, abo_id):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
-        'loco': request.user.member,
+        'member': request.user.member,
         "depots": Depot.objects.all()
     })
     return render(request, "my_depot_change.html", renderdict)
@@ -106,7 +103,7 @@ def my_depot_change(request, abo_id):
 @primary_member_of_abo
 def my_size_change(request, abo_id):
     """
-    Eine Abo-Grösse ändern
+    change the size of an abo
     """
     saved = False
     if request.method == "POST" and int(time.strftime("%m")) <=10 and int(request.POST.get("abo")) > 0:
@@ -124,7 +121,7 @@ def my_size_change(request, abo_id):
 @primary_member_of_abo
 def my_extra_change(request, abo_id):
     """
-    Ein Extra-Abos ändern
+    change an extra abo
     """
     saved = False
     if request.method == "POST":
@@ -141,7 +138,7 @@ def my_extra_change(request, abo_id):
                     has_active=False
                     index=0;
                     while not has_active or index<existing.count():
-                        existing_extra_abo = exisitng[index]
+                        existing_extra_abo = existing[index]
                         if existing_extra_abo.active == True:
                              has_active=True
                         elif existing_extra_abo.canceled==True and future_extra_abo.active==True:
@@ -183,7 +180,7 @@ def my_extra_change(request, abo_id):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
-        'loco': request.user.member,
+        'member': request.user.member,
         "extras": abos
     })
     return render(request, "my_extra_change.html", renderdict)
@@ -191,7 +188,7 @@ def my_extra_change(request, abo_id):
 
 def my_signup(request):
     """
-    Become a member of ortoloco
+    Become a member of juntagrico
     """
     success = False
     agberror = False
@@ -200,40 +197,40 @@ def my_signup(request):
     if request.method == 'POST':
         agbchecked = request.POST.get("agb") == "on"
 
-        locoform = MemberProfileForm(request.POST)
+        memberform = MemberProfileForm(request.POST)
         if not agbchecked:
             agberror = True
         else:
-            if locoform.is_valid():
+            if memberform.is_valid():
                 #check if user already exists
-                if User.objects.filter(email=locoform.cleaned_data['email']).__len__() > 0:
+                if User.objects.filter(email=memberform.cleaned_data['email']).__len__() > 0:
                     userexists = True
                 else:
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
 
-                    loco = Member.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'], email=locoform.cleaned_data['email'])
-                    loco.addr_street = locoform.cleaned_data['addr_street']
-                    loco.addr_zipcode = locoform.cleaned_data['addr_zipcode']
-                    loco.addr_location = locoform.cleaned_data['addr_location']
-                    loco.phone = locoform.cleaned_data['phone']
-                    loco.mobile_phone = locoform.cleaned_data['mobile_phone']
-                    loco.save()
+                    member = Member.objects.create(first_name=memberform.cleaned_data['first_name'], last_name=memberform.cleaned_data['last_name'], email=memberform.cleaned_data['email'])
+                    member.addr_street = memberform.cleaned_data['addr_street']
+                    member.addr_zipcode = memberform.cleaned_data['addr_zipcode']
+                    member.addr_location = memberform.cleaned_data['addr_location']
+                    member.phone = memberform.cleaned_data['phone']
+                    member.mobile_phone = memberform.cleaned_data['mobile_phone']
+                    member.save()
 
-                    loco.user.set_password(password)
-                    loco.user.save()
+                    member.user.set_password(password)
+                    member.user.save()
 
                     #log in to allow him to make changes to the abo
-                    loggedin_user = authenticate(username=loco.user.username, password=password)
+                    loggedin_user = authenticate(username=member.user.username, password=password)
                     login(request, loggedin_user)
                     success = True
                     return redirect("/my/aboerstellen")
     else:
-        locoform = MemberProfileForm()
+        memberform = MemberProfileForm()
 
     renderdict = {
-        'locoform': locoform,
+        'memberform': memberform,
         'success': success,
         'agberror': agberror,
         'agbchecked': agbchecked,
@@ -244,14 +241,14 @@ def my_signup(request):
 
 
 @login_required
-def my_add_loco(request, abo_id):
-    scheineerror = False
-    scheine = 1
+def my_add_member(request, abo_id):
+    shareerror = False
+    shares = 1
     memberexists = False
     memberblocked = False
     member = False
     if request.method == 'POST':
-        locoform = MemberProfileForm(request.POST)
+        memberform = MemberProfileForm(request.POST)
         members = Member.objects.filter(email=request.POST.get('email'))
         if members.count() > 0:
             memberexists = True
@@ -259,36 +256,36 @@ def my_add_loco(request, abo_id):
             if member.abo is not None:
                 memberblocked=True
         try:
-            scheine = int(request.POST.get("anteilscheine"))
-            scheineerror = scheine < 0
+            shares = int(request.POST.get("shares"))
+            shareerror = shares < 0
         except TypeError:
-            scheineerror = True
+            shareerror = True
         except  ValueError:
-            scheineerror = True
-        if locoform.is_valid() and scheineerror is False and memberexists is False:
+            shareerror = True
+        if memberform.is_valid() and shareerror is False and memberexists is False:
             pw = password_generator()
-            member = Member.objects.create(first_name=locoform.cleaned_data['first_name'], last_name=locoform.cleaned_data['last_name'], email=locoform.cleaned_data['email'])
-            member.first_name = locoform.cleaned_data['first_name']
-            member.last_name = locoform.cleaned_data['last_name']
-            member.email = locoform.cleaned_data['email']
-            member.addr_street = locoform.cleaned_data['addr_street']
-            member.addr_zipcode = locoform.cleaned_data['addr_zipcode']
-            member.addr_location = locoform.cleaned_data['addr_location']
-            member.phone = locoform.cleaned_data['phone']
-            member.mobile_phone = locoform.cleaned_data['mobile_phone']
+            member = Member.objects.create(first_name=memberform.cleaned_data['first_name'], last_name=memberform.cleaned_data['last_name'], email=memberform.cleaned_data['email'])
+            member.first_name = memberform.cleaned_data['first_name']
+            member.last_name = memberform.cleaned_data['last_name']
+            member.email = memberform.cleaned_data['email']
+            member.addr_street = memberform.cleaned_data['addr_street']
+            member.addr_zipcode = memberform.cleaned_data['addr_zipcode']
+            member.addr_location = memberform.cleaned_data['addr_location']
+            member.phone = memberform.cleaned_data['phone']
+            member.mobile_phone = memberform.cleaned_data['mobile_phone']
             member.confirmed = False
             member.abo_id = abo_id
             member.save()
             member.user.set_password(pw)
             member.user.save()
 
-            for num in range(0, scheine):
-                anteilschein = Share(member=loco, paid_date=None)
-                anteilschein.save()
-                send_anteilschein_created_mail(anteilschein, request.META["HTTP_HOST"])
-            send_been_added_to_abo(loco.email, pw, request.user.member.get_name(), scheine, hashlib.sha1(locoform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
+            for num in range(0, shares):
+                share = Share(member=member, paid_date=None)
+                share.save()
+                send_share_created_mail(share, request.META["HTTP_HOST"])
+            send_been_added_to_abo(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(memberform.cleaned_data['email'] + str(abo_id)).hexdigest(), request.META["HTTP_HOST"])
 
-            loco.save()
+            member.save()
             if request.GET.get("return"):
                 return redirect(request.GET.get("return"))
             return redirect('/my/aboerstellen')
@@ -299,104 +296,101 @@ def my_add_loco(request, abo_id):
                 return redirect(request.GET.get("return"))
             return redirect('/my/aboerstellen')
     else:
-        loco = request.user.member
-        initial = {"addr_street": loco.addr_street,
-                   "addr_zipcode": loco.addr_zipcode,
-                   "addr_location": loco.addr_location,
-                   "phone": loco.phone,
+        member = request.user.member
+        initial = {"addr_street": member.addr_street,
+                   "addr_zipcode": member.addr_zipcode,
+                   "addr_location": member.addr_location,
+                   "phone": member.phone,
         }
-        locoform = MemberProfileForm(initial=initial)
+        memberform = MemberProfileForm(initial=initial)
     renderdict = {
-        'scheine': scheine,
+        'shares': shares,
         'memberexists': memberexists,
         'memberblocked': memberexists,
-        'scheineerror': scheineerror,
-        'locoform': locoform,
-        "loco": request.user.member,
+        'shareerror': shareerror,
+        'memberform': memberform,
+        "member": request.user.member,
         "depots": Depot.objects.all(),
         "cancelUrl": request.GET.get("return")
     }
-    return render(request, "add_loco.html", renderdict)
+    return render(request, "add_member.html", renderdict)
 
 
 @login_required
 def my_createabo(request):
     """
-    Abo erstellen
+    create a abo
     """
-    loco = request.user.member
-    scheineerror = False
+    member = request.user.member
+    shareerror = False
     aboform = AboForm()
 
-    if loco.abo is None:
+    if member.abo is None:
         selectedabo="none"
     else:
-        selectedabo = AboSize.objects.filter(size=loco.abo.size)[0].name
+        selectedabo = AboSize.objects.filter(size=member.abo.size)[0].name
 
-    loco_scheine = 0
-    if loco.abo is not None:
-        for abo_loco in loco.abo.recipients().exclude(email=request.user.member.email):
-            loco_scheine += abo_loco.share_set.all().__len__()
+    member_shares = 0
+    if member.abo is not None:
+        for abo_member in member.abo.recipients().exclude(email=request.user.member.email):
+            member_shares += abo_member.share_set.all().__len__()
 
     if request.method == "POST":
-        scheine = int(request.POST.get("scheine"))
+        shares = int(request.POST.get("shares"))
         selectedabo = request.POST.get("abo")
         aboform = AboForm(request.POST)
 
-        scheine += loco_scheine
-        min_anzahl_scheine = next(iter(AboSize.objects.filter(name=selectedabo).values_list('shares', flat=True) or []), 1)
-        if scheine < min_anzahl_scheine or not aboform.is_valid():
-            scheineerror = scheine < min_anzahl_scheine
+        shares += member_shares
+        min_num_shares = next(iter(AboSize.objects.filter(name=selectedabo).values_list('shares', flat=True) or []), 1)
+        if shares < min_num_shares or not aboform.is_valid():
+            shareerror = shares < min_num_shares
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
             size = next(iter(AboSize.objects.filter(name=selectedabo).values_list('size', flat=True) or []), 0)
 
             if size > 0:
-                if loco.abo is None:
-                    loco.abo = Abo.objects.create(size=size, primary_member=loco, depot=depot,start_date=aboform.cleaned_data['start_date'])
+                if member.abo is None:
+                    member.abo = Abo.objects.create(size=size, primary_member=member, depot=depot,start_date=aboform.cleaned_data['start_date'])
                 else:
-                    loco.abo.start_date=aboform.cleaned_data['start_date']
-                    loco.abo.size = size
-                    loco.abo.future_size = size
-                    loco.abo.depot = depot
-                loco.abo.save()
-            loco.save()
+                    member.abo.start_date=aboform.cleaned_data['start_date']
+                    member.abo.size = size
+                    member.abo.future_size = size
+                    member.abo.depot = depot
+                member.abo.save()
+            member.save()
 
-            if loco.share_set.count() < int(request.POST.get("scheine")):
-                toadd = int(request.POST.get("scheine")) - loco.share_set.count()
+            if member.share_set.count() < int(request.POST.get("shares")):
+                toadd = int(request.POST.get("shares")) - member.share_set.count()
                 for num in range(0, toadd):
-                    anteilschein = Share(member=loco, paid_date=None)
-                    anteilschein.save()
-                    send_anteilschein_created_mail(anteilschein, request.META["HTTP_HOST"])
-            if request.POST.get("add_loco"):
-                return redirect("/my/abonnent/" + str(loco.abo_id))
+                    share = Share(member=member, paid_date=None)
+                    share.save()
+                    send_share_created_mail(share, request.META["HTTP_HOST"])
+            if request.POST.get("add_member"):
+                return redirect("/my/abonnent/" + str(member.abo_id))
             else:
                 password = password_generator()
-
                 request.user.set_password(password)
                 request.user.save()
-
                 #user did it all => send confirmation mail
-                send_welcome_mail(loco.email, password, request.META["HTTP_HOST"])
-                send_welcome_mail("dorothea@ortoloco.ch", "<geheim>", request.META["HTTP_HOST"])
+                send_welcome_mail(member.email, password, request.META["HTTP_HOST"])
 
                 return redirect("/my/willkommen")
 
     selected_depot = None
-    mit_locos = []
+    co_members = []
     if request.user.member.abo is not None:
         selected_depot = request.user.member.abo.depot
-        mit_locos = request.user.member.abo.recipients().exclude(email=request.user.member.email)
+        co_members = request.user.member.abo.recipients().exclude(email=request.user.member.email)
 
     renderdict = {
-        'loco_scheine': loco_scheine,
-        'loco': request.user.member,
+        'member_shares': member_shares,
+        'member': request.user.member,
         'abo_sizes': AboSize.objects.order_by('size'),
         'depots': Depot.objects.all(),
         'selected_depot': selected_depot,
         'selected_abo': selectedabo,
-        'scheineerror': scheineerror,
-        'mit_locos': mit_locos,
+        'shareerror': shareerror,
+        'co_members': co_members,
         'aboform': aboform
     }
     return render(request, "createabo.html", renderdict)
@@ -405,7 +399,7 @@ def my_createabo(request):
 @login_required
 def my_welcome(request):
     """
-    Willkommen
+    welcome
     """
 
     renderdict = get_menu_dict(request)
@@ -420,20 +414,12 @@ def my_welcome(request):
 
 def my_confirm(request, hash):
     """
-    Confirm from a user that has been added as a Mitabonnent
+    Confirm from a user that has been added as a co_abonnent
     """
 
-    for loco in Member.objects.all():
-        if hash == hashlib.sha1(loco.email + str(loco.abo_id)).hexdigest():
-            loco.confirmed = True
-            loco.save()
+    for member in Member.objects.all():
+        if hash == hashlib.sha1(member.email + str(member.abo_id)).hexdigest():
+            member.confirmed = True
+            member.save()
 
     return redirect("/my/home")
-
-
-
-
-
-
-
-

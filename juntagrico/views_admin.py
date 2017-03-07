@@ -27,11 +27,7 @@ from juntagrico.helpers import *
 from juntagrico.filters import Filter
 from juntagrico.mailer import *
 from juntagrico.views import get_menu_dict
-
-from static_ortoloco.models import StaticContent
-
-import hashlib
-from static_ortoloco.models import Politoloco
+from juntagrico.config import *
 
 from decorators import primary_member_of_abo
 
@@ -55,15 +51,15 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get("sender")
     if request.POST.get("allabo") == "on":
-        for loco in Member.objects.exclude(abo=None).filter(abo__active=True).exclude(block_emails=True):
-            emails.add(loco.email)
-    if request.POST.get("allanteilsschein") == "on":
-        for loco in Member.objects.exclude(block_emails=True):
-            if loco.share_set.count() > 0:
-                emails.add(loco.email)
+        for member in Member.objects.exclude(abo=None).filter(abo__active=True).exclude(block_emails=True):
+            emails.add(member.email)
+    if request.POST.get("share") == "on":
+        for member in Member.objects.exclude(block_emails=True):
+            if member.share_set.count() > 0:
+                emails.add(member.email)
     if request.POST.get("all") == "on":
-        for loco in Member.objects.exclude(block_emails=True):
-            emails.add(loco.email)
+        for member in Member.objects.exclude(block_emails=True):
+            emails.add(member.email)
     if request.POST.get("recipients"):
         recipients = re.split(r"\s*,?\s*", request.POST.get("recipients"))
         for recipient in recipients:
@@ -121,13 +117,13 @@ def my_mails_intern(request, enhanced, error_message=None):
     })
     return render(request, 'mail_sender.html', renderdict)
 
-@permission_required('juntagrico.can_filter_locos')
+@permission_required('juntagrico.can_filter_members')
 def my_filters(request):
     now = timezone.now()
-    locos = Member.objects.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
+    members = Member.objects.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'locos': locos
+        'members': members
     })
     return render(request, 'filters.html', renderdict)
 
@@ -137,11 +133,11 @@ def my_filters(request):
 def my_filters_depot(request, depot_id):
     now = timezone.now()
     depot = get_object_or_404(Depot, id=int(depot_id))
-    locos = Member.objects.filter(abo__depot = depot).annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
+    members = Member.objects.filter(abo__depot = depot).annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails']=True
     renderdict.update({
-        'locos': locos,
+        'members': members,
         'enhanced': "depot"
     })
     return render(request, 'filters.html', renderdict)
@@ -150,11 +146,11 @@ def my_filters_depot(request, depot_id):
 def my_filters_area(request, area_id):
     now = timezone.now()
     area = get_object_or_404(ActivityArea, id=int(area_id))
-    locos = area.locos.all().annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1))))
+    members = area.members.all().annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails']=True
     renderdict.update({
-        'locos': locos,
+        'members': members,
         'enhanced': "area"
     })
     return render(request, 'filters.html', renderdict)
@@ -165,18 +161,18 @@ def my_abos(request):
     now = timezone.now()
     abos = []
     for abo in Abo.objects.filter():
-        boehnlis = 0
-        boehnlis_kernbereich = 0
-        for loco in abo.locos.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1)))):
-            boehnlis += loco.boehnli_count
-            boehnlis_kernbereich += loco.core_boehnli_count
+        assignments = 0
+        core_assignments = 0
+        for member in abo.members.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignemnt__core_cache=True, then=1)))):
+            assignments += member.assignment_count
+            core_assignments += member.core_assignment_count
 
         abos.append({
             'abo': abo,
-            'text': get_status_bean_text(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0),
-            'boehnlis': boehnlis,
-            'boehnlis_kernbereich': boehnlis_kernbereich,
-            'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
+            'text': get_status_bean_text(100 / (abo.size * 10) * assignments if abo.size > 0 else 0),
+            'assignments': assignments,
+            'core_assignments': core_assignments,
+            'icon': helpers.get_status_bean(100 / (abo.size * 10) * assignments if abo.size > 0 else 0)
         })
 
     renderdict = get_menu_dict(request)
@@ -193,18 +189,18 @@ def my_abos_depot(request, depot_id):
     abos = []
     depot = get_object_or_404(Depot, id=int(depot_id))
     for abo in Abo.objects.filter(depot = depot):
-        boehnlis = 0
-        boehnlis_kernbereich = 0
-        for loco in abo.locos.annotate(boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, then=1)))).annotate(core_boehnli_count=Count(Case(When(boehnli__job__time__year=now.year, boehnli__job__time__lt=now, boehnli__core_cache=True, then=1)))):
-            boehnlis += loco.boehnli_count
-            boehnlis_kernbereich += loco.core_boehnli_count
+        assignments = 0
+        core_assignments = 0
+        for member in abo.members.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1)))):
+            assignments += member.assignment_count
+            core_assignments += member.core_assignemtns_count
 
         abos.append({
             'abo': abo,
-            'text': get_status_bean_text(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0),
-            'boehnlis': boehnlis,
-            'boehnlis_kernbereich': boehnlis_kernbereich,
-            'icon': helpers.get_status_bean(100 / (abo.size * 10) * boehnlis if abo.size > 0 else 0)
+            'text': get_status_bean_text(100 / (abo.size * 10) * assignments if abo.size > 0 else 0),
+            'assignments': assignments,
+            'core_assignments': core_assignments,
+            'icon': helpers.get_status_bean(100 / (abo.size * 10) * assignments if abo.size > 0 else 0)
         })
 
     renderdict = get_menu_dict(request)
@@ -215,7 +211,7 @@ def my_abos_depot(request, depot_id):
     return render(request, 'abos.html', renderdict)
 
 @permission_required('juntagrico.is_operations_group')
-def my_depotlisten(request):
+def my_depotlists(request):
     return alldepots_list(request, "")
     
 @permission_required('juntagrico.is_operations_group')
@@ -381,48 +377,46 @@ def my_maps(request):
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_excel_export_locos_filter(request):
+def my_excel_export_members_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = StringIO()
     workbook = xlsxwriter.Workbook(output)
-    worksheet_s = workbook.add_worksheet("Locos")
+    worksheet_s = workbook.add_worksheet(Config.members_string())
     
     worksheet_s.write_string(0, 0, unicode("Name", "utf-8"))
-    worksheet_s.write_string(0, 1, unicode("Boehnlis", "utf-8"))
-    worksheet_s.write_string(0, 2, unicode("Boehnlis Kernbereich", "utf-8"))
+    worksheet_s.write_string(0, 1, unicode(Config.assignments_string(), "utf-8"))
+    worksheet_s.write_string(0, 2, unicode(Config.assignments_string()+" Kernbereich", "utf-8"))
     worksheet_s.write_string(0, 3, unicode("Taetigkeitsbereiche", "utf-8"))
     worksheet_s.write_string(0, 4, unicode("Depot", "utf-8"))
     worksheet_s.write_string(0, 5, unicode("Email", "utf-8"))
     worksheet_s.write_string(0, 6, unicode("Telefon", "utf-8"))
     worksheet_s.write_string(0, 7, unicode("Mobile", "utf-8"))
-    
-    locos = Member.objects.all()
-    boehnlis = current_year_boehnlis_per_loco()
-    boehnlis_kernbereich = current_year_kernbereich_boehnlis_per_loco()
+
+    now = timezone.now()
+    members = members = Member.objects.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
+
     row = 1
-    for loco in locos:
-        loco.boehnlis = boehnlis[loco]
-        loco.boehnlis_kernbereich = boehnlis_kernbereich[loco]
-        loco.bereiche = ""
-        for bereich in loco.areas.all():
-            loco.bereiche = loco.bereiche + bereich.name +" "
-        if loco.bereiche == "":
-            loco.bereiche = unicode("-Kein Tätigkeitsbereich-", "utf-8")
+    for member in members:
+        member.areas = ""
+        for area in member.areas.all():
+            member.areas = member.areas + area.name + " "
+        if member.areas == "":
+            member.areas = unicode("-Kein Tätigkeitsbereich-", "utf-8")
         
-        loco.depot_name = unicode("Kein Depot definiert", "utf-8")
-        if loco.abo is not None:
-            loco.depot_name=loco.abo.depot.name
-        looco_full_name = loco.first_name + " " + loco.last_name
+        member.depot_name = unicode("Kein Depot definiert", "utf-8")
+        if member.abo is not None:
+            member.depot_name=member.abo.depot.name
+        looco_full_name = member.first_name + " " + member.last_name
         worksheet_s.write_string(row, 0, looco_full_name)
-        worksheet_s.write(row, 1, loco.boehnlis)
-        worksheet_s.write(row, 2, loco.boehnlis_kernbereich)
-        worksheet_s.write_string(row, 3, loco.bereiche)
-        worksheet_s.write_string(row, 4, loco.depot_name)
-        worksheet_s.write_string(row, 5, loco.email)
-        worksheet_s.write_string(row, 6, loco.phone)
-        if loco.mobile_phone is not None: 
-            worksheet_s.write_string(row, 7, loco.mobile_phone)
+        worksheet_s.write(row, 1, member.assignment_count)
+        worksheet_s.write(row, 2, member.core_assignment_count)
+        worksheet_s.write_string(row, 3, member.areas)
+        worksheet_s.write_string(row, 4, member.depot_name)
+        worksheet_s.write_string(row, 5, member.email)
+        worksheet_s.write_string(row, 6, member.phone)
+        if member.mobile_phone is not None:
+            worksheet_s.write_string(row, 7, member.mobile_phone)
         row = row + 1
 
     workbook.close()
@@ -431,7 +425,7 @@ def my_excel_export_locos_filter(request):
     return response
 
 @permission_required('juntagrico.is_operations_group')
-def my_excel_export_locos(request):
+def my_excel_export_members(request):
     fields = [
     u'first_name',
     u'last_name',
@@ -446,7 +440,7 @@ def my_excel_export_locos(request):
     u'reachable_by_email',
     u'block_emails',
     ]
-    return generate_excell(fields, Loco)
+    return generate_excell(fields, Member)
     
 @permission_required('juntagrico.is_operations_group')
 def my_excel_export_shares(request):
@@ -459,9 +453,9 @@ def my_excel_export_shares(request):
     u'termination_date',
     u'payback_date',
     u'notes',
-    u'loco.first_name',
-    u'loco.last_name',
-    u'loco.email',
+    u'member.first_name',
+    u'member.last_name',
+    u'member.email',
     ]
     return generate_excell(fields, Share)
 

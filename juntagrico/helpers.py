@@ -24,6 +24,8 @@ from StringIO import StringIO
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
+from config import *
+
 
 
 class AuthenticateWithEmail(object):
@@ -58,6 +60,7 @@ def render_to_pdf_http(request, template_name, renderdict, filename):
     if not success:
         return HttpResponseServerError()
     return response
+
 def render_to_pdf_storage(template_name, renderdict, filename):
     """
     Take a string of rendered html and pack it into a pdfand save it
@@ -68,8 +71,6 @@ def render_to_pdf_storage(template_name, renderdict, filename):
     pdf = StringIO()
     pisa.CreatePDF(rendered_html, dest=pdf)
     default_storage.save(filename, ContentFile(pdf.getvalue()))
-    
-
 
 weekday_choices = ((1, "Montag"),
                    (2, "Dienstag"),
@@ -81,20 +82,16 @@ weekday_choices = ((1, "Montag"),
 
 weekdays = dict(weekday_choices)
 
-
 def get_current_jobs():
     from models import Job
-
     return Job.objects.filter(time__gte=timezone.now()).order_by("time")
 
 def get_current_one_time_jobs():
     from models import OneTimeJob
-
     return OneTimeJob.objects.filter(time__gte=timezone.now()).order_by("time")
 
 def get_current_recuring_jobs():
     from models import RecuringJob
-
     return RecuringJob.objects.filter(time__gte=timezone.now()).order_by("time")
 
 class Swapstd(object):
@@ -104,21 +101,17 @@ class Swapstd(object):
         self.new = (f, g)
         self.old = (sys.stdout, sys.stderr)
 
-
     def __enter__(self):
         sys.stdout, sys.stderr = self.new
 
-
     def __exit__(self, *a):
         sys.stdout, sys.stderr = self.old
-
 
 def make_username(firstname, lastname, email):
     firstname = slugify(firstname)[:10]
     lastname = slugify(lastname)[:10]
     email = hashlib.sha1(email).hexdigest()
     return ("%s_%s_%s" % (firstname, lastname, email))[:30]
-
 
 @staff_member_required
 def run_in_shell(request, command_string, input=None):
@@ -176,9 +169,8 @@ def generate_excell(fields, model_instance):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = StringIO()
     workbook = xlsxwriter.Workbook(output)
-    worksheet_s = workbook.add_worksheet("Locos")
-    
-        
+    worksheet_s = workbook.add_worksheet(Config.members_string())
+
     col = 0
     for field in fields:
 	parts = field.split('.')
@@ -221,7 +213,7 @@ def generate_excell(fields, model_instance):
 def genecrate_ical_for_job(job):
     c = Calendar()
     e = Event()
-    e.name = 'ortoloco Einsatz:'+job.typ.name
+    e.name = Config.organisation_name()+' Einsatz:'+job.typ.name
     e.location = job.typ.location
     e.description = job.typ.description
     e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
@@ -236,8 +228,3 @@ def start_of_year():
 def start_of_next_year():
     year = timezone.now().year+1
     return datetime.date(year, 1, 1)
-    
-
-
-                    
-            
