@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 
-class Aboudit(models.Model):
+class Audit(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     action = models.CharField(max_length=20)
     field = models.CharField(max_length=100)
@@ -31,13 +31,13 @@ def m2m(m2mrel):
         action = "m2m" + action[4:]
 
         if action == "m2m_clear":
-            Aboudit.objects.create(action=action,
+            Audit.objects.create(action=action,
                                  field=fieldname,
                                  source_object=instance,
                                  target_type=target_ct)
         elif action in ("m2m_add", "m2m_delete"):
             for obj in target_model.objects.filter(pk__in=pk_set):
-                Aboudit.objects.create(action=action,
+                Audit.objects.create(action=action,
                                      field=fieldname,
                                      source_object=instance,
                                      target_object=obj)
@@ -61,6 +61,6 @@ def fk(rel):
             kwds["target_type"] = target_ct
         else:
             kwds["target_object"] = target_obj
-        Aboudit.objects.create(**kwds)
+        Audit.objects.create(**kwds)
 
     signals.post_save.connect(callback, sender=source_model, weak=False)

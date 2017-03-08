@@ -2,7 +2,7 @@
 {% block content %}
     Nicht vergessen: <br/>
 
-    Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein ortoloco-Arbeitseinsatz <b>"{{ job.typ.displayed_name }}"</b> statt.
+    Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein {{ config organisation_name }}-Arbeitseinsatz <b>"{{ job.typ.displayed_name }}"</b> statt.
     <br/><br/>
     Details:
     <table cellspacing="0" cellpadding="0">
@@ -15,7 +15,7 @@
             <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</td>
         </tr>
         <tr>
-            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">mitlocos:</th>
+            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">mitmembers:</th>
             <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ participants }}</td>
         </tr>
         <tr>
@@ -31,5 +31,5 @@
     Wir freuen uns, dich zu sehen und zählen auf dich!<br/><br/>
 
     Herzlich grüsst,<br/>
-    dein ortoloco-Team
+    dein {{ config organisation_name }}-Team
 {% endblock %}

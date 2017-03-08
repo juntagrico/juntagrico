@@ -8,22 +8,22 @@
 
         <h5>Infos:</h5>
 
-        Um Mitglied der Genossenschaft ortoloco zu werden, musst du mindestens einen Anteilschein (CHF 250) erwerben.
+        Um Mitglied der Genossenschaft {{ config organisation_name }} zu werden, musst du mindestens einen Anteilschein (CHF {{ config share_price }}) erwerben.
         <br/><br/>
 
-        <form action="" method="post" class="form-horizontal createabo">
+        <form action="" method="post" class="form-horizontal createsubscription">
             {% csrf_token %}
-            {% for abo_size in abo_sizes %}
+            {% for subscription_size in subscription_sizes %}
             <div class="form-group">
                 <label class="col-md-4 control-label">{% if foorloop.first %}Abogrösse{% endif %}</label>
 
                 <div class="col-md-8 controls">
-                    <label class="radio" for="{{ abo_size.name }}">
-                        <input type="radio" name="abo" value="{{ abo_size.name }}" id="{{ abo_size.name }}" {% if selected_abo == abo_size.name %}checked="checked"{% endif %}/>
-                        <strong>{{ abo_size.long_name }}</strong>
+                    <label class="radio" for="{{ subscription_size.name }}">
+                        <input type="radio" name="subscription" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if selected_subscription == subscription_size.name %}checked="checked"{% endif %}/>
+                        <strong>{{ subscription_size.long_name }}</strong>
 
                         <br/>
-                        {{ abo_size.description }}
+                        {{ subscription_size.description }}
                     </label>
                 </div>
             </div>
@@ -33,11 +33,11 @@
 
                 <div class="col-md-8 controls">
                     <label class="radio" for="none">
-                        <input type="radio" name="abo" value="none" id="none" {% if selected_abo == "none" %}checked="checked"{% endif %}/>
+                        <input type="radio" name="subscription" value="none" id="none" {% if selected_subscription == "none" %}checked="checked"{% endif %}/>
                         <strong>Kein Abo</strong>
 
                         <br/>
-                        Du kannst auch ohne Gemüseabo ortoloco-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
+                        Du kannst auch ohne Gemüseabo{{ config organisation_name }}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
                     </label>
                 </div>
             </div>
@@ -47,10 +47,10 @@
                 <div class="col-md-8 controls">
                     <label for="scheine">
 
-                        {{ aboform.start_date }}
+                        {{ subscriptionform.start_date }}
                         Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein Abo zum gewünschten Datum frei ist.
                     </label>
-                    {% if aboform.start_date.errors %}
+                    {% if subscriptionform.start_date.errors %}
                         <div class="alert alert-danger">Das gewählte Startdatum ist nicht gültig</div>
                     {% endif %}
                 </div>
@@ -74,19 +74,19 @@
             </div>
 
             <div class="form-group">
-                <label class="col-md-4 control-label">MitabonnentInnen</label>
+                <label class="col-md-4 control-label">MitsubscriptionnnentInnen</label>
 
                 <div class="col-md-8 controls">
-                    {% if 0 == mit_locos|length %}
-                        <div>Bisher hast du keine MitabonnentInnen eingetragen.</div>
+                    {% if 0 == co_members|length %}
+                        <div>Bisher hast du keine MitsubscriptionnnentInnen eingetragen.</div>
                     {% else %}
                         <ul>
-                            {% for loco in mit_locos %}
-                                <li>{{ loco.first_name }} {{ loco.last_name }} - {{ loco.share_set.all|length }} Share(e)</li>
+                            {% for member in core_members %}
+                                <li>{{ member.first_name }} {{ member.last_name }} - {{ member.share_set.all|length }} Share(e)</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
-                    <button class="btn btn-small" id="add-loco">Weitere MitabonnentIn hinzufügen</button>
+                    <button class="btn btn-small" id="add-member">Weitere MitabonnentIn hinzufügen</button>
                     <br/><br/>
                 </div>
             </div>
@@ -94,12 +94,12 @@
                 <label class="col-md-4 control-label">Anteilscheine</label>
 
                 <div class="col-md-8 controls">
-                    <label for="scheine">
+                    <label for="shares">
 
-                        <input type="text" name="scheine" id="scheine" class="col-md-1 form-control"/><br/>
+                        <input type="text" name="shares" id="shares" class="col-md-1 form-control"/><br/>
                         Du kannst unbeschränkt und jederzeit Anteilscheine erwerben. Allerdings brauchst du je nach Abogrösse ein Minimum, um zu starten.
                     </label>
-                    {% if scheineerror %}
+                    {% if shareerror %}
                         <div class="alert alert-danger">Du brauchst mehr Anteilscheine für das gewählte Abo</div>
                     {% endif %}
                 </div>
@@ -115,8 +115,8 @@
 
 {% block scripts %}
     <script type="text/javascript">
-        var loco_scheine = {{ loco_scheine }};
-        var loco_addr = '{{ loco.addr_street }}+{{ loco.addr_zipcode }}+{{ loco.addr_location }}';
+        var member_scheine = {{ member_scheine }};
+        var member_addr = '{{ member.addr_street }}+{{ member.addr_zipcode }}+{{ member.addr_location }}';
 
         var destinations = [];
         var depots = [];
@@ -136,14 +136,13 @@
         {% endfor %}
 
 	var sizes={
-	{% for abo_size in abo_sizes %}
-            "{{ abo_size.name }}":{{ abo_size.shares }},
+	{% for subscription_size in subscription_sizes %}
+            "{{ subscription_size.name }}":{{ subscription_size.shares }},
         {% endfor %}
 	}
 
     </script>
-    <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
     <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyCreateAbo.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initCreateSubscription.js"></script>
 {% endblock %}

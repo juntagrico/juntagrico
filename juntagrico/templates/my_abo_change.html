@@ -21,7 +21,7 @@
             <h3>Zusatz-Abos</h3>
             <br/>
             Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
-            > <a href="https://ortoloco.s3.amazonaws.com/media/documents/151224_Infoblatt_Zusatzabos_16.pdf" target="_blank">Weitere Infos zu den Zusatzabos</a>
+            > <a href="{{ config extra_sub_info }}" target="_blank">Weitere Infos zu den Zusatzsubscriptions</a>
 
         </div>
     </div>
@@ -35,35 +35,35 @@
         </div>
         <div class="col-md-4">
             Nächstmögliches Datum:
-            {{ next_extra_abo_date |date:"d.m.Y" }}
+            {{ next_extra_subscription_date |date:"d.m.Y" }}
         </div>
     </div>
     <br/>
     <div class="row">
         <div class="col-md-4">
             <h5>Momentanes Depot:</h5>
-            {{ loco.abo.depot.name }}
+            {{ member.subscription.depot.name }}
         </div>
         <div class="col-md-4">
             <h5>Zukünftige Grösse:</h5>
-            {{ loco.abo.future_size_name }}
+            {{ member.subscription.future_size_name }}
         </div>
         <div class="col-md-4">
             <h5>Zukünftige Zusatz-Abos:</h5>
-            {% if not loco.abo.extra_abos_changed %}
-                {% if loco.abo.extra_abos.all|length == 0 %}
+            {% if not member.subscription.extra_subscriptions_changed %}
+                {% if member.subscription.extra_subscriptions.all|length == 0 %}
                     Keine Zusatz-Abos
                 {% else %}
-                    {% for zusatzabo in loco.abo.extra_abos.all %}
-                        <li>{{ zusatzabo.type.name }}</li>
+                    {% for zusatzsubscription in member.subscription.extra_subscriptions.all %}
+                        <li>{{ zusatzsubscription.type.name }}</li>
                     {% endfor %}
                 {% endif %}
             {% else %}
-                {% if loco.abo.future_extra_abos.all|length == 0 %}
+                {% if member.subscription.future_extra_subscriptions.all|length == 0 %}
                     Keine Zusatz-Abos
                 {% else %}
-                    {% for zusatzabo in loco.abo.future_extra_abos.all %}
-                        <li>{{ zusatzabo.type.name }}</li>
+                    {% for zusatzsubscription in member.subscription.future_extra_subscriptions.all %}
+                        <li>{{ zusatzsubscription.type.name }}</li>
                     {% endfor %}
                 {% endif %}
             {% endif %}
@@ -72,14 +72,14 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <a href="/my/abo/{{ loco.abo.id }}/aendern/depot" class="btn btn-success">Depot ändern</a>
+            <a href="/my/subscription/{{ member.subscription.id }}/aendern/depot" class="btn btn-success">Depot ändern</a>
         </div>
         <div class="col-md-4">
-            <a {% if change_size %}href="/my/abo/{{ loco.abo.id }}/aendern/groesse"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
+            <a {% if change_size %}href="/my/subscription/{{ member.subscription.id }}/aendern/groesse"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
             {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
         </div>
         <div class="col-md-4">
-            <a href="/my/abo/{{ loco.abo.id }}/aendern/extra" class="btn btn-success">Zusatz-Abos ändern</a>
+            <a href="/my/subscription/{{ member.subscription.id }}/aendern/extra" class="btn btn-success">Zusatz-Abos ändern</a>
         </div>
     </div>
 {% endblock %}

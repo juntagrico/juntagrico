@@ -31,9 +31,9 @@
         <div class="col-md-5">
             {% for i in slotrange %}
                 {% if i < number_of_participants %}
-                    <img class="jobstatus" src="/static/img/erbse_voll.png" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    <img class="jobstatus" src="/static/img/circle_full.png" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% else %}
-                    <img class="jobstatus" src="/static/img/erbse_leer.png" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    <img class="jobstatus" src="/static/img/circle_empty.png" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% endif %}
             {% endfor %}
         </div>
@@ -58,7 +58,7 @@
         <div class="col-md-5">
             <form id="email-sender" action="/my/mails" method="POST">
                 {% csrf_token %}
-                <input type="hidden" name="recipient_type" id="recipient_type" value="Locos"/>
+                <input type="hidden" name="recipient_type" id="recipient_type" value="{{ config members_string }}"/>
                 <input type="hidden" name="recipients" id="recipients" value="{{emails}}"/>
                 <input type="hidden" name="recipients_count" id="recipients_count" value="{{number_of_participants}}"/>
                 <button type="submit" class="btn" id="send-email">Allen eine Email senden</button>
@@ -76,7 +76,7 @@
                 <ul>
                     {% for participant, comments, url, reachable in participants_summary %}
                         <li>
-                            <a class="job-participant" loco-id="{{ participant }}" href="#">
+                            <a class="job-participant" member-id="{{ participant }}" href="#">
                                 {{ participant }}
                             </a>
 							{% if reachable %}
@@ -84,7 +84,7 @@
 							{% endif %}
                             <br>
                             {% for comment in comments %}
-                                <span class="loco-job-comments">Hinweis: {{ comment }}</span>
+                                <span class="member-job-comments">Hinweis: {{ comment }}</span>
                                 <br>
                             {% endfor %}
                             <br>
@@ -137,12 +137,12 @@
 
         <!-- Modal -->
 <!-- 
-        <div class="modal fade" id="locoMessageModal" tabindex="-1" role="dialog" aria-labelledby="locoMessageModalLabel" aria-hidden="true">
+        <div class="modal fade" id="memberMessageModal" tabindex="-1" role="dialog" aria-labelledby="memberMessageModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="locoMessageModalLabel">Nachricht wegen des {{ job.typ.name }} Einsatzes vom {{ job.time |date:"d. M" }}</h4>
+                <h4 class="modal-title" id="memberMessageModalLabel">Nachricht wegen des {{ job.typ.name }} Einsatzes vom {{ job.time |date:"d. M" }}</h4>
               </div>
               <div class="modal-body">
                 <textarea class="form-control" rows="16" style="width: 100%" placeholder="Deine Nachricht">Hoi
@@ -153,7 +153,7 @@ A propos vom kommenden {{ job.typ.name }} Einsatz vom {{ job.time |date:"d. F, \
 
 Merci vielmals,
 
-{{ user.loco.first_name }}</textarea>
+{{ user.member.first_name }}</textarea>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
@@ -167,5 +167,5 @@ Merci vielmals,
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyJobLocoMessaging.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyJob{{ config member_string }}Messaging.js"></script>
 {% endblock %}

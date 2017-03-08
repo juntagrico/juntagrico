@@ -15,21 +15,21 @@
             </tr>
             </thead>
             <tbody>
-            {% for abo in waitinglist %}
+            {% for subscription in waitinglist %}
                 <tr>
-                    <td>{{ abo.overview }}</td>
-                    <td>{{ abo.start_date |date:"d.m.y" }}</td>
-                    <td>{{ abo.primary_member.first_name }} {{ abo.primary_member.last_name }}</td>
+                    <td>{{ subscription.overview }}</td>
+                    <td>{{ subscription.start_date |date:"d.m.y" }}</td>
+                    <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
                     <td>
-                        <form id="abo{{ abo.id }}" method="post" action="/my/mails"> 
+                        <form id="subscription{{ subscription.id }}" method="post" action="/my/mails"> 
                             {% csrf_token %}
-                            <input type="hidden" name="recipients" value="{{ abo.primary_member.email }}"/>
+                            <input type="hidden" name="recipients" value="{{ subscription.primary_member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#" onclick="$('#abo{{ abo.id }}').submit();">{{ abo.primary_member.email }}</a>
+                            <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();">{{ subscription.primary_member.email }}</a>
                         </form>
                     </td>
-                    <td>{{ abo.paid_shares }}</td>
-                    <td>{{ abo.creation_date }}</td>
+                    <td>{{ subscription.paid_shares }}</td>
+                    <td>{{ subscription.creation_date }}</td>
                 </tr>
             {% endfor %}
             </tbody>

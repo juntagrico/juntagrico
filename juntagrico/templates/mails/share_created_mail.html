@@ -2,7 +2,7 @@
 {% block content %}
     Hallo lieber Buchhalter
     <br/><br/>
-    Folgender Loco hat einen Anteilschein Bestellt<br/>
+    Folgender {{ config member_string }} hat einen Anteilschein Bestellt<br/>
     {{member.get_name}}<br/>
     {{member.addr_street}}<br/>
     {{member.addr_zipcode}} {{member.addr_location}}<br/>

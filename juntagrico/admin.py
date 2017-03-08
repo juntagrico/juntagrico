@@ -12,7 +12,7 @@ from juntagrico.models import *
 
 # This form exists to restrict primary user choice to users that have actually set the
 # current subscription as their subscription
-class SubscriptionAbodminForm(forms.ModelForm):
+class SubscriptionAdminForm(forms.ModelForm):
     class Meta:
         model = Subscription
         fields = '__all__'
@@ -36,7 +36,7 @@ class SubscriptionAbodminForm(forms.ModelForm):
         return forms.ModelForm.clean(self)
 
     def save(self, commit=True):
-        # HAboCK: set commit=True, ignoring what the admin tells us.
+        # HACK: set commit=True, ignoring what the admin tells us.
         # This causes save_m2m to be called.
         return forms.ModelForm.save(self, commit=True)
 
@@ -61,14 +61,14 @@ class JobCopyForm(forms.ModelForm):
                                          widget=forms.widgets.CheckboxSelectMultiple)
 
     time = forms.TimeField(label="Zeit", required=False,
-                           widget=admin.widgets.AbodminTimeWidget)
+                           widget=admin.widgets.AdminTimeWidget)
 
-    start_date = forms.DateField(label="Abonfangsdatum", required=True,
-                                 widget=admin.widgets.AbodminDateWidget)
+    start_date = forms.DateField(label="Anfangsdatum", required=True,
+                                 widget=admin.widgets.AdminDateWidget)
     end_date = forms.DateField(label="Enddatum", required=True,
-                               widget=admin.widgets.AbodminDateWidget)
+                               widget=admin.widgets.AdminDateWidget)
 
-    weekly = forms.ChoiceField(choices=[(7, "jede Woche"), (14, "Abolle zwei Wochen")],
+    weekly = forms.ChoiceField(choices=[(7, "jede Woche"), (14, "Alle zwei Wochen")],
                                widget=forms.widgets.RadioSelect, initial=7)
 
     def __init__(self, *a, **k):
@@ -83,7 +83,7 @@ class JobCopyForm(forms.ModelForm):
         cleaned_data = forms.ModelForm.clean(self)
         if "start_date" in cleaned_data and "end_date" in cleaned_data:
             if not self.get_dates(cleaned_data):
-                raise ValidationError("Kein neuer Job fällt zwischen Abonfangs- und Enddatum")
+                raise ValidationError("Kein neuer Job fällt zwischen Anfangs- und Enddatum")
         return cleaned_data
 
     def save(self, commit=True):
@@ -102,12 +102,12 @@ class JobCopyForm(forms.ModelForm):
             job.save()
 
         # create new objects
-        # HAboCK: admin expects a saveable object to be returned when commit=False
+        # HACK: admin expects a saveable object to be returned when commit=False
         # return newjobs[-1]
         return inst
 
     def save_m2m(self):
-        # HAboCK: the admin expects this method to exist
+        # HACK: the admin expects this method to exist
         pass
 
     @staticmethod
@@ -128,8 +128,8 @@ class JobCopyForm(forms.ModelForm):
         return res
 
 
-class AbossignmentInline(admin.TabularInline):
-    model = Abossignment
+class AssignmentInline(admin.TabularInline):
+    model = Assignment
     # readonly_fields = ["member"]
     raw_id_fields = ["member"]
 
@@ -153,12 +153,12 @@ class AbossignmentInline(admin.TabularInline):
         return obj.slots
 
 
-class JobAbodmin(admin.ModelAbodmin):
+class JobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "type, "time", "slots", "freie_plaetze"]
     actions = ["copy_job", "mass_copy_job"]
     search_fields = ["type_name", "type_activityarea__name"]
     exclude = ["reminder_sent"]
-    inlines = [AbossignmentInline]
+    inlines = [AssignmentInline]
     readonly_fields = ["freie_plaetze"]
 
     def mass_copy_job(self, request, queryset):
@@ -181,17 +181,17 @@ class JobAbodmin(admin.ModelAbodmin):
     def get_form(self, request, obj=None, **kwds):
         if "copy_job" in request.path:
             return JobCopyForm
-        return super(JobAbodmin, self).get_form(request, obj, **kwds)
+        return super(JobAdmin, self).get_form(request, obj, **kwds)
 
     def get_urls(self):
-        urls = super(JobAbodmin, self).get_urls()
+        urls = super(JobAdmin, self).get_urls()
         my_urls = [
             url(r"^copy_job/(?P<jobid>.*?)/$", self.admin_site.admin_view(self.copy_job_view))
         ]
         return my_urls + urls
 
     def copy_job_view(self, request, jobid):
-        # HUGE HAboCK: modify admin properties just for this view
+        # HUGE HACK: modify admin properties just for this view
         tmp_readonly = self.readonly_fields
         tmp_inlines = self.inlines
         self.readonly_fields = []
@@ -202,7 +202,7 @@ class JobAbodmin(admin.ModelAbodmin):
         return res
 
     def get_queryset(self, request):
-        qs = super(admin.ModelAbodmin, self).get_queryset(request)
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(type_activityarea__coordinator=request.user.member)
@@ -212,16 +212,16 @@ class JobAbodmin(admin.ModelAbodmin):
         if db_field.name == "type and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             kwargs["queryset"] = JobType.objects.filter(activityarea__coordinator=request.user.member)
-        return super(admin.ModelAbodmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class OneTimeJobAbodmin(admin.ModelAbodmin):
+class OneTimeJobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "time", "slots", "freie_plaetze"]
     actions = ["transform_job"]
     search_fields = ["name", "activityarea__name"]
     exclude = ["reminder_sent"]
 
-    inlines = [AbossignmentInline]
+    inlines = [AssignmentInline]
     readonly_fields = ["freie_plaetze"]
 
     def transform_job(self, request, queryset):
@@ -235,7 +235,7 @@ class OneTimeJobAbodmin(admin.ModelAbodmin):
             t.save()
             rj.type= t
             rj.save()
-            for b in Abossignment.objects.filter(job_id=inst.id):
+            for b in Assignment.objects.filter(job_id=inst.id):
                 b.job = rj
                 b.save()
             inst.delete()
@@ -245,7 +245,7 @@ class OneTimeJobAbodmin(admin.ModelAbodmin):
     transform_job.short_description = "EinzelJobs in Jobart konvertieren"
 
     def get_queryset(self, request):
-        qs = super(admin.ModelAbodmin, self).get_queryset(request)
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(activityarea__coordinator=request.user.member)
@@ -254,11 +254,11 @@ class OneTimeJobAbodmin(admin.ModelAbodmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "activityarea" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = AboctivityAborea.objects.filter(coordinator=request.user.member)
-        return super(admin.ModelAbodmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+            kwargs["queryset"] = ActivityArea.objects.filter(coordinator=request.user.member)
+        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class JobTypeAbodmin(admin.ModelAbodmin):
+class JobTypeAdmin(admin.ModelAdmin):
     list_display = ["__unicode__"]
     actions = ["transform_job_type"]
 
@@ -273,7 +273,7 @@ class JobTypeAbodmin(admin.ModelAbodmin):
                 i = i + 1
                 print oj.__dict__
                 oj.save()
-                for b in Abossignment.objects.filter(job_id=rj.id):
+                for b in Assignment.objects.filter(job_id=rj.id):
                     b.job = oj
                     b.save()
                 rj.delete()
@@ -282,7 +282,7 @@ class JobTypeAbodmin(admin.ModelAbodmin):
     transform_job_type.short_description = "Jobart in EinzelJobs konvertieren"
 
     def get_queryset(self, request):
-        qs = super(admin.ModelAbodmin, self).get_queryset(request)
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(activityarea__coordinator=request.user.member)
@@ -291,8 +291,8 @@ class JobTypeAbodmin(admin.ModelAbodmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "activityarea" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = AboctivityAborea.objects.filter(coordinator=request.user.member)
-        return super(admin.ModelAbodmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+            kwargs["queryset"] = ActivityArea.objects.filter(coordinator=request.user.member)
+        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class ExtraSubscriptionInline(admin.TabularInline):
@@ -303,8 +303,8 @@ class ExtraSubscriptionInline(admin.TabularInline):
         return 0
 
 
-class SubscriptionAbodmin(admin.ModelAbodmin):
-    form = SubscriptionAbodminForm
+class SubscriptionAdmin(admin.ModelAdmin):
+    form = SubscriptionAdminForm
     list_display = ["__unicode__", "recipients_names", "primary_member_nullsave", "depot", "active"]
     # filter_horizontal = ["users"]
     search_fields = ["members__user__username", "members__first_name", "members__last_name", "depot__name"]
@@ -312,13 +312,13 @@ class SubscriptionAbodmin(admin.ModelAbodmin):
     inlines = [ExtraSubscriptionInline]
 
 
-class AbouditAbodmin(admin.ModelAbodmin):
+class AuditAdmin(admin.ModelAdmin):
     list_display = ["timestamp", "source_type", "target_type", "field", "action",
                     "source_object", "target_object"]
     # can_delete = False
 
 
-class ShareAbodmin(admin.ModelAbodmin):
+class ShareAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "member", "number", "paid_date", "issue_date", "booking_date", "cancelled_date",
                     "termination_date", "payback_date"]
     search_fields = ["id", "member__email", "member__first_name", "member__last_name", "number", "paid_date",
@@ -326,31 +326,31 @@ class ShareAbodmin(admin.ModelAbodmin):
     raw_id_fields = ["member"]
 
 
-class DepotAbodmin(admin.ModelAbodmin):
+class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ["contact"]
     list_display = ["name", "code", "weekday", "contact"]
 
 
-class ExtraSubscriptionAbodmin(admin.ModelAbodmin):
+class ExtraSubscriptionAdmin(admin.ModelAdmin):
     raw_id_fields = ["main_subscription"]
 
 
-class AboreaAbodmin(admin.ModelAbodmin):
+class AreaAdmin(admin.ModelAdmin):
     filter_horizontal = ["members"]
     raw_id_fields = ["coordinator"]
     list_display = ["name", "core", "hidden", "coordinator"]
 
     def get_queryset(self, request):
-        qs = super(admin.ModelAbodmin, self).get_queryset(request)
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             return qs.filter(coordinator=request.user.member)
         return qs
 
 
-class AbossignmentAbodmin(admin.ModelAbodmin):
+class AssignmentAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
-        qs = super(admin.ModelAbodmin, self).get_queryset(request)
+        qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             otjidlist = list(
@@ -370,9 +370,9 @@ class AbossignmentAbodmin(admin.ModelAbodmin):
                 RecuringJob.objects.filter(type_activityarea__coordinator=request.user.member).values_list('id', flat=True))
             jidlist = otjidlist + rjidlist
             kwargs["queryset"] = Job.objects.filter(id__in=jidlist)
-        return super(admin.ModelAbodmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-class MemberAbodminForm(forms.ModelForm):
+class MemberAdminForm(forms.ModelForm):
     class Meta:
         model = Member
         fields = '__all__'
@@ -386,15 +386,15 @@ class MemberAbodminForm(forms.ModelForm):
             url = reverse("admin:juntagrico_subscription_change", args=(member.subscription.id,))
             link = "<a href=%s>%s</a>" % (url, member.subscription)
         else:
-            link = "Kein Abo$o"
+            link = "Kein Abo"
         self.fields["subscription_link"].initial = link
 
     subscription_link = forms.URLField(widget=admin_helpers.MyHTMLWidget(), required=False,
-                              label="Abo$o")
+                              label="Abo")
 
 
-class MemberAbodmin(admin.ModelAbodmin):
-    form = MemberAbodminForm
+class MemberAdmin(admin.ModelAdmin):
+    form = MemberAdminForm
     list_display = ["email", "first_name", "last_name"]
     search_fields = ["first_name", "last_name", "email"]
     # raw_id_fields = ["subscription"]
@@ -412,24 +412,24 @@ class MemberAbodmin(admin.ModelAbodmin):
     impersonate_job.short_description = Config.member_string()+" imitieren (impersonate)..."
 
 
-admin.site.register(Depot, DepotAbodmin)
-admin.site.register(ExtraSubscription, ExtraSubscriptionAbodmin)
+admin.site.register(Depot, DepotAdmin)
+admin.site.register(ExtraSubscription, ExtraSubscriptionAdmin)
 admin.site.register(ExtraSubscriptionType)
 admin.site.register(ExtraSubscriptionCategory)
 admin.site.register(SubscriptionSize)
-admin.site.register(Abossignment, AbossignmentAbodmin)
-admin.site.register(Subscription, SubscriptionAbodmin)
-admin.site.register(Member, MemberAbodmin)
-admin.site.register(AboctivityAborea, AboreaAbodmin)
-admin.site.register(Share, ShareAbodmin)
+admin.site.register(Assignment, AssignmentAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)
+admin.site.register(Member, MemberAdmin)
+admin.site.register(ActivityArea, AreaAdmin)
+admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
 
 # This is only added to admin for debugging
-# admin.site.register(model_audit.Aboudit, AbouditAbodmin)
+# admin.site.register(model_audit.Audit, AuditAdmin)
 
 # Not adding this because it can and should be edited from Job, 
 # where integrity constraints are checked
-# admin.site.register(Abossignment, AbossignmentAbodmin)
-admin.site.register(JobType, JobTypeAbodmin)
-admin.site.register(RecuringJob, JobAbodmin)
-admin.site.register(OneTimeJob, OneTimeJobAbodmin)
+# admin.site.register(Assignment, AssignmentAdmin)
+admin.site.register(JobType, JobTypeAdmin)
+admin.site.register(RecuringJob, JobAdmin)
+admin.site.register(OneTimeJob, OneTimeJobAdmin)

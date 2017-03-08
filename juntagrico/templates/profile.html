@@ -8,99 +8,99 @@
     {% else %}
         <form method="post" class="form-horizontal">
             {% csrf_token %}
-            <div class="form-group {% if locoform.first_name.errors %}error{% endif %}">
+            <div class="form-group {% if memberform.first_name.errors %}error{% endif %}">
                 <label class="control-label col-sm-4" for="id_first_name">Vorname</label>
 
                 <div class="controls col-sm-8">
-                    {{ locoform.first_name }}
+                    {{ memberform.first_name }}
                 </div>
             </div>
-            {% if locoform.first_name.errors %}
+            {% if memberform.first_name.errors %}
                 <div class="alert alert-danger">Vorname ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if locoform.last_name.errors %}error{% endif %}">
+            <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
                 <label class="control-label col-sm-4" for="id_last_name">Nachname</label>
 
                 <div class="controls col-sm-8">
-                    {{ locoform.last_name }}
+                    {{ memberform.last_name }}
                 </div>
             </div>
-            {% if locoform.last_name.errors %}
+            {% if memberform.last_name.errors %}
                 <div class="alert alert-danger">Nachname ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if locoform.addr_street.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_addr_street">{{ locoform.addr_street.label }}</label>
+            <div class="form-group {% if memberform.addr_street.errors %}error{% endif %}">
+                <label class="control-label col-sm-4" for="id_addr_street">{{ memberform.addr_street.label }}</label>
 
                 <div class="controls col-sm-8">
-                    {{ locoform.addr_street }}
+                    {{ memberform.addr_street }}
                 </div>
             </div>
-            {% if locoform.addr_street.errors %}
+            {% if memberform.addr_street.errors %}
                 <div class="alert alert-danger">Strasse ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if locoform.addr_zipcode.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_addr_zipcode">{{ locoform.addr_zipcode.label }}</label>
+            <div class="form-group {% if memberform.addr_zipcode.errors %}error{% endif %}">
+                <label class="control-label col-sm-4" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }}</label>
 
                 <div class="controls col-sm-8">
-                    {{ locoform.addr_zipcode }}
+                    {{ memberform.addr_zipcode }}
                 </div>
             </div>
-            {% if locoform.addr_zipcode.errors %}
+            {% if memberform.addr_zipcode.errors %}
                 <div class="alert alert-danger">PLZ ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if locoform.addr_location.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_addr_location">{{ locoform.addr_location.label }}</label>
+            <div class="form-group {% if memberform.addr_location.errors %}error{% endif %}">
+                <label class="control-label col-sm-4" for="id_addr_location">{{ memberform.addr_location.label }}</label>
 
                 <div class="controls col-sm-8">
-                    {{ locoform.addr_location }}
+                    {{ memberform.addr_location }}
                 </div>
             </div>
-            {% if locoform.addr_location.errors %}
+            {% if memberform.addr_location.errors %}
                 <div class="alert alert-danger">Ort ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if locoform.phone.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_phone">{{ locoform.phone.label }}</label>
+            <div class="form-group {% if memberform.phone.errors %}error{% endif %}">
+                <label class="control-label col-sm-4" for="id_phone">{{ memberform.phone.label }}</label>
 
                 <div class="controls col-sm-8">
-                    {{ locoform.phone }}
+                    {{ memberform.phone }}
                 </div>
             </div>
-            {% if locoform.phone.errors %}
+            {% if memberform.phone.errors %}
                 <div class="alert alert-danger">Telefon ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if locoform.mobile_phone.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_mobile_phone">{{ locoform.mobile_phone.label }}</label>
+            <div class="form-group {% if memberform.mobile_phone.errors %}error{% endif %}">
+                <label class="control-label col-sm-4" for="id_mobile_phone">{{ memberform.mobile_phone.label }}</label>
 
                 <div class="controls col-sm-8">
-                    {{ locoform.mobile_phone }}
+                    {{ memberform.mobile_phone }}
                 </div>
             </div>
-            {% if locoform.mobile_phone.errors %}
+            {% if memberform.mobile_phone.errors %}
                 <div class="alert alert-danger">Mobile ungültig</div>
             {% endif %}
 			
-			<div class="form-group {% if locoform.email.errors %}error{% endif %}">
+			<div class="form-group {% if memberform.email.errors %}error{% endif %}">
                 <label class="control-label col-sm-4" for="id_email">E-Mail Adresse</label>
 				
 				<div class="controls col-sm-8">
-						{{ locoform.email }}
+						{{ memberform.email }}
 				</div>
 			</div>
-                {% if locoform.email.errors %}
+                {% if memberform.email.errors %}
                     <div class="alert alert-danger">E-Mail ungültig</div>
                 {% endif %}
 			
             <div class="form-group">
-                <label class="control-label col-sm-4" for="id_reachable_by_email">sollen andere Loc@s dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
+                <label class="control-label col-sm-4" for="id_reachable_by_email">sollen andere {{ config members_string }} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
 
                 <div class="controls col-sm-1">
-                    {{ locoform.reachable_by_email }}
+                    {{ memberform.reachable_by_email }}
                 </div>
             </div>
 			

@@ -1,7 +1,7 @@
 {% extends "mybase.html" %}
 
 {% block content %}
-    <h3>Alle locas und locos im Überblick</h3>
+    <h3>Alle locas und members im Überblick</h3>
     <style>
         body > .container {
             width: 95%;
@@ -9,7 +9,7 @@
     </style>
         <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
         {% csrf_token %}
-        <input type="hidden" name="recipient_type" id="recipient_type" value="Locos"/>
+        <input type="hidden" name="recipient_type" id="recipient_type" value="{{ config members_string }}"/>
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden" name="recipients_count" id="recipients_count"/>
         <input type="hidden" name="filter_value" id="filter_value"/>
@@ -45,24 +45,24 @@
             </tr>
             </tfoot>
             <tbody>
-            {% for loco in locos %}
+            {% for member in members %}
                 <tr>
-                    <td>{{ loco.first_name }} {{ loco.last_name }}</td>
-                    <td>{{ loco.boehnli_count }}</td>
-                    <td>{{ loco.core_boehnli_count }}</td>
+                    <td>{{ member.first_name }} {{ member.last_name }}</td>
+                    <td>{{ member.boehnli_count }}</td>
+                    <td>{{ member.core_boehnli_count }}</td>
                     <td>
-                        {% for bereich in loco.areas.all %}
+                        {% for bereich in member.areas.all %}
                             {{ bereich.name }},
                         {% empty %}
                             -Kein Tätigkeitsbereich-
                         {% endfor %}
                     </td>
-                    <td>{{ loco.abo.depot.name }}</td>
-                    <td class="email">{{ loco.email }}</td>
-                    <td>{{ loco.phone }}</td>
-                    <td>{{ loco.mobile_phone }}</td>
-                    <td>{% if loco.abo != None and loco.abo.active %}
-			{{ loco.abo.overview }}
+                    <td>{{ member.subscription.depot.name }}</td>
+                    <td class="email">{{ member.email }}</td>
+                    <td>{{ member.phone }}</td>
+                    <td>{{ member.mobile_phone }}</td>
+                    <td>{% if member.subscription != None and member.subscription.active %}
+			{{ member.subscription.overview }}
 			{% else %}
 			Kein Abo
 			{% endif %}

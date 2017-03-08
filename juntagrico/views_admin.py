@@ -74,7 +74,7 @@ def send_email_intern(request):
         index += 1
 
     if len(emails) > 0:
-        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.METAbo["HTTP_HOST"], attachements, sender=sender)
+        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements, sender=sender)
         sent = len(emails)
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
@@ -145,7 +145,7 @@ def my_filters_depot(request, depot_id):
 @permission_required('juntagrico.is_area_admin')
 def my_filters_area(request, area_id):
     now = timezone.now()
-    area = get_object_or_404(AboctivityAborea, id=int(area_id))
+    area = get_object_or_404(ActivityArea, id=int(area_id))
     members = area.members.all().annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails']=True

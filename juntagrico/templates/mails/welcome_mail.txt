@@ -1,17 +1,12 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-Wir freuen uns, dich bei ortoloco zu begrüssen.
+Wir freuen uns, dich bei {{ config organisation_name }} zu begrüssen.
 
-ortoloco ist ein genossenschaftlich organisierter Garten – 500 Leute produzieren gemeinsam ihr feines Bio-Gemüse. Jedes Mitglied der Genossenschaft kauft mindestens einen Anteilschein à 250 Franken. Damit finanziert ortoloco die Infrastruktur. Somit bist du MiteigentümerIn des Gemüsebetriebs und kannst bei vielen Entscheidungen mitbestimmen. Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet.
+{{ config organisation_name }} ist ein genossenschaftlich organisierter Garten – 500 Leute produzieren gemeinsam ihr feines Bio-Gemüse. Jedes Mitglied der Genossenschaft kauft mindestens einen Anteilschein à {{ config share_price }} Franken. Damit finanziert {{ config organisation_name }} die Infrastruktur. Somit bist du MiteigentümerIn des Gemüsebetriebs und kannst bei vielen Entscheidungen mitbestimmen. Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet.
 
 Bitte zahle den Betrag für den/die Anteilschein/e auf das folgende Konto ein:
-ortoloco
-c/o Albizke
-Albisriederstr. 203 B
-8047 Zürich
-Postkonto-Nummer: 85-199010-5
-IBAN: CH72 0900 0000 8519 9010 5
-BIC: POFICHBEXXX
+{{config organisation_address }}
+{{config organisation_bank_connection }}
 
 Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
 
@@ -20,7 +15,7 @@ Passwort: {{ password }}
 Bitte setze dir hier gleich ein neues Passwort:
 {{serverurl}}/my/passwort
 
-Für weitere Fragen schaust du in den FAQ (http://ortoloco.ch/medias/documents/FAQ_ortoloco_14.pdf) nach oder schreibst eine Mail an info@ortoloco.ch.
+Für weitere Fragen schaust du in den FAQ (http://{{ config server_url }}{{ config faq_doc }}) nach oder schreibst eine Mail an {{ config info_email }}.
 
-Bis bald und liebe Grüsse die ortoloco-Betriebsgruppe
+Bis bald und liebe Grüsse die {{ config organisation_name }}-Betriebsgruppe
 {% endblock %}

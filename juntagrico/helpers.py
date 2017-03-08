@@ -28,7 +28,7 @@ from config import *
 
 
 
-class AbouthenticateWithEmail(object):
+class AuthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
         from models import Member
 
@@ -148,7 +148,7 @@ def get_status_bean_text(percent=0):
         elif percent >= 50:
             return "Halb"
         elif percent > 0:
-            return "Abongefangen"
+            return "Angefangen"
         else:
             return "Nix"
           

@@ -2,7 +2,7 @@
 {% block content %}
 Achtung:
 
-Dein ortoloco-Depot hat wie von dir gewünscht gewechselt. 
+Dein {{ config organisation_name }}-Depot hat wie von dir gewünscht gewechselt. 
 
 Details:
 
@@ -14,5 +14,5 @@ Beschreibung:    {{ depot.description }}
 
 
 Herzlich grüsst,
-dein ortoloco-Team
+dein {{ config organisation_name }}-Team
 {% endblock %}

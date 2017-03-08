@@ -1,13 +1,13 @@
 {% extends "mails/email.txt" %}
 {% block content %}
-Wir freuen uns, dich bei ortoloco begrüssen zu dürfen. Soeben hat dich '{{name}}' zu ihrem/seinem Gemüseabo hinzugefügt und für dich {{ anteilsscheine }} Share(e) erworben. Wenn du damit einverstanden bist, ortoloco-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
+Wir freuen uns, dich bei {{ config organisation_name }} begrüssen zu dürfen. Soeben hat dich '{{name}}' zu ihrem/seinem Gemüsesubscription hinzugefügt und für dich {{ anteilsscheine }} Share(e) erworben. Wenn du damit einverstanden bist, {{ config organisation_name }}-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
 Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
 
-Statuten: {{ serverurl }}/static/others/160910_-_Statuten_ortoloco.pdf
-Betriebsreglement: {{ serverurl }}/static/others/160910_-_Betriebsreglement_ortoloco.pdf
+Statuten: {{ serverurl }}{{ config bylaws }}
+Betriebsreglement: {{ serverurl }}{{ config business regulations }}
 
 
-Unter my.ortoloco.ch kannst du dich ab sofort für Jobs anmelden und vieles mehr.
+Unter my.{{ config server_url }} kannst du dich ab sofort für Jobs anmelden und vieles mehr.
 
 Email: {{ username }}
 Passwort: {{ password }}
@@ -15,8 +15,8 @@ Bitte setze dir hier gleich ein neues Passwort:
 {{serverurl}}/my/passwort
 
 Weitere Infos wirst du bald erhalten. Bei Fragen oder Unklarheiten einfach melden:
-info@ortoloco.ch
+{{ config info_email }}
 
 Herzlich grüsst,
-die ortoloco-Betriebsgruppe
+die {{ config organisation_name }}-Betriebsgruppe
 {% endblock %}

@@ -6,20 +6,20 @@
 
 {% block content %}
       <h3>GenossenschafterIn werden</h3>
-      Interessiert an ortoloco?
+      Interessiert an {{ config organisation_name }}?
       <br/><br/>
-      Die Mitgliedschaft bei ortoloco ist geknüpft an den Erwerb von rückzahlbaren Anteilscheinen in der Höhe von CHF 250 pro Anteilschein. Die Anzahl Anteilscheine ist abhängig von der Abogrösse. Dabei
-      sind in der Regel für ein kleines Gemüseabo zwei und für ein grosses Gemüseabo vier Anteilscheine zu erwerben. Die Anteilscheine sind das Genossenschaftskapital, das vor allem zur Finanzierung von
+      Die Mitgliedschaft bei {{ config organisation_name }} ist geknüpft an den Erwerb von rückzahlbaren Anteilscheinen in der Höhe von CHF {{ config share_price }} pro Anteilschein. Die Anzahl Anteilscheine ist abhängig von der Abogrösse. Dabei
+      sind in der Regel für ein kleines Gemüsesubscription zwei und für ein grosses Gemüsesubscription vier Anteilscheine zu erwerben. Die Anteilscheine sind das Genossenschaftskapital, das vor allem zur Finanzierung von
       Investitionen – zum Beispiel Infrastruktur – verwendet wird.
       <br/><br/>
-      Die GenossenschafterInnen tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei. Wer bei ortoloco ein Gemüseabo bezieht, verpflichtet sich zur
-      Mitarbeit: Für's kleine Gemüseabo sind jährlich mindestens 10 und für's grosse Gemüseabo 20 Einsätze. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
+      Die GenossenschafterInnen tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei. Wer bei {{ config organisation_name }} ein Gemüsesubscription bezieht, verpflichtet sich zur
+      Mitarbeit: Für's kleine Gemüsesubscription sind jährlich mindestens 10 und für's grosse Gemüsesubscription 20 Einsätze. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
       <br/>
       <br/>
       Bevor du dich als GenossenschafterIn anmeldest, lies bitte die Statuten und das Betriebsreglement durch.
       <ul>
-          <li><a target="_blank" href="/static/others/160910_-_Statuten_ortoloco.pdf">Statuten</a></li>
-          <li><a target="_blank" href="/static/others/160910_-_Betriebsreglement_ortoloco.pdf">Betriebsreglement</a></li>
+          <li><a target="_blank" href="{{ config bylaws }}">Statuten</a></li>
+          <li><a target="_blank" href="{{ config business regulations }}">Betriebsreglement</a></li>
       </ul>
       <br/>
 
@@ -27,97 +27,97 @@
 
     <div class="col-md-2"></div>
     <div class="col-md-8">
-        <!-- <h3>Werde ein ortoloco - Personalien</h3> -->
+        <!-- <h3>Werde ein {{ config organisation_name }} - Personalien</h3> -->
         <br/>
 
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
-            <div class="form-group {% if locoform.last_name.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.last_name.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_last_name">Name *</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.last_name }}
-                    {% if locoform.last_name.errors %}
+                    {{ memberform.last_name }}
+                    {% if memberform.last_name.errors %}
                         <div class="help-block">Name ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.first_name.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.first_name.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_first_name">Vorname *</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.first_name }}
-                    {% if locoform.first_name.errors %}
+                    {{ memberform.first_name }}
+                    {% if memberform.first_name.errors %}
                         <div class="help-block">Vorname ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.addr_street.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.addr_street.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_addr_street">Strasse/Nr. *</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.addr_street }}
-                    {% if locoform.addr_street.errors %}
+                    {{ memberform.addr_street }}
+                    {% if memberform.addr_street.errors %}
                         <div class="help-block">Strasse ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.addr_zipcode.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.addr_zipcode.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_addr_zipcode">PLZ *</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.addr_zipcode }}
-                    {% if locoform.addr_zipcode.errors %}
+                    {{ memberform.addr_zipcode }}
+                    {% if memberform.addr_zipcode.errors %}
                         <div class="help-block">PLZ ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.addr_location.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.addr_location.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_addr_location">Ort *</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.addr_location }}
-                    {% if locoform.addr_location.errors %}
+                    {{ memberform.addr_location }}
+                    {% if memberform.addr_location.errors %}
                         <div class="help-block">Ort ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.phone.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.phone.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_phone">Telefon *</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.phone }}
-                    {% if locoform.phone.errors %}
+                    {{ memberform.phone }}
+                    {% if memberform.phone.errors %}
                         <div class="help-block">Telefon ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.mobile_phone.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.mobile_phone.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_mobile_phone">Mobile &nbsp;</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.mobile_phone }}
-                    {% if locoform.mobile_phone.errors %}
+                    {{ memberform.mobile_phone }}
+                    {% if memberform.mobile_phone.errors %}
                         <div class="help-block">Mobile ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.email.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.email.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_email">E-Mail Adresse *</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.email }}
-                    {% if locoform.email.errors %}
+                    {{ memberform.email }}
+                    {% if memberform.email.errors %}
                         <div class="help-block">E-Mail ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if locoform.birthday.errors %}has-error{% endif %}">
+            <div class="form-group {% if memberform.birthday.errors %}has-error{% endif %}">
                 <label class="col-md-4 control-label" for="id_birthday">Geburtstag &nbsp;</label>
 
                 <div class="col-md-8 controls">
-                    {{ locoform.birthday }}
-                    {% if locoform.birthday.errors %}
+                    {{ memberform.birthday }}
+                    {% if memberform.birthday.errors %}
                         <div class="help-block">Geburtstag ungültig</div>
                     {% endif %}
                 </div>
@@ -126,9 +126,9 @@
                 <div class="col-md-offset-4 col-md-8">
                     <div class="checkbox">
                         <label>
-                            {{ locoform.agb }}
+                            {{ memberform.agb }}
                             <input type="checkbox" name="agb" id="agb" {% if agbchecked %}checked="checked"{% endif %}>
-                            Ich habe <a target="_blank" href="/static/others/160910_-_Statuten_ortoloco.pdf">die Statuten</a> und <a target="_blank" href="/static/others/160910_-_Betriebsreglement_ortoloco.pdf">das Betriebsreglement</a> gelesen und erkläre meinen Willen, der "Genossenschaft ortoloco - Die regionale Gartenkooperative"
+                            Ich habe <a target="_blank" href="{{ config bylaws }}">die Statuten</a> und <a target="_blank" href="{{ config business regulations }}">das Betriebsreglement</a> gelesen und erkläre meinen Willen, der "Genossenschaft {{ config organisation_name }} - Die regionale Gartenkooperative"
                             beizutreten. Hiermit beantrage ich meine Aufnahme.
 
                             {% if agberror %}

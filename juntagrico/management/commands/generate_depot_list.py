@@ -33,11 +33,11 @@ class Command(BaseCommand):
 
     # entry point used by manage.py
     def handle(self, *args, **options):
-        if not options['force'] and timezone.now().weekday()!=settings.DEPOT_LIST_GENERAboTION_DAboY:
+        if not options['force'] and timezone.now().weekday()!=settings.DEPOT_LIST_GENERATION_DAY:
             print "not the specified day for depot list generation, use --force to override"
             return
         
-        if options['future'] or timezone.now().weekday()==settings.DEPOT_LIST_GENERAboTION_DAboY:
+        if options['future'] or timezone.now().weekday()==settings.DEPOT_LIST_GENERATION_DAY:
             future_subscriptions = Subscription.objects.exclude(future_depot__isnull=True)
             for subscription in future_subscriptions:
                 subscription.depot=subscription.future_depot

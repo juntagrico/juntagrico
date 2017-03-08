@@ -2,7 +2,7 @@
 
 {% block content %}
     {% block message %} {% endblock %}
-    {% if no_abo %}
+    {% if no_subscription %}
         <div class="alert alert-warning">Du hast kein Abo</div>
         <br/><br/>
     {% endif %}
@@ -13,7 +13,7 @@
     <h3>Aktuelle Arbeitseinsätze</h3>
     <table class="jobs">
         {% for job in jobs %}
-            <tr class="{% if job.status == "erbse_voll.png" %}full{% endif %}">
+            <tr class="{% if job.status == "circle_full.png" %}full{% endif %}">
                 <td class="date">{{ job.time |date:"d.m H:i" }}</td>
                 <td><a href="/my/jobs/{{ job.id }}" class="{% if job.canceled %}canceled {% endif %}{% if job.is_core %}core {% endif %}">{{ job.typ.name }}</a></td>
                 <td class="status"><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>

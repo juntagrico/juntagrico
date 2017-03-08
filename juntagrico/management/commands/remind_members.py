@@ -18,7 +18,7 @@ class Command(BaseCommand):
         for job in Job.objects.filter(time__range=(now, end), reminder_sent__exact=False):
             participants = []
             emails = []
-            for assignment in Abossignment.objects.filter(job_id=job.id):
+            for assignment in Assignment.objects.filter(job_id=job.id):
                 if assignment.member is not None:
                     participants.append(str(assignment.member))
                     emails.append(assignment.member.email)

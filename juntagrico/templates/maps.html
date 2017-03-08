@@ -2,7 +2,7 @@
 
 {% block content %}
     <div id="maps">
-        <h3>Alle Depots und Locos</h3>
+        <h3>Alle Depots und {{ config members_string }}</h3>
 
         <div class="row">
         </div>
@@ -27,9 +27,9 @@
         },
         {% endfor %}
         ]
-        var locos = [
-        {% for abo in abos %}
-        '{{ abo.primary_member.addr_street }} {{abo.primary_member.addr_zipcode}} {{abo.primary_member.addr_location}}',
+        var members = [
+        {% for subscription in subscriptions %}
+        '{{ subscription.primary_member.addr_street }} {{subscription.primary_member.addr_zipcode}} {{subscription.primary_member.addr_location}}',
         {% endfor %}
         ]
     </script>

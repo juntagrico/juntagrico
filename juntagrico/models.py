@@ -79,7 +79,7 @@ class Depot(models.Model):
     class Meta:
         verbose_name = "Depot"
         verbose_name_plural = "Depots"
-        permissions = (('is_depot_admin', 'Benutzer ist Depot Abodmin'),)
+        permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)
 
 
 class Billable(PolymorphicModel):
@@ -94,12 +94,12 @@ class Billable(PolymorphicModel):
 
 class Bill(models.Model):
     """
-    Aboctuall Bill for billables
+    Actuall Bill for billables
     """
     billable = models.ForeignKey(Billable, related_name="bills", null=False, blank=False,
                                  on_delete=models.PROTECT)
     paid = models.BooleanField("bezahlt", default=False)
-    bill_date = models.DateField("Aboktivierungssdatum", null=True, blank=True)
+    bill_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     ref_number = models.CharField("Referenznummer", max_length=30, unique=True)
     amount = models.FloatField("Betrag", null=False, blank=False)
 
@@ -136,15 +136,15 @@ class ExtraSubscriptionType(models.Model):
     size = models.CharField("Groesse (gross,4, ...)", max_length=100, default="")
     description = models.TextField("Beschreibung", max_length=1000)
     sort_order = models.FloatField("Groesse zum Sortieren", default=1.0)
-    category = models.ForeignKey("ExtraAbo$oCategory", related_name="category", null=True, blank=True,
+    category = models.ForeignKey("ExtraAboCategory", related_name="category", null=True, blank=True,
                                  on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u"%s %s" % (self.id, self.name)
 
     class Meta:
-        verbose_name = "Zusatz-Abo$o-Typ"
-        verbose_name_plural = "Zusatz-Abo$o-Typen"
+        verbose_name = "Zusatz-Abo-Typ"
+        verbose_name_plural = "Zusatz-Abo-Typen"
 
 
 class ExtraSubscriptionCategory(models.Model):
@@ -159,19 +159,19 @@ class ExtraSubscriptionCategory(models.Model):
         return u"%s %s" % (self.id, self.name)
 
     class Meta:
-        verbose_name = "Zusatz-Abo$o-Kategorie"
-        verbose_name_plural = "Zusatz-Abo$o-Kategorien"
+        verbose_name = "Zusatz-Abo-Kategorie"
+        verbose_name_plural = "Zusatz-Abo-Kategorien"
 
 
 class ExtraSubscription(Billable):
     """
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     """
-    main_subscription = models.ForeignKey("Abo$o", related_name="extra_subscription_set", null=False, blank=False,
+    main_subscription = models.ForeignKey("Abo", related_name="extra_subscription_set", null=False, blank=False,
                                  on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     canceled = models.BooleanField("gekündigt", default=False)
-    activation_date = models.DateField("Aboktivierungssdatum", null=True, blank=True)
+    activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     type = models.ForeignKey(ExtraSubscriptionType, related_name="extra_subscriptions", null=False, blank=False,
                              on_delete=models.PROTECT)
@@ -193,8 +193,8 @@ class ExtraSubscription(Billable):
         return u"%s %s" % (self.id, self.type.name)
 
     class Meta:
-        verbose_name = "Zusatz-Abo$o"
-        verbose_name_plural = "Zusatz-Abo$os"
+        verbose_name = "Zusatz-Abo"
+        verbose_name_plural = "Zusatz-Abos"
 
 
 class SubscriptionSize(models.Model):
@@ -204,7 +204,7 @@ class SubscriptionSize(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     long_name = models.CharField("Langer Name", max_length=100, unique=True)
     size = models.PositiveIntegerField("Grösse", unique=True)
-    shares = models.PositiveIntegerField("Abonz benötigter Abonteilsscheine")
+    shares = models.PositiveIntegerField("Anz benötigter Anteilsscheine")
     depot_list = models.BooleanField('Sichtbar auf Depotliste', default=True)
     description = models.TextField("Beschreibung", max_length=1000, blank=True)
 
@@ -212,8 +212,8 @@ class SubscriptionSize(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Abobo Grösse'
-        verbose_name_plural = 'Abobo Grössen'
+        verbose_name = 'Abo Grösse'
+        verbose_name_plural = 'Abo Grössen'
 
 
 class Subscription(Billable):
@@ -228,7 +228,7 @@ class Subscription(Billable):
     primary_member = models.ForeignKey("Member", related_name="subscription_primary", null=True, blank=True,
                                        on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
-    activation_date = models.DateField("Aboktivierungssdatum", null=True, blank=True)
+    activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
     start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_year)
@@ -238,7 +238,7 @@ class Subscription(Billable):
     def __unicode__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return u"Abo$o (%s) %s" % (" + ".join(namelist), self.id)
+        return u"Abo (%s) %s" % (" + ".join(namelist), self.id)
 
     def overview(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
@@ -322,17 +322,17 @@ class Subscription(Billable):
     @staticmethod
     def get_size_name(size=0):
         if size == 1:
-            return "Kleines Abo$o"
+            return "Kleines Abo"
         elif size == 2:
-            return "Grosses Abo$o"
+            return "Grosses Abo"
         elif size == 10:
-            return "Haus Abo$o"
+            return "Haus Abo"
         elif size == 3:
-            return "Kleines + Grosses Abo$o"
+            return "Kleines + Grosses Abo"
         elif size == 4:
-            return "2 Grosse Abo$os"
+            return "2 Grosse Abos"
         else:
-            return "Kein Abo$o"
+            return "Kein Abo"
 
     @property
     def size_name(self):
@@ -347,7 +347,7 @@ class Subscription(Billable):
 
     def clean(self):
         if self.old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(u'Deaktivierte Abobos koennen nicht wieder aktiviert werden', code='invalid')
+            raise ValidationError(u'Deaktivierte Abos koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -367,14 +367,14 @@ class Subscription(Billable):
             member.save()
 
     class Meta:
-        verbose_name = "Abo$o"
-        verbose_name_plural = "Abo$os"
-        permissions = (('can_filter_subscriptions', 'Benutzer kann Abobos filtern'),)
+        verbose_name = "Abo"
+        verbose_name_plural = "Abos"
+        permissions = (('can_filter_subscriptions', 'Benutzer kann Abos filtern'),)
 
 
 class Member(models.Model):
     """
-    Abodditional fields for Django's default user class.
+    Additional fields for Django's default user class.
     """
 
     # user class is only used for logins, permissions, and other builtin django stuff
@@ -447,23 +447,23 @@ class Member(models.Model):
 class Share(Billable):
     member = models.ForeignKey(Member, null=True, blank=True, on_delete=models.SET_NULL)
     paid_date = models.DateField("Bezahlt am", null=True, blank=True);
-    issue_date = models.DateField("Abousgestellt am", null=True, blank=True);
+    issue_date = models.DateField("Ausgestellt am", null=True, blank=True);
     booking_date = models.DateField("Eingebucht am", null=True, blank=True);
     cancelled_date = models.DateField("Gekündigt am", null=True, blank=True);
     termination_date = models.DateField("Gekündigt auf", null=True, blank=True);
     payback_date = models.DateField("Zurückbezahlt am", null=True, blank=True);
-    number = models.IntegerField("Abonteilschein Nummer", null=True, blank=True);
+    number = models.IntegerField("Anteilschein Nummer", null=True, blank=True);
     notes = models.TextField("Notizen", max_length=1000, default="", blank=True)
 
     def __unicode__(self):
-        return u"Abonteilschein #%s" % self.id
+        return u"Anteilschein #%s" % self.id
 
     class Meta:
-        verbose_name = "Abonteilschein"
-        verbose_name_plural = "Abonteilscheine"
+        verbose_name = "Anteilschein"
+        verbose_name_plural = "Anteilscheine"
 
 
-class AboctivityAborea(models.Model):
+class ActivityArea(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
     core = models.BooleanField("Kernbereich", default=False)
@@ -487,14 +487,14 @@ class AboctivityAborea(models.Model):
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 
-class AbobstractJobType(models.Model):
+class AbstractJobType(models.Model):
     """
-    Abobstract type of job.
+    Abstract type of job.
     """
     name = models.CharField("Name", max_length=100, unique=True)
-    displayed_name = models.CharField("Abongezeigter Name", max_length=100, blank=True, null=True)
+    displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
-    activityarea = models.ForeignKey(AboctivityAborea, on_delete=models.PROTECT)
+    activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField("Dauer in Stunden")
     location = models.CharField("Ort", max_length=100, default="")
 
@@ -507,12 +507,12 @@ class AbobstractJobType(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'AbobstractJobart'
-        verbose_name_plural = 'AbobstractJobarten'
+        verbose_name = 'AbstractJobart'
+        verbose_name_plural = 'AbstractJobarten'
         abstract = True
 
 
-class JobType(AbobstractJobType):
+class JobType(AbstractJobType):
     """
     Recuring type of job. do not add field here do it in the parent
     """
@@ -561,7 +561,7 @@ class Job(PolymorphicModel):
         return self.assignments_set.count()
 
     def get_status_percentage(self):
-        assignments = Abossignment.objects.filter(job_id=self.id)
+        assignments = Assignment.objects.filter(job_id=self.id)
         if self.slots < 1:
             return helpers.get_status_bean(100)
         return helpers.get_status_bean(assignments.count() * 100 / self.slots)
@@ -571,12 +571,12 @@ class Job(PolymorphicModel):
 
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:
-            raise ValidationError(u'Abobgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
+            raise ValidationError(u'Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_canceled != instance.canceled and instance.old_canceled is False:
-            assignments = Abossignment.objects.filter(job_id=instance.id)
+            assignments = Assignment.objects.filter(job_id=instance.id)
             emails = set()
             for assignment in assignments:
                 emails.add(assignment.member.email)
@@ -584,7 +584,7 @@ class Job(PolymorphicModel):
             if len(emails) > 0:
                 send_job_canceled(emails, instance, Config.server_url())
         if instance.old_time != instance.time:
-            assignments = Abossignment.objects.filter(job_id=instance.id)
+            assignments = Assignment.objects.filter(job_id=instance.id)
             emails = set()
             for assignment in assignments:
                 emails.add(assignment.member.email)
@@ -596,12 +596,12 @@ class Job(PolymorphicModel):
         instance.old_time = instance.time
         instance.old_canceled = instance.canceled
         if instance.canceled:
-            assignments = Abossignment.objects.filter(job_id=instance.id)
+            assignments = Assignment.objects.filter(job_id=instance.id)
             assignments.delete()
 
     class Meta:
-        verbose_name = 'AbobstractJob'
-        verbose_name_plural = 'AbobstractJobs'
+        verbose_name = 'AbstractJob'
+        verbose_name_plural = 'AbstractJobs'
 
 
 class RecuringJob(Job):
@@ -620,7 +620,7 @@ class RecuringJob(Job):
         verbose_name_plural = 'Jobs'
 
 
-class OneTimeJob(Job, AbobstractJobType):
+class OneTimeJob(Job, AbstractJobType):
     """
     One time job. Do not add Field here do it in the Parent class
     """
@@ -645,16 +645,16 @@ class OneTimeJob(Job, AbobstractJobType):
         verbose_name_plural = 'EinzelJobs'
 
 
-class Abossignment(models.Model):
+class Assignment(models.Model):
     """
     Single assignment (work unit).
     """
-    job = models.ForeignKey(Job, on_delete=models.CAboSCAboDE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
     member = models.ForeignKey(Member, on_delete=models.PROTECT)
     core_cache = models.BooleanField("Kernbereich", default=False)
 
     def __unicode__(self):
-        return u'Abossignment #%s' % self.id
+        return u'Assignment #%s' % self.id
 
     def time(self):
         return self.job.time
@@ -697,7 +697,7 @@ class SpecialRoles(models.Model):
         permissions = (('is_operations_group', 'Benutzer ist in der BG'),
                        ('is_book_keeper', 'Benutzer ist Buchhalter'),
                        ('can_send_mails', 'Benutzer kann im System Emails versenden'),
-                       ('can_use_general_email', 'Benutzer kann General Email Abodresse verwenden'),)
+                       ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
 
 
 # model_audit.m2m(Subscription.users)
@@ -717,4 +717,4 @@ signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 signals.pre_delete.connect(Subscription.pre_delete, sender=Subscription)
 signals.pre_save.connect(Subscription.pre_save, sender=Subscription)
 signals.post_init.connect(Subscription.post_init, sender=Subscription)
-signals.pre_save.connect(Abossignment.pre_save, sender=Abossignment)
+signals.pre_save.connect(Assignment.pre_save, sender=Assignment)

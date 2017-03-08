@@ -1,12 +1,12 @@
 {% extends "mybase.html" %}
 
 {% block content %}
-    <h3>Hier siehst du die Zukunft von ortoloco</h3>
+    <h3>Hier siehst du die Zukunft von {{ config organisation_name }}</h3>
     {% if changed %}
         <div class="alert alert-success">Abos wurden geändert</div>
     {% endif %}
 
-    <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte ortoloco die folgenden Abos und Zusatzabos.</div>
+    <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte {{ config organisation_name }} die folgenden Abos und Zusatzsubscriptions.</div>
 
     <table class="future">
         <tr>
@@ -14,7 +14,7 @@
             <th>Aktuell</th>
             <th>Zukunft</th>
         </tr>
-        {% for line in abo_lines %}
+        {% for line in subscription_lines %}
         <tr>
             <td>{{ line.name }}</td>
             <td>{{ line.now }}</td>
@@ -31,9 +31,9 @@
     </table>
     <br/><br/>
     ACHTUNG! Dies darf nur am 1.1. und am 1.7. des Jahres gedrückt werden!
-    <a href="/my/wechsel/zusatzabos" class="btn btn-success" >Switch to future extra abos</a><br/><br/>
-    {% if abo_change_enabled %}
-      <a href="/my/wechsel/abos" class="btn btn-success">Switch to future abos</a>
+    <a href="/my/wechsel/zusatzsubscriptions" class="btn btn-success" >Switch to future extra subscriptions</a><br/><br/>
+    {% if subscription_change_enabled %}
+      <a href="/my/wechsel/subscriptions" class="btn btn-success">Switch to future subscriptions</a>
     {% endif %}
 {% endblock %}
 

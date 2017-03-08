@@ -282,8 +282,8 @@ def my_add_member(request, subscription_id):
             for num in range(0, shares):
                 share = Share(member=member, paid_date=None)
                 share.save()
-                send_share_created_mail(share, request.METAbo["HTTP_HOST"])
-            send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.METAbo["HTTP_HOST"])
+                send_share_created_mail(share, request.META["HTTP_HOST"])
+            send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
 
             member.save()
             if request.GET.get("return"):
@@ -364,7 +364,7 @@ def my_createsubscription(request):
                 for num in range(0, toadd):
                     share = Share(member=member, paid_date=None)
                     share.save()
-                    send_share_created_mail(share, request.METAbo["HTTP_HOST"])
+                    send_share_created_mail(share, request.META["HTTP_HOST"])
             if request.POST.get("add_member"):
                 return redirect("/my/subscriptionnnent/" + str(member.subscription_id))
             else:
@@ -372,7 +372,7 @@ def my_createsubscription(request):
                 request.user.set_password(password)
                 request.user.save()
                 #user did it all => send confirmation mail
-                send_welcome_mail(member.email, password, request.METAbo["HTTP_HOST"])
+                send_welcome_mail(member.email, password, request.META["HTTP_HOST"])
 
                 return redirect("/my/willkommen")
 
@@ -405,7 +405,7 @@ def my_welcome(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': get_current_jobs()[:7],
-        'teams': AboctivityAborea.objects.filter(hidden=False),
+        'teams': ActivityArea.objects.filter(hidden=False),
         'no_subscription': request.user.member.subscription is None
     })
 

@@ -12,7 +12,7 @@
                 <label class="control-label col-sm-4">Absender</label>
 
                 <div class="controls col-sm-8">
-                    info@ortoloco.ch
+                    {{ config info_email }}
                 </div>
             </div>
             <div class="form-group">
@@ -21,15 +21,15 @@
                 <div class="controls col-sm-8">
                     Wähle mind. eine der folgenden Gruppen:
                     <div class="checkbox">
-                        <label class="high-label" for="allpolitoloco">
-                            <input type="checkbox" id="allpolitoloco" name="allpolitoloco">
-                            Alle politolocos (Aktuelle Anzahl: {{ politolocos }})
+                        <label class="high-label" for="allpolitomember">
+                            <input type="checkbox" id="allpolitomember" name="allpolitomember">
+                            Alle politomembers (Aktuelle Anzahl: {{ politomembers }})
                         </label>
                     </div>
                     <div class="checkbox">
-                        <label class="high-label" for="allortolocos">
-                            <input type="checkbox" id="allortolocos" name="allortolocos">
-                            Alle ortolocos (Aktuelle Anzahl: {{ ortolocos }})
+                        <label class="high-label" for="allmembers">
+                            <input type="checkbox" id="allmembers" name="allmembers">
+                            Alle {{config members_string }} (Aktuelle Anzahl: {{ members }})
                         </label>
                     </div>
                     <div class="checkbox form-inline">
@@ -52,14 +52,14 @@
 
                 <div class="controls col-sm-8">
                     <div class="row">
-                        <div class="col-md-12 politoloco"></div>
+                        <div class="col-md-12 politomember"></div>
                     </div>
                     <textarea name="message" id="message" class="mailer" class="form-control" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
                     <input type="hidden" id="textMessage" name="textMessage" class="form-control"/>
                     <br/>
 
                     <div class="row">
-                        <div class="col-md-12 politoloco"></div>
+                        <div class="col-md-12 politomember"></div>
                     </div>
                 </div>
             </div>

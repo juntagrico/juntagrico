@@ -1,4 +1,5 @@
+{% load config %}
 {% block content %}{% endblock %}
 
 ============
-weitere Infos: http://ortoloco.ch
+weitere Infos: http://{{ config server_url }}

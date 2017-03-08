@@ -35,7 +35,7 @@ class Filter(object):
     def execute(cls, names, op):
         if op == "OR":
             aggregate = any
-        elif op == "AboND":
+        elif op == "AND":
             aggregate = all
 
         d = dict(cls.get_all())
@@ -64,16 +64,16 @@ FilterGen(lambda depot: u"Depot {0}".format(depot.name),
           lambda depot, member: member.subscription.depot == depot,
           Depot.objects.all)
 
-Filter("Abolle mit Abo$o", lambda member: member.subscription)
-Filter("Abolle ohne Abo$o", lambda member: not member.subscription)
+Filter("Alle mit Abo", lambda member: member.subscription)
+Filter("Alle ohne Abo", lambda member: not member.subscription)
 
-Filter("Abonteilscheinbesitzer",
+Filter("Anteilscheinbesitzer",
        lambda member: member.user.share_set.exists())
-Filter("Nicht Abonteilscheinbesitzer",
+Filter("Nicht Anteilscheinbesitzer",
        lambda member: not member.user.share_set.exists())
 
-Filter("kleines Abo$o", lambda member: member.subscription.small_subscriptions)
-Filter("grosses Abo$o", lambda member: member.subscription.big_subscriptions())
+Filter("kleines Abo", lambda member: member.subscription.small_subscriptions)
+Filter("grosses Abo", lambda member: member.subscription.big_subscriptions())
 Filter("Haussubscription", lambda member: member.subscription.house_subscriptions())
 
 
@@ -83,4 +83,4 @@ FilterGen(lambda za: u"Zusatzsubscription {0}".format(za.name),
 
 FilterGen(lambda activityarea: u"Taetigkeitsbereich {0}".format(activityarea.name),
           lambda activityarea, member: activityarea.users.filter(id=member.user.id),
-          AboctivityAborea.objects.all)
+          ActivityArea.objects.all)

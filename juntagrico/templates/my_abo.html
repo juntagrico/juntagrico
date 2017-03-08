@@ -2,19 +2,19 @@
 
 {% block content %}
     <h3>Abo Übersicht</h3>
-    {% if not loco.abo %}
-        <div class="alert alert-warning">Du hast noch kein Abo<br/>Du möchtest eines? Melde dich hier an: <a href="/my/aboerstellen">Abo erstellen</a></div>
+    {% if not member.subscription %}
+        <div class="alert alert-warning">Du hast noch kein Abo<br/>Du möchtest eines? Melde dich hier an: <a href="/my/subscriptionerstellen">Abo erstellen</a></div>
     {% else %}
         <dl class="dl-horizontal">
             <dt>Abogrösse</dt>
             <dd>
-                {{ loco.abo.size_name }}
+                {{ member.subscription.size_name }}
             </dd>
             <dt>&nbsp;</dt>
             <dd>&nbsp;</dd>
             <dt>Status</dt>
             <dd>
-                {% if loco.abo.active %}
+                {% if member.subscription.active %}
                     Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
                 {% else %}
                     <span class="text-error">Auf der Warteliste</span> - du erhälst leider im Moment noch kein Gemüse.
@@ -25,11 +25,11 @@
             <dt>Anteilscheine</dt>
             <dd>
                 {{ scheine }} {% if scheine_unpaid > 0 %}(davon {{ scheine_unpaid }} noch nicht bezahlt){% endif %}<br/><br/>
-                Anteilscheine von MitabonnentInnen:
+                Anteilscheine von MitsubscriptionnnentInnen:
                 <ul>
-                    {% for abonnent in  mitabonnenten %}
-                        <li>{{ abonnent.share_set.count }} von {{ abonnent.first_name }} {{ abonnent.last_name }}
-                            {% if not abonnent.confirmed %}
+                    {% for subscriptionnnent in  mitsubscriptionnnenten %}
+                        <li>{{ subscriptionnnent.share_set.count }} von {{ subscriptionnnent.first_name }} {{ subscriptionnnent.last_name }}
+                            {% if not subscriptionnnent.confirmed %}
                                 (nicht bestätigt)
                             {% endif %}
                         </li>
@@ -40,70 +40,70 @@
             <dd>&nbsp;</dd>
             <dt>Abo geteilt mit</dt>
             <dd>
-                {% if mitabonnenten|length > 0 %}
-                    {% if mitabonnenten|length > 1 %}
+                {% if mitsubscriptionnnenten|length > 0 %}
+                    {% if mitsubscriptionnnenten|length > 1 %}
                         <ul>
-                            {% for sharee in mitabonnenten %}
+                            {% for sharee in mitsubscriptionnnenten %}
                                 <li>{{ sharee.first_name }} {{ sharee.last_name }}</li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        {% for sharee in mitabonnenten %}
+                        {% for sharee in mitsubscriptionnnenten %}
                             {{ sharee.first_name }} {{ sharee.last_name }}
                         {% endfor %}
                         <br/>
                     {% endif %}
                 {% else %}
-                    Du hast noch keine MitabonnentInnen eingetragen.<br/>
+                    Du hast noch keine MitsubscriptionnnentInnen eingetragen.<br/>
                 {% endif %}
-                <a href="/my/abonnent/{{ loco.abo.id }}?return=/my/abo">Hier MitabonnentInnen eintragen</a>
+                <a href="/my/subscriptionnnent/{{ member.subscription.id }}?return=/my/subscription">Hier MitsubscriptionnnentInnen eintragen</a>
             </dd>
             <dt>&nbsp;</dt>
             <dd>&nbsp;</dd>
             <dt>Depot</dt>
             <dd>
-                {{ loco.abo.depot.name }} > <a href="/my/depot/{{ loco.abo.depot.id }}">Weitere Infos zum Depot</a>
+                {{ member.subscription.depot.name }} > <a href="/my/depot/{{ member.subscription.depot.id }}">Weitere Infos zum Depot</a>
             </dd>
 
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
-                <dt>Zusatzabos</dt>
+                <dt>Zusatzsubscriptions</dt>
                 <dd>
-                    {% if zusatzabos|length == 0 %}
-                        Keine Zusatzabos
+                    {% if zusatzsubscriptions|length == 0 %}
+                        Keine Zusatzsubscriptions
                     {% else %}
                         <ul>
-                            {% for zusatzabo in zusatzabos %}
-                                <li>{{ zusatzabo.name }}</li>
+                            {% for zusatzsubscription in zusatzsubscriptions %}
+                                <li>{{ zusatzsubscription.name }}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
                 </dd>
-            {% if zusatzabos_changed %}
+            {% if zusatzsubscriptions_changed %}
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
-                <dt>Neue Zusatzabos</dt>
+                <dt>Neue Zusatzsubscriptions</dt>
                 <dd>
-                    (Die Änderungen treten am {{ next_extra_abo_date |date:"d.m.Y" }} in Kraft)
-                    {% if not future_zusatzabos %}
-                        <br>Keine Zusatzabos
+                    (Die Änderungen treten am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)
+                    {% if not future_zusatzsubscriptions %}
+                        <br>Keine Zusatzsubscriptions
                     {% else %}
                         <ul>
-                            {% for zusatzabo in future_zusatzabos %}
-                                <li>{{ zusatzabo.name }}</li>
+                            {% for zusatzsubscription in future_zusatzsubscriptions %}
+                                <li>{{ zusatzsubscription.name }}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
                 </dd>
             {% endif %}
 
-            {% if loco.abo.size != loco.abo.future_size %}
+            {% if member.subscription.size != member.subscription.future_size %}
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
                 <dt>Neue Abogrösse</dt>
                 <dd>
-                    (Die Änderung tritt am {{ next_extra_abo_date |date:"d.m.Y" }} in Kraft)<br>
-                    {{ loco.abo.future_size_name }}
+                    (Die Änderung tritt am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)<br>
+                    {{ member.subscription.future_size_name }}
                 </dd>
             {% endif %}
             <dt>&nbsp;</dt>
@@ -111,9 +111,9 @@
             <dt>&nbsp;</dt>
             <dd>
                 <div class="form-actions">
-                    <a href="{% if primary %}/my/abo/{{ loco.abo.id }}/aendern{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
+                    <a href="{% if primary %}/my/subscription/{{ member.subscription.id }}/aendern{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
                     {% if not primary %}
-                        * Das Abo kann nur der Hauptabonnent ändern.
+                        * Das Abo kann nur der Hauptsubscriptionnnent ändern.
                     {% endif %}
                 </div>
             </dd>
