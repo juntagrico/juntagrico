@@ -35,7 +35,7 @@ class Filter(object):
     def execute(cls, names, op):
         if op == "OR":
             aggregate = any
-        elif op == "AND":
+        elif op == "AboND":
             aggregate = all
 
         d = dict(cls.get_all())
@@ -61,26 +61,26 @@ class FilterGen(Filter):
 
 
 FilterGen(lambda depot: u"Depot {0}".format(depot.name),
-          lambda depot, member: member.abo.depot == depot,
+          lambda depot, member: member.subscription.depot == depot,
           Depot.objects.all)
 
-Filter("Alle mit Abo", lambda member: member.abo)
-Filter("Alle ohne Abo", lambda member: not member.abo)
+Filter("Abolle mit Abo$o", lambda member: member.subscription)
+Filter("Abolle ohne Abo$o", lambda member: not member.subscription)
 
-Filter("Anteilscheinbesitzer",
+Filter("Abonteilscheinbesitzer",
        lambda member: member.user.share_set.exists())
-Filter("Nicht Anteilscheinbesitzer",
+Filter("Nicht Abonteilscheinbesitzer",
        lambda member: not member.user.share_set.exists())
 
-Filter("kleines Abo", lambda member: member.abo.small_abos)
-Filter("grosses Abo", lambda member: member.abo.big_abos())
-Filter("Hausabo", lambda member: member.abo.house_abos())
+Filter("kleines Abo$o", lambda member: member.subscription.small_subscriptions)
+Filter("grosses Abo$o", lambda member: member.subscription.big_subscriptions())
+Filter("Haussubscription", lambda member: member.subscription.house_subscriptions())
 
 
-FilterGen(lambda za: u"Zusatzabo {0}".format(za.name),
-          lambda za, member: za.abo_set.filter(id=member.abo.id),
-          ExtraAboType.objects.all)
+FilterGen(lambda za: u"Zusatzsubscription {0}".format(za.name),
+          lambda za, member: za.subscription_set.filter(id=member.subscription.id),
+          ExtraSubscriptionType.objects.all)
 
 FilterGen(lambda activityarea: u"Taetigkeitsbereich {0}".format(activityarea.name),
           lambda activityarea, member: activityarea.users.filter(id=member.user.id),
-          ActivityArea.objects.all)
+          AboctivityAborea.objects.all)

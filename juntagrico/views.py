@@ -30,7 +30,7 @@ from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 import hashlib
 
-from decorators import primary_member_of_abo
+from decorators import primary_member_of_subscription
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
@@ -45,21 +45,21 @@ def get_menu_dict(request):
             if assignment.job.time.year == date.today().year and assignment.job.time < timezone.now():
                 res.append(assignment)
         return res
-    abo_size=0
-    if member.abo is not None:
+    subscription_size=0
+    if member.subscription is not None:
         partner_assignments = []
-        for abo_member in member.abo.recipients():
-            if abo_member == member: continue
-            partner_assignments.extend(filter_to_past_assignments(Assignment.objects.filter(member=abo_member)))
+        for subscription_member in member.subscription.recipients():
+            if subscription_member == member: continue
+            partner_assignments.extend(filter_to_past_assignments(Abossignment.objects.filter(member=subscription_member)))
 
-        userassignments = filter_to_past_assignments(Assignment.objects.filter(member=member))
-        abo_size = member.abo.size * 10
+        userassignments = filter_to_past_assignments(Abossignment.objects.filter(member=member))
+        subscription_size = member.subscription.size * 10
 
         # amount of assignments shown => round up if needed never down
-        assignmentsrange = range(0, max(userassignments.__len__(), int(math.ceil(member.abo.size * 10 / member.abo.members.count()))))
-        assignmentsrange = range(0, max(abo_size, len(userassignments) + len(partner_assignments)))
+        assignmentsrange = range(0, max(userassignments.__len__(), int(math.ceil(member.subscription.size * 10 / member.subscription.members.count()))))
+        assignmentsrange = range(0, max(subscription_size, len(userassignments) + len(partner_assignments)))
 
-        for assignment in Assignment.objects.all().filter(member=member).order_by("job__time"):
+        for assignment in Abossignment.objects.all().filter(member=member).order_by("job__time"):
             if assignment.job.time > timezone.now():
                 next_jobs.append(assignment.job)
     else:
@@ -69,7 +69,7 @@ def get_menu_dict(request):
         next_jobs = []
 
     depot_admin = Depot.objects.filter(contact=request.user.member)
-    area_admin = ActivityArea.objects.filter(coordinator=request.user.member)
+    area_admin = AboctivityAborea.objects.filter(coordinator=request.user.member)
     menu_dict = {
         'user': request.user,
         'assignmentsrange': assignmentsrange,
@@ -77,15 +77,15 @@ def get_menu_dict(request):
         'userassignemnts_core': len([assignment for assignment in userassignments if assignment.is_core()]),
         'partner_assignments_total': len(userassignments) + len(partner_assignments),
         'partner_assignments_core': len(userassignments) + len([assignment for assignment in partner_assignments if assignment.is_core()]),
-        'abo_size': abo_size,
+        'subscription_size': subscription_size,
         'next_jobs': next_jobs,
         'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
-        'can_filter_abos': request.user.has_perm('juntagrico.can_filter_abos'),
+        'can_filter_subscriptions': request.user.has_perm('juntagrico.can_filter_subscriptions'),
         'can_send_mails': request.user.has_perm('juntagrico.can_send_mails'),
         'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
         'depot_admin': depot_admin,
         'area_admin': area_admin,
-        'depot_list_url': settings.MEDIA_URL+ settings.MEDIA_ROOT +"/dpl.pdf",
+        'depot_list_url': settings.MEDIAbo_URL+ settings.MEDIAbo_ROOT +"/dpl.pdf",
     }
     enrich_menu_dict(request,menu_dict)
     return menu_dict
@@ -99,12 +99,12 @@ def my_home(request):
 
     next_jobs = set(get_current_jobs()[:7])
     pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=timezone.now()))
-    next_activityday = set(RecuringJob.objects.filter(typ__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
+    next_activityday = set(RecuringJob.objects.filter(type_name="Aboktionstag", time__gte=timezone.now()).order_by("time")[:2])
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_activityday), key=lambda job: job.time),
-        'teams': ActivityArea.objects.filter(hidden=False).order_by("-core", "name"),
-        'no_abo': request.user.member.abo is None,
+        'teams': AboctivityAborea.objects.filter(hidden=False).order_by("-core", "name"),
+        'no_subscription': request.user.member.subscription is None,
     })
 
     return render(request, "myhome.html", renderdict)
@@ -123,8 +123,8 @@ def my_job(request, job_id):
         # adding participants
         add = int(num)
         for i in range(add):
-            Assignment.objects.create(member=member, job=job)
-        send_job_signup([member.email], job, request.META["HTTP_HOST"])
+            Abossignment.objects.create(member=member, job=job)
+        send_job_signup([member.email], job, request.METAbo["HTTP_HOST"])
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
@@ -143,7 +143,7 @@ def my_job(request, job_id):
         elif member.assignment_for_job > 2:
             name = name + u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
         contact_url = u'/my/kontakt/member/{}/{}/'.format(member.id, job_id)
-        reachable = member.reachable_by_email==True or request.user.is_staff or job.typ.activityarea.coordinator==member
+        reachable = member.reachable_by_email==True or request.user.is_staff or job.typeactivityarea.coordinator==member
         participants_summary.append((name, None, contact_url, reachable))
         emails.append(member.email)
         
@@ -159,7 +159,7 @@ def my_job(request, job_id):
     renderdict = get_menu_dict(request)
     jobendtime = job.end_time()
     renderdict.update({
-        'admin': request.user.is_staff or job.typ.activityarea.coordinator==member,
+        'admin': request.user.is_staff or job.typeactivityarea.coordinator==member,
         'emails': "\n".join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
@@ -200,7 +200,7 @@ def my_participation(request):
     success = False
     if request.method == 'POST':
         old_areas = set(member.areas.all())
-        new_areas = set(area for area in ActivityArea.objects.filter(hidden=False)
+        new_areas = set(area for area in AboctivityAborea.objects.filter(hidden=False)
                         if request.POST.get("area" + str(area.id)))
         if old_areas != new_areas:
             member.areas = new_areas
@@ -210,7 +210,7 @@ def my_participation(request):
 
         success = True
 
-    for area in ActivityArea.objects.filter(hidden=False):
+    for area in AboctivityAborea.objects.filter(hidden=False):
         if area.hidden:
             continue
         my_areas.append({
@@ -233,11 +233,11 @@ def my_participation(request):
 @login_required
 def my_pastjobs(request):
     """
-    All past jobs of current user
+    Aboll past jobs of current user
     """
     member = request.user.member
 
-    allassignments = Assignment.objects.filter(member=member)
+    allassignments = Abossignment.objects.filter(member=member)
     past_assingments = []
 
     for assignment in allassignments:
@@ -264,7 +264,7 @@ def my_team(request, area_id):
     job_types = JobType.objects.all().filter(activityarea=area_id)
 
     otjobs = get_current_one_time_jobs().filter(activityarea=area_id)
-    rjobs = get_current_recuring_jobs().filter(typ__in=job_types)
+    rjobs = get_current_recuring_jobs().filter(type_in=job_types)
     
     jobs = list(rjobs)
 
@@ -276,7 +276,7 @@ def my_team(request, area_id):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'team': get_object_or_404(ActivityArea, id=int(area_id)),
+        'team': get_object_or_404(AboctivityAborea, id=int(area_id)),
         'jobs': jobs,
     })
     return render(request, "team.html", renderdict)
@@ -285,7 +285,7 @@ def my_team(request, area_id):
 @login_required
 def my_assignments(request):
     """
-    All jobs to be sorted etc.
+    Aboll jobs to be sorted etc.
     """
     renderdict = get_menu_dict(request)
 
@@ -302,7 +302,7 @@ def my_assignments(request):
 @login_required
 def my_assingments_all(request):
     """
-    All jobs to be sorted etc.
+    Aboll jobs to be sorted etc.
     """
     renderdict = get_menu_dict(request)
     jobs = Job.objects.all().order_by("time")
@@ -329,7 +329,7 @@ def my_contact(request):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
+        'usernameAbondEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
         'is_sent': is_sent,
         'menu': {'contact': 'active'},
     })
@@ -356,8 +356,8 @@ def my_contact_member(request, member_id, job_id):
     job = Job.objects.filter(id=job_id)[0]
     renderdict = get_menu_dict(request)
     renderdict.update({        
-        'admin': request.user.is_staff or job.typ.activityarea.coordinator==member,
-        'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
+        'admin': request.user.is_staff or job.typeactivityarea.coordinator==member,
+        'usernameAbondEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
         'member_id': member_id,
         'member_name': contact_member.first_name + " " + contact_member.last_name,
         'is_sent': is_sent,
@@ -427,7 +427,7 @@ def my_new_password(request):
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()
-            send_mail_password_reset(member.email, pw, request.META["HTTP_HOST"])
+            send_mail_password_reset(member.email, pw, request.METAbo["HTTP_HOST"])
 
     renderdict = {
         'sent': sent

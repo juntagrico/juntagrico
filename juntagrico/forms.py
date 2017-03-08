@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models.fields import DecimalField
 from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, Select, TextInput, ChoiceField, CheckboxInput, DateInput
-from juntagrico.models import Member, User, Abo
+from juntagrico.models import Member, User, Subscription
 
 
 class PasswordForm(Form):
@@ -34,9 +34,9 @@ class MemberProfileForm(ModelForm):
         }
 
 
-class AboForm(ModelForm):
+class SubscriptionForm(ModelForm):
     class Meta:
-        model = Abo
+        model = Subscription
         fields = ['start_date']    
         widgets = {
             'start_date': DateInput(attrs={'format': '%d.%m.%y', 'class': 'form-control'}),

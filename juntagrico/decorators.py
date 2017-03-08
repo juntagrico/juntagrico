@@ -1,16 +1,16 @@
 from functools import wraps
 from django.shortcuts import get_object_or_404
-from juntagrico.models import Abo
+from juntagrico.models import Subscription
 from django.http import HttpResponseRedirect
 
 
-def primary_member_of_abo(view):
+def primary_member_of_subscription(view):
     @wraps(view)
-    def wrapper(request, abo_id, *args, **kwargs):
+    def wrapper(request, subscription_id, *args, **kwargs):
         if request.user.is_authenticated():
-            abo = get_object_or_404(Abo, id=abo_id)
-            if abo.primary_member.id == request.user.member.id:
-                return view(request, abo_id=abo_id, *args, **kwargs)
+            subscription = get_object_or_404(Subscription, id=subscription_id)
+            if subscription.primary_member.id == request.user.member.id:
+                return view(request, subscription_id=subscription_id, *args, **kwargs)
             else:
                 return HttpResponseRedirect("/accounts/login/?next=" + str(request.get_full_path()))
         else:

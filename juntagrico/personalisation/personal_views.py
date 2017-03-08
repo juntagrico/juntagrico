@@ -34,7 +34,7 @@ def send_politoloco(request):
             attachements.append(request.FILES.get("image-" + str(index)))
             index += 1
 
-        send_politoloco_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements)
+        send_politoloco_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.METAbo["HTTP_HOST"], attachements)
         sent = len(emails)
     renderdict = get_menu_dict(request)
     renderdict.update({

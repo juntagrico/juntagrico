@@ -3,7 +3,7 @@ from django.conf.urls import include, url
 from django.conf import settings
 from django.views.generic import RedirectView
 from juntagrico import views as juntagrico
-from juntagrico import views_abo as juntagrico_abo
+from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico import views_admin as juntagrico_admin
 from juntagrico.personalisation import personal_urls
 
@@ -28,17 +28,17 @@ urls = [
     url('^/neuespasswort$', juntagrico.my_new_password),
     url(r'^logout/$', juntagrico.logout_view),
     
-    # abo related juntagrico stuff
-    url('^/abo$', juntagrico_abo.my_abo),
-    url('^/abo/(?P<abo_id>.*?)/aendern$', juntagrico_abo.my_abo_change),
-    url('^/abo/(?P<abo_id>.*?)/aendern/depot$', juntagrico_abo.my_depot_change),
-    url('^/abo/(?P<abo_id>.*?)/aendern/groesse$', juntagrico_abo.my_size_change),
-    url('^/abo/(?P<abo_id>.*?)/aendern/extra$', juntagrico_abo.my_extra_change),
-    url('^/anmelden$', juntagrico_abo.my_signup),
-    url('^/abonnent/(?P<abo_id>.*?)/', juntagrico_abo.my_add_member),
-    url('^/aboerstellen$', juntagrico_abo.my_createabo),
-    url('^/willkommen$', juntagrico_abo.my_welcome),
-    url('^/bestaetigung/(?P<hash>.*?)/', juntagrico_abo.my_confirm),
+    # subscription related juntagrico stuff
+    url('^/subscription$', juntagrico_subscription.my_subscription),
+    url('^/subscription/(?P<subscription_id>.*?)/aendern$', juntagrico_subscription.my_subscription_change),
+    url('^/subscription/(?P<subscription_id>.*?)/aendern/depot$', juntagrico_subscription.my_depot_change),
+    url('^/subscription/(?P<subscription_id>.*?)/aendern/groesse$', juntagrico_subscription.my_size_change),
+    url('^/subscription/(?P<subscription_id>.*?)/aendern/extra$', juntagrico_subscription.my_extra_change),
+    url('^/anmelden$', juntagrico_subscription.my_signup),
+    url('^/subscriptionnnent/(?P<subscription_id>.*?)/', juntagrico_subscription.my_add_member),
+    url('^/subscriptionerstellen$', juntagrico_subscription.my_createsubscription),
+    url('^/willkommen$', juntagrico_subscription.my_welcome),
+    url('^/bestaetigung/(?P<hash>.*?)/', juntagrico_subscription.my_confirm),
     
     # admin related juntagrico stuff
     url('^/mails/send/depot$', juntagrico_admin.send_email_depot),
@@ -51,13 +51,13 @@ urls = [
     url('^/filters$', juntagrico_admin.my_filters),
     url('^/filters/depot/(?P<depot_id>.*?)/', juntagrico_admin.my_filters_depot),
     url('^/filters/area/(?P<area_id>.*?)/', juntagrico_admin.my_filters_area),
-    url('^/abos$', juntagrico_admin.my_abos),
-    url('^/abos/depot/(?P<depot_id>.*?)/', juntagrico_admin.my_abos_depot),
+    url('^/subscriptions$', juntagrico_admin.my_subscriptions),
+    url('^/subscriptions/depot/(?P<depot_id>.*?)/', juntagrico_admin.my_subscriptions_depot),
     #url('^my/depotlisten', juntagrico_admin.my_depotlists),
     url('^exports/depotlisten/(?P<name>.*)', juntagrico_admin.alldepots_list),
     url('^/zukunft', juntagrico_admin.my_future),
-    url('^/wechsel/zusatzabos', juntagrico_admin.my_switch_extras),
-    url('^/wechsel/abos', juntagrico_admin.my_switch_abos),    
+    url('^/wechsel/zusatzsubscriptions', juntagrico_admin.my_switch_extras),
+    url('^/wechsel/subscriptions', juntagrico_admin.my_switch_subscriptions),    
     url('^/export$', juntagrico_admin.my_export),
     url('^/export/membersfilter$', juntagrico_admin.my_excel_export_members_filter),
     url('^/export/members', juntagrico_admin.my_excel_export_members),

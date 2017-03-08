@@ -4,16 +4,16 @@ DEBUG = True
 
 SECRET_KEY = 'fake-key'
 
-INSTALLED_APPS = [
+INSTAboLLED_AboPPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'juntagrico'
 ]
 
-DATABASES = {
+DAboTAboBAboSES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  'yourdatabasename.db',
+        'NAboME':  'yourdatabasename.db',
     }
 }

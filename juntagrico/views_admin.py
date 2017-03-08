@@ -29,7 +29,7 @@ from juntagrico.mailer import *
 from juntagrico.views import get_menu_dict
 from juntagrico.config import *
 
-from decorators import primary_member_of_abo
+from decorators import primary_member_of_subscription
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -50,8 +50,8 @@ def send_email_intern(request):
         raise Http404
     emails = set()
     sender = request.POST.get("sender")
-    if request.POST.get("allabo") == "on":
-        for member in Member.objects.exclude(abo=None).filter(abo__active=True).exclude(block_emails=True):
+    if request.POST.get("allsubscription") == "on":
+        for member in Member.objects.exclude(subscription=None).filter(subscription__active=True).exclude(block_emails=True):
             emails.add(member.email)
     if request.POST.get("share") == "on":
         for member in Member.objects.exclude(block_emails=True):
@@ -74,7 +74,7 @@ def send_email_intern(request):
         index += 1
 
     if len(emails) > 0:
-        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.META["HTTP_HOST"], attachements, sender=sender)
+        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"), emails, request.METAbo["HTTP_HOST"], attachements, sender=sender)
         sent = len(emails)
     return redirect("/my/mails/send/result/"+str(sent)+"/") 
 
@@ -133,7 +133,7 @@ def my_filters(request):
 def my_filters_depot(request, depot_id):
     now = timezone.now()
     depot = get_object_or_404(Depot, id=int(depot_id))
-    members = Member.objects.filter(abo__depot = depot).annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
+    members = Member.objects.filter(subscription__depot = depot).annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails']=True
     renderdict.update({
@@ -145,7 +145,7 @@ def my_filters_depot(request, depot_id):
 @permission_required('juntagrico.is_area_admin')
 def my_filters_area(request, area_id):
     now = timezone.now()
-    area = get_object_or_404(ActivityArea, id=int(area_id))
+    area = get_object_or_404(AboctivityAborea, id=int(area_id))
     members = area.members.all().annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1))))
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails']=True
@@ -156,59 +156,59 @@ def my_filters_area(request, area_id):
     return render(request, 'filters.html', renderdict)
 
 
-@permission_required('juntagrico.can_filter_abos')
-def my_abos(request):
+@permission_required('juntagrico.can_filter_subscriptions')
+def my_subscriptions(request):
     now = timezone.now()
-    abos = []
-    for abo in Abo.objects.filter():
+    subscriptions = []
+    for subscription in Subscription.objects.filter():
         assignments = 0
         core_assignments = 0
-        for member in abo.members.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignemnt__core_cache=True, then=1)))):
+        for member in subscription.members.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignemnt__core_cache=True, then=1)))):
             assignments += member.assignment_count
             core_assignments += member.core_assignment_count
 
-        abos.append({
-            'abo': abo,
-            'text': get_status_bean_text(100 / (abo.size * 10) * assignments if abo.size > 0 else 0),
+        subscriptions.append({
+            'subscription': subscription,
+            'text': get_status_bean_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
             'core_assignments': core_assignments,
-            'icon': helpers.get_status_bean(100 / (abo.size * 10) * assignments if abo.size > 0 else 0)
+            'icon': helpers.get_status_bean(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
         })
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'abos': abos
+        'subscriptions': subscriptions
     })
 
-    return render(request, 'abos.html', renderdict)
+    return render(request, 'subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')
-def my_abos_depot(request, depot_id):
+def my_subscriptions_depot(request, depot_id):
     now = timezone.now()
-    abos = []
+    subscriptions = []
     depot = get_object_or_404(Depot, id=int(depot_id))
-    for abo in Abo.objects.filter(depot = depot):
+    for subscription in Subscription.objects.filter(depot = depot):
         assignments = 0
         core_assignments = 0
-        for member in abo.members.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1)))):
+        for member in subscription.members.annotate(assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(core_assignment_count=Count(Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True, then=1)))):
             assignments += member.assignment_count
             core_assignments += member.core_assignemtns_count
 
-        abos.append({
-            'abo': abo,
-            'text': get_status_bean_text(100 / (abo.size * 10) * assignments if abo.size > 0 else 0),
+        subscriptions.append({
+            'subscription': subscription,
+            'text': get_status_bean_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
             'core_assignments': core_assignments,
-            'icon': helpers.get_status_bean(100 / (abo.size * 10) * assignments if abo.size > 0 else 0)
+            'icon': helpers.get_status_bean(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
         })
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'abos': abos
+        'subscriptions': subscriptions
     })
 
-    return render(request, 'abos.html', renderdict)
+    return render(request, 'subscriptions.html', renderdict)
 
 @permission_required('juntagrico.is_operations_group')
 def my_depotlists(request):
@@ -226,16 +226,16 @@ def alldepots_list(request, name):
 
     categories = []
     types =[]
-    for category in ExtraAboCategory.objects.all().order_by("sort_order"):
+    for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
             cat={}
             cat["name"]= category.name
             cat["description"] = category.description
             count = 0
-            for extra_abo in ExtraAboType.objects.all().filter(category = category).order_by("sort_order"):
+            for extra_subscription in ExtraSubscriptionType.objects.all().filter(category = category).order_by("sort_order"):
                 count+=1
                 type={}
-                type["name"] = extra_abo.name
-                type["size"] = extra_abo.size
+                type["name"] = extra_subscription.name
+                type["size"] = extra_subscription.size
                 type["last"]=False
                 types.append(type)
             type["last"]=True
@@ -257,7 +257,7 @@ def alldepots_list(request, name):
     
     for depot in depots:
         depot.fill_overview_cache()
-        depot.fill_active_abo_cache()
+        depot.fill_active_subscription_cache()
         row = overview.get(depot.get_weekday_display())
         count=0
         while count < len(row):
@@ -284,47 +284,47 @@ def alldepots_list(request, name):
 def my_future(request):
     renderdict = get_menu_dict(request)
     
-    abosizes =[] 
-    abo_lines = dict({})    
+    subscriptionsizes =[] 
+    subscription_lines = dict({})    
     extra_lines = dict({})
-    for abo_size in AboSize.objects.all():
-        abosizes.append(abo_size.name)
-        abo_lines[abo_size.name] = {
-            'name': abo_size.name,
+    for subscription_size in SubscriptionSize.objects.all():
+        subscriptionsizes.append(subscription_size.name)
+        subscription_lines[subscription_size.name] = {
+            'name': subscription_size.name,
             'future': 0,
             'now': 0
         }
-    for extra_abo in ExtraAboType.objects.all():
-        extra_lines[extra_abo.name] = {
-            'name': extra_abo.name,
+    for extra_subscription in ExtraSubscriptionType.objects.all():
+        extra_lines[extra_subscription.name] = {
+            'name': extra_subscription.name,
             'future': 0,
             'now': 0
         }
-    for abo in Abo.objects.all():
-        for abo_size in abosizes:
-            abo_lines[abo_size]['now'] += abo.abo_amount(abo_size)
-            abo_lines[abo_size]['future'] += abo.abo_amount_future(abo_size)
-        for users_abo in abo.future_extra_abos.all():
-            extra_lines[users_abo.type.name]['future'] += 1
-        for users_abo in abo.extra_abos.all():
-            extra_lines[users_abo.type.name]['now'] += 1
+    for subscription in Subscription.objects.all():
+        for subscription_size in subscriptionsizes:
+            subscription_lines[subscription_size]['now'] += subscription.subscription_amount(subscription_size)
+            subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(subscription_size)
+        for users_subscription in subscription.future_extra_subscriptions.all():
+            extra_lines[users_subscription.type.name]['future'] += 1
+        for users_subscription in subscription.extra_subscriptions.all():
+            extra_lines[users_subscription.type.name]['now'] += 1
 
     month = int(time.strftime("%m"))
     day = int(time.strftime("%d"))
 
     renderdict.update({
         'changed': request.GET.get("changed"),
-        'abo_lines': abo_lines.itervalues(),
+        'subscription_lines': subscription_lines.itervalues(),
         'extra_lines': extra_lines.itervalues(),
-        'abo_change_enabled': month is 12 or (month is 1 and day <= 6)
+        'subscription_change_enabled': month is 12 or (month is 1 and day <= 6)
     })
     return render(request, 'future.html', renderdict)
 
 
 @permission_required('juntagrico.is_operations_group')
 def my_switch_extras(request):
-    for abo in Abo.objects.all():
-        for extra in abo.extra_abo_set:
+    for subscription in Subscription.objects.all():
+        for extra in subscription.extra_subscription_set:
             if extra.active == True and extra.canceled == True:
                 extra.active=False
                 extra.save()
@@ -335,17 +335,17 @@ def my_switch_extras(request):
     return redirect('/my/zukunft?changed=true')
 
 @permission_required('juntagrico.is_operations_group')
-def my_switch_abos(request):
+def my_switch_subscriptions(request):
     renderdict = get_menu_dict(request)
 
-    for abo in Abo.objects.all():
-        if abo.size is not abo.future_size:
-            if abo.future_size is 0:
-                abo.active = False
-            if abo.size is 0:
-                abo.active = True
-            abo.size = abo.future_size
-            abo.save()
+    for subscription in Subscription.objects.all():
+        if subscription.size is not subscription.future_size:
+            if subscription.future_size is 0:
+                subscription.active = False
+            if subscription.size is 0:
+                subscription.active = True
+            subscription.size = subscription.future_size
+            subscription.save()
 
 
     renderdict.update({
@@ -370,7 +370,7 @@ def my_maps(request):
 
     renderdict = {
         "depots": Depot.objects.all(),
-        "abos" : Abo.objects.filter(active=True),
+        "subscriptions" : Subscription.objects.filter(active=True),
     }
 
     return render(request, "maps.html", renderdict)
@@ -405,8 +405,8 @@ def my_excel_export_members_filter(request):
             member.areas = unicode("-Kein Tätigkeitsbereich-", "utf-8")
         
         member.depot_name = unicode("Kein Depot definiert", "utf-8")
-        if member.abo is not None:
-            member.depot_name=member.abo.depot.name
+        if member.subscription is not None:
+            member.depot_name=member.subscription.depot.name
         looco_full_name = member.first_name + " " + member.last_name
         worksheet_s.write_string(row, 0, looco_full_name)
         worksheet_s.write(row, 1, member.assignment_count)
@@ -467,7 +467,7 @@ def my_export(request):
 @permission_required('juntagrico.is_operations_group')
 def waitinglist(request):
     renderdict = get_menu_dict(request)
-    waitinglist = Abo.objects.filter(active=False).filter(deactivation_date=None).order_by('start_date')
+    waitinglist = Subscription.objects.filter(active=False).filter(deactivation_date=None).order_by('start_date')
     renderdict.update({
         'waitinglist': waitinglist
     })

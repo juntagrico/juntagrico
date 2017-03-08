@@ -1,5 +1,5 @@
 """
-Wrapper for loading templates from "templates" directories in INSTALLED_APPS
+Wrapper for loading templates from "templates" directories in INSTAboLLED_AboPPS
 packages.
 """
 

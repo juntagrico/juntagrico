@@ -28,7 +28,7 @@ from config import *
 
 
 
-class AuthenticateWithEmail(object):
+class AbouthenticateWithEmail(object):
     def authenticate(self, username=None, password=None):
         from models import Member
 
@@ -148,7 +148,7 @@ def get_status_bean_text(percent=0):
         elif percent >= 50:
             return "Halb"
         elif percent > 0:
-            return "Angefangen"
+            return "Abongefangen"
         else:
             return "Nix"
           
@@ -213,9 +213,9 @@ def generate_excell(fields, model_instance):
 def genecrate_ical_for_job(job):
     c = Calendar()
     e = Event()
-    e.name = Config.organisation_name()+' Einsatz:'+job.typ.name
-    e.location = job.typ.location
-    e.description = job.typ.description
+    e.name = Config.organisation_name()+' Einsatz:'+job.typename
+    e.location = job.typelocation
+    e.description = job.typedescription
     e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
     e.end = job.time.strftime('%Y%m%d %H:%M:%S')
     c.events.append(e)

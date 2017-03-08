@@ -4,10 +4,10 @@ register = template.Library()
 
 
 @register.filter
-def abos_amount(abo, name):
-    return abo.abo_amount(name)
+def subscriptions_amount(subscription, name):
+    return subscription.subscription_amount(name)
     
 @register.filter
-def extra_abo(abo, code):
-    return abo.extra_abo(code)
+def extra_subscription(subscription, code):
+    return subscription.extra_subscription(code)
     

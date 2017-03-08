@@ -33,43 +33,43 @@ class Command(BaseCommand):
 
     # entry point used by manage.py
     def handle(self, *args, **options):
-        if not options['force'] and timezone.now().weekday()!=settings.DEPOT_LIST_GENERATION_DAY:
+        if not options['force'] and timezone.now().weekday()!=settings.DEPOT_LIST_GENERAboTION_DAboY:
             print "not the specified day for depot list generation, use --force to override"
             return
         
-        if options['future'] or timezone.now().weekday()==settings.DEPOT_LIST_GENERATION_DAY:
-            future_abos = Abo.objects.exclude(future_depot__isnull=True)
-            for abo in future_abos:
-                abo.depot=abo.future_depot
-                abo.future_depot=None
-                abo.save()
+        if options['future'] or timezone.now().weekday()==settings.DEPOT_LIST_GENERAboTION_DAboY:
+            future_subscriptions = Subscription.objects.exclude(future_depot__isnull=True)
+            for subscription in future_subscriptions:
+                subscription.depot=subscription.future_depot
+                subscription.future_depot=None
+                subscription.save()
                 emails = []
-                for member in abo.recipients():
+                for member in subscription.recipients():
                     emails.append(member.email)
-                send_depot_changed(emails,abo.depot,Config.server_url())
+                send_depot_changed(emails,subscription.depot,Config.server_url())
         
         if options['force'] and not options['future']:
             print "future depots ignored, use --future to override"
-        Abo.fill_sizes_cache()
+        Subscription.fill_sizes_cache()
         
         depots = Depot.objects.all().order_by("code")
         
-        abo_names = []
-        for abo_size in AboSize.objects.filter(depot_list=True).order_by('size'):
-            abo_names.append(abo_size.name)
+        subscription_names = []
+        for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
+            subscription_names.append(subscription_size.name)
         
         categories = []
         types =[]
-        for category in ExtraAboCategory.objects.all().order_by("sort_order"):
+        for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
                 cat={}
                 cat["name"]= category.name
                 cat["description"] = category.description
                 count = 0
-                for extra_abo in ExtraAboType.objects.all().filter(category = category).order_by("sort_order"):
+                for extra_subscription in ExtraSubscriptionType.objects.all().filter(category = category).order_by("sort_order"):
                     count+=1
                     type={}
-                    type["name"] = extra_abo.name
-                    type["size"] = extra_abo.size
+                    type["name"] = extra_subscription.name
+                    type["size"] = extra_subscription.size
                     type["last"]=False
                     types.append(type)
                 type["last"]=True
@@ -91,7 +91,7 @@ class Command(BaseCommand):
 
         for depot in depots:
             depot.fill_overview_cache()
-            depot.fill_active_abo_cache()
+            depot.fill_active_subscription_cache()
             row = overview.get(depot.get_weekday_display())
             count=0
             while count < len(row):
@@ -99,22 +99,22 @@ class Command(BaseCommand):
                 all[count] += depot.overview_cache[count]
                 count+=1; 
         
-        insert_point = len(abo_names)
+        insert_point = len(subscription_names)
         overview["Dienstag"].insert(insert_point, 0)
         overview["Donnerstag"].insert(insert_point, 0)
         overview["all"].insert(insert_point, 0)
         
         index=0
-        for abo_size in AboSize.objects.filter(depot_list=True).order_by('size'):
-            overview["Dienstag"][insert_point]=overview["Dienstag"][insert_point]+ abo_size.size*overview["Dienstag"][index]
-            overview["Donnerstag"][insert_point]=overview["Donnerstag"][insert_point]+ abo_size.size*overview["Donnerstag"][index]
-            overview["all"][insert_point]=overview["all"][insert_point]+ abo_size.size*overview["all"][index]
+        for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
+            overview["Dienstag"][insert_point]=overview["Dienstag"][insert_point]+ subscription_size.size*overview["Dienstag"][index]
+            overview["Donnerstag"][insert_point]=overview["Donnerstag"][insert_point]+ subscription_size.size*overview["Donnerstag"][index]
+            overview["all"][insert_point]=overview["all"][insert_point]+ subscription_size.size*overview["all"][index]
             index+=1
             
         renderdict = {
             "overview": overview,
             "depots": depots,
-            "abo_names": abo_names,
+            "subscription_names": subscription_names,
             "categories" : categories,
             "types" : types,
             "datum": timezone.now(),
