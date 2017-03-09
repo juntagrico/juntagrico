@@ -1,13 +1,13 @@
 {% extends "mails/email.txt" %}
 {% block content %}
 
-Dein {{ config organisation_name }}-Arbeitseinsatz "{{ job.typ.displayed_name }}"  um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} wurde leider Abgesagt.
+Dein {{ config organisation_name }}-Arbeitseinsatz "{{ job.type.displayed_name }}"  um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} wurde leider Abgesagt.
 
 Details:
 
-Job:             {{ job.typ.description }}
+Job:             {{ job.type.description }}
 Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-Ort:             {{ job.typ.location }}
+Ort:             {{ job.type.location }}
 
 Es tut uns leid und hoffen dich bei einem anderen Einsatz wieder zu sehen!
 

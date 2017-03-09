@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>Abo Übersicht</h3>
+    {% if not member.subscription %}
+        <div class="alert alert-warning">Du hast noch kein Abo<br/>Du möchtest eines? Melde dich hier an: <a href="/my/subscriptionerstellen">Abo erstellen</a></div>
+    {% else %}
+        <dl class="dl-horizontal">
+            <dt>Abogrösse</dt>
+            <dd>
+                {{ member.subscription.size_name }}
+            </dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Status</dt>
+            <dd>
+                {% if member.subscription.active %}
+                    Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
+                {% else %}
+                    <span class="text-error">Auf der Warteliste</span> - du erhälst leider im Moment noch kein Gemüse.
+                {% endif %}
+            </dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Anteilscheine</dt>
+            <dd>
+                {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/><br/>
+                Anteilscheine von MitabonnentInnen:
+                <ul>
+                    {% for co_member in  co_members %}
+                        <li>{{ co_member.share_set.count }} von {{ co_member.first_name }} {{ co_member.last_name }}
+                            {% if not co_member.confirmed %}
+                                (nicht bestätigt)
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Abo geteilt mit</dt>
+            <dd>
+                {% if co_members|length > 0 %}
+                    {% if co_members|length > 1 %}
+                        <ul>
+                            {% for sharee in co_members %}
+                                <li>{{ sharee.first_name }} {{ sharee.last_name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        {% for sharee in co_members %}
+                            {{ sharee.first_name }} {{ sharee.last_name }}
+                        {% endfor %}
+                        <br/>
+                    {% endif %}
+                {% else %}
+                    Du hast noch keine MitabonnentInnen eingetragen.<br/>
+                {% endif %}
+                <a href="/my/abonnent/{{ member.subscription.id }}?return=/my/subscription">Hier MitabonnentInnen eintragen</a>
+            </dd>
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>Depot</dt>
+            <dd>
+                {{ member.subscription.depot.name }} > <a href="/my/depot/{{ member.subscription.depot.id }}">Weitere Infos zum Depot</a>
+            </dd>
+
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+                <dt>Zusatzabos</dt>
+                <dd>
+                    {% if extra_subscriptions|length == 0 %}
+                        Keine Zusatzabos
+                    {% else %}
+                        <ul>
+                            {% for extra subscription in extra_subscriptions %}
+                                <li>{{ extra_subscription.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </dd>
+            {% if extra_subscriptions_changed %}
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+                <dt>Neue Zusatzabos</dt>
+                <dd>
+                    (Die Änderungen treten am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)
+                    {% if not future_zusatzsubscriptions %}
+                        <br>Keine Zusatzsubscriptions
+                    {% else %}
+                        <ul>
+                            {% for extra_subscription in future_extra_subscriptions %}
+                                <li>{{ extra_subscription.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </dd>
+            {% endif %}
+
+            {% if member.subscription.size != member.subscription.future_size %}
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+                <dt>Neue Abogrösse</dt>
+                <dd>
+                    (Die Änderung tritt am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)<br>
+                    {{ member.subscription.future_size_name }}
+                </dd>
+            {% endif %}
+            <dt>&nbsp;</dt>
+            <dd>&nbsp;</dd>
+            <dt>&nbsp;</dt>
+            <dd>
+                <div class="form-actions">
+                    <a href="{% if primary %}/my/subscription/{{ member.subscription.id }}/aendern{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
+                    {% if not primary %}
+                        * Das Abo kann nur der Hauptsubscriptionnnent ändern.
+                    {% endif %}
+                </div>
+            </dd>
+        </dl>
+    {% endif %}
+{% endblock %}

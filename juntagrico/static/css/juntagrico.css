@@ -1,0 +1,505 @@
+.juntagrico_logo {
+    background: url(/static/img/juntagrico.png) 0 0px;
+    display: inline-block;
+    width: 300px;
+    height: 45px;
+}
+
+.next-jobs {
+    margin-top: 5px;
+}
+
+.next-jobs .time {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.jobs .date {
+    width: 150px;
+}
+
+.jobs .status {
+    padding-left: 30px;
+}
+
+.jobs .full {
+    opacity: 0.2;
+}
+
+#jobs .list {
+    width: 100%;
+}
+
+#jobs_header, #filter-locos_header {
+    margin-bottom: 20px;
+}
+
+#filter-members a {
+    color: white;
+    text-decoration: underline;
+}
+
+#jobs_footer, #filter-members_footer {
+    margin-top: 20px;
+}
+
+#jobs_page_prev, #jobs_page_next, #filter-locos_page_prev, #filter-locos_page_next {
+    display: none !important;
+}
+
+#jobs .table-sort {
+    font-family: Arial;
+    font-size: 12;
+}
+
+.jobstatus {
+    margin-right: -7px;
+}
+
+.juntagrico {
+    margin-top: 0;
+}
+
+.myjuntagrico {
+    margin-top: 80px;
+    margin-bottom: 30px;
+}
+
+.juntagrico h3 {
+    margin-top: 0;
+}
+
+.createsubscription .control-label {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.createsubscription label {
+    font-weight: normal;
+}
+
+.createsubscription #depot {
+    margin-bottom: 3px;
+}
+
+#map-canvas {
+    width: 100%;
+    height: 400px;
+}
+
+#depot #map-canvas {
+    margin-left: 180px;
+    width: 400px;
+    height: 440px;
+}
+
+
+.high-label {
+    line-height: 35px;
+}
+
+.high-label input[type=checkbox] {
+    margin-top: 9px;
+}
+
+.file-upload {
+    line-height: 30px;
+}
+
+.file-upload-button {
+    display: inline-block;
+    position: relative;
+}
+
+.file-upload-button > input[type=file] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+}
+
+textarea#recipients {
+    width: 100%;
+}
+
+textarea#recipients[disabled=disabled] {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+#edit-recipients-action {
+    font-size: smaller;
+}
+
+#edit-recipients-action::before {
+    content: "(";
+}
+
+#edit-recipients-action::after {
+    content: ")";
+}
+
+.nav li.inline a {
+    display: inline-block;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+}
+
+.nav li.inline a:hover {
+    background: none;
+}
+
+table.future {
+    width: 100%;
+    margin-top: 50px;
+}
+
+table.future th {
+    text-align: left;
+}
+
+table.future td {
+    line-height: 30px;
+}
+
+.loco-job-comments {
+    font-style: italic;
+}
+
+#filter {
+    width: 100%;
+}
+
+#filter table {
+    width: 100%;
+    font-size: 10px;
+}
+
+#filter-table .odd {
+    background-color: #e1eff4
+}
+
+.main-menu {
+    font-size: 18px;
+}
+
+.main-menu li a {
+    line-height: 15px;
+}
+
+.main-menu .separator {
+    height: 10px;
+}
+
+.admin-menu {
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+}
+
+.admin-menu li a {
+    line-height: 10px;
+}
+
+.section-title {
+    font-size: 12px;
+    margin-top: -20px;
+}
+
+.table th {
+    position: relative;
+}
+
+.table th:before {
+    position: absolute;
+    right: 10px;
+}
+
+.table th.sorting_asc:before {
+    content: "↓";
+}
+
+.table th.sorting_desc:before {
+    content: "↑";
+}
+
+/* general overrides of bootstrap */
+@font-face {
+    font-family: 'typenoksidi';
+    src: url('/static/fonts/typenoksidi-webfont.eot');
+    src: url('/static/fonts/typenoksidi-webfont.eot?#iefix') format('embedded-opentype'), url('/static/fonts/typenoksidi-webfont.woff') format('woff'), url('/static/fonts/typenoksidi-webfont.ttf') format('truetype'), url('/static/fonts/typenoksidi-webfont.svg#typenoksidiregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+a {
+    color: #347094;
+}
+
+a.canceled {
+    color: #A94442;
+    text-decoration: line-through;
+}
+
+a.canceled:hover, a.canceled:focus {
+    color: #A94442;
+}
+
+ul {
+    padding-left: 20px;
+}
+
+a:hover, a:focus {
+    color: #21285f;
+}
+
+html, body {
+    font-family: "Courier New", monospace;
+    font-size: 16px;
+    background-color: #f7fdff;
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6, .main-menu {
+    font-family: "typenoksidi", serif;
+}
+
+select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    height: 30px;
+}
+
+/* general stuff */
+
+.main-menu {
+    font-size: 19px;
+}
+
+.main-menu li a {
+    padding: 0;
+    line-height: 34px;
+}
+
+.main-menu li a {
+    padding: 0;
+}
+
+.logo {
+    background: url(/static/img/logo.png) 0 0px;
+    display: inline-block;
+    width: 220px;
+    height: 51px;
+    margin-bottom: 25px;
+}
+
+.logo:hover {
+    background-position: 0 51px;
+}
+
+.container {
+    min-height: 100%;
+    position: relative;
+    padding: 0px 40px 0 40px;
+}
+
+.juntagrico {
+    margin-top: 80px;
+    background: url(/static/img/ortoloco_full.gif) bottom no-repeat;
+    padding-bottom: 400px;
+}
+
+.juntagrico.home {
+    background: none;
+    padding-bottom: 0;
+}
+
+.juntagrico.home .lastNews {
+    margin-bottom: 585px;
+}
+
+.juntagrico.home .lastNews h3 {
+    color: #347094;
+}
+
+.ortoloco.home .ortoloco_gemuese {
+    background: url(/static/img/ortoloco_home_small.gif) right bottom no-repeat;
+    position: absolute;
+    bottom: -5px;
+    right: 70px;
+    width: 623px;
+    height: 600px;
+}
+
+.container .circletop {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    right: 0;
+    background-image: url(/static/img/circle_x.png);
+    height: 20px;
+    opacity: 1.0;
+}
+
+.container .circleleft {
+    position: absolute;
+    left: 0px;
+    top: 36px;
+    background-image: url(/static/img/circle_y.png);
+    bottom: 0px;
+    width: 20px;
+    opacity: 1.0;
+}
+
+.container .circleright {
+    position: absolute;
+    right: -5px;
+    top: 36px;
+    background-image: url(/static/img/circle_y.png);
+    bottom: 0px;
+    width: 20px;
+    opacity: 1.0;
+}
+
+/* menu */
+.nav-pills > li.active > a {
+    color: black;
+    background-color: transparent;
+}
+
+.nav-pills.nav-stacked > li > a, .nav-pills ul.nav-pills.nav-stacked > li:last-child > a {
+    background-color: transparent;
+}
+
+.nav-pills > li.active > a:hover, .nav-pills > .active > a:focus {
+    color: black;
+    background-color: transparent;
+}
+
+.nav-pills > li > a {
+    border-radius: 0;
+    margin-top: 0;
+    line-height: 22px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-left: -20px;
+    padding-left: 20px;
+}
+
+.nav-pills.nav-stacked > li {
+    width: 280px;
+}
+
+.nav-pills.nav-stacked > li > a, .nav-pills ul.nav-pills.nav-stacked > li:last-child > a {
+    margin-bottom: 0;
+}
+
+.nav-pills a:hover {
+    color: #21285f;
+}
+
+.activeItem {
+    display: none;
+}
+
+.nav-pills ul {
+    margin-bottom: 0;
+    background-color: transparent;
+}
+
+.nav-pills ul.nav-pills > .active > a, .nav-pills ul.nav-pills > .active > a:hover, .nav-pills ul.nav-pills > .active > a:focus {
+    background-color: transparent;
+}
+
+.myortoloco_link {
+    position: absolute;
+    right: 25px;
+    bottom: 80px;
+    width: 18px;
+    height: 140px;
+    display: inline-block;
+    background: url(/static/img/myortoloco_link.png) 0px 0px no-repeat;
+
+}
+
+.myortoloco_link:hover {
+    background-position: -19px 0;
+
+}
+
+/* medias */
+.year {
+    opacity: 0.7;
+}
+
+.medias tr.newYear {
+    border-top: 1px #ddd solid;
+}
+
+.medias.table th, .medias.table td {
+    border: 0;
+}
+
+.medias tr {
+    display: none;
+}
+
+.medias tr.shown, .medias tr.newYear {
+    display: table-row;
+}
+
+/* links */
+.link .desc, .document .desc {
+    padding-top: 5px;
+    padding-left: 35px;
+    background: url(/static/img/circle_y.png) no-repeat left -88px;
+}
+
+/* contact */
+#map-canvas {
+    display: inline-block;
+    width: 560px;
+    height: 300px;
+}
+
+.addresses {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+/* gallery */
+.lastImg, .lastImg:hover, .nextImg, .nextImg:hover {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+    opacity: 1;
+    font-size: 70px;
+    line-height: 70px;
+    text-decoration: none;
+    text-align: center;
+}
+
+.photo-gallery {
+    display: block;
+    clear: both;
+    overflow: auto;
+}
+
+.gallery-photo {
+    text-align: center;
+    list-style: none;
+}
+
+.galleryDate {
+    padding-bottom: 20px;
+}
+
+.impersonate {
+    position: relative;
+    top: 70px;
+}
+
+.jobs .core, .teams .core {
+    color: #780fff;
+}

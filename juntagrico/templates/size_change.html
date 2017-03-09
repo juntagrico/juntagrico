@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>Abogrösse ändern</h3>
+    {% if saved %}
+        <div class="alert alert-success">
+            Die Abogrösse wurde erfolgreich geändert.<br/>
+            <a href="/my/subscription">Zurück zur Abo-Übersicht</a>
+        </div>
+    {% else %}
+        <br/>
+        <form method="post" class="form-horizontal createsubscription">
+            {% csrf_token %}
+             {% for subscription_size in subscription_sizes %}
+            <div class="form-group">
+                <label class="col-md-4 control-label">{% if foorloop.first %}Abogrösse{% endif %}</label>
+
+                <div class="col-md-8 controls">
+                    <label class="radio" for="{{ subscription_size.name }}">
+                        <input type="radio" name="subscription" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if ssize == subscription_size.size %}checked="checked"{% endif %}/>
+                        <strong>{{ subscription_size.long_name }}</strong>
+
+                        <br/>
+                        {{ subscription_size.description }}
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="form-group">
+                <label class="control-label col-sm-4"></label>
+                <div class="controls col-sm-8">
+                    <button type="submit" class="btn btn-success">Abogrösse ändern</button>
+                </div>
+            </div>
+            <div class="form-actions col-sm-8">
+            </div>
+            <br/>
+            <div class="form-group">
+            <label class="control-label col-sm-4">Abo kündigen</label>
+            <div class="controls col-sm-8">
+                <label>
+                    <div>
+                        Du willst ab nächstem Jahr kein {{ config organisation_name }}-Abo mehr? Dann schicke bitte deine Kündigung
+                        bis spätestens Ende Oktober an <a href="mailto:{{ config info_email }}?subject=Kündigung Abo {{ config server_url }}">{{ config info_email }}</a>.
+                        Weitere Infos zur Kündigung des Abos und der Mitgliedschaft findest du im
+                        <a href="/ {{ config business regulations }}">Betriebsreglement</a>.
+                    </div>
+                </label>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+
+{% endblock %}

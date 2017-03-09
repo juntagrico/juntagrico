@@ -7,7 +7,7 @@ Statuten: {{ serverurl }}{{ config bylaws }}
 Betriebsreglement: {{ serverurl }}{{ config business regulations }}
 
 
-Unter my.{{ config server_url }} kannst du dich ab sofort für Jobs anmelden und vieles mehr.
+Unter {{ config adminportal_server_url }} kannst du dich ab sofort für Jobs anmelden und vieles mehr.
 
 Email: {{ username }}
 Passwort: {{ password }}

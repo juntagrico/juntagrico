@@ -1,7 +1,7 @@
-{% extends "mybase.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-    <h3>{{ job.typ.name }}</h3>
+    <h3>{{ job.type.name }}</h3>
 
     {% if job_canceled %}
         <div class="alert alert-danger">Der Job wurde abgesagt! Entschuldige die Umstände. Aber es gibt immer <a href="/my/einsaetze" style="text-decoration: underline">viel zu tun</a>...</div>
@@ -42,14 +42,14 @@
     <div class="row">
         <div class="col-md-3">Ort:</div>
         <div class="col-md-5">
-            {{ job.typ.location }}
-            (<a href="https://www.google.ch/maps/place/{{ job.typ.location }}" target="_blank">Karte</a>)
+            {{ job.type.location }}
+            (<a href="https://www.google.ch/maps/place/{{ job.type.location }}" target="_blank">Karte</a>)
         </div>
     </div>
     <br/>
     <div class="row">
         <div class="col-md-3">Beschreibung:</div>
-        <div class="col-md-5">{{ job.typ.description }}</div>
+        <div class="col-md-5">{{ job.type.description }}</div>
     </div>
     <br/>
     {% if admin %}
@@ -58,7 +58,6 @@
         <div class="col-md-5">
             <form id="email-sender" action="/my/mails" method="POST">
                 {% csrf_token %}
-                <input type="hidden" name="recipient_type" id="recipient_type" value="{{ config members_string }}"/>
                 <input type="hidden" name="recipients" id="recipients" value="{{emails}}"/>
                 <input type="hidden" name="recipients_count" id="recipients_count" value="{{number_of_participants}}"/>
                 <button type="submit" class="btn" id="send-email">Allen eine Email senden</button>
@@ -135,37 +134,7 @@
 
     {% endif %}
 
-        <!-- Modal -->
-<!-- 
-        <div class="modal fade" id="memberMessageModal" tabindex="-1" role="dialog" aria-labelledby="memberMessageModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="memberMessageModalLabel">Nachricht wegen des {{ job.typ.name }} Einsatzes vom {{ job.time |date:"d. M" }}</h4>
-              </div>
-              <div class="modal-body">
-                <textarea class="form-control" rows="16" style="width: 100%" placeholder="Deine Nachricht">Hoi
-
-A propos vom kommenden {{ job.typ.name }} Einsatz vom {{ job.time |date:"d. F, \u\m H:i" }}:
-
-...
-
-Merci vielmals,
-
-{{ user.member.first_name }}</textarea>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
-                <button type="button" class="btn btn-success btn-message-send">Nachricht senden</button>
-              </div>
-            </div>
-          </div>
-        </div>
--->
-
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyJob{{ config member_string }}Messaging.js"></script>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "mybase.html" %}
+{% extends "base.html" %}
 
 {% block content %}
     <div id="maps">
@@ -33,7 +33,7 @@
         {% endfor %}
         ]
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyMaps.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMaps.js"></script>
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwgHE65hyBkmTeUG178QxKXLhniRZ9J3s"
         type="text/javascript"></script>

@@ -35,6 +35,12 @@ class Config:
         return "Juntagrico"
 
     @staticmethod
+    def organisation_long_name():
+        if hasattr(settings, 'ORGANISATION_LONG_NAME'):
+            return settings.ORGANISATION_LONG_NAME
+        return "Juntagrico the best thing in the world"
+
+    @staticmethod
     def organisation_address():
         if hasattr(settings, 'ORGANISATION_ADDRESS'):
             return settings.ORGANISATION_ADDRESS

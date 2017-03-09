@@ -1,4 +1,4 @@
-{% extends "mybase.html" %}
+{% extends "base.html" %}
 
 {% block content %}
     <h3>Alle Einsätze im Überblick</h3>
@@ -16,11 +16,11 @@
             <tbody>
             {% for job in jobs %}
                 <tr>
-                    <td>{% if job.typ.bereich.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/circle_full_core.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/circle_full.png"/>{% endif %}</td>
+                    <td>{% if job.type.bereich.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/circle_full_core.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/circle_full.png"/>{% endif %}</td>
                     <td>{{ job.weekday_name }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}</td>
-                    <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.typ.get_name }}</a></td>
+                    <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.type.get_name }}</a></td>
                     <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>
-                    <td>{{ job.typ.location }}</td>
+                    <td>{{ job.type.location }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -34,5 +34,5 @@
 
 {% block scripts %}
     <script type="text/javascript" src="/static/external/datatables.min.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMyJobs.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initJobs.js"></script>
 {% endblock %}

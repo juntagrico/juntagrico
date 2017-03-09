@@ -1,4 +1,4 @@
-{% extends "mybase.html" %}
+{% extends "base.html" %}
 
 {% block content %}
     <div id="depot">
@@ -7,7 +7,7 @@
             <h4>{{ config members_string }}</h4>
             <a href="/my/export/members/">exportieren</a>
             <br/><br/>
-            <h4>{{ config members_string }} mit Böhnli und Tätigketsbereichen</h4>
+            <h4>{{ config members_string }} mit {{ config assignments_string }} und Tätigketsbereichen</h4>
             <a href="/my/export/membersfilter">exportieren</a>
             <br/><br/>
             <h4>Anteilsscheine</h4>

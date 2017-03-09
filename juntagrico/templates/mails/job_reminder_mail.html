@@ -2,25 +2,25 @@
 {% block content %}
     Nicht vergessen: <br/>
 
-    Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein {{ config organisation_name }}-Arbeitseinsatz <b>"{{ job.typ.displayed_name }}"</b> statt.
+    Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein {{ config organisation_name }}-Arbeitseinsatz <b>"{{ job.type.displayed_name }}"</b> statt.
     <br/><br/>
     Details:
     <table cellspacing="0" cellpadding="0">
         <tr>
             <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Job:</th>
-            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ job.typ.description }}</td>
+            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ job.type.description }}</td>
         </tr>
         <tr>
             <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Zeit:</th>
             <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</td>
         </tr>
         <tr>
-            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">mitmembers:</th>
+            <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Teilnehmer:</th>
             <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ participants }}</td>
         </tr>
         <tr>
             <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Ort:</th>
-            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ job.typ.location }}</td>
+            <td style="font-size: 14px; font-family: 'Courier New',monospace;">{{ job.type.location }}</td>
         </tr>
         <tr>
             <th style="text-align: left; padding-right: 5px;font-size: 14px; font-family: 'Courier New',monospace;">Verantwortlich:</th>

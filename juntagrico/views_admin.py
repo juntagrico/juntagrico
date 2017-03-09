@@ -125,7 +125,7 @@ def my_filters(request):
     renderdict.update({
         'members': members
     })
-    return render(request, 'filters.html', renderdict)
+    return render(request, 'members.html', renderdict)
 
 
 
@@ -140,7 +140,7 @@ def my_filters_depot(request, depot_id):
         'members': members,
         'enhanced': "depot"
     })
-    return render(request, 'filters.html', renderdict)
+    return render(request, 'members.html', renderdict)
 
 @permission_required('juntagrico.is_area_admin')
 def my_filters_area(request, area_id):
@@ -153,7 +153,7 @@ def my_filters_area(request, area_id):
         'members': members,
         'enhanced': "area"
     })
-    return render(request, 'filters.html', renderdict)
+    return render(request, 'members.html', renderdict)
 
 
 @permission_required('juntagrico.can_filter_subscriptions')

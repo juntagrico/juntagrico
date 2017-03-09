@@ -97,7 +97,7 @@ def my_depot_change(request, subscription_id):
         'member': request.user.member,
         "depots": Depot.objects.all()
     })
-    return render(request, "my_depot_change.html", renderdict)
+    return render(request, "depot_change.html", renderdict)
 
 
 @primary_member_of_subscription
@@ -115,7 +115,7 @@ def my_size_change(request, subscription_id):
         'saved': saved,
         'size': request.user.member.subscription.future_size
     })
-    return render(request, "my_size_change.html", renderdict)
+    return render(request, "size_change.html", renderdict)
 
 
 @primary_member_of_subscription
@@ -183,7 +183,7 @@ def my_extra_change(request, subscription_id):
         'member': request.user.member,
         "extras": subscriptions
     })
-    return render(request, "my_extra_change.html", renderdict)
+    return render(request, "extra_change.html", renderdict)
 
 
 def my_signup(request):

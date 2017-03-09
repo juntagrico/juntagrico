@@ -107,7 +107,7 @@ def my_home(request):
         'no_subscription': request.user.member.subscription is None,
     })
 
-    return render(request, "myhome.html", renderdict)
+    return render(request, "home.html", renderdict)
 
 
 @login_required
@@ -249,7 +249,7 @@ def my_pastjobs(request):
         'assignments': past_assingments,
         'menu': {'participation': 'active'},
     })
-    return render(request, "my_pastjobs.html", renderdict)
+    return render(request, "pastjobs.html", renderdict)
 
 
 
@@ -333,7 +333,7 @@ def my_contact(request):
         'is_sent': is_sent,
         'menu': {'contact': 'active'},
     })
-    return render(request, "my_contact.html", renderdict)
+    return render(request, "contact.html", renderdict)
 
 @login_required
 def my_contact_member(request, member_id, job_id):
@@ -432,7 +432,7 @@ def my_new_password(request):
     renderdict = {
         'sent': sent
     }
-    return render(request, 'my_newpassword.html', renderdict)
+    return render(request, 'newpassword.html', renderdict)
 
 
 def logout_view(request):

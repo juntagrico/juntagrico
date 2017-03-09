@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block allcontent %}
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <h3>Wähle dein Abo</h3>
+        <br/>
+
+        <h5>Infos:</h5>
+
+        Um Mitglied der Genossenschaft {{ config organisation_name }} zu werden, musst du mindestens einen Anteilschein (CHF {{ config share_price }}) erwerben.
+        <br/><br/>
+
+        <form action="" method="post" class="form-horizontal createsubscription">
+            {% csrf_token %}
+            {% for subscription_size in subscription_sizes %}
+            <div class="form-group">
+                <label class="col-md-4 control-label">{% if foorloop.first %}Abogrösse{% endif %}</label>
+
+                <div class="col-md-8 controls">
+                    <label class="radio" for="{{ subscription_size.name }}">
+                        <input type="radio" name="subscription" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if selected_subscription == subscription_size.name %}checked="checked"{% endif %}/>
+                        <strong>{{ subscription_size.long_name }}</strong>
+
+                        <br/>
+                        {{ subscription_size.description }}
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="form-group">
+                <label class="col-md-4 control-label"></label>
+
+                <div class="col-md-8 controls">
+                    <label class="radio" for="none">
+                        <input type="radio" name="subscription" value="none" id="none" {% if selected_subscription == "none" %}checked="checked"{% endif %}/>
+                        <strong>Kein Abo</strong>
+
+                        <br/>
+                        Du kannst auch ohne Gemüseabo{{ config organisation_name }}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
+                    </label>
+                </div>
+            </div>
+            <div id="start_date" class="form-group" style="display: none;">
+                <label class="col-md-4 control-label">Gewünschtes Startdatum</label>
+
+                <div class="col-md-8 controls">
+                    <label for="scheine">
+
+                        {{ subscriptionform.start_date }}
+                        Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein Abo zum gewünschten Datum frei ist.
+                    </label>
+                    {% if subscriptionform.start_date.errors %}
+                        <div class="alert alert-danger">Das gewählte Startdatum ist nicht gültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="depot">Depot</label>
+
+                <div class="col-md-8 controls">
+                    <select name="depot" id="depot" class="form-control">
+                        {% for depot in depots %}
+                            <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="depot">
+                        Wähle ein Depot aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
+                    </label>
+
+                    <div id="map-canvas"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-md-4 control-label">MitsubscriptionnnentInnen</label>
+
+                <div class="col-md-8 controls">
+                    {% if 0 == co_members|length %}
+                        <div>Bisher hast du keine MitsubscriptionnnentInnen eingetragen.</div>
+                    {% else %}
+                        <ul>
+                            {% for member in core_members %}
+                                <li>{{ member.first_name }} {{ member.last_name }} - {{ member.share_set.all|length }} Share(e)</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <button class="btn btn-small" id="add-member">Weitere MitabonnentIn hinzufügen</button>
+                    <br/><br/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label">Anteilscheine</label>
+
+                <div class="col-md-8 controls">
+                    <label for="shares">
+
+                        <input type="text" name="shares" id="shares" class="col-md-1 form-control"/><br/>
+                        Du kannst unbeschränkt und jederzeit Anteilscheine erwerben. Allerdings brauchst du je nach Abogrösse ein Minimum, um zu starten.
+                    </label>
+                    {% if shareerror %}
+                        <div class="alert alert-danger">Du brauchst mehr Anteilscheine für das gewählte Abo</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-md-offset-4 form-actions">
+                <button type="submit" class="btn btn-success">Abo erstellen</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        var member_scheine = {{ member_scheine }};
+        var member_addr = '{{ member.addr_street }}+{{ member.addr_zipcode }}+{{ member.addr_location }}';
+
+        var destinations = [];
+        var depots = [];
+        {% for depot in depots %}
+            {% if depot.latitude %}
+                destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}");
+                depots.push({
+                    name: '{{ depot.name }}',
+                    addr_street: '{{ depot.addr_street }}',
+                    addr_zipcode: '{{ depot.addr_zipcode }}',
+                    addr_location: '{{ depot.addr_location }}',
+                    latitude: '{{ depot.latitude }}',
+                    longitude: '{{ depot.longitude }}',
+                    code: '{{ depot.code }}'
+                });
+            {% endif %}
+        {% endfor %}
+
+	var sizes={
+	{% for subscription_size in subscription_sizes %}
+            "{{ subscription_size.name }}":{{ subscription_size.shares }},
+        {% endfor %}
+	}
+
+    </script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initCreateSubscription.js"></script>
+{% endblock %}

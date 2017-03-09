@@ -2,13 +2,13 @@
 {% block content %}
 Nicht vergessen:
 
-Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein {{ config organisation_name }}-Arbeitseinsatz "{{ job.typ.displayed_name }}" statt.
+Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein {{ config organisation_name }}-Arbeitseinsatz "{{ job.type.displayed_name }}" statt.
 
 Details:
 
-Job:             {{ job.typ.description }}
+Job:             {{ job.type.description }}
 Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-mitmembers:        {{ participants }}
+Teilnehmer:        {{ participants }}
 Verantwortlich:  {{ contact }}
 
 Wir freuen uns, dich zu sehen und zählen auf dich!
