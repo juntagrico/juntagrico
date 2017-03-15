@@ -40,10 +40,10 @@
             <div class="controls col-sm-8">
                 <label>
                     <div>
-                        Du willst ab nächstem Jahr kein {{ config organisation_name }}-Abo mehr? Dann schicke bitte deine Kündigung
-                        bis spätestens Ende Oktober an <a href="mailto:{{ config info_email }}?subject=Kündigung Abo {{ config server_url }}">{{ config info_email }}</a>.
+                        Du willst ab nächstem Jahr kein {% config "organisation_name" %}-Abo mehr? Dann schicke bitte deine Kündigung
+                        bis spätestens Ende Oktober an <a href="mailto:{% config "info_email" %}?subject=Kündigung Abo {% config "server_url" %}">{% config "info_email" %}</a>.
                         Weitere Infos zur Kündigung des Abos und der Mitgliedschaft findest du im
-                        <a href="/ {{ config business regulations }}">Betriebsreglement</a>.
+                        <a href="/ {% config "business regulations" %}">Betriebsreglement</a>.
                     </div>
                 </label>
             </div>

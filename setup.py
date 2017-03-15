@@ -1,8 +1,8 @@
 import os
 from setuptools import find_packages, setup
 
-with open(os.path.join(os.path.dirname(__file__), 'REAboDME.rst')) as readme:
-    REAboDME = readme.read()
+with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+    README = readme.read()
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     license='BSD License',  # example license
     description='juntagrico',
-    long_description=REAboDME,
+    long_description=README,
     url='https://www.example.com/',
     author='Your Name',
     author_email='yourname@example.com',
@@ -22,8 +22,8 @@ setup(
         'Environment :: Web Environment',
         'Framework :: Django',
         'Framework :: Django :: X.Y',  # replace "X.Y" as appropriate
-        'Intended Aboudience :: Developers',
-        'License :: OSI Abopproved :: BSD License',  # example license
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',  # example license
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         # Replace these appropriately if you are stuck on Python 2.

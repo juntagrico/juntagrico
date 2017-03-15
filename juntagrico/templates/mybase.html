@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <title>{{ config adminportal_name }}</title>
+    <title>{% config "adminportal_name" %}</title>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
 
     <link href="/static/external/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ config style_sheet() }}" rel="stylesheet">
+    <link href="{% config "style_sheet()" %}" rel="stylesheet">
     <link href="/static/css/personal.css" rel="stylesheet">
 
 </head>
@@ -56,7 +56,7 @@
                     </li>
                     <li class="separator"></li>
                     <li class="{{ menu.juntagrico }}">
-                        <a href="/aktuelles">{{ config server_url }}</a>
+                        <a href="/aktuelles">{% config "server_url" %}</a>
                     </li>
                     <li class="{{ menu.logout }}">
                         <a href="/logout">Abmelden</a>
@@ -68,12 +68,12 @@
                 <ul class="nav nav-pills nav-stacked admin-menu">
                     {% for depot in depot_admin %}
                         <li class="inline">
-                            <a href="/my/filters/depot/{{ depot.id }}">{{ config members_string }}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
+                            <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
                         </li>
                     {% endfor %}
                     {% for area in area_admin %}
                         <li>
-                            <a href="/my/filters/area/{{ area.id }}">{{ config members_string }} in {{ area.name }}</a>
+                            <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
                         </li>
                     {% endfor %}
                     {% if can_send_mails %}
@@ -93,7 +93,7 @@
                         <li class="inline">
                             Filtern 
                             {% if can_filter_members %}
-                            <a href="/my/filters">{{ config members_string }}</a> | 
+                            <a href="/my/filters">{% config "members_string" %}</a> | 
                             {% endif %}
                             {% if can_filter_subscriptions %}
                             <a href="/my/subscriptions">Abos</a>
@@ -117,7 +117,7 @@
                 <hr>
                 <div class="bohnen">
                     {% block bohnen %}
-                        <h5>Abo {{ config assignemts_string }}-Konto</h5>
+                        <h5>Abo {% config "assignments_string" %}-Konto</h5>
                         {% for i in bohnenrange %}
                             {% if i < userbohnen_kernbereich %}
                                 <img alt="Kernbereich" title="Kernbereich" class="jobstatus"

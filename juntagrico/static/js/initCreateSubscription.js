@@ -1,22 +1,22 @@
-/*global define, $, loco_scheine, depots, destinations, google */
+/*global define, $, mwember_shares, depots, destinations, google */
 define(['modules/depotDistance'], function (depotDistance) {
 
-    // check for the amount of shares of the loco
+    // check for the amount of shares of the member
     $("input[type=radio]").change(function () {
         var $checked = $(":checked");
-        if ($checked.val() === "none") {
+        if ($checked.val() == "none") {
             $("#shares").val(1);
         } 
         else {
-            $("#shares").val(Math.max(sizes[$checked.val()] - loco_scheine, 0));
+            $("#shares").val(Math.max(sizes[$checked.val()] - member_shares, 0));
         }
     }).change();
 
 
-    // check for the amount of shares of the loco
+    // check for the amount of shares of the member
     $("input[type=radio]").change(function () {
         var $checked = $(":checked");
-        if ($checked.val() === "none") {
+        if ($checked.val() == "none") {
             $("#start_date").hide();
 }
         else {
@@ -25,13 +25,16 @@ define(['modules/depotDistance'], function (depotDistance) {
     }).change();
 
 
-    // add additional loco form
-    $("#add-loco").click(function () {
-        $(this).after($('<input type="hidden" id="add-loco-value" name="add_loco" value="true"/>'));
-        $(this).closest("form").off("submit").submit();
+    // add additional member form
+    $("#add-member").click(function () {
+        var $checked = $(":checked");
+        if ($checked.val() != "none") { 
+        	$(this).after($('<input type="hidden" id="add-member-value" name="add_member" value="true"/>'));
+        	$(this).closest("form").off("submit").submit();
+        }
     });
     $("form").submit(function () {
-        $("#add-loco-value").remove();
+        $("#add-member-value").remove();
     });
 
     // preselect depot
@@ -39,6 +42,6 @@ define(['modules/depotDistance'], function (depotDistance) {
         $("#depot").val(window.depot_id);
     }
 
-    depotDistance.calculate(loco_addr, destinations, depots);
+    depotDistance.calculate(member_addr, destinations, depots);
 
 });

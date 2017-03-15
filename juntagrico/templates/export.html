@@ -4,10 +4,10 @@
     <div id="depot">
         <h3>Exporte</h3>
             <br/>
-            <h4>{{ config members_string }}</h4>
+            <h4>{% config "members_string" %}</h4>
             <a href="/my/export/members/">exportieren</a>
             <br/><br/>
-            <h4>{{ config members_string }} mit {{ config assignments_string }} und Tätigketsbereichen</h4>
+            <h4>{% config "members_string" %} mit {% config "assignments_string" %} und Tätigketsbereichen</h4>
             <a href="/my/export/membersfilter">exportieren</a>
             <br/><br/>
             <h4>Anteilsscheine</h4>

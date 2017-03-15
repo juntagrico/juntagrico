@@ -2,7 +2,7 @@
 {% block content %}
 Achtung:
 
-Dein {{ config organisation_name }}-Arbeitseinsatz "{{ job.type.displayed_name }}" findet neu um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} statt.
+Dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.displayed_name }}" findet neu um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} statt.
 
 Details:
 
@@ -14,5 +14,5 @@ Ort:             {{ job.type.location }}
 Wir freuen uns, dich zu sehen und zählen auf dich!
 
 Herzlich grüsst,
-dein {{ config organisation_name }}-Team
+dein {% config "organisation_name" %}-Team
 {% endblock %}

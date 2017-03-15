@@ -55,7 +55,7 @@ class SubscriptionAdminForm(forms.ModelForm):
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
-        fields = ["type, "slots"]
+        fields = ["type", "slots"]
 
     weekdays = forms.MultipleChoiceField(label="Wochentage", choices=helpers.weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
@@ -97,7 +97,7 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = RecuringJob.objects.create(typeinst.type slots=inst.slots, time=dt)
+            job = RecuringJob.objects.create(typeinst.type, slots=inst.slots, time=dt)
             newjobs.append(job)
             job.save()
 
@@ -154,7 +154,7 @@ class AssignmentInline(admin.TabularInline):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "type, "time", "slots", "freie_plaetze"]
+    list_display = ["__unicode__", "type", "time", "slots", "freie_plaetze"]
     actions = ["copy_job", "mass_copy_job"]
     search_fields = ["type_name", "type_activityarea__name"]
     exclude = ["reminder_sent"]
@@ -173,7 +173,7 @@ class JobAdmin(admin.ModelAdmin):
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = RecuringJob(typeinst.type slots=inst.slots, time=inst.time)
+            newjob = RecuringJob(typeinst.type, slots=inst.slots, time=inst.time)
             newjob.save()
 
     copy_job.short_description = "Jobs kopieren"
@@ -209,7 +209,7 @@ class JobAdmin(admin.ModelAdmin):
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "type and request.user.has_perm("juntagrico.is_area_admin") and (
+        if db_field.name == "type" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
             kwargs["queryset"] = JobType.objects.filter(activityarea__coordinator=request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)

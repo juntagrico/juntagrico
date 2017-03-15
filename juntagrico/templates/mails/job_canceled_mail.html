@@ -1,7 +1,7 @@
 {% extends "mails/email.html" %}
 {% block content %}
 
-    Dein {{ config organisation_name }}-Arbeitseinsatz <b>{{ job.type.displayed_name }}<b/>  um <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> wurde leider Abgesagt.
+    Dein {% config "organisation_name" %}-Arbeitseinsatz <b>{{ job.type.displayed_name }}<b/>  um <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> wurde leider Abgesagt.
     <br/><br/>
     Details:
     <table cellspacing="0" cellpadding="0">
@@ -22,5 +22,5 @@
     Es tut uns leid und hoffen dich bei einem anderen Einsatz wieder zu sehen!<br/><br/>
 
     Herzlich grüsst,<br/>
-    dein {{ config organisation_name }}-Team
+    dein {% config "organisation_name" %}-Team
 {% endblock %}

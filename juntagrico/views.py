@@ -99,7 +99,7 @@ def my_home(request):
 
     next_jobs = set(get_current_jobs()[:7])
     pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=timezone.now()))
-    next_activityday = set(RecuringJob.objects.filter(type_name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
+    next_activityday = set(RecuringJob.objects.filter(type__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_activityday), key=lambda job: job.time),

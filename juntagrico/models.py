@@ -136,7 +136,7 @@ class ExtraSubscriptionType(models.Model):
     size = models.CharField("Groesse (gross,4, ...)", max_length=100, default="")
     description = models.TextField("Beschreibung", max_length=1000)
     sort_order = models.FloatField("Groesse zum Sortieren", default=1.0)
-    category = models.ForeignKey("ExtraAboCategory", related_name="category", null=True, blank=True,
+    category = models.ForeignKey("ExtraSubscriptionCategory", related_name="category", null=True, blank=True,
                                  on_delete=models.PROTECT)
 
     def __unicode__(self):
@@ -167,7 +167,7 @@ class ExtraSubscription(Billable):
     """
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     """
-    main_subscription = models.ForeignKey("Abo", related_name="extra_subscription_set", null=False, blank=False,
+    main_subscription = models.ForeignKey("Subscription", related_name="extra_subscription_set", null=False, blank=False,
                                  on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     canceled = models.BooleanField("gekündigt", default=False)
@@ -532,7 +532,7 @@ class Job(PolymorphicModel):
     old_time = None
 
     @property
-    def typeself):
+    def type(self):
         raise NotImplementedError
 
     def __unicode__(self):
@@ -626,7 +626,7 @@ class OneTimeJob(Job, AbstractJobType):
     """
 
     @property
-    def typeself):
+    def type(self):
         return self
 
     def __unicode__(self):

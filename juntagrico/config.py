@@ -77,7 +77,7 @@ class Config:
         return "my.juntagrico.juntagrico"
 
     @staticmethod
-    def business regulations():
+    def business_regulations():
         if hasattr(settings, 'BUSINESS_REGULATIONS'):
             return settings.BUSINESS_REGULATIONS
         return "/static/docs/business_regulations.pdf"
@@ -117,3 +117,9 @@ class Config:
         if hasattr(settings, 'SHARE_PRICE'):
             return settings.SHARE_PRICE
         return "250"
+
+    @staticmethod
+    def google_api_key():
+        if hasattr(settings, 'GOOGLE_API_KEY'):
+            return settings.GOOGLE_API_KEY
+        return "GOOGLE_API_KEY"

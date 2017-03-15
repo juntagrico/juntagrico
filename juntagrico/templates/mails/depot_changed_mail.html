@@ -2,7 +2,7 @@
 {% block content %}
     Achtung: <br/>
 
-    Dein {{ config organisation_name }}-Depot hat wie von dir gewünscht gewechselt. 
+    Dein {% config "organisation_name" %}-Depot hat wie von dir gewünscht gewechselt. 
     <br/><br/>
     Details:
     <table cellspacing="0" cellpadding="0">
@@ -30,5 +30,5 @@
 
 
     Herzlich grüsst,<br/>
-    dein {{ config organisation_name }}-Team
+    dein {% config "organisation_name" %}-Team
 {% endblock %}

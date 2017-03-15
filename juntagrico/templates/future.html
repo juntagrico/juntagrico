@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>Hier siehst du die Zukunft von {{ config organisation_name }}</h3>
+    <h3>Hier siehst du die Zukunft von {% config "organisation_name" %}</h3>
     {% if changed %}
         <div class="alert alert-success">Abos wurden geändert</div>
     {% endif %}
 
-    <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte {{ config organisation_name }} die folgenden Abos und Zusatzsubscriptions.</div>
+    <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte {% config "organisation_name" %} die folgenden Abos und Zusatzsubscriptions.</div>
 
     <table class="future">
         <tr>

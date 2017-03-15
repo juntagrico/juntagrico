@@ -62,7 +62,7 @@ def my_subscription(request):
         'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
         'menu': {'subscriptionnnement': 'active'},
     })
-    return render(request, "my_subscription.html", renderdict)
+    return render(request, "subscription.html", renderdict)
 
 
 @primary_member_of_subscription
@@ -423,3 +423,156 @@ def my_confirm(request, hash):
             member.save()
 
     return redirect("/my/home")
+
+
+
+@login_required
+def createsubscription(request):
+    """
+    create a subscription
+    """
+    member = request.user.member
+    shareerror = False
+    subscriptionform = SubscriptionForm()
+    session_subscription = request.session.get('create_subscription')
+    co_members = request.session.get('create_co_members', [])
+    co_members_shares = request.session.get('create_co_members_shares', [])
+    member_shares = request.session.get('create_member_shares', [])
+
+    selectedsubscription="none"
+    co_member_shares = 0
+    selected_depot = None
+    
+    if session_subscription is not None:
+        selectedsubscription = next(iter(SubscriptionSize.objects.filter(size=session_subscription.size).values_list('name', flat=True) or []), 'none')
+        selected_depot = session_subscription.depot
+    
+    for co_members_share in co_members_shares:
+            co_member_shares += 1
+
+    if request.method == "POST":
+        shares = int(request.POST.get("shares"))
+        selectedsubscription = request.POST.get("subscription")
+        subscriptionform = SubscriptionForm(request.POST)
+
+        shares += co_member_shares
+        min_num_shares = next(iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('shares', flat=True) or []), 1)
+        if shares < min_num_shares or not subscriptionform.is_valid():
+            shareerror = shares < min_num_shares
+        else:
+            depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
+            size = next(iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('size', flat=True) or []), 0)
+
+            if size > 0:
+                session_subscription=Subscription(**form_data.cleaned_data)
+                session_subscription.depot=depot
+                session_subscription.pirmary_member=member
+                session_subscription.size=size    
+
+            if member_shares.count() < int(request.POST.get("shares")):
+                toadd = int(request.POST.get("shares")) - member_shares.count()
+                for num in range(0, toadd):
+                    members_share.append(Share(member=member, paid_date=None))
+            elif member_shares.count() > int(request.POST.get("shares")):
+                
+
+            if request.POST.get("add_member"):
+                request.session.['create_subscription'] = session_subscription
+                return redirect("/my/subscriptionnnent/"
+            else:
+                password = password_generator()
+                request.user.set_password(password)
+                request.user.save()
+                #user did it all => send confirmation mail
+                send_welcome_mail(member.email, password, request.META["HTTP_HOST"])
+
+                return redirect("/my/willkommen")
+
+    renderdict = {
+        'member_shares': member_shares,
+        'member': request.user.member,
+        'subscription_sizes': SubscriptionSize.objects.order_by('size'),
+        'depots': Depot.objects.all(),
+        'selected_depot': selected_depot,
+        'selected_subscription': selectedsubscription,
+        'shareerror': shareerror,
+        'co_members': co_members,
+        'subscriptionform': subscriptionform
+    }
+    return render(request, "createsubscription.html", renderdict)
+
+@login_required
+def add_member(request, subscription_id):
+    shareerror = False
+    shares = 1
+    memberexists = False
+    memberblocked = False
+    member = False
+    if request.method == 'POST':
+        memberform = MemberProfileForm(request.POST)
+        members = Member.objects.filter(email=request.POST.get('email'))
+        if members.count() > 0:
+            memberexists = True
+            member= members[0]
+            if member.subscription is not None:
+                memberblocked=True
+        try:
+            shares = int(request.POST.get("shares"))
+            shareerror = shares < 0
+        except TypeError:
+            shareerror = True
+        except  ValueError:
+            shareerror = True
+        if memberform.is_valid() and shareerror is False and memberexists is False:
+            pw = password_generator()
+            member = Member.objects.create(first_name=memberform.cleaned_data['first_name'], last_name=memberform.cleaned_data['last_name'], email=memberform.cleaned_data['email'])
+            member.first_name = memberform.cleaned_data['first_name']
+            member.last_name = memberform.cleaned_data['last_name']
+            member.email = memberform.cleaned_data['email']
+            member.addr_street = memberform.cleaned_data['addr_street']
+            member.addr_zipcode = memberform.cleaned_data['addr_zipcode']
+            member.addr_location = memberform.cleaned_data['addr_location']
+            member.phone = memberform.cleaned_data['phone']
+            member.mobile_phone = memberform.cleaned_data['mobile_phone']
+            member.confirmed = False
+            member.subscription_id = subscription_id
+            member.save()
+            member.user.set_password(pw)
+            member.user.save()
+
+            for num in range(0, shares):
+                share = Share(member=member, paid_date=None)
+                share.save()
+                send_share_created_mail(share, request.META["HTTP_HOST"])
+            send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
+
+            member.save()
+            if request.GET.get("return"):
+                return redirect(request.GET.get("return"))
+            return redirect('/my/subscriptionerstellen')
+        if  memberexists is True and memberblocked is False:
+            member.subscription_id=subscription_id
+            member.save()
+            if request.GET.get("return"):
+                return redirect(request.GET.get("return"))
+            return redirect('/my/subscriptionerstellen')
+    else:
+        member = request.user.member
+        initial = {"addr_street": member.addr_street,
+                   "addr_zipcode": member.addr_zipcode,
+                   "addr_location": member.addr_location,
+                   "phone": member.phone,
+        }
+        memberform = MemberProfileForm(initial=initial)
+    renderdict = {
+        'shares': shares,
+        'memberexists': memberexists,
+        'memberblocked': memberexists,
+        'shareerror': shareerror,
+        'memberform': memberform,
+        "member": request.user.member,
+        "depots": Depot.objects.all(),
+        "cancelUrl": request.GET.get("return")
+    }
+    return render(request, "add_member.html", renderdict)
+

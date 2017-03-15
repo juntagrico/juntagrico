@@ -2,7 +2,7 @@
 {% block content %}
     Nicht vergessen: <br/>
 
-    Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein {{ config organisation_name }}-Arbeitseinsatz <b>"{{ job.type.displayed_name }}"</b> statt.
+    Am <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> findet dein {% config "organisation_name" %}-Arbeitseinsatz <b>"{{ job.type.displayed_name }}"</b> statt.
     <br/><br/>
     Details:
     <table cellspacing="0" cellpadding="0">
@@ -31,5 +31,5 @@
     Wir freuen uns, dich zu sehen und zählen auf dich!<br/><br/>
 
     Herzlich grüsst,<br/>
-    dein {{ config organisation_name }}-Team
+    dein {% config "organisation_name" %}-Team
 {% endblock %}

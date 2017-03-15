@@ -1,8 +1,8 @@
 {% extends "mails/email.html" %}
 {% block content %}
-    Wir freuen uns, dich bei {{ config organisation_name }} zu begrüssen.
+    Wir freuen uns, dich bei {% config "organisation_name" %} zu begrüssen.
     <br/><br/>
-    {{ config organisation_name }} ist ein genossenschaftlich organisierter Garten – Die Mitglieder produzieren gemeinsam ihr feines Gemüse. Jedes Mitglied der Genossenschaft kauft mindestens einen Anteilschein à {{ config share_price }} Franken. Damit finanziert {{ config organisation_name }} die Infrastruktur. Somit bist du MiteigentümerIn des Gemüsebetriebs und kannst bei vielen Entscheidungen mitbestimmen. Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet.
+    {% config "organisation_name" %} ist ein genossenschaftlich organisierter Garten – Die Mitglieder produzieren gemeinsam ihr feines Gemüse. Jedes Mitglied der Genossenschaft kauft mindestens einen Anteilschein à {% config "share_price" %} Franken. Damit finanziert {% config "organisation_name" %} die Infrastruktur. Somit bist du MiteigentümerIn des Gemüsebetriebs und kannst bei vielen Entscheidungen mitbestimmen. Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet.
     <br/><br/>
     Bitte zahle den Betrag für den/die Anteilschein/e auf das folgende Konto ein:<br/>
     {{config organisation_address }}
@@ -10,11 +10,11 @@
     <br/><br/>
     Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
     <br/><br/>
-    Gerne darfst du schon vorher im Garten schnuppern kommen – schau dich auf der Online-Plattform <a href="{{ serverurl }}/my/home">www.{{ config server_url }}/my/home</a> um und melde dich für einen Einsatz an, wenn du Lust hast. Dein Login:<br/>
+    Gerne darfst du schon vorher im Garten schnuppern kommen – schau dich auf der Online-Plattform <a href="{{ serverurl }}/my/home">www.{% config "server_url" %}/my/home</a> um und melde dich für einen Einsatz an, wenn du Lust hast. Dein Login:<br/>
     Email: {{ username }}<br/>
     Passwort: {{ password }} (bitte setze dir <a href="{{ serverurl }}/my/passwort">hier</a> gleich ein neues Passwort)
     <br/><br/>
-    Für weitere Fragen schaust du in den <a href="{{ serverurl }}{{ config faq_doc }}">FAQ</a> nach oder schreibst eine Mail an <a href="mailto:{{ config info_email }}">{{ config info_email }}</a>.
+    Für weitere Fragen schaust du in den <a href="{{ serverurl }}{% config "faq_doc" %}">FAQ</a> nach oder schreibst eine Mail an <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>.
     <br/><br/>
-    Bis bald und liebe Grüsse die {{ config organisation_name }}-Betriebsgruppe
+    Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
 {% endblock %}

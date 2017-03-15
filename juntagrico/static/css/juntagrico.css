@@ -304,34 +304,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     padding: 0px 40px 0 40px;
 }
 
-.juntagrico {
-    margin-top: 80px;
-    background: url(/static/img/ortoloco_full.gif) bottom no-repeat;
-    padding-bottom: 400px;
-}
-
-.juntagrico.home {
-    background: none;
-    padding-bottom: 0;
-}
-
-.juntagrico.home .lastNews {
-    margin-bottom: 585px;
-}
-
-.juntagrico.home .lastNews h3 {
-    color: #347094;
-}
-
-.ortoloco.home .ortoloco_gemuese {
-    background: url(/static/img/ortoloco_home_small.gif) right bottom no-repeat;
-    position: absolute;
-    bottom: -5px;
-    right: 70px;
-    width: 623px;
-    height: 600px;
-}
-
 .container .circletop {
     position: absolute;
     left: 0;
@@ -466,33 +438,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 .addresses {
     padding-top: 20px;
     padding-bottom: 40px;
-}
-
-/* gallery */
-.lastImg, .lastImg:hover, .nextImg, .nextImg:hover {
-    position: relative;
-    display: inline-block;
-    z-index: 100;
-    opacity: 1;
-    font-size: 70px;
-    line-height: 70px;
-    text-decoration: none;
-    text-align: center;
-}
-
-.photo-gallery {
-    display: block;
-    clear: both;
-    overflow: auto;
-}
-
-.gallery-photo {
-    text-align: center;
-    list-style: none;
-}
-
-.galleryDate {
-    padding-bottom: 20px;
 }
 
 .impersonate {

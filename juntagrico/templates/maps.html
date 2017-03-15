@@ -2,7 +2,7 @@
 
 {% block content %}
     <div id="maps">
-        <h3>Alle Depots und {{ config members_string }}</h3>
+        <h3>Alle Depots und {% config "members_string" %}</h3>
 
         <div class="row">
         </div>
@@ -35,6 +35,6 @@
     </script>
     <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMaps.js"></script>
     <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwgHE65hyBkmTeUG178QxKXLhniRZ9J3s"
+            src="https://maps.googleapis.com/maps/api/js?key={% config "google_api_key" %}"
         type="text/javascript"></script>
 {% endblock %}

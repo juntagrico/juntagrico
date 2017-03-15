@@ -2,7 +2,7 @@
 {% block content %}
 Hallo lieber Buchhalter
 
-Folgender {{ config member_string }} hat einen Anteilschein Bestellt
+Folgender {% config "member_string" %} hat einen Anteilschein Bestellt
 {{member.get_name}}
 {{member.addr_street}}
 {{member.addr_zipcode}} {{member.addr_location}}

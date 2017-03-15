@@ -28,7 +28,7 @@ define([], function () {
         );
     };
 
-    var calculateDistances = function (loco_addr, destinations, depots) {
+    var calculateDistances = function (member_addr, destinations, depots) {
 
         // sort the depots for their distance
         var callback = function (response, status) {
@@ -61,7 +61,7 @@ define([], function () {
 
             var service = new google.maps.DistanceMatrixService();
             service.getDistanceMatrix({
-                origins: [loco_addr],
+                origins: [member_addr],
                 destinations: destinations,
                 travelMode: google.maps.TravelMode.WALKING,
                 unitSystem: google.maps.UnitSystem.METRIC

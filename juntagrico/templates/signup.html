@@ -6,20 +6,20 @@
 
 {% block content %}
       <h3>GenossenschafterIn werden</h3>
-      Interessiert an {{ config organisation_name }}?
+      Interessiert an {% config "organisation_name" %}?
       <br/><br/>
-      Die Mitgliedschaft bei {{ config organisation_name }} ist geknüpft an den Erwerb von rückzahlbaren Anteilscheinen in der Höhe von CHF {{ config share_price }} pro Anteilschein. Die Anzahl Anteilscheine ist abhängig von der Abogrösse. Dabei
+      Die Mitgliedschaft bei {% config "organisation_name" %} ist geknüpft an den Erwerb von rückzahlbaren Anteilscheinen in der Höhe von CHF {% config "share_price" %} pro Anteilschein. Die Anzahl Anteilscheine ist abhängig von der Abogrösse. Dabei
       sind in der Regel für ein kleines Gemüseabo zwei und für ein grosses Gemüseabo vier Anteilscheine zu erwerben. Die Anteilscheine sind das Genossenschaftskapital, das vor allem zur Finanzierung von
       Investitionen – zum Beispiel Infrastruktur – verwendet wird.
       <br/><br/>
-      Die GenossenschafterInnen tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei. Wer bei {{ config organisation_name }} ein Gemüseabo bezieht, verpflichtet sich zur
+      Die GenossenschafterInnen tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei. Wer bei {% config "organisation_name" %} ein Gemüseabo bezieht, verpflichtet sich zur
       Mitarbeit: Für's kleine Gemüseabo sind jährlich mindestens 10 und für's grosse Gemüseabo 20 Einsätze. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
       <br/>
       <br/>
       Bevor du dich als GenossenschafterIn anmeldest, lies bitte die Statuten und das Betriebsreglement durch.
       <ul>
-          <li><a target="_blank" href="{{ config bylaws }}">Statuten</a></li>
-          <li><a target="_blank" href="{{ config business regulations }}">Betriebsreglement</a></li>
+          <li><a target="_blank" href="{% config "bylaws" %}">Statuten</a></li>
+          <li><a target="_blank" href="{% config "business regulations" %}">Betriebsreglement</a></li>
       </ul>
       <br/>
 
@@ -127,7 +127,7 @@
                         <label>
                             {{ memberform.agb }}
                             <input type="checkbox" name="agb" id="agb" {% if agbchecked %}checked="checked"{% endif %}>
-                            Ich habe <a target="_blank" href="{{ config bylaws }}">die Statuten</a> und <a target="_blank" href="{{ config business regulations }}">das Betriebsreglement</a> gelesen und erkläre meinen Willen, "{{ config organisation_long_name }}"
+                            Ich habe <a target="_blank" href="{% config "bylaws" %}">die Statuten</a> und <a target="_blank" href="{% config "business regulations" %}">das Betriebsreglement</a> gelesen und erkläre meinen Willen, "{% config "organisation_long_name" %}"
                             beizutreten. Hiermit beantrage ich meine Aufnahme.
 
                             {% if agberror %}

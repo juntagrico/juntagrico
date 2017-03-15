@@ -23,7 +23,7 @@
         <div class="col-sm-10" id="sender-email">
             <select name="sender" class="form-control">
                 {% if can_use_general_email %}
-                <option value="{{ config info_email }}">{{ config info_email }}</option>
+                <option value="{% config "info_email" %}">{% config "info_email" %}</option>
                 {% endif %}
                 <option value="{{ email }}">{{ email }}</option>
             </select>

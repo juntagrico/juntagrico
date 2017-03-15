@@ -6,7 +6,7 @@ from juntagrico.models import *
 
 from .personal_mailer import *
 
-from static_ortoloco.models import Politoloco
+#from static_ortoloco.models import Politoloco
 
 @permission_required('static_ortoloco.can_send_newsletter')
 def send_politoloco(request):

@@ -5,7 +5,7 @@
     <div class="col-md-8">
         <h3>MitabonnentIn hinzufügen</h3>
         <br/>
-		Bei bestehenden {{ config members_string }} reicht es die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
+		Bei bestehenden {% config "members_string" %} reicht es die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
         <form action="" method="post" class="form-horizontal" id="new_member">
             {% csrf_token %}
             <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
@@ -121,7 +121,7 @@
             </div>
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
-                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem Abo dabei. Bitte meldet euch bei <a href="mailto:{{ config info_email }}">{{ config info_email }}</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
+                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem Abo dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
                 </div>
             {% endif %}
             <div class="form-actions col-sm-offset-4">

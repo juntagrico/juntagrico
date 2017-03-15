@@ -2,4 +2,4 @@
 {% block content %}{% endblock %}
 
 ============
-weitere Infos: http://{{ config server_url }}
+weitere Infos: http://{% config "server_url" %}

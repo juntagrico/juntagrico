@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load config %}
 
 {% block allcontent %}
     <div class="col-md-2"></div>
@@ -8,7 +9,7 @@
 
         <h5>Infos:</h5>
 
-        Um Mitglied der Genossenschaft {{ config organisation_name }} zu werden, musst du mindestens einen Anteilschein (CHF {{ config share_price }}) erwerben.
+        Um Mitglied der Genossenschaft {% config "organisation_name" %} zu werden, musst du mindestens einen Anteilschein (CHF {% config "share_price" %}) erwerben.
         <br/><br/>
 
         <form action="" method="post" class="form-horizontal createsubscription">
@@ -28,19 +29,20 @@
                 </div>
             </div>
             {% endfor %}
+	    {% if 0 == co_members|length %}
             <div class="form-group">
                 <label class="col-md-4 control-label"></label>
-
                 <div class="col-md-8 controls">
                     <label class="radio" for="none">
                         <input type="radio" name="subscription" value="none" id="none" {% if selected_subscription == "none" %}checked="checked"{% endif %}/>
                         <strong>Kein Abo</strong>
 
                         <br/>
-                        Du kannst auch ohne Gemüseabo{{ config organisation_name }}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
+                        Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
                     </label>
                 </div>
-            </div>
+            </div>                        
+            {% endif %}
             <div id="start_date" class="form-group" style="display: none;">
                 <label class="col-md-4 control-label">Gewünschtes Startdatum</label>
 
@@ -74,11 +76,11 @@
             </div>
 
             <div class="form-group">
-                <label class="col-md-4 control-label">MitsubscriptionnnentInnen</label>
+                <label class="col-md-4 control-label">MitabonnentInnen</label>
 
                 <div class="col-md-8 controls">
                     {% if 0 == co_members|length %}
-                        <div>Bisher hast du keine MitsubscriptionnnentInnen eingetragen.</div>
+                        <div>Bisher hast du keine MitabonnentInnen eingetragen.</div>
                     {% else %}
                         <ul>
                             {% for member in core_members %}
@@ -115,7 +117,7 @@
 
 {% block scripts %}
     <script type="text/javascript">
-        var member_scheine = {{ member_scheine }};
+        var member_shares = {{ member_shares }};
         var member_addr = '{{ member.addr_street }}+{{ member.addr_zipcode }}+{{ member.addr_location }}';
 
         var destinations = [];
@@ -142,7 +144,6 @@
 	}
 
     </script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
-    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={% config "google_api_key" %}"></script>
     <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initCreateSubscription.js"></script>
 {% endblock %}

@@ -5,6 +5,6 @@ register = template.Library()
 
 
 @register.simple_tag
-defconfig(property):
-    return getattr(Config,property)()
+def config(property):
+    return getattr(Config, property)()
     

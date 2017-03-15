@@ -1,6 +1,6 @@
 {% extends "mails/email.html" %}
 {% block content %}
-    Du hast dich für den {{ config organisation_name }}-Arbeitseinsatz <b>"{{ job.type.displayed_name }}"</b> um <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> eingeschrieben.
+    Du hast dich für den {% config "organisation_name" %}-Arbeitseinsatz <b>"{{ job.type.displayed_name }}"</b> um <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> eingeschrieben.
     <br/><br/>
     Details:
     <table cellspacing="0" cellpadding="0">
@@ -25,5 +25,5 @@
     Wir freuen uns, dich zu sehen und zählen auf dich!<br/><br/>
 
     Herzlich grüsst,<br/>
-    dein {{ config organisation_name }}-Team
+    dein {% config "organisation_name" %}-Team
 {% endblock %}
