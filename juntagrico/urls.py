@@ -38,8 +38,8 @@ urlpatterns = [
     url('^my/subscription/(?P<subscription_id>.*?)/aendern/groesse$', juntagrico_subscription.my_size_change),
     url('^my/subscription/(?P<subscription_id>.*?)/aendern/extra$', juntagrico_subscription.my_extra_change),
     url('^my/anmelden$', juntagrico_subscription.my_signup),
-    url('^my/subscriptionnnent/(?P<subscription_id>.*?)/', juntagrico_subscription.my_add_member),
-    url('^my/subscriptionerstellen$', juntagrico_subscription.my_createsubscription),
+    url('^my/subscriptionnnent/(?P<subscription_id>.*?)/', juntagrico_subscription.add_member),
+    url('^my/subscriptionerstellen$', juntagrico_subscription.createsubscription),
     url('^my/willkommen$', juntagrico_subscription.my_welcome),
     url('^my/bestaetigung/(?P<hash>.*?)/', juntagrico_subscription.my_confirm),
     

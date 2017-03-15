@@ -209,15 +209,8 @@ def my_signup(request):
                     #set all fields of user
                     #email is also username... we do not use it
                     password = password_generator()
-
-                    member = Member.objects.create(first_name=memberform.cleaned_data['first_name'], last_name=memberform.cleaned_data['last_name'], email=memberform.cleaned_data['email'])
-                    member.addr_street = memberform.cleaned_data['addr_street']
-                    member.addr_zipcode = memberform.cleaned_data['addr_zipcode']
-                    member.addr_location = memberform.cleaned_data['addr_location']
-                    member.phone = memberform.cleaned_data['phone']
-                    member.mobile_phone = memberform.cleaned_data['mobile_phone']
+                    member = Member(**memberform.cleaned_data)
                     member.save()
-
                     member.user.set_password(password)
                     member.user.save()
 
@@ -464,7 +457,7 @@ def createsubscription(request):
             size = next(iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('size', flat=True) or []), 0)
 
             if size > 0:
-                session_subscription=Subscription(**form_data.cleaned_data)
+                session_subscription=Subscription(**subscriptionform.cleaned_data)
                 session_subscription.depot=depot
                 session_subscription.pirmary_member=member
                 session_subscription.size=size    
@@ -472,20 +465,38 @@ def createsubscription(request):
             if member_shares.count() < int(request.POST.get("shares")):
                 toadd = int(request.POST.get("shares")) - member_shares.count()
                 for num in range(0, toadd):
-                    members_share.append(Share(member=member, paid_date=None))
+                    member_shares.append(Share(member=member, paid_date=None))
             elif member_shares.count() > int(request.POST.get("shares")):
-                
+                toremove = int(request.POST.get("shares")) - member_shares.count()
+                for num in range(0, toremove):
+                    member_shares.pop()
 
             if request.POST.get("add_member"):
-                request.session.['create_subscription'] = session_subscription
-                return redirect("/my/subscriptionnnent/"
+                request.session['create_subscription'] = session_subscription
+                request.session['create_member_shares'] = member_shares
+                return redirect("/my/subscriptionnnent/0")
             else:
                 password = password_generator()
                 request.user.set_password(password)
                 request.user.save()
-                #user did it all => send confirmation mail
+                session_subscription.save()
+                member.subscription_id= session_subscription.id
                 send_welcome_mail(member.email, password, request.META["HTTP_HOST"])
-
+                for co_member in co_members:
+                    pw = password_generator()
+                    co_member.subscription_id = session_subscription.id
+                    co_member.save()
+                    co_member.user.set_password(pw)
+                    co_member.user.save()
+                    send_been_added_to_subscription(co_member.email, pw, request.user.member.get_name(), shares,
+                                                    hashlib.sha1(co_member.email + str(
+                                                        session_subscription.id)).hexdigest(), request.META["HTTP_HOST"])
+                for share in member_shares:
+                    share.save()
+                    send_share_created_mail(share, request.META["HTTP_HOST"])
+                for share in co_member_shares:
+                    share.save()
+                    send_share_created_mail(share, request.META["HTTP_HOST"])
                 return redirect("/my/willkommen")
 
     renderdict = {
@@ -521,41 +532,42 @@ def add_member(request, subscription_id):
             shareerror = shares < 0
         except TypeError:
             shareerror = True
-        except  ValueError:
+        except ValueError:
             shareerror = True
         if memberform.is_valid() and shareerror is False and memberexists is False:
-            pw = password_generator()
-            member = Member.objects.create(first_name=memberform.cleaned_data['first_name'], last_name=memberform.cleaned_data['last_name'], email=memberform.cleaned_data['email'])
-            member.first_name = memberform.cleaned_data['first_name']
-            member.last_name = memberform.cleaned_data['last_name']
-            member.email = memberform.cleaned_data['email']
-            member.addr_street = memberform.cleaned_data['addr_street']
-            member.addr_zipcode = memberform.cleaned_data['addr_zipcode']
-            member.addr_location = memberform.cleaned_data['addr_location']
-            member.phone = memberform.cleaned_data['phone']
-            member.mobile_phone = memberform.cleaned_data['mobile_phone']
+            member = Member(**memberform.cleaned_data)
             member.confirmed = False
-            member.subscription_id = subscription_id
-            member.save()
-            member.user.set_password(pw)
-            member.user.save()
-
-            for num in range(0, shares):
-                share = Share(member=member, paid_date=None)
-                share.save()
-                send_share_created_mail(share, request.META["HTTP_HOST"])
-            send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
-
-            member.save()
             if request.GET.get("return"):
+                pw = password_generator()
+                member.subscription_id = subscription_id
+                member.save()
+                member.user.set_password(pw)
+                member.user.save()
+                send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
+                for num in range(0, shares):
+                    share = Share(member=member, paid_date=None)
+                    share.save()
+                    send_share_created_mail(share, request.META["HTTP_HOST"])
                 return redirect(request.GET.get("return"))
-            return redirect('/my/subscriptionerstellen')
-        if  memberexists is True and memberblocked is False:
-            member.subscription_id=subscription_id
-            member.save()
+            else:
+                co_members_shares = request.session.get('create_co_members_shares', [])
+                for num in range(0, shares):
+                    co_members_shares.append(Share(member=member, paid_date=None))
+                request.session['create_co_members_shares']=co_members_shares
+                co_members = request.session.get('create_co_members', [])
+                co_members.append(member)
+                request.session['create_co_members']=co_members
+                return redirect('/my/subscriptionerstellen')
+        if memberexists is True and memberblocked is False:
             if request.GET.get("return"):
+                member.subscription_id = subscription_id
+                member.save()
                 return redirect(request.GET.get("return"))
-            return redirect('/my/subscriptionerstellen')
+            else:
+                co_members = request.session.get('create_co_members', [])
+                co_members.append(member)
+                request.session['create_co_members'] = co_members
+                return redirect('/my/subscriptionerstellen')
     else:
         member = request.user.member
         initial = {"addr_street": member.addr_street,
