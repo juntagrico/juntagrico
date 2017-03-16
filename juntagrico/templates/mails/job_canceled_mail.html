@@ -1,4 +1,5 @@
 {% extends "mails/email.html" %}
+{% load config %}
 {% block content %}
 
     Dein {% config "organisation_name" %}-Arbeitseinsatz <b>{{ job.type.displayed_name }}<b/>  um <b>{{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}</b> wurde leider Abgesagt.

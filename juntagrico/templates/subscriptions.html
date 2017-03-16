@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load config %}
 
 {% block content %}
     <h3>Alle Abos im Überblick</h3>
@@ -22,8 +23,8 @@
                 <th>Hauptmember</th>
                 <th>Weitere {% config "members_string" %}</th>
                 <th>Depot</th>
-                <th>{{config assignments_string }}</th>
-                <th>{{config assignments_string }} Kernbereich</th>
+                <th>{% config "assignments_string" %}</th>
+                <th>{% config "assignments_string" %} Kernbereich</th>
                 <th>Aktiv</th>
                 <th>Emails</th>
             </tr>
@@ -33,8 +34,8 @@
                 <th>Hauptmember</th>
                 <th>Weitere {% config "members_string" %}</th>
                 <th>Depot</th>
-                <th>{{config assignments_string }}</th>
-                <th>{{config assignments_string }} Kernbereich</th>
+                <th>{% config "assignments_string" %}</th>
+                <th>{% config "assignments_string" %} Kernbereich</th>
                 <th>Aktiv</th>
                 <th>Emails</th>
             </tr>

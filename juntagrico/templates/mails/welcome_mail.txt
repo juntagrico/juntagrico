@@ -1,19 +1,26 @@
 {% extends "mails/email.txt" %}
+{% load config %}
 {% block content %}
 Wir freuen uns, dich bei {% config "organisation_name" %} zu begrüssen.
 
 {% config "organisation_name" %} ist ein genossenschaftlich organisierter Garten – 500 Leute produzieren gemeinsam ihr feines Bio-Gemüse. Jedes Mitglied der Genossenschaft kauft mindestens einen Anteilschein à {% config "share_price" %} Franken. Damit finanziert {% config "organisation_name" %} die Infrastruktur. Somit bist du MiteigentümerIn des Gemüsebetriebs und kannst bei vielen Entscheidungen mitbestimmen. Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet.
 
 Bitte zahle den Betrag für den/die Anteilschein/e auf das folgende Konto ein:
-{{config organisation_address }}
-{{config organisation_bank_connection }}
+{% config "organisation_address" %}
+{% config "organisation_bank_connection" %}
 
 Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
 
-Gerne darfst du schon vorher im Garten schnuppern kommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. Email: {{ username }}
+Gerne darfst du schon vorher im Garten schnuppern kommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. 
+{% if password is not None %}
+Email: {{ username }}
 Passwort: {{ password }}
 Bitte setze dir hier gleich ein neues Passwort:
 {{serverurl}}/my/passwort
+
+Damit wir dich als Mitglied freishalten können nutze den Bestätigungslink um deine Email zu bestätigen.
+Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
+{% endif %}
 
 Für weitere Fragen schaust du in den FAQ (http://{% config "server_url" %}{% config "faq_doc" %}) nach oder schreibst eine Mail an {% config "info_email" %}.
 

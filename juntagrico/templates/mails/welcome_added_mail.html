@@ -1,13 +1,16 @@
 {% extends "mails/email.html" %}
+{% load config %}
 {% block content %}
-    Wir freuen uns, dich bei {% config "organisation_name" %} begrüssen zu dürfen. Soeben hat dich '{{ name }}' zu ihrem/seinem Gemüsesubscription hinzugefügt und für dich {{ anteilsscheine }} Share(e) erworben. Wenn du damit einverstanden bist, {% config "organisation_name" %}-GenossenschafterIn zu werden und <a target="_blank" href="{{ serverurl }}{% config "bylaws" %}">die Statuten</a> und <a target="_blank" href="{{ serverurl }}{% config "business regulations" %}">das Betriebsreglement</a> gelesen hast, dann klicke bitte <a href="{{ serverurl }}/my/bestaetigung/{{ hash }}">hier zur Bestätigung</a>.
+    Wir freuen uns, dich bei {% config "organisation_name" %} begrüssen zu dürfen. Soeben hat dich '{{ name }}' zu ihrem/seinem Gemüsesubscription hinzugefügt und für dich {{ anteilsscheine }} Share(e) erworben. Wenn du damit einverstanden bist, {% config "organisation_name" %}-GenossenschafterIn zu werden und <a target="_blank" href="{{ serverurl }}{% config "bylaws" %}">die Statuten</a> und <a target="_blank" href="{{ serverurl }}{% config "business_regulations" %}">das Betriebsreglement</a> gelesen hast, dann klicke bitte <a href="{{ serverurl }}/my/bestaetigung/{{ hash }}">hier zur Bestätigung</a>.
 
     <br/><br/>
     Unter <a href="http://{% config "adminportal_server_url" %}">{% config "adminportal_server_url" %}</a> kannst du dich ab sofort für Arbeitseinsätze anmelden und vieles mehr.
     <br/><br/>
+{% if password is not None %}
     Email: {{ username }}<br/>
     Passwort: {{ password }} (bitte setze dir <a href="{{ serverurl }}/my/passwort">hier</a> gleich ein neues Passwort)
     <br/><br/>
+{% endif %}
     Weitere Infos wirst du bald erhalten. Bei Fragen oder Unklarheiten einfach melden: <br/>
     <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>
     <br/><br/>
