@@ -552,22 +552,22 @@ class Job(PolymorphicModel):
             return 0
 
     def end_time(self):
-        return self.time + datetime.timedelta(hours=self.typeduration)
+        return self.time + datetime.timedelta(hours=self.type.duration)
 
     def start_time(self):
         return self.time
 
     def occupied_places(self):
-        return self.assignments_set.count()
+        return self.assignment_set.count()
 
     def get_status_percentage(self):
         assignments = Assignment.objects.filter(job_id=self.id)
         if self.slots < 1:
-            return helpers.get_status_bean(100)
-        return helpers.get_status_bean(assignments.count() * 100 / self.slots)
+            return helpers.get_status_image(100)
+        return helpers.get_status_image(assignments.count() * 100 / self.slots)
 
     def is_core(self):
-        return self.typeactivityarea.core
+        return self.type.activityarea.core
 
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:
@@ -660,7 +660,7 @@ class Assignment(models.Model):
         return self.job.time
 
     def is_core(self):
-        return self.job.typeactivityarea.core
+        return self.job.type.activityarea.core
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

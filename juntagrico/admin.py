@@ -97,7 +97,7 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = RecuringJob.objects.create(typeinst.type, slots=inst.slots, time=dt)
+            job = RecuringJob.objects.create(type=inst.type, slots=inst.slots, time=dt)
             newjobs.append(job)
             job.save()
 
@@ -173,7 +173,7 @@ class JobAdmin(admin.ModelAdmin):
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = RecuringJob(typeinst.type, slots=inst.slots, time=inst.time)
+            newjob = RecuringJob(type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
 
     copy_job.short_description = "Jobs kopieren"

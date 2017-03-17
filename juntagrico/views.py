@@ -264,7 +264,7 @@ def my_team(request, area_id):
     job_types = JobType.objects.all().filter(activityarea=area_id)
 
     otjobs = get_current_one_time_jobs().filter(activityarea=area_id)
-    rjobs = get_current_recuring_jobs().filter(type_in=job_types)
+    rjobs = get_current_recuring_jobs().filter(type__in=job_types)
     
     jobs = list(rjobs)
 
