@@ -128,19 +128,19 @@ def run_in_shell(request, command_string, input=None):
            "%s\n") % (command_string, out, err)
     return HttpResponse(res, content_type="text/plain")
 
-def get_status_bean(percent=0):
+def get_status_image(percent=0):
         if percent >= 100:
-            return "erbse_voll.png"
+            return "circle_full.png"
         elif percent >= 75:
-            return "erbse_fast_voll.png"
+            return "circle_alomst_full.png"
         elif percent >= 50:
-            return "erbse_halb.png"
+            return "circle_half.png"
         elif percent > 0:
-            return "erbse_fast_leer.png"
+            return "circle_almost_empty.png"
         else:
-            return "erbse_leer.png"
+            return "circle_empty.png"
 
-def get_status_bean_text(percent=0):
+def get_status_image_text(percent=0):
         if percent >= 100:
             return "Fertig"
         elif percent >= 75:
@@ -213,9 +213,9 @@ def generate_excell(fields, model_instance):
 def genecrate_ical_for_job(job):
     c = Calendar()
     e = Event()
-    e.name = Config.organisation_name()+' Einsatz:'+job.typename
-    e.location = job.typelocation
-    e.description = job.typedescription
+    e.name = Config.organisation_name()+' Einsatz:'+job.type.name
+    e.location = job.type.location
+    e.description = job.type.description
     e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
     e.end = job.time.strftime('%Y%m%d %H:%M:%S')
     c.events.append(e)

@@ -86,4 +86,7 @@ TEMPLATES = [
     },
 ]
 
+WHITELIST_EMAILS=[]
+
 GOOGLE_API_KEY = 'AIzaSyCcii4Z71qyky54kEQtRhFbB_z-2zbSU28'
+

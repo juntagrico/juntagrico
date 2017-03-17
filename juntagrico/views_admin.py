@@ -169,10 +169,10 @@ def my_subscriptions(request):
 
         subscriptions.append({
             'subscription': subscription,
-            'text': get_status_bean_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
+            'text': get_status_image_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
             'core_assignments': core_assignments,
-            'icon': helpers.get_status_bean(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
+            'icon': helpers.get_status_image(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
         })
 
     renderdict = get_menu_dict(request)
@@ -197,10 +197,10 @@ def my_subscriptions_depot(request, depot_id):
 
         subscriptions.append({
             'subscription': subscription,
-            'text': get_status_bean_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
+            'text': get_status_image_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
             'core_assignments': core_assignments,
-            'icon': helpers.get_status_bean(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
+            'icon': helpers.get_status_image(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
         })
 
     renderdict = get_menu_dict(request)
@@ -398,11 +398,11 @@ def my_excel_export_members_filter(request):
 
     row = 1
     for member in members:
-        member.areas = ""
+        member.all_areas = ""
         for area in member.areas.all():
-            member.areas = member.areas + area.name + " "
-        if member.areas == "":
-            member.areas = unicode("-Kein Tätigkeitsbereich-", "utf-8")
+            member.all_areas = member.all_areas + area.name + " "
+        if member.all_areas == "":
+            member.all_areas = unicode("-Kein Tätigkeitsbereich-", "utf-8")
         
         member.depot_name = unicode("Kein Depot definiert", "utf-8")
         if member.subscription is not None:
@@ -411,7 +411,7 @@ def my_excel_export_members_filter(request):
         worksheet_s.write_string(row, 0, looco_full_name)
         worksheet_s.write(row, 1, member.assignment_count)
         worksheet_s.write(row, 2, member.core_assignment_count)
-        worksheet_s.write_string(row, 3, member.areas)
+        worksheet_s.write_string(row, 3, member.all_areas)
         worksheet_s.write_string(row, 4, member.depot_name)
         worksheet_s.write_string(row, 5, member.email)
         worksheet_s.write_string(row, 6, member.phone)

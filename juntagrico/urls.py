@@ -18,7 +18,7 @@ urlpatterns = [
     url('^my/home$', juntagrico.my_home),
     url('^my/passwort$', juntagrico.my_change_password),    
     url('^my/jobs/(?P<job_id>.*?)/', juntagrico.my_job),
-    url('^my/teams/(?P<bereich_id>.*?)/', juntagrico.my_team),
+    url('^my/teams/(?P<area_id>.*?)/', juntagrico.my_team),
     url('^my/profil$', juntagrico.my_profile),
     url('^my/mitarbeit$', juntagrico.my_participation),
     url('^my/kontakt$', juntagrico.my_contact),

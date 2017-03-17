@@ -17,7 +17,7 @@
             <tbody>
             {% for job in jobs %}
                 <tr>
-                    <td>{% if job.type.bereich.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/circle_full_core.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/circle_full.png"/>{% endif %}</td>
+                    <td>{% if job.type.activityarea.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/circle_full_core.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/circle_full.png"/>{% endif %}</td>
                     <td>{{ job.weekday_name }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}</td>
                     <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.type.get_name }}</a></td>
                     <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>
