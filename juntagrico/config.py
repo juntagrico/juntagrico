@@ -47,7 +47,7 @@ class Config:
         return "Juntagrico 123 Fakestreet Springfield"
 
     @staticmethod
-    def organisation_organisation_bank_connection():
+    def organisation_bank_connection():
         if hasattr(settings, 'ORGANISATION_BANK_CONNECTION'):
             return settings.ORGANISATION_BANK_CONNECTION
         return "fakebank something something"

@@ -395,7 +395,7 @@ class Member(models.Model):
     subscription = models.ForeignKey(Subscription, related_name="members", null=True, blank=True,
                             on_delete=models.SET_NULL)
 
-    confirmed = models.BooleanField("bestätigt", default=True)
+    confirmed = models.BooleanField("bestätigt", default=False)
     reachable_by_email = models.BooleanField("Kontaktierbar von der Job Seite aus", default=False)
     block_emails = models.BooleanField("keine emails", default=False)
 

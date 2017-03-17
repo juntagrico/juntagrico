@@ -86,4 +86,9 @@ TEMPLATES = [
     },
 ]
 
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
+WHITELIST_EMAILS = []
+
+
 GOOGLE_API_KEY = 'AIzaSyCcii4Z71qyky54kEQtRhFbB_z-2zbSU28'

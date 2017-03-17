@@ -40,6 +40,7 @@ urlpatterns = [
     url('^my/anmelden$', juntagrico_subscription.my_signup),
     url('^my/subscriptionnnent/(?P<subscription_id>.*?)/', juntagrico_subscription.add_member),
     url('^my/subscriptionerstellen$', juntagrico_subscription.createsubscription),
+    url('^my/create/subscription/cancel$', juntagrico_subscription.cancel_create_subscription),
     url('^my/willkommen$', juntagrico_subscription.my_welcome),
     url('^my/bestaetigung/(?P<hash>.*?)/', juntagrico_subscription.my_confirm),
     

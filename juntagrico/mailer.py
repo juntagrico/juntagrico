@@ -87,7 +87,7 @@ def send_contact_member_form(subject, message, member, contact_member, copy_to_m
         send_mail('Nachricht per ' + Config.adminportal_name() +': ' + subject, message, member.email, [member.email])
 
 
-def send_welcome_mail(email, password, server):
+def send_welcome_mail(email, password, hash, server):
     plaintext = get_template('mails/welcome_mail.txt')
     htmly = get_template('mails/welcome_mail.html')
 
@@ -96,6 +96,7 @@ def send_welcome_mail(email, password, server):
         'subject': 'Willkommen bei '+Config.organisation_name(),
         'username': email,
         'password': password,
+        'hash': hash,
         'serverurl': "http://" + get_server(server)
     }
 
