@@ -1,11 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from juntagrico.models import *
-from juntagrico.config import *
-from django.utils import timezone
-import datetime
-from juntagrico.mailer import send_job_reminder
-from django.utils import timezone
 
 
 class Command(BaseCommand):
@@ -26,5 +21,3 @@ class Command(BaseCommand):
             job.reminder_sent = True
             job.save()
             print("reminder sent for job " + str(job.id))
-
-

@@ -25,7 +25,7 @@ def m2m(m2mrel):
     # source_ct = ContentType.objects.get_for_model(source_model)
     target_ct = ContentType.objects.get_for_model(target_model)
 
-    def callback(instance, action, pk_set, **kwds):
+    def callback(instance, action, pk_set):
         if not action.startswith("post_"):
             return
         action = "m2m" + action[4:]
@@ -52,7 +52,7 @@ def fk(rel):
     fieldname = rel.field.name
     target_ct = ContentType.objects.get_for_model(target_model)
 
-    def callback(instance, **kwds):
+    def callback(instance):
         target_obj = getattr(instance, fieldname)
         kwds = dict(action="fk_set", field=fieldname, source_object=instance)
         # ContentType errors out when passing a target_ct with a null object.

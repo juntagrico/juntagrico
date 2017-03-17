@@ -1,38 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from datetime import date
-from collections import defaultdict
-from StringIO import StringIO
-import string
 import random
-import re
-import math
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import auth
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.admin.views.decorators import staff_member_required
+import string
+
 from django.contrib.auth import authenticate, login
-from django.core.management import call_command
-from django.db.models import Count
-from django.db import models
-from django.utils import timezone
-
-import xlsxwriter
-
-from juntagrico.models import *
-from juntagrico.forms import *
-from juntagrico.helpers import *
-from juntagrico.filters import Filter
-from juntagrico.mailer import *
-from juntagrico.views import get_menu_dict
-from juntagrico.config import *
-import hashlib
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
 
 from decorators import primary_member_of_subscription
+from juntagrico.forms import *
+from juntagrico.models import *
+from juntagrico.views import get_menu_dict
 
 
-def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
+def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(
+    random.choice(chars) for x in range(size))
+
 
 @login_required
 def my_subscription(request):
@@ -41,7 +24,7 @@ def my_subscription(request):
     """
     renderdict = get_menu_dict(request)
 
-    if request.user.member.subscription != None:
+    if request.user.member.subscription is not None:
         current_extrasubscriptions = request.user.member.subscription.extra_subscriptions.all()
         future_extrasubscriptions = request.user.member.subscription.future_extra_subscriptions.filter(active=False)
         extrasubscriptions_changed = set(current_extrasubscriptions) != set(future_extrasubscriptions)
@@ -51,7 +34,8 @@ def my_subscription(request):
                 'extrasubscriptions': current_extrasubscriptions,
                 'future_extrasubscriptions': future_extrasubscriptions,
                 'extrasubscriptions_changed': extrasubscriptions_changed,
-                'subscriptionmembers': request.user.member.subscription.recipients().exclude(email=request.user.member.email),
+                'subscriptionmembers': request.user.member.subscription.recipients().exclude(
+                    email=request.user.member.email),
                 'primary': request.user.member.subscription.primary_member.email == request.user.member.email,
                 'next_extra_subscription_date': Subscription.next_extra_change_date(),
                 'next_size_date': Subscription.next_size_change_date()
@@ -66,7 +50,7 @@ def my_subscription(request):
 
 
 @primary_member_of_subscription
-def my_subscription_change(request, subscription_id):
+def my_subscription_change(request):
     """
     change an subscription
     """
@@ -82,7 +66,7 @@ def my_subscription_change(request, subscription_id):
 
 
 @primary_member_of_subscription
-def my_depot_change(request, subscription_id):
+def my_depot_change(request):
     """
     change a depot
     """
@@ -101,12 +85,12 @@ def my_depot_change(request, subscription_id):
 
 
 @primary_member_of_subscription
-def my_size_change(request, subscription_id):
+def my_size_change(request):
     """
     change the size of an subscription
     """
     saved = False
-    if request.method == "POST" and int(time.strftime("%m")) <=10 and int(request.POST.get("subscription")) > 0:
+    if request.method == "POST" and int(time.strftime("%m")) <= 10 and int(request.POST.get("subscription")) > 0:
         request.user.member.subscription.future_size = int(request.POST.get("subscription"))
         request.user.member.subscription.save()
         saved = True
@@ -119,7 +103,7 @@ def my_size_change(request, subscription_id):
 
 
 @primary_member_of_subscription
-def my_extra_change(request, subscription_id):
+def my_extra_change(request):
     """
     change an extra subscription
     """
@@ -128,24 +112,24 @@ def my_extra_change(request, subscription_id):
         for extra_subscription in ExtraSubscriptionType.objects.all():
             existing = request.user.member.subscription.extra_subscriptions.filter(type__id=extra_subscription.id)
             if request.POST.get("subscription" + str(extra_subscription.id)) == str(extra_subscription.id):
-		if existing.count()==0:
+                if existing.count() == 0:
                     future_extra_subscription = ExtraSubscription.create()
                     future_extra_subscription.subscription = request.user.member.subscription
                     future_extra_subscription.type = extra_subscription
                     future_extra_subscription.active = False
                     future_extra_subscription.save()
                 else:
-                    has_active=False
-                    index=0;
-                    while not has_active or index<existing.count():
+                    has_active = False
+                    index = 0
+                    while not has_active or index < existing.count():
                         existing_extra_subscription = existing[index]
-                        if existing_extra_subscription.active == True:
-                             has_active=True
-                        elif existing_extra_subscription.canceled==True and future_extra_subscription.active==True:
-                             existing_extra_subscription.canceled=False;
-                             existing_extra_subscription.save();
-                             has_active=True
-                        index+=1
+                        if existing_extra_subscription.active:
+                            has_active = True
+                        elif existing_extra_subscription.canceled is True and future_extra_subscription.active is True:
+                            existing_extra_subscription.canceled = False
+                            existing_extra_subscription.save()
+                            has_active = True
+                        index += 1
                     if not has_active:
                         future_extra_subscription = ExtraSubscription.create()
                         future_extra_subscription.subscription = request.user.member.subscription
@@ -154,19 +138,19 @@ def my_extra_change(request, subscription_id):
                         future_extra_subscription.save()
 
             else:
-                if existing.count()>0:
+                if existing.count() > 0:
                     for existing_extra_subscription in existing:
-			if existing_extra_subscription.canceled==False and future_extra_subscription.active==True:
-                            existing_extra_subscription.canceled=True;
-                            existing_extra_subscription.save();
-                        elif existing_extra_subscription.deactivation_date is None and future_extra_subscription.active==False:
-                            existing_extra_subscription.delete();
+                        if existing_extra_subscription.canceled is False and future_extra_subscription.active is True:
+                            existing_extra_subscription.canceled = True
+                            existing_extra_subscription.save()
+                        elif existing_extra_subscription.deactivation_date is None and future_extra_subscription.active is False:
+                            existing_extra_subscription.delete()
         request.user.member.subscription.save()
         saved = True
 
     subscriptions = []
     for subscription in ExtraSubscriptionType.objects.all():
-        if request.user.member.subscription.future_extra_subscriptions.filter(type__id=subscription.id).count()>0:
+        if request.user.member.subscription.future_extra_subscriptions.filter(type__id=subscription.id).count() > 0:
             subscriptions.append({
                 'id': subscription.type.id,
                 'name': subscription.type.name,
@@ -202,22 +186,21 @@ def my_signup(request):
             agberror = True
         else:
             if memberform.is_valid():
-                #check if user already exists
+                # check if user already exists
                 if User.objects.filter(email=memberform.cleaned_data['email']).__len__() > 0:
                     userexists = True
                 else:
-                    #set all fields of user
-                    #email is also username... we do not use it
+                    # set all fields of user
+                    # email is also username... we do not use it
                     password = password_generator()
                     member = Member(**memberform.cleaned_data)
                     member.save()
                     member.user.set_password(password)
                     member.user.save()
 
-                    #log in to allow him to make changes to the subscription
+                    # log in to allow him to make changes to the subscription
                     loggedin_user = authenticate(username=member.user.username, password=password)
                     login(request, loggedin_user)
-                    success = True
                     return redirect("/my/subscriptionerstellen")
     else:
         memberform = MemberProfileForm()
@@ -249,7 +232,7 @@ def my_welcome(request):
     return render(request, "welcome.html", renderdict)
 
 
-def my_confirm(request, hash):
+def my_confirm(hash):
     """
     Confirm from a user that has been added as a co_subscriptionnnent
     """
@@ -260,6 +243,7 @@ def my_confirm(request, hash):
             member.save()
 
     return redirect("/my/home")
+
 
 @login_required
 def createsubscription(request):
@@ -276,16 +260,17 @@ def createsubscription(request):
 
     print co_members
 
-    selectedsubscription="none"
-    co_member_shares = 0
+    selectedsubscription = "none"
     selected_depot = None
     existing_member_shares = member.share_set.all().count()
-    shares= existing_member_shares
-    
+    shares = existing_member_shares
+
     if session_subscription is not None:
-        selectedsubscription = next(iter(SubscriptionSize.objects.filter(size=session_subscription.size).values_list('name', flat=True) or []), 'none')
+        selectedsubscription = next(
+            iter(SubscriptionSize.objects.filter(size=session_subscription.size).values_list('name', flat=True) or []),
+            'none')
         selected_depot = session_subscription.depot
-    
+
     co_member_shares = len(co_members_shares)
     if request.method == "POST":
         shares += int(request.POST.get("shares"))
@@ -293,25 +278,28 @@ def createsubscription(request):
         subscriptionform = SubscriptionForm(request.POST)
 
         shares += co_member_shares
-        min_num_shares = next(iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('shares', flat=True) or []), 1)
+        min_num_shares = next(
+            iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('shares', flat=True) or []), 1)
         if shares < min_num_shares or not subscriptionform.is_valid():
             shareerror = shares < min_num_shares
         else:
             depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
-            size = next(iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('size', flat=True) or []), 0)
+            size = next(
+                iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('size', flat=True) or []),
+                0)
 
             if size > 0:
-                session_subscription=Subscription(**subscriptionform.cleaned_data)
-                session_subscription.depot=depot
-                session_subscription.primary_member=member
-                session_subscription.size=size    
+                session_subscription = Subscription(**subscriptionform.cleaned_data)
+                session_subscription.depot = depot
+                session_subscription.primary_member = member
+                session_subscription.size = size
 
             if len(member_shares) < int(request.POST.get("shares")):
                 toadd = int(request.POST.get("shares")) - len(member_shares)
                 for num in range(0, toadd):
                     member_shares.append(Share(member=member, paid_date=None))
             elif len(member_shares) > int(request.POST.get("shares")):
-                toremove = len(member_shares) - int(request.POST.get("shares")) 
+                toremove = len(member_shares) - int(request.POST.get("shares"))
                 for num in range(0, toremove):
                     member_shares.pop()
 
@@ -326,29 +314,30 @@ def createsubscription(request):
                     request.user.set_password(password)
                     request.user.save()
                 session_subscription.save()
-                member.subscription_id= session_subscription.id
+                member.subscription_id = session_subscription.id
                 member.save()
                 send_welcome_mail(member.email, password, hashlib.sha1(member.email + str(
-                                                        session_subscription.id)).hexdigest(), request.META["HTTP_HOST"])
+                    session_subscription.id)).hexdigest(), request.META["HTTP_HOST"])
                 for co_member in co_members:
                     co_member.subscription_id = session_subscription.id
                     co_member.save()
-                    pw=None
+                    pw = None
                     if co_member.confirmed is False:
                         pw = password_generator()
                         co_member.user.set_password(pw)
                         co_member.user.save()
                     send_been_added_to_subscription(co_member.email, pw, request.user.member.get_name(), shares,
                                                     hashlib.sha1(co_member.email + str(
-                                                        session_subscription.id)).hexdigest(), request.META["HTTP_HOST"])
-                for share in member_shares+co_members_shares:
+                                                        session_subscription.id)).hexdigest(),
+                                                    request.META["HTTP_HOST"])
+                for share in member_shares + co_members_shares:
                     if share.id is None:
                         share.save()
                         send_share_created_mail(share, request.META["HTTP_HOST"])
-                request.session['create_subscription']=None
-                request.session['create_co_members']=[]
-                request.session['create_co_members_shares']=[]
-                request.session['create_member_shares']=[]
+                request.session['create_subscription'] = None
+                request.session['create_co_members'] = []
+                request.session['create_co_members_shares'] = []
+                request.session['create_member_shares'] = []
                 return redirect("/my/willkommen")
 
     renderdict = {
@@ -365,6 +354,7 @@ def createsubscription(request):
     }
     return render(request, "createsubscription.html", renderdict)
 
+
 @login_required
 def add_member(request, subscription_id):
     shareerror = False
@@ -376,17 +366,17 @@ def add_member(request, subscription_id):
         try:
             shares = int(request.POST.get("shares"))
             shareerror = shares < 0
-        except :
-            shareerror = True   
-        member = next(iter(Member.objects.filter(email=request.POST.get('email')) or []),None)
+        except:
+            shareerror = True
+        member = next(iter(Member.objects.filter(email=request.POST.get('email')) or []), None)
         if member is not None:
             memberexists = True
-            shares=0
+            shares = 0
             if member.subscription is not None:
-                memberblocked=True
-       
+                memberblocked = True
+
         if (memberform.is_valid() and shareerror is False) or (memberexists is True and memberblocked is False):
-            tmp_shares =[]
+            tmp_shares = []
             pw = None
             if memberexists is False:
                 for num in range(0, shares):
@@ -402,8 +392,9 @@ def add_member(request, subscription_id):
             if request.GET.get("return"):
                 member.subscription_id = subscription_id
                 member.save()
-                send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
-                if memberexists is False:                
+                send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(
+                    memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
+                if memberexists is False:
                     for share in tmp_shares:
                         share.save()
                         send_share_created_mail(share, request.META["HTTP_HOST"])
@@ -411,10 +402,10 @@ def add_member(request, subscription_id):
             else:
                 co_members_shares = request.session.get('create_co_members_shares', [])
                 co_members_shares += tmp_shares
-                request.session['create_co_members_shares']=co_members_shares
+                request.session['create_co_members_shares'] = co_members_shares
                 co_members = request.session.get('create_co_members', [])
                 co_members.append(member)
-                request.session['create_co_members']=co_members
+                request.session['create_co_members'] = co_members
                 return redirect('/my/subscriptionerstellen')
     else:
         member = request.user.member
@@ -422,7 +413,7 @@ def add_member(request, subscription_id):
                    "addr_zipcode": member.addr_zipcode,
                    "addr_location": member.addr_location,
                    "phone": member.phone,
-        }
+                   }
         memberform = MemberProfileForm(initial=initial)
     renderdict = {
         'shares': shares,
@@ -436,11 +427,11 @@ def add_member(request, subscription_id):
     }
     return render(request, "add_member.html", renderdict)
 
+
 @login_required
 def cancel_create_subscription(request):
-    request.session['create_subscription']=None
-    request.session['create_co_members']=[]
-    request.session['create_co_members_shares']=[]
-    request.session['create_member_shares']=[]
+    request.session['create_subscription'] = None
+    request.session['create_co_members'] = []
+    request.session['create_co_members_shares'] = []
+    request.session['create_member_shares'] = []
     return redirect('/my/subscription')
-

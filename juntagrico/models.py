@@ -1,17 +1,14 @@
 # encoding: utf-8
 
-import datetime
 import time
 
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import signals, Q
-from django.utils import timezone
+from django.db.models import signals
 from polymorphic.models import PolymorphicModel
 
 import helpers
-from config import *
 import model_audit
 from juntagrico.mailer import *
 
@@ -69,7 +66,8 @@ class Depot(models.Model):
         for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
             self.overview_cache.append(self.subscription_amounts(self.subscription_cache, subscription_size.name))
         for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
-            for extra_subscription in ExtraSubscriptionType.objects.all().filter(category=category).order_by("sort_order"):
+            for extra_subscription in ExtraSubscriptionType.objects.all().filter(category=category).order_by(
+                    "sort_order"):
                 code = extra_subscription.name
                 self.overview_cache.append(self.extra_subscription(self.subscription_cache, code))
 
@@ -104,7 +102,7 @@ class Bill(models.Model):
     amount = models.FloatField("Betrag", null=False, blank=False)
 
     def __unicode__(self):
-        return u"%s %s" % (self.ref_number)
+        return u"%s %s" % self.ref_number
 
     class Meta:
         verbose_name = "Rechnung"
@@ -121,7 +119,7 @@ class Payment(models.Model):
     amount = models.FloatField("Betrag", null=False, blank=False)
 
     def __unicode__(self):
-        return u"%s %s" % (self.ref_number)
+        return u"%s %s" % self.ref_number
 
     class Meta:
         verbose_name = "Zahlung"
@@ -167,8 +165,9 @@ class ExtraSubscription(Billable):
     """
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     """
-    main_subscription = models.ForeignKey("Subscription", related_name="extra_subscription_set", null=False, blank=False,
-                                 on_delete=models.PROTECT)
+    main_subscription = models.ForeignKey("Subscription", related_name="extra_subscription_set", null=False,
+                                          blank=False,
+                                          on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     canceled = models.BooleanField("gekündigt", default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
@@ -179,14 +178,14 @@ class ExtraSubscription(Billable):
     old_active = None
 
     @classmethod
-    def pre_save(cls, sender, instance, **kwds):
+    def pre_save(cls, instance):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
 
     @classmethod
-    def post_init(cls, sender, instance, **kwds):
+    def post_init(cls, instance):
         instance.old_active = instance.active
 
     def __unicode__(self):
@@ -271,7 +270,8 @@ class Subscription(Billable):
 
     @property
     def future_extra_subscriptions(self):
-        return self.extra_subscription_set.filter(Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
+        return self.extra_subscription_set.filter(
+            Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
 
     @staticmethod
     def fill_sizes_cache():
@@ -281,10 +281,10 @@ class Subscription(Billable):
         for size in SubscriptionSize.objects.order_by('size'):
             list.append(size.size)
             map[size.name] = index
-            index = index + 1
+            index += 1
         Subscription.sizes_cache = {'list': list,
-                           'map': map,
-                           }
+                                    'map': map,
+                                    }
 
     def subscription_amount(self, subscription_name):
         if Subscription.sizes_cache == {}:
@@ -304,7 +304,8 @@ class Subscription(Billable):
         index = Subscription.sizes_cache['map'][subscription_name]
         if index == len(Subscription.sizes_cache['list']) - 1:
             return int(self.future_size / Subscription.sizes_cache['list'][index])
-        return int((self.future_size % Subscription.sizes_cache['list'][index + 1]) / Subscription.sizes_cache['list'][index])
+        return int(
+            (self.future_size % Subscription.sizes_cache['list'][index + 1]) / Subscription.sizes_cache['list'][index])
 
     @staticmethod
     def next_extra_change_date():
@@ -350,18 +351,18 @@ class Subscription(Billable):
             raise ValidationError(u'Deaktivierte Abos koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
-    def pre_save(cls, sender, instance, **kwds):
+    def pre_save(cls, instance):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
 
     @classmethod
-    def post_init(cls, sender, instance, **kwds):
+    def post_init(cls, instance):
         instance.old_active = instance.active
 
     @classmethod
-    def pre_delete(cls, sender, instance, **kwds):
+    def pre_delete(cls, instance):
         for member in instance.recipients():
             member.subscription = None
             member.save()
@@ -393,7 +394,7 @@ class Member(models.Model):
     mobile_phone = models.CharField("Mobile", max_length=50, null=True, blank=True)
 
     subscription = models.ForeignKey(Subscription, related_name="members", null=True, blank=True,
-                            on_delete=models.SET_NULL)
+                                     on_delete=models.SET_NULL)
 
     confirmed = models.BooleanField("bestätigt", default=False)
     reachable_by_email = models.BooleanField("Kontaktierbar von der Job Seite aus", default=False)
@@ -405,7 +406,7 @@ class Member(models.Model):
         return self.get_name()
 
     @classmethod
-    def create(cls, sender, instance, created, **kdws):
+    def create(cls, instance, created):
         """
         Callback to create corresponding member when new user is created.
         """
@@ -418,16 +419,16 @@ class Member(models.Model):
             instance.save()
 
     @classmethod
-    def post_delete(cls, sender, instance, **kwds):
+    def post_delete(cls, instance):
         instance.user.delete()
 
     @classmethod
-    def pre_save(cls, sender, instance, **kwds):
+    def pre_save(cls, instance):
         if instance.old_subscription != instance.subscription and instance.subscription is None:
             instance.areas = ()
 
     @classmethod
-    def post_init(cls, sender, instance, **kwds):
+    def post_init(cls, instance):
         instance.old_subscription = None  # instance.subscription
 
     class Meta:
@@ -446,13 +447,13 @@ class Member(models.Model):
 
 class Share(Billable):
     member = models.ForeignKey(Member, null=True, blank=True, on_delete=models.SET_NULL)
-    paid_date = models.DateField("Bezahlt am", null=True, blank=True);
-    issue_date = models.DateField("Ausgestellt am", null=True, blank=True);
-    booking_date = models.DateField("Eingebucht am", null=True, blank=True);
-    cancelled_date = models.DateField("Gekündigt am", null=True, blank=True);
-    termination_date = models.DateField("Gekündigt auf", null=True, blank=True);
-    payback_date = models.DateField("Zurückbezahlt am", null=True, blank=True);
-    number = models.IntegerField("Anteilschein Nummer", null=True, blank=True);
+    paid_date = models.DateField("Bezahlt am", null=True, blank=True)
+    issue_date = models.DateField("Ausgestellt am", null=True, blank=True)
+    booking_date = models.DateField("Eingebucht am", null=True, blank=True)
+    cancelled_date = models.DateField("Gekündigt am", null=True, blank=True)
+    termination_date = models.DateField("Gekündigt auf", null=True, blank=True)
+    payback_date = models.DateField("Zurückbezahlt am", null=True, blank=True)
+    number = models.IntegerField("Anteilschein Nummer", null=True, blank=True)
     notes = models.TextField("Notizen", max_length=1000, default="", blank=True)
 
     def __unicode__(self):
@@ -605,7 +606,7 @@ class Job(PolymorphicModel):
 
 
 class RecuringJob(Job):
-    type= models.ForeignKey(JobType, on_delete=models.PROTECT)
+    type = models.ForeignKey(JobType, on_delete=models.PROTECT)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -663,7 +664,7 @@ class Assignment(models.Model):
         return self.job.type.activityarea.core
 
     @classmethod
-    def pre_save(cls, sender, instance, **kwds):
+    def pre_save(cls, instance):
         instance.core_cache = instance.is_core()
 
     class Meta:

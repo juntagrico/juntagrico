@@ -8,11 +8,13 @@ class Filter(object):
 
     def __init__(self, name, q):
         self.name = name
+
         def safe_q(*args):
             try:
                 return q(*args)
             except Exception:
                 return False
+
         self.q = safe_q
         self.all_filters.append(self)
 
@@ -40,9 +42,9 @@ class Filter(object):
 
         d = dict(cls.get_all())
         filter_funcs = [d[name] for name in names]
+        # noinspection PyUnboundLocalVariable
         return [member for member in Member.objects.all()
                 if aggregate(f(member) for f in filter_funcs)]
-
 
     @classmethod
     def format_data(cls, queryset, formatter):
@@ -57,7 +59,6 @@ class FilterGen(Filter):
     def get(self):
         for p in self.parameter_func():
             yield self.name(p), partial(self.q, p)
-        
 
 
 FilterGen(lambda depot: u"Depot {0}".format(depot.name),
@@ -75,7 +76,6 @@ Filter("Nicht Anteilscheinbesitzer",
 Filter("kleines Abo", lambda member: member.subscription.small_subscriptions)
 Filter("grosses Abo", lambda member: member.subscription.big_subscriptions())
 Filter("Haussubscription", lambda member: member.subscription.house_subscriptions())
-
 
 FilterGen(lambda za: u"Zusatzsubscription {0}".format(za.name),
           lambda za, member: za.subscription_set.filter(id=member.subscription.id),

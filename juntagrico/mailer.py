@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
+import os
+import re
+
+from django.contrib.auth.models import Permission
+from django.contrib.sites.shortcuts import get_current_site
 from django.core import mail
-from django.template.loader import get_template
-from django.template import Context
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
-from django.contrib.auth.models import User, Permission
-from django.contrib.sites.shortcuts import get_current_site
-import os, re
-
 
 from juntagrico.helpers import *
-from juntagrico.config import *
+
 
 def get_server(server):
     site_from_env = os.getenv("ORTOLOCO_TEMPLATE_SERVERURL")
@@ -22,6 +20,7 @@ def get_server(server):
     if site_from_db:
         return site_from_db
     return server
+
 
 # sends mail only to specified email-addresses if dev mode
 def send_mail(subject, message, from_email, to_emails):
@@ -70,21 +69,24 @@ def send_mail_multi(email_multi_message):
 
 def send_new_member_in_activityarea_to_operations(area, member):
     send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + member.first_name + " " + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen', Config.info_email(), [area.coordinator.email])
+              'Soeben hat sich ' + member.first_name + " " + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
+              Config.info_email(), [area.coordinator.email])
 
 
 def send_contact_form(subject, message, member, copy_to_member):
-    send_mail('Anfrage per '+Config.adminportal_name()+': ' + subject, message, member.email, [Config.info_email()])
+    send_mail('Anfrage per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [Config.info_email()])
     if copy_to_member:
-        send_mail('Anfrage per '+Config.adminportal_name()+': ' + subject, message, member.email, [member.email])
-		
+        send_mail('Anfrage per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [member.email])
+
+
 def send_contact_member_form(subject, message, member, contact_member, copy_to_member, attachments):
-    msg = EmailMultiAlternatives('Nachricht per ' + Config.adminportal_name() +': ' + subject, message, member.email, [contact_member.email], headers={'Reply-To': member.email})
+    msg = EmailMultiAlternatives('Nachricht per ' + Config.adminportal_name() + ': ' + subject, message, member.email,
+                                 [contact_member.email], headers={'Reply-To': member.email})
     for attachment in attachments:
         msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
     if copy_to_member:
-        send_mail('Nachricht per ' + Config.adminportal_name() +': ' + subject, message, member.email, [member.email])
+        send_mail('Nachricht per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [member.email])
 
 
 def send_welcome_mail(email, password, hash, server):
@@ -93,7 +95,7 @@ def send_welcome_mail(email, password, hash, server):
 
     # reset password so we can send it to him
     d = {
-        'subject': 'Willkommen bei '+Config.organisation_name(),
+        'subject': 'Willkommen bei ' + Config.organisation_name(),
         'username': email,
         'password': password,
         'hash': hash,
@@ -103,11 +105,12 @@ def send_welcome_mail(email, password, hash, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei '+Config.organisation_name(), text_content, Config.info_email(), [email])
+    msg = EmailMultiAlternatives('Willkommen bei ' + Config.organisation_name(), text_content, Config.info_email(),
+                                 [email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
-    
+
 def send_share_created_mail(share, server):
     plaintext = get_template('mails/share_created_mail.txt')
     htmly = get_template('mails/share_created_mail.html')
@@ -121,7 +124,7 @@ def send_share_created_mail(share, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
     perm = Permission.objects.get(codename='is_book_keeper')
-    users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm) ).distinct()
+    users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm)).distinct()
     emails = []
     for user in users:
         emails.append(user.member.email)
@@ -129,13 +132,14 @@ def send_share_created_mail(share, server):
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
+
 def send_been_added_to_subscription(email, password, name, shares, hash, server):
     plaintext = get_template('mails/welcome_added_mail.txt')
     htmly = get_template('mails/welcome_added_mail.html')
 
     # reset password so we can send it to him
     d = {
-        'subject': 'Willkommen bei '+Config.organisation_name(),
+        'subject': 'Willkommen bei ' + Config.organisation_name(),
         'username': email,
         'name': name,
         'password': password,
@@ -147,7 +151,8 @@ def send_been_added_to_subscription(email, password, name, shares, hash, server)
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei '+Config.organisation_name(), text_content, Config.info_email(), [email])
+    msg = EmailMultiAlternatives('Willkommen bei ' + Config.organisation_name(), text_content, Config.info_email(),
+                                 [email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 
@@ -180,7 +185,7 @@ def send_filtered_mail(subject, message, text_message, emails, server, attachmen
 def send_mail_password_reset(email, password, server):
     plaintext = get_template('mails/password_reset_mail.txt')
     htmly = get_template('mails/password_reset_mail.html')
-    subject = 'Dein neues '+Config.organisation_name()+' Passwort'
+    subject = 'Dein neues ' + Config.organisation_name() + ' Passwort'
 
     d = {
         'subject': subject,
@@ -202,20 +207,22 @@ def send_job_reminder(emails, job, participants, server):
     htmly = get_template('mails/job_reminder_mail.html')
     coordinator = job.typeactivityarea.coordinator
     contact = coordinator.first_name + " " + coordinator.last_name + ": " + job.typeactivityarea.contact()
-    
+
     d = {
         'job': job,
         'participants': participants,
         'serverurl': "http://" + get_server(server),
-        'contact' : contact
+        'contact': contact
     }
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name()+" - Job-Erinnerung", text_content, Config.info_email(), emails)
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Job-Erinnerung", text_content, Config.info_email(),
+                                 emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
+
 
 def send_job_canceled(emails, job, server):
     plaintext = get_template('mails/job_canceled_mail.txt')
@@ -229,9 +236,11 @@ def send_job_canceled(emails, job, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name()+" - Job-Abgesagt", text_content, Config.info_email(), emails)
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Job-Abgesagt", text_content, Config.info_email(),
+                                 emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
+
 
 def send_job_time_changed(emails, job, server):
     plaintext = get_template('mails/job_time_changed_mail.txt')
@@ -244,14 +253,14 @@ def send_job_time_changed(emails, job, server):
 
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
-#    ical_content = genecrate_ical_for_job(job)
+    #    ical_content = genecrate_ical_for_job(job)
 
-    msg = EmailMultiAlternatives(Config.organisation_name()+" - Job-Zeit geändert", text_content, Config.info_email(), emails)
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Job-Zeit geändert", text_content, Config.info_email(),
+                                 emails)
     msg.attach_alternative(html_content, "text/html")
- #   msg.attach("einsatz.ics", ical_content, "text/calendar")
+    #   msg.attach("einsatz.ics", ical_content, "text/calendar")
     send_mail_multi(msg)
 
-  
 
 def send_job_signup(emails, job, server):
     plaintext = get_template('mails/job_signup_mail.txt')
@@ -266,14 +275,15 @@ def send_job_signup(emails, job, server):
     html_content = htmly.render(d)
     ical_content = genecrate_ical_for_job(job)
 
-    msg = EmailMultiAlternatives(Config.organisation_name()+" - für Job Angemeldet", text_content, Config.info_email(), emails)
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - für Job Angemeldet", text_content,
+                                 Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
     msg.attach("einsatz.ics", ical_content, "text/calendar")
     print repr(msg.message().as_string())
     print repr(os.linesep)
- #   send_mail_multi(msg)
+    #   send_mail_multi(msg)
 
-    
+
 def send_depot_changed(emails, depot, server):
     plaintext = get_template('mails/depot_changed_mail.txt')
     htmly = get_template('mails/depot_changed_mail.html')
@@ -286,6 +296,7 @@ def send_depot_changed(emails, depot, server):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name()+" - Depot geändert", text_content, Config.info_email(), emails)
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Depot geändert", text_content, Config.info_email(),
+                                 emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)

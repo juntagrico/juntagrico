@@ -1,39 +1,23 @@
 # -*- coding: utf-8 -*-
 
-from datetime import date
-from collections import defaultdict
-from StringIO import StringIO
-import string
 import random
-import re
-import math
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404, redirect
+import string
+from datetime import date
+
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import authenticate, login
-from django.core.management import call_command
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.db import models
-from django.utils import timezone
-from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 
-import xlsxwriter
-
-from juntagrico.models import *
 from juntagrico.forms import *
-from juntagrico.helpers import *
-from juntagrico.filters import Filter
-from juntagrico.mailer import *
+from juntagrico.models import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
-import hashlib
 
-from decorators import primary_member_of_subscription
+def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(
+    random.choice(chars) for x in range(size))
 
-
-def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(random.choice(chars) for x in range(size))
 
 def get_menu_dict(request):
     member = request.user.member
@@ -45,18 +29,18 @@ def get_menu_dict(request):
             if assignment.job.time.year == date.today().year and assignment.job.time < timezone.now():
                 res.append(assignment)
         return res
-    subscription_size=0
+
+    subscription_size = 0
     if member.subscription is not None:
         partner_assignments = []
         for subscription_member in member.subscription.recipients():
-            if subscription_member == member: continue
-            partner_assignments.extend(filter_to_past_assignments(Assignment.objects.filter(member=subscription_member)))
+            if subscription_member == member:
+                continue
+            partner_assignments.extend(
+                filter_to_past_assignments(Assignment.objects.filter(member=subscription_member)))
 
         userassignments = filter_to_past_assignments(Assignment.objects.filter(member=member))
         subscription_size = member.subscription.size * 10
-
-        # amount of assignments shown => round up if needed never down
-        assignmentsrange = range(0, max(userassignments.__len__(), int(math.ceil(member.subscription.size * 10 / member.subscription.members.count()))))
         assignmentsrange = range(0, max(subscription_size, len(userassignments) + len(partner_assignments)))
 
         for assignment in Assignment.objects.all().filter(member=member).order_by("job__time"):
@@ -76,7 +60,8 @@ def get_menu_dict(request):
         'userassignments_total': len(userassignments),
         'userassignemnts_core': len([assignment for assignment in userassignments if assignment.is_core()]),
         'partner_assignments_total': len(userassignments) + len(partner_assignments),
-        'partner_assignments_core': len(userassignments) + len([assignment for assignment in partner_assignments if assignment.is_core()]),
+        'partner_assignments_core': len(userassignments) + len(
+            [assignment for assignment in partner_assignments if assignment.is_core()]),
         'subscription_size': subscription_size,
         'next_jobs': next_jobs,
         'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
@@ -85,9 +70,9 @@ def get_menu_dict(request):
         'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
         'depot_admin': depot_admin,
         'area_admin': area_admin,
-        'depot_list_url': settings.MEDIA_URL+ settings.MEDIA_ROOT +"/dpl.pdf",
+        'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + "/dpl.pdf",
     }
-    enrich_menu_dict(request,menu_dict)
+    enrich_menu_dict(request, menu_dict)
     return menu_dict
 
 
@@ -99,7 +84,8 @@ def my_home(request):
 
     next_jobs = set(get_current_jobs()[:7])
     pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=timezone.now()))
-    next_activityday = set(RecuringJob.objects.filter(type__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
+    next_activityday = set(
+        RecuringJob.objects.filter(type__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_activityday), key=lambda job: job.time),
@@ -128,8 +114,7 @@ def my_job(request, job_id):
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
-    
-    
+
     all_participants = Member.objects.filter(assignment__job=job)
     number_of_participants = len(all_participants)
     unique_participants = all_participants.annotate(assignment_for_job=Count('id')).distinct()
@@ -139,30 +124,27 @@ def my_job(request, job_id):
     for member in unique_participants:
         name = u'{} {}'.format(member.first_name, member.last_name)
         if member.assignment_for_job == 2:
-            name = name + u' (mit einer weiteren Person)'
+            name += u' (mit einer weiteren Person)'
         elif member.assignment_for_job > 2:
-            name = name + u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
+            name += u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
         contact_url = u'/my/kontakt/member/{}/{}/'.format(member.id, job_id)
-        reachable = member.reachable_by_email==True or request.user.is_staff or job.typeactivityarea.coordinator==member
+        reachable = member.reachable_by_email is True or request.user.is_staff or job.typeactivityarea.coordinator == member
         participants_summary.append((name, None, contact_url, reachable))
         emails.append(member.email)
-        
-        
+
     slotrange = range(0, job.slots)
     allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
     job_fully_booked = len(allowed_additional_participants) == 0
     job_is_in_past = job.end_time() < timezone.now()
     job_is_running = job.start_time() < timezone.now()
     job_canceled = job.canceled
-    can_subscribe = not(job_fully_booked or job_is_in_past or job_is_running or job_canceled)
-    
+    can_subscribe = not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
+
     renderdict = get_menu_dict(request)
-    jobendtime = job.end_time()
     renderdict.update({
-        'admin': request.user.is_staff or job.typeactivityarea.coordinator==member,
+        'admin': request.user.is_staff or job.typeactivityarea.coordinator == member,
         'emails': "\n".join(emails),
         'number_of_participants': number_of_participants,
-        'participants_summary': participants_summary,
         'participants_summary': participants_summary,
         'job': job,
         'slotrange': slotrange,
@@ -252,9 +234,6 @@ def my_pastjobs(request):
     return render(request, "pastjobs.html", renderdict)
 
 
-
-
-
 @login_required
 def my_team(request, area_id):
     """
@@ -265,14 +244,12 @@ def my_team(request, area_id):
 
     otjobs = get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = get_current_recuring_jobs().filter(type__in=job_types)
-    
+
     jobs = list(rjobs)
 
     if len(otjobs) > 0:
         jobs.extend(list(otjobs))
         jobs.sort(key=lambda job: job.time)
-
-
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -335,13 +312,14 @@ def my_contact(request):
     })
     return render(request, "contact.html", renderdict)
 
+
 @login_required
 def my_contact_member(request, member_id, job_id):
     """
     member contact form
     """
     member = request.user.member
-    contact_member = get_object_or_404(Member, id=int(member_id))#Member.objects.all().filter(id = member_id)
+    contact_member = get_object_or_404(Member, id=int(member_id))  # Member.objects.all().filter(id = member_id)
     is_sent = False
 
     if request.method == "POST":
@@ -351,12 +329,13 @@ def my_contact_member(request, member_id, job_id):
         while request.FILES.get("image-" + str(index)) is not None:
             attachments.append(request.FILES.get("image-" + str(index)))
             index += 1
-        send_contact_member_form(request.POST.get("subject"), request.POST.get("message"), member, contact_member, request.POST.get("copy"), attachments)
+        send_contact_member_form(request.POST.get("subject"), request.POST.get("message"), member, contact_member,
+                                 request.POST.get("copy"), attachments)
         is_sent = True
     job = Job.objects.filter(id=job_id)[0]
     renderdict = get_menu_dict(request)
-    renderdict.update({        
-        'admin': request.user.is_staff or job.typeactivityarea.coordinator==member,
+    renderdict.update({
+        'admin': request.user.is_staff or job.typeactivityarea.coordinator == member,
         'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
         'member_id': member_id,
         'member_name': contact_member.first_name + " " + contact_member.last_name,
@@ -373,7 +352,7 @@ def my_profile(request):
     if request.method == 'POST':
         memberform = MemberProfileForm(request.POST, instance=member)
         if memberform.is_valid():
-            #set all fields of user
+            # set all fields of user
             member.first_name = memberform.cleaned_data['first_name']
             member.last_name = memberform.cleaned_data['last_name']
             member.email = memberform.cleaned_data['email']

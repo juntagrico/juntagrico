@@ -18,12 +18,13 @@ class SubscriptionAdminForm(forms.ModelForm):
         fields = '__all__'
 
     subscription_members = forms.ModelMultipleChoiceField(queryset=Member.objects.all(), required=False,
-                                                 widget=admin.widgets.FilteredSelectMultiple("Member", False))
+                                                          widget=admin.widgets.FilteredSelectMultiple("Member", False))
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
         self.fields["primary_member"].queryset = Member.objects.filter(subscription=self.instance)
-        self.fields["subscription_members"].queryset = Member.objects.filter(Q(subscription=None) | Q(subscription=self.instance))
+        self.fields["subscription_members"].queryset = Member.objects.filter(
+            Q(subscription=None) | Q(subscription=self.instance))
         self.fields["subscription_members"].initial = Member.objects.filter(subscription=self.instance)
 
     def clean(self):
@@ -87,9 +88,6 @@ class JobCopyForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        weekdays = self.cleaned_data["weekdays"]
-        start = self.cleaned_data["start_date"]
-        end = self.cleaned_data["end_date"]
         time = self.cleaned_data["time"]
 
         inst = self.instance
@@ -130,7 +128,6 @@ class JobCopyForm(forms.ModelForm):
 
 class AssignmentInline(admin.TabularInline):
     model = Assignment
-    # readonly_fields = ["member"]
     raw_id_fields = ["member"]
 
     # can_delete = False
@@ -139,7 +136,7 @@ class AssignmentInline(admin.TabularInline):
     extra = 0
     max_num = 0
 
-    def get_extra(self, request, obj=None):
+    def get_extra(self, request, obj=None, **kwargs):
         # TODO is this needed?
         # if "copy_job" in request.path:
         #    return 0
@@ -147,7 +144,7 @@ class AssignmentInline(admin.TabularInline):
             return 0
         return obj.freie_plaetze()
 
-    def get_max_num(self, request, obj):
+    def get_max_num(self, request, obj=None, **kwargs):
         if obj is None:
             return 0
         return obj.slots
@@ -171,7 +168,7 @@ class JobAdmin(admin.ModelAdmin):
 
     mass_copy_job.short_description = "Job mehrfach kopieren..."
 
-    def copy_job(self, request, queryset):
+    def copy_job(self, queryset):
         for inst in queryset.all():
             newjob = RecuringJob(type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
@@ -224,7 +221,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     inlines = [AssignmentInline]
     readonly_fields = ["freie_plaetze"]
 
-    def transform_job(self, request, queryset):
+    def transform_job(self, queryset):
         for inst in queryset.all():
             t = JobType()
             rj = RecuringJob()
@@ -233,7 +230,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
             name = t.name
             t.name = "something temporal which possibly is never used"
             t.save()
-            rj.type= t
+            rj.type = t
             rj.save()
             for b in Assignment.objects.filter(job_id=inst.id):
                 b.job = rj
@@ -262,15 +259,15 @@ class JobTypeAdmin(admin.ModelAdmin):
     list_display = ["__unicode__"]
     actions = ["transform_job_type"]
 
-    def transform_job_type(self, request, queryset):
+    def transform_job_type(self, queryset):
         for inst in queryset.all():
             i = 0
             for rj in RecuringJob.objects.filter(typeid=inst.id):
                 oj = OneTimeJob()
                 helpers.attribute_copy(inst, oj)
                 helpers.attribute_copy(rj, oj)
-                oj.name = oj.name + str(i)
-                i = i + 1
+                oj.name += str(i)
+                i += 1
                 print oj.__dict__
                 oj.save()
                 for b in Assignment.objects.filter(job_id=rj.id):
@@ -299,7 +296,7 @@ class ExtraSubscriptionInline(admin.TabularInline):
     model = ExtraSubscription
     fk_name = 'main_subscription'
 
-    def get_extra(self, request, obj=None):
+    def get_extra(self, request, obj=None, **kwargs):
         return 0
 
 
@@ -356,7 +353,8 @@ class AssignmentAdmin(admin.ModelAdmin):
             otjidlist = list(
                 OneTimeJob.objects.filter(activityarea__coordinator=request.user.member).values_list('id', flat=True))
             rjidlist = list(
-                RecuringJob.objects.filter(type_activityarea__coordinator=request.user.member).values_list('id', flat=True))
+                RecuringJob.objects.filter(type_activityarea__coordinator=request.user.member).values_list('id',
+                                                                                                           flat=True))
             jidlist = otjidlist + rjidlist
             return qs.filter(job__id__in=jidlist)
         return qs
@@ -367,10 +365,12 @@ class AssignmentAdmin(admin.ModelAdmin):
             otjidlist = list(
                 OneTimeJob.objects.filter(activityarea__coordinator=request.user.member).values_list('id', flat=True))
             rjidlist = list(
-                RecuringJob.objects.filter(type_activityarea__coordinator=request.user.member).values_list('id', flat=True))
+                RecuringJob.objects.filter(type_activityarea__coordinator=request.user.member).values_list('id',
+                                                                                                           flat=True))
             jidlist = otjidlist + rjidlist
             kwargs["queryset"] = Job.objects.filter(id__in=jidlist)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class MemberAdminForm(forms.ModelForm):
     class Meta:
@@ -390,7 +390,7 @@ class MemberAdminForm(forms.ModelForm):
         self.fields["subscription_link"].initial = link
 
     subscription_link = forms.URLField(widget=admin_helpers.MyHTMLWidget(), required=False,
-                              label="Abo")
+                                       label="Abo")
 
 
 class MemberAdmin(admin.ModelAdmin):
@@ -404,12 +404,12 @@ class MemberAdmin(admin.ModelAdmin):
 
     def impersonate_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, u"Genau 1 "+Config.member_string()+" auswählen!", level=messages.ERROR)
+            self.message_user(request, u"Genau 1 " + Config.member_string() + " auswählen!", level=messages.ERROR)
             return HttpResponseRedirect("")
         inst, = queryset.all()
         return HttpResponseRedirect("/impersonate/%s/" % inst.user.id)
 
-    impersonate_job.short_description = Config.member_string()+" imitieren (impersonate)..."
+    impersonate_job.short_description = Config.member_string() + " imitieren (impersonate)..."
 
 
 admin.site.register(Depot, DepotAdmin)
