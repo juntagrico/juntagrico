@@ -8,6 +8,9 @@ from django.template import Template, Context
 
 from juntagrico.models import *
 from juntagrico.views import get_menu_dict
+from juntagrico.util.jobs import *
+from juntagrico.util.pdf import *
+from juntagrico.util.xls import *
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -176,7 +179,7 @@ def my_subscriptions(request):
             'text': get_status_image_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
             'core_assignments': core_assignments,
-            'icon': helpers.get_status_image(
+            'icon': get_status_image(
                 100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
         })
 
@@ -209,7 +212,7 @@ def my_subscriptions_depot(request, depot_id):
             'text': get_status_image_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
             'core_assignments': core_assignments,
-            'icon': helpers.get_status_image(
+            'icon': get_status_image(
                 100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
         })
 

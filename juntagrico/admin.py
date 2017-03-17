@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 
+
 from django import forms
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
-from juntagrico import admin_helpers
+from juntagrico.config import Config
 from juntagrico.models import *
+from juntagrico.util import admin
+from juntagrico.util.models import *
+from juntagrico.util.temporal import *
 
 
 # This form exists to restrict primary user choice to users that have actually set the
@@ -58,7 +62,7 @@ class JobCopyForm(forms.ModelForm):
         model = RecuringJob
         fields = ["type", "slots"]
 
-    weekdays = forms.MultipleChoiceField(label="Wochentage", choices=helpers.weekday_choices,
+    weekdays = forms.MultipleChoiceField(label="Wochentage", choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
 
     time = forms.TimeField(label="Zeit", required=False,
@@ -225,8 +229,8 @@ class OneTimeJobAdmin(admin.ModelAdmin):
         for inst in queryset.all():
             t = JobType()
             rj = RecuringJob()
-            helpers.attribute_copy(inst, t)
-            helpers.attribute_copy(inst, rj)
+            attribute_copy(inst, t)
+            attribute_copy(inst, rj)
             name = t.name
             t.name = "something temporal which possibly is never used"
             t.save()
@@ -264,8 +268,8 @@ class JobTypeAdmin(admin.ModelAdmin):
             i = 0
             for rj in RecuringJob.objects.filter(typeid=inst.id):
                 oj = OneTimeJob()
-                helpers.attribute_copy(inst, oj)
-                helpers.attribute_copy(rj, oj)
+                attribute_copy(inst, oj)
+                attribute_copy(rj, oj)
                 oj.name += str(i)
                 i += 1
                 print oj.__dict__
@@ -389,7 +393,7 @@ class MemberAdminForm(forms.ModelForm):
             link = "Kein Abo"
         self.fields["subscription_link"].initial = link
 
-    subscription_link = forms.URLField(widget=admin_helpers.MyHTMLWidget(), required=False,
+    subscription_link = forms.URLField(widget=admin.MyHTMLWidget(), required=False,
                                        label="Abo")
 
 

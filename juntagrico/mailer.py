@@ -3,15 +3,16 @@
 import os
 import re
 
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import mail
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
+from django.conf import settings
+from django.template.loader import get_template
 
-from juntagrico.helpers import *
-
-
+from juntagrico.config import Config
+from juntagrico.util.ical import *
 def get_server(server):
     site_from_env = os.getenv("ORTOLOCO_TEMPLATE_SERVERURL")
     if site_from_env:

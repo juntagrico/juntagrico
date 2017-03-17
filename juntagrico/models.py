@@ -8,9 +8,11 @@ from django.db import models
 from django.db.models import signals
 from polymorphic.models import PolymorphicModel
 
-import helpers
 import model_audit
 from juntagrico.mailer import *
+from juntagrico.util.temporal import *
+from juntagrico.util.users import *
+from juntagrico.util.jobs import *
 
 
 class Depot(models.Model):
@@ -20,7 +22,7 @@ class Depot(models.Model):
     code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField("Depot Name", max_length=100, unique=True)
     contact = models.ForeignKey("Member", on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField("Wochentag", choices=helpers.weekday_choices)
+    weekday = models.PositiveIntegerField("Wochentag", choices=weekday_choices)
     latitude = models.CharField("Latitude", max_length=100, default="")
     longitude = models.CharField("Longitude", max_length=100, default="")
 
@@ -43,7 +45,7 @@ class Depot(models.Model):
     def weekday_name(self):
         day = "Unbekannt"
         if 8 > self.weekday > 0:
-            day = helpers.weekdays[self.weekday]
+            day = weekdays[self.weekday]
         return day
 
     @staticmethod
@@ -411,7 +413,7 @@ class Member(models.Model):
         Callback to create corresponding member when new user is created.
         """
         if created:
-            username = helpers.make_username(instance.first_name, instance.last_name, instance.email)
+            username = make_username(instance.first_name, instance.last_name, instance.email)
             user = User(username=username)
             user.save()
             user = User.objects.get(username=username)
@@ -540,7 +542,7 @@ class Job(PolymorphicModel):
         return u'Job #%s' % self.id
 
     def weekday_name(self):
-        weekday = helpers.weekdays[self.time.isoweekday()]
+        weekday = weekdays[self.time.isoweekday()]
         return weekday[:2]
 
     def time_stamp(self):
@@ -564,8 +566,8 @@ class Job(PolymorphicModel):
     def get_status_percentage(self):
         assignments = Assignment.objects.filter(job_id=self.id)
         if self.slots < 1:
-            return helpers.get_status_image(100)
-        return helpers.get_status_image(assignments.count() * 100 / self.slots)
+            return get_status_image(100)
+        return get_status_image(assignments.count() * 100 / self.slots)
 
     def is_core(self):
         return self.type.activityarea.core
