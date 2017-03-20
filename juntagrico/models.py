@@ -9,6 +9,7 @@ from django.db.models import signals
 from polymorphic.models import PolymorphicModel
 
 import model_audit
+from juntagrico.dao.sharedao import ShareDao
 from juntagrico.mailer import *
 from juntagrico.util.temporal import *
 from juntagrico.util.users import *
@@ -267,8 +268,7 @@ class Subscription(Billable):
 
     @property
     def paid_shares(self):
-        return Share.objects.filter(member__in=self.members.all()).filter(paid_date__isnull=False).filter(
-            cancelled_date__isnull=True).count()
+        return ShareDao.paid_shares(self).count()
 
     @property
     def future_extra_subscriptions(self):
