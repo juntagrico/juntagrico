@@ -77,7 +77,7 @@ def get_menu_dict(request):
 
 
 @login_required
-def my_home(request):
+def home(request):
     """
     Overview on juntagrico
     """
@@ -97,7 +97,7 @@ def my_home(request):
 
 
 @login_required
-def my_job(request, job_id):
+def job(request, job_id):
     """
     Details for a job
     """
@@ -127,7 +127,7 @@ def my_job(request, job_id):
             name += u' (mit einer weiteren Person)'
         elif member.assignment_for_job > 2:
             name += u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
-        contact_url = u'/my/kontakt/member/{}/{}/'.format(member.id, job_id)
+        contact_url = u'/my/contact/member/{}/{}/'.format(member.id, job_id)
         reachable = member.reachable_by_email is True or request.user.is_staff or job.typeactivityarea.coordinator == member
         participants_summary.append((name, None, contact_url, reachable))
         emails.append(member.email)
@@ -159,7 +159,7 @@ def my_job(request, job_id):
 
 
 @login_required
-def my_depot(request, depot_id):
+def depot(request, depot_id):
     """
     Details for a Depot
     """
@@ -173,7 +173,7 @@ def my_depot(request, depot_id):
 
 
 @login_required
-def my_participation(request):
+def participation(request):
     """
     Details for all areas a member can participate
     """
@@ -213,7 +213,7 @@ def my_participation(request):
 
 
 @login_required
-def my_pastjobs(request):
+def pastjobs(request):
     """
     All past jobs of current user
     """
@@ -235,7 +235,7 @@ def my_pastjobs(request):
 
 
 @login_required
-def my_team(request, area_id):
+def team(request, area_id):
     """
     Details for a team
     """
@@ -260,7 +260,7 @@ def my_team(request, area_id):
 
 
 @login_required
-def my_assignments(request):
+def assignments(request):
     """
     All jobs to be sorted etc.
     """
@@ -277,7 +277,7 @@ def my_assignments(request):
 
 
 @login_required
-def my_assingments_all(request):
+def assingments_all(request):
     """
     All jobs to be sorted etc.
     """
@@ -292,7 +292,7 @@ def my_assingments_all(request):
 
 
 @login_required
-def my_contact(request):
+def contact(request):
     """
     contact form
     """
@@ -314,7 +314,7 @@ def my_contact(request):
 
 
 @login_required
-def my_contact_member(request, member_id, job_id):
+def contact_member(request, member_id, job_id):
     """
     member contact form
     """
@@ -342,11 +342,11 @@ def my_contact_member(request, member_id, job_id):
         'is_sent': is_sent,
         'job_id': job_id
     })
-    return render(request, "my_contact_member.html", renderdict)
+    return render(request, "contact_member.html", renderdict)
 
 
 @login_required
-def my_profile(request):
+def profile(request):
     success = False
     member = request.user.member
     if request.method == 'POST':
@@ -377,7 +377,7 @@ def my_profile(request):
 
 
 @login_required
-def my_change_password(request):
+def change_password(request):
     success = False
     if request.method == 'POST':
         form = PasswordForm(request.POST)
@@ -396,7 +396,7 @@ def my_change_password(request):
     return render(request, 'password.html', renderdict)
 
 
-def my_new_password(request):
+def new_password(request):
     sent = False
     if request.method == 'POST':
         sent = True

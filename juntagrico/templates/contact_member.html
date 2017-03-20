@@ -7,7 +7,7 @@
 	{% else %}
     <h3>Kontakt</h3>
     <br/>
-    <form action="/my/kontakt/member/{{member_id}}/{{job_id}}/" method="POST" class="form-horizontal" enctype="multipart/form-data">
+    <form action="/my/contact/member/{{member_id}}/{{job_id}}/" method="POST" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
             <label class="control-label col-sm-4">Absender</label>

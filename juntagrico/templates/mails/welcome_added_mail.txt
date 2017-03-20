@@ -2,7 +2,7 @@
 {% load config %}
 {% block content %}
 Wir freuen uns, dich bei {% config "organisation_name" %} begrüssen zu dürfen. Soeben hat dich '{{name}}' zu ihrem/seinem Gemüsesubscription hinzugefügt und für dich {{ anteilsscheine }} Share(e) erworben. Wenn du damit einverstanden bist, {% config "organisation_name" %}-GenossenschafterIn zu werden und die Statuten und das Betriebsreglement gelesen hast, dann klicke bitte auf den Bestätigungslink:
-Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
+Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
 
 Statuten: {{ serverurl }}{% config "bylaws" %}
 Betriebsreglement: {{ serverurl }}{% config "business_regulations" %}
@@ -13,7 +13,7 @@ Unter {% config "adminportal_server_url" %} kannst du dich ab sofort für Jobs a
 Email: {{ username }}
 Passwort: {{ password }}
 Bitte setze dir hier gleich ein neues Passwort:
-{{serverurl}}/my/passwort
+{{serverurl}}/my/password
 {% endif %}
 Weitere Infos wirst du bald erhalten. Bei Fragen oder Unklarheiten einfach melden:
 {% config "info_email" %}

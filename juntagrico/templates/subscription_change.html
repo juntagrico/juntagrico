@@ -73,14 +73,14 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <a href="/my/subscription/{{ member.subscription.id }}/aendern/depot" class="btn btn-success">Depot ändern</a>
+            <a href="/my/subscription/{{ member.subscription.id }}/change/depot" class="btn btn-success">Depot ändern</a>
         </div>
         <div class="col-md-4">
-            <a {% if change_size %}href="/my/subscription/{{ member.subscription.id }}/aendern/groesse"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
+            <a {% if change_size %}href="/my/subscription/{{ member.subscription.id }}/change/size"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
             {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
         </div>
         <div class="col-md-4">
-            <a href="/my/subscription/{{ member.subscription.id }}/aendern/extra" class="btn btn-success">Zusatz-Abos ändern</a>
+            <a href="/my/subscription/{{ member.subscription.id }}/change/extra" class="btn btn-success">Zusatz-Abos ändern</a>
         </div>
     </div>
 {% endblock %}

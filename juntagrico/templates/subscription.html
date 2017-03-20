@@ -4,7 +4,7 @@
 {% block content %}
     <h3>Abo Übersicht</h3>
     {% if not member.subscription %}
-        <div class="alert alert-warning">Du hast noch kein Abo<br/>Du möchtest eines? Melde dich hier an: <a href="/my/subscriptionerstellen">Abo erstellen</a></div>
+        <div class="alert alert-warning">Du hast noch kein Abo<br/>Du möchtest eines? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
     {% else %}
         <dl class="dl-horizontal">
             <dt>Abogrösse</dt>
@@ -112,7 +112,7 @@
             <dt>&nbsp;</dt>
             <dd>
                 <div class="form-actions">
-                    <a href="{% if primary %}/my/subscription/{{ member.subscription.id }}/aendern{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
+                    <a href="{% if primary %}/my/subscription/{{ member.subscription.id }}/change{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
                     {% if not primary %}
                         * Das Abo kann nur der Hauptsubscriptionnnent ändern.
                     {% endif %}

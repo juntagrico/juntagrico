@@ -75,17 +75,17 @@ def send_email_result(request, numsent):
 
 
 @permission_required('juntagrico.can_send_mails')
-def my_mails(request, enhanced=None):
+def mails(request, enhanced=None):
     return my_mails_intern(request, enhanced)
 
 
 @permission_required('juntagrico.is_depot_admin')
-def my_mails_depot(request):
+def mails_depot(request):
     return my_mails_intern(request, "depot")
 
 
 @permission_required('juntagrico.is_area_admin')
-def my_mails_area(request):
+def mails_area(request):
     return my_mails_intern(request, "area")
 
 
@@ -109,7 +109,7 @@ def my_mails_intern(request, enhanced, error_message=None):
 
 
 @permission_required('juntagrico.can_filter_members')
-def my_filters(request):
+def filters(request):
     now = timezone.now()
     members = Member.objects.annotate(assignment_count=Count(
         Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
@@ -124,7 +124,7 @@ def my_filters(request):
 
 
 @permission_required('juntagrico.is_depot_admin')
-def my_filters_depot(request, depot_id):
+def filters_depot(request, depot_id):
     now = timezone.now()
     depot = get_object_or_404(Depot, id=int(depot_id))
     members = Member.objects.filter(subscription__depot=depot).annotate(assignment_count=Count(
@@ -142,7 +142,7 @@ def my_filters_depot(request, depot_id):
 
 
 @permission_required('juntagrico.is_area_admin')
-def my_filters_area(request, area_id):
+def filters_area(request, area_id):
     now = timezone.now()
     area = get_object_or_404(ActivityArea, id=int(area_id))
     members = area.members.all().annotate(assignment_count=Count(
@@ -160,7 +160,7 @@ def my_filters_area(request, area_id):
 
 
 @permission_required('juntagrico.can_filter_subscriptions')
-def my_subscriptions(request):
+def subscriptions(request):
     now = timezone.now()
     subscriptions = []
     for subscription in Subscription.objects.filter():
@@ -192,7 +192,7 @@ def my_subscriptions(request):
 
 
 @permission_required('juntagrico.is_depot_admin')
-def my_subscriptions_depot(request, depot_id):
+def filter_subscriptions_depot(request, depot_id):
     now = timezone.now()
     subscriptions = []
     depot = get_object_or_404(Depot, id=int(depot_id))
@@ -291,7 +291,7 @@ def alldepots_list(name):
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_future(request):
+def future(request):
     renderdict = get_menu_dict(request)
 
     subscriptionsizes = []
@@ -333,7 +333,7 @@ def my_future(request):
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_switch_extras():
+def change_extras():
     for subscription in Subscription.objects.all():
         for extra in subscription.extra_subscription_set:
             if extra.active is True and extra.canceled is True:
@@ -343,11 +343,11 @@ def my_switch_extras():
                 extra.active = True
                 extra.save()
 
-    return redirect('/my/zukunft?changed=true')
+    return redirect('/my/future?changed=true')
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_switch_subscriptions(request):
+def change_subscriptions(request):
     renderdict = get_menu_dict(request)
 
     for subscription in Subscription.objects.all():
@@ -362,11 +362,11 @@ def my_switch_subscriptions(request):
     renderdict.update({
     })
 
-    return redirect('/my/zukunft?changed=true')
+    return redirect('/my/future?changed=true')
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_get_mail_template(template_id):
+def get_mail_template(template_id):
     renderdict = {}
 
     template = MailTemplate.objects.filter(id=template_id)[0]
@@ -378,7 +378,7 @@ def my_get_mail_template(template_id):
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_maps(request):
+def maps(request):
     renderdict = {
         "depots": Depot.objects.all(),
         "subscriptions": Subscription.objects.filter(active=True),
@@ -388,7 +388,7 @@ def my_maps(request):
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_excel_export_members_filter():
+def excel_export_members_filter():
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = StringIO()
@@ -441,7 +441,7 @@ def my_excel_export_members_filter():
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_excel_export_members():
+def excel_export_members():
     fields = [
         u'first_name',
         u'last_name',
@@ -460,7 +460,7 @@ def my_excel_export_members():
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_excel_export_shares():
+def excel_export_shares():
     fields = [
         u'number',
         u'paid_date',
@@ -478,7 +478,7 @@ def my_excel_export_shares():
 
 
 @permission_required('juntagrico.is_operations_group')
-def my_export(request):
+def export(request):
     renderdict = get_menu_dict(request)
     return render(request, 'export.html', renderdict)
 

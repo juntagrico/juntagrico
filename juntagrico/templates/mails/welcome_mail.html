@@ -15,9 +15,9 @@
 {% if password is not None %}
 Dein Login:<br/>
     Email: {{ username }}<br/>
-    Passwort: {{ password }} (bitte setze dir <a href="{{ serverurl }}/my/passwort">hier</a> gleich ein neues Passwort)
+    Passwort: {{ password }} (bitte setze dir <a href="{{ serverurl }}/my/password">hier</a> gleich ein neues Passwort)
     <br/>
-    Damit wir dich als Mitglied freishalten können musst du <a href="{{ serverurl }}/my/bestaetigung/{{ hash }}">hier deine Email bestätigen</a>.
+    Damit wir dich als Mitglied freishalten können musst du <a href="{{ serverurl }}/my/confirm/{{ hash }}">hier deine Email bestätigen</a>.
     <br/><br/>
 {% endif %}
     Für weitere Fragen schaust du in den <a href="{{ serverurl }}{% config "faq_doc" %}">FAQ</a> nach oder schreibst eine Mail an <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>.

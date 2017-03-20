@@ -16,10 +16,10 @@ Gerne darfst du schon vorher im Garten schnuppern kommen – schau dich auf der 
 Email: {{ username }}
 Passwort: {{ password }}
 Bitte setze dir hier gleich ein neues Passwort:
-{{serverurl}}/my/passwort
+{{serverurl}}/my/password
 
 Damit wir dich als Mitglied freishalten können nutze den Bestätigungslink um deine Email zu bestätigen.
-Bestätigungslink: {{ serverurl }}/my/bestaetigung/{{ hash }}
+Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
 {% endif %}
 
 Für weitere Fragen schaust du in den FAQ (http://{% config "server_url" %}{% config "faq_doc" %}) nach oder schreibst eine Mail an {% config "info_email" %}.

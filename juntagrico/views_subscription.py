@@ -18,7 +18,7 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 
 
 @login_required
-def my_subscription(request):
+def subscription(request):
     """
     Details for an subscription of a member
     """
@@ -50,7 +50,7 @@ def my_subscription(request):
 
 
 @primary_member_of_subscription
-def my_subscription_change(request):
+def subscription_change(request):
     """
     change an subscription
     """
@@ -62,11 +62,11 @@ def my_subscription_change(request):
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_size_date': Subscription.next_size_change_date()
     })
-    return render(request, "my_subscription_change.html", renderdict)
+    return render(request, "subscription_change.html", renderdict)
 
 
 @primary_member_of_subscription
-def my_depot_change(request):
+def depot_change(request):
     """
     change a depot
     """
@@ -85,7 +85,7 @@ def my_depot_change(request):
 
 
 @primary_member_of_subscription
-def my_size_change(request):
+def size_change(request):
     """
     change the size of an subscription
     """
@@ -103,7 +103,7 @@ def my_size_change(request):
 
 
 @primary_member_of_subscription
-def my_extra_change(request):
+def extra_change(request):
     """
     change an extra subscription
     """
@@ -170,7 +170,7 @@ def my_extra_change(request):
     return render(request, "extra_change.html", renderdict)
 
 
-def my_signup(request):
+def signup(request):
     """
     Become a member of juntagrico
     """
@@ -201,7 +201,7 @@ def my_signup(request):
                     # log in to allow him to make changes to the subscription
                     loggedin_user = authenticate(username=member.user.username, password=password)
                     login(request, loggedin_user)
-                    return redirect("/my/subscriptionerstellen")
+                    return redirect("/my/create/subscrition")
     else:
         memberform = MemberProfileForm()
 
@@ -217,7 +217,7 @@ def my_signup(request):
 
 
 @login_required
-def my_welcome(request):
+def welcome(request):
     """
     welcome
     """
@@ -232,7 +232,7 @@ def my_welcome(request):
     return render(request, "welcome.html", renderdict)
 
 
-def my_confirm(hash):
+def confirm(hash):
     """
     Confirm from a user that has been added as a co_subscriptionnnent
     """
@@ -306,7 +306,7 @@ def createsubscription(request):
             if request.POST.get("add_member"):
                 request.session['create_subscription'] = session_subscription
                 request.session['create_member_shares'] = member_shares
-                return redirect("/my/subscriptionnnent/0")
+                return redirect("/my/cosubmember/0")
             else:
                 password = None
                 if member.confirmed is False:
@@ -338,7 +338,7 @@ def createsubscription(request):
                 request.session['create_co_members'] = []
                 request.session['create_co_members_shares'] = []
                 request.session['create_member_shares'] = []
-                return redirect("/my/willkommen")
+                return redirect("/my/welcome")
 
     renderdict = {
         'co_member_shares': co_member_shares,
@@ -406,7 +406,7 @@ def add_member(request, subscription_id):
                 co_members = request.session.get('create_co_members', [])
                 co_members.append(member)
                 request.session['create_co_members'] = co_members
-                return redirect('/my/subscriptionerstellen')
+                return redirect('/my/create/subscrition')
     else:
         member = request.user.member
         initial = {"addr_street": member.addr_street,
