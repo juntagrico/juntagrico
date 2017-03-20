@@ -47,11 +47,6 @@
     display: none !important;
 }
 
-#jobs .table-sort {
-    font-family: Arial;
-    font-size: 12;
-}
-
 .jobstatus {
     margin-right: -7px;
 }
@@ -166,10 +161,6 @@ table.future td {
     line-height: 30px;
 }
 
-.loco-job-comments {
-    font-style: italic;
-}
-
 #filter {
     width: 100%;
 }
@@ -177,10 +168,6 @@ table.future td {
 #filter table {
     width: 100%;
     font-size: 10px;
-}
-
-#filter-table .odd {
-    background-color: #e1eff4
 }
 
 .main-menu {
@@ -204,11 +191,6 @@ table.future td {
     line-height: 10px;
 }
 
-.section-title {
-    font-size: 12px;
-    margin-top: -20px;
-}
-
 .table th {
     position: relative;
 }
@@ -218,13 +200,6 @@ table.future td {
     right: 10px;
 }
 
-.table th.sorting_asc:before {
-    content: "↓";
-}
-
-.table th.sorting_desc:before {
-    content: "↑";
-}
 
 /* general overrides of bootstrap */
 @font-face {
@@ -267,7 +242,7 @@ h1, h2, h3, h4, h5, h6, .main-menu {
     font-family: "typenoksidi", serif;
 }
 
-select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
     height: 30px;
 }
 
@@ -284,18 +259,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 
 .main-menu li a {
     padding: 0;
-}
-
-.logo {
-    background: url(/static/img/logo.png) 0 0px;
-    display: inline-block;
-    width: 220px;
-    height: 51px;
-    margin-bottom: 25px;
-}
-
-.logo:hover {
-    background-position: 0 51px;
 }
 
 .container {
@@ -371,10 +334,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     color: #21285f;
 }
 
-.activeItem {
-    display: none;
-}
-
 .nav-pills ul {
     margin-bottom: 0;
     background-color: transparent;
@@ -384,60 +343,11 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     background-color: transparent;
 }
 
-.myortoloco_link {
-    position: absolute;
-    right: 25px;
-    bottom: 80px;
-    width: 18px;
-    height: 140px;
-    display: inline-block;
-    background: url(/static/img/myortoloco_link.png) 0px 0px no-repeat;
-
-}
-
-.myortoloco_link:hover {
-    background-position: -19px 0;
-
-}
-
-/* medias */
-.year {
-    opacity: 0.7;
-}
-
-.medias tr.newYear {
-    border-top: 1px #ddd solid;
-}
-
-.medias.table th, .medias.table td {
-    border: 0;
-}
-
-.medias tr {
-    display: none;
-}
-
-.medias tr.shown, .medias tr.newYear {
-    display: table-row;
-}
-
-/* links */
-.link .desc, .document .desc {
-    padding-top: 5px;
-    padding-left: 35px;
-    background: url(/static/img/circle_y.png) no-repeat left -88px;
-}
-
 /* contact */
 #map-canvas {
     display: inline-block;
     width: 560px;
     height: 300px;
-}
-
-.addresses {
-    padding-top: 20px;
-    padding-bottom: 40px;
 }
 
 .impersonate {
