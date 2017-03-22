@@ -1,18 +1,16 @@
 from django.utils import timezone
 
+from juntagrico.models import RecuringJob, OneTimeJob, Job
 
 def get_current_jobs():
-    from models import Job
     return Job.objects.filter(time__gte=timezone.now()).order_by("time")
 
 
 def get_current_one_time_jobs():
-    from models import OneTimeJob
     return OneTimeJob.objects.filter(time__gte=timezone.now()).order_by("time")
 
 
 def get_current_recuring_jobs():
-    from models import RecuringJob
     return RecuringJob.objects.filter(time__gte=timezone.now()).order_by("time")
 
 
