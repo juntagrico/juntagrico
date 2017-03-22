@@ -122,6 +122,18 @@ class Config:
         return "250"
 
     @staticmethod
+    def promoted_job_types()():
+        if hasattr(settings, 'PROMOTED_JOB_TYPES'):
+            return settings.PROMOTED_JOB_TYPES
+        return 
+
+    @staticmethod
+    def promomted_jobs_amount():
+        if hasattr(settings, 'PROMOTED_JOBS_AMOUNT'):
+            return settings.PROMOTED_JOBS_AMOUNT
+        return 2
+
+    @staticmethod
     def google_api_key():
         if hasattr(settings, 'GOOGLE_API_KEY'):
             return settings.GOOGLE_API_KEY

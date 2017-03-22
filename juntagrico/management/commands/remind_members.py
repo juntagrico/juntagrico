@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 
 from juntagrico.models import *
 from juntagrico.dao.assignmentdao import AssignmentDao
+from juntagrico.dao.jobdao import JobDao
 
 
 class Command(BaseCommand):
@@ -11,7 +12,7 @@ class Command(BaseCommand):
 
         now = timezone.now()
         end = now + datetime.timedelta(days=2)
-        for job in Job.objects.filter(time__range=(now, end), reminder_sent__exact=False):
+        for job in JobDao.jobs_to_remind(now, end):
             participants = []
             emails = []
             for assignment in AssignmentDao.assignments_for_job(job.id):

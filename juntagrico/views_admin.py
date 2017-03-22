@@ -9,6 +9,9 @@ from django.template import Template, Context
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
+from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.models import *
 from juntagrico.views import get_menu_dict
 from juntagrico.util.jobs import *
@@ -38,15 +41,14 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get("sender")
     if request.POST.get("allsubscription") == "on":
-        for member in Member.objects.exclude(subscription=None).filter(subscription__active=True).exclude(
-                block_emails=True):
+        for member in MemberDaomembers_for email_with_subscription():
             emails.add(member.email)
     if request.POST.get("share") == "on":
-        for member in Member.objects.exclude(block_emails=True):
+        for member in MemberDao.members_for email():
             if member.share_set.count() > 0:
                 emails.add(member.email)
     if request.POST.get("all") == "on":
-        for member in Member.objects.exclude(block_emails=True):
+        for member in MemberDao.members_for email():
             emails.add(member.email)
     if request.POST.get("recipients"):
         recipients = re.split(r"\s*,?\s*", request.POST.get("recipients"))
@@ -114,11 +116,7 @@ def my_mails_intern(request, enhanced, error_message=None):
 @permission_required('juntagrico.can_filter_members')
 def filters(request):
     now = timezone.now()
-    members = Member.objects.annotate(assignment_count=Count(
-        Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
-        core_assignment_count=Count(Case(
-            When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True,
-                 then=1))))
+    members = MemberDao.members_with_assignments_count()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'members': members
@@ -130,11 +128,7 @@ def filters(request):
 def filters_depot(request, depot_id):
     now = timezone.now()
     depot = get_object_or_404(Depot, id=int(depot_id))
-    members = Member.objects.filter(subscription__depot=depot).annotate(assignment_count=Count(
-        Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
-        core_assignment_count=Count(Case(
-            When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True,
-                 then=1))))
+    members = MemberDao.members_with_assignments_count_for_depot(depot)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
     renderdict.update({
@@ -148,11 +142,7 @@ def filters_depot(request, depot_id):
 def filters_area(request, area_id):
     now = timezone.now()
     area = get_object_or_404(ActivityArea, id=int(area_id))
-    members = area.members.all().annotate(assignment_count=Count(
-        Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
-        core_assignment_count=Count(Case(
-            When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True,
-                 then=1))))
+    members = 
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
     renderdict.update({
@@ -166,14 +156,10 @@ def filters_area(request, area_id):
 def subscriptions(request):
     now = timezone.now()
     subscriptions = []
-    for subscription in Subscription.objects.filter():
+    for subscription in SubscriptionDao.all_subscritions():
         assignments = 0
         core_assignments = 0
-        for member in subscription.members.annotate(assignment_count=Count(
-                Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
-            core_assignment_count=Count(Case(
-                When(assignment__job__time__year=now.year, assignment__job__time__lt=now,
-                     assignemnt__core_cache=True, then=1)))):
+        for member in MemberDao.members_with_assignments_count_in_subscription(subscription):
             assignments += member.assignment_count
             core_assignments += member.core_assignment_count
 
@@ -199,14 +185,10 @@ def filter_subscriptions_depot(request, depot_id):
     now = timezone.now()
     subscriptions = []
     depot = get_object_or_404(Depot, id=int(depot_id))
-    for subscription in Subscription.objects.filter(depot=depot):
+    for subscription in SubscriptionDao.subscritions_by_depot(depot):
         assignments = 0
         core_assignments = 0
-        for member in subscription.members.annotate(assignment_count=Count(
-                Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
-            core_assignment_count=Count(Case(
-                When(assignment__job__time__year=now.year, assignment__job__time__lt=now,
-                     assignment__core_cache=True, then=1)))):
+        for member in  MemberDao.members_with_assignments_count_in_subscription(subscription):
             assignments += member.assignment_count
             core_assignments += member.core_assignemtns_count
 
@@ -239,7 +221,7 @@ def future(request):
     subscriptionsizes = []
     subscription_lines = dict({})
     extra_lines = dict({})
-    for subscription_size in SubscriptionSize.objects.all():
+    for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
         subscriptionsizes.append(subscription_size.name)
         subscription_lines[subscription_size.name] = {
             'name': subscription_size.name,
@@ -252,7 +234,7 @@ def future(request):
             'future': 0,
             'now': 0
         }
-    for subscription in Subscription.objects.all():
+    for subscription in SubscriptionDao.all_subscritions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['now'] += subscription.subscription_amount(subscription_size)
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
@@ -276,7 +258,7 @@ def future(request):
 
 @permission_required('juntagrico.is_operations_group')
 def change_extras():
-    for subscription in Subscription.objects.all():
+    for subscription in SubscriptionDao.all_subscritions():
         for extra in subscription.extra_subscription_set:
             if extra.active is True and extra.canceled is True:
                 extra.active = False
@@ -292,7 +274,7 @@ def change_extras():
 def change_subscriptions(request):
     renderdict = get_menu_dict(request)
 
-    for subscription in Subscription.objects.all():
+    for subscription in SubscriptionDao.all_subscritions():
         if subscription.size is not subscription.future_size:
             if subscription.future_size is 0:
                 subscription.active = False
@@ -323,7 +305,7 @@ def get_mail_template(template_id):
 def maps(request):
     renderdict = {
         "depots": DepotDao.all_depots(),
-        "subscriptions": Subscription.objects.filter(active=True),
+        "subscriptions": SubscriptionDao.all_active_subscritions(),
     }
 
     return render(request, "maps.html", renderdict)
@@ -347,11 +329,7 @@ def excel_export_members_filter():
     worksheet_s.write_string(0, 7, unicode("Mobile", "utf-8"))
 
     now = timezone.now()
-    members = Member.objects.annotate(assignment_count=Count(
-        Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
-        core_assignment_count=Count(Case(
-            When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True,
-                 then=1))))
+    members = MemberDao.members_with_assignments_count()
 
     row = 1
     for member in members:
@@ -428,7 +406,7 @@ def export(request):
 @permission_required('juntagrico.is_operations_group')
 def waitinglist(request):
     renderdict = get_menu_dict(request)
-    waitinglist = Subscription.objects.filter(active=False).filter(deactivation_date=None).order_by('start_date')
+    waitinglist = SubscriptionDao.not_started_subscriptions()
     renderdict.update({
         'waitinglist': waitinglist
     })

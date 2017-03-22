@@ -1,19 +1,3 @@
-from django.utils import timezone
-
-from juntagrico.models import RecuringJob, OneTimeJob, Job
-
-def get_current_jobs():
-    return Job.objects.filter(time__gte=timezone.now()).order_by("time")
-
-
-def get_current_one_time_jobs():
-    return OneTimeJob.objects.filter(time__gte=timezone.now()).order_by("time")
-
-
-def get_current_recuring_jobs():
-    return RecuringJob.objects.filter(time__gte=timezone.now()).order_by("time")
-
-
 def get_status_image(percent=0):
     if percent >= 100:
         return "circle_full.png"

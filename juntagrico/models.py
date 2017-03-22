@@ -11,7 +11,9 @@ from polymorphic.models import PolymorphicModel
 import model_audit
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.dao.assignmentdao import AssignmentDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategory
 from juntagrico.mailer import *
 from juntagrico.util.temporal import *
 from juntagrico.util.users import *
@@ -68,9 +70,9 @@ class Depot(models.Model):
     def fill_overview_cache(self):
         self.fill_active_subscription_cache()
         self.overview_cache = []
-        for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
+        for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             self.overview_cache.append(self.subscription_amounts(self.subscription_cache, subscription_size.name))
-        for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
+        for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered():
                 code = extra_subscription.name
                 self.overview_cache.append(self.extra_subscription(self.subscription_cache, code))
@@ -281,7 +283,7 @@ class Subscription(Billable):
         list = []
         map = {}
         index = 0
-        for size in SubscriptionSize.objects.order_by('size'):
+        for size in SubscriptionSizeDao.all_sizes_ordered():
             list.append(size.size)
             map[size.name] = index
             index += 1

@@ -2,6 +2,9 @@ from django.core.management.base import BaseCommand
 
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategory
 from juntagrico.models import *
 
 
@@ -32,8 +35,7 @@ class Command(BaseCommand):
             return
 
         if options['future'] or timezone.now().weekday() == settings.DEPOT_LIST_GENERATION_DAY:
-            future_subscriptions = Subscription.objects.exclude(future_depot__isnull=True)
-            for subscription in future_subscriptions:
+            for subscription in SubscriptionDao.subscritions_with_future_depots():
                 subscription.depot = subscription.future_depot
                 subscription.future_depot = None
                 subscription.save()
@@ -49,19 +51,18 @@ class Command(BaseCommand):
         depots = DepotDao.all_depots_order_by_code()
 
         subscription_names = []
-        for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
+        for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             subscription_names.append(subscription_size.name)
 
         categories = []
         types = []
-        for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
+        for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             cat = {"name": category.name, "description": category.description}
             count = 0
-            for extra_subscription in ExtraSubscriptionType.extra_types_by_category_ordered():
+            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered():
                 count += 1
                 type = {"name": extra_subscription.name, "size": extra_subscription.size, "last": False}
                 types.append(type)
-            # noinspection PyUnboundLocalVariable
             type["last"] = True
             cat["count"] = count
             categories.append(cat)
@@ -96,7 +97,7 @@ class Command(BaseCommand):
         overview["all"].insert(insert_point, 0)
 
         index = 0
-        for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
+        for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             overview["Dienstag"][insert_point] = overview["Dienstag"][insert_point] + subscription_size.size * \
                                                                                       overview["Dienstag"][index]
             overview["Donnerstag"][insert_point] = overview["Donnerstag"][insert_point] + subscription_size.size * \

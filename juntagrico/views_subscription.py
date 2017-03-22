@@ -7,8 +7,11 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
-from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.depotdao import ActivityAreaDao
+from juntagrico.dao.activityareaodao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from decorators import primary_member_of_subscription
 from juntagrico.forms import *
 from juntagrico.models import *
@@ -227,7 +230,7 @@ def welcome(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'jobs': get_current_jobs()[:7],
-        'teams': ActivityArea.objects.filter(hidden=False),
+        'teams': ActivityAreaDao.all_visible_areas(),
         'no_subscription': request.user.member.subscription is None
     })
 
@@ -239,7 +242,7 @@ def confirm(hash):
     Confirm from a user that has been added as a co_subscriptionnnent
     """
 
-    for member in Member.objects.all():
+    for member in MemberDao.all_members():
         if hash == hashlib.sha1(member.email + str(member.subscription_id)).hexdigest():
             member.confirmed = True
             member.save()
@@ -269,7 +272,7 @@ def createsubscription(request):
 
     if session_subscription is not None:
         selectedsubscription = next(
-            iter(SubscriptionSize.objects.filter(size=session_subscription.size).values_list('name', flat=True) or []),
+            iter(SubscriptionSizeDao.sizes_by_size(session_subscription.size).values_list('name', flat=True) or []),
             'none')
         selected_depot = session_subscription.depot
 
@@ -281,13 +284,13 @@ def createsubscription(request):
 
         shares += co_member_shares
         min_num_shares = next(
-            iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('shares', flat=True) or []), 1)
+            iter(SubscriptionSizeDao.sizes_by_name(selectedsubscription).values_list('shares', flat=True) or []), 1)
         if shares < min_num_shares or not subscriptionform.is_valid():
             shareerror = shares < min_num_shares
         else:
             depot = DepotDao.depot_by_idrequest.POST.get("depot"))
             size = next(
-                iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('size', flat=True) or []),
+                iter(SubscriptionSizeDao.sizes_by_name(selectedsubscription).values_list('size', flat=True) or []),
                 0)
 
             if size > 0:
@@ -346,7 +349,7 @@ def createsubscription(request):
         'co_member_shares': co_member_shares,
         'existing_member_shares': existing_member_shares,
         'member': request.user.member,
-        'subscription_sizes': SubscriptionSize.objects.order_by('size'),
+        'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered(),
         'depots': DepotDao.all_depots(),
         'selected_depot': selected_depot,
         'selected_subscription': selectedsubscription,
@@ -370,7 +373,7 @@ def add_member(request, subscription_id):
             shareerror = shares < 0
         except:
             shareerror = True
-        member = next(iter(Member.objects.filter(email=request.POST.get('email')) or []), None)
+        member = next(iter(MemberDao.members_by_email(request.POST.get('email')) or []), None)
         if member is not None:
             memberexists = True
             shares = 0

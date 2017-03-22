@@ -12,6 +12,10 @@ from django.shortcuts import render, get_object_or_404
 
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.assignmentdao import AssignmentDao
+from juntagrico.dao.jobdao import JobDao
+from juntagrico.dao.jobtypedao import JobTypeDao
+from juntagrico.dao.depotdao import ActivityAreaDao
+from juntagrico.dao.memberdao import MemberDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
@@ -55,7 +59,7 @@ def get_menu_dict(request):
         next_jobs = []
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
-    area_admin = ActivityArea.objects.filter(coordinator=request.user.member)
+    area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
     menu_dict = {
         'user': request.user,
         'assignmentsrange': assignmentsrange,
@@ -85,13 +89,12 @@ def home(request):
     """
 
     next_jobs = set(get_current_jobs()[:7])
-    pinned_jobs = set(Job.objects.filter(pinned=True, time__gte=timezone.now()))
-    next_activityday = set(
-        RecuringJob.objects.filter(type__name="Aktionstag", time__gte=timezone.now()).order_by("time")[:2])
+    pinned_jobs = set(JobDao.get_pinned_jobs())
+    next_pormotedjobs = set(JobDao.get_promoted_jobs())
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_activityday), key=lambda job: job.time),
-        'teams': ActivityArea.objects.filter(hidden=False).order_by("-core", "name"),
+        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_pormotedjobs), key=lambda job: job.time),
+        'teams': ActivityAreaDao.all_visible_areas_ordered(),
         'no_subscription': request.user.member.subscription is None,
     })
 
@@ -117,7 +120,7 @@ def job(request, job_id):
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
 
-    all_participants = Member.objects.filter(assignment__job=job)
+    all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
     unique_participants = all_participants.annotate(assignment_for_job=Count('id')).distinct()
 
@@ -184,7 +187,7 @@ def participation(request):
     success = False
     if request.method == 'POST':
         old_areas = set(member.areas.all())
-        new_areas = set(area for area in ActivityArea.objects.filter(hidden=False)
+        new_areas = set(area for area in ActivityAreaDao.all_visible_areas()
                         if request.POST.get("area" + str(area.id)))
         if old_areas != new_areas:
             member.areas = new_areas
@@ -194,7 +197,7 @@ def participation(request):
 
         success = True
 
-    for area in ActivityArea.objects.filter(hidden=False):
+    for area in ActivityAreaDao.all_visible_areas():
         if area.hidden:
             continue
         my_areas.append({
@@ -242,7 +245,7 @@ def team(request, area_id):
     Details for a team
     """
 
-    job_types = JobType.objects.all().filter(activityarea=area_id)
+    job_types = JobTypeDao.types_by_area(area_id)
 
     otjobs = get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = get_current_recuring_jobs().filter(type__in=job_types)
@@ -284,7 +287,7 @@ def assingments_all(request):
     All jobs to be sorted etc.
     """
     renderdict = get_menu_dict(request)
-    jobs = Job.objects.all().order_by("time")
+    jobs = JobDao.obs_ordered_by_time()
     renderdict.update({
         'jobs': jobs,
         'menu': {'jobs': 'active'},
@@ -321,7 +324,7 @@ def contact_member(request, member_id, job_id):
     member contact form
     """
     member = request.user.member
-    contact_member = get_object_or_404(Member, id=int(member_id))  # Member.objects.all().filter(id = member_id)
+    contact_member = get_object_or_404(Member, id=int(member_id))
     is_sent = False
 
     if request.method == "POST":
@@ -334,7 +337,7 @@ def contact_member(request, member_id, job_id):
         send_contact_member_form(request.POST.get("subject"), request.POST.get("message"), member, contact_member,
                                  request.POST.get("copy"), attachments)
         is_sent = True
-    job = Job.objects.filter(id=job_id)[0]
+    job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)
     renderdict.update({
         'admin': request.user.is_staff or job.typeactivityarea.coordinator == member,
@@ -402,7 +405,7 @@ def new_password(request):
     sent = False
     if request.method == 'POST':
         sent = True
-        members = Member.objects.filter(email=request.POST.get('username'))
+        members = MemberDao.members_by_email(request.POST.get('username'))
         if len(members) > 0:
             member = members[0]
             pw = password_generator()

@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*-
+
+from juntagrico.models import SubscriptionSize
+
+class SubscriptionSizeDao:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def sizes_for_depot_list():
+        return SubscriptionSize.objects.filter(depot_list=True).order_by('size')
+
+    @staticmethod
+    def all_sizes_ordered():
+        return SubscriptionSize.objects.order_by('size')
+
+    @staticmethod
+    def sizes_by_size(size):
+        return SubscriptionSize.objects.filter(size=size)
+
+    @staticmethod
+    def sizes_by_name(name):
+        return SubscriptionSize.objects.filter(name=name)
+

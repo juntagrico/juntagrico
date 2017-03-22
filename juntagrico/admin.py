@@ -9,6 +9,10 @@ from django.http import HttpResponseRedirect
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
+from juntagrico.dao.jobdao import JobDao
+from juntagrico.dao.jobtypedao import JobTypeDao
+from juntagrico.dao.depotdao import ActivityAreaDao
+from juntagrico.dao.memberdao import MemberDao
 from juntagrico.models import *
 from juntagrico.util import admin
 from juntagrico.util.models import *
@@ -22,15 +26,14 @@ class SubscriptionAdminForm(forms.ModelForm):
         model = Subscription
         fields = '__all__'
 
-    subscription_members = forms.ModelMultipleChoiceField(queryset=Member.objects.all(), required=False,
+    subscription_members = forms.ModelMultipleChoiceField(queryset=MemberDao.all_members(), required=False,
                                                           widget=admin.widgets.FilteredSelectMultiple("Member", False))
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        self.fields["primary_member"].queryset = Member.objects.filter(subscription=self.instance)
-        self.fields["subscription_members"].queryset = Member.objects.filter(
-            Q(subscription=None) | Q(subscription=self.instance))
-        self.fields["subscription_members"].initial = Member.objects.filter(subscription=self.instance)
+        self.fields["primary_member"].queryset = self.instance.members.all()
+        self.fields["subscription_members"].queryset = MemberDao.members_for_subscription(self.instance)
+        self.fields["subscription_members"].initial = self.instance.members.all()
 
     def clean(self):
         # enforce integrity constraint on primary_member
@@ -48,7 +51,7 @@ class SubscriptionAdminForm(forms.ModelForm):
 
     def save_m2m(self):
         # update Subscription-Member many-to-one through foreign keys on Members
-        old_members = set(Member.objects.filter(subscription=self.instance))
+        old_members = set(self.instance.members.all())
         new_members = set(self.cleaned_data["subscription_members"])
         for obj in old_members - new_members:
             obj.subscription = None
@@ -213,7 +216,7 @@ class JobAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "type" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = JobType.objects.filter(activityarea__coordinator=request.user.member)
+            kwargs["queryset"] = JobTypeDao.objects.filter(activityarea__coordinator=request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -256,7 +259,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "activityarea" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = ActivityArea.objects.filter(coordinator=request.user.member)
+            kwargs["queryset"] = ActivityAreaDao.areas_by_coordinator(member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -267,7 +270,7 @@ class JobTypeAdmin(admin.ModelAdmin):
     def transform_job_type(self, queryset):
         for inst in queryset.all():
             i = 0
-            for rj in RecuringJob.objects.filter(typeid=inst.id):
+            for rj in JobDao.recurings_by_type(inst.id):
                 oj = OneTimeJob()
                 attribute_copy(inst, oj)
                 attribute_copy(rj, oj)
@@ -293,7 +296,7 @@ class JobTypeAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "activityarea" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = ActivityArea.objects.filter(coordinator=request.user.member)
+            kwargs["queryset"] = ActivityAreaDao.areas_by_coordinator(member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -355,25 +358,13 @@ class AssignmentAdmin(admin.ModelAdmin):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            otjidlist = list(
-                OneTimeJob.objects.filter(activityarea__coordinator=request.user.member).values_list('id', flat=True))
-            rjidlist = list(
-                RecuringJob.objects.filter(type_activityarea__coordinator=request.user.member).values_list('id',
-                                                                                                           flat=True))
-            jidlist = otjidlist + rjidlist
-            return qs.filter(job__id__in=jidlist)
+            return qs.filter(job__id__in=JobDao.ids_for_area_by_contact(request.user.member))
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "job" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            otjidlist = list(
-                OneTimeJob.objects.filter(activityarea__coordinator=request.user.member).values_list('id', flat=True))
-            rjidlist = list(
-                RecuringJob.objects.filter(type_activityarea__coordinator=request.user.member).values_list('id',
-                                                                                                           flat=True))
-            jidlist = otjidlist + rjidlist
-            kwargs["queryset"] = Job.objects.filter(id__in=jidlist)
+            kwargs["queryset"] = JobDao.objects.filter(id__in=JobDao.ids_for_area_by_contact(request.user.member))
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
