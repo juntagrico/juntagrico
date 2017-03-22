@@ -10,8 +10,8 @@ from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
-
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
@@ -39,13 +39,13 @@ def get_menu_dict(request):
             if subscription_member == member:
                 continue
             partner_assignments.extend(
-                filter_to_past_assignments(Assignment.objects.filter(member=subscription_member)))
+                filter_to_past_assignments(AssignmentDao.assignments_for_member(subscription_member)))
 
-        userassignments = filter_to_past_assignments(Assignment.objects.filter(member=member))
+        userassignments = filter_to_past_assignments(AssignmentDao.assignments_for_member(member))
         subscription_size = member.subscription.size * 10
         assignmentsrange = range(0, max(subscription_size, len(userassignments) + len(partner_assignments)))
 
-        for assignment in Assignment.objects.all().filter(member=member).order_by("job__time"):
+        for assignment in AssignmentDao.assignments_for_member(member).order_by("job__time"):
             if assignment.job.time > timezone.now():
                 next_jobs.append(assignment.job)
     else:
@@ -221,7 +221,7 @@ def pastjobs(request):
     """
     member = request.user.member
 
-    allassignments = Assignment.objects.filter(member=member)
+    allassignments = AssignmentDao.assignments_for_member(member)
     past_assingments = []
 
     for assignment in allassignments:

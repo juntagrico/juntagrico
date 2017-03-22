@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from juntagrico.config import Config
+from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.models import *
 from juntagrico.util import admin
 from juntagrico.util.models import *
@@ -236,7 +237,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
             t.save()
             rj.type = t
             rj.save()
-            for b in Assignment.objects.filter(job_id=inst.id):
+            for b in AssignmentDao.assignments_for_job(inst.id):
                 b.job = rj
                 b.save()
             inst.delete()
@@ -274,7 +275,7 @@ class JobTypeAdmin(admin.ModelAdmin):
                 i += 1
                 print oj.__dict__
                 oj.save()
-                for b in Assignment.objects.filter(job_id=rj.id):
+                for b in AssignmentDao.assignments_for_job(rj.id):
                     b.job = oj
                     b.save()
                 rj.delete()

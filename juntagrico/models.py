@@ -11,6 +11,7 @@ from polymorphic.models import PolymorphicModel
 import model_audit
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.mailer import *
 from juntagrico.util.temporal import *
 from juntagrico.util.users import *
@@ -564,7 +565,7 @@ class Job(PolymorphicModel):
         return self.assignment_set.count()
 
     def get_status_percentage(self):
-        assignments = Assignment.objects.filter(job_id=self.id)
+        assignments = AssignmentDao.assignments_for_job(self.id)
         if self.slots < 1:
             return get_status_image(100)
         return get_status_image(assignments.count() * 100 / self.slots)
@@ -579,7 +580,7 @@ class Job(PolymorphicModel):
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_canceled != instance.canceled and instance.old_canceled is False:
-            assignments = Assignment.objects.filter(job_id=instance.id)
+            assignments = AssignmentDao.assignments_for_job(instance.id)
             emails = set()
             for assignment in assignments:
                 emails.add(assignment.member.email)
@@ -587,7 +588,7 @@ class Job(PolymorphicModel):
             if len(emails) > 0:
                 send_job_canceled(emails, instance, Config.server_url())
         if instance.old_time != instance.time:
-            assignments = Assignment.objects.filter(job_id=instance.id)
+            assignments = AssignmentDao.assignments_for_job(instance.id)
             emails = set()
             for assignment in assignments:
                 emails.add(assignment.member.email)
@@ -599,7 +600,7 @@ class Job(PolymorphicModel):
         instance.old_time = instance.time
         instance.old_canceled = instance.canceled
         if instance.canceled:
-            assignments = Assignment.objects.filter(job_id=instance.id)
+            assignments = AssignmentDao.assignments_for_job(instance.id)
             assignments.delete()
 
     class Meta:
@@ -657,7 +658,7 @@ class Assignment(models.Model):
     core_cache = models.BooleanField("Kernbereich", default=False)
 
     def __unicode__(self):
-        return u'Assignment #%s' % self.id
+        return u'%s #%s' % (Config.assignment_string(), self.id)
 
     def time(self):
         return self.job.time

@@ -8,6 +8,7 @@ from django.template import Template, Context
 
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.models import *
 from juntagrico.views import get_menu_dict
 from juntagrico.util.jobs import *
@@ -104,7 +105,7 @@ def my_mails_intern(request, enhanced, error_message=None):
         'enhanced': enhanced,
         'email': request.user.member.email,
         'error_message': error_message,
-        'templates': MailTemplate.objects.all(),
+        'templates': MailTemplateDao.all_templates(),
         'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email')
     })
     return render(request, 'mail_sender.html', renderdict)
@@ -310,7 +311,7 @@ def change_subscriptions(request):
 def get_mail_template(template_id):
     renderdict = {}
 
-    template = MailTemplate.objects.filter(id=template_id)[0]
+    template = MailTemplateDao.template_by_id(template_id)
     exec template.code
     t = Template(template.template)
     c = Context(renderdict)
