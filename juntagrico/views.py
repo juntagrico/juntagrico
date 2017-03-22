@@ -10,6 +10,8 @@ from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
+
+from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
@@ -52,7 +54,7 @@ def get_menu_dict(request):
         userassignments = []
         next_jobs = []
 
-    depot_admin = Depot.objects.filter(contact=request.user.member)
+    depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityArea.objects.filter(coordinator=request.user.member)
     menu_dict = {
         'user': request.user,

@@ -10,6 +10,7 @@ from polymorphic.models import PolymorphicModel
 
 import model_audit
 from juntagrico.dao.sharedao import ShareDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.mailer import *
 from juntagrico.util.temporal import *
 from juntagrico.util.users import *
@@ -69,8 +70,7 @@ class Depot(models.Model):
         for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
             self.overview_cache.append(self.subscription_amounts(self.subscription_cache, subscription_size.name))
         for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
-            for extra_subscription in ExtraSubscriptionType.objects.all().filter(category=category).order_by(
-                    "sort_order"):
+            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered():
                 code = extra_subscription.name
                 self.overview_cache.append(self.extra_subscription(self.subscription_cache, code))
 

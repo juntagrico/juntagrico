@@ -6,6 +6,8 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
 
+from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.models import *
 from juntagrico.views import get_menu_dict
 from juntagrico.util.jobs import *
@@ -230,67 +232,6 @@ def my_depotlists():
 
 
 @permission_required('juntagrico.is_operations_group')
-def alldepots_list(name):
-    """
-    Printable list of all depots to check on get gemüse
-    """
-    if name == "":
-        depots = Depot.objects.all().order_by("code")
-    else:
-        depots = [get_object_or_404(Depot, code__iexact=name)]
-
-    categories = []
-    types = []
-    for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
-        cat = {"name": category.name, "description": category.description}
-        count = 0
-        for extra_subscription in ExtraSubscriptionType.objects.all().filter(category=category).order_by("sort_order"):
-            count += 1
-            type = {"name": extra_subscription.name, "size": extra_subscription.size, "last": False}
-            types.append(type)
-        type["last"] = True
-        cat["count"] = count
-        categories.append(cat)
-
-    overview = {
-        'Dienstag': None,
-        'Donnerstag': None,
-        'all': None
-    }
-
-    count = len(types) + 2
-    overview["Dienstag"] = [0] * count
-    overview["Donnerstag"] = [0] * count
-    overview["all"] = [0] * count
-
-    all = overview.get('all')
-
-    for depot in depots:
-        depot.fill_overview_cache()
-        depot.fill_active_subscription_cache()
-        row = overview.get(depot.get_weekday_display())
-        count = 0
-        while count < len(row):
-            row[count] += depot.overview_cache[count]
-            all[count] += depot.overview_cache[count]
-            count += 1
-
-    overview["Dienstag"].insert(2, overview["Dienstag"][0] + 2 * overview["Dienstag"][1])
-    overview["Donnerstag"].insert(2, overview["Donnerstag"][0] + 2 * overview["Donnerstag"][1])
-    overview["all"].insert(2, overview["all"][0] + 2 * overview["all"][1])
-
-    renderdict = {
-        "overview": overview,
-        "depots": depots,
-        "categories": categories,
-        "types": types,
-        "datum": timezone.now()
-    }
-
-    return render_to_pdf_http("exports/all_depots.html", renderdict, 'Depotlisten')
-
-
-@permission_required('juntagrico.is_operations_group')
 def future(request):
     renderdict = get_menu_dict(request)
 
@@ -304,7 +245,7 @@ def future(request):
             'future': 0,
             'now': 0
         }
-    for extra_subscription in ExtraSubscriptionType.objects.all():
+    for extra_subscription in ExtraSubscriptionTypeDao.all_extra_types():
         extra_lines[extra_subscription.name] = {
             'name': extra_subscription.name,
             'future': 0,
@@ -380,7 +321,7 @@ def get_mail_template(template_id):
 @permission_required('juntagrico.is_operations_group')
 def maps(request):
     renderdict = {
-        "depots": Depot.objects.all(),
+        "depots": DepotDao.all_depots(),
         "subscriptions": Subscription.objects.filter(active=True),
     }
 

@@ -51,8 +51,6 @@ urlpatterns = [
     url('^my/filters/area/(?P<area_id>.*?)/', juntagrico_admin.filters_area),
     url('^my/subscriptions$', juntagrico_admin.subscriptions),
     url('^my/subscriptions/depot/(?P<depot_id>.*?)/', juntagrico_admin.filter_subscriptions_depot),
-    # url('^my/depotlisten', juntagrico_admin.my_depotlists),
-    url('^my/exports/depotlists/(?P<name>.*)', juntagrico_admin.alldepots_list),
     url('^my/future', juntagrico_admin.future),
     url('^my/change/extras', juntagrico_admin.change_extras),
     url('^my/change/subscriptions', juntagrico_admin.change_subscriptions),

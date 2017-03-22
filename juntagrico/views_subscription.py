@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
+from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from decorators import primary_member_of_subscription
 from juntagrico.forms import *
 from juntagrico.models import *
@@ -79,7 +81,7 @@ def depot_change(request):
     renderdict.update({
         'saved': saved,
         'member': request.user.member,
-        "depots": Depot.objects.all()
+        "depots": DepotDao.all_depots()
     })
     return render(request, "depot_change.html", renderdict)
 
@@ -109,7 +111,7 @@ def extra_change(request):
     """
     saved = False
     if request.method == "POST":
-        for extra_subscription in ExtraSubscriptionType.objects.all():
+        for extra_subscription in ExtraSubscriptionTypeDao.all_extra_types():
             existing = request.user.member.subscription.extra_subscriptions.filter(type__id=extra_subscription.id)
             if request.POST.get("subscription" + str(extra_subscription.id)) == str(extra_subscription.id):
                 if existing.count() == 0:
@@ -149,7 +151,7 @@ def extra_change(request):
         saved = True
 
     subscriptions = []
-    for subscription in ExtraSubscriptionType.objects.all():
+    for subscription in ExtraSubscriptionTypeDao.all_extra_types():
         if request.user.member.subscription.future_extra_subscriptions.filter(type__id=subscription.id).count() > 0:
             subscriptions.append({
                 'id': subscription.type.id,
@@ -283,7 +285,7 @@ def createsubscription(request):
         if shares < min_num_shares or not subscriptionform.is_valid():
             shareerror = shares < min_num_shares
         else:
-            depot = Depot.objects.all().filter(id=request.POST.get("depot"))[0]
+            depot = DepotDao.depot_by_idrequest.POST.get("depot"))
             size = next(
                 iter(SubscriptionSize.objects.filter(name=selectedsubscription).values_list('size', flat=True) or []),
                 0)
@@ -345,7 +347,7 @@ def createsubscription(request):
         'existing_member_shares': existing_member_shares,
         'member': request.user.member,
         'subscription_sizes': SubscriptionSize.objects.order_by('size'),
-        'depots': Depot.objects.all(),
+        'depots': DepotDao.all_depots(),
         'selected_depot': selected_depot,
         'selected_subscription': selectedsubscription,
         'shareerror': shareerror,
@@ -422,7 +424,7 @@ def add_member(request, subscription_id):
         'shareerror': shareerror,
         'memberform': memberform,
         "member": request.user.member,
-        "depots": Depot.objects.all(),
+        "depots": DepotDao.all_depots(),
         "cancelUrl": request.GET.get("return")
     }
     return render(request, "add_member.html", renderdict)

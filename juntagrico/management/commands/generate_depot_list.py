@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand
 
+from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.models import *
 
 
@@ -44,7 +46,7 @@ class Command(BaseCommand):
             print "future depots ignored, use --future to override"
         Subscription.fill_sizes_cache()
 
-        depots = Depot.objects.all().order_by("code")
+        depots = DepotDao.all_depots_order_by_code()
 
         subscription_names = []
         for subscription_size in SubscriptionSize.objects.filter(depot_list=True).order_by('size'):
@@ -55,8 +57,7 @@ class Command(BaseCommand):
         for category in ExtraSubscriptionCategory.objects.all().order_by("sort_order"):
             cat = {"name": category.name, "description": category.description}
             count = 0
-            for extra_subscription in ExtraSubscriptionType.objects.all().filter(category=category).order_by(
-                    "sort_order"):
+            for extra_subscription in ExtraSubscriptionType.extra_types_by_category_ordered():
                 count += 1
                 type = {"name": extra_subscription.name, "size": extra_subscription.size, "last": False}
                 types.append(type)
