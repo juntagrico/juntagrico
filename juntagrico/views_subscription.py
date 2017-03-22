@@ -7,8 +7,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
-from juntagrico.dao.depotdao import ActivityAreaDao
-from juntagrico.dao.activityareaodao import DepotDao
+from juntagrico.dao.activityareadao import ActivityAreaDao
+from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
@@ -288,7 +288,7 @@ def createsubscription(request):
         if shares < min_num_shares or not subscriptionform.is_valid():
             shareerror = shares < min_num_shares
         else:
-            depot = DepotDao.depot_by_idrequest.POST.get("depot"))
+            depot = DepotDao.depot_by_id(request.POST.get("depot"))
             size = next(
                 iter(SubscriptionSizeDao.sizes_by_name(selectedsubscription).values_list('size', flat=True) or []),
                 0)

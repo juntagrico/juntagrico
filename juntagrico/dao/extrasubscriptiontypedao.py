@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import ExtraSubscriptionType
+from juntagrico.models import *
 
 class ExtraSubscriptionTypeDao:
 

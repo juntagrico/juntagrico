@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import JobType
+from juntagrico.models import *
 
 class JobTypeDao:
     def __init__(self):

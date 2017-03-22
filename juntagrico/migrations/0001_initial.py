@@ -9,7 +9,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-import juntagrico.util.helpers
+import juntagrico.util.temporal 
 
 
 class Migration(migrations.Migration):
@@ -313,7 +313,7 @@ class Migration(migrations.Migration):
                 ('activation_date', models.DateField(blank=True, null=True, verbose_name=b'Aktivierungssdatum')),
                 ('deactivation_date', models.DateField(blank=True, null=True, verbose_name=b'Deaktivierungssdatum')),
                 ('creation_date', models.DateField(auto_now_add=True, null=True, verbose_name=b'Erstellungsdatum')),
-                ('start_date', models.DateField(default=juntagrico.util.helpers.start_of_next_year, verbose_name=b'Gew\xc3\xbcnschtes Startdatum')),
+                ('start_date', models.DateField(default=juntagrico.util.temporal.start_of_next_year, verbose_name=b'Gew\xc3\xbcnschtes Startdatum')),
             ],
             options={
                 'verbose_name': 'Abo',

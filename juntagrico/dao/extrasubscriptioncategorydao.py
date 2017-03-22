@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import ExtraSubscriptionCategory
+from juntagrico.models import *
 
 class ExtraSubscriptionCategoryDao:
     def __init__(self):

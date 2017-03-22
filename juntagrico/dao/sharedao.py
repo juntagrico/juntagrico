@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import Share
+from juntagrico.models import *
 
 class ShareDao:
 

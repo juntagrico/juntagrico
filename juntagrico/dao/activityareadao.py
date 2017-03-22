@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import ActivityArea
+from juntagrico.models import *
 
 class ActivityAreaDao:
     def __init__(self):

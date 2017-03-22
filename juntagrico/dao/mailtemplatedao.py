@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import MailTemplate
+from juntagrico.models import *
 
 class MailTemplateDao:
 

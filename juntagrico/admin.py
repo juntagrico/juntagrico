@@ -11,10 +11,10 @@ from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.depotdao import ActivityAreaDao
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.models import *
-from juntagrico.util import admin
+from juntagrico.util import admin as admin_util
 from juntagrico.util.models import *
 from juntagrico.util.temporal import *
 
@@ -385,7 +385,7 @@ class MemberAdminForm(forms.ModelForm):
             link = "Kein Abo"
         self.fields["subscription_link"].initial = link
 
-    subscription_link = forms.URLField(widget=admin.MyHTMLWidget(), required=False,
+    subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
                                        label="Abo")
 
 

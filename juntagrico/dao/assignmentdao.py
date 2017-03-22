@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import Assignment
+from juntagrico.models import *
 
 class AssignmentDao:
 

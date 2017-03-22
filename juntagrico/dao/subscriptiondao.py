@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import Subscription
+from juntagrico.models import *
 
 class SubscriptionDao:
     def __init__(self):

@@ -41,14 +41,14 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get("sender")
     if request.POST.get("allsubscription") == "on":
-        for member in MemberDaomembers_for email_with_subscription():
+        for member in MemberDaomembers_for_email_with_subscription():
             emails.add(member.email)
     if request.POST.get("share") == "on":
-        for member in MemberDao.members_for email():
+        for member in MemberDao.members_for_email():
             if member.share_set.count() > 0:
                 emails.add(member.email)
     if request.POST.get("all") == "on":
-        for member in MemberDao.members_for email():
+        for member in MemberDao.members_for_email():
             emails.add(member.email)
     if request.POST.get("recipients"):
         recipients = re.split(r"\s*,?\s*", request.POST.get("recipients"))
@@ -142,7 +142,7 @@ def filters_depot(request, depot_id):
 def filters_area(request, area_id):
     now = timezone.now()
     area = get_object_or_404(ActivityArea, id=int(area_id))
-    members = 
+    members = MemberDao.members_with_assignments_count_in_area(area)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
     renderdict.update({

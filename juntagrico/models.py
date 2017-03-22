@@ -13,7 +13,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategory
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.mailer import *
 from juntagrico.util.temporal import *
 from juntagrico.util.users import *
@@ -184,14 +184,14 @@ class ExtraSubscription(Billable):
     old_active = None
 
     @classmethod
-    def pre_save(cls, instance):
+    def pre_save(cls, sender, instance, **kwds):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
 
     @classmethod
-    def post_init(cls, instance):
+    def post_init(cls, sender, instance, **kwds):
         instance.old_active = instance.active
 
     def __unicode__(self):
@@ -356,18 +356,18 @@ class Subscription(Billable):
             raise ValidationError(u'Deaktivierte Abos koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
-    def pre_save(cls, instance):
+    def pre_save(cls, sender, instance, **kwds):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
 
     @classmethod
-    def post_init(cls, instance):
+    def post_init(cls, sender, instance, **kwds):
         instance.old_active = instance.active
 
     @classmethod
-    def pre_delete(cls, instance):
+    def pre_delete(cls, sender, instance, **kwds):
         for member in instance.recipients():
             member.subscription = None
             member.save()
@@ -411,7 +411,7 @@ class Member(models.Model):
         return self.get_name()
 
     @classmethod
-    def create(cls, instance, created):
+    def create(cls, sender, instance, created, **kwds):
         """
         Callback to create corresponding member when new user is created.
         """
@@ -424,16 +424,16 @@ class Member(models.Model):
             instance.save()
 
     @classmethod
-    def post_delete(cls, instance):
+    def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
     @classmethod
-    def pre_save(cls, instance):
+    def pre_save(cls, sender, instance, **kwds):
         if instance.old_subscription != instance.subscription and instance.subscription is None:
             instance.areas = ()
 
     @classmethod
-    def post_init(cls, instance):
+    def post_init(cls, sender, instance, **kwds):
         instance.old_subscription = None  # instance.subscription
 
     class Meta:
@@ -669,7 +669,7 @@ class Assignment(models.Model):
         return self.job.type.activityarea.core
 
     @classmethod
-    def pre_save(cls, instance):
+    def pre_save(cls, sender, instance, **kwds):
         instance.core_cache = instance.is_core()
 
     class Meta:

@@ -122,7 +122,7 @@ class Config:
         return "250"
 
     @staticmethod
-    def promoted_job_types()():
+    def promoted_job_types():
         if hasattr(settings, 'PROMOTED_JOB_TYPES'):
             return settings.PROMOTED_JOB_TYPES
         return 
