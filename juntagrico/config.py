@@ -125,7 +125,7 @@ class Config:
     def promoted_job_types():
         if hasattr(settings, 'PROMOTED_JOB_TYPES'):
             return settings.PROMOTED_JOB_TYPES
-        return 
+        return []
 
     @staticmethod
     def promomted_jobs_amount():

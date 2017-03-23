@@ -292,25 +292,20 @@ class Subscription(Billable):
                                     }
 
     def subscription_amount(self, subscription_name):
-        if Subscription.sizes_cache == {}:
-            Subscription.fill_sizes_cache()
-        if Subscription.sizes_cache['list'].__len__ == 1:
-            return self.size / Subscription.sizes_cache['list'][0]
-        index = Subscription.sizes_cache['map'][subscription_name]
-        if index == len(Subscription.sizes_cache['list']) - 1:
-            return int(self.size / Subscription.sizes_cache['list'][index])
-        return int((self.size % Subscription.sizes_cache['list'][index + 1]) / Subscription.sizes_cache['list'][index])
+         return calc_subscritpion_amount(self.size, subscription_name)
 
     def subscription_amount_future(self, subscription_name):
+         return calc_subscritpion_amount(self.furture_size, subscription_name)
+
+    def calc_subscritpion_amount(size, subscription_name):
         if Subscription.sizes_cache == {}:
             Subscription.fill_sizes_cache()
         if Subscription.sizes_cache['list'].__len__ == 1:
-            return self.future_size / Subscription.sizes_cache['list'][0]
+            return size / Subscription.sizes_cache['list'][0]
         index = Subscription.sizes_cache['map'][subscription_name]
         if index == len(Subscription.sizes_cache['list']) - 1:
-            return int(self.future_size / Subscription.sizes_cache['list'][index])
-        return int(
-            (self.future_size % Subscription.sizes_cache['list'][index + 1]) / Subscription.sizes_cache['list'][index])
+            return int(size / Subscription.sizes_cache['list'][index])
+        return int((size % Subscription.sizes_cache['list'][index + 1]) / Subscription.sizes_cache['list'][index])
 
     @staticmethod
     def next_extra_change_date():
@@ -327,18 +322,15 @@ class Subscription(Billable):
 
     @staticmethod
     def get_size_name(size=0):
-        if size == 1:
-            return "Kleines Abo"
-        elif size == 2:
-            return "Grosses Abo"
-        elif size == 10:
-            return "Haus Abo"
-        elif size == 3:
-            return "Kleines + Grosses Abo"
-        elif size == 4:
-            return "2 Grosse Abos"
-        else:
-            return "Kein Abo"
+        size names = []
+        for sub_size in SubscriptionSizeDao.all_sizes_ordered():
+            amount = calc_subscritpion_amount(size, sub_size.name)
+            if amount > 0 :
+                size_names.append(size.long_name +" : " + amount)
+        if len(size_names)>0
+            return ', '.join(size_names)
+        return "kein Abo"
+            
 
     @property
     def size_name(self):
@@ -704,11 +696,6 @@ class SpecialRoles(models.Model):
                        ('is_book_keeper', 'Benutzer ist Buchhalter'),
                        ('can_send_mails', 'Benutzer kann im System Emails versenden'),
                        ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
-
-
-# model_audit.m2m(Subscription.users)
-model_audit.fk(Subscription.depot)
-model_audit.fk(Share.member)
 
 signals.post_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)
