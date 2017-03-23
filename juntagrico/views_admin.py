@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import permission_required
-from django.db.models import Count, Case, When
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context

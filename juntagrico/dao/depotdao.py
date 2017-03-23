@@ -2,7 +2,10 @@
 
 from juntagrico.models import *
 
+
 class DepotDao:
+    def __init__(self):
+        pass
 
     @staticmethod
     def all_depots():
@@ -19,3 +22,7 @@ class DepotDao:
     @staticmethod
     def depot_by_id(identifier):
         return Depot.objects.all().filter(id=identifier)[0]
+
+    @staticmethod
+    def distinct_weekdays():
+        return Depot.objects.all().order_by('weekday').values('weekday').distinct()

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
+import juntagrico
 
-from juntagrico.models import *
 
 class ExtraSubscriptionTypeDao:
+    def __init__(self):
+        pass
 
     @staticmethod
     def all_extra_types():
-        return ExtraSubscriptionType.objects.all()
+        return juntagrico.models.ExtraSubscriptionType.objects.all()
 
     @staticmethod
-    def extra_types_by_category_ordered():
-        return ExtraSubscriptionType.objects.all().filter(category=category).order_by("sort_order")
-
+    def extra_types_by_category_ordered(category):
+        return juntagrico.models.ExtraSubscriptionType.objects.all().filter(category=category).order_by("sort_order")

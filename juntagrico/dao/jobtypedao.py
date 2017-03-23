@@ -2,6 +2,7 @@
 
 from juntagrico.models import *
 
+
 class JobTypeDao:
     def __init__(self):
         pass

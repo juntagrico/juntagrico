@@ -2,7 +2,10 @@
 
 from juntagrico.models import *
 
+
 class MailTemplateDao:
+    def __init__(self):
+        pass
 
     @staticmethod
     def all_templates():
@@ -10,4 +13,4 @@ class MailTemplateDao:
 
     @staticmethod
     def template_by_id(template_id):
-        return  MailTemplate.objects.filter(id=template_id)[0]
+        return MailTemplate.objects.filter(id=template_id)[0]

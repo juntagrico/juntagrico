@@ -28,7 +28,7 @@ DATABASES = {
 ROOT_URLCONF = 'juntagrico.urls'
 
 AUTHENTICATION_BACKENDS = (
-    'juntagrico.helpers.AuthenticateWithEmail',
+    'juntagrico.util.auth.AuthenticateWithEmail',
     'django.contrib.auth.backends.ModelBackend'
 )
 

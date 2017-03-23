@@ -1,11 +1,14 @@
 from django.core.management.base import BaseCommand
 
+
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategory
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.models import *
+from juntagrico.util.pdf import render_to_pdf_storage
+from juntagrico.util.temporal import weekdays
 
 
 class Command(BaseCommand):
@@ -30,11 +33,11 @@ class Command(BaseCommand):
 
     # entry point used by manage.py
     def handle(self, *args, **options):
-        if not options['force'] and timezone.now().weekday() != settings.DEPOT_LIST_GENERATION_DAY:
+        if not options['force'] and timezone.now().weekday() not in Config.depot_list_generation_days():
             print "not the specified day for depot list generation, use --force to override"
             return
 
-        if options['future'] or timezone.now().weekday() == settings.DEPOT_LIST_GENERATION_DAY:
+        if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
             for subscription in SubscriptionDao.subscritions_with_future_depots():
                 subscription.depot = subscription.future_depot
                 subscription.future_depot = None
@@ -67,15 +70,19 @@ class Command(BaseCommand):
             cat["count"] = count
             categories.append(cat)
 
+        used_weekdays = []
+        for item in DepotDao.distinct_weekdays():
+            used_weekdays.append(weekdays[item['weekday']])
+
         overview = {
-            'Dienstag': None,
-            'Donnerstag': None,
             'all': None
         }
+        for weekday in used_weekdays:
+            overview[weekday] = None
 
-        count = len(types) + 2
-        overview["Dienstag"] = [0] * count
-        overview["Donnerstag"] = [0] * count
+        count = len(types) + len(subscription_names)
+        for weekday in used_weekdays:
+            overview[weekday] = [0] * count
         overview["all"] = [0] * count
 
         all = overview.get('all')
@@ -92,16 +99,15 @@ class Command(BaseCommand):
                 count += 1
 
         insert_point = len(subscription_names)
-        overview["Dienstag"].insert(insert_point, 0)
-        overview["Donnerstag"].insert(insert_point, 0)
+        for weekday in used_weekdays:
+            overview[weekday].insert(insert_point, 0)
         overview["all"].insert(insert_point, 0)
 
         index = 0
         for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
-            overview["Dienstag"][insert_point] = overview["Dienstag"][insert_point] + subscription_size.size * \
-                                                                                      overview["Dienstag"][index]
-            overview["Donnerstag"][insert_point] = overview["Donnerstag"][insert_point] + subscription_size.size * \
-                                                                                          overview["Donnerstag"][index]
+            for weekday in used_weekdays:
+                overview[weekday][insert_point] = overview[weekday][insert_point] + subscription_size.size * \
+                                                                                      overview[weekday][index]
             overview["all"][insert_point] = overview["all"][insert_point] + subscription_size.size * overview["all"][
                 index]
             index += 1
@@ -110,11 +116,13 @@ class Command(BaseCommand):
             "overview": overview,
             "depots": depots,
             "subscription_names": subscription_names,
+            "subscriptioncount": len(subscription_names)+1,
             "categories": categories,
             "types": types,
             "datum": timezone.now(),
-            "cover_sheets": settings.DEPOT_LIST_COVER_SHEETS,
-            "depot_overviews": settings.DEPOT_LIST_OVERVIEWS,
+            "cover_sheets": Config.depot_list_cover_sheets(),
+            "depot_overviews": Config.depot_list_overviews(),
+            "weekdays": used_weekdays
         }
 
         render_to_pdf_storage("exports/all_depots.html", renderdict, 'dpl.pdf')

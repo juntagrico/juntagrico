@@ -2,6 +2,7 @@
 
 from juntagrico.models import *
 
+
 class ActivityAreaDao:
     def __init__(self):
         pass

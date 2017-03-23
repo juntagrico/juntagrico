@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from juntagrico.models import *
+import juntagrico
+
 
 class ExtraSubscriptionCategoryDao:
     def __init__(self):
@@ -8,4 +9,4 @@ class ExtraSubscriptionCategoryDao:
 
     @staticmethod
     def all_categories_ordered():
-        return ExtraSubscriptionCategory.objects.all().order_by("sort_order")
+        return juntagrico.models.ExtraSubscriptionCategory.objects.all().order_by("sort_order")

@@ -8,7 +8,6 @@ from django.db import models
 from django.db.models import signals
 from polymorphic.models import PolymorphicModel
 
-import model_audit
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
@@ -73,7 +72,7 @@ class Depot(models.Model):
         for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             self.overview_cache.append(self.subscription_amounts(self.subscription_cache, subscription_size.name))
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
-            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered():
+            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category):
                 code = extra_subscription.name
                 self.overview_cache.append(self.extra_subscription(self.subscription_cache, code))
 
@@ -292,11 +291,12 @@ class Subscription(Billable):
                                     }
 
     def subscription_amount(self, subscription_name):
-         return calc_subscritpion_amount(self.size, subscription_name)
+        return self.calc_subscritpion_amount(self.size, subscription_name)
 
     def subscription_amount_future(self, subscription_name):
-         return calc_subscritpion_amount(self.furture_size, subscription_name)
+        return self.calc_subscritpion_amount(self.furture_size, subscription_name)
 
+    @staticmethod
     def calc_subscritpion_amount(size, subscription_name):
         if Subscription.sizes_cache == {}:
             Subscription.fill_sizes_cache()
@@ -322,15 +322,14 @@ class Subscription(Billable):
 
     @staticmethod
     def get_size_name(size=0):
-        size names = []
+        size_names = []
         for sub_size in SubscriptionSizeDao.all_sizes_ordered():
-            amount = calc_subscritpion_amount(size, sub_size.name)
-            if amount > 0 :
-                size_names.append(size.long_name +" : " + amount)
-        if len(size_names)>0
+            amount = Subscription.calc_subscritpion_amount(size, sub_size.name)
+            if amount > 0:
+                size_names.append(sub_size.long_name + " : " + amount)
+        if len(size_names) > 0:
             return ', '.join(size_names)
         return "kein Abo"
-            
 
     @property
     def size_name(self):
@@ -696,6 +695,7 @@ class SpecialRoles(models.Model):
                        ('is_book_keeper', 'Benutzer ist Buchhalter'),
                        ('can_send_mails', 'Benutzer kann im System Emails versenden'),
                        ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
+
 
 signals.post_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)

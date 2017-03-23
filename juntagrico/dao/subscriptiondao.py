@@ -2,6 +2,7 @@
 
 from juntagrico.models import *
 
+
 class SubscriptionDao:
     def __init__(self):
         pass
