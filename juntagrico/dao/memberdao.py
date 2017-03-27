@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.db.models import Count, Case, When
+from django.utils import timezone
 
 from juntagrico.models import *
 

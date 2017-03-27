@@ -6,13 +6,12 @@ from django.http import HttpResponseRedirect
 
 def primary_member_of_subscription(view):
     @wraps(view)
-    def wrapper(request, subscription_id, *args, **kwargs):
+    def wrapper(request, *args, **kwargs):
         if request.user.is_authenticated():
-            subscription = get_object_or_404(Subscription, id=subscription_id)
-            if subscription.primary_member.id == request.user.member.id:
-                return view(request, subscription_id=subscription_id, *args, **kwargs)
+            if request.user.member.subscription.primary_member.id == request.user.member.id:
+                return view(request, *args, **kwargs)
             else:
-                return HttpResponseRedirect("/accounts/login/?next=" + str(request.get_full_path()))
+                return HttpResponseRedirect("/my/subscription")
         else:
             return HttpResponseRedirect("/accounts/login/?next=" + str(request.get_full_path()))
 

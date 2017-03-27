@@ -499,7 +499,7 @@ class AbstractJobType(models.Model):
         return u'%s - %s' % (self.activityarea, self.get_name())
 
     def get_name(self):
-        if self.displayed_name is not None:
+        if self.displayed_name is not None and self.displayed_name != '':
             return self.displayed_name
         return self.name
 

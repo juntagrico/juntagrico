@@ -27,10 +27,10 @@ urlpatterns = [
 
     # subscription related juntagrico stuff
     url('^my/subscription$', juntagrico_subscription.subscription),
-    url('^my/subscription/(?P<subscription_id>.*?)/change$', juntagrico_subscription.subscription_change),
-    url('^my/subscription/(?P<subscription_id>.*?)/change/depot$', juntagrico_subscription.depot_change),
-    url('^my/subscription/(?P<subscription_id>.*?)/change/size$', juntagrico_subscription.size_change),
-    url('^my/subscription/(?P<subscription_id>.*?)/change/extra$', juntagrico_subscription.extra_change),
+    url('^my/subscription/change$', juntagrico_subscription.subscription_change),
+    url('^my/subscription/change/depot$', juntagrico_subscription.depot_change),
+    url('^my/subscription/change/size$', juntagrico_subscription.size_change),
+    url('^my/subscription/change/extra$', juntagrico_subscription.extra_change),
     url('^my/signup$', juntagrico_subscription.signup),
     url('^my/cosubmember/(?P<subscription_id>.*?)/', juntagrico_subscription.add_member),
     url('^my/create/subscrition$', juntagrico_subscription.createsubscription),

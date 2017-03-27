@@ -18,13 +18,14 @@
             Die Grösse eines Abos (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende Oktober gemacht werden,
             damit die Änderung auf Anfang Januar in Kraft tritt.
         </div>
+        {% if has_extra_subscriptions %}
         <div class="col-md-4">
             <h3>Zusatz-Abos</h3>
             <br/>
             Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
             > <a href="{% config "extra_sub_info" %}" target="_blank">Weitere Infos zu den Zusatzsubscriptions</a>
-
         </div>
+       {% endif %}
     </div>
     <br/>
     <div class="row">
@@ -34,10 +35,12 @@
             Nächstmögliches Datum:
             {{ next_size_date |date:"d.m.Y" }}
         </div>
+        {% if has_extra_subscriptions %}
         <div class="col-md-4">
             Nächstmögliches Datum:
             {{ next_extra_subscription_date |date:"d.m.Y" }}
         </div>
+       {% endif %}
     </div>
     <br/>
     <div class="row">
@@ -49,6 +52,7 @@
             <h5>Zukünftige Grösse:</h5>
             {{ member.subscription.future_size_name }}
         </div>
+        {% if has_extra_subscriptions %}
         <div class="col-md-4">
             <h5>Zukünftige Zusatz-Abos:</h5>
             {% if not member.subscription.extra_subscriptions_changed %}
@@ -68,19 +72,22 @@
                     {% endfor %}
                 {% endif %}
             {% endif %}
-        </div>
+        </div>    
+       {% endif %}
     </div>
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <a href="/my/subscription/{{ member.subscription.id }}/change/depot" class="btn btn-success">Depot ändern</a>
+            <a href="/my/subscription/change/depot" class="btn btn-success">Depot ändern</a>
         </div>
         <div class="col-md-4">
-            <a {% if change_size %}href="/my/subscription/{{ member.subscription.id }}/change/size"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
+            <a {% if change_size %}href="/my/subscription/change/size"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
             {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
         </div>
+        {% if has_extra_subscriptions %}
         <div class="col-md-4">
-            <a href="/my/subscription/{{ member.subscription.id }}/change/extra" class="btn btn-success">Zusatz-Abos ändern</a>
-        </div>
+            <a href="/my/subscription/change/extra" class="btn btn-success">Zusatz-Abos ändern</a>
+        </div>    
+       {% endif %}
     </div>
 {% endblock %}
