@@ -64,6 +64,7 @@ def subscription_change(request):
     renderdict.update({
         'member': request.user.member,
         'change_size': month <= 10,
+        'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_size_date': Subscription.next_size_change_date()
     })
@@ -237,7 +238,7 @@ def welcome(request):
     return render(request, "welcome.html", renderdict)
 
 
-def confirm(hash):
+def confirm(request, hash):
     """
     Confirm from a user that has been added as a co_subscriptionnnent
     """

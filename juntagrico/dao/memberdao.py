@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from django.db.models import Count, Case, When
+from django.utils import timezone
+
 from juntagrico.models import *
 
 class MemberDao:
@@ -32,22 +35,23 @@ class MemberDao:
 
     @staticmethod
     def members_with_assignments_count():
-        return annotate_members_with_assignemnt_count(Member.objects.all())
+        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.all())
 
     @staticmethod
     def members_with_assignments_count_for_depot(depot):
-        return annotate_members_with_assignemnt_count(Member.objects.filter(subscription__depot=depot))
+        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(subscription__depot=depot))
 
     @staticmethod
     def members_with_assignments_count_in_area(area):
-        return annotate_members_with_assignemnt_count(area.members.all())
+        return MemberDao.annotate_members_with_assignemnt_count(area.members.all())
 
     @staticmethod
     def members_with_assignments_count_in_subscription(subscription):
-        return annotate_members_with_assignemnt_count(subscription.members.all())
+        return MemberDao.annotate_members_with_assignemnt_count(subscription.members.all())
 
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
+        now = timezone.now()
         return members.annotate(assignment_count=Count(
         Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
         core_assignment_count=Count(Case(

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import permission_required
-from django.db.models import Count, Case, When
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
@@ -257,7 +256,7 @@ def future(request):
 
 
 @permission_required('juntagrico.is_operations_group')
-def change_extras():
+def change_extras(request):
     for subscription in SubscriptionDao.all_subscritions():
         for extra in subscription.extra_subscription_set:
             if extra.active is True and extra.canceled is True:
@@ -290,7 +289,7 @@ def change_subscriptions(request):
 
 
 @permission_required('juntagrico.is_operations_group')
-def get_mail_template(template_id):
+def get_mail_template(request, template_id):
     renderdict = {}
 
     template = MailTemplateDao.template_by_id(template_id)
@@ -312,7 +311,7 @@ def maps(request):
 
 
 @permission_required('juntagrico.is_operations_group')
-def excel_export_members_filter():
+def excel_export_members_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = StringIO()
@@ -361,7 +360,7 @@ def excel_export_members_filter():
 
 
 @permission_required('juntagrico.is_operations_group')
-def excel_export_members():
+def excel_export_members(request):
     fields = [
         u'first_name',
         u'last_name',
@@ -380,7 +379,7 @@ def excel_export_members():
 
 
 @permission_required('juntagrico.is_operations_group')
-def excel_export_shares():
+def excel_export_shares(request):
     fields = [
         u'number',
         u'paid_date',

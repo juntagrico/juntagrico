@@ -88,7 +88,7 @@ def home(request):
     Overview on juntagrico
     """
 
-    next_jobs = set(get_current_jobs()[:7])
+    next_jobs = set(JobDao.get_current_jobs()[:7])
     pinned_jobs = set(JobDao.get_pinned_jobs())
     next_pormotedjobs = set(JobDao.get_promoted_jobs())
     renderdict = get_menu_dict(request)
@@ -247,8 +247,8 @@ def team(request, area_id):
 
     job_types = JobTypeDao.types_by_area(area_id)
 
-    otjobs = get_current_one_time_jobs().filter(activityarea=area_id)
-    rjobs = get_current_recuring_jobs().filter(type__in=job_types)
+    otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
+    rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
 
     jobs = list(rjobs)
 
@@ -271,7 +271,7 @@ def assignments(request):
     """
     renderdict = get_menu_dict(request)
 
-    jobs = get_current_jobs()
+    jobs = JobDao.get_current_jobs()
     renderdict.update({
         'jobs': jobs,
         'show_all': True,
@@ -287,7 +287,7 @@ def assingments_all(request):
     All jobs to be sorted etc.
     """
     renderdict = get_menu_dict(request)
-    jobs = JobDao.obs_ordered_by_time()
+    jobs = JobDao.jobs_ordered_by_time()
     renderdict.update({
         'jobs': jobs,
         'menu': {'jobs': 'active'},

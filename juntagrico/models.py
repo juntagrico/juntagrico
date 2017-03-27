@@ -292,10 +292,10 @@ class Subscription(Billable):
                                     }
 
     def subscription_amount(self, subscription_name):
-         return calc_subscritpion_amount(self.size, subscription_name)
+         return self.calc_subscritpion_amount(self.size, subscription_name)
 
     def subscription_amount_future(self, subscription_name):
-         return calc_subscritpion_amount(self.furture_size, subscription_name)
+         return self.calc_subscritpion_amount(self.furture_size, subscription_name)
 
     def calc_subscritpion_amount(size, subscription_name):
         if Subscription.sizes_cache == {}:
@@ -320,14 +320,13 @@ class Subscription(Billable):
     def next_size_change_date():
         return datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
 
-    @staticmethod
-    def get_size_name(size=0):
-        size names = []
+    def get_size_name(self, size=0):
+        size_names = []
         for sub_size in SubscriptionSizeDao.all_sizes_ordered():
-            amount = calc_subscritpion_amount(size, sub_size.name)
+            amount = self.calc_subscritpion_amount(size, sub_size.name)
             if amount > 0 :
                 size_names.append(size.long_name +" : " + amount)
-        if len(size_names)>0
+        if len(size_names)>0:
             return ', '.join(size_names)
         return "kein Abo"
             
@@ -500,7 +499,7 @@ class AbstractJobType(models.Model):
         return u'%s - %s' % (self.activityarea, self.get_name())
 
     def get_name(self):
-        if self.displayed_name is not None:
+        if self.displayed_name is not None and self.displayed_name != '':
             return self.displayed_name
         return self.name
 
