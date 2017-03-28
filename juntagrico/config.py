@@ -151,6 +151,19 @@ class Config:
             return settings.DEPOT_LIST_GENERATION_DAYS
         return [1,2,3,4,5,6,7]
 
+    @staticmethod
+    def business_year_start():
+        if hasattr(settings, 'BUSINESS_YEAR_START'):
+            return settings.BUSINESS_YEAR_START
+        return {"day":1, "month":1}
+
+    @staticmethod
+    def business_year_cancelation_month():
+        if hasattr(settings, 'BUSINESS_YEAR_CANCELATION_MONTH'):
+            return settings.BUSINESS_YEAR_CANCELATION_MONTH
+        return 10
+
+
 
 
     @staticmethod

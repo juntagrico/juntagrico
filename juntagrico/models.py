@@ -209,8 +209,10 @@ class SubscriptionSize(models.Model):
     long_name = models.CharField("Langer Name", max_length=100, unique=True)
     size = models.PositiveIntegerField("Grösse", unique=True)
     shares = models.PositiveIntegerField("Anz benötigter Anteilsscheine")
+    required_assignments = models.PositiveIntegerField("Anz benötigter Arbeitseinsätze")
     depot_list = models.BooleanField('Sichtbar auf Depotliste', default=True)
     description = models.TextField("Beschreibung", max_length=1000, blank=True)
+    
 
     def __unicode__(self):
         return self.name
@@ -235,7 +237,7 @@ class Subscription(Billable):
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
-    start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_year)
+    start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_business_year)
     old_active = None
     sizes_cache = {}
 
@@ -311,14 +313,10 @@ class Subscription(Billable):
     def next_extra_change_date():
         month = int(time.strftime("%m"))
         if month >= 7:
-            next_extra = datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
+            next_extra = timezone.date(day=1, month=1, year=timezone.date.today().year + 1)
         else:
-            next_extra = datetime.date(day=1, month=7, year=datetime.date.today().year)
+            next_extra = timezone.date(day=1, month=7, year=timezone.date.today().year)
         return next_extra
-
-    @staticmethod
-    def next_size_change_date():
-        return datetime.date(day=1, month=1, year=datetime.date.today().year + 1)
 
     @staticmethod
     def get_size_name(size=0):
@@ -483,6 +481,47 @@ class ActivityArea(models.Model):
         verbose_name_plural = 'Tätigkeitsbereiche'
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
+class JobExtraType(models.Model):
+    """
+    Types of extras which a job type might need or can have
+    """    
+    name = models.CharField("Name", max_length=100, unique=True)
+    display_empty = models.CharField("Icon für felhlendes Extra", max_length=1000, blank=False, null=False)
+    display_full = models.CharField("Icon für Extra", max_length=1000, blank=False, null=False)
+    
+    class Meta:
+        verbose_name = 'JobExtraTyp'
+        verbose_name_plural = 'JobExtraTypen'
+
+class JobExtra(models.Model):
+    """
+    Actual Extras mapping
+    """
+    recuring_type = models.ForeignKey("JobType", related_name="job_extras_set", null=True,
+                                          blank=True,
+                                          on_delete=models.PROTECT)
+    onetime_type = models.ForeignKey("OneTimeJob", related_name="job_extras_set", null=True,
+                                          blank=True,
+                                          on_delete=models.PROTECT)
+    extra_type = models.ForeignKey("JobExtraType", related_name="job_types_set", null=False,
+                                          blank=False,
+                                          on_delete=models.PROTECT)
+    per_member = models.BooleanField("jeder kann Extra auswählen", default=False)
+
+    def empty(self,assignment_set):
+        ids=[assignment.id for assignemt in assignment_set]
+        return self.assignements.filter(id_in=ids).count()>0
+
+    @property
+    def type(self):
+        if recuring_type is not None:
+            return recuring_type
+        return onetime_type
+    
+    class Meta:
+        verbose_name = 'JobExtra'
+        verbose_name_plural = 'JobExtras'
+
 
 class AbstractJobType(models.Model):
     """
@@ -549,7 +588,7 @@ class Job(PolymorphicModel):
             return 0
 
     def end_time(self):
-        return self.time + datetime.timedelta(hours=self.type.duration)
+        return self.time + timezone.timedelta(hours=self.type.duration)
 
     def start_time(self):
         return self.time
@@ -566,9 +605,36 @@ class Job(PolymorphicModel):
     def is_core(self):
         return self.type.activityarea.core
 
+    def extras(self):
+        extras_result =[]
+        for extra in type.job_extras_set.all():
+            if extra.empty(self.assignment_set.all()):
+                extra_result.append(extra.extra_type.display_empty)
+            else:           
+                extra_result.append(extra.extra_type.display_full)
+        return " ".join(extras_result)
+
+    def empty_per_job_extras(self):
+        extras_result =[]
+        for extra in type.job_extras_set.filter(per_member=False):
+            if extra.empty(self.assignment_set.all()):
+                extra_result.append(extra)
+        return extras_result
+
+    def full_per_job_extras(self):
+        extras_result =[]
+        for extra in type.job_extras_set.filter(per_member=False):
+            if not extra.empty(self.assignment_set.all()):
+                extra_result.append(extra)
+        return extras_result
+
+    def per_member_extras(self):
+        return type.job_extras_set.filter(per_member=True)
+
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:
             raise ValidationError(u'Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
+   
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -648,7 +714,8 @@ class Assignment(models.Model):
     """
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     member = models.ForeignKey(Member, on_delete=models.PROTECT)
-    core_cache = models.BooleanField("Kernbereich", default=False)
+    core_cache = models.BooleanField("Kernbereich", default=False) 
+    job_extras = models.ManyToManyField(JobExtra,related_name='assignments', blank=True)
 
     def __unicode__(self):
         return u'%s #%s' % (Config.assignment_string(), self.id)

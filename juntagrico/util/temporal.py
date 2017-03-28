@@ -1,6 +1,7 @@
-import datetime
-
+import calendar
 from django.utils import timezone
+
+from juntagrico.config import Config
 
 weekday_choices = ((1, "Montag"),
                    (2, "Dienstag"),
@@ -26,11 +27,31 @@ def get_status_image_text(percent=0):
         return "Nix"
 
 
-def start_of_year():
-    year = timezone.now().year
-    return datetime.date(year, 1, 1)
+def start_of_business_year():
+    now = timezone.now()
+    day = Config.business_year_start()["day"]
+    month = Config.business_year_start()["month"]
+    if now.month<month:
+        year=now.year-1
+    else:
+        year=now.year
+    return timezone.date(year, month, day)
 
+def start_of_next_business_year():
+    now = timezone.now()
+    day = Config.business_year_start()["day"]
+    month = Config.business_year_start()["month"]
+    if now.month<month:
+        year=now.year
+    else:
+        year=now.year+1
+    return timezone.date(year, month, day)
 
-def start_of_next_year():
-    year = timezone.now().year + 1
-    return datetime.date(year, 1, 1)
+def next_cancelation_date():
+    now = timezone.now()
+    c_month = Config.business_year_cancelation_month()
+    if now.month<c_month+1:
+        year=now.year
+    else:
+        year=now.year+1
+    return timezone.date(year, c_month, calendar.monthrange(year,c_month)[1])

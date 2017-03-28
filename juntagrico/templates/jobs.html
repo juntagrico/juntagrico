@@ -12,6 +12,7 @@
                 <th>Job</th>
                 <th>Status</th>
                 <th>Ort</th>
+                <th>Extras</th>
             </tr>
             </thead>
             <tbody>
@@ -22,6 +23,7 @@
                     <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.type.get_name }}</a></td>
                     <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>
                     <td>{{ job.type.location }}</td>
+                    <td>{{ job.extras }}</td>
                 </tr>
             {% endfor %}
             </tbody>

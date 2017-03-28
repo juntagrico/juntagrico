@@ -4,6 +4,7 @@ from django.db.models import Count, Case, When
 from django.utils import timezone
 
 from juntagrico.models import *
+from juntagrico.util import temporal
 
 
 class MemberDao:
@@ -54,7 +55,7 @@ class MemberDao:
     def annotate_members_with_assignemnt_count(members):
         now = timezone.now()
         return members.annotate(assignment_count=Count(
-            Case(When(assignment__job__time__year=now.year, assignment__job__time__lt=now, then=1)))).annotate(
+            Case(When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, then=1)))).annotate(
             core_assignment_count=Count(Case(
-                When(assignment__job__time__year=now.year, assignment__job__time__lt=now, assignment__core_cache=True,
+                When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, assignment__core_cache=True,
                      then=1))))

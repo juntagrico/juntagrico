@@ -9,3 +9,4 @@ settings_local.py
 ssl/*
 my_settings_local.py
 /.project
+*.db

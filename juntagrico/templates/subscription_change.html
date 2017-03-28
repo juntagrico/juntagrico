@@ -15,8 +15,8 @@
         <div class="col-md-4">
             <h3>Grösse</h3>
             <br/>
-            Die Grösse eines Abos (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende Oktober gemacht werden,
-            damit die Änderung auf Anfang Januar in Kraft tritt.
+            Die Grösse eines Abos (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende {{ next_cancel_date |date:"F" }} gemacht werden,
+            damit die Änderung auf Anfang {{ next_business_year |date:"F" }}-{{ next_cancel_date |date:"F" }} in Kraft tritt.
         </div>
         {% if has_extra_subscriptions %}
         <div class="col-md-4">
@@ -33,7 +33,7 @@
         </div>
         <div class="col-md-4">
             Nächstmögliches Datum:
-            {{ next_size_date |date:"d.m.Y" }}
+            {{ next_business_year |date:"d.m.Y" }}
         </div>
         {% if has_extra_subscriptions %}
         <div class="col-md-4">
@@ -82,7 +82,7 @@
         </div>
         <div class="col-md-4">
             <a {% if change_size %}href="/my/subscription/change/size"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
-            {% if not change_size %}* nur Januar-Oktober möglich{% endif %}
+            {% if not change_size %}* nur {{ next_business_year |date:"F" }}-{{ next_cancel_date |date:"F" }} möglich{% endif %}
         </div>
         {% if has_extra_subscriptions %}
         <div class="col-md-4">

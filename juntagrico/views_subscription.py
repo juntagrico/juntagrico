@@ -6,6 +6,7 @@ import string
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
@@ -16,6 +17,7 @@ from decorators import primary_member_of_subscription
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.views import get_menu_dict
+from juntagrico.util import temporal
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(
@@ -59,14 +61,15 @@ def subscription_change(request):
     """
     change an subscription
     """
-    month = int(time.strftime("%m"))
+    month = timezone.now().month
     renderdict = get_menu_dict(request)
     renderdict.update({
         'member': request.user.member,
-        'change_size': month <= 10,
+        'change_size': month <= Config.business_year_cancelation_month(),
+        'next_cancel_date': Config.business_year_cancelation_month(),
         'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
-        'next_size_date': Subscription.next_size_change_date()
+        'next_business_year': temporal.start_of_next_business_year()
     })
     return render(request, "subscription_change.html", renderdict)
 

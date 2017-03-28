@@ -157,6 +157,12 @@ class AssignmentInline(admin.TabularInline):
             return 0
         return obj.slots
 
+class JobExtraInline(admin.TabularInline):
+    model = JobExtra
+
+    def get_extra(self, request, obj=None, **kwargs):
+        return 0
+
 
 class JobAdmin(admin.ModelAdmin):
     list_display = ["__unicode__", "type", "time", "slots", "freie_plaetze"]
@@ -226,7 +232,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     search_fields = ["name", "activityarea__name"]
     exclude = ["reminder_sent"]
 
-    inlines = [AssignmentInline]
+    inlines = [AssignmentInline, JobExtraInline]
     readonly_fields = ["freie_plaetze"]
 
     def transform_job(self, queryset):
@@ -266,6 +272,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
 class JobTypeAdmin(admin.ModelAdmin):
     list_display = ["__unicode__"]
     actions = ["transform_job_type"]
+    inlines = [JobExtraInline]
 
     def transform_job_type(self, queryset):
         for inst in queryset.all():
@@ -419,6 +426,8 @@ admin.site.register(Member, MemberAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
 admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
+admin.site.register(JobExtra)
+admin.site.register(JobExtraType)
 
 # This is only added to admin for debugging
 # admin.site.register(model_audit.Audit, AuditAdmin)
