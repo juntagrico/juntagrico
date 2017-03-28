@@ -41,6 +41,23 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
+EMAIL_HOST = os.environ.get('JUNTAGRICO_EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('JUNTAGRICO_EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('JUNTAGRICO_EMAIL_PASSWORD')
+EMAIL_PORT = os.environ.get('JUNTAGRICO_EMAIL_PORT', 2525 )
+EMAIL_USE_TLS = os.environ.get('JUNTAGRICO_EMAIL_TLS', False)
+
+def whitelist_email_from_env(var_env_name):
+    email = os.environ.get(var_env_name)
+    if email:
+        WHITELIST_EMAILS.append(email.replace('@gmail.com', '(\+\S+)?@gmail.com'))
+
+
+if DEBUG is True:
+    for key in os.environ.keys():
+        if key.startswith("JUNTAGRICO_EMAIL_WHITELISTED"):
+            whitelist_email_from_env(key)
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
