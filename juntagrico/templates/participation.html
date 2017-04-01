@@ -17,7 +17,7 @@
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-md-4">
-                        <h4>Kernbereiche: <img alt="core_area" title="core_area" class="jobstatus" src="/static/img/circle_full_core.png"/></h4>
+                        <h4>Kernbereiche: <img alt="core_area" title="core_area" class="jobstatus" src="{% cirlces "circle_full_core" %}"/></h4>
                     </div>
                     <div class="col-md-4">
                         <h5>Koordiniert von:</h5>
@@ -43,7 +43,7 @@
                 <br/>
                 <div class="row">
                     <div class="col-md-4">
-                        <h4>Weitere Bereiche: <img alt="other_area" title="other_area" class="jobstatus" src="/static/img/circle_full.png"/></h4>
+                        <h4>Weitere Bereiche: <img alt="other_area" title="other_area" class="jobstatus" src="{% cirlces "circle_full" %}"/></h4>
                     </div>
                     <div class="col-md-8">
                         <h5>Koordiniert von:</h5>

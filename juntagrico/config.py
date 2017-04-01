@@ -163,6 +163,20 @@ class Config:
             return settings.BUSINESS_YEAR_CANCELATION_MONTH
         return 10
 
+    @staticmethod
+    def circles(key):
+        if hasattr(settings, 'CIRCLES'):
+            return settings.CIRCLES[key]
+        return {'circle_full': '/static/img/circle_full.png',
+            'circle_alomst_full': '/static/img/circle_alomst_full.png',
+            'circle_half': 'static/img/circle_half.png',
+            'circle_almost_empty': '/static/img/circle_almost_empty.png',
+            'circle_empty': '/static/img/circle_empty.png',
+            'circle_full_core': '/static/img/circle_full_core.png',
+            'circle_x': '/static/img/circle_x.png',
+            'circle_y': '/static/img/circle_y.png'
+        }
+
 
 
 

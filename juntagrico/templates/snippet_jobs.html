@@ -12,13 +12,13 @@
     <tbody>
     {% for job in jobs %}
         <tr>
-            <td>{% if job.type.activityarea.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/circle_full_core.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/circle_full.png"/>{% endif %}</td>
+            <td>{% if job.type.activityarea.core %}<img alt="Kernbereich" class="jobstatus" src="{% circle "circle_full_core" %}"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="{% cirlces "circle_full" %}"/>{% endif %}</td>
             <td>
                 {{ job.weekday_name }}<br/>{{ job.time |date:"d." }}&nbsp;{{ job.time |date:"m." }}&nbsp;{{ job.time |date:"Y" }}
                 <br/> {{ job.time |date:"H:i" }}&nbsp;&ndash;&nbsp;{{ job.end_time |date:"H:i" }}</td>
             <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}><strong>{{ job.type.activityarea.name }}</strong><br/>
                 {{ job.type.get_name }}</a><br/></a></td>
-            <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>
+            <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="{% cirlces job.get_status_percentage "}"/></td>
             <td>{{ job.type.location }}</td>
             <td>{{ job.extras|safe }}</td>
         </tr>
