@@ -12,15 +12,7 @@
         {{ announcement }}
     {% endautoescape %}
     <h3>Aktuelle Arbeitseinsätze</h3>
-    <table class="jobs">
-        {% for job in jobs %}
-            <tr class="{% if job.status == "circle_full.png" %}full{% endif %}">
-                <td class="date">{{ job.time |date:"d.m H:i" }}</td>
-                <td><a href="/my/jobs/{{ job.id }}" class="{% if job.canceled %}canceled {% endif %}{% if job.is_core %}core {% endif %}">{{ job.type.name }}</a></td>
-                <td class="status"><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>
-            </tr>
-        {% endfor %}
-    </table>
+    {% include "snippet_jobs.html" %}
     <br/>
     <a href="/my/assignments">Hier alle Arbeitseinsätze anzeigen</a>
     <br/><br/><br/>
@@ -33,4 +25,7 @@
         {% endfor %}
     </table>
 
+{% endblock %}
+
+{% block scripts %}
 {% endblock %}

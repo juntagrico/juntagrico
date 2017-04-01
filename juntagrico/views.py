@@ -46,7 +46,7 @@ def get_menu_dict(request):
                 filter_to_past_assignments(AssignmentDao.assignments_for_member(subscription_member)))
 
         userassignments = filter_to_past_assignments(AssignmentDao.assignments_for_member(member))
-        subscription_size = member.subscription.size * 10
+        subscription_size = member.subscription.required_assignments()
         assignmentsrange = range(0, max(subscription_size, len(userassignments) + len(partner_assignments)))
 
         for assignment in AssignmentDao.assignments_for_member(member).order_by("job__time"):
@@ -115,17 +115,15 @@ def job(request, job_id):
         add = int(num)
         for i in range(add):
             assignment=Assignment.objects.create(member=member, job=job)
-        for extra in job.type.job_extras_set:
+        for extra in job.type.job_extras_set.all():
             if request.POST.get("extra" + str(extra.extra_type.id)) == str(extra.extra_type.id):
-                assignment.job_extras.append(extra)
+                assignment.job_extras.add(extra)
         assignment.save()
 
         send_job_signup([member.email], job, request.META["HTTP_HOST"])
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
-
-    assignments
 
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
@@ -141,7 +139,7 @@ def job(request, job_id):
             name += u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
         contact_url = u'/my/contact/member/{}/{}/'.format(member.id, job_id)
         extras=[]
-        for assignment in AssignemtDao.assignments_for_job_and_member(job.id, member):
+        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
         reachable = member.reachable_by_email is True or request.user.is_staff or job.typeactivityarea.coordinator == member

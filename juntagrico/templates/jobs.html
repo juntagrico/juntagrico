@@ -3,31 +3,8 @@
 
 {% block content %}
     <h3>Alle Einsätze im Überblick</h3>
-    <div id="jobs">
-        <table id="filter-table" class="list table" style="display: table;">
-            <thead>
-            <tr>
-                <th>Kernb.</th>
-                <th>Datum</th>
-                <th>Job</th>
-                <th>Status</th>
-                <th>Ort</th>
-                <th>Extras</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for job in jobs %}
-                <tr>
-                    <td>{% if job.type.activityarea.core %}<img alt="Kernbereich" class="jobstatus" src="/static/img/circle_full_core.png"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="/static/img/circle_full.png"/>{% endif %}</td>
-                    <td>{{ job.weekday_name }}, {{ job.time |date:"d.m H:i" }}-{{ job.end_time |date:"H:i" }}</td>
-                    <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.type.get_name }}</a></td>
-                    <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="/static/img/{{ job.get_status_percentage }}"/></td>
-                    <td>{{ job.type.location }}</td>
-                    <td>{{ job.extras }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <div id="jobs">        
+    {% include "snippet_jobs.html" %}
     </div>
     <br/><br/>
     {% if show_all %}
@@ -36,6 +13,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initJobs.js"></script>
+<script type="text/javascript" src="/static/external/datatables.min.js"></script>
+<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initJobs.js"></script>
 {% endblock %}

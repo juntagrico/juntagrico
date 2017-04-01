@@ -14,15 +14,7 @@
     </div>
     <br/>
     <h4>Kommende Termine</h4>
-    <table class="jobs">
-        {% for job in jobs %}
-            <tr class="{% if job.status == "circle_full.png" %}full{% endif %}">
-                <td class="date">{{ job.time |date:"d.m H:i" }}</td>
-                <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.type.name}}</a></td>
-                <td class="status"><img src="/static/img/{{ job.get_status_percentage }}"/></td>
-            </tr>
-        {% endfor %}
-    </table>
+    {% include "snippet_jobs.html" %}
     {% if jobs|length <= 0 %}
         Keine Jobs ausgeschrieben
     {% endif %}

@@ -328,6 +328,13 @@ class Subscription(Billable):
         if len(size_names) > 0:
             return ', '.join(size_names)
         return "kein Abo"
+        
+    def required_assignments(self):
+        result = 0
+        for sub_size in SubscriptionSizeDao.all_sizes_ordered():
+            amount = Subscription.calc_subscritpion_amount(self.size, sub_size.name)
+            resukt += sub_size.required_assignments * amount
+        return result
 
     @property
     def size_name(self):
@@ -509,8 +516,8 @@ class JobExtra(models.Model):
     per_member = models.BooleanField("jeder kann Extra auswählen", default=False)
 
     def empty(self,assignment_set):
-        ids=[assignment.id for assignemt in assignment_set]
-        return self.assignements.filter(id_in=ids).count()>0
+        ids=[assignment.id for assignment in assignment_set]
+        return self.assignments.filter(id__in=ids).count()==0
 
     @property
     def type(self):
@@ -607,29 +614,29 @@ class Job(PolymorphicModel):
 
     def extras(self):
         extras_result =[]
-        for extra in type.job_extras_set.all():
+        for extra in self.type.job_extras_set.all():
             if extra.empty(self.assignment_set.all()):
-                extra_result.append(extra.extra_type.display_empty)
+                extras_result.append(extra.extra_type.display_empty)
             else:           
-                extra_result.append(extra.extra_type.display_full)
+                extras_result.append(extra.extra_type.display_full)
         return " ".join(extras_result)
 
     def empty_per_job_extras(self):
         extras_result =[]
-        for extra in type.job_extras_set.filter(per_member=False):
+        for extra in self.type.job_extras_set.filter(per_member=False):
             if extra.empty(self.assignment_set.all()):
-                extra_result.append(extra)
+                extras_result.append(extra)
         return extras_result
 
     def full_per_job_extras(self):
         extras_result =[]
-        for extra in type.job_extras_set.filter(per_member=False):
+        for extra in self.type.job_extras_set.filter(per_member=False):
             if not extra.empty(self.assignment_set.all()):
-                extra_result.append(extra)
+                extras_result.append(extra)
         return extras_result
 
     def per_member_extras(self):
-        return type.job_extras_set.filter(per_member=True)
+        return self.type.job_extras_set.filter(per_member=True)
 
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:

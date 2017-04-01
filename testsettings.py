@@ -47,6 +47,10 @@ EMAIL_HOST_PASSWORD = os.environ.get('JUNTAGRICO_EMAIL_PASSWORD')
 EMAIL_PORT = os.environ.get('JUNTAGRICO_EMAIL_PORT', 2525 )
 EMAIL_USE_TLS = os.environ.get('JUNTAGRICO_EMAIL_TLS', False)
 
+
+
+WHITELIST_EMAILS = []
+
 def whitelist_email_from_env(var_env_name):
     email = os.environ.get(var_env_name)
     if email:
@@ -104,8 +108,6 @@ TEMPLATES = [
 ]
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
-
-WHITELIST_EMAILS = []
 
 
 GOOGLE_API_KEY = 'AIzaSyCcii4Z71qyky54kEQtRhFbB_z-2zbSU28'

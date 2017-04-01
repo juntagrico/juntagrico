@@ -44,10 +44,10 @@
         <div class="col-md-3">Extras:</div>
         <div class="col-md-5">
             {% for extra in job.empty_per_job_extras %}
-                {{ extra.exra.diplay_empty }}
+                {{ extra.extra_type.display_empty|safe }}
             {% endfor %}
             {% for extra in job.full_per_job_extras %}
-                {{ extra.exra.diplay_full }}
+                {{ extra.extra_type.display_full|safe }}
             {% endfor %}
         </div>
     </div>
@@ -91,7 +91,7 @@
                             <a class="job-participant" member-id="{{ participant }}" href="#">
                                 {{ participant }}
                             </a>
-                            {{extras}}
+                            {{extras|safe}}
 							{% if reachable %}
 								&nbsp;<a href="{{url}}"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></a>
 							{% endif %}
@@ -140,10 +140,10 @@
                         <input type="hidden" name="jobs" value="1">
                     {% endif %}
                     {% for extra in job.empty_per_job_extras %}
-                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}" /> {{ extra.extra_type.description }}<br/>
+                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}" /> {{ extra.extra_type.name }}<br/>
                     {% endfor %} 
                     {% for extra in job.per_member_extras %}
-                        <input type="checkbox" name="extra {{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"  /> {{ extra.extra_type.description }}<br/>
+                        <input type="checkbox" name="extra {{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"  /> {{ extra.extra_type.name }}<br/>
                     {% endfor %} 
                     <div>
                         <button type="submit" class="btn btn-success">Bestätigen</button>
