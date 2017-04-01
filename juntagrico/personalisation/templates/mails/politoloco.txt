@@ -1,5 +1,0 @@
-{% block content %}
-{{ content }}
-{% endblock %}
-============
-weitere Infos: http://ortoloco.ch
