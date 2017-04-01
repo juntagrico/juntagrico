@@ -1,4 +1,5 @@
 import calendar
+import datetime
 from django.utils import timezone
 
 from juntagrico.config import Config
@@ -35,7 +36,7 @@ def start_of_business_year():
         year=now.year-1
     else:
         year=now.year
-    return timezone.date(year, month, day)
+    return datetime.date(year, month, day)
 
 def start_of_next_business_year():
     now = timezone.now()
@@ -45,7 +46,7 @@ def start_of_next_business_year():
         year=now.year
     else:
         year=now.year+1
-    return timezone.date(year, month, day)
+    return datetime.date(year, month, day)
 
 def next_cancelation_date():
     now = timezone.now()
@@ -54,4 +55,4 @@ def next_cancelation_date():
         year=now.year
     else:
         year=now.year+1
-    return timezone.date(year, c_month, calendar.monthrange(year,c_month)[1])
+    return datetime.date(year, c_month, calendar.monthrange(year,c_month)[1])
