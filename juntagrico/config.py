@@ -164,6 +164,12 @@ class Config:
         return 10
 
     @staticmethod
+    def demo():
+        if hasattr(settings, 'DEMO'):
+            return settings.DEMO
+        return False
+
+    @staticmethod
     def circles(key):
         if hasattr(settings, 'CIRCLES'):
             return settings.CIRCLES[key]

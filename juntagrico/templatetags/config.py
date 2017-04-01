@@ -8,6 +8,10 @@ register = template.Library()
 def config(property):
     return getattr(Config, property)()
     
+@register.assignment_tag(takes_context=True)
+def config2(context, property):
+    return getattr(Config, property)()
+    
 @register.simple_tag
 def circles(key):
     return Config.circles(key)
