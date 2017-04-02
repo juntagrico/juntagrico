@@ -296,7 +296,7 @@ class Subscription(Billable):
         return self.calc_subscritpion_amount(self.size, subscription_name)
 
     def subscription_amount_future(self, subscription_name):
-        return self.calc_subscritpion_amount(self.furture_size, subscription_name)
+        return self.calc_subscritpion_amount(self.future_size, subscription_name)
 
     @staticmethod
     def calc_subscritpion_amount(size, subscription_name):
