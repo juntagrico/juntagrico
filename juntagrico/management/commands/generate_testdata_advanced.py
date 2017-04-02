@@ -41,6 +41,7 @@ class Command(BaseCommand):
         latlng = str(point[1])+","+str(point[0])
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
         url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latlng+"&key="+Config.google_api_key()
+        prunt ulr
         req = urllib2.urlopen(url, context = cert)
         data=req.read()
         address_data = json.loads(data)["results"][0]["address_components"]
