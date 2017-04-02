@@ -181,7 +181,7 @@ class Config:
             'circle_full_core': '/static/img/circle_full_core.png',
             'circle_x': '/static/img/circle_x.png',
             'circle_y': '/static/img/circle_y.png'
-        }
+        }[key]
 
 
 
