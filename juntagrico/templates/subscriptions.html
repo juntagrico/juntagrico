@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load config %}
+{% load circles %}
+
 
 {% block content %}
     <h3>Alle Abos im Überblick</h3>
@@ -54,9 +56,9 @@
                     </td>
                     <td>{{ subscription.subscription.recipients_names }}</td>
                     <td>{{ subscription.subscription.depot.name }}</td>
-                    <td>{{ subscription.assignments }} <img src="{% cirlces subscription.icon %}""/> {{ subscription.text }}</td>
+                    <td>{{ subscription.assignments }} <img src="{% circels subscription.icon %}""/> {{ subscription.text }}</td>
                     <td>{{ subscription.core_assignments }}</td>
-                    <td>{% if subscription.subscription.active %}<img src="{% cirlces "circle_full" %}"/> Aktiv{% else %}<img src="{% cirlces "circle_empty" %}"/> Wartend{% endif %}</td>
+                    <td>{% if subscription.subscription.active %}<img src="{% circels "circle_full" %}"/> Aktiv{% else %}<img src="{% circels "circle_empty" %}"/> Wartend{% endif %}</td>
                     <td>{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>
             {% endfor %}
