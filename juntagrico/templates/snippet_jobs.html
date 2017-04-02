@@ -19,7 +19,7 @@
                 <br/> {{ job.time |date:"H:i" }}&nbsp;&ndash;&nbsp;{{ job.end_time |date:"H:i" }}</td>
             <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}><strong>{{ job.type.activityarea.name }}</strong><br/>
                 {{ job.type.get_name }}</a><br/></a></td>
-            <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="{% circles job.get_status_percentage "}"/></td>
+            <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="{% circles job.get_status_percentage %}"/></td>
             <td>{{ job.type.location }}</td>
             <td>{{ job.extras|safe }}</td>
         </tr>
