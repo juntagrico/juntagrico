@@ -22,7 +22,7 @@
             <tr>
                 <th>Name</th>
                 <th>{% config "assignments_string" %}</th>
-                <th>{% config "assignments_string" %} Kernbereich</th>
+                {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Taetigkeitsbereiche</th>
                 <th>Depot</th>
                 <th>Email</th>
@@ -34,7 +34,7 @@
             <tr>
                 <th>Name</th>
                 <th>{% config "assignments_string" %}</th>
-                <th>{% config "assignments_string" %} Kernbereich</th>
+                {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Taetigkeitsbereiche</th>
                 <th>Depot</th>
                 <th>Email</th>
@@ -56,7 +56,7 @@
                     {% endif %}
                     </td>
                     <td>{{ member.boehnli_count }}</td>
-                    <td>{{ member.core_boehnli_count }}</td>
+                    {% if show_core %}<td>{{ member.core_boehnli_count }}</td>{% endif %}
                     <td>
                         {% for area in member.areas.all %}
                             {{ area.name }},

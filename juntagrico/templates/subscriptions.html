@@ -25,7 +25,7 @@
                 <th>Weitere {% config "members_string" %}</th>
                 <th>Depot</th>
                 <th>{% config "assignments_string" %}</th>
-                <th>{% config "assignments_string" %} Kernbereich</th>
+                {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Aktiv</th>
                 <th>Emails</th>
             </tr>
@@ -36,7 +36,7 @@
                 <th>Weitere {% config "members_string" %}</th>
                 <th>Depot</th>
                 <th>{% config "assignments_string" %}</th>
-                <th>{% config "assignments_string" %} Kernbereich</th>
+                {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Aktiv</th>
                 <th>Emails</th>
             </tr>
@@ -55,8 +55,8 @@
                     </td>
                     <td>{{ subscription.subscription.recipients_names }}</td>
                     <td>{{ subscription.subscription.depot.name }}</td>
-                    <td>{{ subscription.assignments }} <img src="{% circels subscription.icon %}""/> {{ subscription.text }}</td>
-                    <td>{{ subscription.core_assignments }}</td>
+                    <td>{{ subscription.assignments }} <img src="{% circels subscription.icon %}"/> {{ subscription.text }}</td>
+                    {% if show_core %}<td>{{ subscription.core_assignments }}</td>{% endif %}
                     <td>{% if subscription.subscription.active %}<img src="{% circels "circle_full" %}"/> Aktiv{% else %}<img src="{% circels "circle_empty" %}"/> Wartend{% endif %}</td>
                     <td>{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>

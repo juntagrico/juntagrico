@@ -76,6 +76,7 @@ def get_menu_dict(request):
         'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
         'depot_admin': depot_admin,
         'area_admin': area_admin,
+        'show_core': ActivityAreaDao.all_core_areas().count()>0,
         'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + "/dpl.pdf",
     }
     enrich_menu_dict(request, menu_dict)

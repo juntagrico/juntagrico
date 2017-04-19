@@ -15,7 +15,7 @@
             <br/><br/>
             <form action="/my/participation" method="post">
                 {% csrf_token %}
-                <div class="row">
+                {% if show_core %}<div class="row">
                     <div class="col-md-4">
                         <h4>Kernbereiche: <img alt="core_area" title="core_area" class="jobstatus" src="{% circles "circle_full_core" %}"/></h4>
                     </div>
@@ -40,7 +40,7 @@
                     </div>
                     {% endif %}
                 {% endfor %}
-                <br/>
+                <br/>{% endif %}
                 <div class="row">
                     <div class="col-md-4">
                         <h4>Weitere Bereiche: <img alt="other_area" title="other_area" class="jobstatus" src="{% circles "circle_full" %}"/></h4>
