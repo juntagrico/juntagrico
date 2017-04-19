@@ -164,10 +164,16 @@ class Config:
         return 10
 
     @staticmethod
-    def demo():
-        if hasattr(settings, 'DEMO'):
-            return settings.DEMO
-        return False
+    def demouser():
+        if hasattr(settings, 'DEMO_USER'):
+            return settings.DEMO_USER
+        return ''
+
+    @staticmethod
+    def demopwd():
+        if hasattr(settings, 'DEMO_PWD'):
+            return settings.DEMO_PWD
+        return ''
 
     @staticmethod
     def circles(key):
