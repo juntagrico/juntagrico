@@ -292,14 +292,13 @@ def createsubscription(request):
         if shares < min_num_shares or not subscriptionform.is_valid():
             shareerror = shares < min_num_shares
         else:
-            depot = DepotDao.depot_by_id(request.POST.get("depot"))
             size = next(
                 iter(SubscriptionSizeDao.sizes_by_name(selectedsubscription).values_list('size', flat=True) or []),
                 0)
 
             if size > 0:
                 session_subscription = Subscription(**subscriptionform.cleaned_data)
-                session_subscription.depot = depot
+                session_subscription.depot = DepotDao.depot_by_id(request.POST.get("depot"))
                 session_subscription.primary_member = member
                 session_subscription.size = size
 
@@ -322,9 +321,10 @@ def createsubscription(request):
                     password = password_generator()
                     request.user.set_password(password)
                     request.user.save()
-                session_subscription.save()
-                member.subscription_id = session_subscription.id
-                member.save()
+                if session_subscription is not None:
+                    session_subscription.save()
+                    member.subscription_id = session_subscription.id
+                    member.save
                 send_welcome_mail(member.email, password, hashlib.sha1(member.email + str(
                     session_subscription.id)).hexdigest(), request.META["HTTP_HOST"])
                 for co_member in co_members:
