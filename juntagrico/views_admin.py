@@ -293,7 +293,7 @@ def get_mail_template(request, template_id):
     renderdict = {}
 
     template = MailTemplateDao.template_by_id(template_id)
-    exec template.code
+    exec(template.code)
     t = Template(template.template)
     c = Context(renderdict)
     result = t.render(c)
