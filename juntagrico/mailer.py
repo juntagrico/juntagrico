@@ -36,12 +36,12 @@ def send_mail(subject, message, from_email, to_emails):
                     sent = True
                     okmails.append(email)
             if not sent:
-                print "Mail not sent to " + ", " + email + ", not in whitelist"
+                print("Mail not sent to: " + email + " not in whitelist")
 
     if len(okmails) > 0:
         for amail in okmails:
             mail.send_mail(subject, message, from_email, [amail], fail_silently=False)
-        print "Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else "")
+        print("Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else ""))
 
     return None
 
@@ -58,13 +58,13 @@ def send_mail_multi(email_multi_message):
                     sent = True
                     okmails.append(email)
             if not sent:
-                print "Mail not sent to " + email + ", not in whitelist"
+                print("Mail not sent to " + email + ", not in whitelist")
 
     if len(okmails) > 0:
         email_multi_message.to = []
         email_multi_message.bcc = okmails
         email_multi_message.send()
-        print "Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else "")
+        print("Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else ""))
     return None
 
 
@@ -280,8 +280,6 @@ def send_job_signup(emails, job, server):
                                  Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
     msg.attach("einsatz.ics", ical_content, "text/calendar")
-    print repr(msg.message().as_string())
-    print repr(os.linesep)
     #   send_mail_multi(msg)
 
 

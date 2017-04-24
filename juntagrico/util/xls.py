@@ -1,4 +1,4 @@
-from StringIO import StringIO
+from io import StringIO
 
 import xlsxwriter
 from django.http import HttpResponse

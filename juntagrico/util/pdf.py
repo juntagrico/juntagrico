@@ -1,4 +1,4 @@
-from StringIO import StringIO
+from io import StringIO
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage

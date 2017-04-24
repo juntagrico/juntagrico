@@ -13,7 +13,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from decorators import primary_member_of_subscription
+from juntagrico.decorators import primary_member_of_subscription
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.views import get_menu_dict
@@ -266,8 +266,6 @@ def createsubscription(request):
     co_members = request.session.get('create_co_members', [])
     co_members_shares = request.session.get('create_co_members_shares', [])
     member_shares = request.session.get('create_member_shares', [])
-
-    print co_members
 
     selectedsubscription = "none"
     selected_depot = None

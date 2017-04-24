@@ -283,7 +283,6 @@ class JobTypeAdmin(admin.ModelAdmin):
                 attribute_copy(rj, oj)
                 oj.name += str(i)
                 i += 1
-                print oj.__dict__
                 oj.save()
                 for b in AssignmentDao.assignments_for_job(rj.id):
                     b.job = oj
