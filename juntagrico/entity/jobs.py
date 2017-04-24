@@ -6,6 +6,7 @@ from polymorphic.models import PolymorphicModel
 from juntagrico.dao.assignmentdao import AssignmentDao
 
 from juntagrico.util.jobs import *
+from juntagrico.util.temporal import *
 from juntagrico.config import Config
 
 class ActivityArea(models.Model):
