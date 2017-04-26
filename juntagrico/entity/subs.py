@@ -18,6 +18,7 @@ class SubscriptionSize(models.Model):
     size = models.PositiveIntegerField("Grösse", unique=True)
     shares = models.PositiveIntegerField("Anz benötigter Anteilsscheine")
     required_assignments = models.PositiveIntegerField("Anz benötigter Arbeitseinsätze")
+    price = models.PositiveIntegerField("Preis")
     depot_list = models.BooleanField('Sichtbar auf Depotliste', default=True)
     description = models.TextField("Beschreibung", max_length=1000, blank=True)
     

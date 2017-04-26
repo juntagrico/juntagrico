@@ -149,7 +149,13 @@ class Config:
     def depot_list_generation_days():
         if hasattr(settings, 'DEPOT_LIST_GENERATION_DAYS'):
             return settings.DEPOT_LIST_GENERATION_DAYS
-        return [1,2,3,4,5,6,7]
+        return [1,2,3,4,5,6,7]	
+
+    @staticmethod
+    def billing():
+        if hasattr(settings, 'BILLING'):
+            return settings.BILLING
+        return False
 
     @staticmethod
     def business_year_start():

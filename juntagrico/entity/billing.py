@@ -2,6 +2,7 @@
 
 from django.db import models
 from polymorphic.models import PolymorphicModel
+from juntagrico.util.temporal import *
 
 
 class Billable(PolymorphicModel):
@@ -26,7 +27,7 @@ class Bill(models.Model):
     amount = models.FloatField("Betrag", null=False, blank=False)
 
     def __unicode__(self):
-        return u"%s %s" % self.ref_number
+        return u"%s" % self.ref_number
 
     class Meta:
         verbose_name = "Rechnung"
@@ -43,8 +44,39 @@ class Payment(models.Model):
     amount = models.FloatField("Betrag", null=False, blank=False)
 
     def __unicode__(self):
-        return u"%s %s" % self.ref_number
+        return u"%s" % self.ref_number
 
     class Meta:
         verbose_name = "Zahlung"
         verbose_name_plural = "Zahlung"
+		
+class ExtraSubBillingPeriod(models.Model):
+    """
+    Billing Period for Extra subscriptions for which a bill has to be issued
+    """
+    type = models.ForeignKey("ExtraSubscriptionType", related_name="periods", null=False, blank=False,
+                                 on_delete=models.PROTECT)
+    price = models.PositiveIntegerField("Preis")
+    start_day = models.PositiveIntegerField("Start Tag")
+    start_month = models.PositiveIntegerField("Start Monat", choices=month_choices)
+    end_day = models.PositiveIntegerField("End Tag")
+    end_month = models.PositiveIntegerField("End Monat", choices=month_choices)
+    code = models.TextField("Code für Teilabrechnung", max_length=1000, default="")
+	
+    def partial_price(self):
+        now = timezone.now()
+        start = calculate_last(self.start_day, self.start_month)
+        end = calculate_last(self.end_day, self.end_month)
+        if code !="":
+            exec(code)
+        else:
+            total_days = (end - start).days
+            passed_days = (now - start).days
+            price = self.price *(passed_days/total_days)
+            
+    def __unicode__(self):
+        return u"%s(%s%s - %s%s)" % self.type.name, self.start_day, self.start_month, self.end_day, self.end_month
+
+    class Meta:
+        verbose_name = "Verechnungsperdiode Zusatzabos"
+        verbose_name_plural = "Verechnungsperdioden Zusatzabos"
