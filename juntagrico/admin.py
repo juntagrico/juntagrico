@@ -427,13 +427,10 @@ admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(JobExtra)
 admin.site.register(JobExtraType)
-
-# This is only added to admin for debugging
-# admin.site.register(model_audit.Audit, AuditAdmin)
-
-# Not adding this because it can and should be edited from Job, 
-# where integrity constraints are checked
-# admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
+if Config.billing():
+    admin.site.register(Bill)
+    admin.site.register(Payment)
+    admin.site.register(ExtraSubBillingPeriod)

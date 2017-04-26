@@ -73,6 +73,17 @@ class ExtraSubBillingPeriod(models.Model):
             total_days = (end - start).days
             passed_days = (now - start).days
             price = self.price *(passed_days/total_days)
+	
+    def calculated_price(self, activation_date):
+        start = calculate_last(self.start_day, self.start_month)
+        end = calculate_last(self.end_day, self.end_month)
+        ref_date = max(activation_date, start)
+        if code !="":
+            exec(code)
+        else:
+            total_days = (end - start).days
+            passed_days = (end - ref_date).days
+            price = self.price *(passed_days/total_days)
             
     def __unicode__(self):
         return u"%s(%s%s - %s%s)" % self.type.name, self.start_day, self.start_month, self.end_day, self.end_month

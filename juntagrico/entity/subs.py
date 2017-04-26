@@ -144,6 +144,14 @@ class Subscription(Billable):
             amount = Subscription.calc_subscritpion_amount(self.size, sub_size.name)
             resukt += sub_size.required_assignments * amount
         return result
+       
+    @property
+    def price(self):
+        result = 0
+        for sub_size in SubscriptionSizeDao.all_sizes_ordered():
+            amount = Subscription.calc_subscritpion_amount(self.size, sub_size.name)
+            result += sub_size.price * amount
+        return result
 
     @property
     def size_name(self):
