@@ -4,7 +4,11 @@ from juntagrico.util.temporal import *
 from juntagrico.config import Config
 
 def calculate_check_number(ref_number):
-    return "0"
+    numbers=[0, 9, 4, 6, 8, 2, 7, 1, 3, 5]
+    overfloat = 0
+    for n in ref_number:
+        overfloat = numbers[(overfloat+int(n))%10]
+    return str((10-overfloat)%10)
 
 def generate_ref_number(type,billable_id,recipient_id):
     type_code = {"subscription":"01","share":"02","extra":"03"}.get(type,"00")
