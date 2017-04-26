@@ -142,7 +142,7 @@ class Subscription(Billable):
         result = 0
         for sub_size in SubscriptionSizeDao.all_sizes_ordered():
             amount = Subscription.calc_subscritpion_amount(self.size, sub_size.name)
-            resukt += sub_size.required_assignments * amount
+            result += sub_size.required_assignments * amount
         return result
        
     @property
