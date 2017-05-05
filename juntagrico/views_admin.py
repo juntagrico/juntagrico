@@ -64,7 +64,7 @@ def send_email_intern(request):
 
     if len(emails) > 0:
         send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"),
-                           emails, request.META["HTTP_HOST"], attachements, sender=sender)
+                           emails, attachements, sender=sender)
         sent = len(emails)
     return redirect("/my/mails/send/result/" + str(sent) + "/")
 

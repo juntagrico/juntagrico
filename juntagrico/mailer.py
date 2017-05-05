@@ -13,14 +13,8 @@ from django.template.loader import get_template
 
 from juntagrico.config import Config
 from juntagrico.util.ical import *
-def get_server(server):
-    site_from_env = os.getenv("ORTOLOCO_TEMPLATE_SERVERURL")
-    if site_from_env:
-        return site_from_env
-    site_from_db = get_current_site(None).domain
-    if site_from_db:
-        return site_from_db
-    return server
+def get_server():
+    return "http://" + Config.adminportal_server_url()
 
 
 # sends mail only to specified email-addresses if dev mode
@@ -90,7 +84,7 @@ def send_contact_member_form(subject, message, member, contact_member, copy_to_m
         send_mail('Nachricht per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [member.email])
 
 
-def send_welcome_mail(email, password, hash, server):
+def send_welcome_mail(email, password, hash):
     plaintext = get_template('mails/welcome_mail.txt')
     htmly = get_template('mails/welcome_mail.html')
 
@@ -100,7 +94,7 @@ def send_welcome_mail(email, password, hash, server):
         'username': email,
         'password': password,
         'hash': hash,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(d)
@@ -112,7 +106,7 @@ def send_welcome_mail(email, password, hash, server):
     send_mail_multi(msg)
 
 
-def send_share_created_mail(share, server):
+def send_share_created_mail(share):
     plaintext = get_template('mails/share_created_mail.txt')
     htmly = get_template('mails/share_created_mail.html')
 
@@ -120,7 +114,7 @@ def send_share_created_mail(share, server):
     d = {
         'member': share.member,
         'share': share,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
@@ -134,7 +128,7 @@ def send_share_created_mail(share, server):
     send_mail_multi(msg)
 
 
-def send_been_added_to_subscription(email, password, name, shares, hash, server):
+def send_been_added_to_subscription(email, password, name, shares, hash):
     plaintext = get_template('mails/welcome_added_mail.txt')
     htmly = get_template('mails/welcome_added_mail.html')
 
@@ -146,7 +140,7 @@ def send_been_added_to_subscription(email, password, name, shares, hash, server)
         'password': password,
         'hash': hash,
         'shares': shares,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(d)
@@ -158,19 +152,19 @@ def send_been_added_to_subscription(email, password, name, shares, hash, server)
     send_mail_multi(msg)
 
 
-def send_filtered_mail(subject, message, text_message, emails, server, attachments, sender):
+def send_filtered_mail(subject, message, text_message, emails, attachments, sender):
     plaintext = get_template('mails/filtered_mail.txt')
     htmly = get_template('mails/filtered_mail.html')
 
     htmld = {
         'subject': subject,
         'content': message,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
     textd = {
         'subject': subject,
         'content': text_message,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(textd)
@@ -183,7 +177,7 @@ def send_filtered_mail(subject, message, text_message, emails, server, attachmen
     send_mail_multi(msg)
 
 
-def send_mail_password_reset(email, password, server):
+def send_mail_password_reset(email, password):
     plaintext = get_template('mails/password_reset_mail.txt')
     htmly = get_template('mails/password_reset_mail.html')
     subject = 'Dein neues ' + Config.organisation_name() + ' Passwort'
@@ -192,7 +186,7 @@ def send_mail_password_reset(email, password, server):
         'subject': subject,
         'email': email,
         'password': password,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(d)
@@ -203,7 +197,7 @@ def send_mail_password_reset(email, password, server):
     send_mail_multi(msg)
 
 
-def send_job_reminder(emails, job, participants, server):
+def send_job_reminder(emails, job, participants):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
     coordinator = job.typeactivityarea.coordinator
@@ -212,7 +206,7 @@ def send_job_reminder(emails, job, participants, server):
     d = {
         'job': job,
         'participants': participants,
-        'serverurl': "http://" + get_server(server),
+        'serverurl': get_server(),
         'contact': contact
     }
 
@@ -225,13 +219,13 @@ def send_job_reminder(emails, job, participants, server):
     send_mail_multi(msg)
 
 
-def send_job_canceled(emails, job, server):
+def send_job_canceled(emails, job):
     plaintext = get_template('mails/job_canceled_mail.txt')
     htmly = get_template('mails/job_canceled_mail.html')
 
     d = {
         'job': job,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(d)
@@ -243,13 +237,13 @@ def send_job_canceled(emails, job, server):
     send_mail_multi(msg)
 
 
-def send_job_time_changed(emails, job, server):
+def send_job_time_changed(emails, job):
     plaintext = get_template('mails/job_time_changed_mail.txt')
     htmly = get_template('mails/job_time_changed_mail.html')
 
     d = {
         'job': job,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(d)
@@ -263,13 +257,13 @@ def send_job_time_changed(emails, job, server):
     send_mail_multi(msg)
 
 
-def send_job_signup(emails, job, server):
+def send_job_signup(emails, job):
     plaintext = get_template('mails/job_signup_mail.txt')
     htmly = get_template('mails/job_signup_mail.html')
 
     d = {
         'job': job,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(d)
@@ -283,13 +277,13 @@ def send_job_signup(emails, job, server):
     #   send_mail_multi(msg)
 
 
-def send_depot_changed(emails, depot, server):
+def send_depot_changed(emails, depot):
     plaintext = get_template('mails/depot_changed_mail.txt')
     htmly = get_template('mails/depot_changed_mail.html')
 
     d = {
         'depot': depot,
-        'serverurl': "http://" + get_server(server)
+        'serverurl': get_server()
     }
 
     text_content = plaintext.render(d)

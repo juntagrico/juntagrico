@@ -196,14 +196,14 @@ class Job(PolymorphicModel):
                 emails.add(assignment.member.email)
             instance.slots = 0
             if len(emails) > 0:
-                send_job_canceled(emails, instance, Config.server_url())
+                send_job_canceled(emails, instance)
         if instance.old_time != instance.time:
             assignments = AssignmentDao.assignments_for_job(instance.id)
             emails = set()
             for assignment in assignments:
                 emails.add(assignment.member.email)
             if len(emails) > 0:
-                send_job_time_changed(emails, instance, Config.server_url())
+                send_job_time_changed(emails, instance)
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):

@@ -324,7 +324,7 @@ def createsubscription(request):
                     member.subscription_id = session_subscription.id
                     member.save
                 send_welcome_mail(member.email, password, hashlib.sha1(member.email + str(
-                    session_subscription.id)).hexdigest(), request.META["HTTP_HOST"])
+                    session_subscription.id)).hexdigest())
                 for co_member in co_members:
                     co_member.subscription_id = session_subscription.id
                     co_member.save()
@@ -335,12 +335,11 @@ def createsubscription(request):
                         co_member.user.save()
                     send_been_added_to_subscription(co_member.email, pw, request.user.member.get_name(), shares,
                                                     hashlib.sha1(co_member.email + str(
-                                                        session_subscription.id)).hexdigest(),
-                                                    request.META["HTTP_HOST"])
+                                                        session_subscription.id)).hexdigest())
                 for share in member_shares + co_members_shares:
                     if share.id is None:
                         share.save()
-                        send_share_created_mail(share, request.META["HTTP_HOST"])
+                        send_share_created_mail(share)
                 request.session['create_subscription'] = None
                 request.session['create_co_members'] = []
                 request.session['create_co_members_shares'] = []
@@ -400,11 +399,11 @@ def add_member(request, subscription_id):
                 member.subscription_id = subscription_id
                 member.save()
                 send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(
-                    memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
+                    memberform.cleaned_data['email'] + str(subscription_id)).hexdigest())
                 if memberexists is False:
                     for share in tmp_shares:
                         share.save()
-                        send_share_created_mail(share, request.META["HTTP_HOST"])
+                        send_share_created_mail(share)
                 return redirect(request.GET.get("return"))
             else:
                 co_members_shares = request.session.get('create_co_members_shares', [])

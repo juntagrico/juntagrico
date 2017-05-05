@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 emails = []
                 for member in subscription.recipients():
                     emails.append(member.email)
-                send_depot_changed(emails, subscription.depot, Config.server_url())
+                send_depot_changed(emails, subscription.depot)
 
         if options['force'] and not options['future']:
             print "future depots ignored, use --future to override"

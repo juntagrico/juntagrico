@@ -121,7 +121,7 @@ def job(request, job_id):
                 assignment.job_extras.add(extra)
         assignment.save()
 
-        send_job_signup([member.email], job, request.META["HTTP_HOST"])
+        send_job_signup([member.email], job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
@@ -421,7 +421,7 @@ def new_password(request):
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()
-            send_mail_password_reset(member.email, pw, request.META["HTTP_HOST"])
+            send_mail_password_reset(member.email, pw)
 
     renderdict = {
         'sent': sent
