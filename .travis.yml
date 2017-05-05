@@ -4,3 +4,5 @@ python:
 install:
   - pip install --upgrade -r requirements.txt
 script: pwd
+notifications:
+    slack: ortoloco:k0AsQP9K7UmQjSgnyZNvR7pm
