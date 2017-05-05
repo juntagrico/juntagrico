@@ -321,8 +321,8 @@ def send_bill_sub(bill, subscription, start, end, member):
     d = {
         'bill': bill,
         'sub': subscription,
-        'start': start
-        'end': end
+        'start': start,
+        'end': end,
         'serverurl': get_server()
     }
 
@@ -342,8 +342,8 @@ def send_bill_extrasub(bill, extrasub, start, end, member):
     d = {
         'bill': bill,
         'extrasub': extrasub,
-        'start': start
-        'end': end
+        'start': start,
+        'end': end,
         'serverurl': get_server()
     }
 
