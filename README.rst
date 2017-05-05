@@ -1,6 +1,8 @@
-=====
 Juntagrico
 =====
+
+.. image:: https://travis-ci.org/ortoloco/ortoloco.svg?branch=master
+    :target: https://travis-ci.org/ortoloco/ortoloco
 
 **the easy solution for cooperative vegetable growers**
 
