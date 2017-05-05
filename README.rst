@@ -1,6 +1,7 @@
 =====
 Juntagrico
 =====
+
 [![Build Status](https://travis-ci.org/juntagrico/juntagrico.svg?branch=master)](https://travis-ci.org/juntagrico/juntagrico)
 
 **the easy solution for cooperative vegetable growers**
