@@ -53,7 +53,11 @@ class Config:
     def organisation_bank_connection():
         if hasattr(settings, 'ORGANISATION_BANK_CONNECTION'):
             return settings.ORGANISATION_BANK_CONNECTION
-        return "fakebank something something"
+        return {"PC" : "01-123-5",
+                "IBAN" : "CH 00 12345 67890 12345 67890 10",
+                "BIC" : "BIC12345XX",
+                "Name" : "Juntagrico Bank",
+                "ESR" : "01-123-45"}
 
     @staticmethod
     def info_email():
@@ -101,19 +105,19 @@ class Config:
     def faq_doc():
         if hasattr(settings, 'FAQ_DOC'):
             return settings.FAQ_DOC
-        return "/share/doc/fac.pdf"
+        return "/static/doc/fac.pdf"
 
     @staticmethod
     def extra_sub_info():
         if hasattr(settings, 'EXTRA_SUB_INFO'):
             return settings.EXTRA_SUB_INFO
-        return "/share/doc/extra_sub_info.pdf"
+        return "/static/doc/extra_sub_info.pdf"
 
     @staticmethod
     def activity_area_info():
         if hasattr(settings, 'ACTIVITY_AREA_INFO'):
             return settings.ACTIVITY_AREA_INFO
-        return "/share/doc/activity_area_info.pdf"
+        return "/static/doc/activity_area_info.pdf"
 
     @staticmethod
     def share_price():
