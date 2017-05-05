@@ -33,6 +33,7 @@ def bill_subscription(subscrtption):
     price = subscription.price*(remaining_days/total_days)
     refnumber = generate_ref_number("subscription",subscription.id,subscription.primary_member.id,start)
     bill = Bill.objects.create(billable=subscription,ammount=price,ref_number=refnumber,bill_date=now)
+    send_bill_sub(bill, subscription, start, end, subscription.primary_member)
 
 
 def bill_share(share):
@@ -40,12 +41,14 @@ def bill_share(share):
     price = float(Config.share_price())
     refnumber = generate_ref_number("share",share.id,share.member.id)
     bill = Bill.objects.create(billable=share,ammount=price,ref_number=refnumber,bill_date=now)
-    
+    send_bill_share(bill, share, share.member)   
 
 
 def bill_extra_subscription(extra, period):
     price = period.calculated_price(extra.activation_date)
     start = period.get_actual_start(extra.activation_date)
+    end = period.get_actual_end()
     refnumber = generate_ref_number("extra",extra.id,extra.main_subscription.primary_member.id,start)
     bill = Bill.objects.create(billable=extra,ammount=price,ref_number=refnumber,bill_date=now)
+    send_bill_extrasub(bill, extra, start, end, extra.main_subscription.primary_member)
     

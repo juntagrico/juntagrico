@@ -66,7 +66,7 @@ class ExtraSubBillingPeriod(models.Model):
     def partial_price(self):
         now = timezone.now()
         start = calculate_last(self.start_day, self.start_month)
-        end = calculate_last(self.end_day, self.end_month)
+        end = calculate_next(self.end_day, self.end_month)
         if code !="":
             exec(code)
         else:
@@ -76,7 +76,7 @@ class ExtraSubBillingPeriod(models.Model):
 	
     def calculated_price(self, activation_date):
         start = calculate_last(self.start_day, self.start_month)
-        end = calculate_last(self.end_day, self.end_month)
+        end = calculate_next(self.end_day, self.end_month)
         ref_date = max(activation_date, start)
         if code !="":
             exec(code)
@@ -88,6 +88,9 @@ class ExtraSubBillingPeriod(models.Model):
     def get_actual_start(self, activation_date):
         start = calculate_last(self.start_day, self.start_month)
         return max(activation_date, start)
+    
+    def get_actual_end(self):
+        return calculate_next(self.end_day, self.end_month)
             
     def __unicode__(self):
         return u"%s(%s%s - %s%s)" % self.type.name, self.start_day, self.start_month, self.end_day, self.end_month
