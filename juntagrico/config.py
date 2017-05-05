@@ -47,7 +47,12 @@ class Config:
     def organisation_address():
         if hasattr(settings, 'ORGANISATION_ADDRESS'):
             return settings.ORGANISATION_ADDRESS
-        return "Juntagrico 123 Fakestreet Springfield"
+        return {"name":"Juntagrico", 
+                "street" : "Fakestreet",
+                "number" : "123",
+                "zip" : "12456",
+                "city" : "Springfield",
+                "extra" : ""}
 
     @staticmethod
     def organisation_bank_connection():
@@ -56,7 +61,7 @@ class Config:
         return {"PC" : "01-123-5",
                 "IBAN" : "CH 00 12345 67890 12345 67890 10",
                 "BIC" : "BIC12345XX",
-                "Name" : "Juntagrico Bank",
+                "NAME" : "Juntagrico Bank",
                 "ESR" : "01-123-45"}
 
     @staticmethod
