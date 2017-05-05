@@ -293,3 +293,64 @@ def send_depot_changed(emails, depot):
                                  emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
+
+
+def send_bill_share(bill, share, member):
+    plaintext = get_template('mails/bill_share.txt')
+    htmly = get_template('mails/bill_share.html')
+
+    d = {
+        'bill': bill,
+        'share': share,
+        'serverurl': get_server()
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Rechnung Anteilschein", text_content, Config.info_email(),
+                                 [member.email])
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
+
+    
+def send_bill_sub(bill, subscription, start, end, member):
+    plaintext = get_template('mails/bill_sub.txt')
+    htmly = get_template('mails/bill_sub.html')
+
+    d = {
+        'bill': bill,
+        'sub': subscription,
+        'start': start
+        'end': end
+        'serverurl': get_server()
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Rechnung Abo", text_content, Config.info_email(),
+                                 [member.email])
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
+
+    
+def send_bill_extrasub(bill, extrasub, start, end, member):
+    plaintext = get_template('mails/bill_extrasub.txt')
+    htmly = get_template('mails/bill_extrasub.html')
+
+    d = {
+        'bill': bill,
+        'extrasub': extrasub,
+        'start': start
+        'end': end
+        'serverurl': get_server()
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Rechnung ExtraAbo", text_content, Config.info_email(),
+                                 [member.email])
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
