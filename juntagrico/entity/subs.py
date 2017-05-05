@@ -6,6 +6,8 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 
 from juntagrico.util.temporal import *
+from juntagrico.util.bills import *
+from juntagrico.config import Config
 
 from juntagrico.entity.billing import *
 
@@ -172,6 +174,8 @@ class Subscription(Billable):
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
+            if Config.billing():
+                bill_subscription(instance)
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
 

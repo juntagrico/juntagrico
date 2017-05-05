@@ -1,3 +1,4 @@
+from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
 from juntagrico.entity.billing import *
 from juntagrico.entity.subs import *
 from juntagrico.util.temporal import *
@@ -44,6 +45,11 @@ def bill_share(share):
     send_bill_share(bill, share, share.member)   
 
 
+def bill_extra_subscription(extra):
+    period = ExtraSubBillingPeriodDao.get_current_period_per_type(extra.type)
+    bill_extra_subscription(extra, period)
+    
+    
 def bill_extra_subscription(extra, period):
     price = period.calculated_price(extra.activation_date)
     start = period.get_actual_start(extra.activation_date)
