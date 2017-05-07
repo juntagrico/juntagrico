@@ -1,0 +1,17 @@
+{% extends "mails/email.txt" %}
+{% load config %}
+{% block content %}
+{% config "organisation_bank_connection" as bank%}
+Lieber {{ member.first_name }}
+
+Hier die Rechnung für deinen bestellten Anteilschein:
+
+Betrag:         {{ bill.price}}
+Referenznummer: {{ bill.refnumber }}
+Kontonummer:    {{ bank.ESR }}
+
+Solange dein Anteilschein nicht bezahlt wurde bist du nicht Genossenschafter. Der Betrag kann in Teilzahlungen bezahlt werden. 
+Bei Teilzahlungen bitte beachten immer die Referenznummer anzugeben, damit das System genau abrechnen kann.
+
+dein {% config "organisation_name" %}-Team
+{% endblock %}

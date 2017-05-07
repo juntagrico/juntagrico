@@ -1,0 +1,18 @@
+{% extends "mails/email.txt" %}
+{% load config %}
+{% block content %}
+{% config "organisation_bank_connection" as bank%}
+Lieber {{ member.first_name }}
+
+Hier die aktuelle Rechnung für dein Ortoloco Abo:
+
+Start:          {{ start }}
+Ende:           {{ end }}
+Betrag:         {{ bill.price}}
+Referenznummer: {{ bill.refnumber }}
+Kontonummer:    {{ bank.ESR }}
+
+Der Betrag ist Zahlbar bis {{ end }} und kann in Teilzahlungen bezahlt werden. Bei Teilzahlungen bitte beachten immer die Referenznummer anzugeben, damit das System genau abrechnen kann.
+
+dein {% config "organisation_name" %}-Team
+{% endblock %}

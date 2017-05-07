@@ -300,6 +300,7 @@ def send_bill_share(bill, share, member):
     htmly = get_template('mails/bill_share.html')
 
     d = {
+        'member': member,
         'bill': bill,
         'share': share,
         'serverurl': get_server()
@@ -319,6 +320,7 @@ def send_bill_sub(bill, subscription, start, end, member):
     htmly = get_template('mails/bill_sub.html')
 
     d = {
+        'member': member,
         'bill': bill,
         'sub': subscription,
         'start': start,
@@ -340,6 +342,7 @@ def send_bill_extrasub(bill, extrasub, start, end, member):
     htmly = get_template('mails/bill_extrasub.html')
 
     d = {
+        'member': member,
         'bill': bill,
         'extrasub': extrasub,
         'start': start,
