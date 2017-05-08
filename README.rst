@@ -1,6 +1,10 @@
-=====
 Juntagrico
 =====
+
+.. image:: https://travis-ci.org/ortoloco/ortoloco.svg?branch=master
+    :target: https://travis-ci.org/ortoloco/ortoloco
+
+**the easy solution for cooperative vegetable growers**
 
 Juntagrico is a simple Django app to conduct Web-based juntagrico. For each
 question, visitors can choose between a fixed number of answers.
