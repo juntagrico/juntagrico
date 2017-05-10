@@ -1,6 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.auth.views import login
+from django.contrib.auth.views import LoginView
 
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
@@ -23,7 +23,7 @@ urlpatterns = [
     url('^my/depot/(?P<depot_id>.*?)/', juntagrico.depot),
     url('^my/newpassword$', juntagrico.new_password),
     url(r'^logout/$', juntagrico.logout_view),
-    url(r'^accounts/login/$', login),
+    url(r'^accounts/login/$', LoginView.as_view()),
 
     # subscription related juntagrico stuff
     url('^my/subscription$', juntagrico_subscription.subscription),

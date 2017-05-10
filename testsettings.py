@@ -107,6 +107,8 @@ TEMPLATES = [
     },
 ]
 
+LOGIN_REDIRECT_URL = "/my/home"
+
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 
