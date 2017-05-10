@@ -41,11 +41,11 @@ class Command(BaseCommand):
         latlng = str(point[1])+","+str(point[0])
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
         url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latlng+"&key="+Config.google_api_key()
-        print url
+        print(url)
         req = urllib2.urlopen(url, context = cert)
         data=req.read()
         address_data = json.loads(data)["results"][0]["address_components"]
-        print address_data
+        print(address_data)
         result = {'HNr': ''}
         for item in address_data:
             if 'route' in item['types']:
@@ -64,7 +64,7 @@ class Command(BaseCommand):
                    "addr_street": props['StrasseLan'] + " " + props['HNr'], "addr_zipcode": props['PLZ'], "addr_location": props['Ort'],
                    "birthday": "2017-03-27", "phone": self.get_phone_number(i), "mobile_phone": "", "confirmed": True,
                    "reachable_by_email": False, "block_emails": False}
-        print result
+        print(result)
         return result
         
     def generate_share_dict(self, member):
@@ -123,7 +123,7 @@ class Command(BaseCommand):
                           "depot_list": True, "required_assignments":sub_assignments, 
                           "description": "Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche."}
         SubscriptionSize.objects.create(**subsize_fields)
-        print subsize_fields
+        print(subsize_fields)
         
         req = urllib2.urlopen("https://data.stadt-zuerich.ch/dataset/b2c829d4-9d4b-4741-a944-242c28f00b2a/resource/0119385c-52d4-4dfb-a18f-8c6178a16460/download/gastwirtschaftsbetriebeper20161231.json", context = cert)
         req.read(3)#source is shitty
