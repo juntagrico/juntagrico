@@ -14,6 +14,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
+from juntagrico.dao.jobextradao import JobExtraeDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.forms import *
