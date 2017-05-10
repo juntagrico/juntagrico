@@ -119,8 +119,9 @@ class Command(BaseCommand):
         sub_size = int(input("Size of subscription (a number)"))
         sub_shares = int(input("Required shares per subscription (a number)"))
         sub_assignments = int(input("Required assignment per subscription (a number)"))
+        sub_prize = int(input("Price of subscription (a number)"))
         subsize_fields = {"name": "Normales Abo", "long_name": "Ganz Normales Abo", "size": sub_size, "shares": sub_shares,
-                          "depot_list": True, "required_assignments":sub_assignments, 
+                          "depot_list": True, "required_assignments":sub_assignments, "price": sub_prize,
                           "description": "Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche."}
         SubscriptionSize.objects.create(**subsize_fields)
         print(subsize_fields)
