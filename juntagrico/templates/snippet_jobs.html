@@ -7,7 +7,7 @@
         <th>Job</th>
         <th>Status</th>
         <th>Ort</th>
-        <th>Extras</th>
+        {% if show_extras %}<th>Extras</th>{% endif %}
     </tr>
     </thead>
     <tbody>
@@ -21,7 +21,7 @@
                 {{ job.type.get_name }}</a><br/></a></td>
             <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="{% circles job.get_status_percentage %}"/></td>
             <td>{{ job.type.location }}</td>
-            <td>{{ job.extras|safe }}</td>
+            {% if show_extras %}<td>{{ job.extras|safe }}</td>{% endif %}
         </tr>
     {% endfor %}
     </tbody>
