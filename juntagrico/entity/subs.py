@@ -55,27 +55,27 @@ class Subscription(Billable):
     def __unicode__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return u"Abo (%s) %s" % (" + ".join(namelist), self.id)
+        return "Abo (%s) %s" % (" + ".join(namelist), self.id)
 
     def overview(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return u"%s" % (" + ".join(namelist))
+        return "%s" % (" + ".join(namelist))
 
     def recipients_names(self):
         members = self.members.all()
-        return ", ".join(unicode(member) for member in members)
+        return ", ".join(str(member) for member in members)
 
     def other_recipients_names(self):
         members = self.recipients().exclude(email=self.primary_member.email)
-        return ", ".join(unicode(member) for member in members)
+        return ", ".join(str(member) for member in members)
 
     def recipients(self):
         return self.members.all()
 
     def primary_member_nullsave(self):
         member = self.primary_member
-        return unicode(member) if member is not None else ""
+        return str(member) if member is not None else ""
 
     @property
     def extra_subscriptions(self):
@@ -168,7 +168,7 @@ class Subscription(Billable):
 
     def clean(self):
         if self.old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(u'Deaktivierte Abos koennen nicht wieder aktiviert werden', code='invalid')
+            raise ValidationError('Deaktivierte Abos koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

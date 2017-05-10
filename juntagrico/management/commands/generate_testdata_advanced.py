@@ -116,10 +116,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
         
-        sub_size = int(input("Size of subscription (a number)"))
-        sub_shares = int(input("Required shares per subscription (a number)"))
-        sub_assignments = int(input("Required assignment per subscription (a number)"))
-        sub_prize = int(input("Price of subscription (a number)"))
+        sub_size = int(eval(input("Size of subscription (a number)")))
+        sub_shares = int(eval(input("Required shares per subscription (a number)")))
+        sub_assignments = int(eval(input("Required assignment per subscription (a number)")))
+        sub_prize = int(eval(input("Price of subscription (a number)")))
         subsize_fields = {"name": "Normales Abo", "long_name": "Ganz Normales Abo", "size": sub_size, "shares": sub_shares,
                           "depot_list": True, "required_assignments":sub_assignments, "price": sub_prize,
                           "description": "Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche."}
@@ -137,10 +137,10 @@ class Command(BaseCommand):
         
         
         amount_of_depots =len(depot_data)
-        depots_to_generate = int(input("Number of depots to generate (max :"+str(amount_of_depots)+" min: 1)"))
+        depots_to_generate = int(eval(input("Number of depots to generate (max :"+str(amount_of_depots)+" min: 1)")))
         depots_to_generate = min(amount_of_depots, depots_to_generate)
         depots_to_generate = max(1, depots_to_generate)
-        subs_per_depot = int(input("supscriptions per depot (a number)"))
+        subs_per_depot = int(eval(input("supscriptions per depot (a number)")))
         
         for i in range(0, depots_to_generate):
             props = depot_data[i]['properties']
@@ -181,7 +181,7 @@ class Command(BaseCommand):
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {"slots": 10, "time": timezone.now(), "pinned": False, "reminder_sent": False,
                            "canceled": False, "type": type_1}
-        job_amount = int(input("Jobs per area (a number)"))
+        job_amount = int(eval(input("Jobs per area (a number)")))
         for x in range(0, job_amount):
             job1_all_fields["time"] += timezone.timedelta(days=7)
             RecuringJob.objects.create(**job1_all_fields)

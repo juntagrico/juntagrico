@@ -22,4 +22,4 @@ class Command(BaseCommand):
             send_job_reminder(emails, job, ", ".join(participants))
             job.reminder_sent = True
             job.save()
-            print("reminder sent for job " + str(job.id))
+            print(("reminder sent for job " + str(job.id)))

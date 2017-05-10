@@ -16,7 +16,7 @@ class ExtraSubscriptionType(models.Model):
                                  on_delete=models.PROTECT)
 
     def __unicode__(self):
-        return u"%s %s" % (self.id, self.name)
+        return "%s %s" % (self.id, self.name)
 
     class Meta:
         verbose_name = "Zusatz-Abo-Typ"
@@ -32,7 +32,7 @@ class ExtraSubscriptionCategory(models.Model):
     sort_order = models.FloatField("Nummer zum Sortieren", default=1.0)
 
     def __unicode__(self):
-        return u"%s %s" % (self.id, self.name)
+        return "%s %s" % (self.id, self.name)
 
     class Meta:
         verbose_name = "Zusatz-Abo-Kategorie"
@@ -69,7 +69,7 @@ class ExtraSubscription(Billable):
         instance.old_active = instance.active
 
     def __unicode__(self):
-        return u"%s %s" % (self.id, self.type.name)
+        return "%s %s" % (self.id, self.type.name)
 
     class Meta:
         verbose_name = "Zusatz-Abo"

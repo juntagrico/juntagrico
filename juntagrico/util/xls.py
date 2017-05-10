@@ -23,7 +23,7 @@ def generate_excell(fields, model_instance):
         while count < len(parts):
             dbfield = dbfield.related_model._meta.get_field(parts[count])
             count += 1
-        worksheet_s.write_string(0, col, unicode(str(dbfield.verbose_name), "utf-8"))
+        worksheet_s.write_string(0, col, str(str(dbfield.verbose_name), "utf-8"))
         col += 1
 
     instances = model_instance.objects.all()
@@ -39,10 +39,10 @@ def generate_excell(fields, model_instance):
                 fieldvalue = getattr(fieldvalue, parts[count])
                 count += 1
             if fieldvalue is not None:
-                if isinstance(fieldvalue, unicode):
+                if isinstance(fieldvalue, str):
                     worksheet_s.write_string(row, col, fieldvalue)
                 else:
-                    worksheet_s.write_string(row, col, unicode(str(fieldvalue), "utf-8"))
+                    worksheet_s.write_string(row, col, str(str(fieldvalue), "utf-8"))
             col += 1
         row += 1
 

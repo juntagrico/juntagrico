@@ -30,7 +30,7 @@ class Depot(models.Model):
     subscription_cache = None
 
     def __unicode__(self):
-        return u"%s %s" % (self.id, self.name)
+        return "%s %s" % (self.id, self.name)
 
     def active_subscriptions(self):
         return self.subscription_set.filter(active=True)

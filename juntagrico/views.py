@@ -48,7 +48,7 @@ def get_menu_dict(request):
 
         userassignments = filter_to_past_assignments(AssignmentDao.assignments_for_member(member))
         subscription_size = member.subscription.required_assignments()
-        assignmentsrange = range(0, max(subscription_size, len(userassignments) + len(partner_assignments)))
+        assignmentsrange = list(range(0, max(subscription_size, len(userassignments) + len(partner_assignments))))
 
         for assignment in AssignmentDao.assignments_for_member(member).order_by("job__time"):
             if assignment.job.time > timezone.now():
@@ -135,12 +135,12 @@ def job(request, job_id):
     participants_summary = []
     emails = []
     for member in unique_participants:
-        name = u'{} {}'.format(member.first_name, member.last_name)
+        name = '{} {}'.format(member.first_name, member.last_name)
         if member.assignment_for_job == 2:
-            name += u' (mit einer weiteren Person)'
+            name += ' (mit einer weiteren Person)'
         elif member.assignment_for_job > 2:
-            name += u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
-        contact_url = u'/my/contact/member/{}/{}/'.format(member.id, job_id)
+            name += ' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
+        contact_url = '/my/contact/member/{}/{}/'.format(member.id, job_id)
         extras=[]
         for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):
             for extra in assignment.job_extras.all():
@@ -149,8 +149,8 @@ def job(request, job_id):
         participants_summary.append((name, None, contact_url, reachable, " ".join(extras)))
         emails.append(member.email)
 
-    slotrange = range(0, job.slots)
-    allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
+    slotrange = list(range(0, job.slots))
+    allowed_additional_participants = list(range(1, job.slots - number_of_participants + 1))
     job_fully_booked = len(allowed_additional_participants) == 0
     job_is_in_past = job.end_time() < timezone.now()
     job_is_running = job.start_time() < timezone.now()

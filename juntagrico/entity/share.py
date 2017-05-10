@@ -24,7 +24,7 @@ class Share(Billable):
         if created and Config.billing():
             bill_share(instance)
     def __unicode__(self):
-        return u"Anteilschein #%s" % self.id
+        return "Anteilschein #%s" % self.id
 
     class Meta:
         verbose_name = "Anteilschein"

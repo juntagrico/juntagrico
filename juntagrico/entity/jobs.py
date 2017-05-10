@@ -19,7 +19,7 @@ class ActivityArea(models.Model):
     show_coordinator_phonenumber = models.BooleanField("Koordinator Tel Nr Veröffentlichen", default=False)
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return '%s' % self.name
 
     def contact(self):
         if self.show_coordinator_phonenumber is True:
@@ -86,7 +86,7 @@ class AbstractJobType(models.Model):
     location = models.CharField("Ort", max_length=100, default="")
 
     def __unicode__(self):
-        return u'%s - %s' % (self.activityarea, self.get_name())
+        return '%s - %s' % (self.activityarea, self.get_name())
 
     def get_name(self):
         if self.displayed_name is not None and self.displayed_name != '':
@@ -123,7 +123,7 @@ class Job(PolymorphicModel):
         raise NotImplementedError
 
     def __unicode__(self):
-        return u'Job #%s' % self.id
+        return 'Job #%s' % self.id
 
     def weekday_name(self):
         weekday = weekdays[self.time.isoweekday()]
@@ -184,7 +184,7 @@ class Job(PolymorphicModel):
 
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:
-            raise ValidationError(u'Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
+            raise ValidationError('Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
    
 
     @classmethod
@@ -244,7 +244,7 @@ class OneTimeJob(Job, AbstractJobType):
         return self
 
     def __unicode__(self):
-        return u'%s - %s' % (self.activityarea, self.get_name())
+        return '%s - %s' % (self.activityarea, self.get_name())
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -269,7 +269,7 @@ class Assignment(models.Model):
     job_extras = models.ManyToManyField(JobExtra,related_name='assignments', blank=True)
 
     def __unicode__(self):
-        return u'%s #%s' % (Config.assignment_string(), self.id)
+        return '%s #%s' % (Config.assignment_string(), self.id)
 
     def time(self):
         return self.job.time

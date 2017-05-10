@@ -174,7 +174,7 @@ class JobAdmin(admin.ModelAdmin):
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, u"Genau 1 Job auswählen!", level=messages.ERROR)
+            self.message_user(request, "Genau 1 Job auswählen!", level=messages.ERROR)
             return HttpResponseRedirect("")
 
         inst, = queryset.all()
@@ -406,7 +406,7 @@ class MemberAdmin(admin.ModelAdmin):
 
     def impersonate_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, u"Genau 1 " + Config.member_string() + " auswählen!", level=messages.ERROR)
+            self.message_user(request, "Genau 1 " + Config.member_string() + " auswählen!", level=messages.ERROR)
             return HttpResponseRedirect("")
         inst, = queryset.all()
         return HttpResponseRedirect("/impersonate/%s/" % inst.user.id)

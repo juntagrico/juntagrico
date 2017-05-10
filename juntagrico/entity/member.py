@@ -70,7 +70,7 @@ class Member(models.Model):
         permissions = (('can_filter_members', 'Benutzer kann ' + Config.members_string() + ' filtern'),)
 
     def get_name(self):
-        return u"%s %s" % (self.first_name, self.last_name)
+        return "%s %s" % (self.first_name, self.last_name)
 
     def get_phone(self):
         if self.mobile_phone != "":

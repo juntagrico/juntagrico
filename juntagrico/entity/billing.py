@@ -27,7 +27,7 @@ class Bill(models.Model):
     amount = models.FloatField("Betrag", null=False, blank=False)
 
     def __unicode__(self):
-        return u"%s" % self.ref_number
+        return "%s" % self.ref_number
 
     class Meta:
         verbose_name = "Rechnung"
@@ -44,7 +44,7 @@ class Payment(models.Model):
     amount = models.FloatField("Betrag", null=False, blank=False)
 
     def __unicode__(self):
-        return u"%s" % self.ref_number
+        return "%s" % self.ref_number
 
     class Meta:
         verbose_name = "Zahlung"
@@ -93,7 +93,7 @@ class ExtraSubBillingPeriod(models.Model):
         return calculate_next(self.end_day, self.end_month)
             
     def __unicode__(self):
-        return u"%s(%s%s - %s%s)" % self.type.name, self.start_day, self.start_month, self.end_day, self.end_month
+        return "%s(%s%s - %s%s)" % self.type.name, self.start_day, self.start_month, self.end_day, self.end_month
 
     class Meta:
         verbose_name = "Verechnungsperdiode Zusatzabos"
