@@ -118,45 +118,41 @@ def extra_change(request):
     """
     saved = False
     if request.method == "POST":
-        for extra_subscription in ExtraSubscriptionTypeDao.all_extra_types():
-            existing = request.user.member.subscription.extra_subscriptions.filter(type__id=extra_subscription.id)
-            if request.POST.get("subscription" + str(extra_subscription.id)) == str(extra_subscription.id):
-                if existing.count() == 0:
-                    future_extra_subscription = ExtraSubscription.create()
-                    future_extra_subscription.subscription = request.user.member.subscription
-                    future_extra_subscription.type = extra_subscription
-                    future_extra_subscription.active = False
-                    future_extra_subscription.save()
+        for extra_abo in ExtraAboType.objects.all():
+            existing = request.user.loco.abo.extra_abo_set.filter(type__id=extra_abo.id)
+            if request.POST.get("abo" + str(extra_abo.id)) == str(extra_abo.id):
+                if existing.count()==0:
+                    future_extra_abo = ExtraAbo.objects.create(main_abo=request.user.loco.abo,type=extra_abo)
+                    future_extra_abo.active = False
+                    future_extra_abo.save()
                 else:
-                    has_active = False
-                    index = 0
-                    while not has_active or index < existing.count():
-                        existing_extra_subscription = existing[index]
-                        if existing_extra_subscription.active:
-                            has_active = True
-                        elif existing_extra_subscription.canceled is True and future_extra_subscription.active is True:
-                            existing_extra_subscription.canceled = False
-                            existing_extra_subscription.save()
-                            has_active = True
-                        index += 1
+                    has_active=False
+                    index=0;
+                    while not has_active or index<existing.count():
+                        existing_extra_abo = exisitng[index]
+                        if existing_extra_abo.active == True:
+                             has_active=True
+                        elif existing_extra_abo.canceled==True and existing_extra_abo.active==True:
+                             existing_extra_abo.canceled=False;
+                             existing_extra_abo.save();
+                             has_active=True
+                        index+=1
                     if not has_active:
-                        future_extra_subscription = ExtraSubscription.create()
-                        future_extra_subscription.subscription = request.user.member.subscription
-                        future_extra_subscription.type = extra_subscription
-                        future_extra_subscription.active = False
-                        future_extra_subscription.save()
+                        future_extra_abo = ExtraAbo.create(main_abo=request.user.loco.abo,type=extra_abo)
+                        future_extra_abo.active = False
+                        future_extra_abo.save()
 
             else:
-                if existing.count() > 0:
-                    for existing_extra_subscription in existing:
-                        if existing_extra_subscription.canceled is False and future_extra_subscription.active is True:
-                            existing_extra_subscription.canceled = True
-                            existing_extra_subscription.save()
-                        elif existing_extra_subscription.deactivation_date is None and future_extra_subscription.active is False:
-                            existing_extra_subscription.delete()
-        request.user.member.subscription.save()
+                if existing.count()>0:
+                    for existing_extra_abo in existing:
+                        if existing_extra_abo.canceled==False and existing_extra_abo.active==True:
+                            existing_extra_abo.canceled=True;
+                            existing_extra_abo.save();
+                        elif existing_extra_abo.deactivation_date is None and existing_extra_abo.active==False:
+                            existing_extra_abo.delete();
+        request.user.loco.abo.save()
         saved = True
-
+        
     subscriptions = []
     for subscription in ExtraSubscriptionTypeDao.all_extra_types():
         if request.user.member.subscription.future_extra_subscriptions.filter(type__id=subscription.id).count() > 0:
