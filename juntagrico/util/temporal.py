@@ -53,7 +53,7 @@ def calculate_next(day, month):
         year=now.year
     else:
         year=now.year+1
-    return datetime.date(year, c_month, day)  
+    return datetime.date(year, month, day)  
 
 def calculate_last(day, month):
     now = timezone.now()
@@ -61,7 +61,7 @@ def calculate_last(day, month):
         year=now.year
     else:
         year=now.year-1
-    return datetime.date(year, c_month, day)    
+    return datetime.date(year, month, day)    
 	
 month_choices = ((1, "Januar"),
                    (2, "Februar"),
