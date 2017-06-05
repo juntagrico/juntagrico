@@ -7,7 +7,7 @@
     <div>Achtung, es werden nur Einsätze von diesem Kalenderjahr angezeigt.</div><br/>
     <ul class="unstyled">
         {% for assignment in assignments %}
-            <li>{% if assignment.job.type.activityarea.core %}<img alt="Kernbereich" title="Kernbereich" class="jobstatus" src="{% cirlces "circle_full_core" %}"/>{% else %}<img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich" class="jobstatus" src="{% cirlces "circle_full" %}"/>{% endif %} &nbsp;<a href="/my/jobs/{{ assignment.job.id }}">{{ assignment.job.type }}</a><br/>
+            <li>{% if assignment.job.type.activityarea.core %}<img alt="Kernbereich" title="Kernbereich" class="jobstatus" src="{% circles "circle_full_core" %}"/>{% else %}<img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich" class="jobstatus" src="{% circles "circle_full" %}"/>{% endif %} &nbsp;<a href="/my/jobs/{{ assignment.job.id }}">{{ assignment.job.type }}</a><br/>
             <div class="time">{{ assignment.job.time|date:"d.m H:i" }}-{{ assignment.job.end_time|date:"H:i" }}</div>
             </li>
         {% endfor %}

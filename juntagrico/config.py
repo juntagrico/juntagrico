@@ -47,13 +47,22 @@ class Config:
     def organisation_address():
         if hasattr(settings, 'ORGANISATION_ADDRESS'):
             return settings.ORGANISATION_ADDRESS
-        return "Juntagrico 123 Fakestreet Springfield"
+        return {"name":"Juntagrico", 
+                "street" : "Fakestreet",
+                "number" : "123",
+                "zip" : "12456",
+                "city" : "Springfield",
+                "extra" : ""}
 
     @staticmethod
     def organisation_bank_connection():
         if hasattr(settings, 'ORGANISATION_BANK_CONNECTION'):
             return settings.ORGANISATION_BANK_CONNECTION
-        return "fakebank something something"
+        return {"PC" : "01-123-5",
+                "IBAN" : "CH 00 12345 67890 12345 67890 10",
+                "BIC" : "BIC12345XX",
+                "NAME" : "Juntagrico Bank",
+                "ESR" : "01-123-45"}
 
     @staticmethod
     def info_email():
@@ -101,19 +110,19 @@ class Config:
     def faq_doc():
         if hasattr(settings, 'FAQ_DOC'):
             return settings.FAQ_DOC
-        return "/share/doc/fac.pdf"
+        return "/static/doc/fac.pdf"
 
     @staticmethod
     def extra_sub_info():
         if hasattr(settings, 'EXTRA_SUB_INFO'):
             return settings.EXTRA_SUB_INFO
-        return "/share/doc/extra_sub_info.pdf"
+        return "/static/doc/extra_sub_info.pdf"
 
     @staticmethod
     def activity_area_info():
         if hasattr(settings, 'ACTIVITY_AREA_INFO'):
             return settings.ACTIVITY_AREA_INFO
-        return "/share/doc/activity_area_info.pdf"
+        return "/static/doc/activity_area_info.pdf"
 
     @staticmethod
     def share_price():
@@ -149,7 +158,13 @@ class Config:
     def depot_list_generation_days():
         if hasattr(settings, 'DEPOT_LIST_GENERATION_DAYS'):
             return settings.DEPOT_LIST_GENERATION_DAYS
-        return [1,2,3,4,5,6,7]
+        return [1,2,3,4,5,6,7]	
+
+    @staticmethod
+    def billing():
+        if hasattr(settings, 'BILLING'):
+            return settings.BILLING
+        return False
 
     @staticmethod
     def business_year_start():
@@ -164,6 +179,18 @@ class Config:
         return 10
 
     @staticmethod
+    def demouser():
+        if hasattr(settings, 'DEMO_USER'):
+            return settings.DEMO_USER
+        return ''
+
+    @staticmethod
+    def demopwd():
+        if hasattr(settings, 'DEMO_PWD'):
+            return settings.DEMO_PWD
+        return ''
+
+    @staticmethod
     def circles(key):
         if hasattr(settings, 'CIRCLES'):
             return settings.CIRCLES[key]
@@ -175,7 +202,7 @@ class Config:
             'circle_full_core': '/static/img/circle_full_core.png',
             'circle_x': '/static/img/circle_x.png',
             'circle_y': '/static/img/circle_y.png'
-        }
+        }[key]
 
 
 

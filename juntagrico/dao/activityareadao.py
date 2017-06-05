@@ -18,3 +18,7 @@ class ActivityAreaDao:
     @staticmethod
     def all_visible_areas_ordered():
         return ActivityArea.objects.filter(hidden=False).order_by("-core", "name")
+
+    @staticmethod
+    def all_core_areas():
+        return ActivityArea.objects.filter(core=True)

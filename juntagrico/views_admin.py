@@ -64,7 +64,7 @@ def send_email_intern(request):
 
     if len(emails) > 0:
         send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"),
-                           emails, request.META["HTTP_HOST"], attachements, sender=sender)
+                           emails, attachements, sender=sender)
         sent = len(emails)
     return redirect("/my/mails/send/result/" + str(sent) + "/")
 
@@ -248,8 +248,8 @@ def future(request):
 
     renderdict.update({
         'changed': request.GET.get("changed"),
-        'subscription_lines': subscription_lines.itervalues(),
-        'extra_lines': extra_lines.itervalues(),
+        'subscription_lines': iter(subscription_lines.values()),
+        'extra_lines': iter(extra_lines.values()),
         'subscription_change_enabled': month is 12 or (month is 1 and day <= 6)
     })
     return render(request, 'future.html', renderdict)
@@ -293,7 +293,7 @@ def get_mail_template(request, template_id):
     renderdict = {}
 
     template = MailTemplateDao.template_by_id(template_id)
-    exec template.code
+    exec(template.code)
     t = Template(template.template)
     c = Context(renderdict)
     result = t.render(c)
@@ -318,14 +318,14 @@ def excel_export_members_filter(request):
     workbook = xlsxwriter.Workbook(output)
     worksheet_s = workbook.add_worksheet(Config.members_string())
 
-    worksheet_s.write_string(0, 0, unicode("Name", "utf-8"))
-    worksheet_s.write_string(0, 1, unicode(Config.assignments_string(), "utf-8"))
-    worksheet_s.write_string(0, 2, unicode(Config.assignments_string() + " Kernbereich", "utf-8"))
-    worksheet_s.write_string(0, 3, unicode("Taetigkeitsbereiche", "utf-8"))
-    worksheet_s.write_string(0, 4, unicode("Depot", "utf-8"))
-    worksheet_s.write_string(0, 5, unicode("Email", "utf-8"))
-    worksheet_s.write_string(0, 6, unicode("Telefon", "utf-8"))
-    worksheet_s.write_string(0, 7, unicode("Mobile", "utf-8"))
+    worksheet_s.write_string(0, 0, str("Name", "utf-8"))
+    worksheet_s.write_string(0, 1, str(Config.assignments_string(), "utf-8"))
+    worksheet_s.write_string(0, 2, str(Config.assignments_string() + " Kernbereich", "utf-8"))
+    worksheet_s.write_string(0, 3, str("Taetigkeitsbereiche", "utf-8"))
+    worksheet_s.write_string(0, 4, str("Depot", "utf-8"))
+    worksheet_s.write_string(0, 5, str("Email", "utf-8"))
+    worksheet_s.write_string(0, 6, str("Telefon", "utf-8"))
+    worksheet_s.write_string(0, 7, str("Mobile", "utf-8"))
 
     now = timezone.now()
     members = MemberDao.members_with_assignments_count()
@@ -336,9 +336,9 @@ def excel_export_members_filter(request):
         for area in member.areas.all():
             member.all_areas = member.all_areas + area.name + " "
         if member.all_areas == "":
-            member.all_areas = unicode("-Kein Tätigkeitsbereich-", "utf-8")
+            member.all_areas = str("-Kein Tätigkeitsbereich-", "utf-8")
 
-        member.depot_name = unicode("Kein Depot definiert", "utf-8")
+        member.depot_name = str("Kein Depot definiert", "utf-8")
         if member.subscription is not None:
             member.depot_name = member.subscription.depot.name
         looco_full_name = member.first_name + " " + member.last_name
@@ -362,18 +362,18 @@ def excel_export_members_filter(request):
 @permission_required('juntagrico.is_operations_group')
 def excel_export_members(request):
     fields = [
-        u'first_name',
-        u'last_name',
-        u'email',
-        u'addr_street',
-        u'addr_zipcode',
-        u'addr_location',
-        u'birthday',
-        u'phone',
-        u'mobile_phone',
-        u'confirmed',
-        u'reachable_by_email',
-        u'block_emails',
+        'first_name',
+        'last_name',
+        'email',
+        'addr_street',
+        'addr_zipcode',
+        'addr_location',
+        'birthday',
+        'phone',
+        'mobile_phone',
+        'confirmed',
+        'reachable_by_email',
+        'block_emails',
     ]
     return generate_excell(fields, Member)
 
@@ -381,17 +381,17 @@ def excel_export_members(request):
 @permission_required('juntagrico.is_operations_group')
 def excel_export_shares(request):
     fields = [
-        u'number',
-        u'paid_date',
-        u'issue_date',
-        u'booking_date',
-        u'cancelled_date',
-        u'termination_date',
-        u'payback_date',
-        u'notes',
-        u'member.first_name',
-        u'member.last_name',
-        u'member.email',
+        'number',
+        'paid_date',
+        'issue_date',
+        'booking_date',
+        'cancelled_date',
+        'termination_date',
+        'payback_date',
+        'notes',
+        'member.first_name',
+        'member.last_name',
+        'member.email',
     ]
     return generate_excell(fields, Share)
 

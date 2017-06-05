@@ -34,7 +34,7 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         if not options['force'] and timezone.now().weekday() not in Config.depot_list_generation_days():
-            print "not the specified day for depot list generation, use --force to override"
+            print("not the specified day for depot list generation, use --force to override")
             return
 
         if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
@@ -45,10 +45,10 @@ class Command(BaseCommand):
                 emails = []
                 for member in subscription.recipients():
                     emails.append(member.email)
-                send_depot_changed(emails, subscription.depot, Config.server_url())
+                send_depot_changed(emails, subscription.depot)
 
         if options['force'] and not options['future']:
-            print "future depots ignored, use --future to override"
+            print("future depots ignored, use --future to override")
         Subscription.fill_sizes_cache()
 
         depots = DepotDao.all_depots_order_by_code()

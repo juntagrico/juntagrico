@@ -14,6 +14,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
+from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.forms import *
@@ -47,7 +48,7 @@ def get_menu_dict(request):
 
         userassignments = filter_to_past_assignments(AssignmentDao.assignments_for_member(member))
         subscription_size = member.subscription.required_assignments()
-        assignmentsrange = range(0, max(subscription_size, len(userassignments) + len(partner_assignments)))
+        assignmentsrange = list(range(0, max(subscription_size, len(userassignments) + len(partner_assignments))))
 
         for assignment in AssignmentDao.assignments_for_member(member).order_by("job__time"):
             if assignment.job.time > timezone.now():
@@ -76,6 +77,8 @@ def get_menu_dict(request):
         'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
         'depot_admin': depot_admin,
         'area_admin': area_admin,
+        'show_core': ActivityAreaDao.all_core_areas().count()>0,
+        'show_extras': JobExtraDao.all_job_extras().count()>0,
         'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + "/dpl.pdf",
     }
     enrich_menu_dict(request, menu_dict)
@@ -120,7 +123,7 @@ def job(request, job_id):
                 assignment.job_extras.add(extra)
         assignment.save()
 
-        send_job_signup([member.email], job, request.META["HTTP_HOST"])
+        send_job_signup([member.email], job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return HttpResponseRedirect('my/jobs')
@@ -132,12 +135,12 @@ def job(request, job_id):
     participants_summary = []
     emails = []
     for member in unique_participants:
-        name = u'{} {}'.format(member.first_name, member.last_name)
+        name = '{} {}'.format(member.first_name, member.last_name)
         if member.assignment_for_job == 2:
-            name += u' (mit einer weiteren Person)'
+            name += ' (mit einer weiteren Person)'
         elif member.assignment_for_job > 2:
-            name += u' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
-        contact_url = u'/my/contact/member/{}/{}/'.format(member.id, job_id)
+            name += ' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
+        contact_url = '/my/contact/member/{}/{}/'.format(member.id, job_id)
         extras=[]
         for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):
             for extra in assignment.job_extras.all():
@@ -146,8 +149,8 @@ def job(request, job_id):
         participants_summary.append((name, None, contact_url, reachable, " ".join(extras)))
         emails.append(member.email)
 
-    slotrange = range(0, job.slots)
-    allowed_additional_participants = range(1, job.slots - number_of_participants + 1)
+    slotrange = list(range(0, job.slots))
+    allowed_additional_participants = list(range(1, job.slots - number_of_participants + 1))
     job_fully_booked = len(allowed_additional_participants) == 0
     job_is_in_past = job.end_time() < timezone.now()
     job_is_running = job.start_time() < timezone.now()
@@ -420,7 +423,7 @@ def new_password(request):
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()
-            send_mail_password_reset(member.email, pw, request.META["HTTP_HOST"])
+            send_mail_password_reset(member.email, pw)
 
     renderdict = {
         'sent': sent
@@ -431,4 +434,4 @@ def new_password(request):
 def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
-    return HttpResponseRedirect("")
+    return HttpResponseRedirect("accounts/login/")

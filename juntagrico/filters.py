@@ -61,7 +61,7 @@ class FilterGen(Filter):
             yield self.name(p), partial(self.q, p)
 
 
-FilterGen(lambda depot: u"Depot {0}".format(depot.name),
+FilterGen(lambda depot: "Depot {0}".format(depot.name),
           lambda depot, member: member.subscription.depot == depot,
           Depot.objects.all)
 
@@ -77,10 +77,10 @@ Filter("kleines Abo", lambda member: member.subscription.small_subscriptions)
 Filter("grosses Abo", lambda member: member.subscription.big_subscriptions())
 Filter("Haussubscription", lambda member: member.subscription.house_subscriptions())
 
-FilterGen(lambda za: u"Zusatzsubscription {0}".format(za.name),
+FilterGen(lambda za: "Zusatzsubscription {0}".format(za.name),
           lambda za, member: za.subscription_set.filter(id=member.subscription.id),
           ExtraSubscriptionType.objects.all)
 
-FilterGen(lambda activityarea: u"Taetigkeitsbereich {0}".format(activityarea.name),
+FilterGen(lambda activityarea: "Taetigkeitsbereich {0}".format(activityarea.name),
           lambda activityarea, member: activityarea.users.filter(id=member.user.id),
           ActivityArea.objects.all)

@@ -13,7 +13,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from decorators import primary_member_of_subscription
+from juntagrico.decorators import primary_member_of_subscription
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.views import get_menu_dict
@@ -118,45 +118,41 @@ def extra_change(request):
     """
     saved = False
     if request.method == "POST":
-        for extra_subscription in ExtraSubscriptionTypeDao.all_extra_types():
-            existing = request.user.member.subscription.extra_subscriptions.filter(type__id=extra_subscription.id)
-            if request.POST.get("subscription" + str(extra_subscription.id)) == str(extra_subscription.id):
-                if existing.count() == 0:
-                    future_extra_subscription = ExtraSubscription.create()
-                    future_extra_subscription.subscription = request.user.member.subscription
-                    future_extra_subscription.type = extra_subscription
-                    future_extra_subscription.active = False
-                    future_extra_subscription.save()
+        for extra_abo in ExtraAboType.objects.all():
+            existing = request.user.loco.abo.extra_abo_set.filter(type__id=extra_abo.id)
+            if request.POST.get("abo" + str(extra_abo.id)) == str(extra_abo.id):
+                if existing.count()==0:
+                    future_extra_abo = ExtraAbo.objects.create(main_abo=request.user.loco.abo,type=extra_abo)
+                    future_extra_abo.active = False
+                    future_extra_abo.save()
                 else:
-                    has_active = False
-                    index = 0
-                    while not has_active or index < existing.count():
-                        existing_extra_subscription = existing[index]
-                        if existing_extra_subscription.active:
-                            has_active = True
-                        elif existing_extra_subscription.canceled is True and future_extra_subscription.active is True:
-                            existing_extra_subscription.canceled = False
-                            existing_extra_subscription.save()
-                            has_active = True
-                        index += 1
+                    has_active=False
+                    index=0;
+                    while not has_active or index<existing.count():
+                        existing_extra_abo = exisitng[index]
+                        if existing_extra_abo.active == True:
+                             has_active=True
+                        elif existing_extra_abo.canceled==True and existing_extra_abo.active==True:
+                             existing_extra_abo.canceled=False;
+                             existing_extra_abo.save();
+                             has_active=True
+                        index+=1
                     if not has_active:
-                        future_extra_subscription = ExtraSubscription.create()
-                        future_extra_subscription.subscription = request.user.member.subscription
-                        future_extra_subscription.type = extra_subscription
-                        future_extra_subscription.active = False
-                        future_extra_subscription.save()
+                        future_extra_abo = ExtraAbo.create(main_abo=request.user.loco.abo,type=extra_abo)
+                        future_extra_abo.active = False
+                        future_extra_abo.save()
 
             else:
-                if existing.count() > 0:
-                    for existing_extra_subscription in existing:
-                        if existing_extra_subscription.canceled is False and future_extra_subscription.active is True:
-                            existing_extra_subscription.canceled = True
-                            existing_extra_subscription.save()
-                        elif existing_extra_subscription.deactivation_date is None and future_extra_subscription.active is False:
-                            existing_extra_subscription.delete()
-        request.user.member.subscription.save()
+                if existing.count()>0:
+                    for existing_extra_abo in existing:
+                        if existing_extra_abo.canceled==False and existing_extra_abo.active==True:
+                            existing_extra_abo.canceled=True;
+                            existing_extra_abo.save();
+                        elif existing_extra_abo.deactivation_date is None and existing_extra_abo.active==False:
+                            existing_extra_abo.delete();
+        request.user.loco.abo.save()
         saved = True
-
+        
     subscriptions = []
     for subscription in ExtraSubscriptionTypeDao.all_extra_types():
         if request.user.member.subscription.future_extra_subscriptions.filter(type__id=subscription.id).count() > 0:
@@ -267,8 +263,6 @@ def createsubscription(request):
     co_members_shares = request.session.get('create_co_members_shares', [])
     member_shares = request.session.get('create_member_shares', [])
 
-    print co_members
-
     selectedsubscription = "none"
     selected_depot = None
     existing_member_shares = member.share_set.all().count()
@@ -292,14 +286,13 @@ def createsubscription(request):
         if shares < min_num_shares or not subscriptionform.is_valid():
             shareerror = shares < min_num_shares
         else:
-            depot = DepotDao.depot_by_id(request.POST.get("depot"))
             size = next(
                 iter(SubscriptionSizeDao.sizes_by_name(selectedsubscription).values_list('size', flat=True) or []),
                 0)
 
             if size > 0:
                 session_subscription = Subscription(**subscriptionform.cleaned_data)
-                session_subscription.depot = depot
+                session_subscription.depot = DepotDao.depot_by_id(request.POST.get("depot"))
                 session_subscription.primary_member = member
                 session_subscription.size = size
 
@@ -322,11 +315,12 @@ def createsubscription(request):
                     password = password_generator()
                     request.user.set_password(password)
                     request.user.save()
-                session_subscription.save()
-                member.subscription_id = session_subscription.id
-                member.save()
+                if session_subscription is not None:
+                    session_subscription.save()
+                    member.subscription_id = session_subscription.id
+                    member.save
                 send_welcome_mail(member.email, password, hashlib.sha1(member.email + str(
-                    session_subscription.id)).hexdigest(), request.META["HTTP_HOST"])
+                    session_subscription.id)).hexdigest())
                 for co_member in co_members:
                     co_member.subscription_id = session_subscription.id
                     co_member.save()
@@ -337,12 +331,11 @@ def createsubscription(request):
                         co_member.user.save()
                     send_been_added_to_subscription(co_member.email, pw, request.user.member.get_name(), shares,
                                                     hashlib.sha1(co_member.email + str(
-                                                        session_subscription.id)).hexdigest(),
-                                                    request.META["HTTP_HOST"])
+                                                        session_subscription.id)).hexdigest())
                 for share in member_shares + co_members_shares:
                     if share.id is None:
                         share.save()
-                        send_share_created_mail(share, request.META["HTTP_HOST"])
+                        send_share_created_mail(share)
                 request.session['create_subscription'] = None
                 request.session['create_co_members'] = []
                 request.session['create_co_members_shares'] = []
@@ -402,11 +395,11 @@ def add_member(request, subscription_id):
                 member.subscription_id = subscription_id
                 member.save()
                 send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(
-                    memberform.cleaned_data['email'] + str(subscription_id)).hexdigest(), request.META["HTTP_HOST"])
+                    memberform.cleaned_data['email'] + str(subscription_id)).hexdigest())
                 if memberexists is False:
                     for share in tmp_shares:
                         share.save()
-                        send_share_created_mail(share, request.META["HTTP_HOST"])
+                        send_share_created_mail(share)
                 return redirect(request.GET.get("return"))
             else:
                 co_members_shares = request.session.get('create_co_members_shares', [])

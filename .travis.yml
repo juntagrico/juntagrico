@@ -1,0 +1,9 @@
+language: python
+python:
+- '3.6'
+install:
+- pip install --upgrade -r requirements.txt
+script: pwd
+notifications:
+  slack:
+    secure: fFz2zol7/S0Kr4+XA/rAkX9HQ7kxSnsjJBvDf8r8sI2cHqK4PLRZiAbMO3qWxcsTNWVo2hb73PNLjkLeVqL+sB0HYmgVPkbkWa+eQistr03ezB2aHA/Hd61fwMaw4vUhWFVn9swRPw2SV32mhR2NUn6BTxYTD3F/qnTIbKKttGVSrilAphXjYNkKDqkS4Hy/3ygYPUlbZh+DXtp0uuTzvPW0BcZz0iG+gAJCId1I2Hv3kUCdgjM/egREz+QKMWORmIokAv0aJKRIdd2R+/JMCOsugBvuc6NzvHniZsRYEKjgyGqMFFbRKrojgomjVDSBlGhEumfdInqLlS24cLBsEN6QwxDc8/8jmty5cyFR1/GBThCINClzDPsjjMtaKdc8n+xJ58VtN3HzurbrwgWy0T1W0ucZ+QKFdVXWncbP4i3yyJbz45AIOzuiQDoJoiTa5GsigCS5jXRMoaUdGhe5b+0ADHgz/d8a+6IEXBc85ggRmyXAz7u9/7+CGI4AYillswR6a60jY5NzpmW6R3tYEa3nQpqrhKHrspnpghBUbV65ioYEvkPqYRBuPEWuDm1DnK5164oSrlFMraHtzGVuE/qvOijUwLqewV0a2VdJJmZ2/Wo3XW0FuJjuH4g6JmSdXP8x3UZfW5houMnVOCf4pu7Eoi3ApRkS059gyuUdSSA=

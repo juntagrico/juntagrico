@@ -174,7 +174,7 @@ class JobAdmin(admin.ModelAdmin):
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, u"Genau 1 Job auswählen!", level=messages.ERROR)
+            self.message_user(request, "Genau 1 Job auswählen!", level=messages.ERROR)
             return HttpResponseRedirect("")
 
         inst, = queryset.all()
@@ -283,7 +283,6 @@ class JobTypeAdmin(admin.ModelAdmin):
                 attribute_copy(rj, oj)
                 oj.name += str(i)
                 i += 1
-                print oj.__dict__
                 oj.save()
                 for b in AssignmentDao.assignments_for_job(rj.id):
                     b.job = oj
@@ -407,7 +406,7 @@ class MemberAdmin(admin.ModelAdmin):
 
     def impersonate_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, u"Genau 1 " + Config.member_string() + " auswählen!", level=messages.ERROR)
+            self.message_user(request, "Genau 1 " + Config.member_string() + " auswählen!", level=messages.ERROR)
             return HttpResponseRedirect("")
         inst, = queryset.all()
         return HttpResponseRedirect("/impersonate/%s/" % inst.user.id)
@@ -428,13 +427,10 @@ admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(JobExtra)
 admin.site.register(JobExtraType)
-
-# This is only added to admin for debugging
-# admin.site.register(model_audit.Audit, AuditAdmin)
-
-# Not adding this because it can and should be edited from Job, 
-# where integrity constraints are checked
-# admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
+if Config.billing():
+    admin.site.register(Bill)
+    admin.site.register(Payment)
+    admin.site.register(ExtraSubBillingPeriod)

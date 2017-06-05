@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import ssl
 import math
 import sys
@@ -29,11 +29,11 @@ class Command(BaseCommand):
     
     def get_name(self,i):
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-        req = urllib2.urlopen("https://uinames.com/api/", context = cert)
+        req = urllib.request.urlopen("https://uinames.com/api/", context = cert)
         name_data = json.loads(req.read().decode(sys.stdin.encoding).encode('utf-8'))
-        name = unicode(name_data['surname'])
-        prename = unicode(name_data['name'])
-        email = unicode(slugify(prename)+"."+slugify(name)+str(i)+str(timezone.now().microsecond)+"@"+Config.info_email().split('@')[-1])
+        name = str(name_data['surname'])
+        prename = str(name_data['name'])
+        email = str(slugify(prename)+"."+slugify(name)+str(i)+str(timezone.now().microsecond)+"@"+Config.info_email().split('@')[-1])
         return {'name': name, 'prename': prename, 'email': email}
         
     
@@ -41,10 +41,11 @@ class Command(BaseCommand):
         latlng = str(point[1])+","+str(point[0])
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
         url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+latlng+"&key="+Config.google_api_key()
-        req = urllib2.urlopen(url, context = cert)
+        print(url)
+        req = urllib.request.urlopen(url, context = cert)
         data=req.read()
         address_data = json.loads(data)["results"][0]["address_components"]
-        print address_data
+        print(address_data)
         result = {'HNr': ''}
         for item in address_data:
             if 'route' in item['types']:
@@ -63,7 +64,7 @@ class Command(BaseCommand):
                    "addr_street": props['StrasseLan'] + " " + props['HNr'], "addr_zipcode": props['PLZ'], "addr_location": props['Ort'],
                    "birthday": "2017-03-27", "phone": self.get_phone_number(i), "mobile_phone": "", "confirmed": True,
                    "reachable_by_email": False, "block_emails": False}
-        print result
+        print(result)
         return result
         
     def generate_share_dict(self, member):
@@ -115,30 +116,31 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
         
-        sub_size = int(raw_input("Size of subscription (a number)"))
-        sub_shares = int(raw_input("Required shares per subscription (a number)"))
-        sub_assignments = int(raw_input("Required assignment per subscription (a number)"))
+        sub_size = int(eval(input("Size of subscription (a number)")))
+        sub_shares = int(eval(input("Required shares per subscription (a number)")))
+        sub_assignments = int(eval(input("Required assignment per subscription (a number)")))
+        sub_prize = int(eval(input("Price of subscription (a number)")))
         subsize_fields = {"name": "Normales Abo", "long_name": "Ganz Normales Abo", "size": sub_size, "shares": sub_shares,
-                          "depot_list": True, "required_assignments":sub_assignments, 
+                          "depot_list": True, "required_assignments":sub_assignments, "price": sub_prize,
                           "description": "Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche."}
         SubscriptionSize.objects.create(**subsize_fields)
-        print subsize_fields
+        print(subsize_fields)
         
-        req = urllib2.urlopen("https://data.stadt-zuerich.ch/dataset/b2c829d4-9d4b-4741-a944-242c28f00b2a/resource/0119385c-52d4-4dfb-a18f-8c6178a16460/download/gastwirtschaftsbetriebeper20161231.json", context = cert)
+        req = urllib.request.urlopen("https://data.stadt-zuerich.ch/dataset/b2c829d4-9d4b-4741-a944-242c28f00b2a/resource/0119385c-52d4-4dfb-a18f-8c6178a16460/download/gastwirtschaftsbetriebeper20161231.json", context = cert)
         req.read(3)#source is shitty
         depot_data = json.loads(req.read())['features']
         
-        req = urllib2.urlopen("https://data.stadt-zuerich.ch/dataset/brunnen/resource/d741cf9c-63be-495f-8c3e-9418168fcdbf/download/brunnen.json", context = cert)        
+        req = urllib.request.urlopen("https://data.stadt-zuerich.ch/dataset/brunnen/resource/d741cf9c-63be-495f-8c3e-9418168fcdbf/download/brunnen.json", context = cert)        
         address_data = json.loads(req.read())['features']
         adress_counter = 0
         
         
         
         amount_of_depots =len(depot_data)
-        depots_to_generate = int(raw_input("Number of depots to generate (max :"+str(amount_of_depots)+" min: 1)"))
+        depots_to_generate = int(eval(input("Number of depots to generate (max :"+str(amount_of_depots)+" min: 1)")))
         depots_to_generate = min(amount_of_depots, depots_to_generate)
         depots_to_generate = max(1, depots_to_generate)
-        subs_per_depot = int(raw_input("supscriptions per depot (a number)"))
+        subs_per_depot = int(eval(input("supscriptions per depot (a number)")))
         
         for i in range(0, depots_to_generate):
             props = depot_data[i]['properties']
@@ -179,7 +181,7 @@ class Command(BaseCommand):
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {"slots": 10, "time": timezone.now(), "pinned": False, "reminder_sent": False,
                            "canceled": False, "type": type_1}
-        job_amount = int(raw_input("Jobs per area (a number)"))
+        job_amount = int(eval(input("Jobs per area (a number)")))
         for x in range(0, job_amount):
             job1_all_fields["time"] += timezone.timedelta(days=7)
             RecuringJob.objects.create(**job1_all_fields)
