@@ -1,8 +1,10 @@
 .juntagrico_logo {
     background: url(/static/img/juntagrico.png) 0 0px;
+    background-size:     contain;
+    background-repeat:   no-repeat;
     display: inline-block;
-    width: 300px;
-    height: 45px;
+    width: 400px;
+    height: 75px;
 }
 
 .next-jobs {
@@ -183,7 +185,7 @@ table.future td {
 }
 
 .admin-menu {
-    font-family: "Courier New", monospace;
+    font-family: "SourceSansPro-Regular", sansserif;
     font-size: 14px;
 }
 
@@ -203,9 +205,14 @@ table.future td {
 
 /* general overrides of bootstrap */
 @font-face {
-    font-family: 'typenoksidi';
-    src: url('/static/fonts/typenoksidi-webfont.eot');
-    src: url('/static/fonts/typenoksidi-webfont.eot?#iefix') format('embedded-opentype'), url('/static/fonts/typenoksidi-webfont.woff') format('woff'), url('/static/fonts/typenoksidi-webfont.ttf') format('truetype'), url('/static/fonts/typenoksidi-webfont.svg#typenoksidiregular') format('svg');
+    font-family: 'SourceSansPro-Light';
+    src: url('/static/fonts/SourceSansPro-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SourceSansPro-Regular';
+    src: url('/static/fonts/SourceSansPro-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -232,14 +239,14 @@ a:hover, a:focus {
 }
 
 html, body {
-    font-family: "Courier New", monospace;
+    font-family: "SourceSansPro-Light", sansserif;
     font-size: 16px;
-    background-color: #f7fdff;
+    background-color: #fefffa;
     height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6, .main-menu {
-    font-family: "typenoksidi", serif;
+    font-family: "SourceSansPro-Regular", sansserif;
 }
 
 select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
@@ -272,7 +279,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     left: 0;
     top: 20px;
     right: 0;
-    background-image: url(/static/img/circle_x.png);
     height: 20px;
     opacity: 1.0;
 }
@@ -281,7 +287,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     position: absolute;
     left: 0px;
     top: 36px;
-    background-image: url(/static/img/circle_y.png);
     bottom: 0px;
     width: 20px;
     opacity: 1.0;
@@ -291,7 +296,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     position: absolute;
     right: -5px;
     top: 36px;
-    background-image: url(/static/img/circle_y.png);
     bottom: 0px;
     width: 20px;
     opacity: 1.0;
