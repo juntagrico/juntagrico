@@ -1,4 +1,5 @@
 # encoding: utf-8
+import time
 
 from django.db import models
 
