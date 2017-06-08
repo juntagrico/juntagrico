@@ -24,10 +24,9 @@ class SubscriptionSize(models.Model):
     required_assignments = models.PositiveIntegerField("Anz benötigter Arbeitseinsätze")
     price = models.PositiveIntegerField("Preis")
     depot_list = models.BooleanField('Sichtbar auf Depotliste', default=True)
-    description = models.TextField("Beschreibung", max_length=1000, blank=True)
-    
+    description = models.TextField("Beschreibung", max_length=1000, blank=True)    
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -54,7 +53,7 @@ class Subscription(Billable):
     old_active = None
     sizes_cache = {}
 
-    def __unicode__(self):
+    def __str__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
         return "Abo (%s) %s" % (" + ".join(namelist), self.id)

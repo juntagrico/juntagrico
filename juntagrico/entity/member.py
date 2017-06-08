@@ -35,7 +35,7 @@ class Member(models.Model):
 
     old_subscription = None
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_name()
 
     @classmethod

@@ -165,7 +165,7 @@ class JobExtraInline(admin.TabularInline):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "type", "time", "slots", "freie_plaetze"]
+    list_display = ["__str__", "type", "time", "slots", "freie_plaetze"]
     actions = ["copy_job", "mass_copy_job"]
     search_fields = ["type_name", "type_activityarea__name"]
     exclude = ["reminder_sent"]
@@ -227,7 +227,7 @@ class JobAdmin(admin.ModelAdmin):
 
 
 class OneTimeJobAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "time", "slots", "freie_plaetze"]
+    list_display = ["__str__", "time", "slots", "freie_plaetze"]
     actions = ["transform_job"]
     search_fields = ["name", "activityarea__name"]
     exclude = ["reminder_sent"]
@@ -270,7 +270,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
 
 
 class JobTypeAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__"]
+    list_display = ["__str__"]
     actions = ["transform_job_type"]
     inlines = [JobExtraInline]
 
@@ -316,7 +316,7 @@ class ExtraSubscriptionInline(admin.TabularInline):
 
 class SubscriptionAdmin(admin.ModelAdmin):
     form = SubscriptionAdminForm
-    list_display = ["__unicode__", "recipients_names", "primary_member_nullsave", "depot", "active"]
+    list_display = ["__str__", "recipients_names", "primary_member_nullsave", "depot", "active"]
     # filter_horizontal = ["users"]
     search_fields = ["members__user__username", "members__first_name", "members__last_name", "depot__name"]
     # raw_id_fields = ["primary_member"]
@@ -330,7 +330,7 @@ class AuditAdmin(admin.ModelAdmin):
 
 
 class ShareAdmin(admin.ModelAdmin):
-    list_display = ["__unicode__", "member", "number", "paid_date", "issue_date", "booking_date", "cancelled_date",
+    list_display = ["__str__", "member", "number", "paid_date", "issue_date", "booking_date", "cancelled_date",
                     "termination_date", "payback_date"]
     search_fields = ["id", "member__email", "member__first_name", "member__last_name", "number", "paid_date",
                      "issue_date", "booking_date", "cancelled_date", "termination_date", "payback_date"]

@@ -18,7 +18,7 @@ class ActivityArea(models.Model):
     members = models.ManyToManyField("Member", related_name="areas", blank=True)
     show_coordinator_phonenumber = models.BooleanField("Koordinator Tel Nr Veröffentlichen", default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % self.name
 
     def contact(self):
@@ -85,7 +85,7 @@ class AbstractJobType(models.Model):
     duration = models.PositiveIntegerField("Dauer in Stunden")
     location = models.CharField("Ort", max_length=100, default="")
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name())
 
     def get_name(self):
@@ -122,7 +122,7 @@ class Job(PolymorphicModel):
     def type(self):
         raise NotImplementedError
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Job #%s' % self.id
 
     def weekday_name(self):
@@ -243,7 +243,7 @@ class OneTimeJob(Job, AbstractJobType):
     def type(self):
         return self
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name())
 
     @classmethod
@@ -268,7 +268,7 @@ class Assignment(models.Model):
     core_cache = models.BooleanField("Kernbereich", default=False) 
     job_extras = models.ManyToManyField(JobExtra,related_name='assignments', blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s #%s' % (Config.assignment_string(), self.id)
 
     def time(self):

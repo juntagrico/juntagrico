@@ -15,7 +15,7 @@ class ExtraSubscriptionType(models.Model):
     category = models.ForeignKey("ExtraSubscriptionCategory", related_name="category", null=True, blank=True,
                                  on_delete=models.PROTECT)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s" % (self.id, self.name)
 
     class Meta:
@@ -31,7 +31,7 @@ class ExtraSubscriptionCategory(models.Model):
     description = models.TextField("Beschreibung", max_length=1000, blank=True)
     sort_order = models.FloatField("Nummer zum Sortieren", default=1.0)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s" % (self.id, self.name)
 
     class Meta:
@@ -68,7 +68,7 @@ class ExtraSubscription(Billable):
     def post_init(cls, sender, instance, **kwds):
         instance.old_active = instance.active
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s" % (self.id, self.type.name)
 
     class Meta:

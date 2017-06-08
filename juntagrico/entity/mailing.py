@@ -10,7 +10,7 @@ class MailTemplate(models.Model):
     template = models.TextField("Template", max_length=1000, default="")
     code = models.TextField("Code", max_length=1000, default="")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:

@@ -26,7 +26,7 @@ class Bill(models.Model):
     ref_number = models.CharField("Referenznummer", max_length=30, unique=True)
     amount = models.FloatField("Betrag", null=False, blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.ref_number
 
     class Meta:
@@ -43,7 +43,7 @@ class Payment(models.Model):
     paid_date = models.DateField("Bezahldatum", null=True, blank=True)
     amount = models.FloatField("Betrag", null=False, blank=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % self.ref_number
 
     class Meta:
@@ -92,7 +92,7 @@ class ExtraSubBillingPeriod(models.Model):
     def get_actual_end(self):
         return calculate_next(self.end_day, self.end_month)
             
-    def __unicode__(self):
+    def __str__(self):
         return "%s(%s%s - %s%s)" % self.type.name, self.start_day, self.start_month, self.end_day, self.end_month
 
     class Meta:

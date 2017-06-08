@@ -23,7 +23,7 @@ class Share(Billable):
     def create(cls, sender, instance, created, **kwds):
         if created and Config.billing():
             bill_share(instance)
-    def __unicode__(self):
+    def __str__(self):
         return "Anteilschein #%s" % self.id
 
     class Meta:

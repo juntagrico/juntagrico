@@ -29,7 +29,7 @@ class Depot(models.Model):
     overview_cache = None
     subscription_cache = None
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s" % (self.id, self.name)
 
     def active_subscriptions(self):
