@@ -55,9 +55,9 @@
                     </td>
                     <td>{{ subscription.subscription.recipients_names }}</td>
                     <td>{{ subscription.subscription.depot.name }}</td>
-                    <td>{{ subscription.assignments }} <img src="{% circles subscription.icon %}"/> {{ subscription.text }}</td>
+                    <td>{{ subscription.assignments }} <img src="{% images subscription.icon %}"/> {{ subscription.text }}</td>
                     {% if show_core %}<td>{{ subscription.core_assignments }}</td>{% endif %}
-                    <td>{% if subscription.subscription.active %}<img src="{% circles "circle_full" %}"/> Aktiv{% else %}<img src="{% circles "circle_empty" %}"/> Wartend{% endif %}</td>
+                    <td>{% if subscription.subscription.active %}<img src="{% images "single_full" %}"/> Aktiv{% else %}<img src="{% images "sinlge_empty" %}"/> Wartend{% endif %}</td>
                     <td>{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>
             {% endfor %}

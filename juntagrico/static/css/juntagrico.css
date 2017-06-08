@@ -1,10 +1,8 @@
 .juntagrico_logo {
     background: url(/static/img/juntagrico.png) 0 0px;
-    background-size:     contain;
-    background-repeat:   no-repeat;
     display: inline-block;
-    width: 400px;
-    height: 75px;
+    width: 580px;
+    height: 161px;
 }
 
 .next-jobs {
@@ -58,17 +56,19 @@
 }
 
 .myjuntagrico {
-    margin-top: 80px;
-    margin-bottom: 30px;
+    margin-top: 60px;
+    margin-bottom: 50px;
 }
 
 .juntagrico h3 {
     margin-top: 0;
+	margin-bottom: 40px;
+	color: #66cc66;
 }
 
 .createsubscription .control-label {
     font-size: 18px;
-    font-weight: bold;
+    font-weight: regular;
 }
 
 .createsubscription label {
@@ -185,7 +185,7 @@ table.future td {
 }
 
 .admin-menu {
-    font-family: "SourceSansPro-Regular", sansserif;
+    font-family: "Source Sans Pro", Light;
     font-size: 14px;
 }
 
@@ -205,29 +205,24 @@ table.future td {
 
 /* general overrides of bootstrap */
 @font-face {
-    font-family: 'SourceSansPro-Light';
-    src: url('/static/fonts/SourceSansPro-Light.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'SourceSansPro-Regular';
-    src: url('/static/fonts/SourceSansPro-Regular.ttf') format('truetype');
+    font-family: 'typenoksidi';
+    src: url('/static/fonts/typenoksidi-webfont.eot');
+    src: url('/static/fonts/typenoksidi-webfont.eot?#iefix') format('embedded-opentype'), url('/static/fonts/typenoksidi-webfont.woff') format('woff'), url('/static/fonts/typenoksidi-webfont.ttf') format('truetype'), url('/static/fonts/typenoksidi-webfont.svg#typenoksidiregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
 a {
-    color: #347094;
+    color: #66cc66;
 }
 
 a.canceled {
-    color: #A94442;
+    color: #ff3399;
     text-decoration: line-through;
 }
 
 a.canceled:hover, a.canceled:focus {
-    color: #A94442;
+    color: #ff3399;
 }
 
 ul {
@@ -235,18 +230,18 @@ ul {
 }
 
 a:hover, a:focus {
-    color: #21285f;
+    color: #999999;
 }
 
 html, body {
-    font-family: "SourceSansPro-Light", sansserif;
+    font-family: "Source Sans Pro", Light;
     font-size: 16px;
     background-color: #fefffa;
     height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6, .main-menu {
-    font-family: "SourceSansPro-Regular", sansserif;
+    font-family: "Source Sans Pro", Regular;
 }
 
 select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
@@ -274,36 +269,14 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     padding: 0px 40px 0 40px;
 }
 
-.container .circletop {
-    position: absolute;
-    left: 0;
-    top: 20px;
-    right: 0;
-    height: 20px;
-    opacity: 1.0;
-}
-
-.container .circleleft {
-    position: absolute;
-    left: 0px;
-    top: 36px;
-    bottom: 0px;
-    width: 20px;
-    opacity: 1.0;
-}
-
-.container .circleright {
-    position: absolute;
-    right: -5px;
-    top: 36px;
-    bottom: 0px;
-    width: 20px;
-    opacity: 1.0;
-}
-
 /* menu */
+.nav-pills > li > a {
+	color: black;
+}
+
+
 .nav-pills > li.active > a {
-    color: black;
+    color: #66cc66;
     background-color: transparent;
 }
 
@@ -335,7 +308,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 }
 
 .nav-pills a:hover {
-    color: #21285f;
+    color: #66cc66;
 }
 
 .nav-pills ul {

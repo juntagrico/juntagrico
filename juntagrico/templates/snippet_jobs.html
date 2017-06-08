@@ -13,13 +13,13 @@
     <tbody>
     {% for job in jobs %}
         <tr>
-            {% if show_core %}<td>{% if job.type.activityarea.core %}<img alt="Kernbereich" class="jobstatus" src="{% circles "circle_full_core" %}"/>{% else %}<img alt="anderer Tätigkeitsbereich" class="jobstatus" src="{% circles "circle_full" %}"/>{% endif %}</td>{% endif %}
+            {% if show_core %}<td>{% if job.type.activityarea.core %}<img alt="Kernbereich" class="jobstatus" src="{% images "core" %}"/>{% endif %}</td>{% endif %}
             <td>
                 {{ job.weekday_name }}<br/>{{ job.time |date:"d." }}&nbsp;{{ job.time |date:"m." }}&nbsp;{{ job.time |date:"Y" }}
                 <br/> {{ job.time |date:"H:i" }}&nbsp;&ndash;&nbsp;{{ job.end_time |date:"H:i" }}</td>
             <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}><strong>{{ job.type.activityarea.name }}</strong><br/>
                 {{ job.type.get_name }}</a><br/></a></td>
-            <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="{% circles job.get_status_percentage %}"/></td>
+            <td><img alt="Job-Status: {{ job.get_status_percentage }}" src="{% images job.get_status_percentage %}"/></td>
             <td>{{ job.type.location }}</td>
             {% if show_extras %}<td>{{ job.extras|safe }}</td>{% endif %}
         </tr>

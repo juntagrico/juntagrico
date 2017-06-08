@@ -32,9 +32,9 @@
         <div class="col-md-5">
             {% for i in slotrange %}
                 {% if i < number_of_participants %}
-                    <img class="jobstatus" src="{% circles "circle_full" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    <img class="jobstatus" src="{% images "single_full" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% else %}
-                    <img class="jobstatus" src="{% circles "circle_empty" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    <img class="jobstatus" src="{% images "single_empty" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% endif %}
             {% endfor %}
         </div>

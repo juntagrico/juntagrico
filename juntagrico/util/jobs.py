@@ -1,14 +1,14 @@
 def get_status_image(percent=0):
     if percent >= 100:
-        return "circle_full"
+        return "status_100"
     elif percent >= 75:
-        return "circle_alomst_full"
+        return "status_75"
     elif percent >= 50:
-        return "circle_half"
+        return "status_50"
     elif percent > 0:
-        return "circle_almost_empty"
+        return "status_25"
     else:
-        return "circle_empty"
+        return "status_0"
 
 
 def get_status_image_text(percent=0):

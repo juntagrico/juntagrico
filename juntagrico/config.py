@@ -191,17 +191,18 @@ class Config:
         return ''
 
     @staticmethod
-    def circles(key):
-        if hasattr(settings, 'CIRCLES'):
-            return settings.CIRCLES[key]
-        return {'circle_full': '/static/img/circle_full.png',
-            'circle_alomst_full': '/static/img/circle_alomst_full.png',
-            'circle_half': 'static/img/circle_half.png',
-            'circle_almost_empty': '/static/img/circle_almost_empty.png',
-            'circle_empty': '/static/img/circle_empty.png',
-            'circle_full_core': '/static/img/circle_full_core.png',
-            'circle_x': '/static/img/circle_x.png',
-            'circle_y': '/static/img/circle_y.png'
+    def images(key):
+        if hasattr(settings, 'IMAGES'):
+            return settings.IMAGES[key]
+        return {'status_100': '/static/img/status_100.png',
+            'status_75': '/static/img/status_75.png',
+            'status_50': '/static/img/status_50.png',
+            'status_25': '/static/img/status_25.png',
+            'status_0': '/static/img/status_0.png',
+            'single_full': '/static/img/single_full.png',
+            'single_empty': '/static/img/single_empty.png',
+            'single_core': '/static/img/single_core.png',
+            'core': '/static/img/core.png'
         }[key]
 
 
