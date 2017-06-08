@@ -18,7 +18,7 @@
 
                 <div class="col-md-8 controls">
                     <label class="radio" for="{{ subscription_size.name }}">
-                        <input type="radio" name="subscription" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if ssize == subscription_size.size %}checked="checked"{% endif %}/>
+                        <input type="radio" name="subscription" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if size == subscription_size.size %}checked="checked"{% endif %}/>
                         <strong>{{ subscription_size.long_name }}</strong>
 
                         <br/>
@@ -44,7 +44,7 @@
                         Du willst ab nächstem Jahr kein {% config "organisation_name" %}-Abo mehr? Dann schicke bitte deine Kündigung
                         bis spätestens Ende Oktober an <a href="mailto:{% config "info_email" %}?subject=Kündigung Abo {% config "server_url" %}">{% config "info_email" %}</a>.
                         Weitere Infos zur Kündigung des Abos und der Mitgliedschaft findest du im
-                        <a href="/ {% config "business regulations" %}">Betriebsreglement</a>.
+                        <a href="/ {% config "business_regulations" %}">Betriebsreglement</a>.
                     </div>
                 </label>
             </div>

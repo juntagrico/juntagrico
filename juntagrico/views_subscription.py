@@ -106,7 +106,8 @@ def size_change(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
-        'size': request.user.member.subscription.future_size
+        'size': request.user.member.subscription.future_size,
+        'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
     })
     return render(request, "size_change.html", renderdict)
 

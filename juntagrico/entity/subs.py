@@ -1,5 +1,6 @@
 # encoding: utf-8
 import time
+import datetime
 
 from django.db import models
 
@@ -125,10 +126,14 @@ class Subscription(Billable):
     def next_extra_change_date():
         month = int(time.strftime("%m"))
         if month >= 7:
-            next_extra = timezone.date(day=1, month=1, year=timezone.date.today().year + 1)
+            next_extra = datetime.date(day=1, month=1, year=timezone.now().today().year + 1)
         else:
-            next_extra = timezone.date(day=1, month=7, year=timezone.date.today().year)
+            next_extra = datetime.date(day=1, month=7, year=timezone.now().today().year)
         return next_extra
+        
+    @staticmethod
+    def next_size_change_date():
+        return start_of_next_business_year()
 
     @staticmethod
     def get_size_name(size=0):
@@ -136,7 +141,7 @@ class Subscription(Billable):
         for sub_size in SubscriptionSizeDao.all_sizes_ordered():
             amount = Subscription.calc_subscritpion_amount(size, sub_size.name)
             if amount > 0:
-                size_names.append(sub_size.long_name + " : " + amount)
+                size_names.append(sub_size.long_name + " : " + str(amount))
         if len(size_names) > 0:
             return ', '.join(size_names)
         return "kein Abo"
