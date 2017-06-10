@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load config %}
+{% block page_title %}
+    <h3>Hier siehst du die Zukunft von {% config "organisation_name" %}</h3>
+{% endblock %}
 
 {% block content %}
-    <h3>Hier siehst du die Zukunft von {% config "organisation_name" %}</h3>
     {% if changed %}
         <div class="alert alert-success">Abos wurden geändert</div>
     {% endif %}

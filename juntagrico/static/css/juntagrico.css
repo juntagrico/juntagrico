@@ -64,6 +64,7 @@
     margin-top: 0;
 	margin-bottom: 40px;
 	color: #66cc66;
+    font-size: 30pt;
 }
 
 .createsubscription .control-label {
@@ -184,8 +185,13 @@ table.future td {
     height: 10px;
 }
 
+.main-menu-small {
+    font-size: 14px;
+    color: #ffcc66
+}
+
 .admin-menu {
-    font-family: "Source Sans Pro", Light;
+    font-family: "Source Sans Pro Light";
     font-size: 14px;
 }
 
@@ -205,9 +211,15 @@ table.future td {
 
 /* general overrides of bootstrap */
 @font-face {
-    font-family: 'typenoksidi';
-    src: url('/static/fonts/typenoksidi-webfont.eot');
-    src: url('/static/fonts/typenoksidi-webfont.eot?#iefix') format('embedded-opentype'), url('/static/fonts/typenoksidi-webfont.woff') format('woff'), url('/static/fonts/typenoksidi-webfont.ttf') format('truetype'), url('/static/fonts/typenoksidi-webfont.svg#typenoksidiregular') format('svg');
+    font-family: 'Source Sans Pro Light';
+    src: url('/static/fonts/SourceSansPro-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro Regular';
+    src: url('/static/fonts/SourceSansPro-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -233,15 +245,22 @@ a:hover, a:focus {
     color: #999999;
 }
 
+a.yellow {
+    color: #ffcc66;
+}
+a.yellow:hover, a.yellow:focus {
+    color: #999999;
+}
+
 html, body {
-    font-family: "Source Sans Pro", Light;
+    font-family: "Source Sans Pro Light";
     font-size: 16px;
     background-color: #fefffa;
     height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6, .main-menu {
-    font-family: "Source Sans Pro", Regular;
+    font-family: "Source Sans Pro Regular";
 }
 
 select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
@@ -334,4 +353,12 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 
 .jobs .core, .teams .core {
     color: #780fff;
+}
+
+/* dl stuff*/
+.dl-horizontal dt, dd{
+    font-weight: normal;
+    margin-bottom: 1em;
+    text-align: left;
+    width: auto;
 }

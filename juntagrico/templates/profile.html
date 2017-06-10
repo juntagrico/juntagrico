@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load config %}
+{% block page_title %}
+    <h3>Personalien ändern</h3>
+{% endblock %}
 
 {% block content %}
-    <h3>Personalien ändern</h3>
-    <br/>
     {% if success %}
         <div class="alert alert-success">Personalien erfolgreich geändert</div>
     {% else %}

@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load config %}
+{% block page_title %}
+    <h3>Zusatz-Abos ändern</h3>
+{% endblock %}
 
 {% block content %}
-    <h3>Zusatz-Abos ändern</h3>
     {% if saved %}
         <div class="alert alert-success">
             Die Zusatz-Abos wurden erfolgreich geändert.<br/>

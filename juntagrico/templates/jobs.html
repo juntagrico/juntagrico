@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load config %}
 
-{% block content %}
+{% block page_title %}
     <h3>Alle Einsätze im Überblick</h3>
+{% endblock %}
+{% block content %}
     <div id="jobs">        
     {% include "snippet_jobs.html" %}
     </div>

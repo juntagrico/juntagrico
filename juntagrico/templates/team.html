@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load config %}
+{% block page_title %}
+    <h3>{{ team.name }}</h3>
+{% endblock %}
 
 {% block content %}
-    <h3>{{ team.name }}</h3>
     <div class="row">
         <div class="col-md-4"><strong>Beschreibung:</strong></div>
         <div class="col-md-8">{{ team.description }}</div>

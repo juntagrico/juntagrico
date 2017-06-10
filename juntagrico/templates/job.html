@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load config %}
+{% block page_title %}
+    <h3>{{ job.type.name }}</h3>
+{% endblock %}
 
 {% block content %}
-    <h3>{{ job.type.name }}</h3>
 
     {% if job_canceled %}
         <div class="alert alert-danger">Der Job wurde abgesagt! Entschuldige die Umstände. Aber es gibt immer <a href="/my/assignments" style="text-decoration: underline">viel zu tun</a>...</div>

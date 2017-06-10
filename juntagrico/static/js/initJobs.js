@@ -3,7 +3,7 @@ define([], function () {
 
     $("#filter-table thead th").each(function () {
         var title = $(this).text();
-        $(this).append("<input type='text' placeholder='' style='width: 100%;' />");
+        $(this).append("<input type='text' placeholder='' style='width: 100%;' class='form-control input-sm' />");
     });
 
     var table = $("#filter-table").DataTable({
