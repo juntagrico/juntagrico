@@ -189,7 +189,7 @@ def filter_subscriptions_depot(request, depot_id):
         core_assignments = 0
         for member in  MemberDao.members_with_assignments_count_in_subscription(subscription):
             assignments += member.assignment_count
-            core_assignments += member.core_assignemtns_count
+            core_assignments += member.core_assignment_count
 
         subscriptions.append({
             'subscription': subscription,
