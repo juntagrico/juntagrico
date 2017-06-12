@@ -41,7 +41,7 @@ class ExtraSubscriptionCategory(models.Model):
 
 class ExtraSubscription(Billable):
     """
-    Types of extra subscriptions, e.g. eggs, cheese, fruit
+    The actiual extra subscription
     """
     main_subscription = models.ForeignKey("Subscription", related_name="extra_subscription_set", null=False,
                                           blank=False,

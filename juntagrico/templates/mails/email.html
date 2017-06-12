@@ -1,18 +1,18 @@
 {% load config %}
 <table width="600px">
     <tr>
-        <td colspan="3" background="{{ serverurl }}{% borders "border_x" %}" align="center" height="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
+        <td colspan="3" class="border_x" align="center" height="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
     </tr>
     <tr>
-        <td rowspan="2" background="{{ serverurl }}{% borders "border_y" %}" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
+        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
         <td style="font-size:14px;font-family: 'Courier New', monospace; font-weight: bold;padding:20px;">{{ subject }}</td>
-        <td rowspan="2" background="{{ serverurl }}{% borders "border_y" %}" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
+        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
     </tr>
     <tr>
         <td style="font-size:14px;font-family: 'Courier New', monospace; padding:20px; */word-break: break-all;">{% block content %}{% endblock %}</td>
     </tr>
     <tr>
-        <td colspan="3" background="{{ serverurl }}{% borders "border_x" %}" align="center" height="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
+        <td colspan="3" class="border_x" align="center" height="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;</td>
     </tr>
     <tr>
         <td colspan="3" style="padding-top:25px;">

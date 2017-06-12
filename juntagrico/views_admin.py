@@ -258,7 +258,7 @@ def future(request):
 @permission_required('juntagrico.is_operations_group')
 def change_extras(request):
     for subscription in SubscriptionDao.all_subscritions():
-        for extra in subscription.extra_subscription_set:
+        for extra in subscription.extra_subscription_set.all():
             if extra.active is True and extra.canceled is True:
                 extra.active = False
                 extra.save()

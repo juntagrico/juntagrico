@@ -12,6 +12,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.decorators import primary_member_of_subscription
 from juntagrico.forms import *
@@ -230,7 +231,7 @@ def welcome(request):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'jobs': get_current_jobs()[:7],
+        'jobs': JobDao.get_current_jobs()[:7],
         'teams': ActivityAreaDao.all_visible_areas(),
         'no_subscription': request.user.member.subscription is None
     })
@@ -319,9 +320,9 @@ def createsubscription(request):
                 if session_subscription is not None:
                     session_subscription.save()
                     member.subscription_id = session_subscription.id
-                    member.save
-                send_welcome_mail(member.email, password, hashlib.sha1(member.email + str(
-                    session_subscription.id)).hexdigest())
+                    member.save()
+                send_welcome_mail(member.email, password, hashlib.sha1((member.email + str(
+                    session_subscription.id)).encode('utf8')).hexdigest())
                 for co_member in co_members:
                     co_member.subscription_id = session_subscription.id
                     co_member.save()

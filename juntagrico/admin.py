@@ -182,7 +182,7 @@ class JobAdmin(admin.ModelAdmin):
 
     mass_copy_job.short_description = "Job mehrfach kopieren..."
 
-    def copy_job(self, queryset):
+    def copy_job(self, request, queryset):
         for inst in queryset.all():
             newjob = RecuringJob(type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
