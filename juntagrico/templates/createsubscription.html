@@ -18,13 +18,15 @@
             {% csrf_token %}
             {% for subscription_size in subscription_sizes %}
             <div class="form-group">
-                <label class="col-md-4 control-label">{% if foorloop.first %}Abogrösse{% endif %}</label>
+                <label class="col-md-3 control-label">{% if forloop.first %}Abogrösse{% endif %}</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-2 controls">
+                    <input type="radio" name="subscription" class="onoffswitch" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if selected_subscription == subscription_size.name %}checked="checked"{% endif %}/>
+                </div>
+
+                <div class="col-md-7 controls">
                     <label class="radio" for="{{ subscription_size.name }}">
-                        <input type="radio" name="subscription" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if selected_subscription == subscription_size.name %}checked="checked"{% endif %}/>
-                        <strong>{{ subscription_size.long_name }}</strong>
-
+                        {{ subscription_size.long_name }}
                         <br/>
                         {{ subscription_size.description }}
                     </label>
@@ -33,22 +35,23 @@
             {% endfor %}
 	    {% if 0 == co_members|length %}
             <div class="form-group">
-                <label class="col-md-4 control-label"></label>
-                <div class="col-md-8 controls">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-2 controls">
+                        <input type="radio" name="subscription" class="onoffswitch"  value="none" id="none" {% if selected_subscription == "none" %}checked="checked"{% endif %}/>
+                </div>
+                <div class="col-md-7 controls">
                     <label class="radio" for="none">
-                        <input type="radio" name="subscription" value="none" id="none" {% if selected_subscription == "none" %}checked="checked"{% endif %}/>
-                        <strong>Kein Abo</strong>
-
+                        Kein Abo
                         <br/>
                         Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
                     </label>
                 </div>
             </div>                        
-            {% endif %}
+        {% endif %}
             <div id="start_date" class="form-group" style="display: none;">
-                <label class="col-md-4 control-label">Gewünschtes Startdatum</label>
+                <label class="col-md-3 control-label">Gewünschtes Startdatum</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     <label>
 
                         {{ subscriptionform.start_date }}
@@ -59,10 +62,10 @@
                     {% endif %}
                 </div>
             </div>
-            <div id="depot_container" class="form-group">
-                <label class="col-md-4 control-label" for="depot">Depot</label>
+            <div id="depot_container" class="form-group" style="display: none;">
+                <label class="col-md-3 control-label" for="depot">Depot</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
@@ -77,10 +80,10 @@
                 </div>
             </div>
 
-            <div id="co_members" class="form-group">
-                <label class="col-md-4 control-label">MitabonnentInnen</label>
+            <div id="co_members" class="form-group" style="display: none;">
+                <label class="col-md-3 control-label">MitabonnentInnen</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {% if 0 == co_members|length %}
                         <div>Bisher hast du keine MitabonnentInnen eingetragen.</div>
                     {% else %}
@@ -96,9 +99,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-4 control-label">Anteilscheine</label>
+                <label class="col-md-3 control-label">Anteilscheine</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     <label for="shares">
 
                         <input type="text" name="shares" id="shares" class="col-md-1 form-control"/><br/>

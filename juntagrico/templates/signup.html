@@ -1,12 +1,11 @@
-{% extends "signupbase.html" %}
+{% extends "base.html" %}
 {% load config %}
 
+{% block page_title %}
+        <h3>GenossenschafterIn werden</h3>
+{% endblock %}
 
-
-
-
-{% block content %}
-      <h3>GenossenschafterIn werden</h3>
+{% block allcontent %}
       Interessiert an {% config "organisation_name" %}?
       <br/><br/>
       Die Mitgliedschaft bei {% config "organisation_name" %} ist geknüpft an den Erwerb von rückzahlbaren Anteilscheinen in der Höhe von CHF {% config "share_price" %} pro Anteilschein. Die Anzahl Anteilscheine ist abhängig von der Abogrösse. Dabei
@@ -33,9 +32,9 @@
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
             <div class="form-group {% if memberform.last_name.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_last_name">Name *</label>
+                <label class="col-md-3 control-label" for="id_last_name">Name *</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.last_name }}
                     {% if memberform.last_name.errors %}
                         <div class="help-block">Name ungültig</div>
@@ -43,9 +42,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.first_name.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_first_name">Vorname *</label>
+                <label class="col-md-3 control-label" for="id_first_name">Vorname *</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.first_name }}
                     {% if memberform.first_name.errors %}
                         <div class="help-block">Vorname ungültig</div>
@@ -53,9 +52,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.addr_street.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_addr_street">Strasse/Nr. *</label>
+                <label class="col-md-3 control-label" for="id_addr_street">Strasse/Nr. *</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.addr_street }}
                     {% if memberform.addr_street.errors %}
                         <div class="help-block">Strasse ungültig</div>
@@ -63,9 +62,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.addr_zipcode.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_addr_zipcode">PLZ *</label>
+                <label class="col-md-3 control-label" for="id_addr_zipcode">PLZ *</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.addr_zipcode }}
                     {% if memberform.addr_zipcode.errors %}
                         <div class="help-block">PLZ ungültig</div>
@@ -73,9 +72,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.addr_location.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_addr_location">Ort *</label>
+                <label class="col-md-3 control-label" for="id_addr_location">Ort *</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.addr_location }}
                     {% if memberform.addr_location.errors %}
                         <div class="help-block">Ort ungültig</div>
@@ -83,9 +82,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.phone.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_phone">Telefon *</label>
+                <label class="col-md-3 control-label" for="id_phone">Telefon *</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.phone }}
                     {% if memberform.phone.errors %}
                         <div class="help-block">Telefon ungültig</div>
@@ -93,9 +92,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.mobile_phone.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_mobile_phone">Mobile &nbsp;</label>
+                <label class="col-md-3 control-label" for="id_mobile_phone">Mobile &nbsp;</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.mobile_phone }}
                     {% if memberform.mobile_phone.errors %}
                         <div class="help-block">Mobile ungültig</div>
@@ -103,9 +102,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.email.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_email">E-Mail Adresse *</label>
+                <label class="col-md-3 control-label" for="id_email">E-Mail Adresse *</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.email }}
                     {% if memberform.email.errors %}
                         <div class="help-block">E-Mail ungültig</div>
@@ -113,9 +112,9 @@
                 </div>
             </div>
             <div class="form-group {% if memberform.birthday.errors %}has-error{% endif %}">
-                <label class="col-md-4 control-label" for="id_birthday">Geburtstag &nbsp;</label>
+                <label class="col-md-3 control-label" for="id_birthday">Geburtstag &nbsp;</label>
 
-                <div class="col-md-8 controls">
+                <div class="col-md-9 controls">
                     {{ memberform.birthday }}
                     {% if memberform.birthday.errors %}
                         <div class="help-block">Geburtstag ungültig</div>
@@ -123,7 +122,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-md-offset-4 col-md-8">
+                <div class="col-md-offset-3 col-md-9">
                     <div class="checkbox">
                         <label>
                             {{ memberform.agb }}

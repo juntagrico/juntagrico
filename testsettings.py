@@ -25,7 +25,7 @@ DATABASES = {
     }
 }
 
-ROOT_URLCONF = 'juntagrico.urls'
+ROOT_URLCONF = 'testurls'
 
 AUTHENTICATION_BACKENDS = (
     'juntagrico.util.auth.AuthenticateWithEmail',

@@ -30,7 +30,7 @@ class MemberProfileForm(ModelForm):
             'phone': TextInput(attrs={'placeholder': '044 123 45 67', 'class': 'form-control'}),
             'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67', 'class': 'form-control'}),
             'email': TextInput(attrs={'placeholder': 'beate@muster.ch', 'class': 'form-control'}),
-            'reachable_by_email': CheckboxInput(attrs={'class': 'form-control'}),
+            'reachable_by_email': CheckboxInput(attrs={'class': 'onoffswitch'}),
         }
 
 

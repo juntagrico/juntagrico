@@ -63,5 +63,4 @@ urlpatterns = [
     url('^my/maps', juntagrico_admin.maps),
 
     url(r'^my', include(personal_urls)),
-    url(r'^admin/', include(admin.site.urls)),
 ]

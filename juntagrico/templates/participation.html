@@ -19,24 +19,28 @@
                 {% csrf_token %}
                 {% if show_core %}<div class="row">
                     <div class="col-md-4">
-                        <h4>Kernbereiche: <img alt="core_area" title="core_area" class="jobstatus" src="{% images "core" %}"/></h4>
+                        Kernbereiche: <img alt="core_area" title="core_area" class="jobstatus" src="{% images "core" %}"/>
                     </div>
                     <div class="col-md-4">
-                        <h5>Koordiniert von:</h5>
+                        Koordiniert von:
                     </div>
                 </div>
                 {% for area in areas %}
                     {% if area.core %}
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-1">
+                            <div class="checkbox">
+                                  <input type="checkbox" class="onoffswitch" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="checkbox">
                                 <label>
-                                  <input type="checkbox" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
                                   {{ area.name }}
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-7">
                             {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/><a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
                         </div>
                     </div>
@@ -45,25 +49,29 @@
                 <br/>{% endif %}
                 <div class="row">
                     <div class="col-md-4">
-                        <h4>Weitere Bereiche:</h4>
+                        Weitere Bereiche:
                     </div>
                     <div class="col-md-8">
-                        <h5>Koordiniert von:</h5>
+                        Koordiniert von:
                     </div>
                 </div>
                 {% for area in areas %}
                     {% if not area.core %}
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-1">
+                            <div class="checkbox">
+                                  <input type="checkbox" class="onoffswitch" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="checkbox">
                                 <label>
-                                  <input type="checkbox" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
                                   {{ area.name }}
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<a href="mailto:{{ area.coordinator.email }}"></a>
+                        <div class="col-md-7">
+                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/><a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
                         </div>
                     </div>
                     {% endif %}

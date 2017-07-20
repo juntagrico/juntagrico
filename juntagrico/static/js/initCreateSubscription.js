@@ -12,21 +12,36 @@ define(['modules/depotDistance'], function (depotDistance) {
         }
     }).change();
 
-
-    // check for the amount of shares of the member
     $("input[type=radio]").change(function () {
         var $checked = $(":checked");
         if ($checked.val() == "none") {
-            $("#start_date").hide();
-            $("#depot_container").hide();
-            $("#co_members").hide();
-}
+            $("#start_date").hide(1000);
+            $("#depot_container").hide(1000);
+            $("#co_members").hide(1000);
+            }
         else {
-            $("#start_date").show();
-            $("#depot_container").show();
-            $("#co_members").show();
+            $("#start_date").show(1000);
+            $("#depot_container").show(1000);
+            $("#co_members").show(1000);
         }
     }).change();
+    
+    $("#start_date").hide(1000);
+    $("#depot_container").hide(1000);
+    $("#co_members").hide(1000);
+    $("input[type=radio]:checked").each(function () {
+        var $checked = $(":checked");
+        if ($checked.val() == "none") {
+            $("#start_date").hide(1000);
+            $("#depot_container").hide(1000);
+            $("#co_members").hide(1000);
+            }
+        else {
+            $("#start_date").show(1000);
+            $("#depot_container").show(1000);
+            $("#co_members").show(1000);
+        }
+    })
 
 
     // add additional member form

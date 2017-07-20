@@ -85,12 +85,6 @@
     height: 400px;
 }
 
-#depot #map-canvas {
-    margin-left: 180px;
-    width: 400px;
-    height: 440px;
-}
-
 
 .high-label {
     line-height: 35px;
@@ -340,11 +334,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 }
 
 /* contact */
-#map-canvas {
-    display: inline-block;
-    width: 560px;
-    height: 300px;
-}
 
 .impersonate {
     position: relative;
@@ -361,4 +350,11 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
     margin-bottom: 1em;
     text-align: left;
     width: auto;
+}
+
+/* form stuff */
+.form-horizontal .control-label {
+    text-align: left;
+    padding-top: 0 px;
+    font-weight: normal;
 }

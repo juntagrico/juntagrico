@@ -427,7 +427,7 @@ def add_member(request, subscription_id):
         'memberform': memberform,
         "member": request.user.member,
         "depots": DepotDao.all_depots(),
-        "cancelUrl": request.GET.get("return")
+        "cancelUrl": request.GET.get("return") if request.GET.get("return") else '/my/create/subscrition'
     }
     return render(request, "add_member.html", renderdict)
 
