@@ -10,28 +10,28 @@
                 {% csrf_token %}
                 <br/><br/>
                 <div class="form-group">
-                    <label class="control-label col-sm-4" for="username">Email {% config "demouser" %}</label>
-                    <div class="controls col-sm-8">
+                    <label class="control-label col-md-4" for="username">Email {% config "demouser" %}</label>
+                    <div class="controls col-md-8">
                         <input type="text" class="form-control" name="username" id="username" placeholder="Email-Adresse">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-sm-4" for="password">Passwort {% config "demopwd" %}</label>
-                    <div class="controls col-sm-8">
+                    <label class="control-label col-md-4" for="password">Passwort {% config "demopwd" %}</label>
+                    <div class="controls col-md-8">
                         <input type="password" class="form-control" name="password" id="password" placeholder="Passwort">
                     </div>
                 </div>
                 {% if form.errors %}
-                    <div class="col-sm-offset-4 alert alert-danger">Sorry, das ist kein gültiges Login</div>
+                    <div class="col-md-offset-4 alert alert-danger">Sorry, das ist kein gültiges Login</div>
                 {% endif %}
                 <div class="form-group">
-                    <div class="col-sm-offset-4 col-sm-8">
+                    <div class="col-md-offset-4 col-md-8">
                         <button type="submit" class="btn btn-success">Anmelden</button><br/><br/>
                         <a href="/my/newpassword">Neues Passwort anfordern</a>
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-sm-offset-4 col-sm-8">
+                    <div class="col-md-offset-4 col-md-8">
                         <a href="/my/signup">Registrieren und mitmachen!</a>
                     </div>
                 </div>

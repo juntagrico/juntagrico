@@ -239,13 +239,6 @@ a:hover, a:focus {
     color: #999999;
 }
 
-a.yellow {
-    color: #ffcc66;
-}
-a.yellow:hover, a.yellow:focus {
-    color: #999999;
-}
-
 html, body {
     font-family: "Source Sans Pro Light";
     font-size: 16px;
@@ -294,6 +287,16 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 }
 
 .nav-pills.nav-stacked > li > a, .nav-pills ul.nav-pills.nav-stacked > li:last-child > a {
+    background-color: transparent;
+}
+
+.nav-pills > li > a.yellow {
+    color: #ffcc66;;
+    background-color: transparent;
+}
+
+.nav-pills > li > a.yellow:hover, .nav-pills > li > a:focus {
+    color: #999999;
     background-color: transparent;
 }
 
@@ -356,5 +359,15 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 .form-horizontal .control-label {
     text-align: left;
     padding-top: 0 px;
+    font-weight: normal;
+}
+
+/* label stuff */
+label {
+    font-weight: normal;
+}
+
+/* table stuff */
+th {
     font-weight: normal;
 }

@@ -15,6 +15,9 @@ define([], function () {
         "drawCallback": function (settings) {
             // do not like this but it works so far till i get around to find the correct api call
             updateSendEmailButton($("#filter-table tr").size() - 2);
+        },
+        "language": {
+            "search": "Suchen: "
         }
     });
 

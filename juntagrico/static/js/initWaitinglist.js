@@ -6,6 +6,9 @@ define([], function () {
         "search": {
             "regex": true,
             "smart": false
+        },
+        "language": {
+            "search": "Suchen: "
         }
     });
 });

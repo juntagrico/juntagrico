@@ -14,16 +14,16 @@
         <form method="post" class="form-horizontal createsubscription">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label col-sm-4" for="depot">Altes Depot</label>
+                <label class="control-label col-md-4" for="depot">Altes Depot</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ member.subscription.depot.name }}
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-4" for="depot">Neues Depot</label>
+                <label class="control-label col-md-4" for="depot">Neues Depot</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     <select name="depot" id="depot">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
@@ -37,7 +37,7 @@
                     <div class="" id="map-canvas" style="width:440px;"></div>
                 </div>
             </div>
-            <div class="col-sm-offset-4 form-actions">
+            <div class="col-md-offset-4 form-actions">
                 Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Du wirst darüber informiert wenn dein Depot ändert.<br/><br/>
                 <button type="submit" class="btn btn-success">Depot ändern</button>
             </div>

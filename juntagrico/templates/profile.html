@@ -11,9 +11,9 @@
         <form method="post" class="form-horizontal">
             {% csrf_token %}
             <div class="form-group {% if memberform.first_name.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_first_name">Vorname</label>
+                <label class="control-label col-md-4" for="id_first_name">Vorname</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ memberform.first_name }}
                 </div>
             </div>
@@ -22,9 +22,9 @@
             {% endif %}
 
             <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_last_name">Nachname</label>
+                <label class="control-label col-md-4" for="id_last_name">Nachname</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ memberform.last_name }}
                 </div>
             </div>
@@ -33,9 +33,9 @@
             {% endif %}
 
             <div class="form-group {% if memberform.addr_street.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_addr_street">{{ memberform.addr_street.label }}</label>
+                <label class="control-label col-md-4" for="id_addr_street">{{ memberform.addr_street.label }}</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ memberform.addr_street }}
                 </div>
             </div>
@@ -44,9 +44,9 @@
             {% endif %}
 
             <div class="form-group {% if memberform.addr_zipcode.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }}</label>
+                <label class="control-label col-md-4" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }}</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ memberform.addr_zipcode }}
                 </div>
             </div>
@@ -55,9 +55,9 @@
             {% endif %}
 
             <div class="form-group {% if memberform.addr_location.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_addr_location">{{ memberform.addr_location.label }}</label>
+                <label class="control-label col-md-4" for="id_addr_location">{{ memberform.addr_location.label }}</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ memberform.addr_location }}
                 </div>
             </div>
@@ -66,9 +66,9 @@
             {% endif %}
 
             <div class="form-group {% if memberform.phone.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_phone">{{ memberform.phone.label }}</label>
+                <label class="control-label col-md-4" for="id_phone">{{ memberform.phone.label }}</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ memberform.phone }}
                 </div>
             </div>
@@ -77,9 +77,9 @@
             {% endif %}
 
             <div class="form-group {% if memberform.mobile_phone.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_mobile_phone">{{ memberform.mobile_phone.label }}</label>
+                <label class="control-label col-md-4" for="id_mobile_phone">{{ memberform.mobile_phone.label }}</label>
 
-                <div class="controls col-sm-8">
+                <div class="controls col-md-8">
                     {{ memberform.mobile_phone }}
                 </div>
             </div>
@@ -88,9 +88,9 @@
             {% endif %}
 			
 			<div class="form-group {% if memberform.email.errors %}error{% endif %}">
-                <label class="control-label col-sm-4" for="id_email">E-Mail Adresse</label>
+                <label class="control-label col-md-4" for="id_email">E-Mail Adresse</label>
 				
-				<div class="controls col-sm-8">
+				<div class="controls col-md-8">
 						{{ memberform.email }}
 				</div>
 			</div>
@@ -99,20 +99,20 @@
                 {% endif %}
 			
             <div class="form-group">
-                <label class="control-label col-sm-4" for="id_reachable_by_email">sollen andere {% config "members_string" %} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
+                <label class="control-label col-md-4" for="id_reachable_by_email">sollen andere {% config "members_string" %} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
 
-                <div class="controls col-sm-1">
+                <div class="controls col-md-1">
                     {{ memberform.reachable_by_email }}
                 </div>
             </div>
 			
             <div class="form-group">
-                <label class="control-label col-sm-4"></label>    
-                <div class="controls col-sm-8">
+                <label class="control-label col-md-4"></label>    
+                <div class="controls col-md-8">
                     <a href="/my/password">hier kannst du dein Passwort ändern</a>
                 </div>
             </div>
-            <div class="form-actions col-sm-offset-4 col-sm-8">
+            <div class="form-actions col-md-offset-4 col-md-8">
                 <button type="submit" class="btn btn-success">Personalien ändern</button>
             </div>
         </form>
