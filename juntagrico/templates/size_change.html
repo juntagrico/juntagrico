@@ -16,19 +16,22 @@
             {% csrf_token %}
              {% for subscription_size in subscription_sizes %}
             <div class="form-group">
-                <label class="col-md-4 control-label">{% if foorloop.first %}Abogrösse{% endif %}</label>
-
-                <div class="col-md-8 controls">
-                    <label class="radio" for="{{ subscription_size.name }}">
-                        <input type="radio" name="subscription" value="{{ subscription_size.name }}" id="{{ subscription_size.name }}" {% if size == subscription_size.size %}checked="checked"{% endif %}/>
-                        <strong>{{ subscription_size.long_name }}</strong>
-
+                <label class="col-md-3 control-label">{% if forloop.first %}Abogrösse{% endif %}</label>
+                <div class="col-md-9 controls radio">     
+                    <label for="{{ subscription_size.name }}" class="control-label col-md-2">
+                        <input type="radio" name="subscription" class="onoffswitch" value="{{ subscription_size.size }}" id="{{ subscription_size.name }}" {% if size == subscription_size.size %}checked="checked"{% endif %}/>
+                    </label>
+                    <label for="{{ subscription_size.name }}" class="control-label col-md-7">
+                        {{ subscription_size.long_name }}
+                        <br/>
                         <br/>
                         {{ subscription_size.description }}
                     </label>
                 </div>
             </div>
             {% endfor %}
+            <div class="form-group">
+            </div>
             <div class="form-group">
                 <label class="control-label col-md-4"></label>
                 <div class="controls col-md-8">
@@ -39,7 +42,7 @@
             </div>
             <br/>
             <div class="form-group">
-            <label class="control-label col-md-4">Abo kündigen</label>
+            <label class="control-label col-md-3">Abo kündigen</label>
             <div class="controls col-md-8">
                 <label>
                     <div>

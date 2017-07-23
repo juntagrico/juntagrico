@@ -14,17 +14,17 @@
         <form method="post" class="form-horizontal createsubscription">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label col-md-4" for="depot">Altes Depot</label>
+                <label class="control-label col-md-3" for="depot">Altes Depot</label>
 
-                <div class="controls col-md-8">
+                <div class="controls col-md-9">
                     {{ member.subscription.depot.name }}
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-md-4" for="depot">Neues Depot</label>
+                <label class="control-label col-md-3" for="depot">Neues Depot</label>
 
-                <div class="controls col-md-8">
-                    <select name="depot" id="depot">
+                <div class="controls col-md-9">
+                    <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
                         {% endfor %}
@@ -34,10 +34,10 @@
                         Wähle ein Depot aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
                     </label>
 
-                    <div class="" id="map-canvas" style="width:440px;"></div>
+                    <div id="map-canvas" ></div>
                 </div>
             </div>
-            <div class="col-md-offset-4 form-actions">
+            <div class="col-md-offset-3 form-actions">
                 Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Du wirst darüber informiert wenn dein Depot ändert.<br/><br/>
                 <button type="submit" class="btn btn-success">Depot ändern</button>
             </div>
@@ -68,6 +68,6 @@
 
 {% endblock %}
 {% block scripts %}
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}"></script>
 <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeDepot.js"></script>
 {% endblock %}

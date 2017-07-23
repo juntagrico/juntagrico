@@ -9,20 +9,20 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <h3>Depot</h3>
+            Depot
             <br/>
              Du bist umgezogen oder möchtest aus einem anderen Grund dein Gemüse in einem anderen Quartierdepot abholen? 
 			 Du kannst das Depot jederzeit wechseln - die Änderung wird sobald aktiv von uns kommuniziert.
         </div>
         <div class="col-md-4">
-            <h3>Grösse</h3>
+            Grösse
             <br/>
             Die Grösse eines Abos (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende {{ next_cancel_date |date:"F" }} gemacht werden,
             damit die Änderung auf Anfang {{ next_business_year |date:"F" }}-{{ next_cancel_date |date:"F" }} in Kraft tritt.
         </div>
         {% if has_extra_subscriptions %}
         <div class="col-md-4">
-            <h3>Zusatz-Abos</h3>
+            Zusatz-Abos
             <br/>
             Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
             > <a href="{% config "extra_sub_info" %}" target="_blank">Weitere Infos zu den Zusatzsubscriptions</a>
@@ -47,16 +47,16 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <h5>Momentanes Depot:</h5>
+            Momentanes Depot: <br/>
             {{ member.subscription.depot.name }}
         </div>
         <div class="col-md-4">
-            <h5>Zukünftige Grösse:</h5>
+            Zukünftige Grösse: <br/>
             {{ member.subscription.future_size_name }}
         </div>
         {% if has_extra_subscriptions %}
         <div class="col-md-4">
-            <h5>Zukünftige Zusatz-Abos:</h5>
+            Zukünftige Zusatz-Abos: <br/>
             {% if not member.subscription.extra_subscriptions_changed %}
                 {% if member.subscription.extra_subscriptions.all|length == 0 %}
                     Keine Zusatz-Abos

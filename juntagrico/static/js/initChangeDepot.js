@@ -4,6 +4,6 @@ define(['modules/depotDistance'], function (depotDistance) {
     // preselect depot
     $("#depot").val(depot_id);
 
-    depotDistance.calculate(loco_addr, destinations, depots);
+    depotDistance.calculate(member_addr, destinations, depots);
 
 });
