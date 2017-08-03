@@ -42,5 +42,23 @@ define([], function () {
 
     $("#allsingleemail").change(function () {
         $("#singleemail").toggle();
+        $('#allshares').prop('checked', false);
+        $('#allsubscription').prop('checked', false);
+        $('#all').prop('checked', false);
+    });
+
+    $("#allshares").change(function () {
+        $('#allsingleemail').prop('checked', false);
+        $("#singleemail").hide();
+    });
+
+    $("#all").change(function () {
+        $('#allsingleemail').prop('checked', false);
+        $("#singleemail").hide();
+    });
+
+    $("#allsubscription").change(function () {
+        $('#allsingleemail').prop('checked', false);
+        $("#singleemail").hide();
     });
 });

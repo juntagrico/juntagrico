@@ -38,6 +38,7 @@
         </div>
     </div>
     <div class="row myjuntagrico">
+    {% block all_page_title %}
         <div class="col-md-3"> 
             &nbsp;
         </div>
@@ -45,6 +46,7 @@
             {% block page_title %}
             {% endblock %}
         </div>
+    {% endblock %}
     </div>
     <div class="row juntagrico">
         {% block allcontent %}
