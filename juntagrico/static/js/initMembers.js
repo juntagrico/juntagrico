@@ -29,11 +29,11 @@ define([], function () {
         } else if (count == 1) {
             $("button#send-email")
                 .prop("disabled", false)
-                .text("Email an diesen Loco senden");
+                .text("Email an diesen "+member_string+" senden");
         } else {
             $("button#send-email")
                 .prop("disabled", false)
-                .text("Email an diese " + count + " Locos senden");
+                .text("Email an diese " + count + " "+members_string+" senden");
         }
     }
 
