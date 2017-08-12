@@ -107,6 +107,18 @@ class Config:
         return "/static/css/juntagrico.css"
 
     @staticmethod
+    def favicon():
+        if hasattr(settings, 'FAVICON'):
+            return settings.FAVICON
+        return "/static/img/favicon.ico"
+
+    @staticmethod
+    def bootstrap():
+        if hasattr(settings, 'BOOTSTRAP'):
+            return settings.BOOTSTRAP
+        return "/static/external/bootstrap-3.3.1/css/bootstrap.min.css"
+
+    @staticmethod
     def faq_doc():
         if hasattr(settings, 'FAQ_DOC'):
             return settings.FAQ_DOC
