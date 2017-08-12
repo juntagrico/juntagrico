@@ -5,7 +5,9 @@
     <title>{% config "adminportal_name" %}</title>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="/static/img/favicon.ico"/>
+    <link rel="shortcut icon" href="/static/img/favicon.ico"/>
 
+    <link href="/static/external/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/external/bootstrap-3.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/external/mid/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="/static/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet">
@@ -71,7 +73,7 @@
                     </li>
                     <li class="separator"></li>
                     <li class="main-menu-small">
-                        <a class="yellow" href="{% config "server_url" %}">{% config "server_url" %}</a>
+                        <a class="yellow" href="http://{% config "server_url" %}">{% config "server_url" %}</a>
                     </li>
                     <li class="main-menu-small">
                         <a class="yellow" href="/logout">Abmelden</a>
