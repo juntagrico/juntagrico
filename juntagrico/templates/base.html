@@ -138,16 +138,16 @@
                     {% block bohnen %}
                         <h5>Abo {% config "assignments_string" %}-Konto</h5>
                         {% for i in assignmentsrange %}
-                            {% if i < userbohnen_kernbereich %}
+                            {% if i < userassignemnts_core %}
                                 <img alt="Kernbereich" title="Kernbereich" class="jobstatus"
                                      src="{% images "single_core" %}"/>
-                            {% elif i < userbohnen_total %}
+                            {% elif i < userassignments_total %}
                                 <img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich" class="jobstatus"
                                      src="{% images "single_full" %}"/>
-                            {% elif i < partner_bohnen_kernbereich %}
+                            {% elif i < partner_assignments_core %}
                                 <img alt="Kernbereich Partner" title="Kernbereich Partner" class="jobstatus"
                                      src="{% images "single_core" %}" style="opacity:0.5;"/>
-                            {% elif i < partner_bohnen_total %}
+                            {% elif i < partner_assignments_total %}
                                 <img alt="anderer Tätigkeitsbereich Partner" title="anderer Tätigkeitsbereich Partner" class="jobstatus"
                                      src="{% images "single_full" %}" style="opacity:0.5;"/>
                             {% else %}
