@@ -361,8 +361,7 @@ def createsubscription(request):
         'selected_subscription': selectedsubscription,
         'shareerror': shareerror,
         'co_members': co_members,
-        'subscriptionform': subscriptionform,
-        'logged_in': request.user.is_authenticated()
+        'subscriptionform': subscriptionform
     }
     return render(request, "createsubscription.html", renderdict)
 
@@ -434,7 +433,7 @@ def add_member(request, subscription_id):
         'memberblocked': memberexists,
         'shareerror': shareerror,
         'memberform': memberform,
-        "member": request.user.member,
+        "member": member,
         "depots": DepotDao.all_depots(),
         "cancelUrl": request.GET.get("return") if request.GET.get("return") else '/my/create/subscrition'
     }
