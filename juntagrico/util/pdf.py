@@ -1,4 +1,4 @@
-from io import StringIO
+from io import StringIO BytesIO
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -30,6 +30,6 @@ def render_to_pdf_storage(template_name, renderdict, filename):
     if default_storage.exists(filename):
         default_storage.delete(filename)
     rendered_html = get_template(template_name).render(renderdict)
-    pdf = StringIO()
+    pdf = BytesIO()
     pisa.CreatePDF(rendered_html, dest=pdf)
     default_storage.save(filename, ContentFile(pdf.getvalue()))
