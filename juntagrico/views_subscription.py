@@ -354,7 +354,7 @@ def createsubscription(request):
     renderdict = {
         'co_member_shares': co_member_shares,
         'existing_member_shares': existing_member_shares,
-        'member': request.user.member,
+        'member': member,
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered(),
         'depots': DepotDao.all_depots(),
         'selected_depot': selected_depot,
