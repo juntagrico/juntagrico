@@ -107,6 +107,7 @@ def send_welcome_mail(email, password, hash):
 
 
 def send_share_created_mail(share):
+    """ temporal removal
     plaintext = get_template('mails/share_created_mail.txt')
     htmly = get_template('mails/share_created_mail.html')
 
@@ -125,8 +126,7 @@ def send_share_created_mail(share):
         emails.append(user.member.email)
     msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', text_content, Config.info_email(), emails)
     msg.attach_alternative(html_content, "text/html")
-    send_mail_multi(msg)
-
+    send_mail_multi(msg)"""
 
 def send_been_added_to_subscription(email, password, name, shares, hash):
     plaintext = get_template('mails/welcome_added_mail.txt')
