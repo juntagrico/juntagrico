@@ -201,13 +201,7 @@ def signup(request):
                     # email is also username... we do not use it
                     password = password_generator()
                     member = Member(**memberform.cleaned_data)
-                    member.save()
-                    member.user.set_password(password)
-                    member.user.save()
-
-                    # log in to allow him to make changes to the subscription
-                    loggedin_user = authenticate(username=member.user.username, password=password)
-                    login(request, loggedin_user)
+                    request.session['main_memer'] = member
                     return redirect("/my/create/subscrition")
     else:
         memberform = MemberProfileForm()
@@ -252,12 +246,18 @@ def confirm(request, hash):
     return redirect("/my/home")
 
 
-@login_required
+
 def createsubscription(request):
     """
     create a subscription
     """
-    member = request.user.member
+    if request.user.is_authenticated():
+        member = request.user.member
+    else:
+        member = request.session.get('main_member')
+    if member is None:
+        return redirect("http://"+Config.server_url())
+    
     shareerror = False
     subscriptionform = SubscriptionForm()
     session_subscription = request.session.get('create_subscription')
@@ -267,7 +267,9 @@ def createsubscription(request):
 
     selectedsubscription = "none"
     selected_depot = None
-    existing_member_shares = member.share_set.all().count()
+    existing_member_shares = 0
+    if member.pk is not None:
+        existing_member_shares = member.share_set.all().count()
     shares = existing_member_shares
 
     if session_subscription is not None:
@@ -313,7 +315,8 @@ def createsubscription(request):
                 return redirect("/my/cosubmember/0")
             else:
                 password = None
-                if member.confirmed is False:
+                if member.pk is None:
+                    member.save()
                     password = password_generator()
                     request.user.set_password(password)
                     request.user.save()
@@ -338,11 +341,15 @@ def createsubscription(request):
                     if share.id is None:
                         share.save()
                         send_share_created_mail(share)
+                request.session['main_member'] = None
                 request.session['create_subscription'] = None
                 request.session['create_co_members'] = []
                 request.session['create_co_members_shares'] = []
                 request.session['create_member_shares'] = []
-                return redirect("/my/welcome")
+                if request.user.is_authenticated():
+                    return redirect("/my/home")
+                else:
+                    return redirect("/my/welcome")
 
     renderdict = {
         'co_member_shares': co_member_shares,
@@ -354,12 +361,13 @@ def createsubscription(request):
         'selected_subscription': selectedsubscription,
         'shareerror': shareerror,
         'co_members': co_members,
-        'subscriptionform': subscriptionform
+        'subscriptionform': subscriptionform,
+        'logged_in': request.user.is_authenticated()
     }
     return render(request, "createsubscription.html", renderdict)
 
 
-@login_required
+
 def add_member(request, subscription_id):
     shareerror = False
     shares = 1
@@ -386,10 +394,6 @@ def add_member(request, subscription_id):
                 for num in range(0, shares):
                     tmp_shares.append(Share(member=member, paid_date=None))
                 member = Member(**memberform.cleaned_data)
-                member.save()
-                pw = password_generator()
-                member.user.set_password(pw)
-                member.user.save()
             else:
                 for share in member.share_set.all():
                     tmp_shares.append(share)
@@ -412,7 +416,12 @@ def add_member(request, subscription_id):
                 request.session['create_co_members'] = co_members
                 return redirect('/my/create/subscrition')
     else:
-        member = request.user.member
+        if request.user.is_authenticated():
+            member = request.user.member
+        else:
+            member = request.session.get('main_member')
+        if member is None:
+            return redirect("http://"+Config.server_url())
         initial = {"addr_street": member.addr_street,
                    "addr_zipcode": member.addr_zipcode,
                    "addr_location": member.addr_location,
@@ -432,10 +441,14 @@ def add_member(request, subscription_id):
     return render(request, "add_member.html", renderdict)
 
 
-@login_required
 def cancel_create_subscription(request):
+    request.session['main_memer'] = None
     request.session['create_subscription'] = None
     request.session['create_co_members'] = []
     request.session['create_co_members_shares'] = []
     request.session['create_member_shares'] = []
-    return redirect('/my/subscription')
+    if request.user.is_authenticated():
+        return redirect('/my/subscription')
+    else:
+        return redirect("http://"+Config.server_url())
+    
