@@ -31,5 +31,5 @@ def render_to_pdf_storage(template_name, renderdict, filename):
         default_storage.delete(filename)
     rendered_html = get_template(template_name).render(renderdict)
     pdf = StringIO()
-    pisa.CreatePDF(rendered_html.decode("ISO-8859-1"), dest=pdf)
+    pisa.CreatePDF(str(rendered_html), dest=pdf)
     default_storage.save(filename, ContentFile(pdf.getvalue()))
