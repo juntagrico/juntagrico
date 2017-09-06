@@ -318,8 +318,8 @@ def createsubscription(request):
                 if member.pk is None:
                     member.save()
                     password = password_generator()
-                    request.user.set_password(password)
-                    request.user.save()
+                    member.user.set_password(password)
+                    member.user.save()
                 if session_subscription is not None:
                     session_subscription.save()
                     member.subscription_id = session_subscription.id
@@ -334,7 +334,7 @@ def createsubscription(request):
                         pw = password_generator()
                         co_member.user.set_password(pw)
                         co_member.user.save()
-                    send_been_added_to_subscription(co_member.email, pw, request.user.member.get_name(), shares,
+                    send_been_added_to_subscription(co_member.email, pw, member.get_name(), shares,
                                                     hashlib.sha1(co_member.email + str(
                                                         session_subscription.id)).hexdigest())
                 for share in member_shares + co_members_shares:
