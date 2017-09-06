@@ -434,4 +434,4 @@ def new_password(request):
 def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
-    return HttpResponseRedirect("/accounts/login/")
+    return HttpResponseRedirect("/my/home")

@@ -201,7 +201,7 @@ def signup(request):
                     # email is also username... we do not use it
                     password = password_generator()
                     member = Member(**memberform.cleaned_data)
-                    request.session['main_memer'] = member
+                    request.session['main_member'] = member
                     return redirect("/my/create/subscrition")
     else:
         memberform = MemberProfileForm()
