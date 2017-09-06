@@ -1,10 +1,17 @@
-{% extends "home.html" %}
+{% extends "base.html" %}
 {% load config %}
-
-
-{% block message %}
-    <div class="alert alert-success">
+{% block all_page_title %}
+    <div class="col-md-3"> 
+            &nbsp;
+    </div>
+    <div class="col-md-9 juntagrico">
         <h3>Herzlich willkommen bei {% config "organisation_name" %}!</h3>
-        Du wirst bald von der Betriebsgruppe weitere Infos erhalten.
+    </div>
+{% endblock %}
+
+{% block allcontent %}
+    <div class="alert alert-success">
+        Dein Abo wurde erstellt und wartet nun darauf aktiviert zu werden. 
+        Du erhälst eine Email mit allen weiteren infos an die von dir angegebene Emailadresse.
     </div><br/><br/>
 {% endblock %}
