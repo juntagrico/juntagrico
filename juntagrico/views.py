@@ -159,7 +159,7 @@ def job(request, job_id):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'admin': request.user.is_staff or job.typeactivityarea.coordinator == member,
+        'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
         'emails': "\n".join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
@@ -352,7 +352,7 @@ def contact_member(request, member_id, job_id):
     job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'admin': request.user.is_staff or job.typeactivityarea.coordinator == member,
+        'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
         'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
         'member_id': member_id,
         'member_name': contact_member.first_name + " " + contact_member.last_name,

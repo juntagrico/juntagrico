@@ -26,6 +26,16 @@
             <a href="/my/home"><span class="juntagrico_logo"></span></a>
         </div>
     </div>
+    {% if user.is_impersonate %}
+        <div class="row myjuntagrico">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    Du imitierst derzeit den Benutzer “{{ user.member.first_name }} {{ user.member.last_name }}”. <a
+                        href="/impersonate/stop">Beende dies hier</a>.
+                </div>
+            </div>
+        </div>
+    {% endif %}
     <div class="row myjuntagrico">
     {% block all_page_title %}
         <div class="col-md-3"> 
