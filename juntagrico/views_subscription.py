@@ -335,8 +335,8 @@ def createsubscription(request):
                         co_member.user.set_password(pw)
                         co_member.user.save()
                     send_been_added_to_subscription(co_member.email, pw, member.get_name(), shares,
-                                                    hashlib.sha1(co_member.email + str(
-                                                        session_subscription.id).encode('utf-8')).hexdigest())
+                                                    hashlib.sha1((co_member.email + str(
+                    session_subscription.id)).encode('utf8')).hexdigest())
                 for share in member_shares + co_members_shares:
                     if share.id is None:
                         share.save()
