@@ -325,7 +325,7 @@ def createsubscription(request):
                     member.subscription_id = session_subscription.id
                     member.save()
                 send_welcome_mail(member.email, password, hashlib.sha1((member.email + str(
-                    session_subscription.id)).encode('utf8')).hexdigest())
+                    member.id)).encode('utf8')).hexdigest())
                 for co_member in co_members:
                     co_member.subscription_id = session_subscription.id
                     co_member.save()
@@ -336,7 +336,7 @@ def createsubscription(request):
                         co_member.user.save()
                     send_been_added_to_subscription(co_member.email, pw, member.get_name(), shares,
                                                     hashlib.sha1((co_member.email + str(
-                    session_subscription.id)).encode('utf8')).hexdigest())
+                    co_member.id)).encode('utf8')).hexdigest())
                 for share in member_shares + co_members_shares:
                     if share.id is None:
                         share.save()
