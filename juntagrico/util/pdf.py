@@ -30,6 +30,6 @@ def render_to_pdf_storage(template_name, renderdict, filename):
     if default_storage.exists(filename):
         default_storage.delete(filename)
     rendered_html = get_template(template_name).render(renderdict)
-    pdf = StringIO()
-    pisa.CreatePDF(str(rendered_html).encode('utf-8'), dest=pdf)
+    pdf = BytesIO()
+    pisa.CreatePDF(BytesIO(str(rendered_html).encode("ISO-8859-1")), dest=pdf)
     default_storage.save(filename, ContentFile(pdf.getvalue()))
