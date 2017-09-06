@@ -167,7 +167,7 @@ class JobExtraInline(admin.TabularInline):
 class JobAdmin(admin.ModelAdmin):
     list_display = ["__str__", "type", "time", "slots", "freie_plaetze"]
     actions = ["copy_job", "mass_copy_job"]
-    search_fields = ["type_name", "type_activityarea__name"]
+    search_fields = ["type_name", "type_activityarea_name"]
     exclude = ["reminder_sent"]
     inlines = [AssignmentInline]
     readonly_fields = ["freie_plaetze"]
