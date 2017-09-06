@@ -62,7 +62,7 @@ class Command(BaseCommand):
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             cat = {"name": category.name, "description": category.description}
             count = 0
-            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered():
+            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category):
                 count += 1
                 type = {"name": extra_subscription.name, "size": extra_subscription.size, "last": False}
                 types.append(type)
