@@ -9,6 +9,7 @@ define([], function () {
     var table = $("#filter-table").DataTable({
         "paging": false,
         "info": false,
+        "ordering": false,
         "search": {
             "regex": true,
             "smart": false
