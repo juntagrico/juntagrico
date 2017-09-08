@@ -132,8 +132,8 @@
             <td class="small bottom-border right-border"></td>
         </tr>
         <tr>
-            <td style="width:180px;"></td>
-            <td style="width:180px; text-align:right;">TOTAL</td>
+            <td style="width:160px;"></td>
+            <td style="width:200px; text-align:right;">TOTAL</td>
             {% for value in depot.overview_cache %}
                 <td style="width:40px; text-align:right;">{{ value }}</td>
             {% endfor %}
@@ -154,8 +154,8 @@
         </tr>
         {% for subscription in depot.subscription_cache.all %}
             <tr>
-                <td style="width:180px; text-align:right;" class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
-                <td style="width:180px; text-align:right;" class="top-border left-border">{{ subscription.other_recipients_names }}</td>
+                <td style="width:160px; text-align:right;" class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
+                <td style="width:200px; text-align:right;" class="top-border left-border">{{ subscription.other_recipients_names }}</td>
                 {% for subscription_name in subscription_names %}                    
                     <td style="text-align:right;" class="top-border left-border">{% if subscription|subscriptions_amount:subscription_name %}{{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
                 {% endfor %}
