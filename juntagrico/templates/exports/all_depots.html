@@ -133,12 +133,12 @@
         </tr>
         <tr>
             <td></td>
-            <td style="text-align:right;">TOTAL</td>
+            <td>TOTAL</td>
             {% for value in depot.overview_cache %}
-                <td style="width:30px; text-align:right;">{{ value }}</td>
+                <td>{{ value }}</td>
             {% endfor %}
-            <td style="width:40px;"></td>
-            <td style="width:40px;"></td>
+            <td></td>
+            <td></td>
         </tr>
         <tr>
             <th>Name</th>
@@ -149,18 +149,18 @@
             {% for type in types %}
                 <th></th>
             {% endfor %}
-            <th style="text-align: right;">abgeholt</th>
-            <th style="text-align: right;">Tasche retour</th>
+            <th>abgeholt</th>
+            <th>Tasche retour</th>
         </tr>
         {% for subscription in depot.subscription_cache.all %}
             <tr>
-                <td style="text-align:right;" class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
-                <td style="text-align:right;" class="top-border left-border">{{ subscription.other_recipients_names }}</td>
+                <td class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
+                <td class="top-border left-border">{{ subscription.other_recipients_names }}</td>
                 {% for subscription_name in subscription_names %}                    
-                    <td style="text-align:right;" class="top-border left-border">{% if subscription|subscriptions_amount:subscription_name %}{{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
+                    <td class="top-border left-border">{% if subscription|subscriptions_amount:subscription_name %}{{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
                 {% endfor %}
                 {% for type in types %}                    
-                    <td style="text-align:right;" class="top-border left-border">{% if subscription|extra_subscription:type.name %}1{% endif %}</td>
+                    <td class="top-border left-border">{% if subscription|extra_subscription:type.name %}1{% endif %}</td>
                 {% endfor %}
                 <td class="top-border left-border"></td>
                 <td class="top-border left-border right-border"></td>
@@ -176,8 +176,8 @@
             {% for type in types %}
                 <th></th>
             {% endfor %}
-            <th style="text-align: right;">abgeholt</th>
-            <th style="text-align: right;">Tasche retour</th>
+            <th>abgeholt</th>
+            <th>Tasche retour</th>
         </tr>
         <tr>
             <td></td>
