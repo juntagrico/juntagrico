@@ -55,6 +55,14 @@
             font-size: 14px;
             line-height: 14px;
         }
+        
+        table {
+            table-layout:fixed;
+        }
+        
+        .name {
+            width: 180px;
+        }
 
        
     </style>
@@ -111,8 +119,8 @@
     Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
-            <td></td>
-            <td></td>
+            <td class="name"></td>
+            <td class="name"></td>
             <th colspan="2" class="top-border left-border right-border">ABO</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
