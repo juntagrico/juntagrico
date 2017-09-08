@@ -149,8 +149,8 @@
             <td></td>
         </tr>
         <tr>
-            <th>Name</th>
-            <th>Abo mit</th>
+            <th style="width:180px;">Name</th>
+            <th style="width:180px;">Abo mit</th>
             {% for subscription_name in subscription_names %}
                 <th></th>
             {% endfor %}
@@ -162,16 +162,16 @@
         </tr>
         {% for subscription in depot.subscription_cache.all %}
             <tr>
-                <td class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
-                <td class="top-border left-border">{{ subscription.other_recipients_names }}</td>
+                <td style="width:180px;" class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
+                <td style="width:180px;" class="top-border left-border">{{ subscription.other_recipients_names }}</td>
                 {% for subscription_name in subscription_names %}                    
-                    <td class="top-border left-border">{% if subscription|subscriptions_amount:subscription_name %}{{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
+                    <td style="width:40px;" class="top-border left-border">{% if subscription|subscriptions_amount:subscription_name %}{{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
                 {% endfor %}
                 {% for type in types %}                    
-                    <td class="top-border left-border">{% if subscription|extra_subscription:type.name %}1{% endif %}</td>
+                    <td style="width:40px;" class="top-border left-border">{% if subscription|extra_subscription:type.name %}1{% endif %}</td>
                 {% endfor %}
-                <td class="top-border left-border"></td>
-                <td class="top-border left-border right-border"></td>
+                <td style="width:60px;" class="top-border left-border"></td>
+                <td style="width:60px;" class="top-border left-border right-border"></td>
             </tr>
         {% endfor %}
         {% if depot.active_subscriptions.all|length > 20 %}
