@@ -176,16 +176,16 @@
         {% endfor %}
         {% if depot.active_subscriptions.all|length > 20 %}
         <tr>
-            <th>Name</th>
-            <th>Abo mit</th>
+            <th style="width:180px;">Name</th>
+            <th style="width:180px;">Abo mit</th>
             {% for subscription_name in subscription_names %}
-                <th></th>
+                <th style="width:40px;"></th>
             {% endfor %}
             {% for type in types %}
-                <th></th>
+                <th style="width:40px;"></th>
             {% endfor %}
-            <th>abgeholt</th>
-            <th>Tasche retour</th>
+            <th style="width:60px;">abgeholt</th>
+            <th style="width:60px;">Tasche retour</th>
         </tr>
         <tr>
             <td></td>
