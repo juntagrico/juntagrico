@@ -17,7 +17,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='juntagrico',
-    version='0.1.releasecandidate1.49',
+    version='0.1.releasecandidate1.50',
     packages=find_packages(),
     include_package_data=True,
     license='BSD License',  # example license
