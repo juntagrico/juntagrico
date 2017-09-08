@@ -173,42 +173,55 @@
                 <td style="width:60px;" class="top-border left-border"></td>
                 <td style="width:60px;" class="top-border left-border right-border"></td>
             </tr>
-        {% endfor %}
-        {% if depot.active_subscriptions.all|length > 200 %}
+        {% if forloop.counter0|divisibleby:19 %}
+            </table>
+            <div class="page-break"></div>
+             <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} Fortsetzung</h2>
+    <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
         <tr>
-            <th style="width:180px;">Name</th>
-            <th style="width:180px;">Abo mit</th>
-            {% for subscription_name in subscription_names %}
-                <th style="width:40px;"></th>
-            {% endfor %}
-            {% for type in types %}
-                <th style="width:40px;"></th>
-            {% endfor %}
-            <th style="width:60px;">abgeholt</th>
-            <th style="width:60px;">Tasche retour</th>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>            
-            {% for subscription_name in subscription_names %}
-                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ subscription_name }}</td>
-            {% endfor %}
-            {% for type in types %}
-                <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
-            {% endfor %}
-            <td></td>
-            <td class="small bottom-border right-border"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
+            <td style="width:180px;" class="name"></td>
+            <td style="width:180px;" class="name"></td>
             <th colspan="2" class="top-border left-border right-border">ABO</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}
             <th colspan="2" class="top-border right-border"></th>
         </tr>
-        {% endif%}
+        <tr>
+            <td></td>
+            <td></td>
+            {% for subscription_name in subscription_names %}
+                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ subscription_name }}</td>
+            {% endfor %}
+            {% for type in types %}
+                <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
+            {% endfor %}
+            <td class="small bottom-border"></td>
+            <td class="small bottom-border right-border"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>TOTAL</td>
+            {% for value in depot.overview_cache %}
+                <td>{{ value }}</td>
+            {% endfor %}
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <th style="width:180px;">Name</th>
+            <th style="width:180px;">Abo mit</th>
+            {% for subscription_name in subscription_names %}
+                <th></th>
+            {% endfor %}
+            {% for type in types %}
+                <th></th>
+            {% endfor %}
+            <th>abgeholt</th>
+            <th>Tasche retour</th>
+        </tr>
+        {% endif %}
+        {% endfor %}
     </table>
     <div class="page-break"></div>
 {% endfor %}
