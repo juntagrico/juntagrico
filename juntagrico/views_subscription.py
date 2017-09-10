@@ -217,18 +217,14 @@ def signup(request):
     return render(request, "signup.html", renderdict)
 
 
-@login_required
+
 def welcome(request):
     """
     welcome
     """
-
-    renderdict = get_menu_dict(request)
-    renderdict.update({
-        'jobs': JobDao.get_current_jobs()[:7],
-        'teams': ActivityAreaDao.all_visible_areas(),
-        'no_subscription': request.user.member.subscription is None
-    })
+    renderdict= {
+        'no_subscription': request.session['main_member'].subscription is None
+    }
 
     return render(request, "welcome.html", renderdict)
 
@@ -239,7 +235,7 @@ def confirm(request, hash):
     """
 
     for member in MemberDao.all_members():
-        if hash == hashlib.sha1(member.email + str(member.subscription_id)).hexdigest():
+        if hash == hashlib.sha1((member.email + str(member.id)).encode('utf8')).hexdigest():
             member.confirmed = True
             member.save()
 
@@ -341,7 +337,6 @@ def createsubscription(request):
                     if share.id is None:
                         share.save()
                         send_share_created_mail(share)
-                request.session['main_member'] = None
                 request.session['create_subscription'] = None
                 request.session['create_co_members'] = []
                 request.session['create_co_members_shares'] = []

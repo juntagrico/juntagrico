@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "sbase.html" %}
 {% load config %}
 {% block all_page_title %}
     <div class="col-md-3"> 
@@ -11,7 +11,11 @@
 
 {% block allcontent %}
     <div class="alert alert-success">
+        {% if no_subscription %}
+        Du bist jetzt Mitglied bei {% config "organisation_name" %}.
+        {% else %}
         Dein Abo wurde erstellt und wartet nun darauf aktiviert zu werden. 
+        {% endif %}
         Du erhälst eine Email mit allen weiteren infos an die von dir angegebene Emailadresse.
     </div><br/><br/>
 {% endblock %}
