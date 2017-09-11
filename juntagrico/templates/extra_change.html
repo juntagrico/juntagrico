@@ -15,10 +15,13 @@
         <form method="post" class="form-horizontal createsubscription">
             {% csrf_token %}
             <div class="form-group">
-                <label class="control-label col-md-3" for="depot">Deine Abos</label>
-
-                <div class="controls col-md-9">
                     {% for extra in extras %}
+                    <label class="control-label col-md-3" for="depot">
+                    {% if forloop.first %}    
+                        Deine Abos
+                    {% endif %}
+                    </label>
+                    <div class="controls col-md-9">
                         <div class="checkbox">
                             <label for="subscription{{ extra.id }}" class="control-label col-md-2">
                                 <input type="checkbox" value="{{ extra.id }}" name="subscription{{ extra.id }}" class="onoffswitch" id="subscription{{ extra.id }}" {% if extra.selected %}checked="checked"{% endif %} />
@@ -27,6 +30,7 @@
                                 {{ extra.name }}
                             </label>
                         </div>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
