@@ -338,7 +338,7 @@ def createsubscription(request):
                         if share.member.email == member.email:
                             share.member = member
                         else:
-                            share.member = (co_member for co_member in co_members if co_member.email == share.email)[0]
+                            share.member = list((co_member for co_member in co_members if co_member.email == share.email))[0]
                         share.save()
                         send_share_created_mail(share)
                 request.session['create_subscription'] = None
