@@ -335,6 +335,10 @@ def createsubscription(request):
                     co_member.id)).encode('utf8')).hexdigest())
                 for share in member_shares + co_members_shares:
                     if share.id is None:
+                        if share.member.email == main_member.email:
+                            share.member = main_member
+                        else:
+                            share.member = (co_member for co_member in in co_members if co_member.email == share.email)[0]
                         share.save()
                         send_share_created_mail(share)
                 request.session['create_subscription'] = None
@@ -386,8 +390,8 @@ def add_member(request, subscription_id):
             pw = None
             if memberexists is False:
                 for num in range(0, shares):
-                    tmp_shares.append(Share(member=member, paid_date=None))
                 member = Member(**memberform.cleaned_data)
+                    tmp_shares.append(Share(member=member, paid_date=None))
             else:
                 for share in member.share_set.all():
                     tmp_shares.append(share)
