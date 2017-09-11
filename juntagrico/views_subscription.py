@@ -335,8 +335,8 @@ def createsubscription(request):
                     co_member.id)).encode('utf8')).hexdigest())
                 for share in member_shares + co_members_shares:
                     if share.id is None:
-                        if share.member.email == main_member.email:
-                            share.member = main_member
+                        if share.member.email == member.email:
+                            share.member = member
                         else:
                             share.member = (co_member for co_member in co_members if co_member.email == share.email)[0]
                         share.save()
