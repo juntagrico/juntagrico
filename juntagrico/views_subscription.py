@@ -67,7 +67,7 @@ def subscription_change(request):
     renderdict.update({
         'member': request.user.member,
         'change_size': month <= Config.business_year_cancelation_month(),
-        'next_cancel_date': Config.business_year_cancelation_month(),
+        'next_cancel_date': temporal.next_cancelation_date(),
         'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year()
@@ -107,7 +107,7 @@ def size_change(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
-        'next_cancel_date': Config.business_year_cancelation_month(),
+        'next_cancel_date': temporal.next_cancelation_date(),
         'size': request.user.member.subscription.future_size,
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
     })
