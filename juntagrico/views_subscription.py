@@ -107,6 +107,7 @@ def size_change(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
+        'next_cancel_date': Config.business_year_cancelation_month(),
         'size': request.user.member.subscription.future_size,
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
     })
