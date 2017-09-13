@@ -216,13 +216,13 @@ class JobAdmin(admin.ModelAdmin):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            return qs.filter(type_activityarea__coordinator=request.user.member)
+            return qs.filter(type__activityarea__coordinator=request.user.member)
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "type" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = JobTypeDao.objects.filter(activityarea__coordinator=request.user.member)
+            kwargs["queryset"] = JobTypeDao.types_by_coordinator(request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
