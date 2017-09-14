@@ -302,7 +302,7 @@ class JobTypeAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "activityarea" and request.user.has_perm("juntagrico.is_area_admin") and (
                 not (request.user.is_superuser or request.user.has_perm("juntagrico.is_operations_group"))):
-            kwargs["queryset"] = ActivityAreaDao.areas_by_coordinator(member)
+            kwargs["queryset"] = ActivityAreaDao.areas_by_coordinator(request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 

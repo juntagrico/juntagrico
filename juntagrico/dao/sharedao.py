@@ -9,5 +9,5 @@ class ShareDao:
 
     @staticmethod
     def paid_shares(subscription):
-        return juntagrico.entity.Share.objects.filter(member__in=subscription.members.all()).filter(paid_date__isnull=False).filter(
+        return juntagrico.models.Share.objects.filter(member__in=subscription.members.all()).filter(paid_date__isnull=False).filter(
             cancelled_date__isnull=True)
