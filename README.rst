@@ -4,9 +4,11 @@ Juntagrico
 .. image:: https://travis-ci.org/juntagrio/juntagrico.svg?branch=master
     :target: https://travis-ci.org/juntagrico/juntagrico
    
-.. image:: https://img.shields.io/gemnasium/juntagrico/juntagrico.svg   :target: https://github.com/juntagrico/juntagrico
+.. image:: https://img.shields.io/gemnasium/juntagrico/juntagrico.svg
+    :target: https://github.com/juntagrico/juntagrico
 
-.. image:: https://img.shields.io/codeclimate/github/juntagrico/juntagrico.svg   :target: https://github.com/juntagrico/juntagrico
+.. image:: https://img.shields.io/codeclimate/github/juntagrico/juntagrico.svg
+    :target: https://github.com/juntagrico/juntagrico
 
 **the easy solution for cooperative vegetable growers**
 
