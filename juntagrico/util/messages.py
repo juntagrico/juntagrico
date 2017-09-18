@@ -2,9 +2,9 @@
 
 from django.template.loader import get_template
 
-from django.dao import ShareDao
+from juntagrico.dao.sharedao import ShareDao
 
-def messages(request)
+def messages(request):
     result = []
     if request.user.member.confirmed is False:
         result.append(get_template('messages/not_confirmed.html').render())
@@ -12,9 +12,9 @@ def messages(request)
     if request.user.member.subscription is None:
         result.append(get_template('messages/no_subscription.html').render())
         
-    if ShareDao.get_unpaid_shares(request.user.member).size()>0:
+    if len(ShareDao.unpaid_shares(request.user.member))>0:
         render_dict ={
-            'amount': ShareDao.get_unpaid_shares(request.user.member).size(),
+            'amount': len(ShareDao.unpaid_shares(request.user.member)),
         }
         result.append(get_template('messages/unpaid_shares.html').render(render_dict))
     

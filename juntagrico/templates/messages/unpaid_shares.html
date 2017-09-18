@@ -1,11 +1,8 @@
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
+<div class="alert alert-warning">
   Du hast {{ amount }} 
   {% if amount == 1%}
     unbezahlter Anteilsschein
   {% else %}
     unbezahlte Anteilsscheine
-  {% endif%}. Finde <a href="my/info/unpaidshares" class="alert-link">hier</a> mehr dazu.
+  {% endif%}. Finde <a href="/my/info/unpaidshares" class="alert-link">hier</a> mehr dazu.
 </div>

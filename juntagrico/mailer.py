@@ -2,6 +2,7 @@
 
 import os
 import re
+import hashlib
 
 from django.contrib.auth.models import Permission, User
 from django.contrib.sites.shortcuts import get_current_site
