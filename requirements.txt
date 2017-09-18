@@ -1,6 +1,6 @@
 Django==1.11.5
 django-polymorphic==1.2
-XlsxWriter==0.9.6
+XlsxWriter==1.0.0
 html5lib==1.0b10
 pyPdf==1.13
 xhtml2pdf==0.2b1
