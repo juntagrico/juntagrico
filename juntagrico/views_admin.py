@@ -40,7 +40,7 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get("sender")
     if request.POST.get("allsubscription") == "on":
-        for member in MemberDaomembers_for_email_with_subscription():
+        for member in MemberDao.members_for_email_with_subscription():
             emails.add(member.email)
     if request.POST.get("allshares") == "on":
         for member in MemberDao.members_for_email():
