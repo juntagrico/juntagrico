@@ -13,6 +13,7 @@ from django.template.loader import get_template
 
 from juntagrico.config import Config
 from juntagrico.util.ical import *
+
 def get_server():
     return "http://" + Config.adminportal_server_url()
 
@@ -233,6 +234,26 @@ def send_job_canceled(emails, job):
 
     msg = EmailMultiAlternatives(Config.organisation_name() + " - Job-Abgesagt", text_content, Config.info_email(),
                                  emails)
+    msg.attach_alternative(html_content, "text/html")
+    send_mail_multi(msg)
+
+
+def send_confirm_mail(member):
+    
+    plaintext = get_template('mails/confirm.txt')
+    htmly = get_template('mails/confirm.html')
+
+    d = {
+        'hash': hashlib.sha1((member.email + str(
+                    member.id)).encode('utf8')).hexdigest(),
+        'serverurl': get_server()
+    }
+
+    text_content = plaintext.render(d)
+    html_content = htmly.render(d)
+
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Email Adresse bestätigen", text_content, Config.info_email(),
+                                 [member.email])
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
 

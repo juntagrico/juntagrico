@@ -22,6 +22,8 @@ urlpatterns = [
     url('^my/pastjobs$', juntagrico.pastjobs),
     url('^my/depot/(?P<depot_id>.*?)/', juntagrico.depot),
     url('^my/newpassword$', juntagrico.new_password),
+    url('^my/sendconfirm$', juntagrico.send_confirm),
+    url('^my/info/unpaidshares$', juntagrico.info_unpaid_shares),
     url(r'^logout/$', juntagrico.logout_view),
     url(r'^accounts/login/$', LoginView.as_view()),
 

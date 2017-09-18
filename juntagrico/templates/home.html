@@ -2,11 +2,12 @@
 {% load config %}
 
 {% block content %}
-    {% block message %} {% endblock %}
-    {% if no_subscription %}
-        <div class="alert alert-warning">Du hast kein Abo</div>
-        <br/><br/>
-    {% endif %}
+    {% for message in messages %}
+        {{ message }}
+        {% if forloop.last %}
+            <br/><br/>
+        {% endif %}
+    {% endfor %}
 
     {% autoescape off %}
         {{ announcement }}
