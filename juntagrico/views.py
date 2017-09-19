@@ -19,6 +19,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.forms import *
 from juntagrico.models import *
+from juntagrico.util.messages import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 
@@ -98,7 +99,7 @@ def home(request):
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_pormotedjobs), key=lambda job: job.time),
         'teams': ActivityAreaDao.all_visible_areas_ordered(),
-        'no_subscription': request.user.member.subscription is None,
+        'messages': messages(request),
     })
 
     return render(request, "home.html", renderdict)
@@ -392,6 +393,17 @@ def profile(request):
     })
     return render(request, "profile.html", renderdict)
 
+
+@login_required
+def send_confirm(request):
+    send_confirm_mail(request.user.member)
+    renderdict = get_menu_dict(request)
+    return render(request, 'info/confirmation_sent.html', renderdict)
+    
+@login_required
+def info_unpaid_shares(request):
+    renderdict = get_menu_dict(request)
+    return render(request, 'info/unpaid_shares.html', renderdict)
 
 @login_required
 def change_password(request):

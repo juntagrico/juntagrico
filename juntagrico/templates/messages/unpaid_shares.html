@@ -1,0 +1,8 @@
+<div class="alert alert-warning">
+  Du hast {{ amount }} 
+  {% if amount == 1%}
+    unbezahlter Anteilsschein
+  {% else %}
+    unbezahlte Anteilsscheine
+  {% endif%}. Finde <a href="/my/info/unpaidshares" class="alert-link">hier</a> mehr dazu.
+</div>

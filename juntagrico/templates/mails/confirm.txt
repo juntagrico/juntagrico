@@ -1,0 +1,10 @@
+{% extends "mails/email.txt" %}
+{% load config %}
+{% block content %}
+Klicke bitte auf den Bestätigungslink:
+Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
+
+
+Herzlich grüsst,
+die {% config "organisation_name" %}-Betriebsgruppe
+{% endblock %}

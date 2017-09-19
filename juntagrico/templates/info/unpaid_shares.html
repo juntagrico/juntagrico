@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load config %}
+
+{% block content %}
+    Im System sind gewisse deiner Anteilsscheine als nicht bezahlt markiert. Solltest du die Zahlung bereits vorgenommen haben wurde sie noch nicht ins System übertragen.
+    Dies kann einige Tage dauern. Falls du die Anteilscheine noch nicht bezahlt hast benutze diese Bankverbindung
+    <br/>
+        {% config "organisation_address" as addr%}
+        {{ addr.name }}<br/>
+        {% if addr.extra %}
+            {{ addr.extra }}<br/>
+        {% endif %}    
+        {{ addr.street }} {{ addr.number }}<br/>
+        {{ addr.zip }} {{ addr.city }}<br/>
+        {% config "organisation_bank_connection" as bank%}
+        {{ bank.NAME }}<br/>
+        Postkonto-Nummer: {{ bank.PC }}<br/>
+        IBAN: {{ bank.IBAN }}<br/>
+        BIC: {{ bank.BIC }}<br/><br/>
+    Solltest du Fragen dazu haben sende eine Email an <a href="mailto:{% config "info_email" %}?subject=Frage zu unbezahltem Anteilsschein {% config "server_url" %}">{% config "info_email" %}</a>.
+{% endblock %}    
+
+{% block scripts %}
+{% endblock %}

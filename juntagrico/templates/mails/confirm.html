@@ -1,0 +1,10 @@
+{% extends "mails/email.html" %}
+{% load config %}
+{% block content %}
+   Klicke bitte <a href="{{ serverurl }}/my/confirm/{{ hash }}">hier zur Bestätigung</a>.
+
+   
+    <br/><br/>
+    Herzlich grüsst,<br/>
+    die {% config "organisation_name" %}-Betriebsgruppe
+{% endblock %}
