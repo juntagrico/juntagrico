@@ -399,8 +399,8 @@ def add_member(request, subscription_id):
             if request.GET.get("return"):
                 member.subscription_id = subscription_id
                 member.save()
-                send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1(
-                    memberform.cleaned_data['email'] + str(subscription_id)).hexdigest())
+                send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1((member.email + str(
+                    member.id)).encode('utf8')).hexdigest())
                 if memberexists is False:
                     for share in tmp_shares:
                         share.save()
