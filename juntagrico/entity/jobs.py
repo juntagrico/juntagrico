@@ -12,6 +12,7 @@ from juntagrico.config import Config
 class ActivityArea(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, default="")
+    email = models.EmailField(null=True)
     core = models.BooleanField("Kernbereich", default=False)
     hidden = models.BooleanField("versteckt", default=False)
     coordinator = models.ForeignKey("Member", on_delete=models.PROTECT)

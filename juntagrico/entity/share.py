@@ -9,7 +9,7 @@ from juntagrico.config import Config
 
 
 class Share(Billable):
-    member = models.ForeignKey("Member", null=True, blank=True, on_delete=models.SET_NULL)
+    member = models.ForeignKey("Member", blank=True, on_delete=models.PROTECT)
     paid_date = models.DateField("Bezahlt am", null=True, blank=True)
     issue_date = models.DateField("Ausgestellt am", null=True, blank=True)
     booking_date = models.DateField("Eingebucht am", null=True, blank=True)
