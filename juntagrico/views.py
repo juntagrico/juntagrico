@@ -218,7 +218,7 @@ def participation(request):
             'checked': member in area.members.all(),
             'id': area.id,
             'core': area.core,
-            'coordinator': area.coordinator
+            'coordinator': area.coordinator,
             'email': area.email
         })
 
