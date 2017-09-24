@@ -360,6 +360,10 @@ class AreaAdmin(admin.ModelAdmin):
 
 
 class AssignmentAdmin(admin.ModelAdmin):
+        
+    raw_id_fields = ["member", "job"]
+    
+
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
         if request.user.has_perm("juntagrico.is_area_admin") and (
