@@ -219,6 +219,7 @@ def participation(request):
             'id': area.id,
             'core': area.core,
             'coordinator': area.coordinator
+            'email': area.email
         })
 
     renderdict = get_menu_dict(request)
