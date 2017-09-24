@@ -76,7 +76,12 @@
                             </div>
                         </div>
                         <div class="col-md-7">
-                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/><a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
+                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
+                             {% if area.email is not None%}
+                            <a href="mailto:{{ area.email }}">{{ area.email }}</a>
+                            {% else %}
+                            <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
