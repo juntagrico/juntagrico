@@ -294,7 +294,6 @@ def createsubscription(request):
             if size > 0:
                 session_subscription = Subscription(**subscriptionform.cleaned_data)
                 session_subscription.depot = DepotDao.depot_by_id(request.POST.get("depot"))
-                session_subscription.primary_member = member
                 session_subscription.size = size
 
             if len(member_shares) < int(request.POST.get("shares")):
@@ -318,6 +317,7 @@ def createsubscription(request):
                     member.user.set_password(password)
                     member.user.save()
                 if session_subscription is not None:
+                    session_subscription.primary_member = member
                     session_subscription.save()
                     member.subscription_id = session_subscription.id
                     member.save()
