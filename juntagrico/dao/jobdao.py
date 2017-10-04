@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.utils import timezone
 
-from juntagrico.models import *
+from juntagrico.models import Job, OneTimeJob, RecuringJob
 from juntagrico.config import Config
 
 
 class JobDao:
-    def __init__(self):
-        pass
-
     @staticmethod
     def job_by_id(job_id):
         return Job.objects.filter(id=job_id)[0]

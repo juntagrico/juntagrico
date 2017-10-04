@@ -3,8 +3,6 @@ import juntagrico
 
 
 class ExtraSubscriptionTypeDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_extra_types():

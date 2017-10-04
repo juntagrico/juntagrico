@@ -4,8 +4,6 @@ import juntagrico
 
 
 class ShareDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def paid_shares(subscription):

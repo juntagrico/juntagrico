@@ -8,8 +8,6 @@ from juntagrico.util import temporal
 
 
 class MemberDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_members():

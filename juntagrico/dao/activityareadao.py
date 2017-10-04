@@ -4,8 +4,6 @@ from juntagrico.models import *
 
 
 class ActivityAreaDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_visible_areas():

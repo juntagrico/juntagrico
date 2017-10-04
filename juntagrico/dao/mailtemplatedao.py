@@ -4,8 +4,6 @@ from juntagrico.models import *
 
 
 class MailTemplateDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_templates():

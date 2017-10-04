@@ -4,8 +4,6 @@ import juntagrico
 
 
 class AssignmentDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def assignments_for_job(job_identifier):

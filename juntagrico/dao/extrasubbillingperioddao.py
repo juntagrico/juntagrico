@@ -6,8 +6,6 @@ import juntagrico
 
 
 class ExtraSubBillingPeriodDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def get_current_period_per_type(type):        

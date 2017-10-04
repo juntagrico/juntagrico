@@ -4,8 +4,6 @@ from juntagrico.models import *
 
 
 class DepotDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_depots():
