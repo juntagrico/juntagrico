@@ -189,7 +189,7 @@ def signup(request):
     if request.method == 'POST':
         agbchecked = request.POST.get("agb") == "on"
 
-        memberform = MemberProfileForm(request.POST)
+        memberform = RegisterMemberForm(request.POST)
         if not agbchecked:
             agberror = True
         else:
@@ -205,7 +205,7 @@ def signup(request):
                     request.session['main_member'] = member
                     return redirect("/my/create/subscrition")
     else:
-        memberform = MemberProfileForm()
+        memberform = RegisterMemberForm()
 
     renderdict = {
         'memberform': memberform,
@@ -373,7 +373,7 @@ def add_member(request, subscription_id):
     memberexists = False
     memberblocked = False
     if request.method == 'POST':
-        memberform = MemberProfileForm(request.POST)
+        memberform = RegisterMemberForm(request.POST)
         try:
             shares = int(request.POST.get("shares"))
             shareerror = shares < 0
@@ -426,7 +426,7 @@ def add_member(request, subscription_id):
                    "addr_location": member.addr_location,
                    "phone": member.phone,
                    }
-        memberform = MemberProfileForm(initial=initial)
+        memberform = RegisterMemberForm(initial=initial)
     renderdict = {
         'shares': shares,
         'memberexists': memberexists,
