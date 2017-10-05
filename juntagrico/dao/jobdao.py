@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.utils import timezone
 
-from juntagrico.models import Job, OneTimeJob, RecuringJob
+from juntagrico.models import *
 from juntagrico.config import Config
 
 
