@@ -8,6 +8,7 @@ from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.util.jobs import *
 from juntagrico.util.temporal import *
 from juntagrico.config import Config
+from juntagrico.mailer import *
 
 class ActivityArea(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
