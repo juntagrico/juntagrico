@@ -403,6 +403,7 @@ def add_member(request, subscription_id):
                     member.id)).encode('utf8')).hexdigest())
                 if memberexists is False:
                     for share in tmp_shares:
+                        share.member=member
                         share.save()
                         send_share_created_mail(share)
                 return redirect(request.GET.get("return"))
