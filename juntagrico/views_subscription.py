@@ -42,7 +42,7 @@ def subscription(request):
                 'extrasubscriptions': current_extrasubscriptions,
                 'future_extrasubscriptions': future_extrasubscriptions,
                 'extrasubscriptions_changed': extrasubscriptions_changed,
-                'subscriptionmembers': request.user.member.subscription.recipients().exclude(
+                'co_members': request.user.member.subscription.recipients().exclude(
                     email=request.user.member.email),
                 'primary': request.user.member.subscription.primary_member.email == request.user.member.email,
                 'next_extra_subscription_date': Subscription.next_extra_change_date(),
@@ -52,7 +52,7 @@ def subscription(request):
         'member': request.user.member,
         'shares': request.user.member.share_set.count(),
         'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
-        'menu': {'subscriptionnnement': 'active'},
+        'menu': {'subscription': 'active'},
     })
     return render(request, "subscription.html", renderdict)
 
