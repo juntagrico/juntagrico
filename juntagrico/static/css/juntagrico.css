@@ -376,3 +376,20 @@ label {
 th {
     font-weight: normal;
 }
+
+td.details-control, tr.shown td.details-control {
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;    
+	color: #66cc66;
+}
+
+
+td.details-control::before {
+    content: "\e080";
+}
+
+tr.shown td.details-control::before {
+    content: "\e114";
+}
