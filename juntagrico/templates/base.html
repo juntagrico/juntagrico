@@ -63,6 +63,11 @@
                     <li class="{{ menu.jobs }}">
                         <a href="/my/assignments">Einsätze</a>
                     </li>
+                    {% if show_deliveries %}
+                    <li class="{{ menu.deliveries }}">
+                        <a href="/my/deliveries">Lieferungen</a>
+                    </li>
+                    {% endif %}
                     <li class="{{ menu.personalInfo }}">
                         <a href="/my/profile">Personalien</a>
                     </li>

@@ -1,0 +1,17 @@
+{% load config %}
+<table id="filter-table" class="list table" style="display: table;">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Datum</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for delivery in deliveries %}
+        <tr data-subscription_size="{{ delivery.subscription_size }}" data-text=" {{ delivery.text }}" >
+            <td class="details-control"></td>
+            <td>{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

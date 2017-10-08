@@ -17,6 +17,7 @@ from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util.messages import *
@@ -80,6 +81,7 @@ def get_menu_dict(request):
         'area_admin': area_admin,
         'show_core': ActivityAreaDao.all_core_areas().count()>0,
         'show_extras': JobExtraDao.all_job_extras().count()>0,
+        'show_deliveries': DeliveryDao.all_deliveries().count()>0,
         'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + "/dpl.pdf",
     }
     enrich_menu_dict(request, menu_dict)
@@ -308,6 +310,21 @@ def assingments_all(request):
     })
 
     return render(request, "jobs.html", renderdict)
+
+
+@login_required
+def deliveries(request):
+    """
+    All deliveries to be sorted etc.
+    """
+    renderdict = get_menu_dict(request)
+    deliveries = DeliveryDao.all_deliveries_order_by_delivery_date_desc()
+    renderdict.update({
+        'deliveries': deliveries,
+        'menu': {'deliveries': 'active'},
+    })
+
+    return render(request, "deliveries.html", renderdict)
 
 
 @login_required
