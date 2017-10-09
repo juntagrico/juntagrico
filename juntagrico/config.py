@@ -101,6 +101,12 @@ class Config:
         return "/static/docs/bylaws.pdf"
 
     @staticmethod
+    def mail_template():
+        if hasattr(settings, 'MAIL_TEMPLATE'):
+            return settings.MAIL_TEMPLATE
+        return "mails/email.html"
+
+    @staticmethod
     def style_sheet():
         if hasattr(settings, 'STYLE_SHEET'):
             return settings.STYLE_SHEET

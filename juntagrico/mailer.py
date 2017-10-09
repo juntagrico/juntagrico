@@ -92,6 +92,7 @@ def send_welcome_mail(email, password, hash):
 
     # reset password so we can send it to him
     d = {
+        'mail_template': Config.mail_template,
         'subject': 'Willkommen bei ' + Config.organisation_name(),
         'username': email,
         'password': password,
@@ -136,6 +137,7 @@ def send_been_added_to_subscription(email, password, name, shares, hash):
 
     # reset password so we can send it to him
     d = {
+        'mail_template': Config.mail_template,
         'subject': 'Willkommen bei ' + Config.organisation_name(),
         'username': email,
         'name': name,
@@ -159,6 +161,7 @@ def send_filtered_mail(subject, message, text_message, emails, attachments, send
     htmly = get_template('mails/filtered_mail.html')
 
     htmld = {
+        'mail_template': Config.mail_template,
         'subject': subject,
         'content': message,
         'serverurl': get_server()
@@ -185,6 +188,7 @@ def send_mail_password_reset(email, password):
     subject = 'Dein neues ' + Config.organisation_name() + ' Passwort'
 
     d = {
+        'mail_template': Config.mail_template,
         'subject': subject,
         'email': email,
         'password': password,
@@ -206,6 +210,7 @@ def send_job_reminder(emails, job, participants):
     contact = coordinator.first_name + " " + coordinator.last_name + ": " + job.typeactivityarea.contact()
 
     d = {
+        'mail_template': Config.mail_template,
         'job': job,
         'participants': participants,
         'serverurl': get_server(),
@@ -226,6 +231,7 @@ def send_job_canceled(emails, job):
     htmly = get_template('mails/job_canceled_mail.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'job': job,
         'serverurl': get_server()
     }
@@ -245,6 +251,7 @@ def send_confirm_mail(member):
     htmly = get_template('mails/confirm.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'hash': hashlib.sha1((member.email + str(
                     member.id)).encode('utf8')).hexdigest(),
         'serverurl': get_server()
@@ -264,6 +271,7 @@ def send_job_time_changed(emails, job):
     htmly = get_template('mails/job_time_changed_mail.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'job': job,
         'serverurl': get_server()
     }
@@ -284,6 +292,7 @@ def send_job_signup(emails, job):
     htmly = get_template('mails/job_signup_mail.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'job': job,
         'serverurl': get_server()
     }
@@ -304,6 +313,7 @@ def send_depot_changed(emails, depot):
     htmly = get_template('mails/depot_changed_mail.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'depot': depot,
         'serverurl': get_server()
     }
@@ -322,6 +332,7 @@ def send_bill_share(bill, share, member):
     htmly = get_template('mails/bill_share.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'member': member,
         'bill': bill,
         'share': share,
@@ -342,6 +353,7 @@ def send_bill_sub(bill, subscription, start, end, member):
     htmly = get_template('mails/bill_sub.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'member': member,
         'bill': bill,
         'sub': subscription,
@@ -364,6 +376,7 @@ def send_bill_extrasub(bill, extrasub, start, end, member):
     htmly = get_template('mails/bill_extrasub.html')
 
     d = {
+        'mail_template': Config.mail_template,
         'member': member,
         'bill': bill,
         'extrasub': extrasub,

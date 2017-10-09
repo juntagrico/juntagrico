@@ -1,4 +1,4 @@
-{% extends "mails/email.html" %}
+{% extends mail_template %}
 {% load config %}
 {% block content %}
    Klicke bitte <a href="{{ serverurl }}/my/confirm/{{ hash }}">hier zur Bestätigung</a>.

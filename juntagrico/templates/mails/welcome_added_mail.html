@@ -1,4 +1,4 @@
-{% extends "mails/email.html" %}
+{% extends mail_template %}
 {% load config %}
 {% block content %}
     Wir freuen uns, dich bei {% config "organisation_name" %} begrüssen zu dürfen. Soeben hat dich '{{ name }}' zu ihrem/seinem Gemüsesubscription hinzugefügt und für dich {{ anteilsscheine }} Share(e) erworben. Wenn du damit einverstanden bist, {% config "organisation_name" %}-GenossenschafterIn zu werden und <a target="_blank" href="{{ serverurl }}{% config "bylaws" %}">die Statuten</a> und <a target="_blank" href="{{ serverurl }}{% config "business_regulations" %}">das Betriebsreglement</a> gelesen hast, dann klicke bitte <a href="{{ serverurl }}/my/confirm/{{ hash }}">hier zur Bestätigung</a>.
