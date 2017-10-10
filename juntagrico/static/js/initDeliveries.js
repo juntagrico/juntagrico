@@ -32,8 +32,17 @@ define([], function () {
         });
     });
     
-    function format(subscription_size, text) {
-    	return '<div>Abogrösse: ' + subscription_size + '</br>Gemüsetabelle: ' + text + '</div>';
+    function format(subscription_size, json_table) {
+        tbl = JSON.parse(json_table);
+    	txt = "Abogrösse: " + subscription_size + "</br>Gemüsetabelle:</br>" +
+    			"<table border='1'>" +
+            		"<thead><tr><td><b>Name</b></td><td><b>Menge</b></td><td><b>Kommentar</b></td></tr></thead>" +
+            		"<tbody>"
+            for (r in tbl) {
+                txt += "<tr><td>" + tbl[r].name + "</td><td>" + tbl[r].amount + "</td><td>" + tbl[r].comment + "</td></tr>";
+            }
+            txt += "</tbody></table>"
+            	return txt;
     }
     
     $('#filter-table').on('click', 'td.details-control', function () {
