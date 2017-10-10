@@ -318,7 +318,7 @@ def deliveries(request):
     All deliveries to be sorted etc.
     """
     renderdict = get_menu_dict(request)
-    deliveries = DeliveryDao.all_deliveries_order_by_delivery_date_desc()
+    deliveries = DeliveryDao.deliveries_by_weekday_and_subscription_size(request.user.member.subscription)
     renderdict.update({
         'deliveries': deliveries,
         'menu': {'deliveries': 'active'},
