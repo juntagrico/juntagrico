@@ -32,10 +32,9 @@ define([], function () {
         });
     });
     
-    function format(subscription_size, json_table) {
+    function format(json_table) {
         tbl = JSON.parse(json_table);
-    	txt = "Abogrösse: " + subscription_size + "</br>Gemüsetabelle:</br>" +
-    			"<table border='1'>" +
+    	txt = "<table border='1'>" +
             		"<thead><tr><td><b>Name</b></td><td><b>Menge</b></td><td><b>Kommentar</b></td></tr></thead>" +
             		"<tbody>"
             for (r in tbl) {
@@ -55,7 +54,7 @@ define([], function () {
               tr.removeClass('shown');
           } else {
               // Open this row
-              row.child(format(tr.data('subscription_size'), tr.data('text'))).show();
+              row.child(format(tr.data('text'))).show();
               tr.addClass('shown');
           }
       });

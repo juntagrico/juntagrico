@@ -4,13 +4,15 @@
     <tr>
         <th></th>
         <th>Datum</th>
+        <th>Abogrösse</th>
     </tr>
     </thead>
     <tbody>
     {% for delivery in deliveries %}
-        <tr data-subscription_size="{{ delivery.subscription_size }}" data-text=" {{ delivery.text }}" >
+        <tr data-text=" {{ delivery.text }}" >
             <td class="details-control"></td>
-            <td>{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</td>
+            <td>{{ delivery.weekday_shortname }}&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</td>
+            <td>{{ delivery.subscription_size.long_name }}</td>
         </tr>
     {% endfor %}
     </tbody>
