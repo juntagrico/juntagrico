@@ -90,6 +90,12 @@ class Subscription(Billable):
     def future_extra_subscriptions(self):
         return self.extra_subscription_set.filter(
             Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
+            
+    @property
+    def extrasubscriptions_changed(self):
+        current_extrasubscriptions = self.extra_subscriptions.all()
+        future_extrasubscriptions = self.future_extra_subscriptions.all()
+        return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
     @staticmethod
     def fill_sizes_cache():

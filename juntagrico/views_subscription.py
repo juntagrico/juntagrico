@@ -33,21 +33,15 @@ def subscription(request):
     renderdict = get_menu_dict(request)
 
     if request.user.member.subscription is not None:
-        current_extrasubscriptions = request.user.member.subscription.extra_subscriptions.all()
-        future_extrasubscriptions = request.user.member.subscription.future_extra_subscriptions.filter(active=False)
-        extrasubscriptions_changed = set(current_extrasubscriptions) != set(future_extrasubscriptions)
-
-        if request.user.member.subscription:
-            renderdict.update({
-                'extrasubscriptions': current_extrasubscriptions,
-                'future_extrasubscriptions': future_extrasubscriptions,
-                'extrasubscriptions_changed': extrasubscriptions_changed,
-                'co_members': request.user.member.subscription.recipients().exclude(
-                    email=request.user.member.email),
-                'primary': request.user.member.subscription.primary_member.email == request.user.member.email,
-                'next_extra_subscription_date': Subscription.next_extra_change_date(),
-                'next_size_date': Subscription.next_size_change_date()
-            })
+        renderdict.update({
+            'subscription': request.user.member.subscription,
+            'co_members': request.user.member.subscription.recipients().exclude(
+                email=request.user.member.email),
+            'primary': request.user.member.subscription.primary_member.email == request.user.member.email,
+            'next_extra_subscription_date': Subscription.next_extra_change_date(),
+            'next_size_date': Subscription.next_size_change_date(),                
+            'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
+        })
     renderdict.update({
         'member': request.user.member,
         'shares': request.user.member.share_set.count(),
@@ -125,15 +119,15 @@ def extra_change(request):
             existing = request.user.member.subscription.extra_subscription_set.filter(type__id=extra_subscription.id)
             if request.POST.get("subscription" + str(extra_subscription.id)) == str(extra_subscription.id):
                 if existing.count()==0:
-                    future_extra_subscription = Extrasubscription.objects.create(main_subscription=request.user.member.subscription,type=extra_subscription)
+                    future_extra_subscription = ExtraSubscription.objects.create(main_subscription=request.user.member.subscription,type=extra_subscription)
                     future_extra_subscription.active = False
                     future_extra_subscription.save()
                 else:
                     has_active=False
                     index=0;
-                    while not has_active or index<existing.count():
-                        existing_extra_subscription = exisitng[index]
-                        if existing_extra_subscription.active == True:
+                    while not has_active and index<existing.count():
+                        existing_extra_subscription = existing[index]
+                        if (existing_extra_subscription.canceled==False and existing_extra_subscription.active==True) or (existing_extra_subscription.canceled==False and existing_extra_subscription.active==False):
                              has_active=True
                         elif existing_extra_subscription.canceled==True and existing_extra_subscription.active==True:
                              existing_extra_subscription.canceled=False;
@@ -141,7 +135,7 @@ def extra_change(request):
                              has_active=True
                         index+=1
                     if not has_active:
-                        future_extra_subscription = Extrasubscription.create(main_subscription=request.user.member.subscription,type=extra_subscription)
+                        future_extra_subscription = ExtraSubscription.create(main_subscription=request.user.member.subscription,type=extra_subscription)
                         future_extra_subscription.active = False
                         future_extra_subscription.save()
 
