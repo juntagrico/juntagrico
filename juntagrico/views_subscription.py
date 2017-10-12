@@ -11,6 +11,7 @@ from django.utils import timezone
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
@@ -101,14 +102,14 @@ def size_change(request):
     """
     saved = False
     if request.method == "POST" and int(time.strftime("%m")) <= Config.business_year_cancelation_month() and int(request.POST.get("subscription")) > 0:
-        request.user.member.subscription.future_size = int(request.POST.get("subscription"))
+        request.user.member.subscription.future_types = SubscriptionTypeDao.get_by_id(int(request.POST.get("subscription")))
         request.user.member.subscription.save()
         saved = True
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'next_cancel_date': temporal.next_cancelation_date(),
-        'size': request.user.member.subscription.future_size,
+        'size': request.user.member.subscription.future_types[0].id,
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
     })
     return render(request, "size_change.html", renderdict)
@@ -261,8 +262,8 @@ def createsubscription(request):
     co_members = request.session.get('create_co_members', [])
     co_members_shares = request.session.get('create_co_members_shares', [])
     member_shares = request.session.get('create_member_shares', [])
+    selectedsubscription = request.session.get('selectedsubscription', "none")
 
-    selectedsubscription = "none"
     selected_depot = None
     existing_member_shares = 0
     if member.pk is not None:
@@ -270,9 +271,6 @@ def createsubscription(request):
     shares = existing_member_shares
 
     if session_subscription is not None:
-        selectedsubscription = next(
-            iter(SubscriptionSizeDao.sizes_by_size(session_subscription.size).values_list('name', flat=True) or []),
-            'none')
         selected_depot = session_subscription.depot
 
     co_member_shares = len(co_members_shares)
@@ -283,19 +281,17 @@ def createsubscription(request):
 
         shares += co_member_shares
         min_num_shares = next(
-            iter(SubscriptionSizeDao.sizes_by_name(selectedsubscription).values_list('shares', flat=True) or []), 1)
+            iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('shares', flat=True) or []), 1)
         if shares < min_num_shares or not subscriptionform.is_valid():
             shareerror = shares < min_num_shares
         else:
             size = next(
-                iter(SubscriptionSizeDao.sizes_by_name(selectedsubscription).values_list('size', flat=True) or []),
+                iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__size', flat=True) or []),
                 0)
 
             if size > 0:
                 session_subscription = Subscription(**subscriptionform.cleaned_data)
                 session_subscription.depot = DepotDao.depot_by_id(request.POST.get("depot"))
-                session_subscription.size = size
-
             if len(member_shares) < int(request.POST.get("shares")):
                 toadd = int(request.POST.get("shares")) - len(member_shares)
                 for num in range(0, toadd):
@@ -307,7 +303,9 @@ def createsubscription(request):
 
             if request.POST.get("add_member"):
                 request.session['create_subscription'] = session_subscription
+                request.session['create_subscription'] = session_subscription
                 request.session['create_member_shares'] = member_shares
+                request.session['selectedsubscription'] = selectedsubscription
                 return redirect("/my/cosubmember/0")
             else:
                 password = None
@@ -319,6 +317,9 @@ def createsubscription(request):
                 if session_subscription is not None:
                     session_subscription.primary_member = member
                     session_subscription.save()
+                    types = list((type for type in SubscriptionTypeDao.get_by_id(int(selectedsubscription))))                    
+                    TSST.objects.create(type=types[0], subscription=session_subscription)                
+                    TFSST.objects.create(type=types[0], subscription=session_subscription)
                     member.subscription_id = session_subscription.id
                     member.save()
                 send_welcome_mail(member.email, password, hashlib.sha1((member.email + str(

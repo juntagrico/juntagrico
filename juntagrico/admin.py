@@ -21,6 +21,8 @@ from juntagrico.util.temporal import *
 
 # This form exists to restrict primary user choice to users that have actually set the
 # current subscription as their subscription
+
+
 class SubscriptionAdminForm(forms.ModelForm):
     class Meta:
         model = Subscription
@@ -314,13 +316,25 @@ class ExtraSubscriptionInline(admin.TabularInline):
         return 0
 
 
+class SubscriptionTypeInline(admin.TabularInline):
+    model = Subscription.types.through
+    verbose_name = "Abo Typ"
+    verbose_name_plural = "Abo Typen"
+    extra = 0
+
+class FutureSubscriptionTypeInline(admin.TabularInline):
+    model = Subscription.future_types.through
+    verbose_name = "Zukunft Abo Typ"
+    verbose_name_plural = "Zukunft Abo Typen"
+    extra = 0
+
 class SubscriptionAdmin(admin.ModelAdmin):
     form = SubscriptionAdminForm
     list_display = ["__str__", "recipients_names", "primary_member_nullsave", "depot", "active"]
     # filter_horizontal = ["users"]
     search_fields = ["members__user__username", "members__first_name", "members__last_name", "depot__name"]
     # raw_id_fields = ["primary_member"]
-    inlines = [ExtraSubscriptionInline]
+    inlines = [SubscriptionTypeInline, FutureSubscriptionTypeInline, ExtraSubscriptionInline]
 
 
 class AuditAdmin(admin.ModelAdmin):
@@ -423,6 +437,7 @@ admin.site.register(ExtraSubscription, ExtraSubscriptionAdmin)
 admin.site.register(ExtraSubscriptionType)
 admin.site.register(ExtraSubscriptionCategory)
 admin.site.register(SubscriptionSize)
+admin.site.register(SubscriptionType)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Member, MemberAdmin)

@@ -12,26 +12,7 @@ from juntagrico.util.bills import *
 from juntagrico.config import Config
 
 from juntagrico.entity.billing import *
-
-class SubscriptionSize(models.Model):
-    """
-    Subscription sizes
-    """
-    name = models.CharField("Name", max_length=100, unique=True)
-    long_name = models.CharField("Langer Name", max_length=100, unique=True)
-    size = models.PositiveIntegerField("Grösse", unique=True)
-    shares = models.PositiveIntegerField("Anz benötigter Anteilsscheine")
-    required_assignments = models.PositiveIntegerField("Anz benötigter Arbeitseinsätze")
-    price = models.PositiveIntegerField("Preis")
-    depot_list = models.BooleanField('Sichtbar auf Depotliste', default=True)
-    description = models.TextField("Beschreibung", max_length=1000, blank=True)    
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Abo Grösse'
-        verbose_name_plural = 'Abo Grössen'
+from juntagrico.entity.subtypes import *
 
 
 class Subscription(Billable):
@@ -41,8 +22,8 @@ class Subscription(Billable):
     depot = models.ForeignKey("Depot", on_delete=models.PROTECT, related_name="subscription_set")
     future_depot = models.ForeignKey("Depot", on_delete=models.PROTECT, related_name="future_subscription_set", null=True,
                                      blank=True, )
-    size = models.PositiveIntegerField(default=1)
-    future_size = models.PositiveIntegerField("Zukuenftige Groesse", default=1)
+    types = models.ManyToManyField("SubscriptionType",through="TSST", related_name="subscription_set")
+    future_types = models.ManyToManyField("SubscriptionType",through="TFSST", related_name="future_subscription_set")
     primary_member = models.ForeignKey("Member", related_name="subscription_primary", null=True, blank=True,
                                        on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
@@ -51,7 +32,6 @@ class Subscription(Billable):
     creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
     start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_business_year)
     old_active = None
-    sizes_cache = {}
 
     def __str__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
@@ -62,6 +42,13 @@ class Subscription(Billable):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
         return "%s" % (" + ".join(namelist))
+       
+    @property   
+    def size(self):
+        result=0
+        for type in self.types.all():
+            result += type.size.size
+        return result
 
     def recipients_names(self):
         members = self.members.all()
@@ -91,35 +78,21 @@ class Subscription(Billable):
         return self.extra_subscription_set.filter(
             Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
 
-    @staticmethod
-    def fill_sizes_cache():
-        list = []
-        map = {}
-        index = 0
-        for size in SubscriptionSizeDao.all_sizes_ordered():
-            list.append(size.size)
-            map[size.name] = index
-            index += 1
-        Subscription.sizes_cache = {'list': list,
-                                    'map': map,
-                                    }
+    
+    def subscription_amount(self, size_name):
+        return self.calc_subscritpion_amount(self.types, size_name)
 
-    def subscription_amount(self, subscription_name):
-        return self.calc_subscritpion_amount(self.size, subscription_name)
-
-    def subscription_amount_future(self, subscription_name):
-        return self.calc_subscritpion_amount(self.future_size, subscription_name)
+    def subscription_amount_future(self, size_name):
+        return self.calc_subscritpion_amount(self.future_types, size_name)
 
     @staticmethod
-    def calc_subscritpion_amount(size, subscription_name):
-        if Subscription.sizes_cache == {}:
-            Subscription.fill_sizes_cache()
-        if Subscription.sizes_cache['list'].__len__ == 1:
-            return size / Subscription.sizes_cache['list'][0]
-        index = Subscription.sizes_cache['map'][subscription_name]
-        if index == len(Subscription.sizes_cache['list']) - 1:
-            return int(size / Subscription.sizes_cache['list'][index])
-        return int((size % Subscription.sizes_cache['list'][index + 1]) / Subscription.sizes_cache['list'][index])
+    def calc_subscritpion_amount(types, size_name):
+        result = 0
+        for type in types.all():
+            if type.size.name == size_name:
+                result += type.size.size
+        return result
+        
 
     @staticmethod
     def next_extra_change_date():
@@ -135,38 +108,34 @@ class Subscription(Billable):
         return start_of_next_business_year()
 
     @staticmethod
-    def get_size_name(size=0):
+    def get_size_name(types=[]):
         size_names = []
-        for sub_size in SubscriptionSizeDao.all_sizes_ordered():
-            amount = Subscription.calc_subscritpion_amount(size, sub_size.name)
-            if amount > 0:
-                size_names.append(sub_size.long_name + " : " + str(amount))
+        for type in types.all():
+            size_names.append(type.name)
         if len(size_names) > 0:
             return ', '.join(size_names)
         return "kein Abo"
         
     def required_assignments(self):
         result = 0
-        for sub_size in SubscriptionSizeDao.all_sizes_ordered():
-            amount = Subscription.calc_subscritpion_amount(self.size, sub_size.name)
-            result += sub_size.required_assignments * amount
+        for type in self.types.all():
+            result += type.required_assignments
         return result
        
     @property
     def price(self):
         result = 0
-        for sub_size in SubscriptionSizeDao.all_sizes_ordered():
-            amount = Subscription.calc_subscritpion_amount(self.size, sub_size.name)
-            result += sub_size.price * amount
+        for type in self.types.all():
+            result += type.price
         return result
 
     @property
     def size_name(self):
-        return Subscription.get_size_name(size=self.size)
+        return Subscription.get_size_name(types=self.types)
 
     @property
     def future_size_name(self):
-        return Subscription.get_size_name(size=self.future_size)
+        return Subscription.get_size_name(types=self.future_types)
 
     def extra_subscription(self, code):
         return len(self.extra_subscriptions.all().filter(type__name=code)) > 0
