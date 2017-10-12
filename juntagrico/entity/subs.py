@@ -49,6 +49,10 @@ class Subscription(Billable):
         for type in self.types.all():
             result += type.size.size
         return result
+    
+    @property
+    def types_changed(self):
+        return set(self.types.all())!=set(self.future_types.all())
 
     def recipients_names(self):
         members = self.members.all()
@@ -111,7 +115,7 @@ class Subscription(Billable):
     def get_size_name(types=[]):
         size_names = []
         for type in types.all():
-            size_names.append(type.name)
+            size_names.append(type.__str__())
         if len(size_names) > 0:
             return ', '.join(size_names)
         return "kein Abo"

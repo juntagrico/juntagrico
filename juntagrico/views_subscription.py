@@ -102,14 +102,15 @@ def size_change(request):
     """
     saved = False
     if request.method == "POST" and int(time.strftime("%m")) <= Config.business_year_cancelation_month() and int(request.POST.get("subscription")) > 0:
-        request.user.member.subscription.future_types = SubscriptionTypeDao.get_by_id(int(request.POST.get("subscription")))
-        request.user.member.subscription.save()
+        for type in TFSST.objects.filter(subscription=request.user.member.subscription):
+            type.delete()
+        TFSST.objects.create(subscription=request.user.member.subscription, type=SubscriptionTypeDao.get_by_id(int(request.POST.get("subscription")))[0])
         saved = True
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'next_cancel_date': temporal.next_cancelation_date(),
-        'size': request.user.member.subscription.future_types[0].id,
+        'selected_subscription': request.user.member.subscription.future_types.all()[0].id,
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
     })
     return render(request, "size_change.html", renderdict)

@@ -34,7 +34,7 @@ class SubscriptionType(models.Model):
     description = models.TextField("Beschreibung", max_length=1000, blank=True)    
 
     def __str__(self):
-        return self.name
+        return self.name + " - Grösse: " + self.size.name
 
     class Meta:
         verbose_name = 'Abo Typ'
