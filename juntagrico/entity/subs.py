@@ -58,6 +58,7 @@ class Subscription(Billable):
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
         return "Abo (%s) %s" % (" + ".join(namelist), self.id)
 
+        @property
     def overview(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
