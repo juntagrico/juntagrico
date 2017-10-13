@@ -49,7 +49,6 @@ class Command(BaseCommand):
 
         if options['force'] and not options['future']:
             print("future depots ignored, use --future to override")
-        Subscription.fill_sizes_cache()
 
         depots = DepotDao.all_depots_order_by_code()
 
