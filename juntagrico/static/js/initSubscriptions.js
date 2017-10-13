@@ -56,7 +56,7 @@ define([], function () {
     $("form#email-sender").submit(function (event) {
         var emails = [];
         $("#filter-table").find("tr").each(function () {
-            var txt = $("td:eq(6)", this).text().trim();
+            var txt = $("td:eq(7)", this).text().trim();
             if (txt.length > 0) {
                 // Each Subscription might have a comma-separated list of email addresses
                 multiple_emails = txt.split(",");
