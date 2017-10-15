@@ -35,10 +35,8 @@
                                 <input type="radio" name="subscription" class="onoffswitch" value="{{type.id }}" id="{{ type.name }}" {% if selected_subscription == type.id %}checked="checked"{% endif %}/>
                             </label>
                             <label for="{{ type.name }}" class="control-label col-md-7">
-                                {{ type.long_name }}
-                                <br/>
-                                {{ type.description }}
-                                <br/>
+                                {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif%}
+                                {% if type.description.strip %}{{ type.description }}<br/>{% endif%}
                                 Beitrag: {{ type.price }} {% config "currency" %}
                                 <br/>
                                 Anteilsscheine: {{ type.shares }}
