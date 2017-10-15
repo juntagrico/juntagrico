@@ -12,6 +12,7 @@ class ExtraSubscriptionType(models.Model):
     size = models.CharField("Groesse (gross,4, ...)", max_length=100, default="")
     description = models.TextField("Beschreibung", max_length=1000)
     sort_order = models.FloatField("Groesse zum Sortieren", default=1.0)
+    visible = models.BooleanField('Sichtbar', default=True)
     category = models.ForeignKey("ExtraSubscriptionCategory", related_name="category", null=True, blank=True,
                                  on_delete=models.PROTECT)
 
@@ -30,6 +31,7 @@ class ExtraSubscriptionCategory(models.Model):
     name = models.CharField("Name", max_length=100, unique=True)
     description = models.TextField("Beschreibung", max_length=1000, blank=True)
     sort_order = models.FloatField("Nummer zum Sortieren", default=1.0)
+    visible = models.BooleanField('Sichtbar', default=True)
 
     def __str__(self):
         return "%s %s" % (self.id, self.name)

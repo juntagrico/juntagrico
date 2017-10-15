@@ -89,7 +89,7 @@
                 {% endif %}
             {% endif %}
 
-            {% if member.subscription.size != member.subscription.future_size %}
+            {% if member.subscription.types_changed %}
                 <dt>Neue Abogrösse</dt>
                 <dd>
                     (Die Änderung tritt am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)<br>
