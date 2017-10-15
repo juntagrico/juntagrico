@@ -59,32 +59,34 @@
             <dd>
                 {{ member.subscription.depot.name }} > <a href="/my/depot/{{ member.subscription.depot.id }}">Weitere Infos zum Depot</a>
             </dd>
+            {% if has_extra_subscriptions %}
                 <dt>Zusatzabos</dt>
                 <dd>
-                    {% if extra_subscriptions|length == 0 %}
+                    {% if subscription.extra_subscriptions|length == 0 %}
                         Keine Zusatzabos
                     {% else %}
                         <ul>
-                            {% for extra_subscription in extra_subscriptions %}
-                                <li>{{ extra_subscription.name }}</li>
+                            {% for extra_subscription in subscription.extra_subscriptions %}
+                                <li>{{ extra_subscription.type.name }}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
                 </dd>
-            {% if extra_subscriptions_changed %}
-                <dt>Neue Zusatzabos</dt>
-                <dd>
-                    (Die Änderungen treten am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)
-                    {% if not future_zusatzsubscriptions %}
-                        <br>Keine Zusatzsubscriptions
-                    {% else %}
-                        <ul>
-                            {% for extra_subscription in future_extra_subscriptions %}
-                                <li>{{ extra_subscription.name }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </dd>
+                {% if subscription.extrasubscriptions_changed %}
+                    <dt>Neue Zusatzabos</dt>
+                    <dd>
+                        (Die Änderungen treten am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)
+                        {% if not subscription.future_extra_subscriptions %}
+                            <br>Keine Zusatzabos
+                        {% else %}
+                            <ul>
+                                {% for extra_subscription in subscription.future_extra_subscriptions %}
+                                    <li>{{ extra_subscription.type.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </dd>
+                {% endif %}
             {% endif %}
 
             {% if member.subscription.types_changed %}

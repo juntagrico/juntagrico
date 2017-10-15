@@ -38,6 +38,7 @@ class Subscription(Billable):
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
         return "Abo (%s) %s" % (" + ".join(namelist), self.id)
 
+    @property
     def overview(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
@@ -81,6 +82,12 @@ class Subscription(Billable):
     def future_extra_subscriptions(self):
         return self.extra_subscription_set.filter(
             Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
+            
+    @property
+    def extrasubscriptions_changed(self):
+        current_extrasubscriptions = self.extra_subscriptions.all()
+        future_extrasubscriptions = self.future_extra_subscriptions.all()
+        return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
     
     def subscription_amount(self, size_name):
