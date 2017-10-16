@@ -101,7 +101,7 @@ class Subscription(Billable):
         result = 0
         for type in types.all():
             if type.size.name == size_name:
-                result += type.size.size
+                result += 1
         return result
         
 
