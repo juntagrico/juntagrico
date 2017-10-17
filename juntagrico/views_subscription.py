@@ -103,6 +103,7 @@ def size_change(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
+        'hours_used': Config.assignment_unit()=='HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': request.user.member.subscription.future_types.all()[0].id,
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
@@ -425,6 +426,7 @@ def add_member(request, subscription_id):
                    }
         memberform = RegisterMemberForm(initial=initial)
     renderdict = {
+        'hours_used': Config.assignment_unit()=='HOURS',
         'shares': shares,
         'memberexists': memberexists,
         'memberblocked': memberexists,

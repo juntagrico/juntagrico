@@ -159,8 +159,8 @@ def subscriptions(request):
         assignments = 0
         core_assignments = 0
         for member in MemberDao.members_with_assignments_count_in_subscription(subscription):
-            assignments += member.assignment_count
-            core_assignments += member.core_assignment_count
+            assignments += member.assignment_count if member.assignment_count is not None else 0
+            core_assignments += member.core_assignment_count if member.core_assignment_count is not None else 0
 
         subscriptions.append({
             'subscription': subscription,
@@ -188,8 +188,8 @@ def filter_subscriptions_depot(request, depot_id):
         assignments = 0
         core_assignments = 0
         for member in  MemberDao.members_with_assignments_count_in_subscription(subscription):
-            assignments += member.assignment_count
-            core_assignments += member.core_assignment_count
+            assignments += member.assignment_count if member.assignment_count is not None else 0
+            core_assignments += member.core_assignment_count if member.core_assignment_count is not None else 0
 
         subscriptions.append({
             'subscription': subscription,

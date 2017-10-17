@@ -114,6 +114,7 @@ class JobType(AbstractJobType):
 class Job(PolymorphicModel):
     slots = models.PositiveIntegerField("Plaetze")
     time = models.DateTimeField()
+    multiplier = models.PositiveIntegerField(Config.assignments_string()+" vielfaches", default=1)
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField("Reminder verschickt", default=False)
     canceled = models.BooleanField("abgesagt", default=False)
@@ -269,6 +270,7 @@ class Assignment(models.Model):
     member = models.ForeignKey("Member", on_delete=models.PROTECT)
     core_cache = models.BooleanField("Kernbereich", default=False) 
     job_extras = models.ManyToManyField(JobExtra,related_name='assignments', blank=True)
+    amount = models.FloatField("Wert")
 
     def __str__(self):
         return '%s #%s' % (Config.assignment_string(), self.id)
