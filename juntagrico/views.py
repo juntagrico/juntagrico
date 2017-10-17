@@ -31,46 +31,45 @@ def get_menu_dict(request):
     member = request.user.member
     next_jobs = []
 
-    def filter_to_past_assignments(assignments):
-        res = []
-        for assignment in assignments:
-            if assignment.job.time.year == date.today().year and assignment.job.time < timezone.now():
-                res.append(assignment)
-        return res
-
-    subscription_size = 0
+    required_assignments = 0
     if member.subscription is not None:
         partner_assignments = []
         for subscription_member in member.subscription.recipients():
             if subscription_member == member:
                 continue
-            partner_assignments.extend(
-                filter_to_past_assignments(AssignmentDao.assignments_for_member(subscription_member)))
+            partner_assignments.extend(AssignmentDao.assignments_for_member_current_business_year(subscription_member))
 
-        userassignments = filter_to_past_assignments(AssignmentDao.assignments_for_member(member))
-        subscription_size = member.subscription.required_assignments()
-        assignmentsrange = list(range(0, max(subscription_size, len(userassignments) + len(partner_assignments))))
+        userassignments = AssignmentDao.assignments_for_member_current_business_year(member)
+        required_assignments = member.subscription.required_assignments()
+        userassignments_total = sum(a.amount for a in userassignments)
+        userassignemnts_core = sum(a.amount for a in userassignments if a.is_core())
+        partner_assignments_total = sum(a.amount for a in partner_assignments)
+        partner_assignments_core = sum(a.amount for a in partner_assignments if a.is_core())
+        assignmentsrange = list(range(0, max(required_assignments, len(userassignments) + len(partner_assignments))))
 
-        for assignment in AssignmentDao.assignments_for_member(member).order_by("job__time"):
-            if assignment.job.time > timezone.now():
-                next_jobs.append(assignment.job)
+        for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by("job__time"):
+            next_jobs.append(assignment.job)
     else:
         assignmentsrange = None
         partner_assignments = []
         userassignments = []
         next_jobs = []
+        
+    userassignments_total = sum(a.amount for a in userassignments)
+    userassignemnts_core = sum(a.amount for a in userassignments if a.is_core())
+    partner_assignments_total = sum(a.amount for a in partner_assignments)
+    partner_assignments_core = sum(a.amount for a in partner_assignments if a.is_core())
+    assignmentsrange = list(range(0, max(required_assignments, userassignments_total+partner_assignments_total)))
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
     menu_dict = {
         'user': request.user,
         'assignmentsrange': assignmentsrange,
-        'userassignments_total': len(userassignments),
-        'userassignemnts_core': len([assignment for assignment in userassignments if assignment.is_core()]),
-        'partner_assignments_total': len(userassignments) + len(partner_assignments),
-        'partner_assignments_core': len(userassignments) + len(
-            [assignment for assignment in partner_assignments if assignment.is_core()]),
-        'subscription_size': subscription_size,
+        'userassignments_bound': userassignments_total,
+        'userassignemnts_core_bound': userassignemnts_core,
+        'partner_assignments_bound': userassignments_total + partner_assignments_total,
+        'partner_assignments__core_bound': userassignments_total + partner_assignments_core,
         'next_jobs': next_jobs,
         'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
         'can_filter_subscriptions': request.user.has_perm('juntagrico.can_filter_subscriptions'),
@@ -116,12 +115,17 @@ def job(request, job_id):
     if request.method == 'POST':
         num = request.POST.get("jobs")
         # adding participants
+        amount=1
+        if Config.assignment_unit()=='ENTITY':
+            amount = job.multiplier
+        elif Config.assignment_unit()=='HOURS':
+            amount = job.multiplier*job.type.duration
         add = int(num)
         for i in range(add):
-            assignment=Assignment.objects.create(member=member, job=job)
+            assignment=Assignment.objects.create(member=member, job=job, amount=amount)
         for extra in job.type.job_extras_set.all():
             if request.POST.get("extra" + str(extra.extra_type.id)) == str(extra.extra_type.id):
-                assignment.job_extras.add(extra)
+                assignment.job_extras.add(extra)        
         assignment.save()
 
         send_job_signup([member.email], job)

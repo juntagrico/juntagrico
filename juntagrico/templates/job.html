@@ -42,6 +42,16 @@
         </div>
     </div>
     <br/>
+    {% if job.multiplier != 1 %}
+    <div class="row">
+        <div class="col-md-3">{% config "assignments_string" %}:</div>
+        <div class="col-md-5">
+            Du erhälst für diesen Job das {{ job.multiplier }} fachen an {% config "assignments_string" %} gutgeschrieben.
+        </div>
+    </div>
+    <br/>
+    {% endif %}
+    {% if job.extras.strip %}
     <div class="row">
         <div class="col-md-3">Extras:</div>
         <div class="col-md-5">
@@ -54,6 +64,7 @@
         </div>
     </div>
     <br/>
+    {% endif %}
     <div class="row">
         <div class="col-md-3">Ort:</div>
         <div class="col-md-5">

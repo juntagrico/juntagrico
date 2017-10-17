@@ -41,7 +41,7 @@
                                 <br/>
                                 Anteilsscheine: {{ type.shares }}
                                 <br/>
-                                Arbeitseinsätze: {{ type.required_assignments }}
+                                Arbeitseinsätze: {{ type.required_assignments }} {% if hours_used %}Stunden{% endif %}
                             </label>
                         </div>
                     </div>
