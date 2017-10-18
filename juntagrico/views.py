@@ -41,10 +41,6 @@ def get_menu_dict(request):
 
         userassignments = AssignmentDao.assignments_for_member_current_business_year(member)
         required_assignments = member.subscription.required_assignments()
-        userassignments_total = int(sum(a.amount for a in userassignments))
-        userassignemnts_core = int(sum(a.amount for a in userassignments if a.is_core()))
-        partner_assignments_total = int(sum(a.amount for a in partner_assignments))
-        partner_assignments_core = int(sum(a.amount for a in partner_assignments if a.is_core()))
         assignmentsrange = list(range(0, max(required_assignments, len(userassignments) + len(partner_assignments))))
 
         for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by("job__time"):
@@ -54,11 +50,11 @@ def get_menu_dict(request):
         partner_assignments = []
         userassignments = []
         next_jobs = []
-        
-    userassignments_total = sum(a.amount for a in userassignments)
-    userassignemnts_core = sum(a.amount for a in userassignments if a.is_core())
-    partner_assignments_total = sum(a.amount for a in partner_assignments)
-    partner_assignments_core = sum(a.amount for a in partner_assignments if a.is_core())
+   
+    userassignments_total = int(sum(a.amount for a in userassignments))
+    userassignemnts_core = int(sum(a.amount for a in userassignments if a.is_core()))
+    partner_assignments_total = int(sum(a.amount for a in partner_assignments))
+    partner_assignments_core = int(sum(a.amount for a in partner_assignments if a.is_core()))
     assignmentsrange = list(range(0, max(required_assignments, userassignments_total+partner_assignments_total)))
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
