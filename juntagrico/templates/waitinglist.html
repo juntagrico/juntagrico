@@ -32,7 +32,7 @@
                         </form>
                     </td>
                     <td>{{ subscription.paid_shares }}</td>
-                    <td>{{ subscription.creation_date }}</td>
+                    <td>{{ subscription.creation_date|date:"Y-m-d" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
