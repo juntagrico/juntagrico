@@ -175,8 +175,11 @@
         {% endfor %}
 
 	var sizes={
-	{% for subscription_size in subscription_sizes %}
-            "{{ subscription_size.name }}":{{ subscription_size.shares }},
+	{% for subscription_size in subscription_sizes %}{% for type in subscription_size.types.all %}
+                    {% if type.visible %}
+            "{{ type.id }}":{{ type.shares }},
+            {% endif %}
+        {% endfor %}
         {% endfor %}
 	}
 
