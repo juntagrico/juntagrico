@@ -14,7 +14,7 @@ class Delivery(models.Model):
     # json = JSONEditableField()
     
     def __str__(self):
-        return u"%s - %s" % (self.delivery_date, self.subscription_size)
+        return u"%s - %s" % (self.delivery_date, self.subscription_size.long_name)
     
     def weekday(self):
         return self.delivery_date.isoweekday()
