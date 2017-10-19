@@ -31,6 +31,7 @@ class Subscription(Billable):
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
     start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_business_year)
+    notes = models.TextField("Notizen", max_length=1000, blank=True)    
     old_active = None
 
     def __str__(self):

@@ -15,6 +15,7 @@
                 <th>Email</th>
                 <th>Bezahlte Anteilsscheine</th>
                 <th>Bestelldatum</th>
+                <th>Notizen</th>
             </tr>
             </thead>
             <tbody>
@@ -33,6 +34,7 @@
                     </td>
                     <td>{{ subscription.paid_shares }}</td>
                     <td>{{ subscription.creation_date|date:"Y-m-d" }}</td>
+                    <td>{{ subscription.notes }}</td>
                 </tr>
             {% endfor %}
             </tbody>
