@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="waitinglist">
+    <div id="filter">
         <table id="filter-table" class="list table" style="display: table;">
             <thead>
             <tr>
@@ -15,6 +15,7 @@
                 <th>Email</th>
                 <th>Bezahlte Anteilsscheine</th>
                 <th>Bestelldatum</th>
+                <th></th>
                 <th>Notizen</th>
             </tr>
             </thead>
@@ -22,7 +23,7 @@
             {% for subscription in waitinglist %}
                 <tr>
                     <td>{{ subscription.overview }}</td>
-                    <td>{{ subscription.start_date |date:"d.m.y" }}</td>
+                    <td>{{ subscription.start_date |date:"Y-m-d" }}</td>
                     <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
                     <td>
                         <form id="subscription{{ subscription.id }}" method="post" action="/my/mails"> 
@@ -34,6 +35,7 @@
                     </td>
                     <td>{{ subscription.paid_shares }}</td>
                     <td>{{ subscription.creation_date|date:"Y-m-d" }}</td>
+                    <td><a href="/my/subscription/waitinglist/activate/{{ subscription.id }}/" class="btn btn-success">aktivieren</a></td>
                     <td>{{ subscription.notes }}</td>
                 </tr>
             {% endfor %}

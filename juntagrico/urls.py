@@ -39,6 +39,7 @@ urlpatterns = [
     url('^my/create/subscription/cancel$', juntagrico_subscription.cancel_create_subscription),
     url('^my/welcome$', juntagrico_subscription.welcome),
     url('^my/confirm/(?P<hash>.*?)/', juntagrico_subscription.confirm),
+    url('^my/subscription/waitinglist/activate/(?P<subscription_id>.*?)/', juntagrico_subscription.activate_subscription),
 
     # admin related juntagrico stuff
     url('^my/mails/send/depot$', juntagrico_admin.send_email_depot),

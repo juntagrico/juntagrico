@@ -4,7 +4,7 @@ import random
 import string
 
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
@@ -449,4 +449,17 @@ def cancel_create_subscription(request):
         return redirect('/my/subscription')
     else:
         return redirect("http://"+Config.server_url())
+  
+@permission_required('juntagrico.is_operations_group')      
+def activate_subscription(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    if subscription.active is False and subscription.deactivation_date is None:
+        subscription.active=True
+        subscription.save()
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect("http://"+Config.admin_server_url())
+        
+        
     
