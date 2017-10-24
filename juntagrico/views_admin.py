@@ -38,35 +38,35 @@ def send_email_intern(request):
     if request.method != 'POST':
         raise Http404
     emails = set()
-    sender = request.POST.get("sender")
-    if request.POST.get("allsubscription") == "on":
+    sender = request.POST.get('sender')
+    if request.POST.get('allsubscription') == 'on':
         for member in MemberDao.members_for_email_with_subscription():
             emails.add(member.email)
-    if request.POST.get("allshares") == "on":
+    if request.POST.get('allshares') == 'on':
         for member in MemberDao.members_for_email():
             if member.share_set.count() > 0:
                 emails.add(member.email)
-    if request.POST.get("all") == "on":
+    if request.POST.get('all') == 'on':
         for member in MemberDao.members_for_email():
             emails.add(member.email)
-    if request.POST.get("recipients"):
-        recipients = re.split(r"\s*,?\s*", request.POST.get("recipients"))
+    if request.POST.get('recipients'):
+        recipients = re.split(r'\s*,?\s*', request.POST.get('recipients'))
         for recipient in recipients:
             emails.add(recipient)
-    if request.POST.get("allsingleemail"):
-        emails |= set(request.POST.get("singleemail").split(' '))
+    if request.POST.get('allsingleemail'):
+        emails |= set(request.POST.get('singleemail').split(' '))
 
     index = 1
     attachements = []
-    while request.FILES.get("image-" + str(index)) is not None:
-        attachements.append(request.FILES.get("image-" + str(index)))
+    while request.FILES.get('image-' + str(index)) is not None:
+        attachements.append(request.FILES.get('image-' + str(index)))
         index += 1
 
     if len(emails) > 0:
-        send_filtered_mail(request.POST.get("subject"), request.POST.get("message"), request.POST.get("textMessage"),
+        send_filtered_mail(request.POST.get('subject'), request.POST.get('message'), request.POST.get('textMessage'),
                            emails, attachements, sender=sender)
         sent = len(emails)
-    return redirect("/my/mails/send/result/" + str(sent) + "/")
+    return redirect('/my/mails/send/result/' + str(sent) + '/')
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -85,24 +85,24 @@ def mails(request, enhanced=None):
 
 @permission_required('juntagrico.is_depot_admin')
 def mails_depot(request):
-    return my_mails_intern(request, "depot")
+    return my_mails_intern(request, 'depot')
 
 
 @permission_required('juntagrico.is_area_admin')
 def mails_area(request):
-    return my_mails_intern(request, "area")
+    return my_mails_intern(request, 'area')
 
 
 def my_mails_intern(request, enhanced, error_message=None):
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'recipient_type': request.POST.get("recipient_type"),
-        'recipient_type_detail': request.POST.get("recipient_type_detail"),
-        'recipients': request.POST.get("recipients"),
-        'recipients_count': int(request.POST.get("recipients_count") or 0),
-        'filter_value': request.POST.get("filter_value"),
-        'mail_subject': request.POST.get("subject"),
-        'mail_message': request.POST.get("message"),
+        'recipient_type': request.POST.get('recipient_type'),
+        'recipient_type_detail': request.POST.get('recipient_type_detail'),
+        'recipients': request.POST.get('recipients'),
+        'recipients_count': int(request.POST.get('recipients_count') or 0),
+        'filter_value': request.POST.get('filter_value'),
+        'mail_subject': request.POST.get('subject'),
+        'mail_message': request.POST.get('message'),
         'enhanced': enhanced,
         'email': request.user.member.email,
         'error_message': error_message,
@@ -132,7 +132,7 @@ def filters_depot(request, depot_id):
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'enhanced': "depot"
+        'enhanced': 'depot'
     })
     return render(request, 'members.html', renderdict)
 
@@ -146,7 +146,7 @@ def filters_area(request, area_id):
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'enhanced': "area"
+        'enhanced': 'area'
     })
     return render(request, 'members.html', renderdict)
 
@@ -210,7 +210,7 @@ def filter_subscriptions_depot(request, depot_id):
 
 @permission_required('juntagrico.is_operations_group')
 def my_depotlists():
-    return alldepots_list("")
+    return alldepots_list('')
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -243,11 +243,11 @@ def future(request):
         for users_subscription in subscription.extra_subscriptions.all():
             extra_lines[users_subscription.type.name]['now'] += 1
 
-    month = int(time.strftime("%m"))
-    day = int(time.strftime("%d"))
+    month = int(time.strftime('%m'))
+    day = int(time.strftime('%d'))
 
     renderdict.update({
-        'changed': request.GET.get("changed"),
+        'changed': request.GET.get('changed'),
         'subscription_lines': iter(subscription_lines.values()),
         'extra_lines': iter(extra_lines.values()),
         'subscription_change_enabled': month is 12 or (month is 1 and day <= 6)
@@ -303,11 +303,11 @@ def get_mail_template(request, template_id):
 @permission_required('juntagrico.is_operations_group')
 def maps(request):
     renderdict = {
-        "depots": DepotDao.all_depots(),
-        "subscriptions": SubscriptionDao.all_active_subscritions(),
+        'depots': DepotDao.all_depots(),
+        'subscriptions': SubscriptionDao.all_active_subscritions(),
     }
 
-    return render(request, "maps.html", renderdict)
+    return render(request, 'maps.html', renderdict)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -318,30 +318,30 @@ def excel_export_members_filter(request):
     workbook = xlsxwriter.Workbook(output)
     worksheet_s = workbook.add_worksheet(Config.members_string())
 
-    worksheet_s.write_string(0, 0, str("Name", "utf-8"))
-    worksheet_s.write_string(0, 1, str(Config.assignments_string(), "utf-8"))
-    worksheet_s.write_string(0, 2, str(Config.assignments_string() + " Kernbereich", "utf-8"))
-    worksheet_s.write_string(0, 3, str("Taetigkeitsbereiche", "utf-8"))
-    worksheet_s.write_string(0, 4, str("Depot", "utf-8"))
-    worksheet_s.write_string(0, 5, str("Email", "utf-8"))
-    worksheet_s.write_string(0, 6, str("Telefon", "utf-8"))
-    worksheet_s.write_string(0, 7, str("Mobile", "utf-8"))
+    worksheet_s.write_string(0, 0, str('Name', 'utf-8'))
+    worksheet_s.write_string(0, 1, str(Config.assignments_string(), 'utf-8'))
+    worksheet_s.write_string(0, 2, str(Config.assignments_string() + ' Kernbereich', 'utf-8'))
+    worksheet_s.write_string(0, 3, str('Taetigkeitsbereiche', 'utf-8'))
+    worksheet_s.write_string(0, 4, str('Depot', 'utf-8'))
+    worksheet_s.write_string(0, 5, str('Email', 'utf-8'))
+    worksheet_s.write_string(0, 6, str('Telefon', 'utf-8'))
+    worksheet_s.write_string(0, 7, str('Mobile', 'utf-8'))
 
     now = timezone.now()
     members = MemberDao.members_with_assignments_count()
 
     row = 1
     for member in members:
-        member.all_areas = ""
+        member.all_areas = ''
         for area in member.areas.all():
-            member.all_areas = member.all_areas + area.name + " "
-        if member.all_areas == "":
-            member.all_areas = str("-Kein Tätigkeitsbereich-", "utf-8")
+            member.all_areas = member.all_areas + area.name + ' '
+        if member.all_areas == '':
+            member.all_areas = str('-Kein Tätigkeitsbereich-', 'utf-8')
 
-        member.depot_name = str("Kein Depot definiert", "utf-8")
+        member.depot_name = str('Kein Depot definiert', 'utf-8')
         if member.subscription is not None:
             member.depot_name = member.subscription.depot.name
-        looco_full_name = member.first_name + " " + member.last_name
+        looco_full_name = member.first_name + ' ' + member.last_name
         worksheet_s.write_string(row, 0, looco_full_name)
         worksheet_s.write(row, 1, member.assignment_count)
         worksheet_s.write(row, 2, member.core_assignment_count)

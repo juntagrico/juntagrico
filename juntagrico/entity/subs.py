@@ -17,37 +17,37 @@ from juntagrico.entity.subtypes import *
 
 
 class Subscription(Billable):
-    """
+    '''
     One Subscription that may be shared among several people.
-    """
-    depot = models.ForeignKey("Depot", on_delete=models.PROTECT, related_name="subscription_set")
-    future_depot = models.ForeignKey("Depot", on_delete=models.PROTECT, related_name="future_subscription_set", null=True,
+    '''
+    depot = models.ForeignKey('Depot', on_delete=models.PROTECT, related_name='subscription_set')
+    future_depot = models.ForeignKey('Depot', on_delete=models.PROTECT, related_name='future_subscription_set', null=True,
                                      blank=True, )
-    types = models.ManyToManyField("SubscriptionType",through="TSST", related_name="subscription_set")
-    future_types = models.ManyToManyField("SubscriptionType",through="TFSST", related_name="future_subscription_set")
-    primary_member = models.ForeignKey("Member", related_name="subscription_primary", null=True, blank=True,
+    types = models.ManyToManyField('SubscriptionType',through='TSST', related_name='subscription_set')
+    future_types = models.ManyToManyField('SubscriptionType',through='TFSST', related_name='future_subscription_set')
+    primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
                                        on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
-    canceled = models.BooleanField("gekündigt", default=False)
-    activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
-    deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
-    creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
-    start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_business_year)
-    end_date = models.DateField("Gewünschtes Enddatum", null=True)
-    notes = models.TextField("Notizen", max_length=1000, blank=True)    
+    canceled = models.BooleanField('gekündigt', default=False)
+    activation_date = models.DateField('Aktivierungssdatum', null=True, blank=True)
+    deactivation_date = models.DateField('Deaktivierungssdatum', null=True, blank=True)
+    creation_date = models.DateField('Erstellungsdatum', null=True, blank=True, auto_now_add=True)
+    start_date = models.DateField('Gewünschtes Startdatum', null=False, default=start_of_next_business_year)
+    end_date = models.DateField('Gewünschtes Enddatum', null=True)
+    notes = models.TextField('Notizen', max_length=1000, blank=True)    
     old_active = None
     old_canceled = None
 
     def __str__(self):
-        namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
+        namelist = ['1 Einheit' if self.size == 1 else '%d Einheiten' % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return "Abo (%s) %s" % (" + ".join(namelist), self.id)
+        return 'Abo (%s) %s' % (' + '.join(namelist), self.id)
 
     @property
     def overview(self):
-        namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
+        namelist = ['1 Einheit' if self.size == 1 else '%d Einheiten' % self.size]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return "%s" % (" + ".join(namelist))
+        return '%s' % (' + '.join(namelist))
        
     @property   
     def size(self):
@@ -62,18 +62,18 @@ class Subscription(Billable):
 
     def recipients_names(self):
         members = self.members.all()
-        return ", ".join(str(member) for member in members)
+        return ', '.join(str(member) for member in members)
 
     def other_recipients_names(self):
         members = self.recipients().exclude(email=self.primary_member.email)
-        return ", ".join(str(member) for member in members)
+        return ', '.join(str(member) for member in members)
 
     def recipients(self):
         return self.members.all()
 
     def primary_member_nullsave(self):
         member = self.primary_member
-        return str(member) if member is not None else ""
+        return str(member) if member is not None else ''
 
     @property
     def extra_subscriptions(self):
@@ -112,7 +112,7 @@ class Subscription(Billable):
 
     @staticmethod
     def next_extra_change_date():
-        month = int(time.strftime("%m"))
+        month = int(time.strftime('%m'))
         if month >= 7:
             next_extra = datetime.date(day=1, month=1, year=timezone.now().today().year + 1)
         else:
@@ -130,7 +130,7 @@ class Subscription(Billable):
             size_names.append(type.__str__())
         if len(size_names) > 0:
             return ', '.join(size_names)
-        return "kein Abo"
+        return 'kein Abo'
         
     def required_assignments(self):
         result = 0
@@ -183,6 +183,6 @@ class Subscription(Billable):
             member.save()
 
     class Meta:
-        verbose_name = "Abo"
-        verbose_name_plural = "Abos"
+        verbose_name = 'Abo'
+        verbose_name_plural = 'Abos'
         permissions = (('can_filter_subscriptions', 'Benutzer kann Abos filtern'),)

@@ -11,8 +11,8 @@ def primary_member_of_subscription(view):
             if request.user.member.subscription.primary_member.id == request.user.member.id:
                 return view(request, *args, **kwargs)
             else:
-                return HttpResponseRedirect("/my/subscription")
+                return HttpResponseRedirect('/my/subscription')
         else:
-            return HttpResponseRedirect("/accounts/login/?next=" + str(request.get_full_path()))
+            return HttpResponseRedirect('/accounts/login/?next=' + str(request.get_full_path()))
 
     return wrapper

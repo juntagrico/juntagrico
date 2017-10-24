@@ -8,13 +8,13 @@ from xhtml2pdf import pisa
 
 
 def render_to_pdf_http(template_name, renderdict, filename):
-    """
+    '''
     Take a string of rendered html and pack it into a pdfand return it thtough http
-    """
+    '''
     rendered_html = get_template(template_name).render(renderdict)
 
-    response = HttpResponse(content_type="application/pdf")
-    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename='' + filename + '''
 
     success = pisa.CreatePDF(rendered_html, dest=response)
 
@@ -24,12 +24,12 @@ def render_to_pdf_http(template_name, renderdict, filename):
 
 
 def render_to_pdf_storage(template_name, renderdict, filename):
-    """
+    '''
     Take a string of rendered html and pack it into a pdfand save it
-    """
+    '''
     if default_storage.exists(filename):
         default_storage.delete(filename)
     rendered_html = get_template(template_name).render(renderdict)
     pdf = BytesIO()
-    pisa.CreatePDF(BytesIO(str(rendered_html).encode("utf-8")), dest=pdf)
+    pisa.CreatePDF(BytesIO(str(rendered_html).encode('utf-8')), dest=pdf)
     default_storage.save(filename, ContentFile(pdf.getvalue()))

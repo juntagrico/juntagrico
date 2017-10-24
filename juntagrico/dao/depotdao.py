@@ -11,7 +11,7 @@ class DepotDao:
 
     @staticmethod
     def all_depots_order_by_code():
-        return Depot.objects.all().order_by("code")
+        return Depot.objects.all().order_by('code')
 
     @staticmethod
     def depots_for_contact(member):

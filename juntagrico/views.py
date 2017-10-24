@@ -43,7 +43,7 @@ def get_menu_dict(request):
         required_assignments = member.subscription.required_assignments()
         assignmentsrange = list(range(0, max(required_assignments, len(userassignments) + len(partner_assignments))))
 
-        for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by("job__time"):
+        for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time'):
             next_jobs.append(assignment.job)
     else:
         assignmentsrange = None
@@ -75,7 +75,7 @@ def get_menu_dict(request):
         'area_admin': area_admin,
         'show_core': ActivityAreaDao.all_core_areas().count()>0,
         'show_extras': JobExtraDao.all_job_extras().count()>0,
-        'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + "/dpl.pdf",
+        'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + '/dpl.pdf',
     }
     enrich_menu_dict(request, menu_dict)
     return menu_dict
@@ -83,9 +83,9 @@ def get_menu_dict(request):
 
 @login_required
 def home(request):
-    """
+    '''
     Overview on juntagrico
-    """
+    '''
 
     next_jobs = set(JobDao.get_current_jobs()[:7])
     pinned_jobs = set(JobDao.get_pinned_jobs())
@@ -97,19 +97,19 @@ def home(request):
         'messages': messages(request),
     })
 
-    return render(request, "home.html", renderdict)
+    return render(request, 'home.html', renderdict)
 
 
 @login_required
 def job(request, job_id):
-    """
+    '''
     Details for a job
-    """
+    '''
     member = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
 
     if request.method == 'POST':
-        num = request.POST.get("jobs")
+        num = request.POST.get('jobs')
         # adding participants
         amount=1
         if Config.assignment_unit()=='ENTITY':
@@ -120,7 +120,7 @@ def job(request, job_id):
         for i in range(add):
             assignment=Assignment.objects.create(member=member, job=job, amount=amount)
         for extra in job.type.job_extras_set.all():
-            if request.POST.get("extra" + str(extra.extra_type.id)) == str(extra.extra_type.id):
+            if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
                 assignment.job_extras.add(extra)        
         assignment.save()
 
@@ -147,7 +147,7 @@ def job(request, job_id):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
         reachable = member.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == member
-        participants_summary.append((name, None, contact_url, reachable, " ".join(extras)))
+        participants_summary.append((name, None, contact_url, reachable, ' '.join(extras)))
         emails.append(member.email)
 
     slotrange = list(range(0, job.slots))
@@ -161,7 +161,7 @@ def job(request, job_id):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
-        'emails': "\n".join(emails),
+        'emails': '\n'.join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
         'job': job,
@@ -173,35 +173,35 @@ def job(request, job_id):
         'job_canceled': job_canceled,
         'can_subscribe': can_subscribe
     })
-    return render(request, "job.html", renderdict)
+    return render(request, 'job.html', renderdict)
 
 
 @login_required
 def depot(request, depot_id):
-    """
+    '''
     Details for a Depot
-    """
+    '''
     depot = get_object_or_404(Depot, id=int(depot_id))
 
     renderdict = get_menu_dict(request)
     renderdict.update({
         'depot': depot
     })
-    return render(request, "depot.html", renderdict)
+    return render(request, 'depot.html', renderdict)
 
 
 @login_required
 def participation(request):
-    """
+    '''
     Details for all areas a member can participate
-    """
+    '''
     member = request.user.member
     my_areas = []
     success = False
     if request.method == 'POST':
         old_areas = set(member.areas.all())
         new_areas = set(area for area in ActivityAreaDao.all_visible_areas()
-                        if request.POST.get("area" + str(area.id)))
+                        if request.POST.get('area' + str(area.id)))
         if old_areas != new_areas:
             member.areas = new_areas
             member.save()
@@ -228,14 +228,14 @@ def participation(request):
         'success': success,
         'menu': {'participation': 'active'},
     })
-    return render(request, "participation.html", renderdict)
+    return render(request, 'participation.html', renderdict)
 
 
 @login_required
 def pastjobs(request):
-    """
+    '''
     All past jobs of current user
-    """
+    '''
     member = request.user.member
 
     allassignments = AssignmentDao.assignments_for_member(member)
@@ -250,14 +250,14 @@ def pastjobs(request):
         'assignments': past_assingments,
         'menu': {'participation': 'active'},
     })
-    return render(request, "pastjobs.html", renderdict)
+    return render(request, 'pastjobs.html', renderdict)
 
 
 @login_required
 def team(request, area_id):
-    """
+    '''
     Details for a team
-    """
+    '''
 
     job_types = JobTypeDao.types_by_area(area_id)
 
@@ -275,14 +275,14 @@ def team(request, area_id):
         'team': get_object_or_404(ActivityArea, id=int(area_id)),
         'jobs': jobs,
     })
-    return render(request, "team.html", renderdict)
+    return render(request, 'team.html', renderdict)
 
 
 @login_required
 def assignments(request):
-    """
+    '''
     All jobs to be sorted etc.
-    """
+    '''
     renderdict = get_menu_dict(request)
 
     jobs = JobDao.get_current_jobs()
@@ -292,14 +292,14 @@ def assignments(request):
         'menu': {'jobs': 'active'},
     })
 
-    return render(request, "jobs.html", renderdict)
+    return render(request, 'jobs.html', renderdict)
 
 
 @login_required
 def assingments_all(request):
-    """
+    '''
     All jobs to be sorted etc.
-    """
+    '''
     renderdict = get_menu_dict(request)
     jobs = JobDao.jobs_ordered_by_time()
     renderdict.update({
@@ -307,61 +307,61 @@ def assingments_all(request):
         'menu': {'jobs': 'active'},
     })
 
-    return render(request, "jobs.html", renderdict)
+    return render(request, 'jobs.html', renderdict)
 
 
 @login_required
 def contact(request):
-    """
+    '''
     contact form
-    """
+    '''
     member = request.user.member
     is_sent = False
 
-    if request.method == "POST":
+    if request.method == 'POST':
         # send mail to bg
-        send_contact_form(request.POST.get("subject"), request.POST.get("message"), member, request.POST.get("copy"))
+        send_contact_form(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
         is_sent = True
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
+        'usernameAndEmail': member.first_name + ' ' + member.last_name + '<' + member.email + '>',
         'is_sent': is_sent,
         'menu': {'contact': 'active'},
     })
-    return render(request, "contact.html", renderdict)
+    return render(request, 'contact.html', renderdict)
 
 
 @login_required
 def contact_member(request, member_id, job_id):
-    """
+    '''
     member contact form
-    """
+    '''
     member = request.user.member
     contact_member = get_object_or_404(Member, id=int(member_id))
     is_sent = False
 
-    if request.method == "POST":
+    if request.method == 'POST':
         # send mail to member
         index = 1
         attachments = []
-        while request.FILES.get("image-" + str(index)) is not None:
-            attachments.append(request.FILES.get("image-" + str(index)))
+        while request.FILES.get('image-' + str(index)) is not None:
+            attachments.append(request.FILES.get('image-' + str(index)))
             index += 1
-        send_contact_member_form(request.POST.get("subject"), request.POST.get("message"), member, contact_member,
-                                 request.POST.get("copy"), attachments)
+        send_contact_member_form(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
+                                 request.POST.get('copy'), attachments)
         is_sent = True
     job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)
     renderdict.update({
         'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
-        'usernameAndEmail': member.first_name + " " + member.last_name + "<" + member.email + ">",
+        'usernameAndEmail': member.first_name + ' ' + member.last_name + '<' + member.email + '>',
         'member_id': member_id,
-        'member_name': contact_member.first_name + " " + contact_member.last_name,
+        'member_name': contact_member.first_name + ' ' + contact_member.last_name,
         'is_sent': is_sent,
         'job_id': job_id
     })
-    return render(request, "contact_member.html", renderdict)
+    return render(request, 'contact_member.html', renderdict)
 
 
 @login_required
@@ -392,7 +392,7 @@ def profile(request):
         'success': success,
         'menu': {'personalInfo': 'active'},
     })
-    return render(request, "profile.html", renderdict)
+    return render(request, 'profile.html', renderdict)
 
 
 @login_required
@@ -447,4 +447,4 @@ def new_password(request):
 def logout_view(request):
     auth.logout(request)
     # Redirect to a success page.
-    return HttpResponseRedirect("/my/home")
+    return HttpResponseRedirect('/my/home')

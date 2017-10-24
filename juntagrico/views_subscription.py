@@ -28,9 +28,9 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits): re
 
 @login_required
 def subscription(request):
-    """
+    '''
     Details for an subscription of a member
-    """
+    '''
     renderdict = get_menu_dict(request)
 
     if request.user.member.subscription is not None:
@@ -49,14 +49,14 @@ def subscription(request):
         'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
         'menu': {'subscription': 'active'},
     })
-    return render(request, "subscription.html", renderdict)
+    return render(request, 'subscription.html', renderdict)
 
 
 @primary_member_of_subscription
 def subscription_change(request):
-    """
+    '''
     change an subscription
-    """
+    '''
     month = timezone.now().month
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -67,38 +67,38 @@ def subscription_change(request):
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year()
     })
-    return render(request, "subscription_change.html", renderdict)
+    return render(request, 'subscription_change.html', renderdict)
 
 
 @primary_member_of_subscription
 def depot_change(request):
-    """
+    '''
     change a depot
-    """
+    '''
     saved = False
-    if request.method == "POST":
-        request.user.member.subscription.future_depot = get_object_or_404(Depot, id=int(request.POST.get("depot")))
+    if request.method == 'POST':
+        request.user.member.subscription.future_depot = get_object_or_404(Depot, id=int(request.POST.get('depot')))
         request.user.member.subscription.save()
         saved = True
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'member': request.user.member,
-        "depots": DepotDao.all_depots()
+        'depots': DepotDao.all_depots()
     })
-    return render(request, "depot_change.html", renderdict)
+    return render(request, 'depot_change.html', renderdict)
 
 
 @primary_member_of_subscription
 def size_change(request):
-    """
+    '''
     change the size of an subscription
-    """
+    '''
     saved = False
-    if request.method == "POST" and int(time.strftime("%m")) <= Config.business_year_cancelation_month() and int(request.POST.get("subscription")) > 0:
+    if request.method == 'POST' and int(time.strftime('%m')) <= Config.business_year_cancelation_month() and int(request.POST.get('subscription')) > 0:
         for type in TFSST.objects.filter(subscription=request.user.member.subscription):
             type.delete()
-        TFSST.objects.create(subscription=request.user.member.subscription, type=SubscriptionTypeDao.get_by_id(int(request.POST.get("subscription")))[0])
+        TFSST.objects.create(subscription=request.user.member.subscription, type=SubscriptionTypeDao.get_by_id(int(request.POST.get('subscription')))[0])
         saved = True
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -108,19 +108,19 @@ def size_change(request):
         'selected_subscription': request.user.member.subscription.future_types.all()[0].id,
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
     })
-    return render(request, "size_change.html", renderdict)
+    return render(request, 'size_change.html', renderdict)
 
 
 @primary_member_of_subscription
 def extra_change(request):
-    """
+    '''
     change an extra subscription
-    """
+    '''
     saved = False
-    if request.method == "POST":
+    if request.method == 'POST':
         for extra_subscription in ExtraSubscriptionType.objects.all():
             existing = request.user.member.subscription.extra_subscription_set.filter(type__id=extra_subscription.id)
-            if request.POST.get("subscription" + str(extra_subscription.id)) == str(extra_subscription.id):
+            if request.POST.get('subscription' + str(extra_subscription.id)) == str(extra_subscription.id):
                 if existing.count()==0:
                     future_extra_subscription = ExtraSubscription.objects.create(main_subscription=request.user.member.subscription,type=extra_subscription)
                     future_extra_subscription.active = False
@@ -170,21 +170,21 @@ def extra_change(request):
     renderdict.update({
         'saved': saved,
         'member': request.user.member,
-        "extras": subscriptions
+        'extras': subscriptions
     })
-    return render(request, "extra_change.html", renderdict)
+    return render(request, 'extra_change.html', renderdict)
 
 
 def signup(request):
-    """
+    '''
     Become a member of juntagrico
-    """
+    '''
     success = False
     agberror = False
     agbchecked = False
     userexists = False
     if request.method == 'POST':
-        agbchecked = request.POST.get("agb") == "on"
+        agbchecked = request.POST.get('agb') == 'on'
 
         memberform = RegisterMemberForm(request.POST)
         if not agbchecked:
@@ -200,7 +200,7 @@ def signup(request):
                     password = password_generator()
                     member = Member(**memberform.cleaned_data)
                     request.session['main_member'] = member
-                    return redirect("/my/create/subscrition")
+                    return redirect('/my/create/subscrition')
     else:
         memberform = RegisterMemberForm()
 
@@ -212,52 +212,52 @@ def signup(request):
         'userexists': userexists,
         'menu': {'join': 'active'},
     }
-    return render(request, "signup.html", renderdict)
+    return render(request, 'signup.html', renderdict)
 
 
 
 def welcome(request):
-    """
+    '''
     welcome
-    """
+    '''
     renderdict= {
         'no_subscription': request.session['main_member'].subscription is None
     }
 
-    return render(request, "welcome.html", renderdict)
+    return render(request, 'welcome.html', renderdict)
 
 
 def confirm(request, hash):
-    """
+    '''
     Confirm from a user that has been added as a co_subscription member
-    """
+    '''
 
     for member in MemberDao.all_members():
         if hash == hashlib.sha1((member.email + str(member.id)).encode('utf8')).hexdigest():
             member.confirmed = True
             member.save()
 
-    return redirect("/my/home")
+    return redirect('/my/home')
 
 
 
 def createsubscription(request):
-    """
+    '''
     create a subscription
-    """
+    '''
     if request.user.is_authenticated():
         member = request.user.member
     else:
         member = request.session.get('main_member')
     if member is None:
-        return redirect("http://"+Config.server_url())
+        return redirect('http://'+Config.server_url())
     
     shareerror = False 
     session_subscription = request.session.get('create_subscription')
     co_members = request.session.get('create_co_members', [])
     co_members_shares = request.session.get('create_co_members_shares', [])
     member_shares = request.session.get('create_member_shares', [])
-    selectedsubscription = request.session.get('selectedsubscription', "none")
+    selectedsubscription = request.session.get('selectedsubscription', 'none')
 
     selected_depot = None
     existing_member_shares = 0
@@ -269,9 +269,9 @@ def createsubscription(request):
         selected_depot = session_subscription.depot
 
     co_member_shares = len(co_members_shares)
-    if request.method == "POST":
-        shares += int(request.POST.get("shares"))
-        selectedsubscription = request.POST.get("subscription")
+    if request.method == 'POST':
+        shares += int(request.POST.get('shares'))
+        selectedsubscription = request.POST.get('subscription')
         subscriptionform = SubscriptionForm(request.POST)
 
         shares += co_member_shares
@@ -286,22 +286,22 @@ def createsubscription(request):
 
             if size > 0:
                 session_subscription = Subscription(**subscriptionform.cleaned_data)
-                session_subscription.depot = DepotDao.depot_by_id(request.POST.get("depot"))
-            if len(member_shares) < int(request.POST.get("shares")):
-                toadd = int(request.POST.get("shares")) - len(member_shares)
+                session_subscription.depot = DepotDao.depot_by_id(request.POST.get('depot'))
+            if len(member_shares) < int(request.POST.get('shares')):
+                toadd = int(request.POST.get('shares')) - len(member_shares)
                 for num in range(0, toadd):
                     member_shares.append(Share(member=member, paid_date=None))
-            elif len(member_shares) > int(request.POST.get("shares")):
-                toremove = len(member_shares) - int(request.POST.get("shares"))
+            elif len(member_shares) > int(request.POST.get('shares')):
+                toremove = len(member_shares) - int(request.POST.get('shares'))
                 for num in range(0, toremove):
                     member_shares.pop()
 
-            if request.POST.get("add_member"):
+            if request.POST.get('add_member'):
                 request.session['create_subscription'] = session_subscription
                 request.session['create_subscription'] = session_subscription
                 request.session['create_member_shares'] = member_shares
                 request.session['selectedsubscription'] = selectedsubscription
-                return redirect("/my/cosubmember/0")
+                return redirect('/my/cosubmember/0')
             else:
                 password = None
                 if member.pk is None:
@@ -343,9 +343,9 @@ def createsubscription(request):
                 request.session['create_co_members_shares'] = []
                 request.session['create_member_shares'] = []
                 if request.user.is_authenticated():
-                    return redirect("/my/home")
+                    return redirect('/my/home')
                 else:
-                    return redirect("/my/welcome")
+                    return redirect('/my/welcome')
 
     renderdict = {
         'co_member_shares': co_member_shares,
@@ -359,7 +359,7 @@ def createsubscription(request):
         'co_members': co_members,
         'subscriptionform': subscriptionform
     }
-    return render(request, "createsubscription.html", renderdict)
+    return render(request, 'createsubscription.html', renderdict)
 
 
 
@@ -371,7 +371,7 @@ def add_member(request, subscription_id):
     if request.method == 'POST':
         memberform = RegisterMemberForm(request.POST)
         try:
-            shares = int(request.POST.get("shares"))
+            shares = int(request.POST.get('shares'))
             shareerror = shares < 0
         except:
             shareerror = True
@@ -392,7 +392,7 @@ def add_member(request, subscription_id):
             else:
                 for share in member.share_set.all():
                     tmp_shares.append(share)
-            if request.GET.get("return"):
+            if request.GET.get('return'):
                 member.subscription_id = subscription_id
                 member.save()
                 send_been_added_to_subscription(member.email, pw, request.user.member.get_name(), shares, hashlib.sha1((member.email + str(
@@ -402,7 +402,7 @@ def add_member(request, subscription_id):
                         share.member=member
                         share.save()
                         send_share_created_mail(share)
-                return redirect(request.GET.get("return"))
+                return redirect(request.GET.get('return'))
             else:
                 co_members_shares = request.session.get('create_co_members_shares', [])
                 co_members_shares += tmp_shares
@@ -417,11 +417,11 @@ def add_member(request, subscription_id):
         else:
             member = request.session.get('main_member')
         if member is None:
-            return redirect("http://"+Config.server_url())
-        initial = {"addr_street": member.addr_street,
-                   "addr_zipcode": member.addr_zipcode,
-                   "addr_location": member.addr_location,
-                   "phone": member.phone,
+            return redirect('http://'+Config.server_url())
+        initial = {'addr_street': member.addr_street,
+                   'addr_zipcode': member.addr_zipcode,
+                   'addr_location': member.addr_location,
+                   'phone': member.phone,
                    }
         memberform = RegisterMemberForm(initial=initial)
     renderdict = {
@@ -431,11 +431,11 @@ def add_member(request, subscription_id):
         'memberblocked': memberexists,
         'shareerror': shareerror,
         'memberform': memberform,
-        "member": member,
-        "depots": DepotDao.all_depots(),
-        "cancelUrl": request.GET.get("return") if request.GET.get("return") else '/my/create/subscrition'
+        'member': member,
+        'depots': DepotDao.all_depots(),
+        'cancelUrl': request.GET.get('return') if request.GET.get('return') else '/my/create/subscrition'
     }
-    return render(request, "add_member.html", renderdict)
+    return render(request, 'add_member.html', renderdict)
 
 
 def cancel_create_subscription(request):
@@ -447,7 +447,7 @@ def cancel_create_subscription(request):
     if request.user.is_authenticated():
         return redirect('/my/subscription')
     else:
-        return redirect("http://"+Config.server_url())
+        return redirect('http://'+Config.server_url())
 
 @permission_required('juntagrico.is_operations_group')
 def activate_subscription(request, subscription_id):
@@ -458,7 +458,7 @@ def activate_subscription(request, subscription_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect("http://"+Config.admin_server_url())
+        return redirect('http://'+Config.admin_server_url())
 
 @permission_required('juntagrico.is_operations_group')
 def deactivate_subscription(request, subscription_id):
@@ -469,7 +469,7 @@ def deactivate_subscription(request, subscription_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect("http://"+Config.admin_server_url())
+        return redirect('http://'+Config.admin_server_url())
         
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
@@ -480,7 +480,7 @@ def cancel_subscription(request, subscription_id):
     else:
         end_date = end_of_next_business_year()
     subscriptionform = CancelSubscriptionForm(initial={'end_date':end_date,})  
-    if request.method == "POST":    
+    if request.method == 'POST':    
         subscriptionform = CancelSubscriptionForm(request.POST)
         if subscriptionform.is_valid():
             if subscription.active is True and subscription.active is False:
@@ -495,7 +495,7 @@ def cancel_subscription(request, subscription_id):
         'end_date': end_date,
         'subscriptionform': subscriptionform
     }
-    return render(request, "createsubscription.html", renderdict)
+    return render(request, 'createsubscription.html', renderdict)
         
         
     

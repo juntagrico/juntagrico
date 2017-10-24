@@ -3,9 +3,9 @@ from io import StringIO
 import xlsxwriter
 from django.http import HttpResponse
 
-"""
+'''
     Generates excell for a defined set of fields and a model
-"""
+'''
 
 
 def generate_excell(fields, model_instance):
@@ -13,7 +13,7 @@ def generate_excell(fields, model_instance):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = StringIO()
     workbook = xlsxwriter.Workbook(output)
-    worksheet_s = workbook.add_worksheet("Locos")
+    worksheet_s = workbook.add_worksheet('Locos')
 
     col = 0
     for field in fields:
@@ -23,7 +23,7 @@ def generate_excell(fields, model_instance):
         while count < len(parts):
             dbfield = dbfield.related_model._meta.get_field(parts[count])
             count += 1
-        worksheet_s.write_string(0, col, str(str(dbfield.verbose_name), "utf-8"))
+        worksheet_s.write_string(0, col, str(str(dbfield.verbose_name), 'utf-8'))
         col += 1
 
     instances = model_instance.objects.all()
@@ -42,7 +42,7 @@ def generate_excell(fields, model_instance):
                 if isinstance(fieldvalue, str):
                     worksheet_s.write_string(row, col, fieldvalue)
                 else:
-                    worksheet_s.write_string(row, col, str(str(fieldvalue), "utf-8"))
+                    worksheet_s.write_string(row, col, str(str(fieldvalue), 'utf-8'))
             col += 1
         row += 1
 
