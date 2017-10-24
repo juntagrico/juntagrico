@@ -32,11 +32,17 @@ def start_of_business_year():
     day = Config.business_year_start()["day"]
     month = Config.business_year_start()["month"]
     return calculate_last(day, month)
+    
+def end_of_business_year():
+    return start_of_next_business_year() - timedelta(days=1)
 
 def start_of_next_business_year():
     day = Config.business_year_start()["day"]
     month = Config.business_year_start()["month"]
     return calculate_next(day, month)
+    
+def end_of_next_business_year():
+    return start_of_next_business_year() - timedelta(days=1) + timedelta(years=1)
 
 def next_cancelation_date():
     now = timezone.now()

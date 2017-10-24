@@ -325,6 +325,20 @@ def send_depot_changed(emails, depot):
                                  emails)
     msg.attach_alternative(html_content, "text/html")
     send_mail_multi(msg)
+    
+
+def send_subscription_canceled(subscription):
+    plaintext = get_template('mails/subscription_canceled_mail.txt')
+
+    d = {
+        'subscription': subscription
+    }
+
+    text_content = plaintext.render(d)
+    emails = [Config.info_email(),]
+    msg = EmailMultiAlternatives(Config.organisation_name() + " - Abo gekündigt", text_content, Config.info_email(),
+                                 emails)
+    send_mail_multi(msg)
 
 
 def send_bill_share(bill, share, member):

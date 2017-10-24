@@ -15,10 +15,14 @@
             </dd>
             <dt>Status</dt>
             <dd>
-                {% if member.subscription.active %}
+                {% if state == 'active'%}
                     Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
-                {% else %}
+                {% elif state == 'canceled'%}
+                    Dein Abo ist gekündigt, du erhälst wöchentlich dein Gemüse bis zum {{end_date|date "d.m.Y"}}.
+                {% elif state == 'watiting %}
                     <span class="text-error">Auf der Warteliste</span> - du erhälst leider im Moment noch kein Gemüse.
+                {% elif state == 'inactive %}
+                    <span class="text-error">Dein abo wurde deaktiviert</span> - du erhälst im Moment kein Gemüse.
                 {% endif %}
             </dd>
             <dt>Anteilscheine</dt>
@@ -101,7 +105,13 @@
                 <div class="form-actions">
                     <a href="{% if primary %}/my/subscription/change{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
                     {% if not primary %}
-                        * Das Abo kann nur der Hauptsubscriptionnnent ändern.
+                        * Das Abo kann nur der Hauptabonnnent ändern.
+                    {% endif %}
+                </div> 
+                <div class="form-actions">
+                    <a href="{% if primary %}/my/subscription/cancel/{{member.subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo künden</a>
+                    {% if not primary %}
+                        * Das Abo kann nur der Hauptabonnnent künden.
                     {% endif %}
                 </div>
             </dd>

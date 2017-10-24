@@ -410,3 +410,12 @@ def waitinglist(request):
         'waitinglist': waitinglist
     })
     return render(request, 'waitinglist.html', renderdict)
+    
+@permission_required('juntagrico.is_operations_group')
+def canceledlist(request):
+    renderdict = get_menu_dict(request)
+    waitinglist = SubscriptionDao.canceled_subscriptions()
+    renderdict.update({
+        'canceled': waitinglist
+    })
+    return render(request, 'canceledlist.html', renderdict)

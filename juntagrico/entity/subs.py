@@ -7,6 +7,7 @@ from django.db import models
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 
+from juntagrico.mailer import *
 from juntagrico.util.temporal import *
 from juntagrico.util.bills import *
 from juntagrico.config import Config
@@ -27,12 +28,15 @@ class Subscription(Billable):
     primary_member = models.ForeignKey("Member", related_name="subscription_primary", null=True, blank=True,
                                        on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
+    canceled = models.BooleanField("gekündigt", default=False)
     activation_date = models.DateField("Aktivierungssdatum", null=True, blank=True)
     deactivation_date = models.DateField("Deaktivierungssdatum", null=True, blank=True)
     creation_date = models.DateField("Erstellungsdatum", null=True, blank=True, auto_now_add=True)
     start_date = models.DateField("Gewünschtes Startdatum", null=False, default=start_of_next_business_year)
+    end_date = models.DateField("Gewünschtes Enddatum", null=True)
     notes = models.TextField("Notizen", max_length=1000, blank=True)    
     old_active = None
+    old_canceled = None
 
     def __str__(self):
         namelist = ["1 Einheit" if self.size == 1 else "%d Einheiten" % self.size]
@@ -164,10 +168,13 @@ class Subscription(Billable):
                 bill_subscription(instance)
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
+        if instance.old_canceled != instance.canceled:
+            send_subscription_canceled(instance)
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
         instance.old_active = instance.active
+        instance.old_canceled = instance.canceled
 
     @classmethod
     def pre_delete(cls, sender, instance, **kwds):

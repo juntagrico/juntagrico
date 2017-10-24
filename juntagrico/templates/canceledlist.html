@@ -10,11 +10,10 @@
             <thead>
             <tr>
                 <th>Abo</th>
-                <th>Start Datum</th>
+                <th>End Datum</th>
                 <th>Kontakt</th>
                 <th>Email</th>
                 <th>Bezahlte Anteilsscheine</th>
-                <th>Bestelldatum</th>
                 <th></th>
                 <th>Notizen</th>
             </tr>
@@ -23,7 +22,7 @@
             {% for subscription in waitinglist %}
                 <tr>
                     <td>{{ subscription.overview }}</td>
-                    <td>{{ subscription.start_date |date:"Y-m-d" }}</td>
+                    <td>{{ subscription.end_date |date:"Y-m-d" }}</td>
                     <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
                     <td>
                         <form id="subscription{{ subscription.id }}" method="post" action="/my/mails"> 
@@ -34,8 +33,7 @@
                         </form>
                     </td>
                     <td>{{ subscription.paid_shares }}</td>
-                    <td>{{ subscription.creation_date|date:"Y-m-d" }}</td>
-                    <td><a href="/my/subscription/activate/{{ subscription.id }}/" class="btn btn-success">aktivieren</a></td>
+                    <td><a href="/my/subscription/deactivate/{{ subscription.id }}/" class="btn btn-success">aktivieren</a></td>
                     <td>{{ subscription.notes }}</td>
                 </tr>
             {% endfor %}

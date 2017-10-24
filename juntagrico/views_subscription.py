@@ -229,7 +229,7 @@ def welcome(request):
 
 def confirm(request, hash):
     """
-    Confirm from a user that has been added as a co_subscriptionnnent
+    Confirm from a user that has been added as a co_subscription member
     """
 
     for member in MemberDao.all_members():
@@ -252,8 +252,7 @@ def createsubscription(request):
     if member is None:
         return redirect("http://"+Config.server_url())
     
-    shareerror = False
-    subscriptionform = SubscriptionForm()
+    shareerror = False 
     session_subscription = request.session.get('create_subscription')
     co_members = request.session.get('create_co_members', [])
     co_members_shares = request.session.get('create_co_members_shares', [])
@@ -449,8 +448,8 @@ def cancel_create_subscription(request):
         return redirect('/my/subscription')
     else:
         return redirect("http://"+Config.server_url())
-  
-@permission_required('juntagrico.is_operations_group')      
+
+@permission_required('juntagrico.is_operations_group')
 def activate_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if subscription.active is False and subscription.deactivation_date is None:
@@ -460,6 +459,43 @@ def activate_subscription(request, subscription_id):
         return redirect(request.META.get('HTTP_REFERER'))
     else:
         return redirect("http://"+Config.admin_server_url())
+
+@permission_required('juntagrico.is_operations_group')
+def deactivate_subscription(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    if subscription.active is True:
+        subscription.active=False
+        subscription.save()
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect("http://"+Config.admin_server_url())
+        
+@primary_member_of_subscription
+def cancel_subscription(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)  
+    now = timezon.now()
+    if now <= next_cancelation_date():
+        end_date = end_of_business_year()
+    else:
+        end_date = end_of_next_business_year()
+    subscriptionform = CancelSubscriptionForm(initial={'end_date':end_date,})  
+    if request.method == "POST":    
+        subscriptionform = CancelSubscriptionForm(request.POST)
+        if subscriptionform.is_valid():
+            if subscription.active is True and subscription.active is False:
+                subscription.canceled=True
+                subscription.end_date=subscriptionform.cleaned_data['end_date']
+                subscription.save()
+            elif subscription.active is False and subscription.deactivation_date is None:
+                subscription.delete()
+            return redirect('/my/subscription')
+    
+    renderdict = {
+        'end_date': end_date,
+        'subscriptionform': subscriptionform
+    }
+    return render(request, "createsubscription.html", renderdict)
         
         
     
