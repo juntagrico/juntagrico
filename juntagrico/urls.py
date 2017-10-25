@@ -65,6 +65,7 @@ urlpatterns = [
     url('^my/export/shares$', juntagrico_admin.excel_export_shares),
     url('^my/mailtemplate/(?P<template_id>.*?)/', juntagrico_admin.get_mail_template),
     url('^my/waitinglist', juntagrico_admin.waitinglist),
+    url('^my/canceledlist', juntagrico_admin.canceledlist),
     url('^my/maps', juntagrico_admin.maps),
 
     url(r'^my', include(personal_urls)),

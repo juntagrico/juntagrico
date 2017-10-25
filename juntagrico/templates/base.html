@@ -80,28 +80,20 @@
                 {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group%}
                 <hr>
                 <h5>Administration</h5>
-                <ul class="nav nav-pills nav-stacked admin-menu">
-                    {% for depot in depot_admin %}
-                        <li class="inline">
-                            <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
-                        </li>
-                    {% endfor %}
-                    {% for area in area_admin %}
+                <ul class="nav nav-pills nav-stacked admin-menu">                
+                    {% if operation_group %}
                         <li>
-                            <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
-                        </li>
-                    {% endfor %}
-                    {% if can_send_mails %}
-                        <li>
-                            <a href="/my/mails">Mails verschicken</a>
+                            <a href="/admin">Daten Administration</a>
                         </li>
                     {% endif %}
                     {% if operation_group %}
                         <li>
                             <a href="{{depot_list_url}}">Depotlisten</a>
                         </li>
+                    {% endif %}
+                    {% if can_send_mails %}
                         <li>
-                            <a href="/my/export">Exporte</a>
+                            <a href="/my/mails">Mails verschicken</a>
                         </li>
                     {% endif %}
                     {% if can_filter_members or can_filter_subscriptions %}
@@ -115,6 +107,26 @@
                             {% endif %}
                         </li>
                     {% endif %}
+                    {% for depot in depot_admin %}
+                        <li class="inline">
+                            <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
+                        </li>
+                    {% endfor %}
+                    {% for area in area_admin %}
+                        <li>
+                            <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
+                        </li>
+                    {% endfor %}
+                    {% if operation_group %}
+                        <li>
+                            <a href="/my/waitinglist">Warteliste</a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group %}
+                        <li>
+                            <a href="/my/canceledlist">Kündigungsliste</a>
+                        </li>
+                    {% endif %}
                     {% if operation_group %}
                         <li>
                             <a href="/my/future">Zukunftsblick</a>
@@ -122,12 +134,9 @@
                     {% endif %}
                     {% if operation_group %}
                         <li>
-                            <a href="/my/waitinglist">Warteliste</a>
+                            <a href="/my/export">Exporte</a>
                         </li>
                     {% endif %}
-                        <li>
-                            <a href="/admin">Daten Administration</a>
-                        </li>
                     
                     {% include "personal_menu.html" %}
                 </ul>
