@@ -5,37 +5,50 @@
 {% endblock %}
 
 {% block content %}
-    {% if saved %}
-        <div class="alert alert-success">
-            Die Zusatz-Abos wurden erfolgreich geändert.<br/>
-            <a href="/my/subscription">Zurück zur Abo-Übersicht</a>
-        </div>
-    {% else %}
-        <br/>
-        <form method="post" class="form-horizontal createsubscription">
-            {% csrf_token %}
-            <div class="form-group">
-                    {% for extra in extras %}
-                    <label class="control-label col-md-3" for="depot">
-                    {% if forloop.first %}    
-                        Deine Abos
-                    {% endif %}
-                    </label>
-                    <div class="controls col-md-9">
-                            <label for="subscription{{ extra.id }}" class="checkbox col-md-2">
-                                <input type="checkbox" value="{{ extra.id }}" name="subscription{{ extra.id }}" class="onoffswitch" id="subscription{{ extra.id }}" {% if extra.selected %}checked="checked"{% endif %} />
-                            </label>
-                            <label for="subscription{{ extra.id }}" class="checkbox col-md-7">
-                                {{ extra.name }}
-                            </label>
-                    </div>
-                    {% endfor %}
+    Übersicht
+    <div id="filter">
+        <table id="filter-table" class="list table" style="display: table;">
+            <thead>
+            <tr>
+                <th>Abo</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for extra in extras %}
+                <tr>
+                    <td>{{ extra.type.name }}</td>
+                    <td>{{ extra.state }}</td>
+                    <td>{% if extra.active && !extra.canceled %}<a href="/my/extra/cancel/{{ extra.id }}/" class="btn btn-success">kündigen</a>{% endif %}</td>                    
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br/><br/>
+    Extra-Abos bestellen
+    <br/>
+
+    <form method="post" class="form-horizontal createsubscription">
+        {% csrf_token %}
+        <div class="form-group">
+                {% for type in types %}
+                <div class="controls col-md-2">
+                    <input type="text" name="extra{{ type.id }}"  class="col-md-2 form-control" value="0"/>
                 </div>
+                <div class="controls col-md-10">
+                        {{ type.name }}<br/>
+                        {{ type.description }}<br/>
+                        {% for period in type.periods %}
+                        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}. {{ period.price }} {% config "currency" %}<br/>
+                </div>
+                {% endfor %}
             </div>
-            <div class="form-actions col-md-offset-4">
-                <button type="submit" class="btn btn-success">Extra-Abos ändern</button>
-            </div>
-        </form>
-    {% endif %}
+        </div>
+        <div class="form-actions col-md-offset-4">
+            <button type="submit" class="btn btn-success">Extra-Abos bestellen</button>
+        </div>
+    </form>
 
 {% endblock %}

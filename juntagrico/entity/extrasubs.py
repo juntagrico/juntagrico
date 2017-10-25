@@ -56,6 +56,17 @@ class ExtraSubscription(Billable):
                              on_delete=models.PROTECT)
 
     old_active = None
+    
+    @property
+    def state(self):
+        if self.active is False and self.deactivation_date is None:
+            return 'wartend'
+        elif self.active is True and self.canceled is False:
+            return 'aktiv'
+        elif self.active is True and self.canceled is True:
+            return 'aktiv - gekündigt'
+        elif self.active is False and self.deactivation_date is not None:
+            return 'inaktiv-gekündigt'
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

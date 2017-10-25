@@ -61,6 +61,8 @@ class ExtraSubBillingPeriod(models.Model):
     start_month = models.PositiveIntegerField('Start Monat', choices=month_choices)
     end_day = models.PositiveIntegerField('End Tag')
     end_month = models.PositiveIntegerField('End Monat', choices=month_choices)
+    cancel_day = models.PositiveIntegerField('Kündigungs Tag')
+    cancel_month = models.PositiveIntegerField('Kündigungs Monat', choices=month_choices)
     code = models.TextField('Code für Teilabrechnung', max_length=1000, default='')
 	
     def partial_price(self):

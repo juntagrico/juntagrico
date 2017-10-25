@@ -116,61 +116,18 @@ def extra_change(request):
     '''
     change an extra subscription
     '''
-    saved = False
     if request.method == 'POST':
-        for extra_subscription in ExtraSubscriptionType.objects.all():
-            existing = request.user.member.subscription.extra_subscription_set.filter(type__id=extra_subscription.id)
-            if request.POST.get('subscription' + str(extra_subscription.id)) == str(extra_subscription.id):
-                if existing.count()==0:
-                    future_extra_subscription = ExtraSubscription.objects.create(main_subscription=request.user.member.subscription,type=extra_subscription)
-                    future_extra_subscription.active = False
-                    future_extra_subscription.save()
-                else:
-                    has_active=False
-                    index=0;
-                    while not has_active and index<existing.count():
-                        existing_extra_subscription = existing[index]
-                        if (existing_extra_subscription.canceled==False and existing_extra_subscription.active==True) or (existing_extra_subscription.canceled==False and existing_extra_subscription.active==False):
-                             has_active=True
-                        elif existing_extra_subscription.canceled==True and existing_extra_subscription.active==True:
-                             existing_extra_subscription.canceled=False;
-                             existing_extra_subscription.save();
-                             has_active=True
-                        index+=1
-                    if not has_active:
-                        future_extra_subscription = ExtraSubscription.create(main_subscription=request.user.member.subscription,type=extra_subscription)
-                        future_extra_subscription.active = False
-                        future_extra_subscription.save()
-
-            else:
-                if existing.count()>0:
-                    for existing_extra_subscription in existing:
-                        if existing_extra_subscription.canceled==False and existing_extra_subscription.active==True:
-                            existing_extra_subscription.canceled=True;
-                            existing_extra_subscription.save();
-                        elif existing_extra_subscription.deactivation_date is None and existing_extra_subscription.active==False:
-                            existing_extra_subscription.delete();
-        request.user.member.subscription.save()
-        saved = True
-        
-    subscriptions = []
-    for subscription in ExtraSubscriptionTypeDao.all_extra_types():
-        if request.user.member.subscription.future_extra_subscriptions.filter(type__id=subscription.id).count() > 0:
-            subscriptions.append({
-                'id': subscription.id,
-                'name': subscription.name,
-                'selected': True
-            })
-        else:
-            subscriptions.append({
-                'id': subscription.id,
-                'name': subscription.name
-            })
-    renderdict = get_menu_dict(request)
+        for type in ExtraSubscriptionTypeDao.all_extra_types():
+            subscription = request.user.member.subscription
+            value = int(request.post.get('extra'+type.id))
+            if value>0:
+                for x in range(value):
+                    ExtraSubscription.objects.create(main_subscription=subscription, type=type)
+        return redirect('my/subscription/change/extra')
+    
     renderdict.update({
-        'saved': saved,
-        'member': request.user.member,
-        'extras': subscriptions
+        'types': ExtraSubscriptionTypeDao.all_extra_types(),
+        'extras': request.user.member.subscription.extra_subscription_set.all()
     })
     return render(request, 'extra_change.html', renderdict)
 
@@ -496,6 +453,42 @@ def cancel_subscription(request, subscription_id):
         'subscriptionform': subscriptionform
     }
     return render(request, 'createsubscription.html', renderdict)
+    
+@permission_required('juntagrico.is_operations_group')
+def activate_extra(request, extra_id):
+    extra = get_object_or_404(ExtraSubscription, id=extra_id)  
+    if extra.active is False and extra.deactivation_date is None:
+        extra.active=True
+        extra.save()
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('http://'+Config.admin_server_url())
+
+@permission_required('juntagrico.is_operations_group')
+def deactivate_extra(request, extra_id):
+    extra = get_object_or_404(ExtraSubscription, id=extra_id)  
+    if extra.active is True:
+        extra.active=False
+        extra.save()
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('http://'+Config.admin_server_url())
+        
+@primary_member_of_subscription
+def cancel_extra(request, extra_id):
+    extra = get_object_or_404(ExtraSubscription, id=extra_id)  
+    if extra.active is False:
+        extra.delete()
+    else:
+        extra.canceled=True
+        extra.save()
+    
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('http://'+Config.admin_server_url())
         
         
     

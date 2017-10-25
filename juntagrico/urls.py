@@ -42,6 +42,9 @@ urlpatterns = [
     url('^my/subscription/activate/(?P<subscription_id>.*?)/', juntagrico_subscription.activate_subscription),
     url('^my/subscription/deactivate/(?P<subscription_id>.*?)/', juntagrico_subscription.deactivate_subscription),
     url('^my/subscription/cancel/(?P<subscription_id>.*?)/', juntagrico_subscription.cancel_subscription),
+    url('^my/extra/activate/(?P<extra_id>.*?)/', juntagrico_subscription.activate_extra),
+    url('^my/extra/deactivate/(?P<extra_id>.*?)/', juntagrico_subscription.deactivate_extra),
+    url('^my/extra/cancel/(?P<extra_id>.*?)/', juntagrico_subscription.cancel_extra),
 
     # admin related juntagrico stuff
     url('^my/mails/send/depot$', juntagrico_admin.send_email_depot),
