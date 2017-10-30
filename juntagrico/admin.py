@@ -449,7 +449,7 @@ admin.site.register(JobExtraType)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
+admin.site.register(ExtraSubBillingPeriod)
 if Config.billing():
     admin.site.register(Bill)
     admin.site.register(Payment)
-    admin.site.register(ExtraSubBillingPeriod)

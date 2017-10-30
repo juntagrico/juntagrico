@@ -15,13 +15,13 @@
             </dd>
             <dt>Status</dt>
             <dd>
-                {% if state == 'active'%}
+                {% if member.subscription.state == 'active'%}
                     Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
-                {% elif state == 'canceled'%}
-                    Dein Abo ist gekündigt, du erhälst wöchentlich dein Gemüse bis zum {{end_date|date "d.m.Y"}}.
-                {% elif state == 'watiting %}
+                {% elif member.subscription.state == 'canceled'%}
+                    Dein Abo ist gekündigt, du erhälst wöchentlich dein Gemüse bis zum {{end_date|date:"d.m.Y"}}.
+                {% elif member.subscription.state == 'watiting' %}
                     <span class="text-error">Auf der Warteliste</span> - du erhälst leider im Moment noch kein Gemüse.
-                {% elif state == 'inactive %}
+                {% elif member.subscription.state == 'inactive' %}
                     <span class="text-error">Dein abo wurde deaktiviert</span> - du erhälst im Moment kein Gemüse.
                 {% endif %}
             </dd>
@@ -102,18 +102,23 @@
             {% endif %}
             <dt>&nbsp;</dt>
             <dd>
+                {% if member.subscription.state != 'inactive' %}
                 <div class="form-actions">
                     <a href="{% if primary %}/my/subscription/change{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
                     {% if not primary %}
                         * Das Abo kann nur der Hauptabonnnent ändern.
                     {% endif %}
                 </div> 
+               {% endif %}
+                <br/>
+                {% if member.subscription.state != 'canceled' and  member.subscription.state != 'inactive' %}
                 <div class="form-actions">
                     <a href="{% if primary %}/my/subscription/cancel/{{member.subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo künden</a>
                     {% if not primary %}
                         * Das Abo kann nur der Hauptabonnnent künden.
                     {% endif %}
                 </div>
+               {% endif %}
             </dd>
         </dl>
     {% endif %}

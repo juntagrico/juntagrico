@@ -31,9 +31,10 @@ class Subscription(Billable):
     canceled = models.BooleanField('gekündigt', default=False)
     activation_date = models.DateField('Aktivierungssdatum', null=True, blank=True)
     deactivation_date = models.DateField('Deaktivierungssdatum', null=True, blank=True)
+    cancelation_date = models.DateField('Kündigüngssdatum', null=True, blank=True)
     creation_date = models.DateField('Erstellungsdatum', null=True, blank=True, auto_now_add=True)
     start_date = models.DateField('Gewünschtes Startdatum', null=False, default=start_of_next_business_year)
-    end_date = models.DateField('Gewünschtes Enddatum', null=True)
+    end_date = models.DateField('Gewünschtes Enddatum', null=True,blank=True)
     notes = models.TextField('Notizen', max_length=1000, blank=True)    
     old_active = None
     old_canceled = None
@@ -74,6 +75,17 @@ class Subscription(Billable):
     def primary_member_nullsave(self):
         member = self.primary_member
         return str(member) if member is not None else ''
+
+    @property
+    def state(self):
+        if self.active is False and self.deactivation_date is None:
+            return 'waiting'
+        elif self.active is True and self.canceled is False:
+            return 'active'
+        elif self.active is True and self.canceled is True:
+            return 'canceled'
+        elif self.active is False and self.deactivation_date is not None:
+            return 'inactive'
 
     @property
     def extra_subscriptions(self):
@@ -170,6 +182,7 @@ class Subscription(Billable):
             instance.deactivation_date = timezone.now().date()
         if instance.old_canceled != instance.canceled:
             send_subscription_canceled(instance)
+            instance.cancelation_date = timezone.now().date()
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):

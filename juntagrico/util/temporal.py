@@ -1,5 +1,6 @@
 import calendar
 import datetime
+from datetime import timedelta
 from django.utils import timezone
 
 from juntagrico.config import Config

@@ -19,7 +19,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for subscription in waitinglist %}
+            {% for subscription in canceledlist %}
                 <tr>
                     <td>{{ subscription.overview }}</td>
                     <td>{{ subscription.end_date |date:"Y-m-d" }}</td>
@@ -33,7 +33,7 @@
                         </form>
                     </td>
                     <td>{{ subscription.paid_shares }}</td>
-                    <td><a href="/my/subscription/deactivate/{{ subscription.id }}/" class="btn btn-success">aktivieren</a></td>
+                    <td><a href="/my/subscription/deactivate/{{ subscription.id }}/" class="btn btn-success">deaktivieren</a></td>
                     <td>{{ subscription.notes }}</td>
                 </tr>
             {% endfor %}

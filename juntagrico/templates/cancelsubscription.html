@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-        <h3>Wähle dein Abo</h3>
+        <h3>Künde dein Abo</h3>
 {% endblock %}
 
-{% content %}
+{% block content %}
     <div class="col-md-12">
         <br/>
         Hier kannst du dein Abo künden. Du kannst dein abo regulär auf den {{ end_date |date:"d.m.Y" }} künden. Falls du auf ein früheres Datum künden willst gelten folgende Regeln:
@@ -22,7 +22,7 @@
                 <label class="col-md-3 control-label">Gewünschtes Enddatum</label>
                 <div class="col-md-9 controls">
                     <label>
-                        {{ subscriptionform.end_date }}
+                        {{ subscriptionform.end_date }}<br/>
                         Falls der Wert hier geändert wird gelten die oben gennanten Regeln!
                     </label>
                     {% if subscriptionform.end_date.errors %}

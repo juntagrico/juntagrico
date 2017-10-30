@@ -34,6 +34,11 @@ def subscription(request):
     renderdict = get_menu_dict(request)
 
     if request.user.member.subscription is not None:
+        cancelation_date = request.user.member.subscription.cancelation_date
+        if cancelation_date <= next_cancelation_date():
+            end_date = end_of_business_year()
+        else:
+            end_date = end_of_next_business_year()
         renderdict.update({
             'subscription': request.user.member.subscription,
             'co_members': request.user.member.subscription.recipients().exclude(
@@ -44,6 +49,7 @@ def subscription(request):
             'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         })
     renderdict.update({
+        'end_date': end_date,
         'member': request.user.member,
         'shares': request.user.member.share_set.count(),
         'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
@@ -119,12 +125,12 @@ def extra_change(request):
     if request.method == 'POST':
         for type in ExtraSubscriptionTypeDao.all_extra_types():
             subscription = request.user.member.subscription
-            value = int(request.post.get('extra'+type.id))
+            value = int(request.POST.get('extra'+str(type.id)))
             if value>0:
                 for x in range(value):
                     ExtraSubscription.objects.create(main_subscription=subscription, type=type)
-        return redirect('my/subscription/change/extra')
-    
+        return redirect('/my/subscription/change/extra')
+    renderdict = get_menu_dict(request)
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_extra_types(),
         'extras': request.user.member.subscription.extra_subscription_set.all()
@@ -431,7 +437,7 @@ def deactivate_subscription(request, subscription_id):
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)  
-    now = timezon.now()
+    now = timezone.now().date()
     if now <= next_cancelation_date():
         end_date = end_of_business_year()
     else:
@@ -440,7 +446,7 @@ def cancel_subscription(request, subscription_id):
     if request.method == 'POST':    
         subscriptionform = CancelSubscriptionForm(request.POST)
         if subscriptionform.is_valid():
-            if subscription.active is True and subscription.active is False:
+            if subscription.active is True and subscription.canceled is False:
                 subscription.canceled=True
                 subscription.end_date=subscriptionform.cleaned_data['end_date']
                 subscription.save()
@@ -448,11 +454,12 @@ def cancel_subscription(request, subscription_id):
                 subscription.delete()
             return redirect('/my/subscription')
     
-    renderdict = {
+    renderdict = get_menu_dict(request)
+    renderdict.update({
         'end_date': end_date,
         'subscriptionform': subscriptionform
-    }
-    return render(request, 'createsubscription.html', renderdict)
+    })
+    return render(request, 'cancelsubscription.html', renderdict)
     
 @permission_required('juntagrico.is_operations_group')
 def activate_extra(request, extra_id):

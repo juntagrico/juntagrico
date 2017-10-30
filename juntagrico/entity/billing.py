@@ -63,7 +63,7 @@ class ExtraSubBillingPeriod(models.Model):
     end_month = models.PositiveIntegerField('End Monat', choices=month_choices)
     cancel_day = models.PositiveIntegerField('Kündigungs Tag')
     cancel_month = models.PositiveIntegerField('Kündigungs Monat', choices=month_choices)
-    code = models.TextField('Code für Teilabrechnung', max_length=1000, default='')
+    code = models.TextField('Code für Teilabrechnung', max_length=1000, default='', blank=True)
 	
     def partial_price(self):
         now = timezone.now()
@@ -95,7 +95,7 @@ class ExtraSubBillingPeriod(models.Model):
         return calculate_next(self.end_day, self.end_month)
             
     def __str__(self):
-        return '%s(%s%s - %s%s)' % self.type.name, self.start_day, self.start_month, self.end_day, self.end_month
+        return '{0}({1}.{2} - {3}.{4})'.format(self.type.name, self.start_day, self.start_month, self.end_day, self.end_month)
 
     class Meta:
         verbose_name = 'Verechnungsperdiode Zusatzabos'

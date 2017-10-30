@@ -6,8 +6,8 @@
 
 {% block content %}
     Übersicht
-    <div id="filter">
-        <table id="filter-table" class="list table" style="display: table;">
+    <div>
+        <table id="filter-table" class="table" style="display: table;">
             <thead>
             <tr>
                 <th>Abo</th>
@@ -20,7 +20,7 @@
                 <tr>
                     <td>{{ extra.type.name }}</td>
                     <td>{{ extra.state }}</td>
-                    <td>{% if extra.active && !extra.canceled %}<a href="/my/extra/cancel/{{ extra.id }}/" class="btn btn-success">kündigen</a>{% endif %}</td>                    
+                    <td>{% if not extra.canceled and extra.deactivation_date is None %}<a href="/my/extra/cancel/{{ extra.id }}/" class="btn btn-success">kündigen</a>{% endif %}</td>                    
                 </tr>
             {% endfor %}
             </tbody>
@@ -34,19 +34,20 @@
         {% csrf_token %}
         <div class="form-group">
                 {% for type in types %}
-                <div class="controls col-md-2">
-                    <input type="text" name="extra{{ type.id }}"  class="col-md-2 form-control" value="0"/>
+                <div class="controls col-md-1">
+                    <input type="text" name="extra{{ type.id }}"  class="col-md-1 form-control" value="0"/>
                 </div>
-                <div class="controls col-md-10">
+                <div class="controls col-md-11">
                         {{ type.name }}<br/>
                         {{ type.description }}<br/>
-                        {% for period in type.periods %}
+                        {% for period in type.periods.all %}
                         {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}. {{ period.price }} {% config "currency" %}<br/>
+                        {% endfor %}
                 </div>
                 {% endfor %}
             </div>
         </div>
-        <div class="form-actions col-md-offset-4">
+        <div class="form-actions ">
             <button type="submit" class="btn btn-success">Extra-Abos bestellen</button>
         </div>
     </form>
