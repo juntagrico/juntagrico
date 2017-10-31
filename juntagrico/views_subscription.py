@@ -69,7 +69,6 @@ def subscription_change(request):
         'member': request.user.member,
         'change_size': month <= Config.business_year_cancelation_month(),
         'next_cancel_date': temporal.next_cancelation_date(),
-        'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year()
     })
@@ -429,6 +428,18 @@ def deactivate_subscription(request, subscription_id):
     if subscription.active is True:
         subscription.active=False
         subscription.save()
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('http://'+Config.admin_server_url())
+
+@permission_required('juntagrico.is_operations_group')
+def activate_future_types(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    for type in TSST.objects.filter(subscription=subscription):
+            type.delete()    
+    for type in TFSST.objects.filter(subscription=subscription):
+        TSST.objects.create(subscription=subscription, type=type.type)
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Warteliste</h3>
+    <h3>Grössen Änderungsliste</h3>
 {% endblock %}
 
 {% block content %}
@@ -10,19 +10,17 @@
             <thead>
             <tr>
                 <th>Abo</th>
-                <th>End Datum</th>
                 <th>Kontakt</th>
                 <th>Email</th>
-                <th>Bezahlte Anteilsscheine</th>
+                <th>Aktuelle Grösse</th>
+                <th>Neue Grösse</th>
                 <th></th>
-                <th>Notizen</th>
             </tr>
             </thead>
             <tbody>
-            {% for subscription in canceledlist %}
+            {% for subscription in changedlist %}
                 <tr>
                     <td>{{ subscription.overview }}</td>
-                    <td>{{ subscription.end_date |date:"Y-m-d" }}</td>
                     <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
                     <td>
                         <form id="subscription{{ subscription.id }}" method="post" action="/my/mails"> 
@@ -32,9 +30,9 @@
                             <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();">{{ subscription.primary_member.email }}</a>
                         </form>
                     </td>
-                    <td>{{ subscription.paid_shares }}</td>
-                    <td><a href="/my/subscription/deactivate/{{ subscription.id }}/" class="btn btn-success">deaktivieren</a></td>
-                    <td>{{ subscription.notes }}</td>
+                    <td>{{ subscription.size_name }}</td>
+                    <td>{{ subscription.future_size_name }}</td>
+                    <td><a href="/my/type/change/{{ subscription.id }}/" class="btn btn-success">ändern</a></td>
                 </tr>
             {% endfor %}
             </tbody>

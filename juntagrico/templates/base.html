@@ -98,7 +98,18 @@
                             {% endif %}
                             {% if operation_group %}
                                 <li>
+                                    <a href="/my/typechangedlist">Grössen Änderungen</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
                                     <a href="/my/canceledlist">Kündigungsliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group and has_extra_subscriptions %}
+                                <li class="inline">
+                                    Zusatzabos  
+                                    <a href="/my/extra/waitinglist">Warteliste</a> | <a href="/my/extra/canceledlist">Kündigungsliste</a>
                                 </li>
                             {% endif %}
                             {% if operation_group %}

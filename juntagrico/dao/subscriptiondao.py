@@ -26,5 +26,9 @@ class SubscriptionDao:
         return Subscription.objects.filter(active=False).filter(deactivation_date=None).order_by('start_date')
         
     @staticmethod
+    def future_subscriptions():
+        return Subscription.objects.filter(canceled=False).filter(deactivation_date=None)
+        
+    @staticmethod
     def canceled_subscriptions():
         return Subscription.objects.filter(active=True).filter(canceled=True).order_by('end_date')

@@ -7,6 +7,7 @@ from django.template import Template, Context
 
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.extrasubscriptiondao import ExtraSubscriptionDao
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
@@ -233,59 +234,26 @@ def future(request):
             'future': 0,
             'now': 0
         }
-    for subscription in SubscriptionDao.all_subscritions():
+    for subscription in SubscriptionDao.all_active_subscritions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['now'] += subscription.subscription_amount(subscription_size)
+        for users_subscription in subscription.extra_subscriptions.all():
+            extra_lines[users_subscription.type.name]['now'] += 1
+            
+    for subscription in SubscriptionDao.future_subscriptions():
+        for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
                 subscription_size)
         for users_subscription in subscription.future_extra_subscriptions.all():
             extra_lines[users_subscription.type.name]['future'] += 1
-        for users_subscription in subscription.extra_subscriptions.all():
-            extra_lines[users_subscription.type.name]['now'] += 1
-
-    month = int(time.strftime('%m'))
-    day = int(time.strftime('%d'))
 
     renderdict.update({
         'changed': request.GET.get('changed'),
         'subscription_lines': iter(subscription_lines.values()),
         'extra_lines': iter(extra_lines.values()),
-        'subscription_change_enabled': month is 12 or (month is 1 and day <= 6)
     })
     return render(request, 'future.html', renderdict)
 
-
-@permission_required('juntagrico.is_operations_group')
-def change_extras(request):
-    for subscription in SubscriptionDao.all_subscritions():
-        for extra in subscription.extra_subscription_set.all():
-            if extra.active is True and extra.canceled is True:
-                extra.active = False
-                extra.save()
-            elif extra.active is False and extra.deactivation_date is None:
-                extra.active = True
-                extra.save()
-
-    return redirect('/my/future?changed=true')
-
-
-@permission_required('juntagrico.is_operations_group')
-def change_subscriptions(request):
-    renderdict = get_menu_dict(request)
-
-    for subscription in SubscriptionDao.all_subscritions():
-        if subscription.size is not subscription.future_size:
-            if subscription.future_size is 0:
-                subscription.active = False
-            if subscription.size is 0:
-                subscription.active = True
-            subscription.size = subscription.future_size
-            subscription.save()
-
-    renderdict.update({
-    })
-
-    return redirect('/my/future?changed=true')
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -419,3 +387,35 @@ def canceledlist(request):
         'canceledlist': canceledlist
     })
     return render(request, 'canceledlist.html', renderdict)
+
+    
+@permission_required('juntagrico.is_operations_group')
+def typechangelist(request):
+    renderdict = get_menu_dict(request)
+    changedlist = []
+    subscriptions = SubscriptionDao.all_active_subscritions()
+    for subscription in subscriptions:
+        if subscription.types_changed:
+            changedlist.append(subscription)
+    renderdict.update({
+        'changedlist': changedlist
+    })
+    return render(request, 'typechangelist.html', renderdict)
+    
+@permission_required('juntagrico.is_operations_group')
+def extra_waitinglist(request):
+    renderdict = get_menu_dict(request)
+    waitinglist = ExtraSubscriptionDao.waiting_extra_subs()
+    renderdict.update({
+        'waitinglist': waitinglist
+    })
+    return render(request, 'extra_waitinglist.html', renderdict)
+    
+@permission_required('juntagrico.is_operations_group')
+def extra_canceledlist(request):
+    renderdict = get_menu_dict(request)
+    canceledlist = ExtraSubscriptionDao.canceled_extra_subs()
+    renderdict.update({
+        'canceledlist': canceledlist
+    })
+    return render(request, 'extra_canceledlist.html', renderdict)
