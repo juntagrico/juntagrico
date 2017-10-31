@@ -85,10 +85,60 @@
                         <li>
                             <a href="/admin">Daten Administration</a>
                         </li>
-                    {% endif %}
+                    {% endif %}                    
                     {% if operation_group %}
                         <li>
-                            <a href="{{depot_list_url}}">Depotlisten</a>
+                            <a data-toggle="collapse" href="#subman">Abo Management <span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <div class="collapse" id="subman">
+                            <ul class="nav nav-pills nav-stacked admin-menu subadmin-menu">
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/waitinglist">Warteliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/canceledlist">Kündigungsliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/future">Zukunftsblick</a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                            </div>
+                        </li>
+                    {% endif %}
+                                        
+                    {% if can_filter_members or can_filter_subscriptions or  depot_admin|length > 0 or area_admin|length > 0 %}
+                        <li>
+                            <a data-toggle="collapse" href="#filterman">Filter <span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <div class="collapse" id="filterman">
+                            <ul class="nav nav-pills nav-stacked admin-menu subadmin-menu">
+                            {% if can_filter_members or can_filter_subscriptions %}
+                                <li class="inline">
+                                    Filtern 
+                                    {% if can_filter_members %}
+                                    <a href="/my/filters">{% config "members_string" %}</a> | 
+                                    {% endif %}
+                                    {% if can_filter_subscriptions %}
+                                    <a href="/my/subscriptions">Abos</a>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                            {% for depot in depot_admin %}
+                                <li class="inline">
+                                    <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
+                                </li>
+                            {% endfor %}
+                            {% for area in area_admin %}
+                                <li>
+                                    <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                            </div>
                         </li>
                     {% endif %}
                     {% if can_send_mails %}
@@ -96,42 +146,12 @@
                             <a href="/my/mails">Mails verschicken</a>
                         </li>
                     {% endif %}
-                    {% if can_filter_members or can_filter_subscriptions %}
-                        <li class="inline">
-                            Filtern 
-                            {% if can_filter_members %}
-                            <a href="/my/filters">{% config "members_string" %}</a> | 
-                            {% endif %}
-                            {% if can_filter_subscriptions %}
-                            <a href="/my/subscriptions">Abos</a>
-                            {% endif %}
-                        </li>
-                    {% endif %}
-                    {% for depot in depot_admin %}
-                        <li class="inline">
-                            <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
-                        </li>
-                    {% endfor %}
-                    {% for area in area_admin %}
-                        <li>
-                            <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
-                        </li>
-                    {% endfor %}
                     {% if operation_group %}
                         <li>
-                            <a href="/my/waitinglist">Warteliste</a>
+                            <a href="{{depot_list_url}}">Depotlisten</a>
                         </li>
                     {% endif %}
-                    {% if operation_group %}
-                        <li>
-                            <a href="/my/canceledlist">Kündigungsliste</a>
-                        </li>
-                    {% endif %}
-                    {% if operation_group %}
-                        <li>
-                            <a href="/my/future">Zukunftsblick</a>
-                        </li>
-                    {% endif %}
+                    
                     {% if operation_group %}
                         <li>
                             <a href="/my/export">Exporte</a>

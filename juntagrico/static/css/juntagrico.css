@@ -194,6 +194,10 @@ table.future td {
     font-size: 14px;
 }
 
+.subadmin-menu {
+    padding-left: 7px;
+}
+
 .admin-menu li a {
     line-height: 10px;
 }
