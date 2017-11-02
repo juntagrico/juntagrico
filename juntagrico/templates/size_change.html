@@ -8,7 +8,12 @@
     {% if saved %}
         <div class="alert alert-success">
             Die Abogrösse wurde erfolgreich geändert.<br/>
-            <a href="/my/subscription">Zurück zur Abo-Übersicht</a>
+            <a href="/my/subscription" class="alert-link">Zurück zur Abo-Übersicht</a>
+        </div>
+    {% elif shareerror %}
+        <div class="alert alert-danger">
+            Es sind zu wenig Anteilscheine vorhanden für diese Grösse!<br/>
+            Bestelle <a href="/my/order/share"class="alert-link">hier</a> mehr Anteilscheine.
         </div>
     {% else %}
         <br/>

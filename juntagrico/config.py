@@ -206,7 +206,7 @@ class Config:
     def business_year_cancelation_month():
         if hasattr(settings, 'BUSINESS_YEAR_CANCELATION_MONTH'):
             return settings.BUSINESS_YEAR_CANCELATION_MONTH
-        return 10
+        return 12
 
     @staticmethod
     def demouser():

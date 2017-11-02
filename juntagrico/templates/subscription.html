@@ -7,6 +7,13 @@
 {% block content %}
     {% if not member.subscription %}
         <div class="alert alert-warning">Du hast noch kein Abo<br/>Du möchtest eines? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
+        <dl class="dl-horizontal">
+        <dt>Anteilscheine</dt>
+            <dd>
+                {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/>
+                Bestelle mehr Anteilscheine <a href="/my/order/share">hier</a>
+            </dd>
+        </dl>
     {% else %}
         <dl class="dl-horizontal">
             <dt>Abogrösse</dt>
@@ -28,6 +35,7 @@
             <dt>Anteilscheine</dt>
             <dd>
                 {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/>
+                Bestelle mehr Anteilscheine <a href="/my/order/share">hier</a><br/><br/>
                 Anteilscheine von MitabonnentInnen:
                 <ul>
                     {% for co_member in  co_members %}

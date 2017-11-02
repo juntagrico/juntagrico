@@ -96,6 +96,10 @@ class Subscription(Billable):
         return ShareDao.paid_shares(self).count()
 
     @property
+    def all_shares(self):
+        return ShareDao.all_shares_subscription(self).count()
+
+    @property
     def future_extra_subscriptions(self):
         return self.extra_subscription_set.filter(
             Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))

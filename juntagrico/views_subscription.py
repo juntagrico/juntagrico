@@ -100,14 +100,21 @@ def size_change(request):
     change the size of an subscription
     '''
     saved = False
+    shareerror = False
     if request.method == 'POST' and int(time.strftime('%m')) <= Config.business_year_cancelation_month() and int(request.POST.get('subscription')) > 0:
-        for type in TFSST.objects.filter(subscription=request.user.member.subscription):
-            type.delete()
-        TFSST.objects.create(subscription=request.user.member.subscription, type=SubscriptionTypeDao.get_by_id(int(request.POST.get('subscription')))[0])
-        saved = True
+        type=SubscriptionTypeDao.get_by_id(int(request.POST.get('subscription')))[0]
+        shares = request.user.member.subscription.all_shares
+        if shares<type.shares:
+            shareerror = True
+        else:
+            for type in TFSST.objects.filter(subscription=request.user.member.subscription):
+                type.delete()
+            TFSST.objects.create(subscription=request.user.member.subscription, type=type)
+            saved = True
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
+        'shareerror': shareerror,
         'hours_used': Config.assignment_unit()=='HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': request.user.member.subscription.future_types.all()[0].id,
@@ -348,8 +355,8 @@ def add_member(request, subscription_id):
             tmp_shares = []
             pw = None
             if memberexists is False:
-                for num in range(0, shares):
-                    member = Member(**memberform.cleaned_data)
+                member = Member(**memberform.cleaned_data)
+                for num in range(0, shares):                    
                     tmp_shares.append(Share(member=member, paid_date=None))
             else:
                 for share in member.share_set.all():
@@ -420,7 +427,7 @@ def activate_subscription(request, subscription_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect('http://'+Config.admin_server_url())
+        return redirect('http://'+Config.adminportal_server_url())
 
 @permission_required('juntagrico.is_operations_group')
 def deactivate_subscription(request, subscription_id):
@@ -431,7 +438,7 @@ def deactivate_subscription(request, subscription_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect('http://'+Config.admin_server_url())
+        return redirect('http://'+Config.adminportal_server_url())
 
 @permission_required('juntagrico.is_operations_group')
 def activate_future_types(request, subscription_id):
@@ -443,7 +450,7 @@ def activate_future_types(request, subscription_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect('http://'+Config.admin_server_url())
+        return redirect('http://'+Config.adminportal_server_url())
         
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
@@ -481,7 +488,7 @@ def activate_extra(request, extra_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect('http://'+Config.admin_server_url())
+        return redirect('http://'+Config.adminportal_server_url())
 
 @permission_required('juntagrico.is_operations_group')
 def deactivate_extra(request, extra_id):
@@ -492,7 +499,7 @@ def deactivate_extra(request, extra_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect('http://'+Config.admin_server_url())
+        return redirect('http://'+Config.adminportal_server_url())
         
 @primary_member_of_subscription
 def cancel_extra(request, extra_id):
@@ -506,7 +513,48 @@ def cancel_extra(request, extra_id):
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
-        return redirect('http://'+Config.admin_server_url())
+        return redirect('http://'+Config.adminportal_server_url())
+        
+
+
+@login_required
+def order_shares(request):
+    if request.method == 'POST':
+        referer = request.POST.get('referer')
+        try:
+            shares = int(request.POST.get('shares'))
+            shareerror = shares < 1
+        except:
+            shareerror = True
+        if not shareerror:
+            member= request.user.member
+            for num in range(0, shares):                    
+                Share.objects.create(member=member, paid_date=None)
+            return redirect('/my/order/share/success?referer='+referer)
+    else:
+        shareerror=False
+        if request.META.get('HTTP_REFERER')is not None:
+            referer= request.META.get('HTTP_REFERER')
+        else:
+            referer = 'http://'+Config.adminportal_server_url()
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'referer': referer,
+        'shareerror': shareerror
+    })
+    return render(request, 'order_share.html', renderdict)
+
+@login_required
+def order_shares_success(request):
+    if request.GET.get('referer')is not None:
+            referer= request.GET.get('referer')
+    else:
+       referer = 'http://'+Config.adminportal_server_url()
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'referer': referer
+    })
+    return render(request, 'order_share_success.html', renderdict)
         
         
     
