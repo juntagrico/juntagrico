@@ -449,7 +449,7 @@ def activate_future_types(request, subscription_id):
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)  
     now = timezone.now().date()
-    if now <= next_cancelation_date():
+    if now <= cancelation_date():
         end_date = end_of_business_year()
     else:
         end_date = end_of_next_business_year()

@@ -20,7 +20,7 @@
                 <tr>
                     <td>{{ extra.type.name }}</td>
                     <td>{{ extra.state }}</td>
-                    <td>{% if not extra.canceled and extra.deactivation_date is None %}<a href="/my/extra/cancel/{{ extra.id }}/" class="btn btn-success">kündigen</a>{% endif %}</td>                    
+                    <td>{% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}<a href="/my/extra/cancel/{{ extra.id }}/" class="btn btn-success">kündigen</a>{% endif %}</td>                    
                 </tr>
             {% endfor %}
             </tbody>

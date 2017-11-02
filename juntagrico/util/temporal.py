@@ -54,6 +54,15 @@ def next_cancelation_date():
         year=now.year+1
     return datetime.date(year, c_month, calendar.monthrange(year,c_month)[1])
 
+def cancelation_date():
+    start = start_of_business_year()
+    c_month = Config.business_year_cancelation_month()
+    if start.month<c_month+1:
+        year=start.year
+    else:
+        year=start.year+1
+    return datetime.date(year, c_month, calendar.monthrange(year,c_month)[1])
+
 def calculate_next(day, month):
     now = timezone.now()
     if now.month<month or (now.month==month and now.day <= day):
@@ -68,7 +77,21 @@ def calculate_last(day, month):
         year=now.year
     else:
         year=now.year-1
-    return datetime.date(year, month, day)    
+    return datetime.date(year, month, day)  
+
+def calculate_next_offset(day, month,offset):
+    if offset.month<month or (offset.month==month and offset.day <= day):
+        year=offset.year
+    else:
+        year=offset.year+1
+    return datetime.date(year, month, day)  
+
+def calculate_last_offset(day, month,offset):
+    if offset.month>month or (offset.month==month and offset.day >= day):
+        year=offset.year
+    else:
+        year=offset.year-1
+    return datetime.date(year, month, day)     
 	
 month_choices = ((1, 'Januar'),
                    (2, 'Februar'),

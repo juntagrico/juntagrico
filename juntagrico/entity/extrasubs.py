@@ -3,6 +3,8 @@
 from django.db import models
 
 from juntagrico.entity.billing import *
+from juntagrico.util.temporal import *
+from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
 
 class ExtraSubscriptionType(models.Model):
     '''
@@ -56,6 +58,12 @@ class ExtraSubscription(Billable):
                              on_delete=models.PROTECT)
 
     old_active = None
+    
+    @property
+    def can_cancel(self):
+        period = ExtraSubBillingPeriodDao.get_current_period_per_type(self.type)
+        print(period.get_actual_cancel())
+        return timezone.now().date()<=period.get_actual_cancel()
     
     @property
     def state(self):
