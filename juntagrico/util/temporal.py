@@ -43,7 +43,8 @@ def start_of_next_business_year():
     return calculate_next(day, month)
     
 def end_of_next_business_year():
-    return start_of_next_business_year() - timedelta(days=1) + timedelta(years=1)
+    tmp = end_of_business_year()
+    return datetime.date(tmp.year+1,tmp.month,tmp.day)
 
 def next_cancelation_date():
     now = timezone.now()
