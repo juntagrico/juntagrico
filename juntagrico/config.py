@@ -110,7 +110,7 @@ class Config:
     def style_sheet():
         if hasattr(settings, 'STYLE_SHEET'):
             return settings.STYLE_SHEET
-        return '/static/css/juntagrico.css'
+        return '/static/css/personal.css'
 
     @staticmethod
     def favicon():
