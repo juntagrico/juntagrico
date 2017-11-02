@@ -356,7 +356,7 @@ def add_member(request, subscription_id):
             pw = None
             if memberexists is False:
                 member = Member(**memberform.cleaned_data)
-                for num in range(0, shares):                    
+                for num in range(0, shares):         
                     tmp_shares.append(Share(member=member, paid_date=None))
             else:
                 for share in member.share_set.all():
