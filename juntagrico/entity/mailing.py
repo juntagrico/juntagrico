@@ -16,3 +16,4 @@ class MailTemplate(models.Model):
     class Meta:
         verbose_name = 'MailTemplate'
         verbose_name_plural = 'MailTemplates'
+        permissions = (('can_load_templates', 'Benutzer kann Templates laden'),)

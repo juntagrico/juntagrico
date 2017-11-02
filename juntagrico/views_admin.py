@@ -108,7 +108,8 @@ def my_mails_intern(request, enhanced, error_message=None):
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
-        'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email')
+        'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email'),
+        'can_load_templates': request.user.has_perm('juntagrico.can_load_templates')
     })
     return render(request, 'mail_sender.html', renderdict)
 
@@ -256,7 +257,7 @@ def future(request):
 
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_load_templates')
 def get_mail_template(request, template_id):
     renderdict = {}
 

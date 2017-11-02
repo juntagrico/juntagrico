@@ -6,6 +6,7 @@
 
 {% block content %}
 <br/>
+{% if can_load_templates %}
 <div class="form-horizontal">
     <div class="form-group">
         <label for="templates" class="col-md-2 control-label">Templates</label>
@@ -21,6 +22,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 <form action="/my/mails/send{% if enhanced != None %}/{{ enhanced }}{% endif %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-group">
