@@ -6,11 +6,10 @@ engines:
     enabled: true
     config:
       languages:
-      - javascript
-      - python:
+      javascript:
+      python:
         mass_threshold: 20
         python_version: 3
-      - php
   eslint:
     enabled: true
   fixme:
