@@ -6,7 +6,6 @@ engines:
     enabled: true
     config:
       languages:
-      javascript:
       python:
         mass_threshold: 20
         python_version: 3
