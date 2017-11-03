@@ -1,4 +1,4 @@
-Django==1.11.6
+Django==1.11.7
 django-polymorphic==1.3
 XlsxWriter==1.0.2
 html5lib==1.0b10
