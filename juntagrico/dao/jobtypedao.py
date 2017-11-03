@@ -4,8 +4,6 @@ from juntagrico.models import *
 
 
 class JobTypeDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def types_by_coordinator(member):

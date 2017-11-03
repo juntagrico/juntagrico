@@ -8,22 +8,24 @@ from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.util.jobs import *
 from juntagrico.util.temporal import *
 from juntagrico.config import Config
+from juntagrico.mailer import *
 
 class ActivityArea(models.Model):
-    name = models.CharField("Name", max_length=100, unique=True)
-    description = models.TextField("Beschreibung", max_length=1000, default="")
-    core = models.BooleanField("Kernbereich", default=False)
-    hidden = models.BooleanField("versteckt", default=False)
-    coordinator = models.ForeignKey("Member", on_delete=models.PROTECT)
-    members = models.ManyToManyField("Member", related_name="areas", blank=True)
-    show_coordinator_phonenumber = models.BooleanField("Koordinator Tel Nr Veröffentlichen", default=False)
+    name = models.CharField('Name', max_length=100, unique=True)
+    description = models.TextField('Beschreibung', max_length=1000, default='')
+    email = models.EmailField(null=True)
+    core = models.BooleanField('Kernbereich', default=False)
+    hidden = models.BooleanField('versteckt', default=False)
+    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT)
+    members = models.ManyToManyField('Member', related_name='areas', blank=True)
+    show_coordinator_phonenumber = models.BooleanField('Koordinator Tel Nr Veröffentlichen', default=False)
 
     def __str__(self):
         return '%s' % self.name
 
     def contact(self):
         if self.show_coordinator_phonenumber is True:
-            return self.coordinator.phone + "   " + self.coordinator.mobile_phone
+            return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
         else:
             return self.coordinator.email
 
@@ -33,31 +35,31 @@ class ActivityArea(models.Model):
         permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
 
 class JobExtraType(models.Model):
-    """
+    '''
     Types of extras which a job type might need or can have
-    """    
-    name = models.CharField("Name", max_length=100, unique=True)
-    display_empty = models.CharField("Icon für felhlendes Extra", max_length=1000, blank=False, null=False)
-    display_full = models.CharField("Icon für Extra", max_length=1000, blank=False, null=False)
+    '''    
+    name = models.CharField('Name', max_length=100, unique=True)
+    display_empty = models.CharField('Icon für felhlendes Extra', max_length=1000, blank=False, null=False)
+    display_full = models.CharField('Icon für Extra', max_length=1000, blank=False, null=False)
     
     class Meta:
         verbose_name = 'JobExtraTyp'
         verbose_name_plural = 'JobExtraTypen'
 
 class JobExtra(models.Model):
-    """
+    '''
     Actual Extras mapping
-    """
-    recuring_type = models.ForeignKey("JobType", related_name="job_extras_set", null=True,
+    '''
+    recuring_type = models.ForeignKey('JobType', related_name='job_extras_set', null=True,
                                           blank=True,
                                           on_delete=models.PROTECT)
-    onetime_type = models.ForeignKey("OneTimeJob", related_name="job_extras_set", null=True,
+    onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras_set', null=True,
                                           blank=True,
                                           on_delete=models.PROTECT)
-    extra_type = models.ForeignKey("JobExtraType", related_name="job_types_set", null=False,
+    extra_type = models.ForeignKey('JobExtraType', related_name='job_types_set', null=False,
                                           blank=False,
                                           on_delete=models.PROTECT)
-    per_member = models.BooleanField("jeder kann Extra auswählen", default=False)
+    per_member = models.BooleanField('jeder kann Extra auswählen', default=False)
 
     def empty(self,assignment_set):
         ids=[assignment.id for assignment in assignment_set]
@@ -75,15 +77,15 @@ class JobExtra(models.Model):
 
 
 class AbstractJobType(models.Model):
-    """
+    '''
     Abstract type of job.
-    """
-    name = models.CharField("Name", max_length=100, unique=True)
-    displayed_name = models.CharField("Angezeigter Name", max_length=100, blank=True, null=True)
-    description = models.TextField("Beschreibung", max_length=1000, default="")
+    '''
+    name = models.CharField('Name', max_length=100, unique=True)
+    displayed_name = models.CharField('Angezeigter Name', max_length=100, blank=True, null=True)
+    description = models.TextField('Beschreibung', max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
-    duration = models.PositiveIntegerField("Dauer in Stunden")
-    location = models.CharField("Ort", max_length=100, default="")
+    duration = models.PositiveIntegerField('Dauer in Stunden')
+    location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name())
@@ -100,9 +102,9 @@ class AbstractJobType(models.Model):
 
 
 class JobType(AbstractJobType):
-    """
+    '''
     Recuring type of job. do not add field here do it in the parent
-    """
+    '''
 
     class Meta:
         verbose_name = 'Jobart'
@@ -110,11 +112,12 @@ class JobType(AbstractJobType):
 
 
 class Job(PolymorphicModel):
-    slots = models.PositiveIntegerField("Plaetze")
+    slots = models.PositiveIntegerField('Plaetze')
     time = models.DateTimeField()
+    multiplier = models.PositiveIntegerField(Config.assignments_string()+' vielfaches', default=1)
     pinned = models.BooleanField(default=False)
-    reminder_sent = models.BooleanField("Reminder verschickt", default=False)
-    canceled = models.BooleanField("abgesagt", default=False)
+    reminder_sent = models.BooleanField('Reminder verschickt', default=False)
+    canceled = models.BooleanField('abgesagt', default=False)
     old_canceled = None
     old_time = None
 
@@ -163,7 +166,7 @@ class Job(PolymorphicModel):
                 extras_result.append(extra.extra_type.display_empty)
             else:           
                 extras_result.append(extra.extra_type.display_full)
-        return " ".join(extras_result)
+        return ' '.join(extras_result)
 
     def empty_per_job_extras(self):
         extras_result =[]
@@ -235,9 +238,9 @@ class RecuringJob(Job):
 
 
 class OneTimeJob(Job, AbstractJobType):
-    """
+    '''
     One time job. Do not add Field here do it in the Parent class
-    """
+    '''
 
     @property
     def type(self):
@@ -260,13 +263,14 @@ class OneTimeJob(Job, AbstractJobType):
 
 
 class Assignment(models.Model):
-    """
+    '''
     Single assignment (work unit).
-    """
+    '''
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    member = models.ForeignKey("Member", on_delete=models.PROTECT)
-    core_cache = models.BooleanField("Kernbereich", default=False) 
+    member = models.ForeignKey('Member', on_delete=models.PROTECT)
+    core_cache = models.BooleanField('Kernbereich', default=False) 
     job_extras = models.ManyToManyField(JobExtra,related_name='assignments', blank=True)
+    amount = models.FloatField('Wert')
 
     def __str__(self):
         return '%s #%s' % (Config.assignment_string(), self.id)

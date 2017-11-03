@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import juntagrico
-
+from juntagrico.util.temporal import *
 
 class AssignmentDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def assignments_for_job(job_identifier):
@@ -19,3 +15,10 @@ class AssignmentDao:
     @staticmethod
     def assignments_for_member(member):
         return juntagrico.models.Assignment.objects.filter(member=member)
+
+    @staticmethod
+    def assignments_for_member_current_business_year(member):
+        return juntagrico.models.Assignment.objects.filter(member=member).filter(job__time__gte=start_of_business_year(), job__time__lt=timezone.now())
+    @staticmethod
+    def upcomming_assignments_for_member(member):
+        return juntagrico.models.Assignment.objects.filter(member=member).filter(job__time__gte=timezone.now())

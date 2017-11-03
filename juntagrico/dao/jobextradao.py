@@ -6,8 +6,6 @@ from juntagrico.config import Config
 
 
 class JobExtraDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_job_extras():

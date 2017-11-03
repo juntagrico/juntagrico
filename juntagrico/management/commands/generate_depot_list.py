@@ -34,7 +34,7 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         if not options['force'] and timezone.now().weekday() not in Config.depot_list_generation_days():
-            print("not the specified day for depot list generation, use --force to override")
+            print('not the specified day for depot list generation, use --force to override')
             return
 
         if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
@@ -48,8 +48,7 @@ class Command(BaseCommand):
                 send_depot_changed(emails, subscription.depot)
 
         if options['force'] and not options['future']:
-            print("future depots ignored, use --future to override")
-        Subscription.fill_sizes_cache()
+            print('future depots ignored, use --future to override')
 
         depots = DepotDao.all_depots_order_by_code()
 
@@ -60,14 +59,14 @@ class Command(BaseCommand):
         categories = []
         types = []
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
-            cat = {"name": category.name, "description": category.description}
+            cat = {'name': category.name, 'description': category.description}
             count = 0
             for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category):
                 count += 1
-                type = {"name": extra_subscription.name, "size": extra_subscription.size, "last": False}
+                type = {'name': extra_subscription.name, 'size': extra_subscription.size, 'last': False}
                 types.append(type)
-            type["last"] = True
-            cat["count"] = count
+            type['last'] = True
+            cat['count'] = count
             categories.append(cat)
 
         used_weekdays = []
@@ -83,7 +82,7 @@ class Command(BaseCommand):
         count = len(types) + len(subscription_names)
         for weekday in used_weekdays:
             overview[weekday] = [0] * count
-        overview["all"] = [0] * count
+        overview['all'] = [0] * count
 
         all = overview.get('all')
 
@@ -101,28 +100,28 @@ class Command(BaseCommand):
         insert_point = len(subscription_names)
         for weekday in used_weekdays:
             overview[weekday].insert(insert_point, 0)
-        overview["all"].insert(insert_point, 0)
+        overview['all'].insert(insert_point, 0)
 
         index = 0
         for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             for weekday in used_weekdays:
                 overview[weekday][insert_point] = overview[weekday][insert_point] + subscription_size.size * \
                                                                                       overview[weekday][index]
-            overview["all"][insert_point] = overview["all"][insert_point] + subscription_size.size * overview["all"][
+            overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.size * overview['all'][
                 index]
             index += 1
 
         renderdict = {
-            "overview": overview,
-            "depots": depots,
-            "subscription_names": subscription_names,
-            "subscriptioncount": len(subscription_names)+1,
-            "categories": categories,
-            "types": types,
-            "datum": timezone.now(),
-            "cover_sheets": Config.depot_list_cover_sheets(),
-            "depot_overviews": Config.depot_list_overviews(),
-            "weekdays": used_weekdays
+            'overview': overview,
+            'depots': depots,
+            'subscription_names': subscription_names,
+            'subscriptioncount': len(subscription_names)+1,
+            'categories': categories,
+            'types': types,
+            'datum': timezone.now(),
+            'cover_sheets': Config.depot_list_cover_sheets(),
+            'depot_overviews': Config.depot_list_overviews(),
+            'weekdays': used_weekdays
         }
 
-        render_to_pdf_storage("exports/all_depots.html", renderdict, 'dpl.pdf')
+        render_to_pdf_storage('exports/all_depots.html', renderdict, 'dpl.pdf')

@@ -4,8 +4,6 @@ from juntagrico.models import *
 
 
 class ActivityAreaDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_visible_areas():
@@ -17,7 +15,7 @@ class ActivityAreaDao:
 
     @staticmethod
     def all_visible_areas_ordered():
-        return ActivityArea.objects.filter(hidden=False).order_by("-core", "name")
+        return ActivityArea.objects.filter(hidden=False).order_by('-core', 'name')
 
     @staticmethod
     def all_core_areas():

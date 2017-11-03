@@ -26,6 +26,7 @@
                 <th>Haupt-{% config "member_string" %}</th>
                 <th>Weitere {% config "members_string" %}</th>
                 <th>Depot</th>
+                <th>Inhalt</th>
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Aktiv</th>
@@ -37,6 +38,7 @@
                 <th>Hauptmember</th>
                 <th>Weitere {% config "members_string" %}</th>
                 <th>Depot</th>
+                <th>Inhalt</th>
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Aktiv</th>
@@ -57,6 +59,7 @@
                     </td>
                     <td>{{ subscription.subscription.recipients_names }}</td>
                     <td>{{ subscription.subscription.depot.name }}</td>
+                    <td>{{ subscription.subscription.overview }}</td>
                     <td>{{ subscription.assignments }} <img src="{% images subscription.icon %}"/> {{ subscription.text }}</td>
                     {% if show_core %}<td>{{ subscription.core_assignments }}</td>{% endif %}
                     <td>{% if subscription.subscription.active %}<img src="{% images "single_full" %}"/> Aktiv{% else %}<img src="{% images "single_empty" %}"/> Wartend{% endif %}</td>

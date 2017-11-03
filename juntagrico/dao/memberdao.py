@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.db.models import Count, Case, When
+from django.db.models import Sum, Case, When
 from django.utils import timezone
 
 from juntagrico.models import *
@@ -8,8 +8,6 @@ from juntagrico.util import temporal
 
 
 class MemberDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def all_members():
@@ -54,8 +52,8 @@ class MemberDao:
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
         now = timezone.now()
-        return members.annotate(assignment_count=Count(
-            Case(When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, then=1)))).annotate(
-            core_assignment_count=Count(Case(
+        return members.annotate(assignment_count=Sum(
+            Case(When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, then='assignment__amount')))).annotate(
+            core_assignment_count=Sum(Case(
                 When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, assignment__core_cache=True,
-                     then=1))))
+                     then='assignment__amount'))))

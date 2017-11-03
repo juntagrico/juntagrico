@@ -6,15 +6,13 @@ import juntagrico
 
 
 class ExtraSubBillingPeriodDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def get_current_period_per_type(type):        
-        now = timezone.now()
+        now = timezone.now().date()
         month = now.month
         for period in juntagrico.entity.billing.ExtraSubBillingPeriod.objects.filter(type__id=type.id).filter(
-            start_month__gte=month).filter(end_month__lte=month):
+            start_month__lte=month).filter(end_month__gte=month):
             start = period.get_actual_start()
             end = period.get_actual_end()
             if start <= now <= end:

@@ -21,15 +21,15 @@ class MemberProfileForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone', 'reachable_by_email']
         widgets = {
-            'first_name': TextInput(attrs={'placeholder': 'Berta', 'class': 'form-control'}),
-            'last_name': TextInput(attrs={'placeholder': 'Muster', 'class': 'form-control'}),
-            'addr_street': TextInput(attrs={'placeholder': 'Zürcherstrasse 123', 'class': 'form-control'}),
-            'addr_zipcode': TextInput(attrs={'placeholder': '8000', 'class': 'form-control'}),
-            'addr_location': TextInput(attrs={'placeholder': 'Zürich', 'class': 'form-control'}),
-            'birthday': TextInput(attrs={'placeholder': '01.12.1956', 'class': 'form-control'}),
-            'phone': TextInput(attrs={'placeholder': '044 123 45 67', 'class': 'form-control'}),
-            'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67', 'class': 'form-control'}),
-            'email': TextInput(attrs={'placeholder': 'beate@muster.ch', 'class': 'form-control'}),
+            'first_name': TextInput(attrs={'readonly':'readonly', 'class': 'form-control'}),
+            'last_name': TextInput(attrs={'readonly':'readonly', 'class': 'form-control'}),
+            'addr_street': TextInput(attrs={'class': 'form-control'}),
+            'addr_zipcode': TextInput(attrs={'class': 'form-control'}),
+            'addr_location': TextInput(attrs={'class': 'form-control'}),
+            'birthday': TextInput(attrs={'class': 'form-control'}),
+            'phone': TextInput(attrs={'class': 'form-control'}),
+            'mobile_phone': TextInput(attrs={'class': 'form-control'}),
+            'email': TextInput(attrs={'readonly':'readonly', 'class': 'form-control'}),
             'reachable_by_email': CheckboxInput(attrs={'class': 'onoffswitch'}),
         }
 
@@ -42,6 +42,14 @@ class SubscriptionForm(ModelForm):
             'start_date': DateInput(attrs={'format': '%d.%m.%y', 'class': 'form-control'}),
         }
 
+class CancelSubscriptionForm(ModelForm):
+    class Meta:
+        model = Subscription
+        fields = ['end_date']
+        widgets = {
+            'start_date': DateInput(attrs={'format': '%d.%m.%y', 'class': 'form-control'}),
+        }
+
 
 class RegisterMemberForm(ModelForm):
     class Meta:
@@ -50,13 +58,13 @@ class RegisterMemberForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone']
         widgets = {
-            'first_name': TextInput(attrs={'placeholder': 'Berta', 'class': 'form-control'}),
-            'last_name': TextInput(attrs={'placeholder': 'Muster', 'class': 'form-control'}),
-            'addr_street': TextInput(attrs={'placeholder': 'Zürcherstrasse 123', 'class': 'form-control'}),
-            'addr_zipcode': TextInput(attrs={'placeholder': '8000', 'class': 'col-xs-2'}),
-            'addr_location': TextInput(attrs={'placeholder': 'Zürich', 'class': 'form-control'}),
-            'birthday': TextInput(attrs={'placeholder': '01.12.1956', 'class': 'form-control'}),
-            'phone': TextInput(attrs={'placeholder': '044 123 45 67', 'class': 'form-control'}),
-            'mobile_phone': TextInput(attrs={'placeholder': '076 123 45 67', 'class': 'form-control'}),
-            'email': TextInput(attrs={'placeholder': 'beate@muster.ch', 'class': 'form-control'})
+            'first_name': TextInput(attrs={'class': 'form-control'}),
+            'last_name': TextInput(attrs={'class': 'form-control'}),
+            'addr_street': TextInput(attrs={'class': 'form-control'}),
+            'addr_zipcode': TextInput(attrs={'class': 'form-control'}),
+            'addr_location': TextInput(attrs={'class': 'form-control'}),
+            'birthday': TextInput(attrs={'class': 'form-control'}),
+            'phone': TextInput(attrs={'class': 'form-control'}),
+            'mobile_phone': TextInput(attrs={'class': 'form-control'}),
+            'email': TextInput(attrs={'class': 'form-control'})
         }

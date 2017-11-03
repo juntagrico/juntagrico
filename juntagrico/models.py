@@ -13,10 +13,10 @@ from juntagrico.entity.mailing import *
 
 
 class SpecialRoles(models.Model):
-    """
+    '''
     No instances should be created of this class it i just the place to create permissions
     like bookkeeper or operation group
-    """
+    '''
 
     class Meta:
         permissions = (('is_operations_group', 'Benutzer ist in der BG'),
@@ -38,5 +38,7 @@ signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 signals.pre_delete.connect(Subscription.pre_delete, sender=Subscription)
 signals.pre_save.connect(Subscription.pre_save, sender=Subscription)
 signals.post_init.connect(Subscription.post_init, sender=Subscription)
+signals.post_init.connect(ExtraSubscription.post_init, sender=ExtraSubscription)
+signals.pre_save.connect(ExtraSubscription.pre_save, sender=ExtraSubscription)
 signals.pre_save.connect(Assignment.pre_save, sender=Assignment)
 signals.post_save.connect(Share.create, sender=Share)

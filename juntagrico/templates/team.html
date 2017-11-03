@@ -12,7 +12,12 @@
     <br/>
     <div class="row">
         <div class="col-md-4"><strong>Verantwortlicher:</strong></div>
-        <div class="col-md-8">{{ team.coordinator.first_name }} {{ team.coordinator.last_name }}<br/><a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.email }}</a></div>
+        <div class="col-md-8">{{ team.coordinator.first_name }} {{ team.coordinator.last_name }}<br/>
+        {% if team.email is not None%}
+        <a href="mailto:{{ team.email }}">{{ team.email }}</a></div>
+        {% else %}
+        <a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.email }}</a></div>
+        {% endif %}
     </div>
     <br/>
     <h4>Kommende Termine</h4>

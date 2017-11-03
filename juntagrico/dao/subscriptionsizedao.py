@@ -3,8 +3,6 @@ import juntagrico
 
 
 class SubscriptionSizeDao:
-    def __init__(self):
-        pass
 
     @staticmethod
     def sizes_for_depot_list():
