@@ -24,7 +24,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for subscription in canceledlist %}
+            {% for subscription in management_list %}
                 <tr>
                     <td>{{ subscription.overview }}</td>
                     <td>{{ subscription.end_date |date:"Y-m-d" }}</td>

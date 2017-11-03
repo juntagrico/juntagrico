@@ -17,6 +17,8 @@ from juntagrico.views import get_menu_dict
 from juntagrico.util.jobs import *
 from juntagrico.util.pdf import *
 from juntagrico.util.xls import *
+from juntagrico.util.mailer import *
+from juntagrico.util.views_admin import *
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -57,11 +59,9 @@ def send_email_intern(request):
     if request.POST.get('allsingleemail'):
         emails |= set(request.POST.get('singleemail').split(' '))
 
-    index = 1
+    
     attachements = []
-    while request.FILES.get('image-' + str(index)) is not None:
-        attachements.append(request.FILES.get('image-' + str(index)))
-        index += 1
+    append_attachements(request, attachements)
 
     if len(emails) > 0:
         send_filtered_mail(request.POST.get('subject'), request.POST.get('message'), request.POST.get('textMessage'),
@@ -373,50 +373,26 @@ def export(request):
 
 @permission_required('juntagrico.is_operations_group')
 def waitinglist(request):
-    renderdict = get_menu_dict(request)
-    waitinglist = SubscriptionDao.not_started_subscriptions()
-    renderdict.update({
-        'waitinglist': waitinglist
-    })
-    return render(request, 'waitinglist.html', renderdict)
+    return subscription_management_list(SubscriptionDao.not_started_subscriptions(), get_menu_dict(request), 'waitinglist.html', request)
     
 @permission_required('juntagrico.is_operations_group')
 def canceledlist(request):
-    renderdict = get_menu_dict(request)
-    canceledlist = SubscriptionDao.canceled_subscriptions()
-    renderdict.update({
-        'canceledlist': canceledlist
-    })
-    return render(request, 'canceledlist.html', renderdict)
+    return subscription_management_list(SubscriptionDao.canceled_subscriptions(), get_menu_dict(request), 'canceledlist.html', request)
 
     
 @permission_required('juntagrico.is_operations_group')
 def typechangelist(request):
-    renderdict = get_menu_dict(request)
     changedlist = []
     subscriptions = SubscriptionDao.all_active_subscritions()
     for subscription in subscriptions:
         if subscription.types_changed:
-            changedlist.append(subscription)
-    renderdict.update({
-        'changedlist': changedlist
-    })
-    return render(request, 'typechangelist.html', renderdict)
+            changedlist.append(subscription)    
+    return subscription_management_list(changedlist, get_menu_dict(request), 'typechangelist.html', request)
     
 @permission_required('juntagrico.is_operations_group')
 def extra_waitinglist(request):
-    renderdict = get_menu_dict(request)
-    waitinglist = ExtraSubscriptionDao.waiting_extra_subs()
-    renderdict.update({
-        'waitinglist': waitinglist
-    })
-    return render(request, 'extra_waitinglist.html', renderdict)
+    return subscription_management_list(ExtraSubscriptionDao.waiting_extra_subs(), get_menu_dict(request), 'extra_waitinglist.html', request)
     
 @permission_required('juntagrico.is_operations_group')
 def extra_canceledlist(request):
-    renderdict = get_menu_dict(request)
-    canceledlist = ExtraSubscriptionDao.canceled_extra_subs()
-    renderdict.update({
-        'canceledlist': canceledlist
-    })
-    return render(request, 'extra_canceledlist.html', renderdict)
+    return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), get_menu_dict(request), 'extra_canceledlist.html', request)

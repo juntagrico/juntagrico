@@ -20,6 +20,7 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util.messages import *
+from juntagrico.util.mailer import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 
@@ -344,11 +345,8 @@ def contact_member(request, member_id, job_id):
 
     if request.method == 'POST':
         # send mail to member
-        index = 1
-        attachments = []
-        while request.FILES.get('image-' + str(index)) is not None:
-            attachments.append(request.FILES.get('image-' + str(index)))
-            index += 1
+        attachments = []        
+        append_attachements(request, attachements)
         send_contact_member_form(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
                                  request.POST.get('copy'), attachments)
         is_sent = True

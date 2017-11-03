@@ -23,7 +23,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for subscription in changedlist %}
+            {% for subscription in management_list %}
                 <tr>
                     <td>{{ subscription.overview }}</td>
                     <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>

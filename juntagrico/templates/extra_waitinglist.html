@@ -21,7 +21,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for extrasubscription in waitinglist %}
+            {% for extrasubscription in management_list %}
                 <tr>
                     <td>{{ extrasubscription.type.name }}</td>
                     <td>{{ extrasubscription.main_subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}</td>

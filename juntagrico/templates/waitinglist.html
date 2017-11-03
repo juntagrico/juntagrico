@@ -25,7 +25,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for subscription in waitinglist %}
+            {% for subscription in management_list %}
                 <tr>
                     <td>{{ subscription.overview }}</td>
                     <td>{{ subscription.start_date |date:"Y-m-d" }}</td>
