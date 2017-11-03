@@ -6,9 +6,7 @@ engines:
     enabled: true
     config:
       languages:
-      python:
-        mass_threshold: 20
-        python_version: 3
+      - python
   eslint:
     enabled: true
   fixme:
