@@ -6,9 +6,8 @@ engines:
     enabled: true
     config:
       languages:
-      - ruby
       - javascript
-      - python
+      - python:
         mass_threshold: 20
         python_version: 3
       - php
