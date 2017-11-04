@@ -221,6 +221,7 @@ def createsubscription(request):
     if member is None:
         return redirect('http://'+Config.server_url())
     
+    subscriptionform = SubscriptionForm()
     shareerror = False 
     session_subscription = request.session.get('create_subscription')
     co_members = request.session.get('create_co_members', [])
