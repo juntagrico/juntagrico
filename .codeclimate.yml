@@ -6,15 +6,16 @@ engines:
     enabled: true
     config:
       languages:
+      - ruby
+      - javascript
       - python
+      - php
   eslint:
     enabled: true
   fixme:
     enabled: true
   radon:
     enabled: true
-    config: 
-      threshold: "D"
 ratings:
   paths:
   - "**.css"
