@@ -436,6 +436,10 @@ def deactivate_subscription(request, subscription_id):
     if subscription.active is True:
         subscription.active=False
         subscription.save()
+        for extra in subscription.extra_subscription_set.all():
+            if extra.active is True:
+                extra.active = False
+                extra.save()
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
@@ -469,6 +473,12 @@ def cancel_subscription(request, subscription_id):
                 subscription.canceled=True
                 subscription.end_date=subscriptionform.cleaned_data['end_date']
                 subscription.save()
+                for extra in subscription.extra_subscription_set.all():
+                    if extra.active is True:
+                        extra.canceled = True
+                        extra.save()
+                    elif extra.active is False and extra.deactivation_date is None:
+                        extra.delete()
             elif subscription.active is False and subscription.deactivation_date is None:
                 subscription.delete()
             return redirect('/my/subscription')
