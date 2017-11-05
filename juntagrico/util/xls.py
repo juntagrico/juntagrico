@@ -1,4 +1,4 @@
-from io import StringIO
+from io import StringIO, BytesIO
 
 import xlsxwriter
 from django.http import HttpResponse
@@ -11,9 +11,9 @@ from django.http import HttpResponse
 def generate_excell(fields, model_instance):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
-    output = StringIO()
+    output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
-    worksheet_s = workbook.add_worksheet('Locos')
+    worksheet_s = workbook.add_worksheet('export')
 
     col = 0
     for field in fields:
@@ -23,7 +23,7 @@ def generate_excell(fields, model_instance):
         while count < len(parts):
             dbfield = dbfield.related_model._meta.get_field(parts[count])
             count += 1
-        worksheet_s.write_string(0, col, str(str(dbfield.verbose_name), 'utf-8'))
+        worksheet_s.write(0, col, dbfield.verbose_name)
         col += 1
 
     instances = model_instance.objects.all()
@@ -40,9 +40,9 @@ def generate_excell(fields, model_instance):
                 count += 1
             if fieldvalue is not None:
                 if isinstance(fieldvalue, str):
-                    worksheet_s.write_string(row, col, fieldvalue)
+                    worksheet_s.write(row, col, fieldvalue)
                 else:
-                    worksheet_s.write_string(row, col, str(str(fieldvalue), 'utf-8'))
+                    worksheet_s.write(row, col, fieldvalue)
             col += 1
         row += 1
 
