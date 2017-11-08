@@ -465,28 +465,24 @@ def cancel_subscription(request, subscription_id):
         end_date = end_of_business_year()
     else:
         end_date = end_of_next_business_year()
-    subscriptionform = CancelSubscriptionForm(initial={'end_date':end_date,})  
     if request.method == 'POST':    
-        subscriptionform = CancelSubscriptionForm(request.POST)
-        if subscriptionform.is_valid():
-            if subscription.active is True and subscription.canceled is False:
-                subscription.canceled=True
-                subscription.end_date=subscriptionform.cleaned_data['end_date']
-                subscription.save()
-                for extra in subscription.extra_subscription_set.all():
-                    if extra.active is True:
-                        extra.canceled = True
-                        extra.save()
-                    elif extra.active is False and extra.deactivation_date is None:
-                        extra.delete()
-            elif subscription.active is False and subscription.deactivation_date is None:
-                subscription.delete()
-            return redirect('/my/subscription')
+        if subscription.active is True and subscription.canceled is False:
+            subscription.canceled=True
+            subscription.end_date=request.POST.get('end_date')
+            subscription.save()
+            for extra in subscription.extra_subscription_set.all():
+                if extra.active is True:
+                    extra.canceled = True
+                    extra.save()
+                elif extra.active is False and extra.deactivation_date is None:
+                    extra.delete()
+        elif subscription.active is False and subscription.deactivation_date is None:
+            subscription.delete()
+        return redirect('/my/subscription')
     
     renderdict = get_menu_dict(request)
     renderdict.update({
         'end_date': end_date,
-        'subscriptionform': subscriptionform
     })
     return render(request, 'cancelsubscription.html', renderdict)
     
