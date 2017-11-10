@@ -346,7 +346,7 @@ def contact_member(request, member_id, job_id):
     if request.method == 'POST':
         # send mail to member
         attachments = []        
-        append_attachements(request, attachements)
+        append_attachements(request, attachments)
         send_contact_member_form(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
                                  request.POST.get('copy'), attachments)
         is_sent = True
