@@ -42,13 +42,6 @@ class SubscriptionForm(ModelForm):
             'start_date': DateInput(attrs={'format': '%d.%m.%y', 'class': 'form-control'}),
         }
 
-class CancelSubscriptionForm(ModelForm):
-    class Meta:
-        model = Subscription
-        fields = ['end_date']
-        widgets = {
-            'start_date': DateInput(attrs={'format': '%d.%m.%y', 'class': 'form-control'}),
-        }
 
 
 class RegisterMemberForm(ModelForm):

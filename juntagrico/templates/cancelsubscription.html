@@ -7,30 +7,16 @@
 {% block content %}
     <div class="col-md-12">
         <br/>
-        Hier kannst du dein Abo künden. Du kannst dein abo regulär auf den {{ end_date |date:"d.m.Y" }} künden. Falls du auf ein früheres Datum künden willst gelten folgende Regeln:
+        Hier kannst du dein Abo künden. Du kannst dein Abo regulär auf den {{ end_date |date:"d.m.Y" }} künden. Falls du auf ein früheres Datum künden willst musst du wie folgt vorgehen:
         <ul>
-            <li>Dein Abo gilt nur als gekündigt, wenn du eine Betätigung per Email erhalten hast. Ansonsten läuft dein Abo auch nach dem gewünschten Enddatum weiter.</li>
-            <li>Sollte sich auf der Warteliste jemand finden der dein Abo per gewünschtem Enddatum übernimmt, kann dein Abo gekündigt werden.</li>
-            <li>Sollte sich auf der Warteliste niemand finden welcher das Abo übernimmt, wirst du darüber informiert und hast die Möglichkeit einen Ersatzt zu stellen.</li>
+            <li>Du kündest hier im System zuerst regulär dein Abo.</li>
+            <li>Anschliessend schreibst du eine Email an {% config "info_email" %} dass du gerne auf ein früheres Datum künden möchtest.</li>
         </ul>
         <br/><br/>
 
         <form action="" method="post" class="form-horizontal">
             {% csrf_token %}
-           
-            <div id="start_date" class="form-group"">
-                <label class="col-md-3 control-label">Gewünschtes Enddatum</label>
-                <div class="col-md-9 controls">
-                    <label>
-                        {{ subscriptionform.end_date }}<br/>
-                        Falls der Wert hier geändert wird gelten die oben gennanten Regeln!
-                    </label>
-                    {% if subscriptionform.end_date.errors %}
-                        <div class="alert alert-danger">Das gewählte Enddatum ist nicht gültig</div>
-                    {% endif %}
-                </div>
-            </div>
-
+            <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden" />
             <div class="col-md-offset-4 form-actions">
                 <button type="submit" class="btn btn-success">Abo künden</button>
             </div>

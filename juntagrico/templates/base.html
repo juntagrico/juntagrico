@@ -107,9 +107,13 @@
                                 </li>
                             {% endif %}
                             {% if operation_group and has_extra_subscriptions %}
-                                <li class="inline">
-                                    Zusatzabos  
-                                    <a href="/my/extra/waitinglist">Warteliste</a> | <a href="/my/extra/canceledlist">Kündigungsliste</a>
+                                <li>
+                                    <a href="/my/extra/waitinglist">Zusatzabos Warteliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group and has_extra_subscriptions %}
+                                <li>
+                                    <a href="/my/extra/canceledlist">Zusatzabos Kündigungsliste</a>
                                 </li>
                             {% endif %}
                             {% if operation_group %}

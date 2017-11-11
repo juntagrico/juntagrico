@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Warteliste</h3>
+    <h3>Kündigungsliste</h3>
 {% endblock %}
 
 {% block content %}
@@ -26,7 +26,7 @@
             <tbody>
             {% for subscription in management_list %}
                 <tr>
-                    <td>{{ subscription.overview }}</td>
+                    <td><a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">{{ subscription.overview }}</a></td>
                     <td>{{ subscription.end_date |date:"Y-m-d" }}</td>
                     <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
                     <td>

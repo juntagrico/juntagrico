@@ -27,7 +27,7 @@
             <tbody>
             {% for subscription in management_list %}
                 <tr>
-                    <td>{{ subscription.overview }}</td>
+                    <td><a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">{{ subscription.overview }}</a></td>
                     <td>{{ subscription.start_date |date:"Y-m-d" }}</td>
                     <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
                     <td>
