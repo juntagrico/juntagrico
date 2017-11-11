@@ -3,7 +3,7 @@ Welcome to the juntagrico documentation
 Installation
 ---------
 
-Install juntagrcio from it's git repository. You need an django app.
+Install juntagrcio from it's git repository or using pip. You need an django app.
 
 The following django settings are nescessary to run juntagrico.
 
@@ -248,6 +248,18 @@ You can use the following settings to configure juntagrico
 
     "/static/docs/bylaws.pdf"
 
+* MAIL_TEMPLATE
+
+  Path to your custom html email template if you want to overwrite the look and feel of the html emails
+  
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    "mails/email.html"
+
 * STYLE_SHEET
 
   If you want to use a custom design this specifies the path for your css
@@ -260,6 +272,18 @@ You can use the following settings to configure juntagrico
 
     "/static/css/juntagrico.css"
 
+* FAVICON
+
+  If you want to use a custom favicon this specifies the path for your favicon
+  
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    "/static/img/favicon.ico"
+
 * FAQ_DOC
 
   Path to your FAQ document
@@ -271,6 +295,18 @@ You can use the following settings to configure juntagrico
   .. code-block:: python
 
     "/static/doc/fac.pdf"
+
+* BOOTSTRAP
+
+  If you want to use a customized version of bootstrap this specifies the coresponding path for it
+  
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    "/static/external/bootstrap-3.3.1/css/bootstrap.min.css"
 
 * EXTRA_SUB_INFO
 
@@ -307,6 +343,30 @@ You can use the following settings to configure juntagrico
   .. code-block:: python
 
     "250"
+
+* CURRENCY
+
+  The default currency used within the system
+  
+  Type: String
+
+  default value
+  
+  .. code-block:: python
+
+    "CHF"
+
+* ASSIGNMENT_UNIT
+
+  The mode how assignemnts are counted: Valid values are EMTITY and HOURS. ENTITY the assignents ar counted by occurence, Hours the value of the assignemnts are counted by the actual time the user spent on a job.
+  
+  Type: String
+
+  default value
+  
+  .. code-block:: python
+
+    "ENTITY"
 
 * PROMOTED_JOB_TYPES
 
@@ -404,7 +464,7 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    10
+    12
 
 * DEMO_USER
 
@@ -428,7 +488,7 @@ You can use the following settings to configure juntagrico
 
     ''
 
-* CIRCLES
+* IMAGES
 
   Defining the different images for core and job assignments etc
 
@@ -436,15 +496,15 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    {'circle_full': '/static/img/circle_full.png',
-        'circle_alomst_full': '/static/img/circle_alomst_full.png',
-        'circle_half': 'static/img/circle_half.png',
-        'circle_almost_empty': '/static/img/circle_almost_empty.png',
-        'circle_empty': '/static/img/circle_empty.png',
-        'circle_full_core': '/static/img/circle_full_core.png',
-        'circle_x': '/static/img/circle_x.png',
-        'circle_y': '/static/img/circle_y.png'
-        }
+    {'status_100': '/static/img/status_100.png', 
+        'status_75': '/static/img/status_75.png', 
+        'status_50': '/static/img/status_50.png', 
+        'status_25': '/static/img/status_25.png', 
+        'status_0': '/static/img/status_0.png', 
+        'single_full': '/static/img/single_full.png', 
+        'single_empty': '/static/img/single_empty.png', 
+        'single_core': '/static/img/single_core.png',
+        'core': '/static/img/core.png'}
 
 * GOOGLE_API_KEY
 
@@ -462,51 +522,56 @@ For your convenience all settings with default values to copy into your settings
 
 .. code-block:: python
 
-        MEMBER_STRING = "Mitglied"
-    MEMBERS_STRING = "Mitglieder"
-    ASSIGNMENT_STRING = "Mitglied"
-    ASSIGNMENTS_STRING = "Arbeitseinsätze"
-    ORGANISATION_NAME = "Juntagrico"
-    ORGANISATION_LONG_NAME = "Juntagrico the best thing in the world"
-    ORGANISATION_ADDRESS = {"name":"Juntagrico", 
-                "street" : "Fakestreet",
-                "number" : "123",
-                "zip" : "12456",
-                "city" : "Springfield",
-                "extra" : ""}
-    ORGANISATION_BANK_CONNECTION = {"PC" : "01-123-5",
-                "IBAN" : "CH 00 12345 67890 12345 67890 10",
-                "BIC" : "BIC12345XX",
-                "NAME" : "Juntagrico Bank",
-                "ESR" : "01-123-45"}
-    INFO_EMAIL = "info@juntagrico.juntagrico"
-    SERVER_URL = "www.juntagrico.juntagrico"
-    ADMINPORTAL_NAME = "my.juntagrico"
-    ADMINPORTAL_SERVER_URL = "my.juntagrico.juntagrico"
-    BUSINESS_REGULATIONS = "/static/docs/business_regulations.pdf"
-    BYLAWS = "/static/docs/bylaws.pdf"
-    STYLE_SHEET = "/static/css/juntagrico.css"
-    FAQ_DOC = "/static/doc/fac.pdf"
-    EXTRA_SUB_INFO = "/static/doc/extra_sub_info.pdf"
-    ACTIVITY_AREA_INFO = "/static/doc/activity_area_info.pdf"
-    SHARE_PRICE = "250"
-    PROMOTED_JOB_TYPES = []
-    PROMOTED_JOBS_AMOUNT = 2
-    DEPOT_LIST_COVER_SHEETS = 'x'
-    DEPOT_LIST_OVERVIEWS = 'x'
-    DEPOT_LIST_GENERATION_DAYS = [1,2,3,4,5,6,7]	
-    BILLING = False
-    BUSINESS_YEAR_START = {"day":1, "month":1}
-    BUSINESS_YEAR_CANCELATION_MONTH = 10
-    DEMO_USER = ''
-    DEMO_PWD = ''
-    CIRCLES = {'circle_full': '/static/img/circle_full.png',
-            'circle_alomst_full': '/static/img/circle_alomst_full.png',
-            'circle_half': 'static/img/circle_half.png',
-            'circle_almost_empty': '/static/img/circle_almost_empty.png',
-            'circle_empty': '/static/img/circle_empty.png',
-            'circle_full_core': '/static/img/circle_full_core.png',
-            'circle_x': '/static/img/circle_x.png',
-            'circle_y': '/static/img/circle_y.png'
-        }
-    GOOGLE_API_KEY = "GOOGLE_API_KEY"
+MEMBER_STRING = 'Mitglied'
+MEMBERS_STRING = 'Mitglieder'
+ASSIGNMENT_STRING = 'Mitglied'
+ASSIGNMENTS_STRING = 'Arbeitseinsätze'
+ORGANISATION_NAME = 'Juntagrico'
+ORGANISATION_LONG_NAME = 'Juntagrico the best thing in the world'
+ORGANISATION_ADDRESS = {'name':'Juntagrico',
+                        'street' : 'Fakestreet',
+                        'number' : '123',
+                        'zip' : '12456',
+                        'city' : 'Springfield',
+                        'extra' : ''}
+ORGANISATION_BANK_CONNECTION = {'PC' : '01-123-5', 
+                                'IBAN' : 'CH 00 12345 67890 12345 67890 10', 
+                                'BIC' : 'BIC12345XX', 
+                                'NAME' : 'Juntagrico Bank', 
+                                'ESR' : '01-123-45'}
+INFO_EMAIL = 'info@juntagrico.juntagrico'
+SERVER_URL = 'www.juntagrico.juntagrico'
+ADMINPORTAL_NAME = 'my.juntagrico'
+ADMINPORTAL_SERVER_URL = 'my.juntagrico.juntagrico'
+BUSINESS_REGULATIONS = '/static/docs/business_regulations.pdf'
+BYLAWS = '/static/docs/bylaws.pdf'
+MAIL_TEMPLATE = 'mails/email.html'
+STYLE_SHEET = '/static/css/personal.css'
+FAVICON = '/static/img/favicon.ico'
+BOOTSTRAP = '/static/external/bootstrap-3.3.1/css/bootstrap.min.css'
+FAQ_DOC = '/static/doc/fac.pdf'
+EXTRA_SUB_INFO = '/static/doc/extra_sub_info.pdf'
+ACTIVITY_AREA_INFO = '/static/doc/activity_area_info.pdf'
+SHARE_PRICE = '250'
+CURRENCY = 'CHF'
+ASSIGNMENT_UNIT = 'ENTITY'
+PROMOTED_JOB_TYPES = []
+PROMOTED_JOBS_AMOUNT = 2
+DEPOT_LIST_COVER_SHEETS = 'x'
+DEPOT_LIST_OVERVIEWS = 'x'
+DEPOT_LIST_GENERATION_DAYS = [1,2,3,4,5,6,7]	
+BILLING = False
+BUSINESS_YEAR_START = {'day':1, 'month':1}
+BUSINESS_YEAR_CANCELATION_MONTH = 12
+DEMO_USER = ''
+DEMO_PWD = ''
+IMAGES[key] = {'status_100': '/static/img/status_100.png', 
+                'status_75': '/static/img/status_75.png', 
+                'status_50': '/static/img/status_50.png', 
+                'status_25': '/static/img/status_25.png', 
+                'status_0': '/static/img/status_0.png', 
+                'single_full': '/static/img/single_full.png', 
+                'single_empty': '/static/img/single_empty.png', 
+                'single_core': '/static/img/single_core.png',
+                'core': '/static/img/core.png'}
+GOOGLE_API_KEY = 'GOOGLE_API_KEY'
