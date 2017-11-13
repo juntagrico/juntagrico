@@ -1,7 +1,7 @@
 Juntagrico
 =====
 
-.. image:: https://travis-ci.org/juntagrio/juntagrico.svg?branch=master
+.. image:: https://travis-ci.org/juntagrico/juntagrico.svg?branch=master
     :target: https://travis-ci.org/juntagrico/juntagrico
    
 .. image:: https://img.shields.io/gemnasium/juntagrico/juntagrico.svg
@@ -9,6 +9,9 @@ Juntagrico
 
 .. image:: https://img.shields.io/codeclimate/github/juntagrico/juntagrico.svg
     :target: https://codeclimate.com/github/juntagrico/juntagrico
+
+.. image:: https://img.shields.io/pypi/v/nine.svg
+    :target: https://pypi.python.org/pypi/juntagrico
 
 **the easy solution for cooperative vegetable growers**
 
