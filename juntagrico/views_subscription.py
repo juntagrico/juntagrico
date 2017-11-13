@@ -33,7 +33,7 @@ def subscription(request):
     '''
     renderdict = get_menu_dict(request)
     
-     end_date = end_of_next_business_year()
+    end_date = end_of_next_business_year()
     
     if request.user.member.subscription is not None:
         cancelation_date = request.user.member.subscription.cancelation_date
