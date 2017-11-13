@@ -22,6 +22,11 @@ Juntagrico
 .. image:: https://img.shields.io/pypi/status/juntagrico.svg
     :target: https://pypi.python.org/pypi/juntagrico
 
+.. image:: https://img.shields.io/github/last-commit/juntagrico/juntagrico.svg
+    :target: https://github.com/juntagrico/juntagrico
+    
+.. image:: https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico.svg
+    :target: https://github.com/juntagrico/juntagrico
 
 **the easy solution for cooperative vegetable growers**
 
