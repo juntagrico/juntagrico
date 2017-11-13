@@ -10,8 +10,18 @@ Juntagrico
 .. image:: https://img.shields.io/codeclimate/github/juntagrico/juntagrico.svg
     :target: https://codeclimate.com/github/juntagrico/juntagrico
 
-.. image:: https://img.shields.io/pypi/v/nine.svg
+.. image:: https://img.shields.io/pypi/v/juntagrico.svg
     :target: https://pypi.python.org/pypi/juntagrico
+
+.. image:: https://img.shields.io/pypi/l/juntagrico.svg
+    :target: https://pypi.python.org/pypi/juntagrico
+    
+.. image:: https://img.shields.io/pypi/pyversions/juntagrico.svg
+    :target: https://pypi.python.org/pypi/juntagrico
+
+.. image:: https://img.shields.io/pypi/status/juntagrico.svg
+    :target: https://pypi.python.org/pypi/juntagrico
+
 
 **the easy solution for cooperative vegetable growers**
 
