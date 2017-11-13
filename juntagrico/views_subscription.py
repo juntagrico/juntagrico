@@ -32,13 +32,13 @@ def subscription(request):
     Details for an subscription of a member
     '''
     renderdict = get_menu_dict(request)
-
+    
+     end_date = end_of_next_business_year()
+    
     if request.user.member.subscription is not None:
         cancelation_date = request.user.member.subscription.cancelation_date
         if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
-        else:
-            end_date = end_of_next_business_year()
         renderdict.update({
             'subscription': request.user.member.subscription,
             'co_members': request.user.member.subscription.recipients().exclude(
