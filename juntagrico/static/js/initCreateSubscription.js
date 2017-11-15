@@ -4,7 +4,7 @@ define(['modules/depotDistance'], function (depotDistance) {
     // check for the amount of shares of the member
     $("input[type=radio]").change(function () {
         var $checked = $(":checked");
-        if ($checked.val() == "none") {
+        if ($checked.val() == "-1") {
             $("#shares").val(1);
         } 
         else {
@@ -14,7 +14,7 @@ define(['modules/depotDistance'], function (depotDistance) {
 
     $("input[type=radio]").change(function () {
         var $checked = $(":checked");
-        if ($checked.val() == "none") {
+        if ($checked.val() == "-1") {
             $("#start_date").hide(1000);
             $("#depot_container").hide(1000);
             $("#co_members").hide(1000);
@@ -31,7 +31,7 @@ define(['modules/depotDistance'], function (depotDistance) {
     $("#co_members").hide(1000);
     $("input[type=radio]:checked").each(function () {
         var $checked = $(":checked");
-        if ($checked.val() == "none") {
+        if ($checked.val() == "-1") {
             $("#start_date").hide(1000);
             $("#depot_container").hide(1000);
             $("#co_members").hide(1000);

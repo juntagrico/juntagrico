@@ -87,8 +87,8 @@ class Command(BaseCommand):
         depot = Depot.objects.create(**depot_dict)
         return depot
     
-    def generate_subscription(self, main_member,co_member,depot,sub_size):
-        sub_dict = {'depot': depot, 'future_depot': None, 'size': sub_size, 'future_size': 1, 'active': True,
+    def generate_subscription(self, main_member,co_member,depot,type):
+        sub_dict = {'depot': depot, 'future_depot': None, 'active': True,
                         'activation_date': '2017-03-27', 'deactivation_date': None, 'creation_date': '2017-03-27',
                         'start_date': '2018-01-01'}
         subscription = Subscription.objects.create(**sub_dict)
@@ -100,8 +100,11 @@ class Command(BaseCommand):
         subscription.save()
         self.members.append(main_member)
         self.members.append(co_member)
+        TSST.objects.create(type=type, subscription=subscription)                
+        TFSST.objects.create(type=type, subscription=subscription)
+                    
     
-    def generate_depot_sub(self, depot, coordinates, j, sub_shares, sub_size):
+    def generate_depot_sub(self, depot, coordinates, j, sub_shares, type):
         props = self.get_address(coordinates)
         mem1_fields = self.generate_member_dict(props, j)
         main_member = Member.objects.create(**mem1_fields)
@@ -109,7 +112,7 @@ class Command(BaseCommand):
         mem2_fields = self.generate_member_dict(props, j)
         co_member = Member.objects.create(**mem2_fields)            
         self.generate_shares(main_member, sub_shares)
-        self.generate_subscription(main_member,co_member,depot,sub_size)
+        self.generate_subscription(main_member,co_member,depot,type)
         
 
     # entry point used by manage.py
@@ -120,11 +123,15 @@ class Command(BaseCommand):
         sub_shares = int(eval(input('Required shares per subscription (a number)')))
         sub_assignments = int(eval(input('Required assignment per subscription (a number)')))
         sub_prize = int(eval(input('Price of subscription (a number)')))
-        subsize_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': sub_size, 'shares': sub_shares,
-                          'depot_list': True, 'required_assignments':sub_assignments, 'price': sub_prize,
+        subsize_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': sub_size,
+                          'depot_list': True, 
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
-        SubscriptionSize.objects.create(**subsize_fields)
-        print(subsize_fields)
+        size = SubscriptionSize.objects.create(**subsize_fields)
+        
+        subtype_fields = { 'name': 'Normales Abo typ', 'long_name': '','shares': sub_shares,'required_assignments':sub_assignments, 'price': sub_prize,
+                            'description': '', 'size':size}
+                
+        type = SubscriptionType.objects.create(**subtype_fields)
         
         req = urllib.request.urlopen('https://data.stadt-zuerich.ch/dataset/b2c829d4-9d4b-4741-a944-242c28f00b2a/resource/0119385c-52d4-4dfb-a18f-8c6178a16460/download/gastwirtschaftsbetriebeper20161231.json', context = cert)
         req.read(3)#source is shitty
@@ -151,9 +158,9 @@ class Command(BaseCommand):
             mem2_fields = self.generate_member_dict(props, i)
             co_member = Member.objects.create(**mem2_fields)            
             self.generate_shares(main_member, sub_shares)
-            self.generate_subscription(main_member, co_member, depot, sub_size)
+            self.generate_subscription(main_member, co_member, depot, type)
             for j in range(1, subs_per_depot):
-                self.generate_depot_sub(depot, address_data[adress_counter]['geometry']['coordinates'], j, sub_shares, sub_size)
+                self.generate_depot_sub(depot, address_data[adress_counter]['geometry']['coordinates'], j, sub_shares, type)
                 adress_counter += 1
                 
         
@@ -163,15 +170,15 @@ class Command(BaseCommand):
                         'hidden': False, 'coordinator': self.members[1], 'show_coordinator_phonenumber': False}
         area_1 = ActivityArea.objects.create(**area1_fields)
         if len(self.members)>2:
-            area_1.members = self.members[2:(len(self.members))/2]
+            area_1.members = self.members[2:int((len(self.members))/2)]
         else:
             area_1.members = [self.members[1]]
         area_1.save()
         area_2 = ActivityArea.objects.create(**area2_fields)        
         if len(self.members)>2:
-            area_1.members = self.members[(len(self.members))/2+1:(len(self.members))/2-1]
+            area_2.members = self.members[int((len(self.members))/2)+1:int((len(self.members))/2-1)]
         else:
-            area_1.members = [self.members[0]]
+            area_2.members = [self.members[0]]
         area_2.save()
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
                         'duration': 2, 'location': 'auf dem Hof'}
