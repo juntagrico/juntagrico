@@ -14,7 +14,7 @@
     <div class="col-md-8">
         <br/>
 
-        Infos:{{ selected_subscription }}
+        Infos:
 
         Um Mitglied der Genossenschaft {% config "organisation_name" %} zu werden, musst du mindestens einen Anteilschein (CHF {% config "share_price" %}) erwerben.
         <br/><br/>
@@ -46,7 +46,7 @@
                                 {% if type.description.strip %}{{ type.description }}<br/>{% endif%}
                                 Beitrag: {{ type.price }} {% config "currency" %}
                                 <br/>
-                                Anteilsscheine: {{ type.shares }} - {% if selected_subscription == type.id %}checked="checked"{% endif %}
+                                Anteilsscheine: {{ type.shares }}
                                 <br/>
                                 Arbeitseinsätze: {{ type.required_assignments }} {% if hours_used %}Stunden{% endif %}
                             </label>
