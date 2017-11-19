@@ -227,8 +227,8 @@ def createsubscription(request):
     co_members = request.session.get('create_co_members', [])
     co_members_shares = request.session.get('create_co_members_shares', [])
     member_shares = request.session.get('create_member_shares', [])
-    selectedsubscription = request.session.get('selectedsubscription', 'none')
-
+    selectedsubscription = int(request.session.get('selectedsubscription', -1))
+    
     selected_depot = None
     existing_member_shares = 0
     if member.pk is not None:
@@ -312,6 +312,7 @@ def createsubscription(request):
                 request.session['create_co_members'] = []
                 request.session['create_co_members_shares'] = []
                 request.session['create_member_shares'] = []
+                request.session['selectedsubscription'] = -1
                 if request.user.is_authenticated():
                     return redirect('/my/home')
                 else:
@@ -414,6 +415,7 @@ def cancel_create_subscription(request):
     request.session['create_co_members'] = []
     request.session['create_co_members_shares'] = []
     request.session['create_member_shares'] = []
+    request.session['selectedsubscription'] = -1
     if request.user.is_authenticated():
         return redirect('/my/subscription')
     else:

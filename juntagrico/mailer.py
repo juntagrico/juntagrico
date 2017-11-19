@@ -206,8 +206,8 @@ def send_mail_password_reset(email, password):
 def send_job_reminder(emails, job, participants):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
-    coordinator = job.typeactivityarea.coordinator
-    contact = coordinator.first_name + ' ' + coordinator.last_name + ': ' + job.typeactivityarea.contact()
+    coordinator = job.type.activityarea.coordinator
+    contact = coordinator.first_name + ' ' + coordinator.last_name + ': ' + job.type.activityarea.contact()
 
     d = {
         'mail_template': Config.mail_template,

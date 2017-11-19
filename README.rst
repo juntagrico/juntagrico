@@ -1,5 +1,5 @@
-Juntagrico
-=====
+juntagrico
+==========
 
 .. image:: https://travis-ci.org/juntagrico/juntagrico.svg?branch=master
     :target: https://travis-ci.org/juntagrico/juntagrico
@@ -30,8 +30,16 @@ Juntagrico
 
 **the easy solution for cooperative vegetable growers**
 
-juntagrico is a platfom for commutnitiy gardens and vegetable cooperatives.
-it provides the basic functionality to manage vegetable and extra subscriptions as well as management of shares for cooperatives,
-billing and other aspects like delivery handling of the crops.
+juntagrico is a management platform for community gardens and vegetable cooperatives.
 
-Detailed documentation can be found here http://juntagrico.readthedocs.io
+It provides the basic functionality like
+
+- subscription management
+- extra subscription management
+- management of shares
+- delivery management 
+- management of members
+- automatic billing
+
+Detailed documentation how to install and configure juntagrico can be found here http://juntagrico.readthedocs.io
+

@@ -39,7 +39,7 @@
                         <label class="col-md-3 control-label"></label>
                         <div class="col-md-9 offset-md-3 controls radio"> 
                             <label for="{{ type.name }}" class="control-label col-md-2">
-                                <input type="radio" name="subscription" class="onoffswitch" value="{{type.id }}" id="{{ type.name }}" {% if selected_subscription == type.id %}checked="checked"{% endif %}/>
+                                <input type="radio" name="subscription" class="onoffswitch" value="{{ type.id }}" id="{{ type.name }}" {% if selected_subscription == type.id %}checked="checked"{% endif %}/>
                             </label>
                             <label for="{{ type.name }}" class="control-label col-md-7">
                                 {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif%}
@@ -69,7 +69,7 @@
                 <label class="col-md-3 control-label"></label>
                 <div class="col-md-9 offset-md-3 controls radio"> 
                     <label class="col-md-2 control-label">
-                            <input type="radio" name="subscription" class="onoffswitch"  value="-1" id="none" {% if selected_subscription == "none" %}checked="checked"{% endif %}/>
+                            <input type="radio" name="subscription" class="onoffswitch"  value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
                     </label>
                     <label class="col-md-7 control-label">
                             Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
