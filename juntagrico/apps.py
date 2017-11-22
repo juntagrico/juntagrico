@@ -1,24 +1,19 @@
-import importlib
-
 from django.apps import AppConfig
-from django.conf import settings
+
+from juntagrico.util.addons import *
+
 
 class JuntagricoAppConfig(AppConfig):
     name = 'juntagrico'
 
+    
     def ready(self):
-        apps = []
+        modules = load_modules()
         
-        admin_menu_templates = []
+        admin_menu_templates = [] 
         
-        print('juntagrico searchching for addons:')
+        load_config('admin_menu_template',admin_menu_templates,modules)
         
-        for app in settings.INSTALLED_APPS:
-            if app.startswith('juntagrico') and app !='juntagrico':
-                print('found: ' + app) 
-                apps.append(app)
-        
-        print('searching for admin menus')
-        for app in apps:
-            if importlib.util.find_spec('admin_menu_template', app + '.juntagricoapp') is not None:
-                admin_menu_template.append(app + '.juntagricoapp' + 'admin_menu_template'())
+        set_admin_menus(admin_menu_templates)
+    
+    

@@ -17,6 +17,7 @@ from juntagrico.models import *
 from juntagrico.util import admin as admin_util
 from juntagrico.util.models import *
 from juntagrico.util.temporal import *
+from juntagrico.util.addons import *
 
 
 # This form exists to restrict primary user choice to users that have actually set the
@@ -350,6 +351,10 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ['members__user__username', 'members__first_name', 'members__last_name', 'depot__name']
     # raw_id_fields = ['primary_member']
     inlines = [SubscriptionTypeInline, FutureSubscriptionTypeInline, ExtraSubscriptionInline]
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_subscription_inlines())
+        super(SubscriptionAdmin,self).__init__(*args, **kwargs)
 
 
 class AuditAdmin(admin.ModelAdmin):
@@ -450,7 +455,6 @@ class MemberAdminForm(forms.ModelForm):
     future_subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
                                        label='Zukünftiges Abo')
 
-
 class MemberAdmin(admin.ModelAdmin):
     form = MemberAdminForm
     list_display = ['email', 'first_name', 'last_name']
@@ -459,6 +463,11 @@ class MemberAdmin(admin.ModelAdmin):
     exclude = ['future_subscription','subscription','old_subscriptions']
     readonly_fields = ['user']
     actions = ['impersonate_job']
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_member_inlines())
+        super(MemberAdmin,self).__init__(*args, **kwargs)
 
     def impersonate_job(self, request, queryset):
         if queryset.count() != 1:
