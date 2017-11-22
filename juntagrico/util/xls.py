@@ -58,7 +58,7 @@ def generate_excell(fields, instances):
                 fieldvalue = getattr(fieldvalue, parts[count])
                 count += 1
             if fieldvalue is not None:
-                worksheet_s.write(row, col, fieldvalue)
+                worksheet_s.write(row, col, str(fieldvalue))
             col += 1
         row += 1
 
