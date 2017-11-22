@@ -34,7 +34,7 @@ define([], function () {
     
     function format(json_table) {
         tbl = JSON.parse(json_table);
-    	txt = "<table border='1'>" +
+    	txt = "<table class='table table-sm'>" +
             		"<thead><tr><td><b>Name</b></td><td><b>Menge</b></td><td><b>Kommentar</b></td></tr></thead>" +
             		"<tbody>"
             for (r in tbl) {
