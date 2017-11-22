@@ -1,7 +1,7 @@
-import importlib
-
 from django.apps import AppConfig
-from django.conf import settings
+
+from juntagrico.util.addons import *
+
 
 from juntagrico.util.addons import *
 
@@ -10,8 +10,6 @@ from juntagrico.util.addons import *
 class JuntagricoAppConfig(AppConfig):
     name = 'juntagrico'
 
-
-    
     def ready(self):
         modules = load_modules()
         
@@ -20,5 +18,4 @@ class JuntagricoAppConfig(AppConfig):
         load_config('admin_menu_template',admin_menu_templates,modules)
         
         set_admin_menus(admin_menu_templates)
-
 

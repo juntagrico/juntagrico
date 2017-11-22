@@ -455,6 +455,7 @@ class MemberAdminForm(forms.ModelForm):
     future_subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
                                        label='Zukünftiges Abo')
 
+
 class MemberAdmin(admin.ModelAdmin):
     form = MemberAdminForm
     list_display = ['email', 'first_name', 'last_name']
