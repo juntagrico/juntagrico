@@ -173,6 +173,10 @@
                         </li>
                     {% endif %}
                     
+                    {% for menu in admin_menus %}
+                        {% include menu %}
+                    {% endfor%}
+                    
                     {% include "personal_menu.html" %}
                 </ul>
                 {% endif %}

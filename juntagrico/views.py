@@ -21,6 +21,7 @@ from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
+from juntagrico.util.addons import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 
@@ -78,6 +79,7 @@ def get_menu_dict(request):
         'show_core': ActivityAreaDao.all_core_areas().count()>0,
         'show_extras': JobExtraDao.all_job_extras().count()>0,
         'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + '/dpl.pdf',
+        'admin_menus' : get_admin_menus,
     }
     enrich_menu_dict(request, menu_dict)
     return menu_dict
