@@ -21,6 +21,7 @@ def generate_excell_from_model(fields, model_instance):
     instances = model_instance.objects.all()
     return generate_excell(parsed_fields, instances)
 
+
 def generate_excell_load_fields(fields, model_instance,instances):
     for field in fields:
         if fields[field]=='':
@@ -57,7 +58,7 @@ def generate_excell(fields, instances):
                 fieldvalue = getattr(fieldvalue, parts[count])
                 count += 1
             if fieldvalue is not None:
-                worksheet_s.write(row, col, str(fieldvalue))
+                worksheet_s.write(row, col, fieldvalue)
             col += 1
         row += 1
 
