@@ -10,8 +10,6 @@ class Delivery(models.Model):
     """
     delivery_date = models.DateField("Lieferdatum")
     subscription_size = models.ForeignKey(SubscriptionSize, verbose_name='Abo-Grösse', on_delete=models.PROTECT)
-    text = models.TextField("Gemüseliste", max_length=1000, default="", null=True, blank=True) # JSON-serialized (text) version of your list
-    # json = JSONEditableField()
     
     def __str__(self):
         return u"%s - %s" % (self.delivery_date, self.subscription_size.long_name)
@@ -27,3 +25,13 @@ class Delivery(models.Model):
         verbose_name = 'Lieferung'
         verbose_name_plural = 'Lieferungen'
         unique_together = (("delivery_date", "subscription_size"))
+        
+class DeliveryItem(models.Model):
+    delivery = models.ForeignKey(Delivery, verbose_name='Lieferung', on_delete=models.PROTECT)
+    name = models.CharField("Name", max_length=100, default="")
+    amount = models.CharField("Menge", max_length=100, default="")
+    comment = models.CharField("Kommentar", max_length=1000, default="", blank=True)
+
+    class Meta:
+        verbose_name = 'Lieferobjekt'
+        verbose_name_plural = 'Lieferobjekte'

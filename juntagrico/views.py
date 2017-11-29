@@ -319,8 +319,9 @@ def deliveries(request):
     """
     renderdict = get_menu_dict(request)
     deliveries = DeliveryDao.deliveries_by_subscription(request.user.member.subscription)
+    delivery_map = [(deli, (DeliveryItem.objects.all().filter(delivery=deli))) for deli in deliveries]
     renderdict.update({
-        'deliveries': deliveries,
+        'delivery_map': delivery_map,
         'menu': {'deliveries': 'active'},
     })
 

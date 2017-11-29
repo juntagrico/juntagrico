@@ -1,19 +1,31 @@
 {% load config %}
-<table id="filter-table" class="list table" style="display: table;">
-    <thead>
-    <tr>
-        <th></th>
-        <th>Datum</th>
-        <th>Abogrösse</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for delivery in deliveries %}
-        <tr data-text=" {{ delivery.text }}" >
-            <td class="details-control"></td>
-            <td>{{ delivery.weekday_shortname }}&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</td>
-            <td>{{ delivery.subscription_size.long_name }}</td>
-        </tr>
+<div class="container">
+  <div class="row">
+  	{% for delivery, deliveryitems in delivery_map %}
+<!--   	<td class="details-control"></td> -->
+<!--    <div class="col-md-1" class="details-control"></div>-->
+    <div class="col-md-2">{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</div>
+	<div class="col-md-10">{{ delivery.subscription_size.long_name }}</div>
+    <div class="col-md-12"> 
+        <table class='table table-sm'>
+            <thead>
+                <tr>
+            	    <th>Bezeichnung</th>
+            	    <th>Menge</th>
+            	    <th>Kommentar</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for deliveryitem in deliveryitems %}
+                <tr>
+                	<td class="col-md-2">{{ deliveryitem.name }}</td>
+                	<td class="col-md-2">{{ deliveryitem.amount }}</td>
+                	<td class="col-md-8">{{ deliveryitem.comment }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>    
     {% endfor %}
-    </tbody>
-</table>
+  </div>
+</div>

@@ -342,6 +342,10 @@ class DepotAdmin(admin.ModelAdmin):
     list_display = ["name", "code", "weekday", "contact"]
 
 
+class DeliveryInline(admin.TabularInline):
+    model = DeliveryItem
+    
+
 class DeliveryAdmin(admin.ModelAdmin):
 #    fieldsets = ( ('Header-Info', {'fields': ('delivery_date', 'subscription_size'), 'classes': ['wide']}),
 #                  ('Vegetables', {'fields': ( 'name', 'amount', 'comment',), 'classes': ['wide']}),
@@ -350,6 +354,7 @@ class DeliveryAdmin(admin.ModelAdmin):
     ordering = ("-delivery_date","subscription_size")
     actions = ["copy_delivery"]
     search_fields = ["delivery_date", "subscription_size"]
+    inlines = [DeliveryInline]
 #    readonly_fields = ["text"]
     save_as = True
 
