@@ -240,15 +240,17 @@ def createsubscription(request):
 
     co_member_shares = len(co_members_shares)
     if request.method == 'POST':
-        shares += int(request.POST.get('shares'))
         selectedsubscription = request.POST.get('subscription')
         subscriptionform = SubscriptionForm(request.POST)
-
-        shares += co_member_shares
-        min_num_shares = next(
+        try:
+            shares += int(request.POST.get('shares'))
+            shares += co_member_shares
+            min_num_shares = next(
             iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('shares', flat=True) or []), 1)
-        if shares < min_num_shares or not subscriptionform.is_valid():
-            shareerror = shares < min_num_shares
+            if shares < min_num_shares or not subscriptionform.is_valid():
+                shareerror = shares < min_num_shares
+        except:
+            shareerror = True        
         else:
             size = next(
                 iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__size', flat=True) or []),
@@ -317,7 +319,6 @@ def createsubscription(request):
                     return redirect('/my/home')
                 else:
                     return redirect('/my/welcome')
-
     renderdict = {
         'co_member_shares': co_member_shares,
         'existing_member_shares': existing_member_shares,
@@ -325,7 +326,7 @@ def createsubscription(request):
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered(),
         'depots': DepotDao.all_depots(),
         'selected_depot': selected_depot,
-        'selected_subscription': selectedsubscription,
+        'selected_subscription': int(selectedsubscription),
         'shareerror': shareerror,
         'co_members': co_members,
         'subscriptionform': subscriptionform
