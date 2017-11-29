@@ -1,7 +1,7 @@
-"""
-Wrapper for loading templates from "templates" directories in INSTALLED_APPS
+'''
+Wrapper for loading templates from 'templates' directories in INSTALLED_APPS
 packages.
-"""
+'''
 
 from django.template.utils import get_app_template_dirs
 

@@ -25,7 +25,7 @@
             Zusatz-Abos
             <br/>
             Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
-            > <a href="{% config "extra_sub_info" %}" target="_blank">Weitere Infos zu den Zusatzsubscriptions</a>
+            > <a href="{% config "extra_sub_info" %}" target="_blank">Weitere Infos zu den Zusatzabos</a>
         </div>
        {% endif %}
     </div>
@@ -57,20 +57,20 @@
         {% if has_extra_subscriptions %}
         <div class="col-md-4">
             Zukünftige Zusatz-Abos: <br/>
-            {% if not member.subscription.extra_subscriptions_changed %}
+            {% if not  member.subscription.extrasubscriptions_changed %}
                 {% if member.subscription.extra_subscriptions.all|length == 0 %}
                     Keine Zusatz-Abos
                 {% else %}
-                    {% for zusatzsubscription in member.subscription.extra_subscriptions.all %}
-                        <li>{{ zusatzsubscription.type.name }}</li>
+                    {% for extrasubscription in member.subscription.extra_subscriptions.all %}
+                        <li>{{ extrasubscription.type.name }}</li>
                     {% endfor %}
                 {% endif %}
             {% else %}
                 {% if member.subscription.future_extra_subscriptions.all|length == 0 %}
                     Keine Zusatz-Abos
                 {% else %}
-                    {% for zusatzsubscription in member.subscription.future_extra_subscriptions.all %}
-                        <li>{{ zusatzsubscription.type.name }}</li>
+                    {% for extrasubscription in member.subscription.future_extra_subscriptions.all %}
+                        <li>{{ extrasubscription.type.name }}</li>
                     {% endfor %}
                 {% endif %}
             {% endif %}

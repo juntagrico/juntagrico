@@ -16,7 +16,7 @@ from juntagrico.config import Config
 from juntagrico.util.ical import *
 
 def get_server():
-    return "http://" + Config.adminportal_server_url()
+    return 'http://' + Config.adminportal_server_url()
 
 
 # sends mail only to specified email-addresses if dev mode
@@ -32,12 +32,12 @@ def send_mail(subject, message, from_email, to_emails):
                     sent = True
                     okmails.append(email)
             if not sent:
-                print(("Mail not sent to: " + email + " not in whitelist"))
+                print(('Mail not sent to: ' + email + ' not in whitelist'))
 
     if len(okmails) > 0:
         for amail in okmails:
             mail.send_mail(subject, message, from_email, [amail], fail_silently=False)
-        print(("Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else "")))
+        print(('Mail sent to ' + ', '.join(okmails) + (', on whitelist' if settings.DEBUG else '')))
 
     return None
 
@@ -54,19 +54,19 @@ def send_mail_multi(email_multi_message):
                     sent = True
                     okmails.append(email)
             if not sent:
-                print(("Mail not sent to " + email + ", not in whitelist"))
+                print(('Mail not sent to ' + email + ', not in whitelist'))
 
     if len(okmails) > 0:
         email_multi_message.to = []
         email_multi_message.bcc = okmails
         email_multi_message.send()
-        print(("Mail sent to " + ", ".join(okmails) + (", on whitelist" if settings.DEBUG else "")))
+        print(('Mail sent to ' + ', '.join(okmails) + (', on whitelist' if settings.DEBUG else '')))
     return None
 
 
 def send_new_member_in_activityarea_to_operations(area, member):
     send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + member.first_name + " " + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
+              'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
               Config.info_email(), [area.coordinator.email])
 
 
@@ -105,12 +105,12 @@ def send_welcome_mail(email, password, hash):
 
     msg = EmailMultiAlternatives('Willkommen bei ' + Config.organisation_name(), text_content, Config.info_email(),
                                  [email])
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
 
 def send_share_created_mail(share):
-    """ temporal removal
+    ''' temporal removal
     plaintext = get_template('mails/share_created_mail.txt')
     htmly = get_template('mails/share_created_mail.html')
 
@@ -128,8 +128,8 @@ def send_share_created_mail(share):
     for user in users:
         emails.append(user.member.email)
     msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', text_content, Config.info_email(), emails)
-    msg.attach_alternative(html_content, "text/html")
-    send_mail_multi(msg)"""
+    msg.attach_alternative(html_content, 'text/html')
+    send_mail_multi(msg)'''
 
 def send_been_added_to_subscription(email, password, name, shares, hash):
     plaintext = get_template('mails/welcome_added_mail.txt')
@@ -152,7 +152,7 @@ def send_been_added_to_subscription(email, password, name, shares, hash):
 
     msg = EmailMultiAlternatives('Willkommen bei ' + Config.organisation_name(), text_content, Config.info_email(),
                                  [email])
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
 
@@ -176,7 +176,7 @@ def send_filtered_mail(subject, message, text_message, emails, attachments, send
     html_content = htmly.render(htmld)
 
     msg = EmailMultiAlternatives(subject, text_content, sender, emails, headers={'Reply-To': sender})
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     for attachment in attachments:
         msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
@@ -199,15 +199,15 @@ def send_mail_password_reset(email, password):
     html_content = htmly.render(d)
 
     msg = EmailMultiAlternatives(subject, text_content, Config.info_email(), [email])
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
 
 def send_job_reminder(emails, job, participants):
     plaintext = get_template('mails/job_reminder_mail.txt')
     htmly = get_template('mails/job_reminder_mail.html')
-    coordinator = job.typeactivityarea.coordinator
-    contact = coordinator.first_name + " " + coordinator.last_name + ": " + job.typeactivityarea.contact()
+    coordinator = job.type.activityarea.coordinator
+    contact = coordinator.first_name + ' ' + coordinator.last_name + ': ' + job.type.activityarea.contact()
 
     d = {
         'mail_template': Config.mail_template,
@@ -220,9 +220,9 @@ def send_job_reminder(emails, job, participants):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Job-Erinnerung", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Job-Erinnerung', text_content, Config.info_email(),
                                  emails)
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
 
@@ -239,9 +239,9 @@ def send_job_canceled(emails, job):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Job-Abgesagt", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Job-Abgesagt', text_content, Config.info_email(),
                                  emails)
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
 
@@ -260,9 +260,9 @@ def send_confirm_mail(member):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Email Adresse bestätigen", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Email Adresse bestätigen', text_content, Config.info_email(),
                                  [member.email])
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
 
@@ -280,10 +280,10 @@ def send_job_time_changed(emails, job):
     html_content = htmly.render(d)
     #    ical_content = genecrate_ical_for_job(job)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Job-Zeit geändert", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Job-Zeit geändert', text_content, Config.info_email(),
                                  emails)
-    msg.attach_alternative(html_content, "text/html")
-    #   msg.attach("einsatz.ics", ical_content, "text/calendar")
+    msg.attach_alternative(html_content, 'text/html')
+    #   msg.attach('einsatz.ics', ical_content, 'text/calendar')
     send_mail_multi(msg)
 
 
@@ -301,10 +301,10 @@ def send_job_signup(emails, job):
     html_content = htmly.render(d)
     ical_content = genecrate_ical_for_job(job)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - für Job Angemeldet", text_content,
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - für Job Angemeldet', text_content,
                                  Config.info_email(), emails)
-    msg.attach_alternative(html_content, "text/html")
-    msg.attach("einsatz.ics", ical_content, "text/calendar")
+    msg.attach_alternative(html_content, 'text/html')
+    msg.attach('einsatz.ics', ical_content, 'text/calendar')
     #   send_mail_multi(msg)
 
 
@@ -321,9 +321,23 @@ def send_depot_changed(emails, depot):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Depot geändert", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Depot geändert', text_content, Config.info_email(),
                                  emails)
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
+    send_mail_multi(msg)
+    
+
+def send_subscription_canceled(subscription):
+    plaintext = get_template('mails/subscription_canceled_mail.txt')
+
+    d = {
+        'subscription': subscription
+    }
+
+    text_content = plaintext.render(d)
+    emails = [Config.info_email(),]
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Abo gekündigt', text_content, Config.info_email(),
+                                 emails)
     send_mail_multi(msg)
 
 
@@ -342,9 +356,9 @@ def send_bill_share(bill, share, member):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Rechnung Anteilschein", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Rechnung Anteilschein', text_content, Config.info_email(),
                                  [member.email])
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
     
@@ -365,9 +379,9 @@ def send_bill_sub(bill, subscription, start, end, member):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Rechnung Abo", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Rechnung Abo', text_content, Config.info_email(),
                                  [member.email])
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)
 
     
@@ -388,7 +402,7 @@ def send_bill_extrasub(bill, extrasub, start, end, member):
     text_content = plaintext.render(d)
     html_content = htmly.render(d)
 
-    msg = EmailMultiAlternatives(Config.organisation_name() + " - Rechnung ExtraAbo", text_content, Config.info_email(),
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Rechnung ExtraAbo', text_content, Config.info_email(),
                                  [member.email])
-    msg.attach_alternative(html_content, "text/html")
+    msg.attach_alternative(html_content, 'text/html')
     send_mail_multi(msg)

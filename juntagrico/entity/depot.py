@@ -10,34 +10,34 @@ from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 
 class Depot(models.Model):
-    """
+    '''
     Location where stuff is picked up.
-    """
-    code = models.CharField("Code", max_length=100, validators=[validators.validate_slug], unique=True)
-    name = models.CharField("Depot Name", max_length=100, unique=True)
-    contact = models.ForeignKey("Member", on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField("Wochentag", choices=weekday_choices)
-    latitude = models.CharField("Latitude", max_length=100, default="")
-    longitude = models.CharField("Longitude", max_length=100, default="")
+    '''
+    code = models.CharField('Code', max_length=100, validators=[validators.validate_slug], unique=True)
+    name = models.CharField('Depot Name', max_length=100, unique=True)
+    contact = models.ForeignKey('Member', on_delete=models.PROTECT)
+    weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
+    latitude = models.CharField('Latitude', max_length=100, default='')
+    longitude = models.CharField('Longitude', max_length=100, default='')
 
-    addr_street = models.CharField("Strasse", max_length=100)
-    addr_zipcode = models.CharField("PLZ", max_length=10)
-    addr_location = models.CharField("Ort", max_length=50)
+    addr_street = models.CharField('Strasse', max_length=100)
+    addr_zipcode = models.CharField('PLZ', max_length=10)
+    addr_location = models.CharField('Ort', max_length=50)
 
-    description = models.TextField("Beschreibung", max_length=1000, default="")
+    description = models.TextField('Beschreibung', max_length=1000, default='')
 
     overview_cache = None
     subscription_cache = None
 
     def __str__(self):
-        return "%s %s" % (self.id, self.name)
+        return '%s %s' % (self.id, self.name)
 
     def active_subscriptions(self):
         return self.subscription_set.filter(active=True)
 
     @property
     def weekday_name(self):
-        day = "Unbekannt"
+        day = 'Unbekannt'
         if 8 > self.weekday > 0:
             day = weekdays[self.weekday]
         return day
@@ -70,6 +70,6 @@ class Depot(models.Model):
         self.subscription_cache = self.active_subscriptions()
 
     class Meta:
-        verbose_name = "Depot"
-        verbose_name_plural = "Depots"
+        verbose_name = 'Depot'
+        verbose_name_plural = 'Depots'
         permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)

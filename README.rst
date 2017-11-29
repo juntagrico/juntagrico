@@ -1,7 +1,7 @@
-Juntagrico
-=====
+juntagrico
+==========
 
-.. image:: https://travis-ci.org/juntagrio/juntagrico.svg?branch=master
+.. image:: https://travis-ci.org/juntagrico/juntagrico.svg?branch=master
     :target: https://travis-ci.org/juntagrico/juntagrico
    
 .. image:: https://img.shields.io/gemnasium/juntagrico/juntagrico.svg
@@ -10,30 +10,36 @@ Juntagrico
 .. image:: https://img.shields.io/codeclimate/github/juntagrico/juntagrico.svg
     :target: https://codeclimate.com/github/juntagrico/juntagrico
 
+.. image:: https://img.shields.io/pypi/v/juntagrico.svg
+    :target: https://pypi.python.org/pypi/juntagrico
+
+.. image:: https://img.shields.io/pypi/l/juntagrico.svg
+    :target: https://pypi.python.org/pypi/juntagrico
+    
+.. image:: https://img.shields.io/pypi/pyversions/juntagrico.svg
+    :target: https://pypi.python.org/pypi/juntagrico
+
+.. image:: https://img.shields.io/pypi/status/juntagrico.svg
+    :target: https://pypi.python.org/pypi/juntagrico
+
+.. image:: https://img.shields.io/github/last-commit/juntagrico/juntagrico.svg
+    :target: https://github.com/juntagrico/juntagrico
+    
+.. image:: https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico.svg
+    :target: https://github.com/juntagrico/juntagrico
+
 **the easy solution for cooperative vegetable growers**
 
-Juntagrico is a simple Django app to conduct Web-based juntagrico. For each
-question, visitors can choose between a fixed number of answers.
+juntagrico is a management platform for community gardens and vegetable cooperatives.
 
-Detailed documentation is in the "docs" directory.
+It provides the basic functionality like
 
-Quick start
------------
+- subscription management
+- extra subscription management
+- management of shares
+- delivery management 
+- management of members
+- automatic billing
 
-1. Add "juntagrico" to your INSTALLED_APPS setting like this::
+Detailed documentation how to install and configure juntagrico can be found here http://juntagrico.readthedocs.io
 
-    INSTALLED_APPS = [
-        ...
-        'juntagrico',
-    ]
-
-2. Include the juntagrico URLconf in your project urls.py like this::
-
-    url(r'^my/', include('juntagrico.urls.urls')),
-
-3. Run `python manage.py migrate` to create the polls models.
-
-4. Start the development server and visit http://127.0.0.1:8000/admin/
-   to create a job (you'll need the Admin app enabled).
-
-5. Visit http://127.0.0.1:8000/my/home to visit juntagrico.

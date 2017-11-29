@@ -17,27 +17,28 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='juntagrico',
-    version='0.1.releasecandidate1.111',
+    version='1.0.1pv3',
     packages=find_packages(),
     include_package_data=True,
-    license='BSD License',  # example license
+    license='GNU Lesser General Public License v3 (LGPLv3)',
     description='juntagrico',
     long_description=README,
-    url='https://www.example.com/',
+    url='https://www.juntagrico.org',
     author='Your Name',
-    author_email='yourname@example.com',
+    author_email='python@juntagrico.org',
     classifiers=[
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.11',  # replace "X.Y" as appropriate
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: LPGLv3',  # example license
+        'Intended Audience :: Other Audience',
+        'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         # Replace these appropriately if you are stuck on Python 2.
         'Programming Language :: Python :: 3.6',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Internet :: WWW/HTTP :: Site Management',
     ],
     install_requires=get_requirements(os.path.join(ROOT_DIR, 'requirements.txt')),
 )

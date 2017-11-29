@@ -1,6 +1,6 @@
-"""
+'''
     Copys the user defined attributes of a model into another model. It will only copy the fields with are present in both
-"""
+'''
 
 
 def attribute_copy(source, target):

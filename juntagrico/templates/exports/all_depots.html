@@ -121,7 +121,7 @@
         <tr>
             <td style="width:180px;" class="name"></td>
             <td style="width:180px;" class="name"></td>
-            <th colspan="2" class="top-border left-border right-border">ABO</th>
+            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">ABO</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}
@@ -181,7 +181,7 @@
         <tr>
             <td style="width:180px;" class="name"></td>
             <td style="width:180px;" class="name"></td>
-            <th colspan="2" class="top-border left-border right-border">ABO</th>
+            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">ABO</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}
@@ -230,7 +230,7 @@
         <tr>
             <td></td>
             <td></td>
-            <th colspan="2" class="top-border left-border right-border">ABO</th>
+            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">ABO</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}

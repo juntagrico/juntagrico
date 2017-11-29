@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load config %}
+{% block page_title %}
+    <h3>Grössen Änderungsliste</h3>
+{% endblock %}
+
+{% block content %}
+    <style>
+        body > .container {
+            width: 95%;
+        }
+    </style>
+    <div id="waitinglist">
+        <table id="filter-table" class="list table" style="display: table;">
+            <thead>
+            <tr>
+                <th>Abo</th>
+                <th>Kontakt</th>
+                <th>Email</th>
+                <th>Aktuelle Grösse</th>
+                <th>Neue Grösse</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for subscription in management_list %}
+                <tr>
+                    <td><a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">{{ subscription.overview }}</a></td>
+                    <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
+                    <td>
+                        <form id="subscription{{ subscription.id }}" method="post" action="/my/mails"> 
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients" value="{{ subscription.primary_member.email }}"/>
+                            <input type="hidden" name="recipients_count" value="1"/>
+                            <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();">{{ subscription.primary_member.email }}</a>
+                        </form>
+                    </td>
+                    <td>{{ subscription.size_name }}</td>
+                    <td>{{ subscription.future_size_name }}</td>
+                    <td><a href="/my/type/change/{{ subscription.id }}/" class="btn btn-success">ändern</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initWaitinglist.js"></script>
+{% endblock %}

@@ -35,9 +35,9 @@ class Filter(object):
 
     @classmethod
     def execute(cls, names, op):
-        if op == "OR":
+        if op == 'OR':
             aggregate = any
-        elif op == "AND":
+        elif op == 'AND':
             aggregate = all
 
         d = dict(cls.get_all())
@@ -61,26 +61,26 @@ class FilterGen(Filter):
             yield self.name(p), partial(self.q, p)
 
 
-FilterGen(lambda depot: "Depot {0}".format(depot.name),
+FilterGen(lambda depot: 'Depot {0}'.format(depot.name),
           lambda depot, member: member.subscription.depot == depot,
           Depot.objects.all)
 
-Filter("Alle mit Abo", lambda member: member.subscription)
-Filter("Alle ohne Abo", lambda member: not member.subscription)
+Filter('Alle mit Abo', lambda member: member.subscription)
+Filter('Alle ohne Abo', lambda member: not member.subscription)
 
-Filter("Anteilscheinbesitzer",
+Filter('Anteilscheinbesitzer',
        lambda member: member.user.share_set.exists())
-Filter("Nicht Anteilscheinbesitzer",
+Filter('Nicht Anteilscheinbesitzer',
        lambda member: not member.user.share_set.exists())
 
-Filter("kleines Abo", lambda member: member.subscription.small_subscriptions)
-Filter("grosses Abo", lambda member: member.subscription.big_subscriptions())
-Filter("Haussubscription", lambda member: member.subscription.house_subscriptions())
+Filter('kleines Abo', lambda member: member.subscription.small_subscriptions)
+Filter('grosses Abo', lambda member: member.subscription.big_subscriptions())
+Filter('Haussubscription', lambda member: member.subscription.house_subscriptions())
 
-FilterGen(lambda za: "Zusatzsubscription {0}".format(za.name),
+FilterGen(lambda za: 'Zusatzsubscription {0}'.format(za.name),
           lambda za, member: za.subscription_set.filter(id=member.subscription.id),
           ExtraSubscriptionType.objects.all)
 
-FilterGen(lambda activityarea: "Taetigkeitsbereich {0}".format(activityarea.name),
+FilterGen(lambda activityarea: 'Taetigkeitsbereich {0}'.format(activityarea.name),
           lambda activityarea, member: activityarea.users.filter(id=member.user.id),
           ActivityArea.objects.all)

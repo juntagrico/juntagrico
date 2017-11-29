@@ -7,4 +7,4 @@ class ExtraSubscriptionCategoryDao:
 
     @staticmethod
     def all_categories_ordered():
-        return juntagrico.models.ExtraSubscriptionCategory.objects.all().order_by("sort_order")
+        return juntagrico.models.ExtraSubscriptionCategory.objects.all().order_by('sort_order')

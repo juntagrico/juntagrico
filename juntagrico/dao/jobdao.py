@@ -29,7 +29,7 @@ class JobDao:
 
     @staticmethod
     def jobs_ordered_by_time():
-        return Job.objects.all().order_by("time")
+        return Job.objects.all().order_by('time')
 
     @staticmethod
     def jobs_to_remind(now, end):
@@ -37,15 +37,15 @@ class JobDao:
 
     @staticmethod
     def get_current_jobs():
-        return Job.objects.filter(time__gte=timezone.now()).order_by("time")
+        return Job.objects.filter(time__gte=timezone.now()).order_by('time')
 
     @staticmethod
     def get_current_one_time_jobs():
-        return OneTimeJob.objects.filter(time__gte=timezone.now()).order_by("time")
+        return OneTimeJob.objects.filter(time__gte=timezone.now()).order_by('time')
 
     @staticmethod
     def get_current_recuring_jobs():
-        return RecuringJob.objects.filter(time__gte=timezone.now()).order_by("time")
+        return RecuringJob.objects.filter(time__gte=timezone.now()).order_by('time')
 
     @staticmethod
     def get_pinned_jobs():
@@ -53,7 +53,7 @@ class JobDao:
 
     @staticmethod
     def get_promoted_jobs():
-        return RecuringJob.objects.filter(type__name__in=Config.promoted_job_types(), time__gte=timezone.now()).order_by("time")[:Config.promomted_jobs_amount()]
+        return RecuringJob.objects.filter(type__name__in=Config.promoted_job_types(), time__gte=timezone.now()).order_by('time')[:Config.promomted_jobs_amount()]
 
 
 

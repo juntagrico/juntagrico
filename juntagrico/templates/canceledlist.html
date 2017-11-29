@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load config %}
+{% block page_title %}
+    <h3>Kündigungsliste</h3>
+{% endblock %}
+
+{% block content %}
+    <style>
+        body > .container {
+            width: 95%;
+        }
+    </style>
+    <div id="waitinglist">
+        <table id="filter-table" class="list table" style="display: table;">
+            <thead>
+            <tr>
+                <th>Abo</th>
+                <th>End Datum</th>
+                <th>Kontakt</th>
+                <th>Email</th>
+                <th>Bezahlte Anteilsscheine</th>
+                <th></th>
+                <th>Notizen</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for subscription in management_list %}
+                <tr>
+                    <td><a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">{{ subscription.overview }}</a></td>
+                    <td>{{ subscription.end_date |date:"Y-m-d" }}</td>
+                    <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
+                    <td>
+                        <form id="subscription{{ subscription.id }}" method="post" action="/my/mails"> 
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients" value="{{ subscription.primary_member.email }}"/>
+                            <input type="hidden" name="recipients_count" value="1"/>
+                            <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();">{{ subscription.primary_member.email }}</a>
+                        </form>
+                    </td>
+                    <td>{{ subscription.paid_shares }}</td>
+                    <td><a href="/my/subscription/deactivate/{{ subscription.id }}/" class="btn btn-success">deaktivieren</a></td>
+                    <td>{{ subscription.notes }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initWaitinglist.js"></script>
+{% endblock %}

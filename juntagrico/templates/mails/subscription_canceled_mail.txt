@@ -1,0 +1,16 @@
+{% extends "mails/email.txt" %}
+{% block content %}
+Hallo
+
+Soeben hat {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
+email : {{ subscription.primary_member.email }}
+
+sein Abo gekündet.
+
+Er möchte sein abo auf den {{ subscription.end_date|date:"d.m.Y" }} künden.
+Falls dies ausserterminlich ist laeite bitte die nötigen Schritte ein.
+
+Liebe Grüsse und einen schönen Tag noch
+Dein Server
+
+{% endblock %}

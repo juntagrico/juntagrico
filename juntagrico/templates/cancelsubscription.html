@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load config %}
+{% block page_title %}
+        <h3>Künde dein Abo</h3>
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12">
+        <br/>
+        Hier kannst du dein Abo künden. Du kannst dein Abo regulär auf den {{ end_date |date:"d.m.Y" }} künden. Falls du auf ein früheres Datum künden willst musst du wie folgt vorgehen:
+        <ul>
+            <li>Du kündest hier im System zuerst regulär dein Abo.</li>
+            <li>Anschliessend schreibst du eine Email an {% config "info_email" %} dass du gerne auf ein früheres Datum künden möchtest.</li>
+        </ul>
+        <br/><br/>
+
+        <form action="" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden" />
+            <div class="col-md-offset-4 form-actions">
+                <button type="submit" class="btn btn-success">Abo künden</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+

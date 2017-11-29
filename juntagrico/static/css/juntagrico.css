@@ -171,6 +171,14 @@ table.future td {
     width: 100%;
     font-size: 10px;
 }
+#waitinglist {
+    width: 100%;
+}
+
+#waitinglist table {
+    width: 100%;
+    font-size: 14px;
+}
 
 .main-menu {
     font-size: 18px;
@@ -192,6 +200,10 @@ table.future td {
 .admin-menu {
     font-family: "Source Sans Pro Light";
     font-size: 14px;
+}
+
+.subadmin-menu {
+    padding-left: 7px;
 }
 
 .admin-menu li a {

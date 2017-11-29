@@ -5,11 +5,8 @@
 {% endblock %}
 
 {% block content %}
-    {% if changed %}
-        <div class="alert alert-success">Abos wurden geändert</div>
-    {% endif %}
 
-    <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte {% config "organisation_name" %} die folgenden Abos und Zusatzsubscriptions.</div>
+    <div>Wenn jetzt alle gewünschten Änderungen der Genossenschafter in Kraft treten würden, dann hätte {% config "organisation_name" %} die folgenden Abos und Zusatzabos.</div>
 
     <table class="future">
         <tr>
@@ -32,12 +29,6 @@
         </tr>
         {% endfor %}
     </table>
-    <br/><br/>
-    ACHTUNG! Dies darf nur am 1.1. und am 1.7. des Jahres gedrückt werden!
-    <a href="/my/change/extras" class="btn btn-success" >Switch to future extra subscriptions</a><br/><br/>
-    {% if subscription_change_enabled %}
-      <a href="/my/change/subscriptions" class="btn btn-success">Switch to future subscriptions</a>
-    {% endif %}
 {% endblock %}
 
 {% block scripts %}

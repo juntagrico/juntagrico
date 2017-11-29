@@ -10,9 +10,9 @@
     <link href="/static/external/mid/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="/static/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="/static/external/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="{% config "style_sheet" %}" rel="stylesheet">
-    <link href="/static/css/personal.css" rel="stylesheet">
+    <link href="/static/css/juntagrico.css" rel="stylesheet">
     <link href="/static/css/slider.css" rel="stylesheet">
+    <link href="{% config "style_sheet" %}" rel="stylesheet">
 
 </head>
 <body>
@@ -85,17 +85,82 @@
                 {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group%}
                 <hr>
                 <h5>Administration</h5>
-                <ul class="nav nav-pills nav-stacked admin-menu">
-                    {% for depot in depot_admin %}
-                        <li class="inline">
-                            <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
-                        </li>
-                    {% endfor %}
-                    {% for area in area_admin %}
+                <ul class="nav nav-pills nav-stacked admin-menu">                
+                    {% if operation_group %}
                         <li>
-                            <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
+                            <a href="/admin">Daten Administration</a>
                         </li>
-                    {% endfor %}
+                    {% endif %}                    
+                    {% if operation_group %}
+                        <li>
+                            <a data-toggle="collapse" href="#subman">Abo Management <span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <div class="collapse" id="subman">
+                            <ul class="nav nav-pills nav-stacked admin-menu subadmin-menu">
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/waitinglist">Warteliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/typechangedlist">Grössen Änderungen</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/canceledlist">Kündigungsliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group and has_extra_subscriptions %}
+                                <li>
+                                    <a href="/my/extra/waitinglist">Zusatzabos Warteliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group and has_extra_subscriptions %}
+                                <li>
+                                    <a href="/my/extra/canceledlist">Zusatzabos Kündigungsliste</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/future">Zukunftsblick</a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                            </div>
+                        </li>
+                    {% endif %}
+                                        
+                    {% if can_filter_members or can_filter_subscriptions or  depot_admin|length > 0 or area_admin|length > 0 %}
+                        <li>
+                            <a data-toggle="collapse" href="#filterman">Filter <span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <div class="collapse" id="filterman">
+                            <ul class="nav nav-pills nav-stacked admin-menu subadmin-menu">
+                            {% if can_filter_members or can_filter_subscriptions %}
+                                <li class="inline">
+                                    Filtern 
+                                    {% if can_filter_members %}
+                                    <a href="/my/filters">{% config "members_string" %}</a> | 
+                                    {% endif %}
+                                    {% if can_filter_subscriptions %}
+                                    <a href="/my/subscriptions">Abos</a>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                            {% for depot in depot_admin %}
+                                <li class="inline">
+                                    <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
+                                </li>
+                            {% endfor %}
+                            {% for area in area_admin %}
+                                <li>
+                                    <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                            </div>
+                        </li>
+                    {% endif %}
                     {% if can_send_mails %}
                         <li>
                             <a href="/my/mails">Mails verschicken</a>
@@ -105,34 +170,13 @@
                         <li>
                             <a href="{{depot_list_url}}">Depotlisten</a>
                         </li>
+                    {% endif %}
+                    
+                    {% if operation_group %}
                         <li>
                             <a href="/my/export">Exporte</a>
                         </li>
                     {% endif %}
-                    {% if can_filter_members or can_filter_subscriptions %}
-                        <li class="inline">
-                            Filtern 
-                            {% if can_filter_members %}
-                            <a href="/my/filters">{% config "members_string" %}</a> | 
-                            {% endif %}
-                            {% if can_filter_subscriptions %}
-                            <a href="/my/subscriptions">Abos</a>
-                            {% endif %}
-                        </li>
-                    {% endif %}
-                    {% if operation_group %}
-                        <li>
-                            <a href="/my/future">Zukunftsblick</a>
-                        </li>
-                    {% endif %}
-                    {% if operation_group %}
-                        <li>
-                            <a href="/my/waitinglist">Warteliste</a>
-                        </li>
-                    {% endif %}
-                        <li>
-                            <a href="/admin">Daten Administration</a>
-                        </li>
                     
                     {% include "personal_menu.html" %}
                 </ul>
@@ -143,16 +187,16 @@
                     {% block bohnen %}
                         <h5>Abo {% config "assignments_string" %}-Konto</h5>
                         {% for i in assignmentsrange %}
-                            {% if i < userassignemnts_core %}
+                            {% if i < userassignemnts_core_bound %}
                                 <img alt="Kernbereich" title="Kernbereich" class="jobstatus"
                                      src="{% images "single_core" %}"/>
-                            {% elif i < userassignments_total %}
+                            {% elif i < userassignments_bound %}
                                 <img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich" class="jobstatus"
                                      src="{% images "single_full" %}"/>
-                            {% elif i < partner_assignments_core %}
+                            {% elif i < partner_assignments_core_bound %}
                                 <img alt="Kernbereich Partner" title="Kernbereich Partner" class="jobstatus"
                                      src="{% images "single_core" %}" style="opacity:0.5;"/>
-                            {% elif i < partner_assignments_total %}
+                            {% elif i < partner_assignments_bound %}
                                 <img alt="anderer Tätigkeitsbereich Partner" title="anderer Tätigkeitsbereich Partner" class="jobstatus"
                                      src="{% images "single_full" %}" style="opacity:0.5;"/>
                             {% else %}

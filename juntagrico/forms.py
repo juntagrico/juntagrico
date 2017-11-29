@@ -43,6 +43,7 @@ class SubscriptionForm(ModelForm):
         }
 
 
+
 class RegisterMemberForm(ModelForm):
     class Meta:
         model = Member

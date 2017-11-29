@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load config %}
+{% block page_title %}
+    <h3>Extra Abo Kündigungsliste</h3>
+{% endblock %}
+
+{% block content %}
+    <style>
+        body > .container {
+            width: 95%;
+        }
+    </style>
+    <div id="waitinglist">
+        <table id="filter-table" class="list table" style="display: table;">
+            <thead>
+            <tr>
+                <th>Typ</th>
+                <th>Kontakt</th>
+                <th>Email</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for extrasubscription in management_list %}
+                <tr>
+                    <td>{{ extrasubscription.type.name }}</td>
+                    <td>{{ extrasubscription.main_subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}</td>
+                    <td>
+                        <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="/my/mails"> 
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients" value="{{ extrasubscription.main_subscription.primary_member.email }}"/>
+                            <input type="hidden" name="recipients_count" value="1"/>
+                            <a href="#" onclick="$('#extrasubscription{{ extrasubscription.id }}').submit();">{{ extrasubscription.main_subscription.primary_member.email }}</a>
+                        </form>
+                    </td>
+                    <td><a href="/my/extra/deactivate/{{ extrasubscription.id }}/" class="btn btn-success">deaktivieren</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initWaitinglist.js"></script>
+{% endblock %}
