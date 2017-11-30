@@ -1,12 +1,16 @@
 {% load config %}
 <div class="container">
   <div class="row">
-  	{% for delivery, deliveryitems in delivery_map %}
-<!--   	<td class="details-control"></td> -->
-<!--    <div class="col-md-1" class="details-control"></div>-->
-    <div class="col-md-2">{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</div>
-	<div class="col-md-10">{{ delivery.subscription_size.long_name }}</div>
-    <div class="col-md-12"> 
+  	{% for delivery in deliveries %}
+    <div class="col-md-2">
+    <a data-toggle="collapse" href="#{{ delivery.id}}">
+    	<span class="glyphicon glyphicon-chevron-right"> </span>{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</div>
+	</a>
+	<div class="col-md-10">
+	<a data-toggle="collapse" href="#{{ delivery.id}}">
+		{{ delivery.subscription_size.long_name }} </div>
+    </a>
+    <div class="col-md-12 collapse {% if forloop.first %} in {% endif%}" id="{{ delivery.id}}">
         <table class='table table-sm'>
             <thead>
                 <tr>
@@ -16,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for deliveryitem in deliveryitems %}
+            {% for deliveryitem in delivery.items.all %}
                 <tr>
                 	<td class="col-md-2">{{ deliveryitem.name }}</td>
                 	<td class="col-md-2">{{ deliveryitem.amount }}</td>
