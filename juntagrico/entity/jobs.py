@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
 from juntagrico.dao.assignmentdao import AssignmentDao

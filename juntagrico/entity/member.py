@@ -43,7 +43,7 @@ class Member(models.Model):
         '''
         Callback to create corresponding member when new user is created.
         '''
-        if created:
+        if created and instance.user is None:
             username = make_username(instance.first_name, instance.last_name, instance.email)
             user = User(username=username)
             user.save()
