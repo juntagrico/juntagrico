@@ -1,10 +1,10 @@
 {% load config %}
 <div class="container">
   {% for delivery in deliveries %}
-  <div class="row">
+  <div class="row delivery-row">
     <div class="col-md-2">
 	    <a data-toggle="collapse" href="#{{ delivery.id}}">
-	    	<span class="glyphicon glyphicon-chevron-{% if forloop.first %}down{% else %}right{% endif %}"> </span>{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}
+	    	<span class="glyphicon glyphicon-chevron-{% if forloop.first %}down{% else %}right{% endif %}"> </span>&nbsp;{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}
 		</a>
 	</div>
 	<div class="col-md-10">
@@ -14,20 +14,20 @@
 	</div>
    
     <div class="col-md-12 collapse {% if forloop.first %} in {% endif%}" id="{{ delivery.id}}">
-        <table class='table table-sm' style="width: auto;">
+        <table class='table table-sm delivery-table'>
             <thead>
                 <tr>
-            	    <th>Bezeichnung</th>
-            	    <th>Menge</th>
-            	    <th>Kommentar</th>
+            	    <th class="col-md-2">Bezeichnung</th>
+            	    <th class="col-md-2">Menge</th>
+            	    <th class="col-md-8">Kommentar</th>
                 </tr>
             </thead>
             <tbody>
             {% for deliveryitem in delivery.items.all %}
                 <tr>
-                	<td class="col-md-2">{{ deliveryitem.name }}</td>
-                	<td class="col-md-2">{{ deliveryitem.amount }}</td>
-                	<td class="col-md-8">{{ deliveryitem.comment }}</td>
+                	<td>{{ deliveryitem.name }}</td>
+                	<td>{{ deliveryitem.amount }}</td>
+                	<td>{{ deliveryitem.comment }}</td>
                 </tr>
             {% endfor %}
             </tbody>
