@@ -13,7 +13,7 @@ class Member(models.Model):
 
     # user class is only used for logins, permissions, and other builtin django stuff
     # all user information should be stored in the Member model
-    user = models.OneToOneField(User, related_name='member', null=True, blank=True)
+    user = models.OneToOneField(User, related_name='member', null=True, blank=True, on_delete=models.CASCADE)
 
     first_name = models.CharField('Vorname', max_length=30)
     last_name = models.CharField('Nachname', max_length=30)

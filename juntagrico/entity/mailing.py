@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+from django.utils.translation import gettext as _
+
 from django.db import models
 
 class MailTemplate(models.Model):
@@ -14,6 +16,6 @@ class MailTemplate(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'MailTemplate'
-        verbose_name_plural = 'MailTemplates'
+        verbose_name = _('MailTemplate')
+        verbose_name_plural = _('MailTemplates')
         permissions = (('can_load_templates', 'Benutzer kann Templates laden'),)
