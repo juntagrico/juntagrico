@@ -1,7 +1,7 @@
 {% load config %}
 <div class="container">
+  {% for delivery in deliveries %}
   <div class="row">
-  	{% for delivery in deliveries %}
     <div class="col-md-2">
 	    <a data-toggle="collapse" href="#{{ delivery.id}}">
 	    	<span class="glyphicon glyphicon-chevron-{% if forloop.first %}down{% else %}right{% endif %}"> </span>{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}
@@ -33,6 +33,6 @@
             </tbody>
         </table>
     </div>    
-    {% endfor %}
   </div>
+  {% endfor %}
 </div>
