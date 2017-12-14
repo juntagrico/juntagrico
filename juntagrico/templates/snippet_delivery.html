@@ -3,13 +3,16 @@
   <div class="row">
   	{% for delivery in deliveries %}
     <div class="col-md-2">
-    <a data-toggle="collapse" href="#{{ delivery.id}}">
-    	<span class="glyphicon glyphicon-chevron-right"> </span>{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}</div>
-	</a>
+	    <a data-toggle="collapse" href="#{{ delivery.id}}">
+	    	<span class="glyphicon glyphicon-chevron-{% if forloop.first %}down{% else %}right{% endif %}"> </span>{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}
+		</a>
+	</div>
 	<div class="col-md-10">
-	<a data-toggle="collapse" href="#{{ delivery.id}}">
-		{{ delivery.subscription_size.long_name }} </div>
-    </a>
+		<a data-toggle="collapse" href="#{{ delivery.id}}">
+			{{ delivery.subscription_size.long_name }}
+		</a>
+	</div>
+   
     <div class="col-md-12 collapse {% if forloop.first %} in {% endif%}" id="{{ delivery.id}}">
         <table class='table table-sm' style="width: auto;">
             <thead>
