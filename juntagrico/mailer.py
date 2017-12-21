@@ -65,9 +65,13 @@ def send_mail_multi(email_multi_message):
 
 
 def send_new_member_in_activityarea_to_operations(area, member):
+    if area.email is not None:
+        emails = [area.email]
+    else:
+        emails = [area.coordinator.email]
     send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
               'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
-              Config.info_email(), [area.coordinator.email])
+              Config.info_email(), emails)
 
 
 def send_contact_form(subject, message, member, copy_to_member):

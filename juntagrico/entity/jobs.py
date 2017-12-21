@@ -27,6 +27,8 @@ class ActivityArea(models.Model):
     def contact(self):
         if self.show_coordinator_phonenumber is True:
             return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
+        elif self.email is not None:
+            return self.email
         else:
             return self.coordinator.email
 
