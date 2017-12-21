@@ -104,7 +104,26 @@ class Config:
     def mail_template():
         if hasattr(settings, 'MAIL_TEMPLATE'):
             return settings.MAIL_TEMPLATE
-        return 'mails/email.html'
+        return 'mails/email.html'    
+
+    @staticmethod
+    def emails(key):
+        if hasattr(settings, 'EMAILS'):
+            return settings.EMAILS[key]
+        return {'welcome': 'mails/welcome_mail.txt',
+            'co_welcome': 'mails/welcome_added_mail.txt',
+            'password': 'mails/password_reset_mail.txt',
+            'j_reminder': 'mails/job_reminder_mail.txt',
+            'j_canceled': 'mails/job_canceled_mail.txt',
+            'confirm': 'mails/confirm.txt',
+            'j_changed': 'mails/job_time_changed_mail.txt',
+            'j_signup': 'mails/job_signup_mail.txt',
+            'd_changed': 'mails/depot_changed_mail.txt',
+            's_canceled': 'mails/subscription_canceled_mail.txt',
+            'b_share': 'mails/bill_share.txt',
+            'b_sub': 'mails/bill_sub.txt',
+            'b_esub': 'mails/bill_extrasub.txt'
+        }[key]
 
     @staticmethod
     def style_sheet():

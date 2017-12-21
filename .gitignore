@@ -10,3 +10,4 @@ ssl/*
 my_settings_local.py
 /.project
 *.db
+dpl.pdf

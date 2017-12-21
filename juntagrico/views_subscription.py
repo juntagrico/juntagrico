@@ -242,15 +242,16 @@ def createsubscription(request):
     if request.method == 'POST':
         selectedsubscription = request.POST.get('subscription')
         subscriptionform = SubscriptionForm(request.POST)
+        min_num_shares = next(
+            iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('shares', flat=True) or []), 1)
         try:
             shares += int(request.POST.get('shares'))
             shares += co_member_shares
-            min_num_shares = next(
-            iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('shares', flat=True) or []), 1)
-            if shares < min_num_shares or not subscriptionform.is_valid():
-                shareerror = shares < min_num_shares
         except:
-            shareerror = True        
+            shareerror = True    
+            
+        if shareerror or shares < min_num_shares or not subscriptionform.is_valid():
+            shareerror = shares < min_num_shares            
         else:
             size = next(
                 iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__size', flat=True) or []),
