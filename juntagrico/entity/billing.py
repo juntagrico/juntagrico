@@ -56,7 +56,7 @@ class ExtraSubBillingPeriod(models.Model):
     '''
     type = models.ForeignKey('ExtraSubscriptionType', related_name='periods', null=False, blank=False,
                                  on_delete=models.PROTECT)
-    price = models.PositiveIntegerField('Preis')
+    price = models.DecimalField('Preis', max_digits=10, decimal_places=2)
     start_day = models.PositiveIntegerField('Start Tag')
     start_month = models.PositiveIntegerField('Start Monat', choices=month_choices)
     end_day = models.PositiveIntegerField('End Tag')
