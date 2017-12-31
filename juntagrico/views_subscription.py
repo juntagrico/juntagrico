@@ -189,6 +189,9 @@ def welcome(request):
     '''
     welcome
     '''
+    if request.META.get('HTTP_REFERER')is  None:
+        return redirect('http://'+Config.adminportal_server_url())
+    
     renderdict= {
         'no_subscription': request.session['main_member'].subscription is None
     }

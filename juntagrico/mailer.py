@@ -189,7 +189,7 @@ def send_mail_password_reset(email, password):
         'serverurl': get_server()
     }
 
-    ontent = plaintext.render(d)
+    content = plaintext.render(d)
 
     msg = EmailMultiAlternatives(subject, content, Config.info_email(), [email])
     send_mail_multi(msg)
