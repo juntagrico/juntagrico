@@ -361,15 +361,11 @@ class DeliveryInline(admin.TabularInline):
     
 
 class DeliveryAdmin(admin.ModelAdmin):
-#    fieldsets = ( ('Header-Info', {'fields': ('delivery_date', 'subscription_size'), 'classes': ['wide']}),
-#                  ('Vegetables', {'fields': ( 'name', 'amount', 'comment',), 'classes': ['wide']}),
-#                )
     list_display = ("__str__", "delivery_date", "subscription_size")
     ordering = ("-delivery_date","subscription_size")
     actions = ["copy_delivery"]
     search_fields = ["delivery_date", "subscription_size"]
     inlines = [DeliveryInline]
-#    readonly_fields = ["text"]
     save_as = True
 
 

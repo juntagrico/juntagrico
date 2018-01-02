@@ -27,7 +27,7 @@ class Delivery(models.Model):
         unique_together = (("delivery_date", "subscription_size"))
 
 class DeliveryItem(models.Model):
-    delivery = models.ForeignKey(Delivery, verbose_name='Lieferung',related_name='items', on_delete=models.CASCADE)
+    delivery = models.ForeignKey(Delivery, verbose_name='Lieferung', related_name='items', on_delete=models.CASCADE)
     name = models.CharField("Name", max_length=100, default="")
     amount = models.CharField("Menge", max_length=100, default="")
     comment = models.CharField("Kommentar", max_length=1000, default="", blank=True)
