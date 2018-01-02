@@ -520,52 +520,52 @@ You can use the following settings to configure juntagrico
 
 For your convenience all settings with default values to copy into your settings.py and to adapt them
 
-.. code-block:: python
+  .. code-block:: python
 
-MEMBER_STRING = 'Mitglied'
-MEMBERS_STRING = 'Mitglieder'
-ASSIGNMENT_STRING = 'Mitglied'
-ASSIGNMENTS_STRING = 'Arbeitseinsätze'
-ORGANISATION_NAME = 'Juntagrico'
-ORGANISATION_LONG_NAME = 'Juntagrico the best thing in the world'
-ORGANISATION_ADDRESS = {'name':'Juntagrico',
+    MEMBER_STRING = 'Mitglied'
+    MEMBERS_STRING = 'Mitglieder'
+    ASSIGNMENT_STRING = 'Arbeitseinsatz'
+    ASSIGNMENTS_STRING = 'Arbeitseinsätze'
+    ORGANISATION_NAME = 'Juntagrico'
+    ORGANISATION_LONG_NAME = 'Juntagrico the best thing in the world'
+    ORGANISATION_ADDRESS = {'name':'Juntagrico',
                         'street' : 'Fakestreet',
                         'number' : '123',
                         'zip' : '12456',
                         'city' : 'Springfield',
                         'extra' : ''}
-ORGANISATION_BANK_CONNECTION = {'PC' : '01-123-5', 
+    ORGANISATION_BANK_CONNECTION = {'PC' : '01-123-5', 
                                 'IBAN' : 'CH 00 12345 67890 12345 67890 10', 
                                 'BIC' : 'BIC12345XX', 
                                 'NAME' : 'Juntagrico Bank', 
                                 'ESR' : '01-123-45'}
-INFO_EMAIL = 'info@juntagrico.juntagrico'
-SERVER_URL = 'www.juntagrico.juntagrico'
-ADMINPORTAL_NAME = 'my.juntagrico'
-ADMINPORTAL_SERVER_URL = 'my.juntagrico.juntagrico'
-BUSINESS_REGULATIONS = '/static/docs/business_regulations.pdf'
-BYLAWS = '/static/docs/bylaws.pdf'
-MAIL_TEMPLATE = 'mails/email.html'
-STYLE_SHEET = '/static/css/personal.css'
-FAVICON = '/static/img/favicon.ico'
-BOOTSTRAP = '/static/external/bootstrap-3.3.1/css/bootstrap.min.css'
-FAQ_DOC = '/static/doc/fac.pdf'
-EXTRA_SUB_INFO = '/static/doc/extra_sub_info.pdf'
-ACTIVITY_AREA_INFO = '/static/doc/activity_area_info.pdf'
-SHARE_PRICE = '250'
-CURRENCY = 'CHF'
-ASSIGNMENT_UNIT = 'ENTITY'
-PROMOTED_JOB_TYPES = []
-PROMOTED_JOBS_AMOUNT = 2
-DEPOT_LIST_COVER_SHEETS = 'x'
-DEPOT_LIST_OVERVIEWS = 'x'
-DEPOT_LIST_GENERATION_DAYS = [1,2,3,4,5,6,7]	
-BILLING = False
-BUSINESS_YEAR_START = {'day':1, 'month':1}
-BUSINESS_YEAR_CANCELATION_MONTH = 12
-DEMO_USER = ''
-DEMO_PWD = ''
-IMAGES[key] = {'status_100': '/static/img/status_100.png', 
+    INFO_EMAIL = 'info@juntagrico.juntagrico'
+    SERVER_URL = 'www.juntagrico.juntagrico'
+    ADMINPORTAL_NAME = 'my.juntagrico'
+    ADMINPORTAL_SERVER_URL = 'my.juntagrico.juntagrico'
+    BUSINESS_REGULATIONS = '/static/docs/business_regulations.pdf'
+    BYLAWS = '/static/docs/bylaws.pdf'
+    MAIL_TEMPLATE = 'mails/email.html'
+    STYLE_SHEET = '/static/css/personal.css'
+    FAVICON = '/static/img/favicon.ico'
+    BOOTSTRAP = '/static/external/bootstrap-3.3.1/css/bootstrap.min.css'
+    FAQ_DOC = '/static/doc/fac.pdf'
+    EXTRA_SUB_INFO = '/static/doc/extra_sub_info.pdf'
+    ACTIVITY_AREA_INFO = '/static/doc/activity_area_info.pdf'
+    SHARE_PRICE = '250'
+    CURRENCY = 'CHF'
+    ASSIGNMENT_UNIT = 'ENTITY'
+    PROMOTED_JOB_TYPES = []
+    PROMOTED_JOBS_AMOUNT = 2
+    DEPOT_LIST_COVER_SHEETS = 'x'
+    DEPOT_LIST_OVERVIEWS = 'x'
+    DEPOT_LIST_GENERATION_DAYS = [1,2,3,4,5,6,7]	
+    BILLING = False
+    BUSINESS_YEAR_START = {'day':1, 'month':1}
+    BUSINESS_YEAR_CANCELATION_MONTH = 12
+    DEMO_USER = ''
+    DEMO_PWD = ''
+    IMAGES[key] = {'status_100': '/static/img/status_100.png', 
                 'status_75': '/static/img/status_75.png', 
                 'status_50': '/static/img/status_50.png', 
                 'status_25': '/static/img/status_25.png', 
@@ -574,4 +574,4 @@ IMAGES[key] = {'status_100': '/static/img/status_100.png',
                 'single_empty': '/static/img/single_empty.png', 
                 'single_core': '/static/img/single_core.png',
                 'core': '/static/img/core.png'}
-GOOGLE_API_KEY = 'GOOGLE_API_KEY'
+    GOOGLE_API_KEY = 'GOOGLE_API_KEY'
