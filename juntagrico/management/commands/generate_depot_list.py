@@ -119,8 +119,6 @@ class Command(BaseCommand):
             'categories': categories,
             'types': types,
             'datum': timezone.now(),
-            'cover_sheets': Config.depot_list_cover_sheets(),
-            'depot_overviews': Config.depot_list_overviews(),
             'weekdays': used_weekdays
         }
 
