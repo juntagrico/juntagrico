@@ -14,13 +14,23 @@ def render_to_pdf_http(template_name, renderdict, filename):
     rendered_html = get_template(template_name).render(renderdict)
 
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename='' + filename + '''
+    response['Content-Disposition'] = "attachment; filename='" + filename + "'"
 
     success = pisa.CreatePDF(rendered_html, dest=response)
 
     if not success:
         return HttpResponseServerError()
     return response
+    
+def return_pdf_http(filename):
+    if default_storage.exists(filename):
+        with default_storage.open(filename) as pdf_file:
+            content = pdf_file.read()
+        response = HttpResponse(content,content_type='application/pdf')
+        response['Content-Disposition'] = "attachment; filename='" + filename + "'"        
+        return response
+    else:
+        return HttpResponseServerError()
 
 
 def render_to_pdf_storage(template_name, renderdict, filename):

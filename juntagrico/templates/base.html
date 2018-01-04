@@ -163,7 +163,26 @@
                     {% endif %}
                     {% if operation_group %}
                         <li>
-                            <a href="{{depot_list_url}}">Depotlisten</a>
+                            <a data-toggle="collapse" href="#lists">Listen <span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <div class="collapse" id="lists">
+                            <ul class="nav nav-pills nav-stacked admin-menu subadmin-menu">
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/pdf/amountoverview">Mengen Übersicht</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/pdf/depotlist">Depotlisten</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/pdf/depotoverview">Depot Übersicht</a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                            </div>
                         </li>
                     {% endif %}
                     
