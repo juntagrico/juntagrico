@@ -214,6 +214,18 @@ def filter_subscriptions_depot(request, depot_id):
 def my_depotlists():
     return alldepots_list('')
 
+@permission_required('juntagrico.is_operations_group')
+def depotlist(request):
+    return return_pdf_http('depotlist.pdf')
+    
+@permission_required('juntagrico.is_operations_group')
+def depot_overview(request):
+    return return_pdf_http('depot_overview.pdf')
+    
+@permission_required('juntagrico.is_operations_group')
+def amount_overview(request):
+    return return_pdf_http('amount_overview.pdf')
+
 
 @permission_required('juntagrico.is_operations_group')
 def future(request):

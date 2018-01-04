@@ -192,18 +192,6 @@ class Config:
         return 2
 
     @staticmethod
-    def depot_list_cover_sheets():
-        if hasattr(settings, 'DEPOT_LIST_COVER_SHEETS'):
-            return settings.DEPOT_LIST_COVER_SHEETS
-        return 'x'
-
-    @staticmethod
-    def depot_list_overviews():
-        if hasattr(settings, 'DEPOT_LIST_OVERVIEWS'):
-            return settings.DEPOT_LIST_OVERVIEWS
-        return 'x'
-
-    @staticmethod
     def depot_list_generation_days():
         if hasattr(settings, 'DEPOT_LIST_GENERATION_DAYS'):
             return settings.DEPOT_LIST_GENERATION_DAYS

@@ -1,0 +1,114 @@
+{% load depot_extras %}
+<html>
+<head>
+    <title>Mengen Übersicht</title>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+                @frame content_frame {
+        left: 50pt;
+            width: 512pt;
+            top: 90pt;
+            height: 632pt;
+        }
+                @frame header_frame {
+        -pdf-frame-content:header_content;
+            left: 50pt;
+            width: 512pt;
+            top: 50pt;
+            height: 40pt;
+            text-align: center;
+        }
+
+            }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .full-border {
+            border: 1px black solid;
+        }
+
+        .left-border {
+            border-left: 1px black solid;
+        }
+
+        .top-border {
+            border-top: 1px black solid;
+        }
+
+        .right-border {
+            border-right: 1px black solid;
+        }
+
+        .bottom-border {
+            border-bottom: 1px black solid;
+        }
+
+        th {
+            text-align: left;
+        }
+        
+        td {
+            font-size: 14px;
+            line-height: 14px;
+        }
+        
+        table {
+            table-layout:fixed;
+        }
+        
+        .name {
+            width: 180px;
+        }
+
+       
+    </style>
+</head>
+
+<body>
+
+<div id="header_content">
+    Erstellt am {{ datum |date:"d.m.Y H:i" }}
+</div>
+
+<div>
+    <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
+        <tr>
+            <td style="width:200px"></td>
+            <th colspan="{{ subscriptioncount}}" class="top-border left-border right-border">ABO</th>
+            {% for category in categories %}
+                <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td></td>
+            
+            {% for subscription_name in subscription_names %}
+                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border">{{ subscription_name }}</td>
+            {% endfor %}
+            <td class="small bottom-border right-border">Einheiten</td>
+            {% for type in types %}
+                <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
+            {% endfor %}
+        </tr>
+        {% for weekday in weekdays %}
+        <tr>
+            <td>{{ weekday }}</td>
+            {% for value in overview|get_item:weekday %}
+                <td style="text-align:right">{{ value }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <tr>
+            <td><b>Alle</b></td>
+            {% for value in overview.all %}
+                <td style="text-align:right">{{ value }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+</body>
+</html>
