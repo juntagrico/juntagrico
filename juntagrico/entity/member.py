@@ -31,7 +31,7 @@ class Member(models.Model):
 
     confirmed = models.BooleanField('bestätigt', default=False)
     reachable_by_email = models.BooleanField('Kontaktierbar von der Job Seite aus', default=False)
-    block_emails = models.BooleanField('keine emails', default=False)
+    inactive = models.BooleanField('inaktiv', default=False)
 
     old_subscription = None
 

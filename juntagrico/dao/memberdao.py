@@ -27,11 +27,11 @@ class MemberDao:
 
     @staticmethod
     def members_for_email():
-        return Member.objects.exclude(block_emails=True)
+        return Member.objects.exclude(inactive=True)
 
     @staticmethod
     def members_for_email_with_subscription():
-        return Member.objects.exclude(subscription=None).filter(subscription__active=True).exclude(block_emails=True)
+        return Member.objects.exclude(subscription=None).filter(subscription__active=True).exclude(inactive=True)
 
     @staticmethod
     def members_with_assignments_count():
