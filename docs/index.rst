@@ -155,6 +155,18 @@ You can use the following settings to configure juntagrico
         "city" : "Springfield",
         "extra" : ""}
 
+* ORGANISATION_PHONE
+
+  The phone number for your organisation
+
+  Type: string
+
+  default value
+
+  .. code-block:: python
+
+    ""
+
 * ORGANISATION_BANK_CONNECTION
 
   the bank connection informartion of your organisation
@@ -270,7 +282,7 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "/static/css/juntagrico.css"
+    "/static/css/personal.css"
 
 * FAVICON
 
