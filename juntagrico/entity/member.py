@@ -38,7 +38,6 @@ class Member(models.Model):
     cancelation_date = models.DateField('Kündigüngssdatum', null=True, blank=True)
     inactive = models.BooleanField('inaktiv', default=False)
 
-    old_subscription = None
     
     @property
     def current_subscription(self):
@@ -81,12 +80,8 @@ class Member(models.Model):
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
-        if instance.old_subscription != instance.subscription and instance.subscription is None:
+        if instance.inactive is True:
             instance.areas = ()
-
-    @classmethod
-    def post_init(cls, sender, instance, **kwds):
-        instance.old_subscription = None  # instance.subscription
 
     class Meta:
         verbose_name = Config.member_string()
