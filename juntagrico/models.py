@@ -10,6 +10,7 @@ from juntagrico.entity.member import *
 from juntagrico.entity.share import *
 from juntagrico.entity.jobs import *
 from juntagrico.entity.mailing import *
+from juntagrico.entity.delivery import *
 
 
 class SpecialRoles(models.Model):
