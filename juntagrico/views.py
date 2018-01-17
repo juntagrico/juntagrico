@@ -35,7 +35,7 @@ def get_menu_dict(request):
     required_assignments = 0
     if member.subscription is not None:
         partner_assignments = []
-        for subscription_member in member.subscription.recipients():
+        for subscription_member in member.subscription.recipients_all():
             if subscription_member == member:
                 continue
             partner_assignments.extend(AssignmentDao.assignments_for_member_current_business_year(subscription_member))
@@ -378,6 +378,7 @@ def profile(request):
             member.addr_location = memberform.cleaned_data['addr_location']
             member.phone = memberform.cleaned_data['phone']
             member.mobile_phone = memberform.cleaned_data['mobile_phone']
+            member.iban = memberform.cleaned_data['iban']
             member.reachable_by_email = memberform.cleaned_data['reachable_by_email']
             member.save()
             success = True
@@ -388,9 +389,52 @@ def profile(request):
     renderdict.update({
         'memberform': memberform,
         'success': success,
+        'coop_member': member.is_cooperation_member,
+        'end_date': next_membership_end_date(),
+        'member': member,
+        'can_cancel': not member.is_cooperation_member or (member.iban is not None and member.current_subscription.share_overflow-member.active_shares_count>0),
+        'missing_iban': member.iban is None ,
         'menu': {'personalInfo': 'active'},
     })
     return render(request, 'profile.html', renderdict)
+    
+@login_required
+def cancel_membership(request):
+    member = request.user.member
+    if request.method == 'POST':
+        now = timezone.now().date()
+        end_date = request.POST.get('end_date')
+        message = request.POST.get('message')
+        member =  request.user.member
+        member.canceled = True
+        member.cancelation_date = now
+        if member.is_cooperation_member:
+            send_membership_canceled(member, end_date, message)
+        else:
+            member.inactive = True
+        
+        member.save()
+        for share in member.active_shares:
+            share.cancelled_date = now
+            share.termination_date = end_date
+            share.save()
+        return redirect('/my/profile')
+    
+    missing_iban = member.iban is None
+    coop_member =  member.is_cooperation_member
+    share_error = member.current_subscription.share_overflow-member.active_shares_count<0
+    can_cancel = not coop_member or (not missing_iban and not share_error) 
+    
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'coop_member': coop_member,
+        'end_date': next_membership_end_date(),
+        'member': member,
+        'can_cancel': can_cancel,
+        'missing_iban': missing_iban ,
+    })
+    return render(request, 'cancelmembership.html', renderdict)
+    
 
 
 @login_required

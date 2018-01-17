@@ -120,6 +120,7 @@ class Config:
             'j_signup': 'mails/job_signup_mail.txt',
             'd_changed': 'mails/depot_changed_mail.txt',
             's_canceled': 'mails/subscription_canceled_mail.txt',
+            'm_canceled': 'mails/membership_canceled_mail.txt',
             'b_share': 'mails/bill_share.txt',
             'b_sub': 'mails/bill_sub.txt',
             'b_esub': 'mails/bill_extrasub.txt'
@@ -214,6 +215,12 @@ class Config:
         if hasattr(settings, 'BUSINESS_YEAR_CANCELATION_MONTH'):
             return settings.BUSINESS_YEAR_CANCELATION_MONTH
         return 12
+
+    @staticmethod
+    def membership_end_month():
+        if hasattr(settings, 'MEMBERSHIP_END_MONTH'):
+            return settings.MEMBERSHIP_END_MONTH
+        return 6
 
     @staticmethod
     def demouser():

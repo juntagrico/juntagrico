@@ -300,11 +300,28 @@ def send_depot_changed(emails, depot):
     send_mail_multi(msg)
     
 
-def send_subscription_canceled(subscription):
+def send_subscription_canceled(subscription, message):
     plaintext = get_template(Config.emails('s_canceled'))
 
     d = {
-        'subscription': subscription
+        'subscription': subscription,
+        'message': message,
+    }
+
+    content = plaintext.render(d)
+    emails = [Config.info_email(),]
+    msg = EmailMultiAlternatives(Config.organisation_name() + ' - Abo gekündigt', content, Config.info_email(),
+                                 emails)
+    send_mail_multi(msg)
+    
+
+def send_membership_canceled(member, end_date, message):
+    plaintext = get_template(Config.emails('m_canceled'))
+
+    d = {
+        'member': member,
+        'end_date': end_date,
+        'message': message,
     }
 
     content = plaintext.render(d)

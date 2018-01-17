@@ -14,6 +14,7 @@ urlpatterns = [
     url('^my/jobs/(?P<job_id>.*?)/', juntagrico.job),
     url('^my/teams/(?P<area_id>.*?)/', juntagrico.team),
     url('^my/profile$', juntagrico.profile),
+    url('^my/cancel/membership$', juntagrico.cancel_membership),
     url('^my/participation$', juntagrico.participation),
     url('^my/contact$', juntagrico.contact),
     url('^my/contact/member/(?P<member_id>.*?)/(?P<job_id>.*?)/', juntagrico.contact_member),

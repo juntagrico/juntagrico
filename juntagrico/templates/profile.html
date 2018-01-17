@@ -7,7 +7,10 @@
 {% block content %}
     {% if success %}
         <div class="alert alert-success">Personalien erfolgreich geändert</div>
-    {% else %}
+    {% endif %}    
+    {% if member.canceled %}
+        <div class="alert alert-warning">Deine Mitgliedschaft ist gekündigt.</div>
+    {% endif %} 
         <form method="post" class="form-horizontal">
             {% csrf_token %}
             <div class="form-group {% if memberform.first_name.errors %}error{% endif %}">
@@ -97,6 +100,16 @@
                 {% if memberform.email.errors %}
                     <div class="alert alert-danger">E-Mail ungültig</div>
                 {% endif %}
+			<div class="form-group {% if memberform.iban.errors %}error{% endif %}">
+                <label class="control-label col-md-4" for="id_iban">IBAN</label>
+				
+				<div class="controls col-md-8">
+						{{ memberform.iban }}
+				</div>
+			</div>
+                {% if memberform.iban.errors %}
+                    <div class="alert alert-danger">IBAN ungültig</div>
+                {% endif %}
 			
             <div class="form-group">
                 <label class="control-label col-md-4" for="id_reachable_by_email">sollen andere {% config "members_string" %} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
@@ -116,5 +129,10 @@
                 <button type="submit" class="btn btn-success">Personalien ändern</button>
             </div>
         </form>
-    {% endif %}
+        
+        {% if not member.canceled %}
+            <div class="form-actions">
+                    <a href="/my/cancel/membership" class="btn btn-success" >Mitgliedsahft künden</a>
+                </div>
+        {% endif %}
 {% endblock %}

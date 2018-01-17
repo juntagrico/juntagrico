@@ -25,16 +25,40 @@ class Member(models.Model):
     birthday = models.DateField('Geburtsdatum', null=True, blank=True)
     phone = models.CharField('Telefonnr', max_length=50)
     mobile_phone = models.CharField('Mobile', max_length=50, null=True, blank=True)
+    
+    iban = models.CharField('IBAN', max_length=100)
 
     subscription = models.ForeignKey('Subscription', related_name='members', null=True, blank=True,
                                      on_delete=models.SET_NULL)
 
     confirmed = models.BooleanField('bestätigt', default=False)
     reachable_by_email = models.BooleanField('Kontaktierbar von der Job Seite aus', default=False)
+    
+    canceled = models.BooleanField('gekündigt', default=False)
+    cancelation_date = models.DateField('Kündigüngssdatum', null=True, blank=True)
     inactive = models.BooleanField('inaktiv', default=False)
 
     old_subscription = None
-
+    
+    @property
+    def current_subscription(self):
+        return subscription
+    
+    @property
+    def is_cooperation_member(self):
+        return self.share_set.filter(paid_date__isnull=False).filter(
+            payback_date__isnull=True).count()>0
+    
+    @property
+    def active_shares(self):
+        return self.share_set.filter(
+            canceled_date__isnull=True)
+            
+    @property
+    def active_shares_count(self):
+        return self.share_set.filter(
+            canceled_date__isnull=True)
+        
     def __str__(self):
         return self.get_name()
 

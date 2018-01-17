@@ -60,16 +60,21 @@ class Subscription(Billable):
     @property
     def types_changed(self):
         return set(self.types.all())!=set(self.future_types.all())
+    
 
     def recipients_names(self):
-        members = self.members.all()
+        members = self.recipients
         return ', '.join(str(member) for member in members)
 
     def other_recipients_names(self):
-        members = self.recipients().exclude(email=self.primary_member.email)
+        members = self.recipients.exclude(email=self.primary_member.email)
         return ', '.join(str(member) for member in members)
 
+    @property
     def recipients(self):
+        return self.members.filter(inactive=False)
+    @property
+    def recipients_all(self):
         return self.members.all()
 
     def primary_member_nullsave(self):
@@ -98,6 +103,10 @@ class Subscription(Billable):
     @property
     def all_shares(self):
         return ShareDao.all_shares_subscription(self).count()
+    
+    @property
+    def share_overflow(self):
+        return self.all_shares - self.required_shares
 
     @property
     def future_extra_subscriptions(self):
@@ -123,8 +132,7 @@ class Subscription(Billable):
         for type in types.all():
             if type.size.name == size_name:
                 result += 1
-        return result
-        
+        return result        
 
     @staticmethod
     def next_extra_change_date():
@@ -146,8 +154,16 @@ class Subscription(Billable):
             size_names.append(type.__str__())
         if len(size_names) > 0:
             return ', '.join(size_names)
-        return 'kein Abo'
-        
+        return 'kein Abo'    
+    
+    @property
+    def required_shares(self):
+        result = 0
+        for type in self.types.all():
+            result += type.shares
+        return result
+      
+    @property      
     def required_assignments(self):
         result = 0
         for type in self.types.all():
