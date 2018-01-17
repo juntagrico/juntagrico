@@ -119,9 +119,10 @@ class Command(BaseCommand):
             'categories': categories,
             'types': types,
             'datum': timezone.now(),
-            'cover_sheets': Config.depot_list_cover_sheets(),
-            'depot_overviews': Config.depot_list_overviews(),
             'weekdays': used_weekdays
         }
 
-        render_to_pdf_storage('exports/all_depots.html', renderdict, 'dpl.pdf')
+        render_to_pdf_storage('exports/legacy.html', renderdict, 'dpl.pdf')
+        render_to_pdf_storage('exports/depotlist.html', renderdict, 'depotlist.pdf')
+        render_to_pdf_storage('exports/depot_overview.html', renderdict, 'depot_overview.pdf')
+        render_to_pdf_storage('exports/amount_overview.html', renderdict, 'amount_overview.pdf')

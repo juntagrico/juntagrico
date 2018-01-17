@@ -79,7 +79,6 @@ def get_menu_dict(request):
         'show_core': ActivityAreaDao.all_core_areas().count()>0,
         'show_extras': JobExtraDao.all_job_extras().count()>0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription))>0,
-        'depot_list_url': settings.MEDIA_URL + settings.MEDIA_ROOT + '/dpl.pdf',
     }
     enrich_menu_dict(request, menu_dict)
     return menu_dict

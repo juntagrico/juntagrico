@@ -74,6 +74,9 @@ urlpatterns = [
     url('^my/typechangedlist', juntagrico_admin.typechangelist),
     url('^my/extra/waitinglist', juntagrico_admin.extra_waitinglist),
     url('^my/extra/canceledlist', juntagrico_admin.extra_canceledlist),
+    url('^my/pdf/depotlist', juntagrico_admin.depotlist),
+    url('^my/pdf/depotoverview', juntagrico_admin.depot_overview),
+    url('^my/pdf/amountoverview', juntagrico_admin.amount_overview),
     url('^my/maps', juntagrico_admin.maps),
 
     url(r'^my', include(personal_urls)),

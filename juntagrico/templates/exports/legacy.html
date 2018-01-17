@@ -1,0 +1,79 @@
+{% load depot_extras %}
+<html>
+<head>
+    <title>Legacy</title>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4;
+                @frame content_frame {
+        left: 50pt;
+            width: 512pt;
+            top: 90pt;
+            height: 632pt;
+        }
+                @frame header_frame {
+        -pdf-frame-content:header_content;
+            left: 50pt;
+            width: 512pt;
+            top: 50pt;
+            height: 40pt;
+            text-align: center;
+        }
+
+            }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .full-border {
+            border: 1px black solid;
+        }
+
+        .left-border {
+            border-left: 1px black solid;
+        }
+
+        .top-border {
+            border-top: 1px black solid;
+        }
+
+        .right-border {
+            border-right: 1px black solid;
+        }
+
+        .bottom-border {
+            border-bottom: 1px black solid;
+        }
+
+        th {
+            text-align: left;
+        }
+        
+        td {
+            font-size: 14px;
+            line-height: 14px;
+        }
+        
+        table {
+            table-layout:fixed;
+        }
+        
+        .name {
+            width: 180px;
+        }
+
+       
+    </style>
+</head>
+
+<body>
+
+<div id="header_content">
+    Erstellt am {{ datum |date:"d.m.Y H:i" }}
+</div>
+
+
+</body>
+</html>

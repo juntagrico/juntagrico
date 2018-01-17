@@ -74,49 +74,10 @@
     Erstellt am {{ datum |date:"d.m.Y H:i" }}
 </div>
 
-{% for i in cover_sheets %}
-<div>
-    <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
-        <tr>
-            <td style="width:200px"></td>
-            <th colspan="{{ subscriptioncount}}" class="top-border left-border right-border">ABO</th>
-            {% for category in categories %}
-                <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
-            {% endfor %}
-        </tr>
-        <tr>
-            <td></td>
-            
-            {% for subscription_name in subscription_names %}
-                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border">{{ subscription_name }}</td>
-            {% endfor %}
-            <td class="small bottom-border right-border">Einheiten</td>
-            {% for type in types %}
-                <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
-            {% endfor %}
-        </tr>
-        {% for weekday in weekdays %}
-        <tr>
-            <td>{{ weekday }}</td>
-            {% for value in overview|get_item:weekday %}
-                <td style="text-align:right">{{ value }}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-        <tr>
-            <td><b>Alle</b></td>
-            {% for value in overview.all %}
-                <td style="text-align:right">{{ value }}</td>
-            {% endfor %}
-        </tr>
-    </table>
-    <div class="page-break"></div>
-</div>
-{% endfor %}
 {% for depot in depots %}
     <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
     <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
-    Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
+    Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}
     <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
         <tr>
             <td style="width:180px;" class="name"></td>
@@ -221,43 +182,6 @@
             <th>Tasche retour</th>
         </tr>
         {% endif %}
-        {% endfor %}
-    </table>
-    <div class="page-break"></div>
-{% endfor %}
-{% for i in depot_overviews %}
-    <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
-        <tr>
-            <td></td>
-            <td></td>
-            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">ABO</th>
-            {% for category in categories %}
-                <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
-            {% endfor %}
-            <th colspan="2" class="top-border right-border"></th>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>            
-            {% for subscription_name in subscription_names %}
-                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ subscription_name }}</td>
-            {% endfor %}
-            {% for type in types %}
-                <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
-            {% endfor %}
-            <td></td>
-            <td class="small bottom-border right-border"></td>
-        </tr>
-        {% for depot in depots %}
-        <tr>
-            <td style="width:180px;"></td>
-            <td style="width:180px; text-align:right;">{{ depot.weekday_name }} - {{ depot.name }}</td>
-            {% for value in depot.overview_cache %}
-                <td style="width:40px; text-align:right;">{{ value }}</td>
-            {% endfor %}
-            <td style="width:60px;"></td>
-            <td style="width:60px;"></td>
-        </tr>
         {% endfor %}
     </table>
     <div class="page-break"></div>
