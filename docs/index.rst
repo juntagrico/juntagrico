@@ -3,7 +3,7 @@ Welcome to the juntagrico documentation
 Installation
 ------------
 
-Install Juntagrico from it's git repository or using pip. You need an django app.
+Install juntagrico from it's git repository or using pip. You need an django app.
 
 The following django settings are nescessary to run juntagrico.
 
