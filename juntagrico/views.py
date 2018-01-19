@@ -392,7 +392,7 @@ def profile(request):
         'coop_member': member.is_cooperation_member,
         'end_date': next_membership_end_date(),
         'member': member,
-        'can_cancel': not member.is_cooperation_member or (member.iban is not None and member.current_subscription.share_overflow-member.active_shares_count>0),
+        'can_cancel': not member.is_cooperation_member or (member.iban is not None and member.subscription.share_overflow-member.active_shares_count>0),
         'missing_iban': member.iban is None ,
         'menu': {'personalInfo': 'active'},
     })
@@ -422,7 +422,7 @@ def cancel_membership(request):
     
     missing_iban = member.iban is None
     coop_member =  member.is_cooperation_member
-    share_error = member.current_subscription.share_overflow-member.active_shares_count<0
+    share_error = member.subscription.share_overflow-member.active_shares_count<0
     can_cancel = not coop_member or (not missing_iban and not share_error) 
     
     renderdict = get_menu_dict(request)
