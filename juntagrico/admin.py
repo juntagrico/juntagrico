@@ -356,6 +356,19 @@ class DepotAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'weekday', 'contact']
 
 
+class DeliveryInline(admin.TabularInline):
+    model = DeliveryItem
+    
+
+class DeliveryAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "delivery_date", "subscription_size")
+    ordering = ("-delivery_date","subscription_size")
+    actions = ["copy_delivery"]
+    search_fields = ["delivery_date", "subscription_size"]
+    inlines = [DeliveryInline]
+    save_as = True
+
+
 class ExtraSubscriptionAdmin(admin.ModelAdmin):
     raw_id_fields = ['main_subscription']
 
@@ -444,6 +457,7 @@ admin.site.register(Member, MemberAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
 admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
+admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(JobExtra)
 admin.site.register(JobExtraType)
 admin.site.register(JobType, JobTypeAdmin)

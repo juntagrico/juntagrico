@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load config %}
+
+{% block page_title %}
+    <h3>Alle Lieferungen im Überblick</h3>
+{% endblock %}
+{% block content %}
+    <div id="deliveries">        
+    {% include "snippet_delivery.html" %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="/static/external/datatables.min.js"></script>
+<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initDeliveries.js"></script>
+{% endblock %}

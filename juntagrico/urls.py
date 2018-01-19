@@ -22,6 +22,7 @@ urlpatterns = [
     url('^my/assignments/all$', juntagrico.assingments_all),
     url('^my/pastjobs$', juntagrico.pastjobs),
     url('^my/depot/(?P<depot_id>.*?)/', juntagrico.depot),
+    url('^my/deliveries$', juntagrico.deliveries),
     url('^my/newpassword$', juntagrico.new_password),
     url('^my/sendconfirm$', juntagrico.send_confirm),
     url('^my/info/unpaidshares$', juntagrico.info_unpaid_shares),
