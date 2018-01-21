@@ -29,7 +29,6 @@ class SpecialRoles(models.Model):
 signals.post_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)
 signals.pre_save.connect(Member.pre_save, sender=Member)
-signals.post_init.connect(Member.post_init, sender=Member)
 signals.pre_save.connect(Job.pre_save, sender=Job)
 signals.post_init.connect(Job.post_init, sender=Job)
 signals.pre_save.connect(RecuringJob.pre_save, sender=RecuringJob)
