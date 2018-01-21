@@ -28,11 +28,11 @@ class Member(models.Model):
     
     iban = models.CharField('IBAN', max_length=100)
 
-    fiture_subscription = models.ForeignKey('Subscription', related_name='members_legacy', null=True, blank=True,
+    future_subscription = models.ForeignKey('Subscription', related_name='members_legacy', null=True, blank=True,
                                      on_delete=models.SET_NULL)
     subscription = models.ForeignKey('Subscription', related_name='members_legacy', null=True, blank=True,
                                      on_delete=models.SET_NULL)
-    old_subscriptions = models.ManytoManyField('Subscription', related_name='members')
+    old_subscriptions = models.ManyToManyField('Subscription', related_name='members')
 
     confirmed = models.BooleanField('bestätigt', default=False)
     reachable_by_email = models.BooleanField('Kontaktierbar von der Job Seite aus', default=False)
