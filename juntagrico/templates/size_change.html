@@ -63,20 +63,7 @@
             </div>
             <div class="form-actions col-md-8">
             </div>
-            <br/>
-            <div class="form-group">
-            <label class="control-label col-md-3">Abo kündigen</label>
-            <div class="controls col-md-8">
-                <label>
-                    <div>
-                        Du willst ab nächstem Jahr kein {% config "organisation_name" %}-Abo mehr? Dann schicke bitte deine Kündigung
-                        bis spätestens Ende {{ next_cancel_date |date:"F" }} an <a href="mailto:{% config "info_email" %}?subject=Kündigung Abo {% config "server_url" %}">{% config "info_email" %}</a>.
-                        Weitere Infos zur Kündigung des Abos und der Mitgliedschaft findest du im
-                        <a href="/ {% config "business_regulations" %}">Betriebsreglement</a>.
-                    </div>
-                </label>
-            </div>
-        </div>
+            
     </form>
     {% endif %}
 
