@@ -10,11 +10,11 @@ class ExtraSubscriptionType(models.Model):
     '''
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     '''
-    name = models.CharField('Name', max_length=100, unique=True)
-    size = models.CharField('Groesse (gross,4, ...)', max_length=100, default='')
-    description = models.TextField('Beschreibung', max_length=1000)
-    sort_order = models.FloatField('Groesse zum Sortieren', default=1.0)
-    visible = models.BooleanField('Sichtbar', default=True)
+    name = models.CharField(_('Name'), max_length=100, unique=True)
+    size = models.CharField(_('Groesse (gross,4, ...)'), max_length=100, default='')
+    description = models.TextField(_('Beschreibung'), max_length=1000)
+    sort_order = models.FloatField(_('Groesse zum Sortieren'), default=1.0)
+    visible = models.BooleanField(_('Sichtbar'), default=True)
     category = models.ForeignKey('ExtraSubscriptionCategory', related_name='category', null=True, blank=True,
                                  on_delete=models.PROTECT)
 
@@ -22,25 +22,25 @@ class ExtraSubscriptionType(models.Model):
         return '%s %s' % (self.id, self.name)
 
     class Meta:
-        verbose_name = 'Zusatz-Abo-Typ'
-        verbose_name_plural = 'Zusatz-Abo-Typen'
+        verbose_name = _('Zusatz-Abo-Typ')
+        verbose_name_plural = _('Zusatz-Abo-Typen')
 
 
 class ExtraSubscriptionCategory(models.Model):
     '''
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     '''
-    name = models.CharField('Name', max_length=100, unique=True)
-    description = models.TextField('Beschreibung', max_length=1000, blank=True)
-    sort_order = models.FloatField('Nummer zum Sortieren', default=1.0)
-    visible = models.BooleanField('Sichtbar', default=True)
+    name = models.CharField(_('Name'), max_length=100, unique=True)
+    description = models.TextField(_('Beschreibung'), max_length=1000, blank=True)
+    sort_order = models.FloatField(_('Nummer zum Sortieren'), default=1.0)
+    visible = models.BooleanField(_('Sichtbar'), default=True)
 
     def __str__(self):
         return '%s %s' % (self.id, self.name)
 
     class Meta:
-        verbose_name = 'Zusatz-Abo-Kategorie'
-        verbose_name_plural = 'Zusatz-Abo-Kategorien'
+        verbose_name = _('Zusatz-Abo-Kategorie')
+        verbose_name_plural = _('Zusatz-Abo-Kategorien')
 
 
 class ExtraSubscription(Billable):
@@ -51,9 +51,9 @@ class ExtraSubscription(Billable):
                                           blank=False,
                                           on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
-    canceled = models.BooleanField('gekündigt', default=False)
-    activation_date = models.DateField('Aktivierungssdatum', null=True, blank=True)
-    deactivation_date = models.DateField('Deaktivierungssdatum', null=True, blank=True)
+    canceled = models.BooleanField(_('gekündigt'), default=False)
+    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
     type = models.ForeignKey(ExtraSubscriptionType, related_name='extra_subscriptions', null=False, blank=False,
                              on_delete=models.PROTECT)
 
@@ -68,13 +68,13 @@ class ExtraSubscription(Billable):
     @property
     def state(self):
         if self.active is False and self.deactivation_date is None:
-            return 'wartend'
+            return _('wartend')
         elif self.active is True and self.canceled is False:
-            return 'aktiv'
+            return _('aktiv')
         elif self.active is True and self.canceled is True:
-            return 'aktiv - gekündigt'
+            return _('aktiv - gekündigt')
         elif self.active is False and self.deactivation_date is not None:
-            return 'inaktiv-gekündigt'
+            return _('inaktiv-gekündigt')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -93,5 +93,5 @@ class ExtraSubscription(Billable):
         return '%s %s' % (self.id, self.type.name)
 
     class Meta:
-        verbose_name = 'Zusatz-Abo'
-        verbose_name_plural = 'Zusatz-Abos'
+        verbose_name = _('Zusatz-Abo')
+        verbose_name_plural = _('Zusatz-Abos')

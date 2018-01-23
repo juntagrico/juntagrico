@@ -11,8 +11,8 @@ class Billable(PolymorphicModel):
     '''
 
     class Meta:
-        verbose_name = 'Verrechenbare Einheit'
-        verbose_name_plural = 'Verrechenbare Einhaiten'
+        verbose_name = _('Verrechenbare Einheit')
+        verbose_name_plural = _('Verrechenbare Einhaiten')
 
 
 class Bill(models.Model):
@@ -21,17 +21,17 @@ class Bill(models.Model):
     '''
     billable = models.ForeignKey('Billable', related_name='bills', null=False, blank=False,
                                  on_delete=models.PROTECT)
-    paid = models.BooleanField('bezahlt', default=False)
-    bill_date = models.DateField('Aktivierungssdatum', null=True, blank=True)
-    ref_number = models.CharField('Referenznummer', max_length=30, unique=True)
-    amount = models.FloatField('Betrag', null=False, blank=False)
+    paid = models.BooleanField(_('bezahlt'), default=False)
+    bill_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
+    ref_number = models.CharField(_('Referenznummer'), max_length=30, unique=True)
+    amount = models.FloatField(_('Betrag'), null=False, blank=False)
 
     def __str__(self):
         return '%s' % self.ref_number
 
     class Meta:
-        verbose_name = 'Rechnung'
-        verbose_name_plural = 'Rechnungen'
+        verbose_name = _('Rechnung')
+        verbose_name_plural = _('Rechnungen')
 
 
 class Payment(models.Model):
@@ -40,15 +40,15 @@ class Payment(models.Model):
     '''
     bill = models.ForeignKey('Bill', related_name='payments', null=False, blank=False,
                              on_delete=models.PROTECT)
-    paid_date = models.DateField('Bezahldatum', null=True, blank=True)
-    amount = models.FloatField('Betrag', null=False, blank=False)
+    paid_date = models.DateField(_('Bezahldatum'), null=True, blank=True)
+    amount = models.FloatField(_('Betrag'), null=False, blank=False)
 
     def __str__(self):
         return '%s' % self.ref_number
 
     class Meta:
-        verbose_name = 'Zahlung'
-        verbose_name_plural = 'Zahlung'
+        verbose_name = _('Zahlung')
+        verbose_name_plural = _('Zahlung')
 		
 class ExtraSubBillingPeriod(models.Model):
     '''
@@ -56,14 +56,14 @@ class ExtraSubBillingPeriod(models.Model):
     '''
     type = models.ForeignKey('ExtraSubscriptionType', related_name='periods', null=False, blank=False,
                                  on_delete=models.PROTECT)
-    price = models.PositiveIntegerField('Preis')
-    start_day = models.PositiveIntegerField('Start Tag')
-    start_month = models.PositiveIntegerField('Start Monat', choices=month_choices)
-    end_day = models.PositiveIntegerField('End Tag')
-    end_month = models.PositiveIntegerField('End Monat', choices=month_choices)
-    cancel_day = models.PositiveIntegerField('Kündigungs Tag')
-    cancel_month = models.PositiveIntegerField('Kündigungs Monat', choices=month_choices)
-    code = models.TextField('Code für Teilabrechnung', max_length=1000, default='', blank=True)
+    price = models.PositiveIntegerField(_('Preis'))
+    start_day = models.PositiveIntegerField(_('Start Tag'))
+    start_month = models.PositiveIntegerField(_('Start Monat'), choices=month_choices)
+    end_day = models.PositiveIntegerField(_('End Tag'))
+    end_month = models.PositiveIntegerField(_('End Monat'), choices=month_choices)
+    cancel_day = models.PositiveIntegerField(_('Kündigungs Tag'))
+    cancel_month = models.PositiveIntegerField(_('Kündigungs Monat'), choices=month_choices)
+    code = models.TextField(_('Code für Teilabrechnung'), max_length=1000, default='', blank=True)
 	
     def partial_price(self):
         now = timezone.now()
@@ -103,5 +103,5 @@ class ExtraSubBillingPeriod(models.Model):
         return '{0}({1}.{2} - {3}.{4})'.format(self.type.name, self.start_day, self.start_month, self.end_day, self.end_month)
 
     class Meta:
-        verbose_name = 'Verechnungsperdiode Zusatzabos'
-        verbose_name_plural = 'Verechnungsperdioden Zusatzabos'
+        verbose_name = _('Verechnungsperdiode Zusatzabos')
+        verbose_name_plural = _('Verechnungsperdioden Zusatzabos')

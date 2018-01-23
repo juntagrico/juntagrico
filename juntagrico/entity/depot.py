@@ -16,15 +16,15 @@ class Depot(models.Model):
     code = models.CharField('Code', max_length=100, validators=[validators.validate_slug], unique=True)
     name = models.CharField('Depot Name', max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
+    weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)
     latitude = models.CharField('Latitude', max_length=100, default='')
     longitude = models.CharField('Longitude', max_length=100, default='')
 
-    addr_street = models.CharField('Strasse', max_length=100)
-    addr_zipcode = models.CharField('PLZ', max_length=10)
-    addr_location = models.CharField('Ort', max_length=50)
+    addr_street = models.CharField(_('Strasse'), max_length=100)
+    addr_zipcode = models.CharField(_('PLZ'), max_length=10)
+    addr_location = models.CharField(_('Ort'), max_length=50)
 
-    description = models.TextField('Beschreibung', max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
 
     overview_cache = None
     subscription_cache = None
@@ -37,7 +37,7 @@ class Depot(models.Model):
 
     @property
     def weekday_name(self):
-        day = 'Unbekannt'
+        day = _('Unbekannt')
         if 8 > self.weekday > 0:
             day = weekdays[self.weekday]
         return day
@@ -70,6 +70,6 @@ class Depot(models.Model):
         self.subscription_cache = self.active_subscriptions()
 
     class Meta:
-        verbose_name = 'Depot'
-        verbose_name_plural = 'Depots'
-        permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)
+        verbose_name = _('Depot')
+        verbose_name_plural = _('Depots')
+        permissions = (('is_depot_admin', _('Benutzer ist Depot Admin')),)
