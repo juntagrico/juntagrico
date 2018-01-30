@@ -22,6 +22,7 @@ class SpecialRoles(models.Model):
     class Meta:
         permissions = (('is_operations_group', 'Benutzer ist in der BG'),
                        ('is_book_keeper', 'Benutzer ist Buchhalter'),
+                       ('new_subscription', 'Benutzer über Abobestellungen informieren'),
                        ('can_send_mails', 'Benutzer kann im System Emails versenden'),
                        ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
 

@@ -63,17 +63,6 @@ def send_mail_multi(email_multi_message):
         print(('Mail sent to ' + ', '.join(okmails) + (', on whitelist' if settings.DEBUG else '')))
     return None
 
-
-def send_new_member_in_activityarea_to_operations(area, member):
-    if area.email is not None:
-        emails = [area.email]
-    else:
-        emails = [area.coordinator.email]
-    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
-              Config.info_email(), emails)
-
-
 def send_contact_form(subject, message, member, copy_to_member):
     send_mail('Anfrage per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [Config.info_email()])
     if copy_to_member:
@@ -88,68 +77,7 @@ def send_contact_member_form(subject, message, member, contact_member, copy_to_m
     send_mail_multi(msg)
     if copy_to_member:
         send_mail('Nachricht per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [member.email])
-
-
-def send_welcome_mail(email, password, hash):
-    plaintext = get_template(Config.emails('welcome'))
-
-    d = {
-        'mail_template': Config.mail_template,
-        'subject': 'Willkommen bei ' + Config.organisation_name(),
-        'username': email,
-        'password': password,
-        'hash': hash,
-        'serverurl': get_server()
-    }
-
-    content = plaintext.render(d)
-
-    msg = EmailMultiAlternatives('Willkommen bei ' + Config.organisation_name(), content, Config.info_email(),
-                                 [email])
-    send_mail_multi(msg)
-
-
-def send_share_created_mail(share):
-    ''' temporal removal
-    plaintext = get_template('mails/share_created_mail.txt')
-    htmly = get_template('mails/share_created_mail.html')
-
-    # reset password so we can send it to him
-    d = {
-        'member': share.member,
-        'share': share,
-        'serverurl': get_server()
-    }
-    text_content = plaintext.render(d)
-    html_content = htmly.render(d)
-    perm = Permission.objects.get(codename='is_book_keeper')
-    users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm)).distinct()
-    emails = []
-    for user in users:
-        emails.append(user.member.email)
-    msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', text_content, Config.info_email(), emails)
-    msg.attach_alternative(html_content, 'text/html')
-    send_mail_multi(msg)'''
-
-def send_been_added_to_subscription(email, password, name, shares, hash):
-    plaintext = get_template(Config.emails('co_welcome'))
-    d = {
-        'mail_template': Config.mail_template,
-        'subject': 'Willkommen bei ' + Config.organisation_name(),
-        'username': email,
-        'name': name,
-        'password': password,
-        'hash': hash,
-        'shares': shares,
-        'serverurl': get_server()
-    }
-
-    content = plaintext.render(d)
-
-    msg = EmailMultiAlternatives('Willkommen bei ' + Config.organisation_name(), content, Config.info_email(),
-                                 [email])
-    send_mail_multi(msg)
-
+        
 
 def send_filtered_mail(subject, message, text_message, emails, attachments, sender):
     plaintext = get_template('mails/filtered_mail.txt')
@@ -175,6 +103,91 @@ def send_filtered_mail(subject, message, text_message, emails, attachments, send
     for attachment in attachments:
         msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
+    
+    
+'''
+Server generated Emails
+'''
+
+
+def send_new_member_in_activityarea_to_operations(area, member):
+    if area.email is not None:
+        emails = [area.email]
+    else:
+        emails = [area.coordinator.email]
+    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
+              'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
+              Config.info_email(), emails)
+
+def send_welcome_mail(email, password, hash, subscription):
+    plaintext = get_template(Config.emails('welcome'))
+
+    d = {
+        'username': email,
+        'password': password,
+        'hash': hash,
+        'subscription': subscription,
+        'serverurl': get_server()
+    }
+
+    content = plaintext.render(d)
+
+    msg = EmailMultiAlternatives('Willkommen bei der Genossenschaft' + Config.organisation_name(), content, Config.info_email(),
+                                 [email])
+    send_mail_multi(msg)
+
+
+def send_share_created_mail(member, share):
+    plaintext = get_template(Config.emails('s_created'))
+
+    d = {
+        'share': share,        
+        'serverurl': get_server()
+    }
+
+    content = plaintext.render(d)
+
+    msg = EmailMultiAlternatives('Dein neuer Anteilschein', content, Config.info_email(),
+                                 [member.email])
+    send_mail_multi(msg)
+
+def send_subscription_created_mail(subscription):
+    plaintext = get_template('n_sub')
+
+    d = {
+        'subscription': subscription,
+        'serverurl': get_server()
+    }
+    content = plaintext.render(d)
+    perm = Permission.objects.get(codename='new_subscription')
+    users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm)).distinct()
+    emails = []
+    for user in users:
+        emails.append(user.member.email)
+    if len(emails)==0:
+        emails = [Config.info_email()]
+    msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', content, Config.info_email(), emails)
+    send_mail_multi(msg)
+
+def send_been_added_to_subscription(email, password, hash, name, shares, welcome=True):
+    if welcome:
+        plaintext = get_template(Config.emails('co_welcome'))
+    else:
+        plaintext = get_template(Config.emails('co_added'))
+    d = {
+        'username': email,
+        'name': name,
+        'password': password,
+        'hash': hash,
+        'shares': shares,
+        'serverurl': get_server()
+    }
+
+    content = plaintext.render(d)
+
+    msg = EmailMultiAlternatives('Willkommen bei ' + Config.organisation_name(), content, Config.info_email(),
+                                 [email])
+    send_mail_multi(msg)
 
 
 def send_mail_password_reset(email, password):
@@ -182,8 +195,6 @@ def send_mail_password_reset(email, password):
     subject = 'Dein neues ' + Config.organisation_name() + ' Passwort'
 
     d = {
-        'mail_template': Config.mail_template,
-        'subject': subject,
         'email': email,
         'password': password,
         'serverurl': get_server()
@@ -201,7 +212,6 @@ def send_job_reminder(emails, job, participants):
     contact = coordinator.first_name + ' ' + coordinator.last_name + ': ' + job.type.activityarea.contact()
 
     d = {
-        'mail_template': Config.mail_template,
         'job': job,
         'participants': participants,
         'serverurl': get_server(),
@@ -219,7 +229,6 @@ def send_job_canceled(emails, job):
     plaintext = get_template(Config.emails('j_canceled'))
 
     d = {
-        'mail_template': Config.mail_template,
         'job': job,
         'serverurl': get_server()
     }
@@ -236,7 +245,6 @@ def send_confirm_mail(member):
     plaintext = get_template(Config.emails('confirm'))
 
     d = {
-        'mail_template': Config.mail_template,
         'hash': hashlib.sha1((member.email + str(
                     member.id)).encode('utf8')).hexdigest(),
         'serverurl': get_server()
@@ -253,7 +261,6 @@ def send_job_time_changed(emails, job):
     plaintext = get_template(Config.emails('j_changed'))
 
     d = {
-        'mail_template': Config.mail_template,
         'job': job,
         'serverurl': get_server()
     }
@@ -270,25 +277,23 @@ def send_job_time_changed(emails, job):
 def send_job_signup(emails, job):
     plaintext = get_template(Config.emails('j_signup'))
     d = {
-        'mail_template': Config.mail_template,
         'job': job,
         'serverurl': get_server()
     }
 
     content = plaintext.render(d)
-    ical_content = genecrate_ical_for_job(job)
+    #ical_content = genecrate_ical_for_job(job)
 
     msg = EmailMultiAlternatives(Config.organisation_name() + ' - für Job Angemeldet', content,
                                  Config.info_email(), emails)
-    msg.attach('einsatz.ics', ical_content, 'text/calendar')
-    #   send_mail_multi(msg)
+    #msg.attach('einsatz.ics', ical_content, 'text/calendar')
+    send_mail_multi(msg)
 
 
 def send_depot_changed(emails, depot):
     plaintext = get_template(Config.emails('d_changed'))
 
     d = {
-        'mail_template': Config.mail_template,
         'depot': depot,
         'serverurl': get_server()
     }
@@ -335,7 +340,6 @@ def send_bill_share(bill, share, member):
     plaintext = get_template(Config.emails('b_share'))
 
     d = {
-        'mail_template': Config.mail_template,
         'member': member,
         'bill': bill,
         'share': share,
@@ -353,7 +357,6 @@ def send_bill_sub(bill, subscription, start, end, member):
     plaintext = get_template(Config.emails('b_sub'))
 
     d = {
-        'mail_template': Config.mail_template,
         'member': member,
         'bill': bill,
         'sub': subscription,
@@ -373,7 +376,6 @@ def send_bill_extrasub(bill, extrasub, start, end, member):
     plaintext = get_template(Config.emails('b_esub'))
 
     d = {
-        'mail_template': Config.mail_template,
         'member': member,
         'bill': bill,
         'extrasub': extrasub,

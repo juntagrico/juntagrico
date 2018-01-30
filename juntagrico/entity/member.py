@@ -56,6 +56,13 @@ class Member(models.Model):
     def active_shares_count(self):
         return self.share_set.filter(
             canceled_date__isnull=True)
+            
+    @property
+    def blocked(self):
+        future = self.future_subscription is not None
+        current = self.subscription is not None
+        canceled = self.subscription.canceled
+        return future or (current and not canceled)
         
     def __str__(self):
         return self.get_name()

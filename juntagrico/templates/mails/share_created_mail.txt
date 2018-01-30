@@ -1,17 +1,27 @@
 {% extends "mails/email.txt" %}
 {% load config %}
 {% block content %}
-Hallo lieber Buchhalter
+Hallo
 
-Folgender {% config "member_string" %} hat einen Anteilschein Bestellt
-{{member.get_name}}
-{{member.addr_street}}
-{{member.addr_zipcode}} {{member.addr_location}}
-{{member.email}}
-{{member.get_phone}}
+Du hast bei der Genossenschaft {% config "organisation_name" %} einen Anteilschein bestellt.
+Dieser Anteilschein hat die Systemnummer {{share.id}}.
 
-Bitte sobald er bezahlt und ausgestellt ist bitte hier eintragen
-{{serverurl}}/admin/juntagrico/anteilschein/{{share.id}}/change/
+Bitte überweise den Betrag von {% config "currency" %} {% config "share_price" %} auf das folgende Konto ein:
+    {% config "organisation_address" as addr%}
+    {{ addr.name }}
+    {% if addr.extra %}
+    {{ addr.extra }}
+    {% endif %}    
+    {{ addr.street }} {{ addr.number }}
+    {{ addr.zip }} {{ addr.city }}
+    {% config "organisation_bank_connection" as bank%}
+    {{ bank.NAME }}
+    Postkonto-Nummer: {{ bank.PC }}
+    IBAN: {{ bank.IBAN }}
+    BIC: {{ bank.BIC }}
 
-Viel Spass beim Erfassen
+Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur einen Anteilschein auf einmal.
+Zusätzlich gib im Betreff die Systemnummer an und die Emailadresse des halter des Anteilscheines (die sist vorallem wichtig wenn du den anteilschein für jemand anderes bezahlst)
+
+Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
 {% endblock %}

@@ -92,13 +92,13 @@ class Config:
     def business_regulations():
         if hasattr(settings, 'BUSINESS_REGULATIONS'):
             return settings.BUSINESS_REGULATIONS
-        return '/static/docs/business_regulations.pdf'
+        return ''
 
     @staticmethod
     def bylaws():
         if hasattr(settings, 'BYLAWS'):
             return settings.BYLAWS
-        return '/static/docs/bylaws.pdf'
+        return ''
 
     @staticmethod
     def mail_template():
@@ -109,9 +109,11 @@ class Config:
     @staticmethod
     def emails(key):
         if hasattr(settings, 'EMAILS'):
-            return settings.EMAILS[key]
+            if key in settings.EMAILS:
+                return settings.EMAILS[key]            
         return {'welcome': 'mails/welcome_mail.txt',
             'co_welcome': 'mails/welcome_added_mail.txt',
+            'co_added': 'mails/added_mail.txt',
             'password': 'mails/password_reset_mail.txt',
             'j_reminder': 'mails/job_reminder_mail.txt',
             'j_canceled': 'mails/job_canceled_mail.txt',
@@ -119,6 +121,8 @@ class Config:
             'j_changed': 'mails/job_time_changed_mail.txt',
             'j_signup': 'mails/job_signup_mail.txt',
             'd_changed': 'mails/depot_changed_mail.txt',
+            's_created': 'mails/share_created_mail.txt',
+            'n_sub': 'mails/new_subscription.txt',
             's_canceled': 'mails/subscription_canceled_mail.txt',
             'm_canceled': 'mails/membership_canceled_mail.txt',
             'b_share': 'mails/bill_share.txt',
@@ -148,7 +152,7 @@ class Config:
     def faq_doc():
         if hasattr(settings, 'FAQ_DOC'):
             return settings.FAQ_DOC
-        return '/static/doc/fac.pdf'
+        return ''
 
     @staticmethod
     def extra_sub_info():
@@ -237,7 +241,8 @@ class Config:
     @staticmethod
     def images(key):
         if hasattr(settings, 'IMAGES'):
-            return settings.IMAGES[key]
+            if key in settings.IMAGES:
+                return settings.IMAGES[key]
         return {'status_100': '/static/img/status_100.png',
             'status_75': '/static/img/status_75.png',
             'status_50': '/static/img/status_50.png',

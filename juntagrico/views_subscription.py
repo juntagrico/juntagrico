@@ -183,22 +183,7 @@ def signup(request):
     }
     return render(request, 'signup.html', renderdict)
 
-
-
-def welcome(request):
-    '''
-    welcome
-    '''
-    if request.META.get('HTTP_REFERER')is  None:
-        return redirect('http://'+Config.adminportal_server_url())
     
-    renderdict= {
-        'no_subscription': request.session['main_member'].subscription is None
-    }
-
-    return render(request, 'welcome.html', renderdict)
-
-
 def confirm(request, hash):
     '''
     Confirm from a user that has been added as a co_subscription member
@@ -211,134 +196,7 @@ def confirm(request, hash):
 
     return redirect('/my/home')
 
-
-
-def createsubscription(request):
-    '''
-    create a subscription
-    '''
-    if request.user.is_authenticated():
-        member = request.user.member
-    else:
-        member = request.session.get('main_member')
-    if member is None:
-        return redirect('http://'+Config.server_url())
     
-    subscriptionform = SubscriptionForm()
-    shareerror = False 
-    session_subscription = request.session.get('create_subscription')
-    co_members = request.session.get('create_co_members', [])
-    co_members_shares = request.session.get('create_co_members_shares', [])
-    member_shares = request.session.get('create_member_shares', [])
-    selectedsubscription = int(request.session.get('selectedsubscription', -1))
-    
-    selected_depot = None
-    existing_member_shares = 0
-    if member.pk is not None:
-        existing_member_shares = member.share_set.all().count()
-    shares = existing_member_shares
-
-    if session_subscription is not None:
-        selected_depot = session_subscription.depot
-
-    co_member_shares = len(co_members_shares)
-    if request.method == 'POST':
-        selectedsubscription = request.POST.get('subscription')
-        subscriptionform = SubscriptionForm(request.POST)
-        min_num_shares = next(
-            iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('shares', flat=True) or []), 1)
-        try:
-            shares += int(request.POST.get('shares'))
-            shares += co_member_shares
-        except:
-            shareerror = True    
-            
-        if shareerror or shares < min_num_shares or not subscriptionform.is_valid():
-            shareerror = shares < min_num_shares            
-        else:
-            size = next(
-                iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__size', flat=True) or []),
-                0)
-
-            if size > 0:
-                session_subscription = Subscription(**subscriptionform.cleaned_data)
-                session_subscription.depot = DepotDao.depot_by_id(request.POST.get('depot'))
-            if len(member_shares) < int(request.POST.get('shares')):
-                toadd = int(request.POST.get('shares')) - len(member_shares)
-                for num in range(0, toadd):
-                    member_shares.append(Share(member=member, paid_date=None))
-            elif len(member_shares) > int(request.POST.get('shares')):
-                toremove = len(member_shares) - int(request.POST.get('shares'))
-                for num in range(0, toremove):
-                    member_shares.pop()
-
-            if request.POST.get('add_member'):
-                request.session['create_subscription'] = session_subscription
-                request.session['create_subscription'] = session_subscription
-                request.session['create_member_shares'] = member_shares
-                request.session['selectedsubscription'] = selectedsubscription
-                return redirect('/my/cosubmember/0')
-            else:
-                password = None
-                if member.pk is None:
-                    member.save()
-                    password = password_generator()
-                    member.user.set_password(password)
-                    member.user.save()
-                if session_subscription is not None:
-                    session_subscription.primary_member = member
-                    session_subscription.save()
-                    types = list((type for type in SubscriptionTypeDao.get_by_id(int(selectedsubscription))))                    
-                    TSST.objects.create(type=types[0], subscription=session_subscription)                
-                    TFSST.objects.create(type=types[0], subscription=session_subscription)
-                    member.subscription_id = session_subscription.id
-                    member.save()
-                send_welcome_mail(member.email, password, hashlib.sha1((member.email + str(
-                    member.id)).encode('utf8')).hexdigest())
-                for co_member in co_members:
-                    co_member.subscription_id = session_subscription.id
-                    co_member.save()
-                    pw = None
-                    if co_member.confirmed is False:
-                        pw = password_generator()
-                        co_member.user.set_password(pw)
-                        co_member.user.save()
-                    send_been_added_to_subscription(co_member.email, pw, member.get_name(), shares,
-                                                    hashlib.sha1((co_member.email + str(
-                    co_member.id)).encode('utf8')).hexdigest())
-                for share in member_shares + co_members_shares:
-                    if share.id is None:
-                        if share.member.email == member.email:
-                            share.member = member
-                        else:
-                            share.member = list((co_member for co_member in co_members if co_member.email == share.member.email))[0]
-                        share.save()
-                        send_share_created_mail(share)
-                request.session['create_subscription'] = None
-                request.session['create_co_members'] = []
-                request.session['create_co_members_shares'] = []
-                request.session['create_member_shares'] = []
-                request.session['selectedsubscription'] = -1
-                if request.user.is_authenticated():
-                    return redirect('/my/home')
-                else:
-                    return redirect('/my/welcome')
-    renderdict = {
-        'co_member_shares': co_member_shares,
-        'existing_member_shares': existing_member_shares,
-        'member': member,
-        'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered(),
-        'depots': DepotDao.all_depots(),
-        'selected_depot': selected_depot,
-        'selected_subscription': int(selectedsubscription),
-        'shareerror': shareerror,
-        'co_members': co_members,
-        'subscriptionform': subscriptionform
-    }
-    return render(request, 'createsubscription.html', renderdict)
-
-
-
 def add_member(request, subscription_id):
     shareerror = False
     shares = 1
@@ -413,18 +271,6 @@ def add_member(request, subscription_id):
     }
     return render(request, 'add_member.html', renderdict)
 
-
-def cancel_create_subscription(request):
-    request.session['main_memer'] = None
-    request.session['create_subscription'] = None
-    request.session['create_co_members'] = []
-    request.session['create_co_members_shares'] = []
-    request.session['create_member_shares'] = []
-    request.session['selectedsubscription'] = -1
-    if request.user.is_authenticated():
-        return redirect('/my/subscription')
-    else:
-        return redirect('http://'+Config.server_url())
 
 @permission_required('juntagrico.is_operations_group')
 def activate_subscription(request, subscription_id):
