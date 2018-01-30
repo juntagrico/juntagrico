@@ -64,6 +64,7 @@ def cs_select_subscription(request):
     }
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 
+    
 def cs_select_depot(request):
     if request.user.is_authenticated():
         member = request.user.member
@@ -79,7 +80,8 @@ def cs_select_depot(request):
         'member': member,
         'depots': DepotDao.all_depots(),
     }
-    return render(request, 'createsubscription/select_depot.html', renderdict
+    return render(request, 'createsubscription/select_depot.html', renderdict)
+
 
 def cs_select_start_date(request):
     if request.user.is_authenticated():
@@ -97,8 +99,9 @@ def cs_select_start_date(request):
     renderdict = {      
         'subscriptionform': subscriptionform,
     }
-    return render(request, 'createsubscription/select_start_date.html', renderdict
+    return render(request, 'createsubscription/select_start_date.html', renderdict)
 
+    
 def cs_select_shares(request):
     if request.user.is_authenticated():
         member = request.user.member
@@ -146,7 +149,7 @@ def cs_select_shares(request):
                 for i in range(shares):
                     create_share(co_member)
             if subscription is not None:
-                send_subscription_created_mail(subscription):
+                send_subscription_created_mail(subscription)
             request.session['selected_subscription'] = None
             request.session['selecteddepot'] = None
             request.session['start_date'] = None
@@ -162,7 +165,7 @@ def cs_select_shares(request):
         'member': member,
         'co_members': co_members
     }
-    return render(request, 'createsubscription/select_shares.html', renderdict
+    return render(request, 'createsubscription/select_shares.html', renderdict)
     
 
 def cs_add_member(request, subscription_id):
