@@ -8,7 +8,7 @@
     {% if saved %}
         <div class="alert alert-success">
             Die Abogrösse wurde erfolgreich geändert.<br/>
-            <a href="/my/subscription" class="alert-link">Zurück zur Abo-Übersicht</a>
+            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">Zurück zur Abo-Übersicht</a>
         </div>
     {% elif shareerror %}
         <div class="alert alert-danger">

@@ -24,7 +24,7 @@ from juntagrico.util.management import *
 
 
 def cs_welcome(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         member = request.user.member
     else:
         member = request.session.get('main_member')
@@ -39,7 +39,7 @@ def cs_welcome(request):
 
 
 def cs_select_subscription(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         member = request.user.member
     else:
         member = request.session.get('main_member')
@@ -62,7 +62,7 @@ def cs_select_subscription(request):
 
     
 def cs_select_depot(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         member = request.user.member
     else:
         member = request.session.get('main_member')
@@ -80,7 +80,7 @@ def cs_select_depot(request):
 
 
 def cs_select_start_date(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         member = request.user.member
     else:
         member = request.session.get('main_member')
@@ -100,7 +100,7 @@ def cs_select_start_date(request):
 
     
 def cs_select_shares(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         member = request.user.member
     else:
         member = request.session.get('main_member')
@@ -146,15 +146,15 @@ def cs_select_shares(request):
                 for i in range(shares):
                     create_share(co_member)
             if subscription is not None:
-                subscription.main_member=member
+                subscription.primary_member=member
                 subscription.save()
                 send_subscription_created_mail(subscription)
             request.session['selected_subscription'] = None
             request.session['selecteddepot'] = None
             request.session['start_date'] = None
-            request.session['create_co_members'] = None  
-            if request.user.is_authenticated():
-                return redirect('/my/subscription')
+            request.session['create_co_members'] = []  
+            if request.user.is_authenticated:
+                return redirect('/my/subscription/detail/')
             else:
                 return redirect('/my/welcome')
     renderdict = {      
@@ -171,11 +171,11 @@ def cs_add_member(request):
     memberexists = False
     memberblocked = False
     co_members = request.session.get('create_co_members', [])
-    if request.user.is_authenticated():
-        member = request.user.member
+    if request.user.is_authenticated:
+        main_member = request.user.member
     else:
-        member = request.session.get('main_member')
-    if member is None:
+        main_member = request.session.get('main_member')
+    if main_member is None:
         return redirect('http://'+Config.server_url())
     if request.method == 'POST':
         memberform = RegisterMemberForm(request.POST)
@@ -188,17 +188,16 @@ def cs_add_member(request):
                 member = Member(**memberform.cleaned_data)
             co_members.append(member)
             request.session['create_co_members'] = co_members
-    initial = {'addr_street': member.addr_street,
-                   'addr_zipcode': member.addr_zipcode,
-                   'addr_location': member.addr_location,
-                   'phone': member.phone,
+    initial = {'addr_street': main_member.addr_street,
+                   'addr_zipcode': main_member.addr_zipcode,
+                   'addr_location': main_member.addr_location,
+                   'phone': main_member.phone,
                    }
     memberform = RegisterMemberForm(initial=initial)
     renderdict = {
         'memberexists': memberexists,
-        'memberblocked': memberexists,
+        'memberblocked': memberblocked,
         'memberform': memberform,
-        'member': member,
     }
     return render(request, 'createsubscription/add_member_cs.html', renderdict)
 
@@ -209,8 +208,8 @@ def cs_cancel_create_subscription(request):
     request.session['selecteddepot'] = None
     request.session['start_date'] = None
     request.session['create_co_members'] = []    
-    if request.user.is_authenticated():
-        return redirect('/my/subscription')
+    if request.user.is_authenticated:
+        return redirect('/my/subscription/detail/')
     else:
         return redirect('http://'+Config.server_url())
 

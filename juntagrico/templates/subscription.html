@@ -4,13 +4,14 @@
     <h3>Abo Übersicht</h3>    
 {% endblock %}
 
-{% block content %
+{% block content %}
     
         {% if future_subscription %}
-            <div class="alert alert-sucess">Du hast ein Abo auf der Warteliste<br/>Mehr Infos dazu findest du <a href="/my/subscrition/{{ member.future_subscription.id}}/">hier</a></div>
+            <div class="alert alert-success">Du hast ein Abo auf der Warteliste<br/>Mehr Infos dazu findest du <a href="/my/subscription/detail/{{ member.future_subscription.id}}/">hier</a></div>
         {% elif can_order %}
         <div class="alert alert-warning">Du hast noch kein Abo oder dein aktuelles ist gekündigt.<br/>Du möchtest ein neus Abo? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
         {% endif %}
+        
     {% if no_subscription %}
         <dl class="dl-horizontal">
         <dt>Anteilscheine</dt>
@@ -31,7 +32,7 @@
                     Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
                 {% elif subscription.state == 'canceled'%}
                     Dein Abo ist gekündigt, du erhälst wöchentlich dein Gemüse bis zum {{end_date|date:"d.m.Y"}}.
-                {% elif subscription.state == 'watiting' %}
+                {% elif subscription.state == 'waiting' %}
                     <span class="text-error">Auf der Warteliste</span> - du erhälst leider im Moment noch kein Gemüse.
                 {% elif subscription.state == 'inactive' %}
                     <span class="text-error">Dein abo wurde deaktiviert</span> - du erhälst im Moment kein Gemüse.
@@ -70,7 +71,7 @@
                 {% else %}
                     Du hast noch keine MitabonnentInnen eingetragen.<br/>
                 {% endif %}
-                <a href="/my/cosubmember/{{ subscription.id }}?return=/my/subscription">Hier MitabonnentInnen eintragen</a>
+                <a href="/my/cosubmember/{{ subscription.id }}">Hier MitabonnentInnen eintragen</a>
             </dd>
             <dt>Depot</dt>
             <dd>
@@ -117,7 +118,7 @@
             <dd>
                 {% if subscription.state != 'inactive' %}
                 <div class="form-actions">
-                    <a href="{% if primary %}/my/subscription/change/{{subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
+                    <a href="{% if primary %}/my/subscription/change/overview/{{subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
                     {% if not primary %}
                         * Das Abo kann nur der Hauptabonnnent ändern.
                     {% endif %}

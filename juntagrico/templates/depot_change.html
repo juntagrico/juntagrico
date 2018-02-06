@@ -7,8 +7,14 @@
 {% block content %}
     {% if saved %}
         <div class="alert alert-success">
-            !!!Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Solange keine Email an {{subscription.primary_member.email}} mit der Bestätigung für das neue Depot gesendet wurde ist noch das alte Depot {{subscription.depot.name}} aktiv!!!<br/>
-            <a href="/my/subscription">Zurück zur Abo-Übersicht</a>
+            {% if subscription.state == 'waiting' %}
+                Das Depot wurde geändert.
+            {% else %}
+                !!!Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Solange keine Email an {{subscription.primary_member.email}} 
+                mit der Bestätigung für das neue Depot gesendet wurde ist noch das alte Depot {{subscription.depot.name}} aktiv!!!
+            {% endif %}
+            <br/>
+            <a href="/my/subscription/detail/{{ subscription.id }}/">Zurück zur Abo-Übersicht</a>
         </div>
     {% else %}
         <form method="post" class="form-horizontal createsubscription">

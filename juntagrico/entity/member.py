@@ -60,9 +60,8 @@ class Member(models.Model):
     @property
     def blocked(self):
         future = self.future_subscription is not None
-        current = self.subscription is not None
-        canceled = self.subscription.canceled
-        return future or (current and not canceled)
+        current = self.subscription is None or not self.subscription.canceled
+        return future or not current 
 
         
     def __str__(self):

@@ -6,15 +6,16 @@ from juntagrico.dao.sharedao import ShareDao
 
 def messages(request):
     result = []
-    if request.user.member.confirmed is False:
+    member = request.user.member
+    if member.confirmed is False:
         result.append(get_template('messages/not_confirmed.html').render())
         
-    if request.user.member.subscription is None:
+    if member.subscription is None and member.future_subscription is None:
         result.append(get_template('messages/no_subscription.html').render())
         
-    if len(ShareDao.unpaid_shares(request.user.member))>0:
+    if len(ShareDao.unpaid_shares(member))>0:
         render_dict ={
-            'amount': len(ShareDao.unpaid_shares(request.user.member)),
+            'amount': len(ShareDao.unpaid_shares(member)),
         }
         result.append(get_template('messages/unpaid_shares.html').render(render_dict))
     

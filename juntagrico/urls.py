@@ -31,10 +31,10 @@ urlpatterns = [
     url(r'^accounts/login/$', LoginView.as_view()),
 
     # subscription related juntagrico stuff
-    url('^my/subscription$', juntagrico_subscription.subscription),
-    url('^my/subscription/(?P<subscription_id>.*?)/', juntagrico_subscription.subscription),
-    url('^my/subscription/change/(?P<subscription_id>.*?)/$', juntagrico_subscription.subscription_change),
-    url('^my/subscription/change/depot/(?P<subscription_id>.*?)/$', juntagrico_subscription.depot_change),
+    url('^my/subscription/detail/$', juntagrico_subscription.subscription),
+    url('^my/subscription/detail/(?P<subscription_id>.*?)/', juntagrico_subscription.subscription),
+    url('^my/subscription/change/overview/(?P<subscription_id>.*?)/', juntagrico_subscription.subscription_change),
+    url('^my/subscription/change/depot/(?P<subscription_id>.*?)/', juntagrico_subscription.depot_change),
     url('^my/subscription/change/size/(?P<subscription_id>.*?)/', juntagrico_subscription.size_change),
     url('^my/subscription/change/extra/(?P<subscription_id>.*?)/', juntagrico_subscription.extra_change),
     url('^my/signup$', juntagrico_subscription.signup),

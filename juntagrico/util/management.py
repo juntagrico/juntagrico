@@ -40,7 +40,7 @@ def update_member(member, subscription, main_member=None, shares=None):
     member.future_subscription = subscription
     member.save()
     if main_member is not None:
-        name = main_member.name
+        name = main_member.get_name()
         send_been_added_to_subscription(member.email, None, None, name, shares, False)
     
     

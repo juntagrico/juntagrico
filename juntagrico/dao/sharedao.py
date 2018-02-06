@@ -12,7 +12,7 @@ class ShareDao:
             
     @staticmethod
     def all_shares_subscription(subscription):
-        return juntagrico.models.Share.objects.filter(member__in=subscription.members.all()).filter(
+        return juntagrico.models.Share.objects.filter(member__in=subscription.recipients_all).filter(
             cancelled_date__isnull=True)
             
     @staticmethod

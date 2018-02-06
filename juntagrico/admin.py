@@ -61,10 +61,20 @@ class SubscriptionAdminForm(forms.ModelForm):
         old_members = set(self.instance.members.all())
         new_members = set(self.cleaned_data['subscription_members'])
         for obj in old_members - new_members:
-            obj.subscription = None
+            if self.instance.state == 'waiting':            
+                obj.future_subscription = None
+            elif self.instance.state == 'inactive':
+                obj.subscription.remove(self.instance)           
+            else:
+                obj.subscription = None
             obj.save()
         for obj in new_members - old_members:
-            obj.subscription = self.instance
+            if self.instance.state == 'waiting':            
+                obj.future_subscription = self.instance
+            elif self.instance.state == 'inactive':
+                obj.subscription.add(self.instance)           
+            else:
+                obj.subscription = self.instance
             obj.save()
 
 
@@ -430,7 +440,7 @@ class MemberAdminForm(forms.ModelForm):
             link = ''
         elif member.future_subscription:
             url = reverse('admin:juntagrico_subscription_change', args=(member.future_subscription.id,))
-            link = '<a href=%s>%s</a>' % (url, member.subscription)
+            link = '<a href=%s>%s</a>' % (url, member.future_subscription)
         else:
             link = 'Kein Abo'
         self.fields['future_subscription_link'].initial = link

@@ -33,13 +33,13 @@ def get_menu_dict(request):
     required_assignments = 0
     if member.subscription is not None:
         partner_assignments = []
-        for subscription_member in member.subscription.recipients_all():
+        for subscription_member in member.subscription.recipients_all:
             if subscription_member == member:
                 continue
             partner_assignments.extend(AssignmentDao.assignments_for_member_current_business_year(subscription_member))
 
         userassignments = AssignmentDao.assignments_for_member_current_business_year(member)
-        required_assignments = member.subscription.required_assignments()
+        required_assignments = member.subscription.required_assignments
         assignmentsrange = list(range(0, max(required_assignments, len(userassignments) + len(partner_assignments))))
 
         for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time'):

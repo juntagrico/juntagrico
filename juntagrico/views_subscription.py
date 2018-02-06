@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
@@ -31,7 +32,7 @@ def subscription(request, subscription_id=None):
     Details for an subscription of a member
     '''
     member = request.user.member
-    future_subscription = memeber.future_subscription is not None
+    future_subscription = member.future_subscription is not None
     can_order = member.future_subscription is None and (member.subscription is None or member.subscription.canceled)
     renderdict = get_menu_dict(request)
     if subscription_id is None:
@@ -41,26 +42,26 @@ def subscription(request, subscription_id=None):
         future_subscription = future_subscription and not(subscription==member.future_subscription)
     end_date = end_of_next_business_year()
     
-    if request.user.member.subscription is not None:
-        cancelation_date = request.user.member.subscription.cancelation_date
+    if subscription is not None:
+        cancelation_date = subscription.cancelation_date
         if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
         renderdict.update({
-            'subscription': request.user.member.subscription,
-            'co_members': request.user.member.subscription.recipients().exclude(
+            'subscription': subscription,
+            'co_members': subscription.recipients.exclude(
                 email=request.user.member.email),
-            'primary': request.user.member.subscription.primary_member.email == request.user.member.email,
+            'primary': subscription.primary_member.email == request.user.member.email,
             'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),                
             'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         })
     renderdict.update({
+        'no_subscription': subscription is None,
         'end_date': end_date,
-        'subscription': subscription,
         'can_order': can_order,
         'future_subscription': future_subscription,
         'member': request.user.member,
-        'shares': request.user.member.active_shares,
+        'shares': request.user.member.active_shares.count(),
         'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
         'menu': {'subscription': 'active'},
     })
@@ -94,7 +95,10 @@ def depot_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     if request.method == 'POST':
-        subscription.future_depot = get_object_or_404(Depot, id=int(request.POST.get('depot')))
+        if subscription.state == 'waiting':
+            subscription.depot = get_object_or_404(Depot, id=int(request.POST.get('depot')))
+        else:
+            subscription.future_depot = get_object_or_404(Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
     renderdict = get_menu_dict(request)
@@ -117,17 +121,22 @@ def size_change(request, subscription_id):
     shareerror = False
     if request.method == 'POST' and int(time.strftime('%m')) <= Config.business_year_cancelation_month() and int(request.POST.get('subscription')) > 0:
         type=SubscriptionTypeDao.get_by_id(int(request.POST.get('subscription')))[0]
-        shares = request.user.member.subscription.all_shares
+        shares = subscription.all_shares
         if shares<type.shares:
             shareerror = True
         else:
-            for type in TFSST.objects.filter(subscription=subscription):
-                type.delete()
+            if subscription.state=='waiting':
+                for t in TSST.objects.filter(subscription=subscription):
+                    t.delete()
+                TSST.objects.create(subscription=subscription, type=type)
+            for t in TFSST.objects.filter(subscription=subscription):
+                t.delete()
             TFSST.objects.create(subscription=subscription, type=type)
             saved = True
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
+        'subscription': subscription,
         'shareerror': shareerror,
         'hours_used': Config.assignment_unit()=='HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
@@ -149,7 +158,7 @@ def extra_change(request, subscription_id):
             if value>0:
                 for x in range(value):
                     ExtraSubscription.objects.create(main_subscription=subscription, type=type)
-        return redirect('/my/subscription/change/extra/'+subscription.id+'/')
+        return redirect('/my/subscription/change/extra/'+str(subscription.id)+'/')
     renderdict = get_menu_dict(request)
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_extra_types(),
@@ -233,7 +242,7 @@ def add_member(request, subscription_id):
                 update_member(member,subscription, main_member, shares)
             for i in range(shares):
                 create_share(member)
-            return redirect('/my/subscription')
+            return redirect('/my/subscription/detail/'+str(subscription_id)+'/')
     else:
         initial = {'addr_street': main_member.addr_street,
                    'addr_zipcode': main_member.addr_zipcode,
@@ -256,8 +265,12 @@ def add_member(request, subscription_id):
 def activate_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if subscription.active is False and subscription.deactivation_date is None:
-        subscription.active=True
-        subscription.save()
+        try:
+            subscription.active=True
+            subscription.save()  
+        except ValidationError:
+            renderdict = get_menu_dict(request)
+            return render(request, 'activation_error.html', renderdict)
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
     else:
