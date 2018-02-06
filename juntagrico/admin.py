@@ -33,9 +33,14 @@ class SubscriptionAdminForm(forms.ModelForm):
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        self.fields['primary_member'].queryset = self.instance.members.all()
-        self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(self.instance)
-        self.fields['subscription_members'].initial = self.instance.members.all()
+        self.fields['primary_member'].queryset = self.instance.recipients
+        if self.instance.state == 'waiting':            
+            self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(self.instance)
+        elif self.instance.state == 'inactive':
+            self.fields['subscription_members'].queryset = MemberDao.all_members()            
+        else:
+            self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(self.instance)
+        self.fields['subscription_members'].initial = self.instance.recipients_all
 
     def clean(self):
         # enforce integrity constraint on primary_member
@@ -421,9 +426,19 @@ class MemberAdminForm(forms.ModelForm):
         else:
             link = 'Kein Abo'
         self.fields['subscription_link'].initial = link
+        if member is None:
+            link = ''
+        elif member.future_subscription:
+            url = reverse('admin:juntagrico_subscription_change', args=(member.future_subscription.id,))
+            link = '<a href=%s>%s</a>' % (url, member.subscription)
+        else:
+            link = 'Kein Abo'
+        self.fields['future_subscription_link'].initial = link
 
     subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
                                        label='Abo')
+    future_subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
+                                       label='Zukünftiges Abo')
 
 
 class MemberAdmin(admin.ModelAdmin):
@@ -431,7 +446,7 @@ class MemberAdmin(admin.ModelAdmin):
     list_display = ['email', 'first_name', 'last_name']
     search_fields = ['first_name', 'last_name', 'email']
     # raw_id_fields = ['subscription']
-    exclude = ['subscription']
+    exclude = ['future_subscription','subscription','old_subscriptions']
     readonly_fields = ['user']
     actions = ['impersonate_job']
 

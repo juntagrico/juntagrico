@@ -72,10 +72,16 @@ class Subscription(Billable):
 
     @property
     def recipients(self):
-        return self.members.filter(inactive=False)
+        return self.recipients_all.filter(inactive=False)
+        
     @property
     def recipients_all(self):
-        return self.members.all()
+        if self.state == 'waiting':
+            return self.members_future.all()
+        elif self.state == 'inactive':
+            return self.members_old.all()
+        else:
+            return self.members.all()
 
     def primary_member_nullsave(self):
         member = self.primary_member
@@ -196,10 +202,21 @@ class Subscription(Billable):
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
+            for member in instance.recipients_all:
+                if member.subscription is not None:
+                    raise ValidationError('Ein Bezüger hat noch ein aktives Abo!', code='invalid')
+            for member in instance.recipients_all:
+                member.subscription=instance
+                member.future_subscription=None
+                member.save()
             if Config.billing():
                 bill_subscription(instance)
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
+            for member in instance.recipients_all:
+                member.old_subscriptions.add(instance)
+                member.subscription=None
+                member.save()
         if instance.old_canceled != instance.canceled:
             send_subscription_canceled(instance)
             instance.cancelation_date = timezone.now().date()

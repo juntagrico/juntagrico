@@ -36,14 +36,14 @@
                 </div>
                 
                 <label class="col-md-6 control-label">
-                    {% if member.active_shares == 0 %}
+                    {% if member.active_shares.count == 0 %}
                     Ein Anteilschein ist automatisch dir zugeteilt und wird hier nicht angezeigt
                     {% else %}
-                    Du hast bereits {{member.active_shares}} Anteilscheine
+                    Du hast bereits {{member.active_shares.count}} Anteilscheine
                     {% endif %}
                 </label>
             </div>
-            {% for co_member in co_members }}
+            {% for co_member in co_members %}
             <div class="form-group">
                 <label class="col-md-3 control-label">{{ co_member.first_name }} {{ co_member.last_name }}</label>
 
@@ -52,7 +52,7 @@
                         <input type="text" name="{{ co_member.email }}" id="shares" class="col-md-1 form-control" value="0"/><br/>
                     </label>                    
                 </div>
-                <label class="col-md-6 control-label">besitzt bereits {{ co_member.active_shares }} Anteilscheine</label>
+                <label class="col-md-6 control-label">besitzt bereits {{ co_member.active_shares.count }} Anteilscheine</label>
             </div>
             {% endfor %}
 

@@ -22,11 +22,8 @@ from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
+from juntagrico.util.management import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
-
-
-def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(
-    random.choice(chars) for x in range(size))
 
 
 def get_menu_dict(request):

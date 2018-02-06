@@ -14,7 +14,7 @@ from juntagrico.mailer import *
 class ActivityArea(models.Model):
     name = models.CharField('Name', max_length=100, unique=True)
     description = models.TextField('Beschreibung', max_length=1000, default='')
-    email = models.EmailField(null=True)
+    email = models.EmailField(null=True, blank=True)
     core = models.BooleanField('Kernbereich', default=False)
     hidden = models.BooleanField('versteckt', default=False)
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT)
@@ -93,6 +93,7 @@ class AbstractJobType(models.Model):
     def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name())
 
+    @property
     def get_name(self):
         if self.displayed_name is not None and self.displayed_name != '':
             return self.displayed_name

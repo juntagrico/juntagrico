@@ -23,10 +23,6 @@ from juntagrico.util import temporal
 from juntagrico.util.management import *
 
 
-def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(
-    random.choice(chars) for x in range(size))
-
-
 def cs_welcome(request):
     if request.user.is_authenticated():
         member = request.user.member
@@ -56,8 +52,8 @@ def cs_select_subscription(request):
                 0)
         if size > 0:
             request.session['selectedsubscription'] = selectedsubscription
-            redirect('/my/create/subscription/selectdepot')
-        redirect('/my/create/subscription/shares')
+            return redirect('/my/create/subscription/selectdepot')
+        return redirect('/my/create/subscription/shares')
     renderdict = {    
         'hours_used': Config.assignment_unit()=='HOURS',
         'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered(),
@@ -75,7 +71,7 @@ def cs_select_depot(request):
     if request.method == 'POST':
         depot = DepotDao.depot_by_id(request.POST.get('depot'))
         request.session['selecteddepot'] = depot
-        redirect('/my/create/subscription/start')
+        return redirect('/my/create/subscription/start')
     renderdict = {
         'member': member,
         'depots': DepotDao.all_depots(),
@@ -95,8 +91,9 @@ def cs_select_start_date(request):
         subscriptionform = SubscriptionForm(request.POST)
         if subscriptionform.is_valid():
             request.session['start_date'] = subscriptionform.cleaned_data['start_date']
-            redirect('/my/create/subscription/addmembers')
-    renderdict = {      
+            return redirect('/my/create/subscription/addmembers')
+    renderdict = {     
+        'start_date': temporal.start_of_next_business_year(),
         'subscriptionform': subscriptionform,
     }
     return render(request, 'createsubscription/select_start_date.html', renderdict)
@@ -110,13 +107,13 @@ def cs_select_shares(request):
     if member is None:
         return redirect('http://'+Config.server_url())
     share_error=False
-    share_sum = member.active_shares    
+    share_sum = len(member.active_shares)  
     co_members = request.session.get('create_co_members', [])
     for co_member in co_members:
-        share_sum += co_member.active_shares
-    selected_subscription = request.session['selectedsubscription',-1]
+        share_sum += len(co_member.active_shares)
+    selected_subscription = request.session.get('selectedsubscription',-1)
     total_shares = next(
-            iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('shares', flat=True) or []), 1)
+            iter(SubscriptionTypeDao.get_by_id(selected_subscription).values_list('shares', flat=True) or []), 1)
     required_shares = max(0,total_shares-max(1,share_sum))        
     
     if request.method == 'POST':
@@ -129,7 +126,7 @@ def cs_select_shares(request):
             share_error = True      
         if not share_error:
             Subscription = None
-            if selected_subscription > -1:
+            if int(selected_subscription) > -1:
                 start_date = request.session['start_date']
                 depot = request.session['selecteddepot']            
                 subscription = create_subscription(start_date, depot, selected_subscription)
@@ -149,6 +146,8 @@ def cs_select_shares(request):
                 for i in range(shares):
                     create_share(co_member)
             if subscription is not None:
+                subscription.main_member=member
+                subscription.save()
                 send_subscription_created_mail(subscription)
             request.session['selected_subscription'] = None
             request.session['selecteddepot'] = None
@@ -168,7 +167,7 @@ def cs_select_shares(request):
     return render(request, 'createsubscription/select_shares.html', renderdict)
     
 
-def cs_add_member(request, subscription_id):
+def cs_add_member(request):
     memberexists = False
     memberblocked = False
     co_members = request.session.get('create_co_members', [])
@@ -185,12 +184,10 @@ def cs_add_member(request, subscription_id):
             memberexists = True
             memberblocked= member.blocked
         if memberform.is_valid()or (memberexists is True and memberblocked is False):
-            if memberexis is False:
+            if memberexists is False:
                 member = Member(**memberform.cleaned_data)
             co_members.append(member)
             request.session['create_co_members'] = co_members
-            if request.POST.get('more'):
-                redirect('/my/create/subscription/addmembers')
     initial = {'addr_street': member.addr_street,
                    'addr_zipcode': member.addr_zipcode,
                    'addr_location': member.addr_location,
@@ -203,7 +200,7 @@ def cs_add_member(request, subscription_id):
         'memberform': memberform,
         'member': member,
     }
-    return render(request, 'add_member_cs.html', renderdict)
+    return render(request, 'createsubscription/add_member_cs.html', renderdict)
 
 
 def cs_cancel_create_subscription(request):
@@ -211,7 +208,7 @@ def cs_cancel_create_subscription(request):
     request.session['selected_subscription'] = None
     request.session['selecteddepot'] = None
     request.session['start_date'] = None
-    request.session['create_co_members'] = None    
+    request.session['create_co_members'] = []    
     if request.user.is_authenticated():
         return redirect('/my/subscription')
     else:

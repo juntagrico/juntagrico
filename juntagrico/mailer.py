@@ -152,7 +152,7 @@ def send_share_created_mail(member, share):
     send_mail_multi(msg)
 
 def send_subscription_created_mail(subscription):
-    plaintext = get_template('n_sub')
+    plaintext = get_template(Config.emails('n_sub'))
 
     d = {
         'subscription': subscription,

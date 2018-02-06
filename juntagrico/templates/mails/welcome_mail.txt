@@ -11,10 +11,10 @@ Bitte setze dir hier gleich ein neues Passwort:
 
 Du erhälst für deine Anteilscheine separate Emails mit den Inforamtionen wie du diese bezalen kannst.
 
-{% if subscription %}
+{% if subscription is not None %}
 Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
-{% endif %}
 
+{% endif %}
 Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. 
 
 Damit wir dich als Mitglied freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
