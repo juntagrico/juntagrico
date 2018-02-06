@@ -33,13 +33,13 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-)
+]
 
 EMAIL_HOST = os.environ.get('JUNTAGRICO_EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('JUNTAGRICO_EMAIL_USER')
