@@ -29,13 +29,13 @@
             <dt>Status</dt>
             <dd>
                 {% if subscription.state == 'active'%}
-                    Dein Abo ist aktiv, du erhälst wöchentlich dein Gemüse.
+                    Dein Abo ist aktiv, du erhältst wöchentlich dein Gemüse.
                 {% elif subscription.state == 'canceled'%}
-                    Dein Abo ist gekündigt, du erhälst wöchentlich dein Gemüse bis zum {{end_date|date:"d.m.Y"}}.
+                    Dein Abo ist gekündigt, du erhältst wöchentlich dein Gemüse bis zum {{end_date|date:"d.m.Y"}}.
                 {% elif subscription.state == 'waiting' %}
-                    <span class="text-error">Auf der Warteliste</span> - du erhälst leider im Moment noch kein Gemüse.
+                    <span class="text-error">Auf der Warteliste</span> - du erhältst leider im Moment noch kein Gemüse.
                 {% elif subscription.state == 'inactive' %}
-                    <span class="text-error">Dein abo wurde deaktiviert</span> - du erhälst im Moment kein Gemüse.
+                    <span class="text-error">Dein abo wurde deaktiviert</span> - du erhältst im Moment kein Gemüse.
                 {% endif %}
             </dd>
             <dt>Anteilscheine</dt>
