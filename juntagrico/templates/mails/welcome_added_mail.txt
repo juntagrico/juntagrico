@@ -21,16 +21,19 @@ Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {
 Damit wir dich als Mitglied freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
 Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
 Damit bestätigst du, dass du damit einverstanden bist {% config "organisation_name" %}-GenossenschafterIn zu werden,dem Abo beizutreten, die bestellten Anteilscheine zu erwerben.
-Ebenfalls bestätigst du, dass du 
-http://{% config "server_url" %}{% config "bylaws" %}
-die Statuten und 
-http://{% config "server_url" %}{% config "business_regulations" %} 
-das Betriebsreglement gelesen hast.
+Ebenfalls bestätigst du, dass du die Statuten ({% config "bylaws" as bylaws %}{{ bylaws|safe }})
+{% config "business_regulations" as business_regulations %}{% if business_regulations.strip %} und das Betriebsreglement({{ business_regulations|safe }}){% endif %}
+
+ gelesen hast.
 
 Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {% config "info_email" %}.
 
-
-Für weitere Fragen schaust du in den FAQ (http://{% config "server_url" %}{% config "faq_doc" %}) nach oder schreibst eine Mail an {% config "info_email" %}.
+{% config "faq_doc" as faq_doc %}
+{% if faq_doc.strip %}
+Für weitere Fragen schaust du in den FAQ ({{ faq_doc|safe }}) nach oder schreibst eine Mail an {% config "info_email" %}.
+{% else %}
+Für weitere Fragen schreibe eine Mail an {% config "info_email" %}.
+{% endif %}
 
 Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
 {% endblock %}

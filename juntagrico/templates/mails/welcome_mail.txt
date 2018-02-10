@@ -20,8 +20,9 @@ Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {
 Damit wir dich als Mitglied freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
 Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
 
-
-Für weitere Fragen schaust du in den FAQ (http://{% config "server_url" %}{% config "faq_doc" %}) nach oder schreibst eine Mail an {% config "info_email" %}.
+{% config "faq_doc" as faq_doc %}
+{% if faq_doc.strip %}Für weitere Fragen schaust du in den FAQ ({{ faq_doc }}) nach oder schreibst eine Mail an {% config "info_email" %}.{% else %}Für weitere Fragen schreibe eine Mail an {% config "info_email" %}.
+{% endif %}
 
 Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
 {% endblock %}

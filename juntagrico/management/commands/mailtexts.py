@@ -25,7 +25,10 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         subscription = Subscription.objects.all()[0]
-        extrasub = ExtraSubscription.objects.all()[0]
+        if ExtraSubscription.objects.all().count()>0:
+            extrasub = ExtraSubscription.objects.all()[0]
+        else:
+            extrasub=None
         share = Share.objects.all()[0]
         job = RecuringJob.objects.all()[0]
         member = Member.objects.all()[0]
@@ -244,18 +247,19 @@ class Command(BaseCommand):
         content = plaintext.render(d)
         print(content)
         print()
-
-        print('*** b_esub ***')
         
-        plaintext = get_template(Config.emails('b_esub'))
-        d = {
-            'member': member,
-            'bill': bill,
-            'extrasub': extrasub,
-            'start': timezone.now(),
-            'end': timezone.now(),
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
-        print()
+        if extrasub is not None:
+            print('*** b_esub ***')
+            
+            plaintext = get_template(Config.emails('b_esub'))
+            d = {
+                'member': member,
+                'bill': bill,
+                'extrasub': extrasub,
+                'start': timezone.now(),
+                'end': timezone.now(),
+                'serverurl': get_server()
+            }
+            content = plaintext.render(d)
+            print(content)
+            print()
