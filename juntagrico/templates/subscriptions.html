@@ -30,6 +30,7 @@
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Aktiv</th>
+                <th>Aktivierungsdatum</th>
                 <th>Emails</th>
             </tr>
             </thead>
@@ -42,6 +43,7 @@
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Aktiv</th>
+                <th>Aktivierungsdatum</th>
                 <th>Emails</th>
             </tr>
             </foot>
@@ -63,7 +65,8 @@
                     <td>{{ subscription.assignments }} <img src="{% images subscription.icon %}"/> {{ subscription.text }}</td>
                     {% if show_core %}<td>{{ subscription.core_assignments }}</td>{% endif %}
                     <td>{% if subscription.subscription.active %}<img src="{% images "single_full" %}"/> Aktiv{% else %}<img src="{% images "single_empty" %}"/> Wartend{% endif %}</td>
-                    <td>{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                    <td>{{ subscription.subscription.activation_date }}</td>
+                    <td class="email">{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>
             {% endfor %}
             </tbody>

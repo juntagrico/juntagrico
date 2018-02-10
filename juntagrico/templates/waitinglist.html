@@ -10,6 +10,14 @@
             width: 95%;
         }
     </style>
+        <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="recipients" id="recipients"/>
+        <input type="hidden" name="recipients_count" id="recipients_count"/>
+        {% if can_send_mails %}
+        <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
+        {% endif %}
+    </form>
     <div id="waitinglist">
         <table id="filter-table" class="list table" style="display: table;">
             <thead>
@@ -18,6 +26,7 @@
                 <th>Start Datum</th>
                 <th>Kontakt</th>
                 <th>Email</th>
+                <th>Tag</th>
                 <th>Bezahlte Anteilsscheine</th>
                 <th>Bestelldatum</th>
                 <th></th>
@@ -35,10 +44,18 @@
                             {% csrf_token %}
                             <input type="hidden" name="recipients" value="{{ subscription.primary_member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();">{{ subscription.primary_member.email }}</a>
+                            <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();" class="email">{{ subscription.primary_member.email }}</a>
                         </form>
                     </td>
-                    <td>{{ subscription.paid_shares }}</td>
+                    <td>{{ subscription.depot.weekday_name }}</td>
+                    <td>
+                        {{ subscription.paid_shares }} 
+                        {% if subscription.paid_shares %}
+                            (J)
+                        {% else %}
+                            (N)
+                        {% endif %}
+                    </td>
                     <td>{{ subscription.creation_date|date:"Y-m-d" }}</td>
                     <td><a href="/my/subscription/activate/{{ subscription.id }}/" class="btn btn-success">aktivieren</a></td>
                     <td>{{ subscription.notes }}</td>
@@ -47,6 +64,11 @@
             </tbody>
         </table>
     </div>
+    <br/><br/>
+    <script>
+            var member_string = "{% config "member_string" %}";
+            var members_string = "{% config "members_string" %}";            
+    </script>
     
 {% endblock %}
 
