@@ -72,9 +72,14 @@ def cs_select_depot(request):
         depot = DepotDao.depot_by_id(request.POST.get('depot'))
         request.session['selecteddepot'] = depot
         return redirect('/my/create/subscription/start')
+    depots = DepotDao.all_depots()
+    requires_map = False
+    for depot in depots:
+        requires_map = requires_map or depot.has_geo
     renderdict = {
         'member': member,
-        'depots': DepotDao.all_depots(),
+        'depots': depots,
+        'requires_map': requires_map,
     }
     return render(request, 'createsubscription/select_depot.html', renderdict)
 

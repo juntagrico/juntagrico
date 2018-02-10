@@ -28,8 +28,9 @@
                     <label for="depot">
                         Wähle ein Depot aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
                     </label>
-
-                    <div id="map-canvas"></div>
+                    {% if requires_map %}
+                        <div id="map-canvas"></div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -49,7 +50,7 @@
         var destinations = [];
         var depots = [];
         {% for depot in depots %}
-            {% if depot.latitude %}
+            {% if depot.has_geo %}
                 destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}");
                 depots.push({
                     name: '{{ depot.name }}',

@@ -17,12 +17,11 @@ class Depot(models.Model):
     name = models.CharField('Depot Name', max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
-    latitude = models.CharField('Latitude', max_length=100, default='')
-    longitude = models.CharField('Longitude', max_length=100, default='')
-
-    addr_street = models.CharField('Strasse', max_length=100)
-    addr_zipcode = models.CharField('PLZ', max_length=10)
-    addr_location = models.CharField('Ort', max_length=50)
+    latitude = models.CharField('Latitude', max_length=100, default='', null=True, blank=True)
+    longitude = models.CharField('Longitude', max_length=100, default='', null=True, blank=True)
+    addr_street = models.CharField('Strasse', max_length=100, null=True, blank=True)
+    addr_zipcode = models.CharField('PLZ', max_length=10, null=True, blank=True)
+    addr_location = models.CharField('Ort', max_length=50, null=True, blank=True)
 
     description = models.TextField('Beschreibung', max_length=1000, default='')
 
@@ -35,6 +34,15 @@ class Depot(models.Model):
     def active_subscriptions(self):
         return self.subscription_set.filter(active=True)
 
+    @property
+    def has_geo(self):
+        lat = self.latitude is not None and self.latitude!=''
+        long = self.longitude is not None and self.longitude!=''
+        street = self.addr_street is None and self.addr_street !=''
+        zip = self.addr_zipcode is None and self.addr_zipcode !=''
+        loc = self.addr_location is None and self.addr_location !=''
+        return lat and long and street and zip and loc 
+    
     @property
     def weekday_name(self):
         day = 'Unbekannt'
