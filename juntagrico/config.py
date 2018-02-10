@@ -55,6 +55,10 @@ class Config:
                 'extra' : ''}
 
     @staticmethod
+    def organisation_phone():
+        return getattr(settings, 'ORGANISATION_PHONE', '')
+
+    @staticmethod
     def organisation_bank_connection():
         if hasattr(settings, 'ORGANISATION_BANK_CONNECTION'):
             return settings.ORGANISATION_BANK_CONNECTION

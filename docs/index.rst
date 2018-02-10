@@ -1,9 +1,9 @@
 Welcome to the juntagrico documentation
-=========
+=======================================
 Installation
----------
+------------
 
-Install juntagrcio from it's git repository or using pip. You need an django app.
+Install juntagrico from it's git repository or using pip. You need an django app.
 
 The following django settings are nescessary to run juntagrico.
 
@@ -55,7 +55,7 @@ Django also needs to be configured to send emails and to access a database. If y
 
 
 juntagrico specific settings
----------
+----------------------------
 
 You can use the following settings to configure juntagrico
 
@@ -154,6 +154,18 @@ You can use the following settings to configure juntagrico
         "zip" : "12456",
         "city" : "Springfield",
         "extra" : ""}
+
+* ORGANISATION_PHONE
+
+  The phone number for your organisation
+
+  Type: string
+
+  default value
+
+  .. code-block:: python
+
+    ""
 
 * ORGANISATION_BANK_CONNECTION
 
@@ -270,7 +282,7 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "/static/css/juntagrico.css"
+    "/static/css/personal.css"
 
 * FAVICON
 
@@ -506,6 +518,30 @@ You can use the following settings to configure juntagrico
         'single_core': '/static/img/single_core.png',
         'core': '/static/img/core.png'}
 
+* EMAILS
+
+  Defining the different email templates
+
+  default value
+
+  .. code-block:: python
+
+    {
+        'welcome': 'mails/welcome_mail.txt',
+        'co_welcome': 'mails/welcome_added_mail.txt',
+        'password': 'mails/password_reset_mail.txt',
+        'j_reminder': 'mails/job_reminder_mail.txt',
+        'j_canceled': 'mails/job_canceled_mail.txt',
+        'confirm': 'mails/confirm.txt',
+        'j_changed': 'mails/job_time_changed_mail.txt',
+        'j_signup': 'mails/job_signup_mail.txt',
+        'd_changed': 'mails/depot_changed_mail.txt',
+        's_canceled': 'mails/subscription_canceled_mail.txt',
+        'b_share': 'mails/bill_share.txt',
+        'b_sub': 'mails/bill_sub.txt',
+        'b_esub': 'mails/bill_extrasub.txt'
+    }
+
 * GOOGLE_API_KEY
 
   The google api key to enable the mapps in juntagrico
@@ -575,3 +611,18 @@ For your convenience all settings with default values to copy into your settings
                 'single_core': '/static/img/single_core.png',
                 'core': '/static/img/core.png'}
     GOOGLE_API_KEY = 'GOOGLE_API_KEY'
+    EMAILS = {
+        'welcome': 'mails/welcome_mail.txt',
+        'co_welcome': 'mails/welcome_added_mail.txt',
+        'password': 'mails/password_reset_mail.txt',
+        'j_reminder': 'mails/job_reminder_mail.txt',
+        'j_canceled': 'mails/job_canceled_mail.txt',
+        'confirm': 'mails/confirm.txt',
+        'j_changed': 'mails/job_time_changed_mail.txt',
+        'j_signup': 'mails/job_signup_mail.txt',
+        'd_changed': 'mails/depot_changed_mail.txt',
+        's_canceled': 'mails/subscription_canceled_mail.txt',
+        'b_share': 'mails/bill_share.txt',
+        'b_sub': 'mails/bill_sub.txt',
+        'b_esub': 'mails/bill_extrasub.txt'
+    }

@@ -282,11 +282,13 @@ def send_job_signup(emails, job):
     }
 
     content = plaintext.render(d)
-    #ical_content = genecrate_ical_for_job(job)
+
+    ical_content = generate_ical_for_job(job)
 
     msg = EmailMultiAlternatives(Config.organisation_name() + ' - für Job Angemeldet', content,
                                  Config.info_email(), emails)
-    #msg.attach('einsatz.ics', ical_content, 'text/calendar')
+    # Not attaching ics as it is not correct
+    # msg.attach('einsatz.ics', ical_content, 'text/calendar')
     send_mail_multi(msg)
 
 
