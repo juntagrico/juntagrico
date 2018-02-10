@@ -7,6 +7,10 @@ SECRET_KEY = 'fake-key'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+IMPERSONATE = {
+    'REDIRECT_URL': '/my/profile',
+}
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -15,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'impersonate',
     'juntagrico',
 ]
 
@@ -39,6 +44,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'impersonate.middleware.ImpersonateMiddleware',
 ]
 
 EMAIL_HOST = os.environ.get('JUNTAGRICO_EMAIL_HOST')
