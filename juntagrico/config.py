@@ -171,6 +171,12 @@ class Config:
         if hasattr(settings, 'SHARE_PRICE'):
             return settings.SHARE_PRICE
         return '250'
+        
+    @staticmethod
+    def base_fee():
+        if hasattr(settings, 'BASE_FEE'):
+            return settings.BASE_FEE
+        return ''
 
     @staticmethod
     def currency():

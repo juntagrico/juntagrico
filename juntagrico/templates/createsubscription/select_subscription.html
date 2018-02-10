@@ -63,7 +63,11 @@
                             <input type="radio" name="subscription" class="onoffswitch"  value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
                     </label>
                     <label class="col-md-7 control-label">
-                            Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
+                            Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.<br/>
+                            {% config "base_fee" as base_fee%}
+                            {% if base_fee.strip %}
+                                Genossenschafter ohne Abo bezahlen einen Jahresbeitrag von {{ base_fee }} {% config "currency" %}
+                            {% endif %}                            
                         </label>
                     
                 </div>
