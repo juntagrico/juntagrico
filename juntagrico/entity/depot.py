@@ -38,9 +38,9 @@ class Depot(models.Model):
     def has_geo(self):
         lat = self.latitude is not None and self.latitude!=''
         long = self.longitude is not None and self.longitude!=''
-        street = self.addr_street is None and self.addr_street !=''
-        zip = self.addr_zipcode is None and self.addr_zipcode !=''
-        loc = self.addr_location is None and self.addr_location !=''
+        street = self.addr_street is not None and self.addr_street !=''
+        zip = self.addr_zipcode is not None and self.addr_zipcode !=''
+        loc = self.addr_location is not None and self.addr_location !=''
         return lat and long and street and zip and loc 
     
     @property
