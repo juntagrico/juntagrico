@@ -54,8 +54,7 @@ class Member(models.Model):
             
     @property
     def active_shares_count(self):
-        return self.share_set.filter(
-            cancelled_date__isnull=True)
+        return self.active_shares.count()
             
     @property
     def blocked(self):

@@ -66,13 +66,13 @@ def cancelation_date():
     return datetime.date(year, c_month, calendar.monthrange(year,c_month)[1])
 
 def next_membership_end_date():
-    month = Config.membership_end_month()
-    day = calendar.monthrange(year,month)[1]
     now = timezone.now().date()
+    month = Config.membership_end_month()
     if now <= cancelation_date():
         offset = end_of_business_year()
     else:
         offset = end_of_next_business_year()
+    day = calendar.monthrange(offset.year,month)[1]
     return calculate_next_offset(day, month,offset)
 
 def calculate_next(day, month):

@@ -37,7 +37,7 @@
                 <button type="submit" class="btn btn-success">Mitgliedschaft künden</button>
             </div>
         </form>
-        {% elseif missing_iban%}
+        {% elif missing_iban%}
             Du musst zuerst deine IBAN hinterlegen, damit deine Ateilscheine ausbezahlt werden können.
         {% else %}
             Du bist entweder Hauptabonnent oder ohne deine Anteilscheine hat dein jetztiges Abo nicht genug Anteilscheine um weiter zu existieren. 
