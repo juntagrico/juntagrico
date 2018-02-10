@@ -55,7 +55,7 @@
                     <li><h5>Dein Menu {{ user.member.first_name }}</h5>
                     </li>
                     <li class="{{ menu.subscriptionnnement }}">
-                        <a href="/my/subscription">Abo</a>
+                        <a href="/my/subscription/detail/">Abo</a>
                     </li>
                     <li class="{{ menu.participation }}">
                         <a href="/my/participation">Mitarbeit</a>
@@ -63,6 +63,11 @@
                     <li class="{{ menu.jobs }}">
                         <a href="/my/assignments">Einsätze</a>
                     </li>
+                    {% if show_deliveries %}
+                    <li class="{{ menu.deliveries }}">
+                        <a href="/my/deliveries">Lieferungen</a>
+                    </li>
+                    {% endif %}
                     <li class="{{ menu.personalInfo }}">
                         <a href="/my/profile">Personalien</a>
                     </li>

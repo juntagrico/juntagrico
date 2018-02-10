@@ -5,6 +5,7 @@ from django.contrib.auth.views import LoginView
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_subscription as juntagrico_subscription
+from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico.personalisation import personal_urls
 
 urlpatterns = [
@@ -14,6 +15,7 @@ urlpatterns = [
     url('^my/jobs/(?P<job_id>.*?)/', juntagrico.job),
     url('^my/teams/(?P<area_id>.*?)/', juntagrico.team),
     url('^my/profile$', juntagrico.profile),
+    url('^my/cancel/membership$', juntagrico.cancel_membership),
     url('^my/participation$', juntagrico.participation),
     url('^my/contact$', juntagrico.contact),
     url('^my/contact/member/(?P<member_id>.*?)/(?P<job_id>.*?)/', juntagrico.contact_member),
@@ -21,6 +23,7 @@ urlpatterns = [
     url('^my/assignments/all$', juntagrico.assingments_all),
     url('^my/pastjobs$', juntagrico.pastjobs),
     url('^my/depot/(?P<depot_id>.*?)/', juntagrico.depot),
+    url('^my/deliveries$', juntagrico.deliveries),
     url('^my/newpassword$', juntagrico.new_password),
     url('^my/sendconfirm$', juntagrico.send_confirm),
     url('^my/info/unpaidshares$', juntagrico.info_unpaid_shares),
@@ -28,16 +31,14 @@ urlpatterns = [
     url(r'^accounts/login/$', LoginView.as_view()),
 
     # subscription related juntagrico stuff
-    url('^my/subscription$', juntagrico_subscription.subscription),
-    url('^my/subscription/change$', juntagrico_subscription.subscription_change),
-    url('^my/subscription/change/depot$', juntagrico_subscription.depot_change),
-    url('^my/subscription/change/size$', juntagrico_subscription.size_change),
-    url('^my/subscription/change/extra$', juntagrico_subscription.extra_change),
+    url('^my/subscription/detail/$', juntagrico_subscription.subscription),
+    url('^my/subscription/detail/(?P<subscription_id>.*?)/', juntagrico_subscription.subscription),
+    url('^my/subscription/change/overview/(?P<subscription_id>.*?)/', juntagrico_subscription.subscription_change),
+    url('^my/subscription/change/depot/(?P<subscription_id>.*?)/', juntagrico_subscription.depot_change),
+    url('^my/subscription/change/size/(?P<subscription_id>.*?)/', juntagrico_subscription.size_change),
+    url('^my/subscription/change/extra/(?P<subscription_id>.*?)/', juntagrico_subscription.extra_change),
     url('^my/signup$', juntagrico_subscription.signup),
     url('^my/cosubmember/(?P<subscription_id>.*?)/', juntagrico_subscription.add_member),
-    url('^my/create/subscrition$', juntagrico_subscription.createsubscription),
-    url('^my/create/subscription/cancel$', juntagrico_subscription.cancel_create_subscription),
-    url('^my/welcome$', juntagrico_subscription.welcome),
     url('^my/confirm/(?P<hash>.*?)/', juntagrico_subscription.confirm),
     url('^my/subscription/activate/(?P<subscription_id>.*?)/', juntagrico_subscription.activate_subscription),
     url('^my/subscription/deactivate/(?P<subscription_id>.*?)/', juntagrico_subscription.deactivate_subscription),
@@ -48,6 +49,14 @@ urlpatterns = [
     url('^my/extra/cancel/(?P<extra_id>.*?)/', juntagrico_subscription.cancel_extra),
     url('^my/order/share/$', juntagrico_subscription.order_shares),
     url('^my/order/share/success$', juntagrico_subscription.order_shares_success),
+    
+    url('^my/create/subscrition$', juntagrico_cs.cs_select_subscription),
+    url('^my/create/subscription/selectdepot$', juntagrico_cs.cs_select_depot),
+    url('^my/create/subscription/start$', juntagrico_cs.cs_select_start_date),
+    url('^my/create/subscription/addmembers$', juntagrico_cs.cs_add_member),
+    url('^my/create/subscription/shares$', juntagrico_cs.cs_select_shares),
+    url('^my/create/subscription/cancel$', juntagrico_cs.cs_cancel_create_subscription),
+    url('^my/welcome$', juntagrico_cs.cs_welcome),
 
     # admin related juntagrico stuff
     url('^my/mails/send/depot$', juntagrico_admin.send_email_depot),

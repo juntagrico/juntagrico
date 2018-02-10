@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load config %}
+{% block all_page_title %}
+    <div class="col-md-3"> 
+            &nbsp;
+    </div>
+    <div class="col-md-9 juntagrico">
+        <h3>Wähle dein Abo</h3>
+    </div>
+{% endblock %}
+
+{% block allcontent %}
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-8">
+        <form action="" method="post" class="form-horizontal createsubscription">
+            {% csrf_token %}
+            {% for subscription_size in subscription_sizes %}
+                <div class="form-group">
+                    <label class="col-md-3 control-label">{% if forloop.first %}Abogrösse{% endif %}</label>
+                    <div class="col-md-9 controls radio">     
+                        <label for="{{ subscription_size.name }}" class="control-label col-md-9">
+                            {{ subscription_size.long_name }}
+                            <br/>
+                            {{ subscription_size.description }}
+                        </label>
+                    </div>
+                </div>
+                {% for type in subscription_size.types.all %}
+                    {% if type.visible %}
+                        <div class="form-group">
+                            <label class="col-md-3 control-label"></label>
+                            <div class="col-md-9 offset-md-3 controls radio"> 
+                                <label for="{{ type.name }}" class="control-label col-md-2">
+                                    <input type="radio" name="subscription" class="onoffswitch" value="{{ type.id }}" id="{{ type.name }}" {% if selected_subscription == type.id %}checked="checked"{% endif %}/>
+                                </label>
+                                <label for="{{ type.name }}" class="control-label col-md-7">
+                                    {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif%}
+                                    {% if type.description.strip %}{{ type.description }}<br/>{% endif%}
+                                    Beitrag: {{ type.price }} {% config "currency" %}
+                                    <br/>
+                                    Anteilsscheine: {{ type.shares }}
+                                    <br/>
+                                    Arbeitseinsätze: {{ type.required_assignments }} {% if hours_used %}Stunden{% endif %}
+                                </label>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+            <div class="form-group">
+                <label class="col-md-3 control-label"> </label>
+                <div class="col-md-9 controls radio">     
+                    <label for="{{ subscription_size.name }}" class="control-label col-md-9">
+                        Kein Abo
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-9 offset-md-3 controls radio"> 
+                    <label class="col-md-2 control-label">
+                            <input type="radio" name="subscription" class="onoffswitch"  value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
+                    </label>
+                    <label class="col-md-7 control-label">
+                            Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.<br/>
+                            {% config "base_fee" as base_fee%}
+                            {% if base_fee.strip %}
+                                Genossenschafter ohne Abo bezahlen einen Jahresbeitrag von {{ base_fee }} {% config "currency" %}
+                            {% endif %}                            
+                        </label>
+                    
+                </div>
+            </div>  
+            <div class="col-md-offset-4 form-actions">
+                <button type="submit" class="btn btn-success">Weiter</button>
+                <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+

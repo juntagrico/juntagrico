@@ -7,8 +7,14 @@
 {% block content %}
     {% if saved %}
         <div class="alert alert-success">
-            !!!Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Solange keine Email an {{member.subscription.primary_member.email}} mit der Bestätigung für das neue Depot gesendet wurde ist noch das alte Depot {{member.subscription.depot.name}} aktiv!!!<br/>
-            <a href="/my/subscription">Zurück zur Abo-Übersicht</a>
+            {% if subscription.state == 'waiting' %}
+                Das Depot wurde geändert.
+            {% else %}
+                !!!Achtung! Das Depot änderst erst bei der nächsten Depotlisten Generierung. Solange keine Email an {{subscription.primary_member.email}} 
+                mit der Bestätigung für das neue Depot gesendet wurde ist noch das alte Depot {{subscription.depot.name}} aktiv!!!
+            {% endif %}
+            <br/>
+            <a href="/my/subscription/detail/{{ subscription.id }}/">Zurück zur Abo-Übersicht</a>
         </div>
     {% else %}
         <form method="post" class="form-horizontal createsubscription">
@@ -17,7 +23,7 @@
                 <label class="control-label col-md-3" for="depot">Altes Depot</label>
 
                 <div class="controls col-md-9">
-                    {{ member.subscription.depot.name }}
+                    {{ subscription.depot.name }}
                 </div>
             </div>
             <div class="form-group">
@@ -34,7 +40,9 @@
                         Wähle ein Depot aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
                     </label>
 
-                    <div id="map-canvas" ></div>
+                    {% if requires_map %}
+                        <div id="map-canvas"></div>
+                    {% endif %}
                 </div>
             </div>
             <div class="col-md-offset-3 form-actions">
@@ -44,13 +52,13 @@
         </form>
 
         <script>
-            var depot_id = {{ member.subscription.depot.id }};
+            var depot_id = {{ subscription.depot.id }};
             var member_addr = '{{ member.addr_street }}+{{ member.addr_zipcode }}+{{ member.addr_location }}';
 
             var destinations = [];
             var depots = [];
             {% for depot in depots %}
-                {% if depot.latitude %}
+                {% if depot.has_geo %}
                     destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}")
                     depots.push({
                         name: '{{ depot.name }}',

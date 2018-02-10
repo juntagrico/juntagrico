@@ -52,7 +52,6 @@ define([], function () {
             $.each(sortedDepots, function (i, d) {
                 $("#depot").append($depotOptions.find("#depot" + d.code).addClass("sorted"));
             });
-            $depotOptions.find("option").not(".sorted").remove();
 
         };
         if (window.google) {

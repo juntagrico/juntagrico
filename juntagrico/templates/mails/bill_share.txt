@@ -6,8 +6,8 @@ Lieber {{ member.first_name }}
 
 Hier die Rechnung für deinen bestellten Anteilschein:
 
-Betrag:         {{ bill.price}}
-Referenznummer: {{ bill.refnumber }}
+Betrag:         {{ bill.amount}} {% config "currency" %}
+Referenznummer: {{ bill.ref_number }}
 Kontonummer:    {{ bank.ESR }}
 
 Solange dein Anteilschein nicht bezahlt wurde bist du nicht Genossenschafter. Der Betrag kann in Teilzahlungen bezahlt werden. 

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load config %}
+{% block page_title %}
+        <h3>Künde deine Migliedshaft</h3>
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12">
+        <br/>
+        Hier kannst du deine Mitgliedshaft kündigen. {% if coop_member%}Der nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.{% endif %}
+        <br/>
+        {% if coop_member%}
+           <ul>
+                <li>Du erhälst keine Emails mehr </li>
+                <li>Du wirst bei deinem Abo ausgetragen</li>
+                <li>Deine Anteilscheine werden gekündigt</li>
+           </ul>
+        {% else %}
+           <ul>
+                <li>Du erhälst keine Emails mehr </li>
+                <li>Du wirst bei deinem Abo ausgetragen</li>
+           </ul>
+        {% endif %}
+        <br/>
+
+        {% if can_cancel %}
+            <form action="" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden" />
+            <div class="form-group">
+            <label class="control-label col-md-3" for="message">Mitteilung</label>
+                <div class="controls col-md-9">
+                    <textarea name="message" id="message" class="form-control" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+                </div>
+            </div>
+            <div class="col-md-offset-4 form-actions">
+                <button type="submit" class="btn btn-success">Mitgliedschaft künden</button>
+            </div>
+        </form>
+        {% elif missing_iban%}
+            Du musst zuerst deine IBAN hinterlegen, damit deine Ateilscheine ausbezahlt werden können.
+        {% else %}
+            Du bist entweder Hauptabonnent oder ohne deine Anteilscheine hat dein jetztiges Abo nicht genug Anteilscheine um weiter zu existieren. 
+            Falls du Hilfe brauchst um das Problem zu beheben wende dich an {% config "info_email" %}.
+        {% endif %}
+        
+        
+    </div>
+
+{% endblock %}
+

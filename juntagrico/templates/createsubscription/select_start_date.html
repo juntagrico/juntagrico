@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load config %}
+{% block all_page_title %}
+    <div class="col-md-3"> 
+            &nbsp;
+    </div>
+    <div class="col-md-9 juntagrico">
+        <h3>Wähle dein Startdatum</h3>
+    </div>
+{% endblock %}
+
+{% block allcontent %}
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+    <br/>
+
+        Info:
+
+        Normalerweise kann ein neues Abo erst ab dem Start einens Geschäftsjahres bezogen werden. Das nächste Startdatum wäre der {{ start_date |date:"d.m.Y" }}. 
+        Es kann jedoch vorkommen, dass unter dem Jahr ein Abo frei wird. Würdest du gerne schon früher einsteigen falls ein Abo frei wird dann kannst du das Startdatum unten anpassen.
+        <br/><br/>
+
+        <form action="" method="post" class="form-horizontal createsubscription">
+            {% csrf_token %}
+            
+            <div id="start_date" class="form-group">
+                <label class="col-md-3 control-label">Gewünschtes Startdatum</label>
+
+                <div class="col-md-9 controls">
+                    <label>
+
+                        {{ subscriptionform.start_date }}
+                        Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein Abo zum gewünschten Datum frei ist.
+                    </label>
+                    {% if subscriptionform.start_date.errors %}
+                        <div class="alert alert-danger">Das gewählte Startdatum ist nicht gültig</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-md-offset-4 form-actions">
+                <button type="submit" class="btn btn-success">Weiter</button>
+                <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

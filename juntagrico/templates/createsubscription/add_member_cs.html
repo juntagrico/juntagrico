@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load config %}
+{% block all_page_title %}
+    <div class="col-md-3"> 
+            &nbsp;
+    </div>
+    <div class="col-md-9 juntagrico">
+        <h3>MitabonnentIn hinzufügen</h3>
+    </div>
+{% endblock %}
+
+{% block allcontent %}
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <br/>
+		Bei bestehenden {% config "members_string" %} reicht es die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
+        <form action="" method="post" class="form-horizontal" id="new_member">
+            {% csrf_token %}
+            <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_last_name">Name *</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.last_name }}
+                    {% if memberform.last_name.errors %}
+                        <span class="help-inline">Name ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.first_name.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_first_name">Vorname *</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.first_name }}
+                    {% if memberform.first_name.errors %}
+                        <span class="help-inline">Vorname ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.addr_street.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_addr_street">{{ memberform.addr_street.label }} *</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.addr_street }}
+                    {% if memberform.addr_street.errors %}
+                        <span class="help-inline">Strasse ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.addr_zipcode.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }} *</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.addr_zipcode }}
+                    {% if memberform.addr_zipcode.errors %}
+                        <span class="help-inline">PLZ ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.addr_location.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_addr_location">{{ memberform.addr_location.label }} *</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.addr_location }}
+                    {% if memberform.addr_location.errors %}
+                        <span class="help-inline">Ort ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.phone.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_phone">{{ memberform.phone.label }} *</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.phone }}
+                    {% if memberform.phone.errors %}
+                        <span class="help-inline">Telefon ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.mobile_phone.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_mobile_phone">{{ memberform.mobile_phone.label }} &nbsp;</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.mobile_phone }}
+                    {% if memberform.mobile_phone.errors %}
+                        <span class="help-inline">Mobile ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.email.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="id_email">E-Mail Adresse *</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.email }}
+
+                    {% if memberform.email.errors %}
+                        <span class="help-inline">E-Mail ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group {% if memberform.birthday.errors %}error{% endif %}">
+                <label class="col-md-3 control-label" for="birthday">Geburtstag &nbsp;</label>
+
+                <div class="controls col-md-9">
+                    {{ memberform.birthday }}
+
+                    {% if memberform.birthday.errors %}
+                        <span class="help-inline">Geburtstag ungültig</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if memberexists and memberblocked %}
+                <div class="alert alert-danger">
+                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem Abo dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
+                </div>
+            {% endif %}
+            <div class="form-actions col-md-offset-3">
+                <button type="submit" class="btn btn-success" formnovalidate>MitabonnentIn hinzufügen</button>
+                <a href="/my/create/subscription/shares" class="btn btn-success">Weiter</a>
+                <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

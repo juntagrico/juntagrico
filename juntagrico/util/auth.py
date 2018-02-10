@@ -8,7 +8,7 @@ class AuthenticateWithEmail(object):
     def authenticate(username=None, password=None):
         try:
             user = Member.objects.get(**{'email': username}).user
-            if user.check_password(password):
+            if user.check_password(password) and not user.member.inactive:
                 return user
         except Member.DoesNotExist:
             return None

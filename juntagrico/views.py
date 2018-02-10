@@ -17,15 +17,13 @@ from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
+from juntagrico.util.management import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
-
-
-def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(
-    random.choice(chars) for x in range(size))
 
 
 def get_menu_dict(request):
@@ -35,13 +33,13 @@ def get_menu_dict(request):
     required_assignments = 0
     if member.subscription is not None:
         partner_assignments = []
-        for subscription_member in member.subscription.recipients():
+        for subscription_member in member.subscription.recipients_all:
             if subscription_member == member:
                 continue
             partner_assignments.extend(AssignmentDao.assignments_for_member_current_business_year(subscription_member))
 
         userassignments = AssignmentDao.assignments_for_member_current_business_year(member)
-        required_assignments = member.subscription.required_assignments()
+        required_assignments = member.subscription.required_assignments
         assignmentsrange = list(range(0, max(required_assignments, len(userassignments) + len(partner_assignments))))
 
         for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time'):
@@ -77,6 +75,7 @@ def get_menu_dict(request):
         'area_admin': area_admin,
         'show_core': ActivityAreaDao.all_core_areas().count()>0,
         'show_extras': JobExtraDao.all_job_extras().count()>0,
+        'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription))>0,
     }
     enrich_menu_dict(request, menu_dict)
     return menu_dict
@@ -312,6 +311,21 @@ def assingments_all(request):
 
 
 @login_required
+def deliveries(request):
+    '''
+    All deliveries to be sorted etc.
+    '''
+    renderdict = get_menu_dict(request)
+    deliveries = DeliveryDao.deliveries_by_subscription(request.user.member.subscription)
+    renderdict.update({
+        'deliveries': deliveries,
+        'menu': {'deliveries': 'active'},
+    })
+
+    return render(request, 'deliveries.html', renderdict)
+
+
+@login_required
 def contact(request):
     '''
     contact form
@@ -378,6 +392,7 @@ def profile(request):
             member.addr_location = memberform.cleaned_data['addr_location']
             member.phone = memberform.cleaned_data['phone']
             member.mobile_phone = memberform.cleaned_data['mobile_phone']
+            member.iban = memberform.cleaned_data['iban']
             member.reachable_by_email = memberform.cleaned_data['reachable_by_email']
             member.save()
             success = True
@@ -388,9 +403,52 @@ def profile(request):
     renderdict.update({
         'memberform': memberform,
         'success': success,
+        'coop_member': member.is_cooperation_member,
+        'end_date': next_membership_end_date(),
+        'member': member,
+        'can_cancel': not member.is_cooperation_member or (member.iban is not None and member.subscription.share_overflow-member.active_shares_count>0),
+        'missing_iban': member.iban is None ,
         'menu': {'personalInfo': 'active'},
     })
     return render(request, 'profile.html', renderdict)
+    
+@login_required
+def cancel_membership(request):
+    member = request.user.member
+    if request.method == 'POST':
+        now = timezone.now().date()
+        end_date = request.POST.get('end_date')
+        message = request.POST.get('message')
+        member =  request.user.member
+        member.canceled = True
+        member.cancelation_date = now
+        if member.is_cooperation_member:
+            send_membership_canceled(member, end_date, message)
+        else:
+            member.inactive = True
+        
+        member.save()
+        for share in member.active_shares:
+            share.cancelled_date = now
+            share.termination_date = end_date
+            share.save()
+        return redirect('/my/profile')
+    
+    missing_iban = member.iban is None
+    coop_member =  member.is_cooperation_member
+    share_error = member.subscription.share_overflow-member.active_shares_count<0
+    can_cancel = not coop_member or (not missing_iban and not share_error) 
+    
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'coop_member': coop_member,
+        'end_date': next_membership_end_date(),
+        'member': member,
+        'can_cancel': can_cancel,
+        'missing_iban': missing_iban ,
+    })
+    return render(request, 'cancelmembership.html', renderdict)
+    
 
 
 @login_required

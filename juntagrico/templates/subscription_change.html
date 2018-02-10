@@ -48,28 +48,28 @@
     <div class="row">
         <div class="col-md-4">
             Momentanes Depot: <br/>
-            {{ member.subscription.depot.name }}
+            {{ subscription.depot.name }}
         </div>
         <div class="col-md-4">
             Zukünftige Grösse: <br/>
-            {{ member.subscription.future_size_name }}
+            {{ subscription.future_size_name }}
         </div>
         {% if has_extra_subscriptions %}
         <div class="col-md-4">
             Zukünftige Zusatz-Abos: <br/>
-            {% if not  member.subscription.extrasubscriptions_changed %}
-                {% if member.subscription.extra_subscriptions.all|length == 0 %}
+            {% if not  subscription.extrasubscriptions_changed %}
+                {% if subscription.extra_subscriptions.all|length == 0 %}
                     Keine Zusatz-Abos
                 {% else %}
-                    {% for extrasubscription in member.subscription.extra_subscriptions.all %}
+                    {% for extrasubscription in subscription.extra_subscriptions.all %}
                         <li>{{ extrasubscription.type.name }}</li>
                     {% endfor %}
                 {% endif %}
             {% else %}
-                {% if member.subscription.future_extra_subscriptions.all|length == 0 %}
+                {% if subscription.future_extra_subscriptions.all|length == 0 %}
                     Keine Zusatz-Abos
                 {% else %}
-                    {% for extrasubscription in member.subscription.future_extra_subscriptions.all %}
+                    {% for extrasubscription in subscription.future_extra_subscriptions.all %}
                         <li>{{ extrasubscription.type.name }}</li>
                     {% endfor %}
                 {% endif %}
@@ -80,15 +80,15 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <a href="/my/subscription/change/depot" class="btn btn-success">Depot ändern</a>
+            <a href="/my/subscription/change/depot/{{ subscription.id }}/" class="btn btn-success">Depot ändern</a>
         </div>
         <div class="col-md-4">
-            <a {% if change_size %}href="/my/subscription/change/size"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
+            <a {% if change_size %}href="/my/subscription/change/size/{{ subscription.id }}/"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
             {% if not change_size %}* nur {{ next_business_year |date:"F" }}-{{ next_cancel_date |date:"F" }} möglich{% endif %}
         </div>
         {% if has_extra_subscriptions %}
         <div class="col-md-4">
-            <a href="/my/subscription/change/extra" class="btn btn-success">Zusatz-Abos ändern</a>
+            <a href="/my/subscription/change/extra/{{ subscription.id }}/" class="btn btn-success">Zusatz-Abos ändern</a>
         </div>    
        {% endif %}
     </div>

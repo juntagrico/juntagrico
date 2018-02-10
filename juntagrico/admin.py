@@ -4,7 +4,7 @@
 from django import forms
 from django.conf.urls import url
 from django.contrib import admin, messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 from juntagrico.config import Config
@@ -33,9 +33,14 @@ class SubscriptionAdminForm(forms.ModelForm):
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        self.fields['primary_member'].queryset = self.instance.members.all()
-        self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(self.instance)
-        self.fields['subscription_members'].initial = self.instance.members.all()
+        self.fields['primary_member'].queryset = self.instance.recipients
+        if self.instance.state == 'waiting':            
+            self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(self.instance)
+        elif self.instance.state == 'inactive':
+            self.fields['subscription_members'].queryset = MemberDao.all_members()            
+        else:
+            self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(self.instance)
+        self.fields['subscription_members'].initial = self.instance.recipients_all
 
     def clean(self):
         # enforce integrity constraint on primary_member
@@ -56,10 +61,20 @@ class SubscriptionAdminForm(forms.ModelForm):
         old_members = set(self.instance.members.all())
         new_members = set(self.cleaned_data['subscription_members'])
         for obj in old_members - new_members:
-            obj.subscription = None
+            if self.instance.state == 'waiting':            
+                obj.future_subscription = None
+            elif self.instance.state == 'inactive':
+                obj.subscription.remove(self.instance)           
+            else:
+                obj.subscription = None
             obj.save()
         for obj in new_members - old_members:
-            obj.subscription = self.instance
+            if self.instance.state == 'waiting':            
+                obj.future_subscription = self.instance
+            elif self.instance.state == 'inactive':
+                obj.subscription.add(self.instance)           
+            else:
+                obj.subscription = self.instance
             obj.save()
 
 
@@ -356,6 +371,19 @@ class DepotAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'weekday', 'contact']
 
 
+class DeliveryInline(admin.TabularInline):
+    model = DeliveryItem
+    
+
+class DeliveryAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "delivery_date", "subscription_size")
+    ordering = ("-delivery_date","subscription_size")
+    actions = ["copy_delivery"]
+    search_fields = ["delivery_date", "subscription_size"]
+    inlines = [DeliveryInline]
+    save_as = True
+
+
 class ExtraSubscriptionAdmin(admin.ModelAdmin):
     raw_id_fields = ['main_subscription']
 
@@ -408,9 +436,19 @@ class MemberAdminForm(forms.ModelForm):
         else:
             link = 'Kein Abo'
         self.fields['subscription_link'].initial = link
+        if member is None:
+            link = ''
+        elif member.future_subscription:
+            url = reverse('admin:juntagrico_subscription_change', args=(member.future_subscription.id,))
+            link = '<a href=%s>%s</a>' % (url, member.future_subscription)
+        else:
+            link = 'Kein Abo'
+        self.fields['future_subscription_link'].initial = link
 
     subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
                                        label='Abo')
+    future_subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
+                                       label='Zukünftiges Abo')
 
 
 class MemberAdmin(admin.ModelAdmin):
@@ -418,7 +456,7 @@ class MemberAdmin(admin.ModelAdmin):
     list_display = ['email', 'first_name', 'last_name']
     search_fields = ['first_name', 'last_name', 'email']
     # raw_id_fields = ['subscription']
-    exclude = ['subscription']
+    exclude = ['future_subscription','subscription','old_subscriptions']
     readonly_fields = ['user']
     actions = ['impersonate_job']
 
@@ -444,6 +482,7 @@ admin.site.register(Member, MemberAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
 admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
+admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(JobExtra)
 admin.site.register(JobExtraType)
 admin.site.register(JobType, JobTypeAdmin)

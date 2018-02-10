@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load config %}
+{% block all_page_title %}
+    <div class="col-md-3"> 
+            &nbsp;
+    </div>
+    <div class="col-md-9 juntagrico">
+        <h3>Anteilsscheine erwerben</h3>
+    </div>
+{% endblock %}
+
+{% block allcontent %}
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <br/>
+        {% if share_error %}
+            <div class="alert alert-danger">Du brauchst entweder mehr Anteilscheine für das gewählte Abo oder eine deiner Eingaben ist keine postitive Zahl.(x &#8713; &#8469;) </div>
+        {% endif %}
+
+        Infos:
+
+        Um Mitglied der Genossenschaft {% config "organisation_name" %} zu werden, musst du mindestens einen Anteilschein ({% config "currency" %} {% config "share_price" %}) erwerben.
+        Für das von dir ausgewählte Abo brauchst du insgesammt {{ total_shares }} Anteilscheine. Du kannst natürlich noch mehr erwerben. <br/>
+        Teile die restliche benötigten {{ required_shares }} Anteilscheine unter dir und deinen MitabonnentInnen auf.
+        <br/><br/>
+
+        <form action="" method="post" class="form-horizontal createsubscription">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="col-md-3 control-label">Deine Anteilscheine</label>
+
+                <div class="col-md-3 controls">
+                    <label for="shares">
+                        <input type="text" name="shares_mainmember" id="shares" class="col-md-1 form-control" value="{{ required_shares }}"/><br/>
+                    </label>                    
+                </div>
+                
+                <label class="col-md-6 control-label">
+                    {% if member.active_shares.count == 0 %}
+                    Ein Anteilschein ist automatisch dir zugeteilt und wird hier nicht angezeigt
+                    {% else %}
+                    Du hast bereits {{member.active_shares.count}} Anteilscheine
+                    {% endif %}
+                </label>
+            </div>
+            {% for co_member in co_members %}
+            <div class="form-group">
+                <label class="col-md-3 control-label">{{ co_member.first_name }} {{ co_member.last_name }}</label>
+
+                <div class="col-md-3 controls">
+                    <label for="shares">
+                        <input type="text" name="{{ co_member.email }}" id="shares" class="col-md-1 form-control" value="0"/><br/>
+                    </label>                    
+                </div>
+                <label class="col-md-6 control-label">besitzt bereits {{ co_member.active_shares.count }} Anteilscheine</label>
+            </div>
+            {% endfor %}
+
+            <div class="col-md-offset-4 form-actions">
+                <button type="submit" class="btn btn-success">Bestellen</button>
+                <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+

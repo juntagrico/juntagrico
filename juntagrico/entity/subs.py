@@ -3,6 +3,7 @@ import time
 import datetime
 
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
@@ -60,17 +61,31 @@ class Subscription(Billable):
     @property
     def types_changed(self):
         return set(self.types.all())!=set(self.future_types.all())
+    
 
     def recipients_names(self):
-        members = self.members.all()
+        members = self.recipients
         return ', '.join(str(member) for member in members)
 
     def other_recipients_names(self):
-        members = self.recipients().exclude(email=self.primary_member.email)
+        members = self.recipients.exclude(email=self.primary_member.email)
         return ', '.join(str(member) for member in members)
 
+    @property
     def recipients(self):
-        return self.members.all()
+        return self.recipients_all.filter(inactive=False)
+        
+    @property
+    def recipients_all(self):
+        return self.recipients_all_for_state(self.state)
+    
+    def recipients_all_for_state(self, state):
+        if state == 'waiting':
+            return self.members_future.all()
+        elif state == 'inactive':
+            return self.members_old.all()
+        else:
+            return self.members.all()
 
     def primary_member_nullsave(self):
         member = self.primary_member
@@ -98,6 +113,10 @@ class Subscription(Billable):
     @property
     def all_shares(self):
         return ShareDao.all_shares_subscription(self).count()
+    
+    @property
+    def share_overflow(self):
+        return self.all_shares - self.required_shares
 
     @property
     def future_extra_subscriptions(self):
@@ -123,8 +142,7 @@ class Subscription(Billable):
         for type in types.all():
             if type.size.name == size_name:
                 result += 1
-        return result
-        
+        return result        
 
     @staticmethod
     def next_extra_change_date():
@@ -146,8 +164,16 @@ class Subscription(Billable):
             size_names.append(type.__str__())
         if len(size_names) > 0:
             return ', '.join(size_names)
-        return 'kein Abo'
-        
+        return 'kein Abo'    
+    
+    @property
+    def required_shares(self):
+        result = 0
+        for type in self.types.all():
+            result += type.shares
+        return result
+      
+    @property      
     def required_assignments(self):
         result = 0
         for type in self.types.all():
@@ -180,24 +206,28 @@ class Subscription(Billable):
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
             instance.activation_date = timezone.now().date()
+            for member in instance.recipients_all_for_state('waiting'):
+                if member.subscription is not None:
+                    raise ValidationError('Ein Bezüger hat noch ein aktives Abo!', code='invalid')
+            for member in instance.recipients_all_for_state('waiting'):
+                member.subscription=instance
+                member.future_subscription=None
+                member.save()
             if Config.billing():
                 bill_subscription(instance)
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
             instance.deactivation_date = timezone.now().date()
+            for member in instance.recipients_all_for_state('active'):
+                member.old_subscriptions.add(instance)
+                member.subscription=None
+                member.save()
         if instance.old_canceled != instance.canceled:
-            send_subscription_canceled(instance)
             instance.cancelation_date = timezone.now().date()
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
         instance.old_active = instance.active
         instance.old_canceled = instance.canceled
-
-    @classmethod
-    def pre_delete(cls, sender, instance, **kwds):
-        for member in instance.recipients():
-            member.subscription = None
-            member.save()
 
     class Meta:
         verbose_name = 'Abo'
