@@ -23,6 +23,7 @@ from juntagrico.models import *
 from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
 from juntagrico.util.management import *
+from juntagrico.util.addons import *
 from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 
@@ -76,6 +77,7 @@ def get_menu_dict(request):
         'show_core': ActivityAreaDao.all_core_areas().count()>0,
         'show_extras': JobExtraDao.all_job_extras().count()>0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription))>0,
+        'admin_menus' : get_admin_menus(),
     }
     enrich_menu_dict(request, menu_dict)
     return menu_dict

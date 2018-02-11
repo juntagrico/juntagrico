@@ -356,7 +356,7 @@ def excel_export_members(request):
         'reachable_by_email',
         'block_emails',
     ]
-    return generate_excell(fields, Member)
+    return generate_excell_from_model(fields, Member)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -374,7 +374,7 @@ def excel_export_shares(request):
         'member.last_name',
         'member.email',
     ]
-    return generate_excell(fields, Share)
+    return generate_excell_from_model(fields, Share)
 
 
 @permission_required('juntagrico.is_operations_group')
