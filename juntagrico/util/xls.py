@@ -21,7 +21,6 @@ def generate_excell_from_model(fields, model_instance):
     instances = model_instance.objects.all()
     return generate_excell(parsed_fields, instances)
 
-
 def generate_excell_load_fields(fields, model_instance,instances):
     for field in fields:
         if fields[field]=='':
