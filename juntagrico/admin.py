@@ -189,6 +189,10 @@ class JobAdmin(admin.ModelAdmin):
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
     readonly_fields = ['freie_plaetze']
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_job_inlines())
+        super(JobAdmin,self).__init__(*args, **kwargs)
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
@@ -252,6 +256,10 @@ class OneTimeJobAdmin(admin.ModelAdmin):
 
     inlines = [AssignmentInline, JobExtraInline]
     readonly_fields = ['freie_plaetze']
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_otjob_inlines())
+        super(OneTimeJobAdmin,self).__init__(*args, **kwargs)
 
     def transform_job(self, queryset):
         for inst in queryset.all():
@@ -291,6 +299,10 @@ class JobTypeAdmin(admin.ModelAdmin):
     list_display = ['__str__']
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_jobtype_inlines())
+        super(JobTypeAdmin,self).__init__(*args, **kwargs)
 
     def transform_job_type(self, queryset):
         for inst in queryset.all():
@@ -357,23 +369,27 @@ class SubscriptionAdmin(admin.ModelAdmin):
         super(SubscriptionAdmin,self).__init__(*args, **kwargs)
 
 
-class AuditAdmin(admin.ModelAdmin):
-    list_display = ['timestamp', 'source_type', 'target_type', 'field', 'action',
-                    'source_object', 'target_object']
-    # can_delete = False
-
-
 class ShareAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'member', 'number', 'paid_date', 'issue_date', 'booking_date', 'cancelled_date',
                     'termination_date', 'payback_date']
     search_fields = ['id', 'member__email', 'member__first_name', 'member__last_name', 'number', 'paid_date',
                      'issue_date', 'booking_date', 'cancelled_date', 'termination_date', 'payback_date']
     raw_id_fields = ['member']
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_share_inlines())
+        super(ShareAdmin,self).__init__(*args, **kwargs)
 
 
 class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ['contact']
     list_display = ['name', 'code', 'weekday', 'contact']
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_depot_inlines())
+        super(DepotAdmin,self).__init__(*args, **kwargs)
 
 
 class DeliveryInline(admin.TabularInline):
@@ -387,16 +403,30 @@ class DeliveryAdmin(admin.ModelAdmin):
     search_fields = ["delivery_date", "subscription_size"]
     inlines = [DeliveryInline]
     save_as = True
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_delivery_inlines())
+        super(DeliveryAdmin,self).__init__(*args, **kwargs)
 
 
 class ExtraSubscriptionAdmin(admin.ModelAdmin):
     raw_id_fields = ['main_subscription']
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_exrtasub_inlines())
+        super(ExtraSubscriptionAdmin,self).__init__(*args, **kwargs)
 
 
 class AreaAdmin(admin.ModelAdmin):
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']
     list_display = ['name', 'core', 'hidden', 'coordinator']
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_area_inlines())
+        super(AreaAdmin,self).__init__(*args, **kwargs)
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
@@ -409,6 +439,11 @@ class AreaAdmin(admin.ModelAdmin):
 class AssignmentAdmin(admin.ModelAdmin):
         
     raw_id_fields = ['member', 'job']
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_assignment_inlines())
+        super(AssignmentAdmin,self).__init__(*args, **kwargs)
     
 
     def get_queryset(self, request):
@@ -479,12 +514,56 @@ class MemberAdmin(admin.ModelAdmin):
     impersonate_job.short_description = Config.member_string() + ' imitieren (impersonate)...'
 
 
+class ExtraSubscriptionTypeAdmin(admin.ModelAdmin):
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_extrasubtype_inlines())
+        super(ExtraSubscriptionTypeAdmin,self).__init__(*args, **kwargs)
+
+class ExtraSubscriptionCategoryAdmin(admin.ModelAdmin):
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_extrasubcat_inlines())
+        super(ExtraSubscriptionCategoryAdmin,self).__init__(*args, **kwargs)
+
+class SubscriptionSizeAdmin(admin.ModelAdmin):
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_subsize_inlines())
+        super(SubscriptionSizeAdmin,self).__init__(*args, **kwargs)
+
+class SubscriptionTypeAdmin(admin.ModelAdmin):
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_subtype_inlines())
+        super(SubscriptionTypeAdmin,self).__init__(*args, **kwargs)
+
+class JobExtraAdmin(admin.ModelAdmin):
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_jobextra_inlines())
+        super(JobExtraAdmin,self).__init__(*args, **kwargs)
+
+class JobExtraTypeAdmin(admin.ModelAdmin):
+    inlines = []
+    
+    def __init__(self, *args, **kwargs):
+        self.inlines.extend(get_jobextratype_inlines())
+        super(JobExtraTypeAdmin,self).__init__(*args, **kwargs)
+
+    
+
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraSubscription, ExtraSubscriptionAdmin)
-admin.site.register(ExtraSubscriptionType)
-admin.site.register(ExtraSubscriptionCategory)
-admin.site.register(SubscriptionSize)
-admin.site.register(SubscriptionType)
+admin.site.register(ExtraSubscriptionType, ExtraSubscriptionTypeAdmin)
+admin.site.register(ExtraSubscriptionCategory, ExtraSubscriptionCategoryAdmin)
+admin.site.register(SubscriptionSize, SubscriptionSizeAdmin)
+admin.site.register(SubscriptionType, SubscriptionTypeAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Member, MemberAdmin)
@@ -492,8 +571,8 @@ admin.site.register(ActivityArea, AreaAdmin)
 admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(Delivery, DeliveryAdmin)
-admin.site.register(JobExtra)
-admin.site.register(JobExtraType)
+admin.site.register(JobExtra, JobExtraAdmin)
+admin.site.register(JobExtraType, JobExtraTypeAdmin)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
