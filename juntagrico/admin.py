@@ -414,7 +414,7 @@ class ExtraSubscriptionAdmin(admin.ModelAdmin):
     inlines = []
     
     def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_exrtasub_inlines())
+        self.inlines.extend(get_extrasub_inlines())
         super(ExtraSubscriptionAdmin,self).__init__(*args, **kwargs)
 
 
