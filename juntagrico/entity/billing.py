@@ -79,23 +79,22 @@ class ExtraSubBillingPeriod(models.Model):
         now = timezone.now()
         start = calculate_last(self.start_day, self.start_month)
         end = calculate_next(self.end_day, self.end_month)
-        if self.code != '':
-            exec(self.code)
-        else:
-            total_days = (end - start).days
-            passed_days = (now - start).days
-            price = self.price * (passed_days/total_days)
-        return price
+        return self.calc_price(start, end, now)
 
     def calculated_price(self, activation_date):
         start = calculate_last(self.start_day, self.start_month)
         end = calculate_next(self.end_day, self.end_month)
         ref_date = max(activation_date, start)
+        return self.calc_price(start, end, ref_date=ref_date)
+
+    def calc_price(self, start, end, now=None, ref_date=None):
         if self.code != '':
             exec(self.code)
         else:
             total_days = (end - start).days
-            passed_days = (end - ref_date).days
+            c_start = ref_date or start
+            c_end = now or end
+            passed_days = (c_end - c_start).days
             price = self.price * (passed_days/total_days)
         return price
 

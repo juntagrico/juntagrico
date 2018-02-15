@@ -1,6 +1,6 @@
 from django.db import models
 
-from juntagrico.util.temporal import weekdays
+from juntagrico.util.temporal import weekday_short
 from juntagrico.entity.subs import SubscriptionSize
 
 
@@ -21,13 +21,13 @@ class Delivery(models.Model):
         return self.delivery_date.isoweekday()
 
     def weekday_shortname(self):
-        weekday = weekdays[self.delivery_date.isoweekday()]
-        return weekday[:2]
+        day = self.delivery_date.isoweekday()
+        return weekday_short(day, 2)
 
     class Meta:
         verbose_name = 'Lieferung'
         verbose_name_plural = 'Lieferungen'
-        unique_together = (("delivery_date", "subscription_size"))
+        unique_together = ("delivery_date", "subscription_size")
 
 
 class DeliveryItem(models.Model):

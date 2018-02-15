@@ -18,6 +18,10 @@ class MemberDao:
         return Member.objects.filter(email=email)
 
     @staticmethod
+    def members_with_shares():
+        return Member.objects.filter(share__isnull=False)
+
+    @staticmethod
     def members_by_job(job):
         return Member.objects.filter(assignment__job=job)
 

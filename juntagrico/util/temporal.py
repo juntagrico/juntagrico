@@ -16,6 +16,9 @@ weekday_choices = ((1, 'Montag'),
 
 weekdays = dict(weekday_choices)
 
+def weekday_short(day, num):
+    weekday = weekdays[day]
+    return weekday[:num]
 
 def get_status_image_text(percent=0):
     if percent >= 100:
