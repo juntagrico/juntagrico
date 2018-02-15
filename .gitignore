@@ -11,3 +11,5 @@ my_settings_local.py
 /.project
 *.db
 *.pdf
+**/dist
+**/*.egg-info
