@@ -10,10 +10,6 @@ from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.extrasubscriptiondao import ExtraSubscriptionDao
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.memberdao.MemberDao import \
-    (members_for_email_with_subscription,
-     members_for_email,
-     members_with_shares)
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.models import *
@@ -47,15 +43,15 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get('sender')
     if request.POST.get('allsubscription') == 'on':
-        members = members_for_email_with_subscription().values_list('email',
+        m_emails = MemberDao.members_for_email_with_subscription().values_list('email',
                                                                     flat=True)
-        emails.extend(m_emails)
+        emails.update(m_emails)
     if request.POST.get('allshares') == 'on':
-        emails.extend(members_with_shares().values_list('email', flat=True))
+        emails.update(MemberDao.members_with_shares().values_list('email', flat=True))
     if request.POST.get('all') == 'on':
-        emails.extend(members_for_email().values_list('email', flat=True))
+        emails.update(MemberDao.members_for_email().values_list('email', flat=True))
     if request.POST.get('recipients'):
-        emails.extend(re.split(r'\s*,?\s*', request.POST.get('recipients')))
+        emails.update(re.split(r'\s*,?\s*', request.POST.get('recipients')))
     if request.POST.get('allsingleemail'):
         emails |= set(request.POST.get('singleemail').split(' '))
 
