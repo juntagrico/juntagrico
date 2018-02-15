@@ -133,8 +133,8 @@ class Job(PolymorphicModel):
         return 'Job #%s' % self.id
 
     def weekday_name(self):
-        weekday = weekdays[self.time.isoweekday()]
-        return weekday[:2]
+        day = self.time.isoweekday()
+        return weekday_short(day, 2)
 
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
