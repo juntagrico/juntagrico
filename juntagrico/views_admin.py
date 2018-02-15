@@ -43,23 +43,23 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get('sender')
     if request.POST.get('allsubscription') == 'on':
-        for member in MemberDao.members_for_email_with_subscription():
-            emails.add(member.email)
+        members = MemberDao.members_for_email_with_subscription()
+        m_emails = members.values_list('email', flat=True)
+        emails.extend(m_emails)
     if request.POST.get('allshares') == 'on':
         for member in MemberDao.members_for_email():
             if member.share_set.count() > 0:
                 emails.add(member.email)
     if request.POST.get('all') == 'on':
-        for member in MemberDao.members_for_email():
-            emails.add(member.email)
+        m_emails = MemberDao.members_for_email().values_list('email',
+                                                             flat=True)
+        emails.extend(m_email)
     if request.POST.get('recipients'):
         recipients = re.split(r'\s*,?\s*', request.POST.get('recipients'))
-        for recipient in recipients:
-            emails.add(recipient)
+        emails.extend(recipients)
     if request.POST.get('allsingleemail'):
         emails |= set(request.POST.get('singleemail').split(' '))
 
-    
     attachements = []
     append_attachements(request, attachements)
 
