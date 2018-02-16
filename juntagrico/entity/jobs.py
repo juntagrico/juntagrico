@@ -91,7 +91,7 @@ class AbstractJobType(models.Model):
     location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
-        return '%s - %s' % (self.activityarea, self.get_name())
+        return '%s - %s' % (self.activityarea, self.get_name)
 
     @property
     def get_name(self):
