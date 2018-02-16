@@ -5,8 +5,7 @@ from django.db import models
 from juntagrico.util.temporal import weekday_choices, weekdays
 
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.dao.extrasubscriptiontypedao.ExtraSubscriptionTypeDao \
-    import extra_types_by_category_ordered
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.extrasubscriptioncategorydao \
     import ExtraSubscriptionCategoryDao
 
@@ -82,7 +81,7 @@ class Depot(models.Model):
             amounts = self.subscription_amounts(cache, size_name)
             self.overview_cache.append(amounts)
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
-            types = extra_types_by_category_ordered(category)
+            types = ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category)
             for extra_subscription in types:
                 code = extra_subscription.name
                 cache = self.subscription_cache
