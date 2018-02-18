@@ -36,13 +36,14 @@ Additionally also some changes in the middleware have to to be added
 
 .. code-block:: python
 
-    MIDDLEWARE_CLASSES = (
+    MIDDLEWARE = [
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
-    )
+        'impersonate.middleware.ImpersonateMiddleware',
+    ]
     
 Since we use session we need a serializer
 
@@ -94,7 +95,7 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "Mitglied" 
+    "Arbeitseinsatz" 
 
 * ASSIGNMENTS_STRING
 
@@ -226,7 +227,7 @@ You can use the following settings to configure juntagrico
 
 * ADMINPORTAL_SERVER_URL
 
-  The base url where you run juntagrico (and where your static lies)
+  The base URL where you run juntagrico (and where your static lies)
   
   Type: String
 
@@ -238,7 +239,7 @@ You can use the following settings to configure juntagrico
 
 * BUSINESS_REGULATIONS
 
-  Path to your business regulations document
+  URL to your business regulations document
   
   Type: String
 
@@ -246,11 +247,11 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "/static/docs/business_regulations.pdf"
+    ""
 
 * BYLAWS
 
-  Path to your bylaws document
+  URL to your bylaws document
   
   Type: String
 
@@ -258,7 +259,7 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "/static/docs/bylaws.pdf"
+    ""
 
 * MAIL_TEMPLATE
 
@@ -298,7 +299,7 @@ You can use the following settings to configure juntagrico
 
 * FAQ_DOC
 
-  Path to your FAQ document
+  URL to your FAQ document
   
   Type: String
 
@@ -306,11 +307,11 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "/static/doc/fac.pdf"
+    ""
 
 * BOOTSTRAP
 
-  If you want to use a customized version of bootstrap this specifies the coresponding path for it
+  If you want to use a customized version of bootstrap this specifies the corresponding path for it
   
   Type: String
 
@@ -322,7 +323,7 @@ You can use the following settings to configure juntagrico
 
 * EXTRA_SUB_INFO
 
-  If you use extra subscritions this describes the path to the document describing them
+  If you use extra subscriptions this describes the URL to the document describing them
   
   Type: String
 
@@ -330,11 +331,11 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "/static/doc/extra_sub_info.pdf"
+    ""
 
 * ACTIVITY_AREA_INFO
 
-  Path to your document describing your activity areas
+  URL to your document describing your activity areas
   
   Type: String
 
@@ -342,7 +343,7 @@ You can use the following settings to configure juntagrico
 
   .. code-block:: python
 
-    "/static/doc/activity_area_info.pdf"
+    ""
 
 * SHARE_PRICE
 
@@ -355,6 +356,18 @@ You can use the following settings to configure juntagrico
   .. code-block:: python
 
     "250"
+
+* BASE_FEE
+
+  Yearly fee for members without a subscription
+  
+  Type: String
+
+  default value
+  
+  .. code-block:: python
+
+    ""
 
 * CURRENCY
 
@@ -370,7 +383,7 @@ You can use the following settings to configure juntagrico
 
 * ASSIGNMENT_UNIT
 
-  The mode how assignemnts are counted: Valid values are EMTITY and HOURS. ENTITY the assignents ar counted by occurence, Hours the value of the assignemnts are counted by the actual time the user spent on a job.
+  The mode how assignments are counted: Valid values are EMTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
   
   Type: String
 
@@ -403,30 +416,6 @@ You can use the following settings to configure juntagrico
   .. code-block:: python
 
     2
-
-* DEPOT_LIST_COVER_SHEETS
-
-  The amount of cover sheets for your delivery lists, for each x one
-  
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    'x'
-
-* DEPOT_LIST_OVERVIEWS
-
-  The amount of overview sheets for your delivery lists, for each x one
-  
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    'x'
 
 * DEPOT_LIST_GENERATION_DAYS
 
@@ -477,6 +466,18 @@ You can use the following settings to configure juntagrico
   .. code-block:: python
 
     12
+
+* MEMBERSHIP_END_MONTH
+
+  The month at which end the members can leave the organisation
+  
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    6
 
 * DEMO_USER
 
@@ -529,6 +530,7 @@ You can use the following settings to configure juntagrico
     {
         'welcome': 'mails/welcome_mail.txt',
         'co_welcome': 'mails/welcome_added_mail.txt',
+        'co_added': 'mails/added_mail.txt',
         'password': 'mails/password_reset_mail.txt',
         'j_reminder': 'mails/job_reminder_mail.txt',
         'j_canceled': 'mails/job_canceled_mail.txt',
@@ -536,7 +538,10 @@ You can use the following settings to configure juntagrico
         'j_changed': 'mails/job_time_changed_mail.txt',
         'j_signup': 'mails/job_signup_mail.txt',
         'd_changed': 'mails/depot_changed_mail.txt',
+        's_created': 'mails/share_created_mail.txt',
+        'n_sub': 'mails/new_subscription.txt',
         's_canceled': 'mails/subscription_canceled_mail.txt',
+        'm_canceled': 'mails/membership_canceled_mail.txt',
         'b_share': 'mails/bill_share.txt',
         'b_sub': 'mails/bill_sub.txt',
         'b_esub': 'mails/bill_extrasub.txt'
@@ -614,6 +619,7 @@ For your convenience all settings with default values to copy into your settings
     EMAILS = {
         'welcome': 'mails/welcome_mail.txt',
         'co_welcome': 'mails/welcome_added_mail.txt',
+        'co_added': 'mails/added_mail.txt',
         'password': 'mails/password_reset_mail.txt',
         'j_reminder': 'mails/job_reminder_mail.txt',
         'j_canceled': 'mails/job_canceled_mail.txt',
@@ -621,8 +627,13 @@ For your convenience all settings with default values to copy into your settings
         'j_changed': 'mails/job_time_changed_mail.txt',
         'j_signup': 'mails/job_signup_mail.txt',
         'd_changed': 'mails/depot_changed_mail.txt',
+        's_created': 'mails/share_created_mail.txt',
+        'n_sub': 'mails/new_subscription.txt',
         's_canceled': 'mails/subscription_canceled_mail.txt',
+        'm_canceled': 'mails/membership_canceled_mail.txt',
         'b_share': 'mails/bill_share.txt',
         'b_sub': 'mails/bill_sub.txt',
         'b_esub': 'mails/bill_extrasub.txt'
     }
+    BASE_FEE = ''
+    ORGANISATION_PHONE = ''

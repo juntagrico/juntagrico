@@ -23,7 +23,7 @@ class Config:
     def assignment_string():
         if hasattr(settings, 'ASSIGNMENT_STRING'):
             return settings.ASSIGNMENT_STRING
-        return 'Mitglied'
+        return 'Arbeitseinsatz'
 
     @staticmethod
     def assignments_string():
@@ -162,13 +162,13 @@ class Config:
     def extra_sub_info():
         if hasattr(settings, 'EXTRA_SUB_INFO'):
             return settings.EXTRA_SUB_INFO
-        return '/static/doc/extra_sub_info.pdf'
+        return ''
 
     @staticmethod
     def activity_area_info():
         if hasattr(settings, 'ACTIVITY_AREA_INFO'):
             return settings.ACTIVITY_AREA_INFO
-        return '/static/doc/activity_area_info.pdf'
+        return ''
 
     @staticmethod
     def share_price():

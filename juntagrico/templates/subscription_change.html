@@ -25,7 +25,10 @@
             Zusatz-Abos
             <br/>
             Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
-            > <a href="{% config "extra_sub_info" %}" target="_blank">Weitere Infos zu den Zusatzabos</a>
+            {% config "extra_sub_info" as extra_sub_info %}
+            {% if extra_sub_info.strip %}
+                <a href="{{ extra_sub_info }}" target="_blank">Weitere Infos zu den Zusatzabos</a>
+            {% endif %}
         </div>
        {% endif %}
     </div>

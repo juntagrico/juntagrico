@@ -13,7 +13,10 @@
             <a href="/my/pastjobs">Zu deinen bisherigen Einsätzen</a><br/><br/>
             Alle wählen zwei Tätigkeitsbereiche, in denen sie regelmässig mitarbeiten und Verantwortung übernehmen.
             <br/><br/>
-            Infos zu den Tätigkeitsbereichen erhältst du im <a target="_blank" href="{% config "activity_area_info" %}">Infoblatt</a>.
+            {% config "activity_area_info" as activity_area_info%} 
+            {% if activity_area_info.strip %}
+            Infos zu den Tätigkeitsbereichen erhältst du im <a target="_blank" href="{{activity_area_info}}">Infoblatt</a>.
+            {% endif %}
             <br/><br/>
             <form action="/my/participation" method="post">
                 {% csrf_token %}
