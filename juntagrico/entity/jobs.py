@@ -251,7 +251,7 @@ class OneTimeJob(Job, AbstractJobType):
         return self
 
     def __str__(self):
-        return '%s - %s' % (self.activityarea, self.get_name())
+        return '%s - %s' % (self.activityarea, self.get_name)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

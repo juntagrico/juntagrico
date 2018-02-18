@@ -15,7 +15,7 @@ class Billable(PolymorphicModel):
 
     class Meta:
         verbose_name = 'Verrechenbare Einheit'
-        verbose_name_plural = 'Verrechenbare Einhaiten'
+        verbose_name_plural = 'Verrechenbare Einheiten'
 
 
 class Bill(models.Model):
