@@ -65,7 +65,7 @@ class SubscriptionAdminForm(forms.ModelForm):
             if self.instance.state == 'waiting':            
                 obj.future_subscription = None
             elif self.instance.state == 'inactive':
-                obj.subscription.remove(self.instance)           
+                obj.old_subscriptions.remove(self.instance)           
             else:
                 obj.subscription = None
             obj.save()
@@ -73,7 +73,7 @@ class SubscriptionAdminForm(forms.ModelForm):
             if self.instance.state == 'waiting':            
                 obj.future_subscription = self.instance
             elif self.instance.state == 'inactive':
-                obj.subscription.add(self.instance)           
+                obj.old_subscriptions.add(self.instance)           
             else:
                 obj.subscription = self.instance
             obj.save()
