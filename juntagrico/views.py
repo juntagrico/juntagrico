@@ -438,7 +438,10 @@ def cancel_membership(request):
     
     missing_iban = member.iban is None
     coop_member =  member.is_cooperation_member
-    share_error = member.subscription.share_overflow-member.active_shares_count<0
+    share_error = False
+    if member.subscription is not None or member.future_subscription is not None:
+        subscription = member.subscription or member.future_subscription
+        share_error = subscription.share_overflow-member.active_shares_count<0
     can_cancel = not coop_member or (not missing_iban and not share_error) 
     
     renderdict = get_menu_dict(request)
