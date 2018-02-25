@@ -400,7 +400,12 @@ def profile(request):
             success = True
     else:
         memberform = MemberProfileForm(instance=member)
-
+    asc = member.active_shares_count
+    sub = member.subscription
+    f_sub = member.future_subscription
+    future = f_sub is not None and f_sub.share_overflow-asc<0 
+    current = sub is not None and sub.share_overflow-asc<0
+    coop_cond = member.iban is not None and not future and not current
     renderdict = get_menu_dict(request)
     renderdict.update({
         'memberform': memberform,
@@ -408,7 +413,7 @@ def profile(request):
         'coop_member': member.is_cooperation_member,
         'end_date': next_membership_end_date(),
         'member': member,
-        'can_cancel': not member.is_cooperation_member or (member.iban is not None and member.subscription.share_overflow-member.active_shares_count>0),
+        'can_cancel': not member.is_cooperation_member or (coop_cond),
         'missing_iban': member.iban is None ,
         'menu': {'personalInfo': 'active'},
     })
@@ -438,10 +443,12 @@ def cancel_membership(request):
     
     missing_iban = member.iban is None
     coop_member =  member.is_cooperation_member
-    share_error = False
-    if member.subscription is not None or member.future_subscription is not None:
-        subscription = member.subscription or member.future_subscription
-        share_error = subscription.share_overflow-member.active_shares_count<0
+    asc = member.active_shares_count
+    sub = member.subscription
+    f_sub = member.future_subscription
+    future = f_sub is not None and f_sub.share_overflow-asc<0 
+    current = sub is not None and sub.share_overflow-asc<0
+    share_error = future or current
     can_cancel = not coop_member or (not missing_iban and not share_error) 
     
     renderdict = get_menu_dict(request)
