@@ -405,7 +405,7 @@ def profile(request):
     f_sub = member.future_subscription
     future = f_sub is not None and f_sub.share_overflow-asc<0 
     current = sub is not None and sub.share_overflow-asc<0
-    coop_cond = member.iban is not None and not future and not current
+    coop_cond = member != '' and not future and not current
     renderdict = get_menu_dict(request)
     renderdict.update({
         'memberform': memberform,
@@ -441,7 +441,7 @@ def cancel_membership(request):
             share.save()
         return redirect('/my/profile')
     
-    missing_iban = member.iban is None
+    missing_iban = member.iban == ''
     coop_member =  member.is_cooperation_member
     asc = member.active_shares_count
     sub = member.subscription

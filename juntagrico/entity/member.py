@@ -26,7 +26,7 @@ class Member(models.Model):
     phone = models.CharField('Telefonnr', max_length=50)
     mobile_phone = models.CharField('Mobile', max_length=50, null=True, blank=True)
     
-    iban = models.CharField('IBAN', max_length=100, null=True, blank=True)
+    iban = models.CharField('IBAN', max_length=100, blank=True, default='')
 
     future_subscription = models.ForeignKey('Subscription', related_name='members_future', null=True, blank=True,
                                      on_delete=models.SET_NULL)
