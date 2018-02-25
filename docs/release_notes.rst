@@ -12,3 +12,10 @@ Release Notes
 * empty strings in profile iban field form are not validated anymore
 * doc updated
 * error in onetime job fixed
+
+1.1.4
+-----
+ Has migrations
+
+* Fixed profile error
+* iban field not nullable blank used for no value
