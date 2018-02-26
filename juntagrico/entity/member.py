@@ -86,7 +86,7 @@ class Member(models.Model):
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         if instance.inactive is True:
-            instance.areas = ()
+            instance.areas.clear()
 
     class Meta:
         verbose_name = Config.member_string()
