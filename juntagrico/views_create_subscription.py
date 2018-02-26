@@ -130,7 +130,7 @@ def cs_select_shares(request):
         except:
             share_error = True      
         if not share_error:
-            Subscription = None
+            subscription = None
             if int(selected_subscription) > -1:
                 start_date = request.session['start_date']
                 depot = request.session['selecteddepot']            
