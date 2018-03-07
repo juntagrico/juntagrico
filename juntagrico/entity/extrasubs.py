@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db import models
+from django.utils.translation import gettext as _
 
 from juntagrico.entity.billing import Billable
 from juntagrico.util.bills import bill_extra_subscription

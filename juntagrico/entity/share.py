@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django.db import models
+from django.utils.translation import gettext as _
 
 from juntagrico.mailer import *
 from juntagrico.entity.billing import *
