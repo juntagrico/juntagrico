@@ -23,7 +23,7 @@ class Config:
     def assignment_string():
         if hasattr(settings, 'ASSIGNMENT_STRING'):
             return settings.ASSIGNMENT_STRING
-        return 'Mitglied'
+        return 'Arbeitseinsatz'
 
     @staticmethod
     def assignments_string():
@@ -53,6 +53,10 @@ class Config:
                 'zip' : '12456',
                 'city' : 'Springfield',
                 'extra' : ''}
+
+    @staticmethod
+    def organisation_phone():
+        return getattr(settings, 'ORGANISATION_PHONE', '')
 
     @staticmethod
     def organisation_bank_connection():
@@ -92,19 +96,43 @@ class Config:
     def business_regulations():
         if hasattr(settings, 'BUSINESS_REGULATIONS'):
             return settings.BUSINESS_REGULATIONS
-        return '/static/docs/business_regulations.pdf'
+        return ''
 
     @staticmethod
     def bylaws():
         if hasattr(settings, 'BYLAWS'):
             return settings.BYLAWS
-        return '/static/docs/bylaws.pdf'
+        return ''
 
     @staticmethod
     def mail_template():
         if hasattr(settings, 'MAIL_TEMPLATE'):
             return settings.MAIL_TEMPLATE
-        return 'mails/email.html'
+        return 'mails/email.html'    
+
+    @staticmethod
+    def emails(key):
+        if hasattr(settings, 'EMAILS'):
+            if key in settings.EMAILS:
+                return settings.EMAILS[key]            
+        return {'welcome': 'mails/welcome_mail.txt',
+            'co_welcome': 'mails/welcome_added_mail.txt',
+            'co_added': 'mails/added_mail.txt',
+            'password': 'mails/password_reset_mail.txt',
+            'j_reminder': 'mails/job_reminder_mail.txt',
+            'j_canceled': 'mails/job_canceled_mail.txt',
+            'confirm': 'mails/confirm.txt',
+            'j_changed': 'mails/job_time_changed_mail.txt',
+            'j_signup': 'mails/job_signup_mail.txt',
+            'd_changed': 'mails/depot_changed_mail.txt',
+            's_created': 'mails/share_created_mail.txt',
+            'n_sub': 'mails/new_subscription.txt',
+            's_canceled': 'mails/subscription_canceled_mail.txt',
+            'm_canceled': 'mails/membership_canceled_mail.txt',
+            'b_share': 'mails/bill_share.txt',
+            'b_sub': 'mails/bill_sub.txt',
+            'b_esub': 'mails/bill_extrasub.txt'
+        }[key]
 
     @staticmethod
     def style_sheet():
@@ -128,25 +156,31 @@ class Config:
     def faq_doc():
         if hasattr(settings, 'FAQ_DOC'):
             return settings.FAQ_DOC
-        return '/static/doc/fac.pdf'
+        return ''
 
     @staticmethod
     def extra_sub_info():
         if hasattr(settings, 'EXTRA_SUB_INFO'):
             return settings.EXTRA_SUB_INFO
-        return '/static/doc/extra_sub_info.pdf'
+        return ''
 
     @staticmethod
     def activity_area_info():
         if hasattr(settings, 'ACTIVITY_AREA_INFO'):
             return settings.ACTIVITY_AREA_INFO
-        return '/static/doc/activity_area_info.pdf'
+        return ''
 
     @staticmethod
     def share_price():
         if hasattr(settings, 'SHARE_PRICE'):
             return settings.SHARE_PRICE
         return '250'
+        
+    @staticmethod
+    def base_fee():
+        if hasattr(settings, 'BASE_FEE'):
+            return settings.BASE_FEE
+        return ''
 
     @staticmethod
     def currency():
@@ -173,18 +207,6 @@ class Config:
         return 2
 
     @staticmethod
-    def depot_list_cover_sheets():
-        if hasattr(settings, 'DEPOT_LIST_COVER_SHEETS'):
-            return settings.DEPOT_LIST_COVER_SHEETS
-        return 'x'
-
-    @staticmethod
-    def depot_list_overviews():
-        if hasattr(settings, 'DEPOT_LIST_OVERVIEWS'):
-            return settings.DEPOT_LIST_OVERVIEWS
-        return 'x'
-
-    @staticmethod
     def depot_list_generation_days():
         if hasattr(settings, 'DEPOT_LIST_GENERATION_DAYS'):
             return settings.DEPOT_LIST_GENERATION_DAYS
@@ -209,6 +231,12 @@ class Config:
         return 12
 
     @staticmethod
+    def membership_end_month():
+        if hasattr(settings, 'MEMBERSHIP_END_MONTH'):
+            return settings.MEMBERSHIP_END_MONTH
+        return 6
+
+    @staticmethod
     def demouser():
         if hasattr(settings, 'DEMO_USER'):
             return settings.DEMO_USER
@@ -223,7 +251,8 @@ class Config:
     @staticmethod
     def images(key):
         if hasattr(settings, 'IMAGES'):
-            return settings.IMAGES[key]
+            if key in settings.IMAGES:
+                return settings.IMAGES[key]
         return {'status_100': '/static/img/status_100.png',
             'status_75': '/static/img/status_75.png',
             'status_50': '/static/img/status_50.png',

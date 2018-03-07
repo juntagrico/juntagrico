@@ -25,15 +25,45 @@ class Member(models.Model):
     birthday = models.DateField(_('Geburtsdatum'), null=True, blank=True)
     phone = models.CharField(_('Telefonnr'), max_length=50)
     mobile_phone = models.CharField(_('Mobile'), max_length=50, null=True, blank=True)
+    
+    iban = models.CharField('IBAN', max_length=100, blank=True, default='')
 
+
+    future_subscription = models.ForeignKey('Subscription', related_name='members_future', null=True, blank=True,
+                                     on_delete=models.SET_NULL)
     subscription = models.ForeignKey('Subscription', related_name='members', null=True, blank=True,
                                      on_delete=models.SET_NULL)
+    old_subscriptions = models.ManyToManyField('Subscription', related_name='members_old')
 
-    confirmed = models.BooleanField(_('bestätigt'), default=False)
-    reachable_by_email = models.BooleanField(_('Kontaktierbar von der Job Seite aus'), default=False)
-    block_emails = models.BooleanField(_('keine emails'), default=False)
+    confirmed = models.BooleanField('bestätigt', default=False)
+    reachable_by_email = models.BooleanField('Kontaktierbar von der Job Seite aus', default=False)
+    
+    canceled = models.BooleanField('gekündigt', default=False)
+    cancelation_date = models.DateField('Kündigüngssdatum', null=True, blank=True)
+    inactive = models.BooleanField('inaktiv', default=False)
 
-    old_subscription = None
+          
+    @property
+    def is_cooperation_member(self):
+        return self.share_set.filter(paid_date__isnull=False).filter(
+            payback_date__isnull=True).count()>0
+    
+    @property
+    def active_shares(self):
+        return self.share_set.filter(
+            cancelled_date__isnull=True)
+            
+    @property
+    def active_shares_count(self):
+        return self.active_shares.count()
+            
+    @property
+    def blocked(self):
+        future = self.future_subscription is not None
+        current = self.subscription is None or not self.subscription.canceled
+        return future or not current 
+
+        
 
     def __str__(self):
         return self.get_name()
@@ -57,12 +87,8 @@ class Member(models.Model):
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
-        if instance.old_subscription != instance.subscription and instance.subscription is None:
-            instance.areas = ()
-
-    @classmethod
-    def post_init(cls, sender, instance, **kwds):
-        instance.old_subscription = None  # instance.subscription
+        if instance.inactive is True:
+            instance.areas.clear()
 
     class Meta:
         verbose_name = Config.member_string()

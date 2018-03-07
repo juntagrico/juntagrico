@@ -55,7 +55,7 @@
                     <li><h5>Dein Menu {{ user.member.first_name }}</h5>
                     </li>
                     <li class="{{ menu.subscriptionnnement }}">
-                        <a href="/my/subscription">Abo</a>
+                        <a href="/my/subscription/detail/">Abo</a>
                     </li>
                     <li class="{{ menu.participation }}">
                         <a href="/my/participation">Mitarbeit</a>
@@ -63,6 +63,11 @@
                     <li class="{{ menu.jobs }}">
                         <a href="/my/assignments">Einsätze</a>
                     </li>
+                    {% if show_deliveries %}
+                    <li class="{{ menu.deliveries }}">
+                        <a href="/my/deliveries">Lieferungen</a>
+                    </li>
+                    {% endif %}
                     <li class="{{ menu.personalInfo }}">
                         <a href="/my/profile">Personalien</a>
                     </li>
@@ -163,7 +168,26 @@
                     {% endif %}
                     {% if operation_group %}
                         <li>
-                            <a href="{{depot_list_url}}">Depotlisten</a>
+                            <a data-toggle="collapse" href="#lists">Listen <span class="glyphicon glyphicon-chevron-right"></span></a>
+                            <div class="collapse" id="lists">
+                            <ul class="nav nav-pills nav-stacked admin-menu subadmin-menu">
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/pdf/amountoverview">Mengen Übersicht</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/pdf/depotlist">Depotlisten</a>
+                                </li>
+                            {% endif %}
+                            {% if operation_group %}
+                                <li>
+                                    <a href="/my/pdf/depotoverview">Depot Übersicht</a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                            </div>
                         </li>
                     {% endif %}
                     
@@ -172,6 +196,10 @@
                             <a href="/my/export">Exporte</a>
                         </li>
                     {% endif %}
+                    
+                    {% for menu in admin_menus %}
+                        {% include menu %}
+                    {% endfor%}
                     
                     {% include "personal_menu.html" %}
                 </ul>

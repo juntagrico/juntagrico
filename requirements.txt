@@ -1,8 +1,9 @@
-Django==2.0.0
-django-polymorphic==1.3
+Django==2.0.2
+django-polymorphic==2.0.2
 XlsxWriter==1.0.2
-html5lib==1.0b10
+html5lib==1.0.1
 pyPdf==1.13
 xhtml2pdf==0.2b1
 ics==0.3.1
-django-impersonate==1.1
+django-impersonate==1.3
+schwifty==1.0.0

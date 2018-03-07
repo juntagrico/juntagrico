@@ -12,9 +12,10 @@ from juntagrico.config import Config
 from juntagrico.mailer import *
 
 class ActivityArea(models.Model):
+
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
-    email = models.EmailField(null=True)
+    email = models.EmailField(null=True, blank=True)
     core = models.BooleanField(_('Kernbereich'), default=False)
     hidden = models.BooleanField(_('versteckt'), default=False)
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT)
@@ -27,6 +28,8 @@ class ActivityArea(models.Model):
     def contact(self):
         if self.show_coordinator_phonenumber is True:
             return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
+        elif self.email is not None:
+            return self.email
         else:
             return self.coordinator.email
 
@@ -89,8 +92,9 @@ class AbstractJobType(models.Model):
     location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
-        return '%s - %s' % (self.activityarea, self.get_name())
+        return '%s - %s' % (self.activityarea, self.get_name)
 
+    @property
     def get_name(self):
         if self.displayed_name is not None and self.displayed_name != '':
             return self.displayed_name
@@ -130,8 +134,8 @@ class Job(PolymorphicModel):
         return _('Job #%s') % self.id
 
     def weekday_name(self):
-        weekday = weekdays[self.time.isoweekday()]
-        return weekday[:2]
+        day = self.time.isoweekday()
+        return weekday_short(day, 2)
 
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
@@ -248,7 +252,7 @@ class OneTimeJob(Job, AbstractJobType):
         return self
 
     def __str__(self):
-        return '%s - %s' % (self.activityarea, self.get_name())
+        return '%s - %s' % (self.activityarea, self.get_name)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

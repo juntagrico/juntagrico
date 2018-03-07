@@ -7,7 +7,7 @@ from juntagrico.config import *
 '''
 
 
-def genecrate_ical_for_job(job):
+def generate_ical_for_job(job):
     c = Calendar()
     e = Event()
     e.name = Config.organisation_name() + ' Einsatz:' + job.type.name

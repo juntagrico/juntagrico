@@ -1,0 +1,18 @@
+{% extends "mails/email.txt" %}
+{% block content %}
+Hallo
+
+Soeben hat {{ member.first_name }} {{ member.last_name }}
+email : {{ member.email }}
+
+seine Mitgliedshaft gekündet.
+
+Er möchte seine Mitgliedschaft auf den {{ end_date|date:"d.m.Y" }} künden.
+
+ausserdem hat er folgende Nachricht für euch hinterlassen:
+{{ message}}
+
+Liebe Grüsse und einen schönen Tag noch
+Dein Server
+
+{% endblock %}

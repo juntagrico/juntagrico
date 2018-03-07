@@ -43,28 +43,25 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get('sender')
     if request.POST.get('allsubscription') == 'on':
-        for member in MemberDao.members_for_email_with_subscription():
-            emails.add(member.email)
+        m_emails = MemberDao.members_for_email_with_subscription().values_list('email',
+                                                                    flat=True)
+        emails.update(m_emails)
     if request.POST.get('allshares') == 'on':
-        for member in MemberDao.members_for_email():
-            if member.share_set.count() > 0:
-                emails.add(member.email)
+        emails.update(MemberDao.members_with_shares().values_list('email', flat=True))
     if request.POST.get('all') == 'on':
-        for member in MemberDao.members_for_email():
-            emails.add(member.email)
+        emails.update(MemberDao.members_for_email().values_list('email', flat=True))
     if request.POST.get('recipients'):
-        recipients = re.split(r'\s*,?\s*', request.POST.get('recipients'))
-        for recipient in recipients:
-            emails.add(recipient)
+        emails.update(re.split(r'\s*,?\s*', request.POST.get('recipients')))
     if request.POST.get('allsingleemail'):
         emails |= set(request.POST.get('singleemail').split(' '))
 
-    
     attachements = []
     append_attachements(request, attachements)
 
     if len(emails) > 0:
-        send_filtered_mail(request.POST.get('subject'), request.POST.get('message'), request.POST.get('textMessage'),
+        send_filtered_mail(request.POST.get('subject'),
+                           request.POST.get('message'),
+                           request.POST.get('textMessage'),
                            emails, attachements, sender=sender)
         sent = len(emails)
     return redirect('/my/mails/send/result/' + str(sent) + '/')
@@ -214,6 +211,18 @@ def filter_subscriptions_depot(request, depot_id):
 def my_depotlists():
     return alldepots_list('')
 
+@permission_required('juntagrico.is_operations_group')
+def depotlist(request):
+    return return_pdf_http('depotlist.pdf')
+    
+@permission_required('juntagrico.is_operations_group')
+def depot_overview(request):
+    return return_pdf_http('depot_overview.pdf')
+    
+@permission_required('juntagrico.is_operations_group')
+def amount_overview(request):
+    return return_pdf_http('amount_overview.pdf')
+
 
 @permission_required('juntagrico.is_operations_group')
 def future(request):
@@ -344,7 +353,7 @@ def excel_export_members(request):
         'reachable_by_email',
         'block_emails',
     ]
-    return generate_excell(fields, Member)
+    return generate_excell_from_model(fields, Member)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -362,7 +371,7 @@ def excel_export_shares(request):
         'member.last_name',
         'member.email',
     ]
-    return generate_excell(fields, Share)
+    return generate_excell_from_model(fields, Share)
 
 
 @permission_required('juntagrico.is_operations_group')

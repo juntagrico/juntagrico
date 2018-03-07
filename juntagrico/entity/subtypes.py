@@ -49,11 +49,13 @@ class TSST(models.Model):
     through class for subscription and subscription types
     '''
     subscription = models.ForeignKey('Subscription', related_name='STSST', on_delete=models.CASCADE)
-    type = models.ForeignKey('SubscriptionType', related_name='TTSST', on_delete=models.CASCADE)
+    type = models.ForeignKey('SubscriptionType', related_name='TTSST', on_delete=models.PROTECT)
+
 
 class TFSST(models.Model):
     '''
     through class for future subscription and subscription types
     '''
     subscription = models.ForeignKey('Subscription', related_name='STFSST', on_delete=models.CASCADE)
-    type = models.ForeignKey('SubscriptionType', related_name='TTFSST', on_delete=models.CASCADE)
+    type = models.ForeignKey('SubscriptionType', related_name='TTFSST', on_delete=models.PROTECT)
+

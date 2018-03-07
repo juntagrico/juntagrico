@@ -2,7 +2,7 @@
 {% load config %}
 {% block content %}
 
-Dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.displayed_name }}"  um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} wurde leider Abgesagt.
+Dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.get_name }}"  um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} wurde leider Abgesagt.
 
 Details:
 

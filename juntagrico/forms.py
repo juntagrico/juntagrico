@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, TextInput, CheckboxInput, DateInput
 
+from schwifty import IBAN
+
 from juntagrico.models import Member, Subscription
 
 
@@ -19,7 +21,7 @@ class MemberProfileForm(ModelForm):
         model = Member
         fields = ['first_name', 'last_name', 'email',
                   'addr_street', 'addr_zipcode', 'addr_location',
-                  'birthday', 'phone', 'mobile_phone', 'reachable_by_email']
+                  'birthday', 'phone', 'mobile_phone', 'iban', 'reachable_by_email']
         widgets = {
             'first_name': TextInput(attrs={'readonly':'readonly', 'class': 'form-control'}),
             'last_name': TextInput(attrs={'readonly':'readonly', 'class': 'form-control'}),
@@ -30,8 +32,17 @@ class MemberProfileForm(ModelForm):
             'phone': TextInput(attrs={'class': 'form-control'}),
             'mobile_phone': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={'readonly':'readonly', 'class': 'form-control'}),
+            'iban': TextInput(attrs={'class': 'form-control'}),
             'reachable_by_email': CheckboxInput(attrs={'class': 'onoffswitch'}),
         }
+        
+    def clean_iban(self):
+        if self.data['iban'] != '':
+            try:
+                iban = IBAN(self.data['iban'])
+            except:
+                raise ValidationError('IBAN ist nicht gültig')
+        return self.data['iban']
 
 
 class SubscriptionForm(ModelForm):

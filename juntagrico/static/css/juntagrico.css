@@ -51,6 +51,16 @@
     margin-right: -7px;
 }
 
+.delivery-table {
+	width: 70%;
+	font-size: 14px;
+	margin-bottom: 0px;
+}
+
+.delivery-row {
+    margin-bottom: 10px;
+}
+
 .juntagrico {
     margin-top: 0;
 }

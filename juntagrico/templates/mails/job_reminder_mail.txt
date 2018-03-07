@@ -3,7 +3,7 @@
 {% block content %}
 Nicht vergessen:
 
-Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.displayed_name }}" statt.
+Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.get_name }}" statt.
 
 Details:
 

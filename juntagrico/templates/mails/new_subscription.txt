@@ -1,0 +1,19 @@
+{% extends "mails/email.txt" %}
+{% load config %}
+{% block content %}
+Hallo
+
+Soeben wurde ein neues Abo bestellt
+
+ID: {{subscription.id}}
+Beschrieb: {{subscription.overview}}
+Abonnenten:
+{% for member in subscription.recipients_all%}
+{{member.first_name}} {{member.last_name}}: {{member.email}}
+{% endfor%}
+
+einen neuen schönen Tag noch wünscht dein
+
+{% config "organisation_name" %}-Server
+
+{% endblock %}

@@ -1,44 +1,28 @@
 {% extends "mails/email.txt" %}
 {% load config %}
 {% block content %}
-{% config "billing" as billing%}
-Wir freuen uns, dich bei {% config "organisation_name" %} zu begrüssen.
+Wir freuen uns, dich bei der Genossenschaft {% config "organisation_name" %} zu begrüssen.
 
-{% config "organisation_name" %} ist ein genossenschaftlich organisierter Garten – 500 Leute produzieren gemeinsam ihr feines Bio-Gemüse. Jedes Mitglied der Genossenschaft kauft mindestens einen Anteilschein à {% config "share_price" %} Franken. Damit finanziert {% config "organisation_name" %} die Infrastruktur. Somit bist du MiteigentümerIn des Gemüsebetriebs und kannst bei vielen Entscheidungen mitbestimmen. Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet.
-
-Bitte zahle den Betrag für den/die Anteilschein/e auf das folgende Konto ein:
-{% if not billing %}
-        Bitte zahle den Betrag für den/die Anteilschein/e auf das folgende Konto ein:
-        {% config "organisation_address" as addr%}
-        {{ addr.name }}
-        {% if addr.extra %}
-            {{ addr.extra }}
-        {% endif %}    
-        {{ addr.street }} {{ addr.number }}
-        {{ addr.zip }} {{ addr.city }}
-        {% config "organisation_bank_connection" as bank%}
-        {{ bank.NAME }}
-        Postkonto-Nummer: {{ bank.PC }}
-        IBAN: {{ bank.IBAN }}
-        BIC: {{ bank.BIC }}
-    {% else %}
-        Du erhälst separate Mails mit den Rechungen für die Anteilsscheine 
-    {% endif %}
-
-Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
-
-Gerne darfst du schon vorher im Garten schnuppern kommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. 
-{% if password is not None %}
+Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten:
 Email: {{ username }}
 Passwort: {{ password }}
 Bitte setze dir hier gleich ein neues Passwort:
 {{serverurl}}/my/password
 
-Damit wir dich als Mitglied freishalten können nutze den Bestätigungslink um deine Email zu bestätigen.
-Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
-{% endif %}
+Du erhälst für deine Anteilscheine separate Emails mit den Inforamtionen wie du diese bezalen kannst.
 
-Für weitere Fragen schaust du in den FAQ (http://{% config "server_url" %}{% config "faq_doc" %}) nach oder schreibst eine Mail an {% config "info_email" %}.
+{% if subscription is not None %}
+Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
+
+{% endif %}
+Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. 
+
+Damit wir dich als Mitglied freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
+Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
+
+{% config "faq_doc" as faq_doc %}
+{% if faq_doc.strip %}Für weitere Fragen schaust du in den FAQ ({{ faq_doc }}) nach oder schreibst eine Mail an {% config "info_email" %}.{% else %}Für weitere Fragen schreibe eine Mail an {% config "info_email" %}.
+{% endif %}
 
 Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
 {% endblock %}

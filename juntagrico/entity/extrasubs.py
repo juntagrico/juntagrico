@@ -1,10 +1,11 @@
-# encoding: utf-8
-
+from django.utils import timezone
 from django.db import models
 
-from juntagrico.entity.billing import *
-from juntagrico.util.temporal import *
+from juntagrico.entity.billing import Billable
+from juntagrico.util.bills import bill_extra_subscription
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
+from juntagrico.config import Config
+
 
 class ExtraSubscriptionType(models.Model):
     '''
@@ -16,6 +17,7 @@ class ExtraSubscriptionType(models.Model):
     sort_order = models.FloatField(_('Groesse zum Sortieren'), default=1.0)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     category = models.ForeignKey('ExtraSubscriptionCategory', related_name='category', null=True, blank=True,
+
                                  on_delete=models.PROTECT)
 
     def __str__(self):
@@ -47,10 +49,11 @@ class ExtraSubscription(Billable):
     '''
     The actiual extra subscription
     '''
-    main_subscription = models.ForeignKey('Subscription', related_name='extra_subscription_set', null=False,
-                                          blank=False,
+    main_subscription = models.ForeignKey('Subscription',
+                                          related_name='extra_subscription_set',
                                           on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
+
     canceled = models.BooleanField(_('gekündigt'), default=False)
     activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
     deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
@@ -58,13 +61,13 @@ class ExtraSubscription(Billable):
                              on_delete=models.PROTECT)
 
     old_active = None
-    
+
     @property
     def can_cancel(self):
         period = ExtraSubBillingPeriodDao.get_current_period_per_type(self.type)
         print(period.get_actual_cancel())
-        return timezone.now().date()<=period.get_actual_cancel()
-    
+        return timezone.now().date() <= period.get_actual_cancel()
+
     @property
     def state(self):
         if self.active is False and self.deactivation_date is None:
@@ -78,12 +81,16 @@ class ExtraSubscription(Billable):
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
-        if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
-            instance.activation_date = timezone.now().date()            
-            if Config.billing():
-                bill_extra_subscription(instance)
-        elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
-            instance.deactivation_date = timezone.now().date()
+        if(instance.old_active != instance.active and
+           instance.old_active is False and
+           instance.deactivation_date is None):
+                instance.activation_date = timezone.now().date()
+                if Config.billing():
+                    bill_extra_subscription(instance)
+        elif(instance.old_active != instance.active and
+             instance.old_active is True and
+             instance.deactivation_date is None):
+                instance.deactivation_date = timezone.now().date()
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
@@ -95,3 +102,4 @@ class ExtraSubscription(Billable):
     class Meta:
         verbose_name = _('Zusatz-Abo')
         verbose_name_plural = _('Zusatz-Abos')
+

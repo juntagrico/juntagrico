@@ -3,7 +3,7 @@
 {% block content %}
 Achtung:
 
-Dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.displayed_name }}" findet neu um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} statt.
+Dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.get_name }}" findet neu um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} statt.
 
 Details:
 

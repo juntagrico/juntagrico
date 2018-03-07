@@ -43,3 +43,5 @@ It provides the basic functionality like
 
 Detailed documentation how to install and configure juntagrico can be found here http://juntagrico.readthedocs.io
 
+Demo can be found here https://juntagrico-demo.herokuapp.com/
+
