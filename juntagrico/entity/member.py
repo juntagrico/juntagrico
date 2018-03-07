@@ -15,18 +15,19 @@ class Member(models.Model):
     # all user information should be stored in the Member model
     user = models.OneToOneField(User, related_name='member', null=True, blank=True, on_delete=models.CASCADE)
 
-    first_name = models.CharField('Vorname', max_length=30)
-    last_name = models.CharField('Nachname', max_length=30)
+    first_name = models.CharField(_('Vorname'), max_length=30)
+    last_name = models.CharField(_('Nachname'), max_length=30)
     email = models.EmailField(unique=True)
 
-    addr_street = models.CharField('Strasse', max_length=100)
-    addr_zipcode = models.CharField('PLZ', max_length=10)
-    addr_location = models.CharField('Ort', max_length=50)
-    birthday = models.DateField('Geburtsdatum', null=True, blank=True)
-    phone = models.CharField('Telefonnr', max_length=50)
-    mobile_phone = models.CharField('Mobile', max_length=50, null=True, blank=True)
+    addr_street = models.CharField(_('Strasse'), max_length=100)
+    addr_zipcode = models.CharField(_('PLZ'), max_length=10)
+    addr_location = models.CharField(_('Ort'), max_length=50)
+    birthday = models.DateField(_('Geburtsdatum'), null=True, blank=True)
+    phone = models.CharField(_('Telefonnr'), max_length=50)
+    mobile_phone = models.CharField(_('Mobile'), max_length=50, null=True, blank=True)
     
     iban = models.CharField('IBAN', max_length=100, blank=True, default='')
+
 
     future_subscription = models.ForeignKey('Subscription', related_name='members_future', null=True, blank=True,
                                      on_delete=models.SET_NULL)
@@ -63,6 +64,7 @@ class Member(models.Model):
         return future or not current 
 
         
+
     def __str__(self):
         return self.get_name()
 
@@ -91,7 +93,7 @@ class Member(models.Model):
     class Meta:
         verbose_name = Config.member_string()
         verbose_name_plural = Config.members_string()
-        permissions = (('can_filter_members', 'Benutzer kann ' + Config.members_string() + ' filtern'),)
+        permissions = (('can_filter_members', _('Benutzer kann ') + Config.members_string() + _(' filtern')),)
 
     def get_name(self):
         return '%s %s' % (self.first_name, self.last_name)

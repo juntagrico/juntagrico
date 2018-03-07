@@ -31,6 +31,7 @@ class Depot(models.Model):
                                      null=True, blank=True)
     description = models.TextField('Beschreibung', max_length=1000, default='')
 
+
     overview_cache = None
     subscription_cache = None
 
@@ -51,7 +52,7 @@ class Depot(models.Model):
 
     @property
     def weekday_name(self):
-        day = 'Unbekannt'
+        day = _('Unbekannt')
         if 8 > self.weekday > 0:
             day = weekdays[self.weekday]
         return day
@@ -92,6 +93,6 @@ class Depot(models.Model):
         self.subscription_cache = self.active_subscriptions()
 
     class Meta:
-        verbose_name = 'Depot'
-        verbose_name_plural = 'Depots'
-        permissions = (('is_depot_admin', 'Benutzer ist Depot Admin'),)
+        verbose_name = _('Depot')
+        verbose_name_plural = _('Depots')
+        permissions = (('is_depot_admin', _('Benutzer ist Depot Admin')),)

@@ -12,14 +12,15 @@ from juntagrico.config import Config
 from juntagrico.mailer import *
 
 class ActivityArea(models.Model):
-    name = models.CharField('Name', max_length=100, unique=True)
-    description = models.TextField('Beschreibung', max_length=1000, default='')
+
+    name = models.CharField(_('Name'), max_length=100, unique=True)
+    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     email = models.EmailField(null=True, blank=True)
-    core = models.BooleanField('Kernbereich', default=False)
-    hidden = models.BooleanField('versteckt', default=False)
+    core = models.BooleanField(_('Kernbereich'), default=False)
+    hidden = models.BooleanField(_('versteckt'), default=False)
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT)
     members = models.ManyToManyField('Member', related_name='areas', blank=True)
-    show_coordinator_phonenumber = models.BooleanField('Koordinator Tel Nr Veröffentlichen', default=False)
+    show_coordinator_phonenumber = models.BooleanField(_('Koordinator Tel Nr Veröffentlichen'), default=False)
 
     def __str__(self):
         return '%s' % self.name
@@ -33,21 +34,21 @@ class ActivityArea(models.Model):
             return self.coordinator.email
 
     class Meta:
-        verbose_name = 'Tätigkeitsbereich'
-        verbose_name_plural = 'Tätigkeitsbereiche'
-        permissions = (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),)
+        verbose_name = _('Tätigkeitsbereich')
+        verbose_name_plural = _('Tätigkeitsbereiche')
+        permissions = (('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
 
 class JobExtraType(models.Model):
     '''
     Types of extras which a job type might need or can have
     '''    
-    name = models.CharField('Name', max_length=100, unique=True)
-    display_empty = models.CharField('Icon für felhlendes Extra', max_length=1000, blank=False, null=False)
-    display_full = models.CharField('Icon für Extra', max_length=1000, blank=False, null=False)
+    name = models.CharField(_('Name'), max_length=100, unique=True)
+    display_empty = models.CharField(_('Icon für fehlendes Extra'), max_length=1000, blank=False, null=False)
+    display_full = models.CharField(_('Icon für Extra'), max_length=1000, blank=False, null=False)
     
     class Meta:
-        verbose_name = 'JobExtraTyp'
-        verbose_name_plural = 'JobExtraTypen'
+        verbose_name = _('JobExtraTyp')
+        verbose_name_plural = _('JobExtraTypen')
 
 class JobExtra(models.Model):
     '''
@@ -62,7 +63,7 @@ class JobExtra(models.Model):
     extra_type = models.ForeignKey('JobExtraType', related_name='job_types_set', null=False,
                                           blank=False,
                                           on_delete=models.PROTECT)
-    per_member = models.BooleanField('jeder kann Extra auswählen', default=False)
+    per_member = models.BooleanField(_('jeder kann Extra auswählen'), default=False)
 
     def empty(self,assignment_set):
         ids=[assignment.id for assignment in assignment_set]
@@ -75,19 +76,19 @@ class JobExtra(models.Model):
         return onetime_type
     
     class Meta:
-        verbose_name = 'JobExtra'
-        verbose_name_plural = 'JobExtras'
+        verbose_name = _('JobExtra')
+        verbose_name_plural = _('JobExtras')
 
 
 class AbstractJobType(models.Model):
     '''
     Abstract type of job.
     '''
-    name = models.CharField('Name', max_length=100, unique=True)
-    displayed_name = models.CharField('Angezeigter Name', max_length=100, blank=True, null=True)
-    description = models.TextField('Beschreibung', max_length=1000, default='')
+    name = models.CharField(_('Name'), max_length=100, unique=True)
+    displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
+    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
-    duration = models.PositiveIntegerField('Dauer in Stunden')
+    duration = models.PositiveIntegerField(_('Dauer in Stunden'))
     location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
@@ -100,8 +101,8 @@ class AbstractJobType(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'AbstractJobart'
-        verbose_name_plural = 'AbstractJobarten'
+        verbose_name = _('AbstractJobart')
+        verbose_name_plural = _('AbstractJobarten')
         abstract = True
 
 
@@ -111,17 +112,17 @@ class JobType(AbstractJobType):
     '''
 
     class Meta:
-        verbose_name = 'Jobart'
-        verbose_name_plural = 'Jobarten'
+        verbose_name = _('Jobart')
+        verbose_name_plural = _('Jobarten')
 
 
 class Job(PolymorphicModel):
-    slots = models.PositiveIntegerField('Plaetze')
+    slots = models.PositiveIntegerField(_('Plaetze'))
     time = models.DateTimeField()
     multiplier = models.PositiveIntegerField(Config.assignments_string()+' vielfaches', default=1)
     pinned = models.BooleanField(default=False)
-    reminder_sent = models.BooleanField('Reminder verschickt', default=False)
-    canceled = models.BooleanField('abgesagt', default=False)
+    reminder_sent = models.BooleanField(_('Reminder verschickt'), default=False)
+    canceled = models.BooleanField(_('abgesagt'), default=False)
     old_canceled = None
     old_time = None
 
@@ -130,7 +131,7 @@ class Job(PolymorphicModel):
         raise NotImplementedError
 
     def __str__(self):
-        return 'Job #%s' % self.id
+        return _('Job #%s') % self.id
 
     def weekday_name(self):
         day = self.time.isoweekday()
@@ -191,7 +192,7 @@ class Job(PolymorphicModel):
 
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:
-            raise ValidationError('Abgesagte jobs koennen nicht wieder aktiviert werden', code='invalid')
+            raise ValidationError(_('Abgesagte jobs koennen nicht wieder aktiviert werden'), code='invalid')
    
 
     @classmethod
@@ -221,8 +222,8 @@ class Job(PolymorphicModel):
             assignments.delete()
 
     class Meta:
-        verbose_name = 'AbstractJob'
-        verbose_name_plural = 'AbstractJobs'
+        verbose_name = _('AbstractJob')
+        verbose_name_plural = _('AbstractJobs')
 
 
 class RecuringJob(Job):
@@ -237,8 +238,8 @@ class RecuringJob(Job):
         Job.post_init(sender, instance)
 
     class Meta:
-        verbose_name = 'Job'
-        verbose_name_plural = 'Jobs'
+        verbose_name = _('Job')
+        verbose_name_plural = _('Jobs')
 
 
 class OneTimeJob(Job, AbstractJobType):
@@ -262,8 +263,8 @@ class OneTimeJob(Job, AbstractJobType):
         Job.post_init(sender, instance)
 
     class Meta:
-        verbose_name = 'EinzelJob'
-        verbose_name_plural = 'EinzelJobs'
+        verbose_name = _('EinzelJob')
+        verbose_name_plural = _('EinzelJobs')
 
 
 class Assignment(models.Model):
@@ -272,9 +273,9 @@ class Assignment(models.Model):
     '''
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     member = models.ForeignKey('Member', on_delete=models.PROTECT)
-    core_cache = models.BooleanField('Kernbereich', default=False) 
+    core_cache = models.BooleanField(_('Kernbereich'), default=False)
     job_extras = models.ManyToManyField(JobExtra,related_name='assignments', blank=True)
-    amount = models.FloatField('Wert')
+    amount = models.FloatField(_('Wert'))
 
     def __str__(self):
         return '%s #%s' % (Config.assignment_string(), self.id)
