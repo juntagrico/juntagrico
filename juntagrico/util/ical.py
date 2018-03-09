@@ -1,6 +1,6 @@
 from ics import Calendar, Event
 
-from juntagrico.config import *
+from juntagrico.config import Config
 
 '''
     Create a ical string from an job

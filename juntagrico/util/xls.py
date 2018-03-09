@@ -1,4 +1,4 @@
-from io import StringIO, BytesIO
+from io import BytesIO
 
 import xlsxwriter
 from django.http import HttpResponse
@@ -7,8 +7,9 @@ from django.http import HttpResponse
     Generates excell for a defined set of fields and a model
 '''
 
+
 def generate_excell_from_model(fields, model_instance):
-    parsed_fields={}
+    parsed_fields = {}
     for field in fields:
         parts = field.split('.')
         count = 1
@@ -21,9 +22,10 @@ def generate_excell_from_model(fields, model_instance):
     instances = model_instance.objects.all()
     return generate_excell(parsed_fields, instances)
 
-def generate_excell_load_fields(fields, model_instance,instances):
+
+def generate_excell_load_fields(fields, model_instance, instances):
     for field in fields:
-        if fields[field]=='':
+        if fields[field] == '':
             parts = field.split('.')
             count = 1
             dbfield = model_instance._meta.get_field(parts[0])
@@ -33,7 +35,8 @@ def generate_excell_load_fields(fields, model_instance,instances):
             fields[field] = dbfield.verbose_name
 
     return generate_excell(fields, instances)
-    
+
+
 def generate_excell(fields, instances):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'

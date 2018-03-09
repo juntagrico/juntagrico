@@ -1,4 +1,4 @@
-from django.shortcuts import render
+
 
 def append_attachements(request, attachements):
     index = 1

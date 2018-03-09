@@ -2,48 +2,54 @@ import hashlib
 import random
 import string
 
-from juntagrico.models import *
+from juntagrico.models import Share, Subscription, TSST, TFSST
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.mailer import send_welcome_mail
+from juntagrico.mailer import send_been_added_to_subscription
+from juntagrico.mailer import send_share_created_mail
 
 
-def password_generator(size=8, chars=string.ascii_uppercase + string.digits): return ''.join(
-    random.choice(chars) for x in range(size))
+def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
+    return ''.join(
+        random.choice(chars) for x in range(size))
 
 
-
-def create_subscription(start_date, depot, selectedsubscription):       
+def create_subscription(start_date, depot, selectedsubscription):
     subscription = Subscription()
     subscription.start_date = start_date
     subscription.depot = depot
     subscription.save()
-    types = list((type for type in SubscriptionTypeDao.get_by_id(int(selectedsubscription))))                    
-    TSST.objects.create(type=types[0], subscription=subscription)                
-    TFSST.objects.create(type=types[0], subscription=subscription)
+    type = SubscriptionTypeDao.get_by_id(int(selectedsubscription))[0]
+    TSST.objects.create(type=type, subscription=subscription)
+    TFSST.objects.create(type=type, subscription=subscription)
     return subscription
 
-    
+
 def create_member(member, subscription, main_member=None, shares=None):
     member.future_subscription = subscription
     member.save()
     password = password_generator()
     member.user.set_password(password)
     member.user.save()
-    hash = hashlib.sha1((member.email + str(member.id)).encode('utf8')).hexdigest()
+    key = (member.email + str(member.id)).encode('utf8')
+    hash = hashlib.sha1(key).hexdigest()
     if main_member is None:
         send_welcome_mail(member.email, password, hash, subscription)
     else:
         name = main_member.get_name()
-        send_been_added_to_subscription(member.email, password, hash, name, shares)
-       
-       
+        email = member.email
+        send_been_added_to_subscription(email, password, hash, name, shares)
+
+
 def update_member(member, subscription, main_member=None, shares=None):
     member.future_subscription = subscription
     member.save()
     if main_member is not None:
         name = main_member.get_name()
-        send_been_added_to_subscription(member.email, None, None, name, shares, False)
-    
-    
+        email = member.email
+        send_been_added_to_subscription(email, None, None, name, shares, False)
+
+
 def create_share(member):
     share = Share.objects.create(member=member)
     send_share_created_mail(member, share)
