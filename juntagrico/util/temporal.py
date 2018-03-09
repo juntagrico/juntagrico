@@ -24,19 +24,6 @@ def weekday_short(day, num):
     return weekday[:num]
 
 
-def get_status_image_text(percent=0):
-    if percent >= 100:
-        return 'Fertig'
-    elif percent >= 75:
-        return 'Dreiviertel'
-    elif percent >= 50:
-        return 'Halb'
-    elif percent > 0:
-        return 'Angefangen'
-    else:
-        return 'Nix'
-
-
 def start_of_business_year():
     day = Config.business_year_start()['day']
     month = Config.business_year_start()['month']

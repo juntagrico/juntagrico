@@ -1,24 +1,19 @@
+import math
+
+
 def get_status_image(percent=0):
-    if percent >= 100:
-        return 'status_100'
-    elif percent >= 75:
-        return 'status_75'
-    elif percent >= 50:
-        return 'status_50'
-    elif percent > 0:
-        return 'status_25'
-    else:
-        return 'status_0'
+    status_number = int(25 * math.floor(float(percent)/25))
+    result = 'status_' + status_number
+    return result
 
 
 def get_status_image_text(percent=0):
-    if percent >= 100:
-        return 'Fertig'
-    elif percent >= 75:
-        return 'Dreiviertel'
-    elif percent >= 50:
-        return 'Halb'
-    elif percent > 0:
-        return 'Angefangen'
-    else:
-        return 'Nix'
+    texts = {
+         100: 'Fertig',
+         75: 'Dreivierte',
+         50: 'Halb',
+         25: 'Angefangen',
+         0: 'Nix'
+    }
+    status_number = int(25 * math.floor(float(percent)/25))
+    return texts[status_number]
