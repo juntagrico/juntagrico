@@ -197,7 +197,6 @@ def cs_add_member(request):
     initial = {'addr_street': main_member.addr_street,
                    'addr_zipcode': main_member.addr_zipcode,
                    'addr_location': main_member.addr_location,
-                   'phone': main_member.phone,
                    }
     memberform = RegisterMemberForm(initial=initial)
     renderdict = {
