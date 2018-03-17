@@ -167,7 +167,8 @@ def cs_select_shares(request):
         'total_shares': total_shares,
         'required_shares': required_shares,
         'member': member,
-        'co_members': co_members
+        'co_members': co_members,
+        'has_com_members': len(co_members)>0
     }
     return render(request, 'createsubscription/select_shares.html', renderdict)
     

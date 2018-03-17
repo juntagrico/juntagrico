@@ -21,7 +21,7 @@ Bitte überweise den Betrag von {% config "currency" %} {% config "share_price" 
     BIC: {{ bank.BIC }}
 
 Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur einen Anteilschein auf einmal.
-Zusätzlich gib im Betreff die Systemnummer an und die Emailadresse des halter des Anteilscheines (die sist vorallem wichtig wenn du den anteilschein für jemand anderes bezahlst)
+Zusätzlich gib im Betreff die Systemnummer an und die Emailadresse des Halters des Anteilscheines (dies ist vorallem wichtig wenn du den Anteilschein für jemand anderen bezahlst)
 
-Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
+Bis bald und liebe Grüsse, die {% config "organisation_name" %}-Betriebsgruppe
 {% endblock %}

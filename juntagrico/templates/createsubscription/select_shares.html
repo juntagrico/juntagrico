@@ -20,8 +20,11 @@
         Infos:
 
         Um Mitglied der Genossenschaft {% config "organisation_name" %} zu werden, musst du mindestens einen Anteilschein ({% config "currency" %} {% config "share_price" %}) erwerben.
-        Für das von dir ausgewählte Abo brauchst du insgesammt {{ total_shares }} Anteilscheine. Du kannst natürlich noch mehr erwerben. <br/>
-        Teile die restliche benötigten {{ required_shares }} Anteilscheine unter dir und deinen MitabonnentInnen auf.
+        Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet. 
+        Für das von dir ausgewählte Abo brauchst du insgesamt {{ total_shares }} Anteilscheine. Du kannst natürlich noch mehr erwerben. <br/>
+        {% if has_com_members %}
+        Teile die restlichen benötigten {{ required_shares }} Anteilscheine unter dir und deinen MitabonnentInnen auf.
+        {% endif %}
         <br/><br/>
 
         <form action="" method="post" class="form-horizontal createsubscription">

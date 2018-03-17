@@ -12,8 +12,11 @@
 {% block allcontent %}
     <div class="col-md-2"></div>
     <div class="col-md-8">
+        Falls du dein Abo mit jemandem teilst und diese Person als MitabonnentIn hinzufügen möchtest, dann fülle bitte die untenstehenden Felder aus. 
         <br/>
 		Bei bestehenden {% config "members_string" %} reicht es die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
+        <br/>
+        Sobald du alle Mitabonnenten hinzugefügt hast, klicke auf "weiter".
         <form action="" method="post" class="form-horizontal" id="new_member">
             {% csrf_token %}
             <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
