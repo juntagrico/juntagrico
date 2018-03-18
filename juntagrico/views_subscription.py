@@ -167,7 +167,8 @@ def extra_change(request, subscription_id):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_extra_types(),
-        'extras': subscription.extra_subscription_set.all()
+        'extras': subscription.extra_subscription_set.all(),
+        'sub_id': subscription_id
     })
     return render(request, 'extra_change.html', renderdict)
 
@@ -362,7 +363,7 @@ def deactivate_extra(request, extra_id):
         return redirect('http://'+Config.adminportal_server_url())
         
 @primary_member_of_subscription
-def cancel_extra(request, extra_id):
+def cancel_extra(request, extra_id, subscription_id):
     extra = get_object_or_404(ExtraSubscription, id=extra_id)  
     if extra.active is False:
         extra.delete()
