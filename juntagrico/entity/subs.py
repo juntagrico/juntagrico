@@ -3,6 +3,7 @@ import time
 import datetime
 
 from django.db import models
+from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 
 from juntagrico.dao.sharedao import ShareDao
@@ -41,13 +42,13 @@ class Subscription(Billable):
     old_canceled = None
 
     def __str__(self):
-        namelist = [_('1 Einheit') if self.size == 1 else _('%d Einheiten') % self.size]
+        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount) Einheiten') % {'amount':self.size}]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return _('Abo (%s) %s') % (' + '.join(namelist), self.id)
+        return _('Abo (%(namelist)) %(id)') % {'namelist':' + '.join(namelist),'id': self.id}
 
     @property
     def overview(self):
-        namelist = [_('1 Einheit') if self.size == 1 else _('%d Einheiten') % self.size]
+        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount) Einheiten') % {'amount':self.size}]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
        

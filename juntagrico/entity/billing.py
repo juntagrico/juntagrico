@@ -3,6 +3,7 @@
 from django.db import models
 from polymorphic.models import PolymorphicModel
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from juntagrico.util.temporal import month_choices, calculate_last
 from juntagrico.util.temporal import calculate_next, calculate_next_offset

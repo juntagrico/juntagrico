@@ -2,6 +2,8 @@
 
 from django.core import validators
 from django.db import models
+from django.utils.translation import gettext as _
+
 from juntagrico.util.temporal import weekday_choices, weekdays
 
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao

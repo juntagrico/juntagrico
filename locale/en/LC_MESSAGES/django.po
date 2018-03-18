@@ -1,0 +1,524 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-03-07 08:59-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: entity/billing.py:18
+msgid "Verrechenbare Einheit"
+msgstr ""
+
+#: entity/billing.py:19
+msgid "Verrechenbare Einheiten"
+msgstr ""
+
+#: entity/billing.py:29
+msgid "bezahlt"
+msgstr ""
+
+#: entity/billing.py:30 entity/extrasubs.py:59 entity/subs.py:34
+msgid "Aktivierungssdatum"
+msgstr ""
+
+#: entity/billing.py:31
+msgid "Referenznummer"
+msgstr ""
+
+#: entity/billing.py:32 entity/billing.py:50
+msgid "Betrag"
+msgstr ""
+
+#: entity/billing.py:38
+msgid "Rechnung"
+msgstr ""
+
+#: entity/billing.py:39
+msgid "Rechnungen"
+msgstr ""
+
+#: entity/billing.py:49
+msgid "Bezahldatum"
+msgstr ""
+
+#: entity/billing.py:56
+msgid "Zahlung"
+msgstr ""
+
+#: entity/billing.py:57
+msgid "Zahlungen"
+msgstr ""
+
+#: entity/billing.py:67
+msgid "Start Tag"
+msgstr ""
+
+#: entity/billing.py:68
+msgid "Start Monat"
+msgstr ""
+
+#: entity/billing.py:69
+msgid "End Tag"
+msgstr ""
+
+#: entity/billing.py:70
+msgid "End Monat"
+msgstr ""
+
+#: entity/billing.py:71
+msgid "Kündigungs Tag"
+msgstr ""
+
+#: entity/billing.py:72
+msgid "Kündigungs Monat"
+msgstr ""
+
+#: entity/billing.py:73
+msgid "Code für Teilabrechnung"
+msgstr ""
+
+#: entity/billing.py:121
+msgid "Verechnungsperdiode Zusatzabos"
+msgstr ""
+
+#: entity/billing.py:122
+msgid "Verechnungsperdioden Zusatzabos"
+msgstr ""
+
+#: entity/depot.py:57
+msgid "Unbekannt"
+msgstr ""
+
+#: entity/depot.py:98
+msgid "Depot"
+msgstr ""
+
+#: entity/depot.py:99
+msgid "Depots"
+msgstr ""
+
+#: entity/depot.py:100
+msgid "Benutzer ist Depot Admin"
+msgstr ""
+
+#: entity/extrasubs.py:15 entity/extrasubs.py:36 entity/jobs.py:17
+#: entity/jobs.py:46 entity/jobs.py:88 entity/mailing.py:11
+#: entity/subtypes.py:8 entity/subtypes.py:26
+msgid "Name"
+msgstr ""
+
+#: entity/extrasubs.py:16
+msgid "Groesse (gross,4, ...)"
+msgstr ""
+
+#: entity/extrasubs.py:17 entity/extrasubs.py:37 entity/jobs.py:18
+#: entity/jobs.py:90 entity/subtypes.py:12 entity/subtypes.py:33
+msgid "Beschreibung"
+msgstr ""
+
+#: entity/extrasubs.py:18
+msgid "Groesse zum Sortieren"
+msgstr ""
+
+#: entity/extrasubs.py:19 entity/extrasubs.py:39 entity/subtypes.py:32
+msgid "Sichtbar"
+msgstr ""
+
+#: entity/extrasubs.py:28
+msgid "Zusatz-Abo-Typ"
+msgstr ""
+
+#: entity/extrasubs.py:29
+msgid "Zusatz-Abo-Typen"
+msgstr ""
+
+#: entity/extrasubs.py:38
+msgid "Nummer zum Sortieren"
+msgstr ""
+
+#: entity/extrasubs.py:45
+msgid "Zusatz-Abo-Kategorie"
+msgstr ""
+
+#: entity/extrasubs.py:46
+msgid "Zusatz-Abo-Kategorien"
+msgstr ""
+
+#: entity/extrasubs.py:58 entity/subs.py:33
+msgid "gekündigt"
+msgstr ""
+
+#: entity/extrasubs.py:60 entity/subs.py:35
+msgid "Deaktivierungssdatum"
+msgstr ""
+
+#: entity/extrasubs.py:75
+msgid "wartend"
+msgstr ""
+
+#: entity/extrasubs.py:77
+msgid "aktiv"
+msgstr ""
+
+#: entity/extrasubs.py:79
+msgid "aktiv - gekündigt"
+msgstr ""
+
+#: entity/extrasubs.py:81
+msgid "inaktiv-gekündigt"
+msgstr ""
+
+#: entity/extrasubs.py:104
+msgid "Zusatz-Abo"
+msgstr ""
+
+#: entity/extrasubs.py:105
+msgid "Zusatz-Abos"
+msgstr ""
+
+#: entity/jobs.py:20 entity/jobs.py:277
+msgid "Kernbereich"
+msgstr ""
+
+#: entity/jobs.py:21
+msgid "versteckt"
+msgstr ""
+
+#: entity/jobs.py:24
+msgid "Koordinator Tel Nr Veröffentlichen"
+msgstr ""
+
+#: entity/jobs.py:38
+msgid "Tätigkeitsbereich"
+msgstr ""
+
+#: entity/jobs.py:39
+msgid "Tätigkeitsbereiche"
+msgstr ""
+
+#: entity/jobs.py:40
+msgid "Benutzer ist TätigkeitsbereichskoordinatorIn"
+msgstr ""
+
+#: entity/jobs.py:47
+msgid "Icon für fehlendes Extra"
+msgstr ""
+
+#: entity/jobs.py:48
+msgid "Icon für Extra"
+msgstr ""
+
+#: entity/jobs.py:51
+msgid "JobExtraTyp"
+msgstr ""
+
+#: entity/jobs.py:52
+msgid "JobExtraTypen"
+msgstr ""
+
+#: entity/jobs.py:67
+msgid "jeder kann Extra auswählen"
+msgstr ""
+
+#: entity/jobs.py:80
+msgid "JobExtra"
+msgstr ""
+
+#: entity/jobs.py:81
+msgid "JobExtras"
+msgstr ""
+
+#: entity/jobs.py:89
+msgid "Angezeigter Name"
+msgstr ""
+
+#: entity/jobs.py:92
+msgid "Dauer in Stunden"
+msgstr ""
+
+#: entity/jobs.py:105
+msgid "AbstractJobart"
+msgstr ""
+
+#: entity/jobs.py:106
+msgid "AbstractJobarten"
+msgstr ""
+
+#: entity/jobs.py:116
+msgid "Jobart"
+msgstr ""
+
+#: entity/jobs.py:117
+msgid "Jobarten"
+msgstr ""
+
+#: entity/jobs.py:121
+msgid "Plaetze"
+msgstr ""
+
+#: entity/jobs.py:125
+msgid "Reminder verschickt"
+msgstr ""
+
+#: entity/jobs.py:126
+msgid "abgesagt"
+msgstr ""
+
+#: entity/jobs.py:135
+#, python-format
+msgid "Job #%s"
+msgstr ""
+
+#: entity/jobs.py:196
+msgid "Abgesagte jobs koennen nicht wieder aktiviert werden"
+msgstr ""
+
+#: entity/jobs.py:226
+msgid "AbstractJob"
+msgstr ""
+
+#: entity/jobs.py:227
+msgid "AbstractJobs"
+msgstr ""
+
+#: entity/jobs.py:242
+msgid "Job"
+msgstr ""
+
+#: entity/jobs.py:243
+msgid "Jobs"
+msgstr ""
+
+#: entity/jobs.py:267
+msgid "EinzelJob"
+msgstr ""
+
+#: entity/jobs.py:268
+msgid "EinzelJobs"
+msgstr ""
+
+#: entity/jobs.py:279
+msgid "Wert"
+msgstr ""
+
+#: entity/mailing.py:12
+msgid "Template"
+msgstr ""
+
+#: entity/mailing.py:13
+msgid "Code"
+msgstr ""
+
+#: entity/mailing.py:19
+msgid "MailTemplate"
+msgstr ""
+
+#: entity/mailing.py:20
+msgid "MailTemplates"
+msgstr ""
+
+#: entity/mailing.py:21
+msgid "Benutzer kann Templates laden"
+msgstr ""
+
+#: entity/member.py:19
+msgid "Vorname"
+msgstr ""
+
+#: entity/member.py:20
+msgid "Nachname"
+msgstr ""
+
+#: entity/member.py:23
+msgid "Strasse"
+msgstr ""
+
+#: entity/member.py:24
+msgid "PLZ"
+msgstr ""
+
+#: entity/member.py:25
+msgid "Ort"
+msgstr ""
+
+#: entity/member.py:26
+msgid "Geburtsdatum"
+msgstr ""
+
+#: entity/member.py:27
+msgid "Telefonnr"
+msgstr ""
+
+#: entity/member.py:28
+msgid "Mobile"
+msgstr ""
+
+#: entity/member.py:97
+msgid "Benutzer kann "
+msgstr ""
+
+#: entity/member.py:97
+msgid " filtern"
+msgstr ""
+
+#: entity/share.py:14
+msgid "Bezahlt am"
+msgstr ""
+
+#: entity/share.py:15
+msgid "Ausgestellt am"
+msgstr ""
+
+#: entity/share.py:16
+msgid "Eingebucht am"
+msgstr ""
+
+#: entity/share.py:17
+msgid "Gekündigt am"
+msgstr ""
+
+#: entity/share.py:18
+msgid "Gekündigt auf"
+msgstr ""
+
+#: entity/share.py:19
+msgid "Zurückbezahlt am"
+msgstr ""
+
+#: entity/share.py:20
+msgid "Anteilschein Nummer"
+msgstr ""
+
+#: entity/share.py:21 entity/subs.py:40
+msgid "Notizen"
+msgstr ""
+
+#: entity/share.py:28
+#, python-format
+msgid "Anteilschein #%s"
+msgstr ""
+
+#: entity/share.py:31
+msgid "Anteilschein"
+msgstr ""
+
+#: entity/share.py:32
+msgid "Anteilscheine"
+msgstr ""
+
+#: entity/subs.py:36
+msgid "Kündigüngssdatum"
+msgstr ""
+
+#: entity/subs.py:37
+msgid "Erstellungsdatum"
+msgstr ""
+
+#: entity/subs.py:38
+msgid "Gewünschtes Startdatum"
+msgstr ""
+
+#: entity/subs.py:39
+msgid "Gewünschtes Enddatum"
+msgstr ""
+
+#: entity/subs.py:45 entity/subs.py:51
+msgid "1 Einheit"
+msgstr ""
+
+#: entity/subs.py:45 entity/subs.py:51
+#, python-format
+msgid "%(amount) Einheiten"
+msgstr ""
+
+#: entity/subs.py:47
+msgid "Abo (%(namelist)) %(id)"
+msgstr ""
+
+#: entity/subs.py:98
+msgid "waiting"
+msgstr ""
+
+#: entity/subs.py:100
+msgid "active"
+msgstr ""
+
+#: entity/subs.py:102
+msgid "canceled"
+msgstr ""
+
+#: entity/subs.py:104
+msgid "inactive"
+msgstr ""
+
+#: entity/subs.py:205
+msgid "Deaktivierte Abos koennen nicht wieder aktiviert werden"
+msgstr ""
+
+#: entity/subs.py:235
+msgid "Abo"
+msgstr ""
+
+#: entity/subs.py:236
+msgid "Abos"
+msgstr ""
+
+#: entity/subs.py:237
+msgid "Benutzer kann Abos filtern"
+msgstr ""
+
+#: entity/subtypes.py:9 entity/subtypes.py:27
+msgid "Langer Name"
+msgstr ""
+
+#: entity/subtypes.py:10
+msgid "Grösse"
+msgstr ""
+
+#: entity/subtypes.py:11
+msgid "Sichtbar auf Depotliste"
+msgstr ""
+
+#: entity/subtypes.py:18
+msgid "Abo Grösse"
+msgstr ""
+
+#: entity/subtypes.py:19
+msgid "Abo Grössen"
+msgstr ""
+
+#: entity/subtypes.py:29
+msgid "Anz benötigter Anteilsscheine"
+msgstr ""
+
+#: entity/subtypes.py:30
+msgid "Anz benötigter Arbeitseinsätze"
+msgstr ""
+
+#: entity/subtypes.py:31
+msgid "Preis"
+msgstr ""
+
+#: entity/subtypes.py:36
+msgid " - Grösse: "
+msgstr ""
+
+#: entity/subtypes.py:39
+msgid "Abo Typ"
+msgstr ""
+
+#: entity/subtypes.py:40
+msgid "Abo Typen"
+msgstr ""
