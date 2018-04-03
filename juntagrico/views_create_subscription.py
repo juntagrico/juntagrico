@@ -139,7 +139,9 @@ def cs_select_shares(request):
                create_member(member, subscription)   
             else:
                update_member(member, subscription)
-            shares = int(request.POST.get('shares_mainmember'))+1
+            shares = int(request.POST.get('shares_mainmember'))
+            if len(member.active_shares) > 0:
+                shares = shares + 1
             for i in range(shares):
                 create_share(member)
             for co_member in co_members:
@@ -168,6 +170,7 @@ def cs_select_shares(request):
         'required_shares': required_shares,
         'member': member,
         'co_members': co_members,
+        'selected_subscription': int(selected_subscription),
         'has_com_members': len(co_members)>0
     }
     return render(request, 'createsubscription/select_shares.html', renderdict)

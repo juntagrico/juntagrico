@@ -5,7 +5,7 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>Anteilsscheine erwerben</h3>
+        <h3>Anteilscheine erwerben</h3>
     </div>
 {% endblock %}
 
@@ -21,7 +21,11 @@
 
         Um Mitglied der Genossenschaft {% config "organisation_name" %} zu werden, musst du mindestens einen Anteilschein ({% config "currency" %} {% config "share_price" %}) erwerben.
         Bei Austritt aus der Genossenschaft bekommst du deinen Anteilschein zurück erstattet. 
+        {% if selected_subscription > -1 %}
         Für das von dir ausgewählte Abo brauchst du insgesamt {{ total_shares }} Anteilscheine. Du kannst natürlich noch mehr erwerben. <br/>
+        {% else %}
+        Als Genossenschafter ohne Abo benötigst du einen Anteilschein. Du kannst natürlich noch mehr erwerben. <br/> 
+        {% endif %}
         {% if has_com_members %}
         Teile die restlichen benötigten {{ required_shares }} Anteilscheine unter dir und deinen MitabonnentInnen auf.
         {% endif %}

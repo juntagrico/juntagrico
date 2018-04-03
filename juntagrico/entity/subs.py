@@ -42,7 +42,7 @@ class Subscription(Billable):
     old_canceled = None
 
     def __str__(self):
-        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount) Einheiten') % {'amount':self.size}]
+        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount)d Einheiten') % {'amount':self.size}]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
         return _('Abo (%(namelist)s) %(id)s') % {'namelist':' + '.join(namelist),'id': self.id}
 
