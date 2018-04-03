@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 subscription.future_depot = None
                 subscription.save()
                 emails = []
-                for member in subscription.recipients():
+                for member in subscription.recipients().all():
                     emails.append(member.email)
                 send_depot_changed(emails, subscription.depot)
 
