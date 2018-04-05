@@ -34,6 +34,9 @@ class SubscriptionType(models.Model):
 
     def __str__(self):
         return self.name + _(' - Grösse: ') + self.size.name
+    
+    def __lt__(self, other):
+        return self.pk < other.pk
 
     class Meta:
         verbose_name = _('Abo Typ')
