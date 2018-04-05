@@ -61,7 +61,7 @@ class Subscription(Billable):
     
     @property
     def types_changed(self):
-        return set(self.types.all())!=set(self.future_types.all())
+        return sorted(list(self.types.all()))!=sorted(list(self.future_types.all()))
     
 
     def recipients_names(self):

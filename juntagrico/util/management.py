@@ -23,12 +23,13 @@ def create_subscription(start_date, depot, selectedsubscription):
 
     
 def create_member(member, subscription, main_member=None, shares=None):
-    if subscription.state == 'waiting':            
-        member.future_subscription = subscription
-    elif subscription.state == 'inactive':
-        member.old_subscriptions.add(subscription)           
-    else:
-        member.subscription = subscription
+    if subscription is not None:
+        if subscription.state == 'waiting':            
+            member.future_subscription = subscription
+        elif subscription.state == 'inactive':
+            member.old_subscriptions.add(subscription)           
+        else:
+            member.subscription = subscription
     member.future_subscription = subscription
     member.save()
     password = password_generator()
