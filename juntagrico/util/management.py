@@ -44,12 +44,13 @@ def create_member(member, subscription, main_member=None, shares=None):
        
        
 def update_member(member, subscription, main_member=None, shares=None):
-    if subscription.state == 'waiting':            
-        member.future_subscription = subscription
-    elif subscription.state == 'inactive':
-        member.old_subscriptions.add(subscription)           
-    else:
-        member.subscription = subscription
+    if subscription is not None:
+        if subscription.state == 'waiting':            
+            member.future_subscription = subscription
+        elif subscription.state == 'inactive':
+            member.old_subscriptions.add(subscription)           
+        else:
+            member.subscription = subscription
     member.save()
     if main_member is not None:
         name = main_member.get_name()

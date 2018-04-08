@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from io import BytesIO
 
 from django.contrib.auth.decorators import permission_required
 from django.http import Http404
@@ -292,7 +292,7 @@ def maps(request):
 def excel_export_members_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
-    output = StringIO()
+    output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
     worksheet_s = workbook.add_worksheet(Config.members_string())
 
