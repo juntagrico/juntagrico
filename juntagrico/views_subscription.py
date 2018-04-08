@@ -80,7 +80,7 @@ def subscription_change(request, subscription_id):
     renderdict.update({
         'subscription': subscription,
         'member': request.user.member,
-        'change_size': month <= Config.business_year_cancelation_month(),
+        'change_size': can_change,
         'next_cancel_date': temporal.next_cancelation_date(),
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year()
