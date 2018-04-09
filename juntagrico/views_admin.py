@@ -351,7 +351,7 @@ def excel_export_members(request):
         'mobile_phone',
         'confirmed',
         'reachable_by_email',
-        'block_emails',
+        'inactive',
     ]
     return generate_excell_from_model(fields, Member)
 
