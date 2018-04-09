@@ -314,9 +314,9 @@ def excel_export_members_filter(request):
         for area in member.areas.all():
             member.all_areas = member.all_areas + area.name + ' '
         if member.all_areas == '':
-            member.all_areas = str('-Kein Tätigkeitsbereich-', 'utf-8')
+            member.all_areas = str('-Kein Tätigkeitsbereich-')
 
-        member.depot_name = str('Kein Depot definiert', 'utf-8')
+        member.depot_name = str('Kein Depot definiert')
         if member.subscription is not None:
             member.depot_name = member.subscription.depot.name
         looco_full_name = member.first_name + ' ' + member.last_name
