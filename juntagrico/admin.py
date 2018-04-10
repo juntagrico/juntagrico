@@ -35,7 +35,9 @@ class SubscriptionAdminForm(forms.ModelForm):
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
         self.fields['primary_member'].queryset = self.instance.recipients
-        if self.instance.state == 'waiting':            
+        if self.instance.pk is None:
+            self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription(self.instance)
+        elif self.instance.state == 'waiting':            
             self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(self.instance)
         elif self.instance.state == 'inactive':
             self.fields['subscription_members'].queryset = MemberDao.all_members()            
