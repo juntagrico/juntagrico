@@ -198,7 +198,10 @@ class Subscription(Billable):
         return Subscription.get_size_name(types=self.future_types)
 
     def extra_subscription(self, code):
-        return len(self.extra_subscriptions.all().filter(type__name=code)) > 0
+        return self.extra_subscription_amount(code) > 0
+
+    def extra_subscription_amount(self, code):
+        return len(self.extra_subscriptions.all().filter(type__name=code))
 
     def clean(self):
         if self.old_active != self.active and self.deactivation_date is not None:
