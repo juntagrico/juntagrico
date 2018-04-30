@@ -263,7 +263,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
         self.inlines.extend(get_otjob_inlines())
         super(OneTimeJobAdmin,self).__init__(*args, **kwargs)
 
-    def transform_job(self, queryset):
+    def transform_job(self, request, queryset):
         for inst in queryset.all():
             t = JobType()
             rj = RecuringJob()
@@ -306,7 +306,7 @@ class JobTypeAdmin(admin.ModelAdmin):
         self.inlines.extend(get_jobtype_inlines())
         super(JobTypeAdmin,self).__init__(*args, **kwargs)
 
-    def transform_job_type(self, queryset):
+    def transform_job_type(self, request, queryset):
         for inst in queryset.all():
             i = 0
             for rj in JobDao.recurings_by_type(inst.id):

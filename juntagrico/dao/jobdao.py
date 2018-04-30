@@ -12,7 +12,7 @@ class JobDao:
 
     @staticmethod
     def recurings_by_type(type_id):
-        return RecuringJob.objects.filter(typeid=type_id)
+        return RecuringJob.objects.filter(type__id=type_id)
 
     @staticmethod
     def ids_for_area_by_contact(member):
