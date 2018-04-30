@@ -156,7 +156,7 @@
                         <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}" /> {{ extra.extra_type.name }}<br/>
                     {% endfor %} 
                     {% for extra in job.per_member_extras %}
-                        <input type="checkbox" name="extra {{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"  /> {{ extra.extra_type.name }}<br/>
+                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"  /> {{ extra.extra_type.name }}<br/>
                     {% endfor %} 
                     <div>
                         <button type="submit" class="btn btn-success">Bestätigen</button>
