@@ -190,7 +190,8 @@ def signup(request):
         else:
             if memberform.is_valid():
                 # check if user already exists
-                if User.objects.filter(email=memberform.cleaned_data['email']).__len__() > 0:
+                email=memberform.cleaned_data['email'];
+                if User.objects.filter(email__iexact=email).__len__() > 0:
                     userexists = True
                 else:
                     member = Member(**memberform.cleaned_data)

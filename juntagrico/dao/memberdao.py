@@ -15,7 +15,7 @@ class MemberDao:
 
     @staticmethod
     def members_by_email(email):
-        return Member.objects.filter(email=email)
+        return Member.objects.filter(email__iexact=email)
 
     @staticmethod
     def members_with_shares():
