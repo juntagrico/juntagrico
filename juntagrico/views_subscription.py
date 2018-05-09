@@ -74,12 +74,13 @@ def subscription_change(request, subscription_id):
     change an subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    month = timezone.now().month
+    now = timezone.now().date()
+    can_change = not ( now >= temporal.cancelation_date() and now < temporal.start_of_next_business_year())
     renderdict = get_menu_dict(request)
     renderdict.update({
         'subscription': subscription,
         'member': request.user.member,
-        'change_size': month <= Config.business_year_cancelation_month(),
+        'change_size': can_change,
         'next_cancel_date': temporal.next_cancelation_date(),
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year()
@@ -167,7 +168,8 @@ def extra_change(request, subscription_id):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_extra_types(),
-        'extras': subscription.extra_subscription_set.all()
+        'extras': subscription.extra_subscription_set.all(),
+        'sub_id': subscription_id
     })
     return render(request, 'extra_change.html', renderdict)
 
@@ -188,7 +190,8 @@ def signup(request):
         else:
             if memberform.is_valid():
                 # check if user already exists
-                if User.objects.filter(email=memberform.cleaned_data['email']).__len__() > 0:
+                email=memberform.cleaned_data['email'];
+                if User.objects.filter(email__iexact=email).__len__() > 0:
                     userexists = True
                 else:
                     member = Member(**memberform.cleaned_data)
@@ -362,7 +365,7 @@ def deactivate_extra(request, extra_id):
         return redirect('http://'+Config.adminportal_server_url())
         
 @primary_member_of_subscription
-def cancel_extra(request, extra_id):
+def cancel_extra(request, extra_id, subscription_id):
     extra = get_object_or_404(ExtraSubscription, id=extra_id)  
     if extra.active is False:
         extra.delete()

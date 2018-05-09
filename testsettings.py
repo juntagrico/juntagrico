@@ -38,7 +38,9 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
+
 MIDDLEWARE = [
+
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -120,3 +122,6 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 GOOGLE_API_KEY = 'AIzaSyCcii4Z71qyky54kEQtRhFbB_z-2zbSU28'
 
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)

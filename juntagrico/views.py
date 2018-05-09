@@ -205,7 +205,7 @@ def participation(request):
         new_areas = set(area for area in ActivityAreaDao.all_visible_areas()
                         if request.POST.get('area' + str(area.id)))
         if old_areas != new_areas:
-            member.areas = new_areas
+            member.areas.set(new_areas)
             member.save()
             for area in new_areas - old_areas:
                 send_new_member_in_activityarea_to_operations(area, member)

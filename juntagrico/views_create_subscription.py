@@ -130,7 +130,7 @@ def cs_select_shares(request):
         except:
             share_error = True      
         if not share_error:
-            Subscription = None
+            subscription = None
             if int(selected_subscription) > -1:
                 start_date = request.session['start_date']
                 depot = request.session['selecteddepot']            
@@ -140,6 +140,8 @@ def cs_select_shares(request):
             else:
                update_member(member, subscription)
             shares = int(request.POST.get('shares_mainmember'))
+            if len(member.active_shares) > 0:
+                shares = shares + 1
             for i in range(shares):
                 create_share(member)
             for co_member in co_members:
@@ -167,7 +169,9 @@ def cs_select_shares(request):
         'total_shares': total_shares,
         'required_shares': required_shares,
         'member': member,
-        'co_members': co_members
+        'co_members': co_members,
+        'selected_subscription': int(selected_subscription),
+        'has_com_members': len(co_members)>0
     }
     return render(request, 'createsubscription/select_shares.html', renderdict)
     
@@ -196,7 +200,6 @@ def cs_add_member(request):
     initial = {'addr_street': main_member.addr_street,
                    'addr_zipcode': main_member.addr_zipcode,
                    'addr_location': main_member.addr_location,
-                   'phone': main_member.phone,
                    }
     memberform = RegisterMemberForm(initial=initial)
     renderdict = {

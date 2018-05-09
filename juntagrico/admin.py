@@ -35,7 +35,9 @@ class SubscriptionAdminForm(forms.ModelForm):
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
         self.fields['primary_member'].queryset = self.instance.recipients
-        if self.instance.state == 'waiting':            
+        if self.instance.pk is None:
+            self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription(self.instance)
+        elif self.instance.state == 'waiting':            
             self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(self.instance)
         elif self.instance.state == 'inactive':
             self.fields['subscription_members'].queryset = MemberDao.all_members()            
@@ -261,7 +263,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
         self.inlines.extend(get_otjob_inlines())
         super(OneTimeJobAdmin,self).__init__(*args, **kwargs)
 
-    def transform_job(self, queryset):
+    def transform_job(self, request, queryset):
         for inst in queryset.all():
             t = JobType()
             rj = RecuringJob()
@@ -304,7 +306,7 @@ class JobTypeAdmin(admin.ModelAdmin):
         self.inlines.extend(get_jobtype_inlines())
         super(JobTypeAdmin,self).__init__(*args, **kwargs)
 
-    def transform_job_type(self, queryset):
+    def transform_job_type(self, request, queryset):
         for inst in queryset.all():
             i = 0
             for rj in JobDao.recurings_by_type(inst.id):

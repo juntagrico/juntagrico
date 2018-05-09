@@ -13,7 +13,7 @@
     <div class="col-md-2"></div>
     <div class="col-md-8">
         <br/>
-		Bei bestehenden {% config "members_string" %} reicht es die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
+		Bei bestehenden {% config "members_string" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
         <form action="" method="post" class="form-horizontal" id="new_member">
             {% csrf_token %}
             <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">

@@ -43,7 +43,7 @@ class Command(BaseCommand):
                 subscription.future_depot = None
                 subscription.save()
                 emails = []
-                for member in subscription.recipients():
+                for member in subscription.recipients:
                     emails.append(member.email)
                 send_depot_changed(emails, subscription.depot)
 
@@ -63,9 +63,9 @@ class Command(BaseCommand):
             count = 0
             for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category):
                 count += 1
-                type = {'name': extra_subscription.name, 'size': extra_subscription.size, 'last': False}
-                types.append(type)
-            type['last'] = True
+                es_type = {'name': extra_subscription.name, 'size': extra_subscription.size, 'last': False}
+                types.append(es_type)
+            es_type['last'] = True
             cat['count'] = count
             categories.append(cat)
 

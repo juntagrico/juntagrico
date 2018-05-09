@@ -3,6 +3,7 @@ import time
 import datetime
 
 from django.db import models
+from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 
 from juntagrico.dao.sharedao import ShareDao
@@ -29,25 +30,25 @@ class Subscription(Billable):
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
                                        on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
-    canceled = models.BooleanField('gekündigt', default=False)
-    activation_date = models.DateField('Aktivierungssdatum', null=True, blank=True)
-    deactivation_date = models.DateField('Deaktivierungssdatum', null=True, blank=True)
-    cancelation_date = models.DateField('Kündigüngssdatum', null=True, blank=True)
-    creation_date = models.DateField('Erstellungsdatum', null=True, blank=True, auto_now_add=True)
-    start_date = models.DateField('Gewünschtes Startdatum', null=False, default=start_of_next_business_year)
-    end_date = models.DateField('Gewünschtes Enddatum', null=True,blank=True)
-    notes = models.TextField('Notizen', max_length=1000, blank=True)    
+    canceled = models.BooleanField(_('gekündigt'), default=False)
+    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
+    cancelation_date = models.DateField(_('Kündigüngssdatum'), null=True, blank=True)
+    creation_date = models.DateField(_('Erstellungsdatum'), null=True, blank=True, auto_now_add=True)
+    start_date = models.DateField(_('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
+    end_date = models.DateField(_('Gewünschtes Enddatum'), null=True,blank=True)
+    notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
     old_active = None
     old_canceled = None
 
     def __str__(self):
-        namelist = ['1 Einheit' if self.size == 1 else '%d Einheiten' % self.size]
+        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount)d Einheiten') % {'amount':self.size}]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return 'Abo (%s) %s' % (' + '.join(namelist), self.id)
+        return _('Abo (%(namelist)s) %(id)s') % {'namelist':' + '.join(namelist),'id': self.id}
 
     @property
     def overview(self):
-        namelist = ['1 Einheit' if self.size == 1 else '%d Einheiten' % self.size]
+        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount)s Einheiten') % {'amount':self.size}]
         namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
        
@@ -60,7 +61,7 @@ class Subscription(Billable):
     
     @property
     def types_changed(self):
-        return set(self.types.all())!=set(self.future_types.all())
+        return sorted(list(self.types.all()))!=sorted(list(self.future_types.all()))
     
 
     def recipients_names(self):
@@ -94,13 +95,13 @@ class Subscription(Billable):
     @property
     def state(self):
         if self.active is False and self.deactivation_date is None:
-            return 'waiting'
+            return _('waiting')
         elif self.active is True and self.canceled is False:
-            return 'active'
+            return _('active')
         elif self.active is True and self.canceled is True:
-            return 'canceled'
+            return _('canceled')
         elif self.active is False and self.deactivation_date is not None:
-            return 'inactive'
+            return _('inactive')
 
     @property
     def extra_subscriptions(self):
@@ -164,6 +165,7 @@ class Subscription(Billable):
             size_names.append(type.__str__())
         if len(size_names) > 0:
             return ', '.join(size_names)
+
         return 'kein Abo'    
     
     @property
@@ -173,7 +175,7 @@ class Subscription(Billable):
             result += type.shares
         return result
       
-    @property      
+    @property
     def required_assignments(self):
         result = 0
         for type in self.types.all():
@@ -196,11 +198,14 @@ class Subscription(Billable):
         return Subscription.get_size_name(types=self.future_types)
 
     def extra_subscription(self, code):
-        return len(self.extra_subscriptions.all().filter(type__name=code)) > 0
+        return self.extra_subscription_amount(code) > 0
+
+    def extra_subscription_amount(self, code):
+        return len(self.extra_subscriptions.all().filter(type__name=code))
 
     def clean(self):
         if self.old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError('Deaktivierte Abos koennen nicht wieder aktiviert werden', code='invalid')
+            raise ValidationError(_('Deaktivierte Abos koennen nicht wieder aktiviert werden'), code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -230,6 +235,6 @@ class Subscription(Billable):
         instance.old_canceled = instance.canceled
 
     class Meta:
-        verbose_name = 'Abo'
-        verbose_name_plural = 'Abos'
-        permissions = (('can_filter_subscriptions', 'Benutzer kann Abos filtern'),)
+        verbose_name = _('Abo')
+        verbose_name_plural = _('Abos')
+        permissions = (('can_filter_subscriptions', _('Benutzer kann Abos filtern')),)

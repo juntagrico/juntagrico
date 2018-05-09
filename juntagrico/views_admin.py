@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+from io import BytesIO
 
 from django.contrib.auth.decorators import permission_required
 from django.http import Http404
@@ -292,18 +292,18 @@ def maps(request):
 def excel_export_members_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
-    output = StringIO()
+    output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
     worksheet_s = workbook.add_worksheet(Config.members_string())
 
-    worksheet_s.write_string(0, 0, str('Name', 'utf-8'))
-    worksheet_s.write_string(0, 1, str(Config.assignments_string(), 'utf-8'))
-    worksheet_s.write_string(0, 2, str(Config.assignments_string() + ' Kernbereich', 'utf-8'))
-    worksheet_s.write_string(0, 3, str('Taetigkeitsbereiche', 'utf-8'))
-    worksheet_s.write_string(0, 4, str('Depot', 'utf-8'))
-    worksheet_s.write_string(0, 5, str('Email', 'utf-8'))
-    worksheet_s.write_string(0, 6, str('Telefon', 'utf-8'))
-    worksheet_s.write_string(0, 7, str('Mobile', 'utf-8'))
+    worksheet_s.write_string(0, 0, str('Name'))
+    worksheet_s.write_string(0, 1, str(Config.assignments_string()))
+    worksheet_s.write_string(0, 2, str(Config.assignments_string() + ' Kernbereich'))
+    worksheet_s.write_string(0, 3, str('Taetigkeitsbereiche'))
+    worksheet_s.write_string(0, 4, str('Depot'))
+    worksheet_s.write_string(0, 5, str('Email'))
+    worksheet_s.write_string(0, 6, str('Telefon'))
+    worksheet_s.write_string(0, 7, str('Mobile'))
 
     now = timezone.now()
     members = MemberDao.members_with_assignments_count()
@@ -314,9 +314,9 @@ def excel_export_members_filter(request):
         for area in member.areas.all():
             member.all_areas = member.all_areas + area.name + ' '
         if member.all_areas == '':
-            member.all_areas = str('-Kein Tätigkeitsbereich-', 'utf-8')
+            member.all_areas = str('-Kein Tätigkeitsbereich-')
 
-        member.depot_name = str('Kein Depot definiert', 'utf-8')
+        member.depot_name = str('Kein Depot definiert')
         if member.subscription is not None:
             member.depot_name = member.subscription.depot.name
         looco_full_name = member.first_name + ' ' + member.last_name
@@ -351,7 +351,7 @@ def excel_export_members(request):
         'mobile_phone',
         'confirmed',
         'reachable_by_email',
-        'block_emails',
+        'inactive',
     ]
     return generate_excell_from_model(fields, Member)
 
