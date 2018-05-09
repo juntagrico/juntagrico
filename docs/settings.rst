@@ -6,7 +6,7 @@ You can use the following settings to configure juntagrico
 
 MEMBER_STRING
 -------------
-  The description text for memebers, if you use something special
+  The description text for members, if you use something special
   
   Type: String
 
@@ -30,7 +30,7 @@ MEMBERS_STRING
 
 ASSIGNMENT_STRING
 -----------------
-  The description text for job assignemnts, if you use something special
+  The description text for job assignments, if you use something special
 
   Type: String
 
@@ -113,7 +113,7 @@ ORGANISATION_PHONE
 
 ORGANISATION_BANK_CONNECTION
 ----------------------------
-  the bank connection informartion of your organisation
+  the bank connection information of your organisation
   
   Type: dict with the keys
   - PC (postkonto)
@@ -134,7 +134,7 @@ ORGANISATION_BANK_CONNECTION
 
 INFO_EMAIL
 ----------
-  The general email of your organistation
+  The general email of your organisation
   
   Type: String
 
@@ -350,7 +350,7 @@ PROMOTED_JOB_TYPES
 
 PROMOTED_JOBS_AMOUNT
 --------------------
-  Amount of jobs which should be promoted on the startpage
+  Amount of jobs which should be promoted on the start page
   
   Type: Integer
 
@@ -362,7 +362,7 @@ PROMOTED_JOBS_AMOUNT
 
 DEPOT_LIST_GENERATION_DAYS
 --------------------------
-  Days on which the deliverylist can be generated
+  Days on which the delivery list can be generated
   
   Type: List of Integers representing days of the week
 
@@ -492,7 +492,7 @@ EMAILS
 
 GOOGLE_API_KEY
 --------------
-  The google api key to enable the mapps in juntagrico
+  The google api key to enable the maps in juntagrico
   
   Type: String
 
