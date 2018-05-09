@@ -642,4 +642,4 @@ For your convenience all settings with default values to copy into your settings
 .. toctree::
    :maxdepth: 2
 
-   release_notes
+   release_notes.rst
