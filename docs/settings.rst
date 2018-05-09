@@ -4,8 +4,8 @@ Settings
 You can use the following settings to configure juntagrico
 
 
-* MEMBER_STRING
-
+MEMBER_STRING
+-------------
   The description text for memebers, if you use something special
   
   Type: String
@@ -16,8 +16,8 @@ You can use the following settings to configure juntagrico
 
     "Mitglied"
 
-* MEMBERS_STRING
-
+MEMBERS_STRING
+--------------
   Plural of the above
 
   Type: String
@@ -28,8 +28,8 @@ You can use the following settings to configure juntagrico
 
     "Mitglieder"
 
-* ASSIGNMENT_STRING
-
+ASSIGNMENT_STRING
+-----------------
   The description text for job assignemnts, if you use something special
 
   Type: String
@@ -40,8 +40,8 @@ You can use the following settings to configure juntagrico
 
     "Arbeitseinsatz" 
 
-* ASSIGNMENTS_STRING
-
+ASSIGNMENTS_STRING
+------------------
   Plural of the above
 
   Type: String
@@ -52,8 +52,8 @@ You can use the following settings to configure juntagrico
 
     "Arbeitseinsätze"
 
-* ORGANISATION_NAME
-
+ORGANISATION_NAME
+-----------------
   The short name of your orgnisation
 
   Type: String
@@ -64,8 +64,8 @@ You can use the following settings to configure juntagrico
 
     "Juntagrico"
 
-* ORGANISATION_LONG_NAME
-
+ORGANISATION_LONG_NAME
+----------------------
   The long version of your organisation, if you have one otherwise also use the short one
   
   Type: String
@@ -76,8 +76,8 @@ You can use the following settings to configure juntagrico
 
     "Juntagrico the best thing in the world"
 
-* ORGANISATION_ADDRESS
-
+ORGANISATION_ADDRESS
+--------------------
   The address of your organisation
   
   Type: dict with the keys
@@ -99,8 +99,8 @@ You can use the following settings to configure juntagrico
         "city" : "Springfield",
         "extra" : ""}
 
-* ORGANISATION_PHONE
-
+ORGANISATION_PHONE
+------------------
   The phone number for your organisation
 
   Type: string
@@ -111,8 +111,8 @@ You can use the following settings to configure juntagrico
 
     ""
 
-* ORGANISATION_BANK_CONNECTION
-
+ORGANISATION_BANK_CONNECTION
+----------------------------
   the bank connection informartion of your organisation
   
   Type: dict with the keys
@@ -132,8 +132,8 @@ You can use the following settings to configure juntagrico
         "NAME" : "Juntagrico Bank",
         "ESR" : "01-123-45"}
 
-* INFO_EMAIL
-
+INFO_EMAIL
+----------
   The general email of your organistation
   
   Type: String
@@ -144,8 +144,8 @@ You can use the following settings to configure juntagrico
 
     "info@juntagrico.juntagrico"
 
-* SERVER_URL
-
+SERVER_URL
+----------
   The base url of your organisation (not the one where you run juntagrico)
 
   Type: String  
@@ -156,8 +156,8 @@ You can use the following settings to configure juntagrico
 
     "www.juntagrico.juntagrico"
 
-* ADMINPORTAL_NAME
-
+ADMINPORTAL_NAME
+----------------
   The name you want to use for the portal
   
   Type: String
@@ -168,8 +168,8 @@ You can use the following settings to configure juntagrico
 
     "my.juntagrico"
 
-* ADMINPORTAL_SERVER_URL
-
+ADMINPORTAL_SERVER_URL
+----------------------
   The base URL where you run juntagrico (and where your static lies)
   
   Type: String
@@ -180,8 +180,8 @@ You can use the following settings to configure juntagrico
 
     "my.juntagrico.juntagrico"
 
-* BUSINESS_REGULATIONS
-
+BUSINESS_REGULATIONS
+--------------------
   URL to your business regulations document
   
   Type: String
@@ -192,8 +192,8 @@ You can use the following settings to configure juntagrico
 
     ""
 
-* BYLAWS
-
+BYLAWS
+------
   URL to your bylaws document
   
   Type: String
@@ -204,8 +204,8 @@ You can use the following settings to configure juntagrico
 
     ""
 
-* MAIL_TEMPLATE
-
+MAIL_TEMPLATE
+-------------
   Path to your custom html email template if you want to overwrite the look and feel of the html emails
   
   Type: String
@@ -216,8 +216,8 @@ You can use the following settings to configure juntagrico
 
     "mails/email.html"
 
-* STYLE_SHEET
-
+STYLE_SHEET
+-----------
   If you want to use a custom design this specifies the path for your css
   
   Type: String
@@ -228,8 +228,8 @@ You can use the following settings to configure juntagrico
 
     "/static/css/personal.css"
 
-* FAVICON
-
+FAVICON
+-------
   If you want to use a custom favicon this specifies the path for your favicon
   
   Type: String
@@ -240,8 +240,8 @@ You can use the following settings to configure juntagrico
 
     "/static/img/favicon.ico"
 
-* FAQ_DOC
-
+FAQ_DOC
+-------
   URL to your FAQ document
   
   Type: String
@@ -252,8 +252,8 @@ You can use the following settings to configure juntagrico
 
     ""
 
-* BOOTSTRAP
-
+BOOTSTRAP
+---------
   If you want to use a customized version of bootstrap this specifies the corresponding path for it
   
   Type: String
@@ -264,8 +264,8 @@ You can use the following settings to configure juntagrico
 
     "/static/external/bootstrap-3.3.1/css/bootstrap.min.css"
 
-* EXTRA_SUB_INFO
-
+EXTRA_SUB_INFO
+--------------
   If you use extra subscriptions this describes the URL to the document describing them
   
   Type: String
@@ -276,8 +276,8 @@ You can use the following settings to configure juntagrico
 
     ""
 
-* ACTIVITY_AREA_INFO
-
+ACTIVITY_AREA_INFO
+------------------
   URL to your document describing your activity areas
   
   Type: String
@@ -288,8 +288,8 @@ You can use the following settings to configure juntagrico
 
     ""
 
-* SHARE_PRICE
-
+SHARE_PRICE
+-----------
   Price of one share
   
   Type: String
@@ -300,8 +300,8 @@ You can use the following settings to configure juntagrico
 
     "250"
 
-* BASE_FEE
-
+BASE_FEE
+--------
   Yearly fee for members without a subscription
   
   Type: String
@@ -312,8 +312,8 @@ You can use the following settings to configure juntagrico
 
     ""
 
-* CURRENCY
-
+CURRENCY
+--------
   The default currency used within the system
   
   Type: String
@@ -324,8 +324,8 @@ You can use the following settings to configure juntagrico
 
     "CHF"
 
-* ASSIGNMENT_UNIT
-
+ASSIGNMENT_UNIT
+---------------
   The mode how assignments are counted: Valid values are EMTITY and HOURS. ENTITY the assignments are counted by occurrence, Hours the value of the assignments are counted by the actual time the user spent on a job.
   
   Type: String
@@ -336,8 +336,8 @@ You can use the following settings to configure juntagrico
 
     "ENTITY"
 
-* PROMOTED_JOB_TYPES
-
+PROMOTED_JOB_TYPES
+------------------
   Types of jobs which should apear on start page
   
   Type: List of Strings
@@ -348,8 +348,8 @@ You can use the following settings to configure juntagrico
 
     []
 
-* PROMOTED_JOBS_AMOUNT
-
+PROMOTED_JOBS_AMOUNT
+--------------------
   Amount of jobs which should be promoted on the startpage
   
   Type: Integer
@@ -360,8 +360,8 @@ You can use the following settings to configure juntagrico
 
     2
 
-* DEPOT_LIST_GENERATION_DAYS
-
+DEPOT_LIST_GENERATION_DAYS
+--------------------------
   Days on which the deliverylist can be generated
   
   Type: List of Integers representing days of the week
@@ -372,8 +372,8 @@ You can use the following settings to configure juntagrico
 
     [1,2,3,4,5,6,7]
 
-* BILLING
-
+BILLING
+-------
   Enabling bill generation and management
   
   Type: Boolean
@@ -384,8 +384,8 @@ You can use the following settings to configure juntagrico
 
     False
 
-* BUSINESS_YEAR_START
-
+BUSINESS_YEAR_START
+-------------------
   Defining the start of the business year
   
   Type: dict with the keys
@@ -398,8 +398,8 @@ You can use the following settings to configure juntagrico
 
     {"day":1, "month":1}
 
-* BUSINESS_YEAR_CANCELATION_MONTH
-
+BUSINESS_YEAR_CANCELATION_MONTH
+-------------------------------
   The date until you can cancel your subscriptions
   
   Type: Integer
@@ -410,8 +410,8 @@ You can use the following settings to configure juntagrico
 
     12
 
-* MEMBERSHIP_END_MONTH
-
+MEMBERSHIP_END_MONTH
+--------------------
   The month at which end the members can leave the organisation
   
   Type: Integer
@@ -422,8 +422,8 @@ You can use the following settings to configure juntagrico
 
     6
 
-* DEMO_USER
-
+DEMO_USER
+---------
   If you run a demo setup and want to display the login name on the login page
   
   Type: String
@@ -434,8 +434,8 @@ You can use the following settings to configure juntagrico
 
     ''
 
-* DEMO_PWD
-
+DEMO_PWD
+--------
   If you run a demo setup and want to display the password on the login page
 
   default value
@@ -444,8 +444,8 @@ You can use the following settings to configure juntagrico
 
     ''
 
-* IMAGES
-
+IMAGES
+------
   Defining the different images for core and job assignments etc
 
   default value
@@ -462,8 +462,8 @@ You can use the following settings to configure juntagrico
         'single_core': '/static/img/single_core.png',
         'core': '/static/img/core.png'}
 
-* EMAILS
-
+EMAILS
+------
   Defining the different email templates
 
   default value
@@ -490,8 +490,8 @@ You can use the following settings to configure juntagrico
         'b_esub': 'mails/bill_extrasub.txt'
     }
 
-* GOOGLE_API_KEY
-
+GOOGLE_API_KEY
+--------------
   The google api key to enable the mapps in juntagrico
   
   Type: String
