@@ -1,4 +1,4 @@
-from io import StringIO, BytesIO
+from io import BytesIO
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
@@ -9,7 +9,8 @@ from xhtml2pdf import pisa
 
 def render_to_pdf_http(template_name, renderdict, filename):
     '''
-    Take a string of rendered html and pack it into a pdfand return it thtough http
+    Take a string of rendered html and pack it
+    into a pdfand return it thtough http
     '''
     rendered_html = get_template(template_name).render(renderdict)
 
@@ -21,13 +22,15 @@ def render_to_pdf_http(template_name, renderdict, filename):
     if not success:
         return HttpResponseServerError()
     return response
-    
+
+
 def return_pdf_http(filename):
     if default_storage.exists(filename):
         with default_storage.open(filename) as pdf_file:
             content = pdf_file.read()
-        response = HttpResponse(content,content_type='application/pdf')
-        response['Content-Disposition'] = "attachment; filename='" + filename + "'"        
+        content_disposition = "attachment; filename='" + filename + "'"
+        response = HttpResponse(content, content_type='application/pdf')
+        response['Content-Disposition'] = content_disposition
         return response
     else:
         return HttpResponseServerError()

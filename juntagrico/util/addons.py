@@ -1,4 +1,5 @@
 import importlib
+from importlib import util
 
 from django.core.cache import cache
 from django.conf import settings
@@ -15,8 +16,8 @@ def load_config(value, dest, modules):
 def load_modules():
     modules = {}
     for app in settings.INSTALLED_APPS:
-        if app.startswith('juntagrico') and app != 'juntagrico':
-            if importlib.util.find_spec(app + '.juntagricoapp') is not None:
+        j_app = app.startswith('juntagrico') and app != 'juntagrico'
+        if j_app and util.find_spec(app + '.juntagricoapp') is not None:
                 modules[app] = importlib.import_module(app + '.juntagricoapp')
     return modules
 
