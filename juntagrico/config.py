@@ -189,6 +189,12 @@ class Config:
         return 'CHF'
 
     @staticmethod
+    def max_units():
+        if hasattr(settings, 'MAX_UNIT'):
+            return settings.MAX_UNIT
+        return -1
+
+    @staticmethod
     def assignment_unit():
         if hasattr(settings, 'ASSIGNMENT_UNIT'):
             return settings.ASSIGNMENT_UNIT

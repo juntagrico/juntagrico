@@ -105,9 +105,9 @@ class Command(BaseCommand):
         index = 0
         for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             for weekday in used_weekdays:
-                overview[weekday][insert_point] = overview[weekday][insert_point] + subscription_size.size * \
+                overview[weekday][insert_point] = overview[weekday][insert_point] + subscription_size.units * \
                                                                                       overview[weekday][index]
-            overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.size * overview['all'][
+            overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.units * overview['all'][
                 index]
             index += 1
 

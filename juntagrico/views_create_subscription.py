@@ -140,7 +140,7 @@ def cs_select_shares(request):
             else:
                update_member(member, subscription)
             shares = int(request.POST.get('shares_mainmember'))
-            if len(member.active_shares) > 0:
+            if len(member.active_shares) == 0:
                 shares = shares + 1
             for i in range(shares):
                 create_share(member)

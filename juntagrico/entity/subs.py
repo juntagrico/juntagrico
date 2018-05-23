@@ -56,7 +56,7 @@ class Subscription(Billable):
     def size(self):
         result=0
         for type in self.types.all():
-            result += type.size.size
+            result += type.size.units
         return result
     
     @property
