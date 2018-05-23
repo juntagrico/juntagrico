@@ -15,18 +15,18 @@
     <div class="col-md-8">
         <form action="" method="post" class="form-horizontal createsubscription">
             {% csrf_token %}
-            {% for subscription_size in subscription_sizes %}
+            {% for ss in subscripton_sizes %}
                 <div class="form-group">
                     <label class="col-md-3 control-label">{% if forloop.first %}Abogrösse{% endif %}</label>
                     <div class="col-md-9 controls radio">     
-                        <label for="{{ subscription_size.name }}" class="control-label col-md-9">
-                            {{ subscription_size.long_name }}
+                        <label for="{{ ss.name }}" class="control-label col-md-9">
+                            {{ ss.long_name }}
                             <br/>
-                            {{ subscription_size.description }}
+                            {{ ss.description }}
                         </label>
                     </div>
                 </div>
-                {% for type in subscription_size.types.all %}
+                {% for type in ss.types.all %}
                     {% if type.visible %}
                         <div class="form-group">
                             <label class="col-md-3 control-label"></label>
@@ -51,7 +51,7 @@
             <div class="form-group">
                 <label class="col-md-3 control-label"> </label>
                 <div class="col-md-9 controls radio">     
-                    <label for="{{ subscription_size.name }}" class="control-label col-md-9">
+                    <label for="{{ ss.name }}" class="control-label col-md-9">
                         Kein Abo
                     </label>
                 </div>
