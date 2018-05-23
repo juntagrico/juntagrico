@@ -2,7 +2,7 @@ import math
 
 
 def get_status_image(percent=0):
-    status_number = int(25 * math.floor(float(percent)/25))
+    status_number = min(100,int(25 * math.floor(float(percent)/25)))
     result = 'status_' + str(status_number)
     return result
 
