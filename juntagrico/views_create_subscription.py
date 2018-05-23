@@ -48,7 +48,7 @@ def cs_select_subscription(request):
     if request.method == 'POST':
         selectedsubscription = request.POST.get('subscription')
         size = next(
-                iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__size', flat=True) or []),
+                iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__units', flat=True) or []),
                 0)
         if size > 0:
             request.session['selectedsubscription'] = selectedsubscription
