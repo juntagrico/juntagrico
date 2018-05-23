@@ -56,7 +56,7 @@ def cs_select_subscription(request):
         return redirect('/my/create/subscription/shares')
     renderdict = {    
         'hours_used': Config.assignment_unit()=='HOURS',
-        'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered(),
+        'subscriptionsizes': SubscriptionSizeDao.all_sizes_ordered(),
     }
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 
