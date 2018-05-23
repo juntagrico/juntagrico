@@ -15,7 +15,7 @@
     <div class="col-md-8">
         <form action="" method="post" class="form-horizontal createsubscription">
             {% csrf_token %}
-            {% for ss in subscripton_sizes %}
+            {% for ss in subscription_sizes %}
                 <div class="form-group">
                     <label class="col-md-3 control-label">{% if forloop.first %}Abogrösse{% endif %}</label>
                     <div class="col-md-9 controls radio">     
