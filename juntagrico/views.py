@@ -8,7 +8,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.assignmentdao import AssignmentDao
@@ -78,6 +78,7 @@ def get_menu_dict(request):
         'show_extras': JobExtraDao.all_job_extras().count()>0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription))>0,
         'admin_menus' : get_admin_menus(),
+        'messages' : [],
     }
     enrich_menu_dict(request, menu_dict)
     return menu_dict
@@ -93,10 +94,10 @@ def home(request):
     pinned_jobs = set(JobDao.get_pinned_jobs())
     next_pormotedjobs = set(JobDao.get_promoted_jobs())
     renderdict = get_menu_dict(request)
+    renderdict['messages'].extend(home_messages(request))
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_pormotedjobs), key=lambda job: job.time),
         'teams': ActivityAreaDao.all_visible_areas_ordered(),
-        'messages': messages(request),
     })
 
     return render(request, 'home.html', renderdict)
@@ -161,6 +162,7 @@ def job(request, job_id):
     can_subscribe = not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
 
     renderdict = get_menu_dict(request)
+    renderdict['messages'].extend(job_messages(request,job))
     renderdict.update({
         'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
         'emails': '\n'.join(emails),
@@ -169,10 +171,6 @@ def job(request, job_id):
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
-        'job_fully_booked': job_fully_booked,
-        'job_is_in_past': job_is_in_past,
-        'job_is_running': job_is_running,
-        'job_canceled': job_canceled,
         'can_subscribe': can_subscribe
     })
     return render(request, 'job.html', renderdict)

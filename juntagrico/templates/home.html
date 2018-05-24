@@ -2,12 +2,7 @@
 {% load config %}
 
 {% block content %}
-    {% for message in messages %}
-        {{ message }}
-        {% if forloop.last %}
-            <br/><br/>
-        {% endif %}
-    {% endfor %}
+
 
     {% autoescape off %}
         {{ announcement }}

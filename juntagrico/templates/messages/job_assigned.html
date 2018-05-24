@@ -1,0 +1,7 @@
+<div class="alert alert-success">Du hast dich bereits für den Job eingeschrieben.
+{% if amount == 1 %}
+    Zusammen mit einer weiteren Person.
+{% elif amount > 1 %}
+    Zusammen mit {{ amount }} weiteren Personen.
+{% endif %}
+</div>

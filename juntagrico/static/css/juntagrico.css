@@ -229,6 +229,9 @@ table.future td {
     right: 10px;
 }
 
+.messages {
+   margin-bottom: 2em;
+}
 
 /* general overrides of bootstrap */
 @font-face {
