@@ -6,7 +6,8 @@ install:
 - pip install codeclimate-test-reporter
 script:
   - django-admin.py test
-  - coverage run "which django-admin.py" test
+  - which django-admin.py
+  - coverage run django-admin.py test
 after_success:
   - codeclimate-test-reporter
 env:
