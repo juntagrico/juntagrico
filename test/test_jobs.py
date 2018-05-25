@@ -47,5 +47,5 @@ class HomeTests(TestCase):
     def testJobPost(self):
         self.client.login(username='test@email.org', password='12345')
         response = self.client.post('/my/jobs/' + str(self.job1.pk) + '/', {'jobs': 1})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         self.assertEqual(self.job1.free_slots(), 0)
