@@ -185,12 +185,12 @@ class JobExtraInline(admin.TabularInline):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'type', 'time', 'slots', 'freie_plaetze']
+    list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name']
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
-    readonly_fields = ['freie_plaetze']
+    readonly_fields = ['free_slots']
     
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_job_inlines())
@@ -251,13 +251,13 @@ class JobAdmin(admin.ModelAdmin):
 
 
 class OneTimeJobAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'time', 'slots', 'freie_plaetze']
+    list_display = ['__str__', 'time', 'slots', 'free_slots']
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name']
     exclude = ['reminder_sent']
 
     inlines = [AssignmentInline, JobExtraInline]
-    readonly_fields = ['freie_plaetze']
+    readonly_fields = ['free_slots']
     
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_otjob_inlines())
