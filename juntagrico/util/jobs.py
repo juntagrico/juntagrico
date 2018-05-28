@@ -15,5 +15,5 @@ def get_status_image_text(percent=0):
          25: 'Angefangen',
          0: 'Nix'
     }
-    status_number = int(25 * math.floor(float(percent)/25))
+    status_number = min(100,int(25 * math.floor(float(percent)/25)))
     return texts[status_number]
