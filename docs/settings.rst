@@ -364,13 +364,13 @@ DEPOT_LIST_GENERATION_DAYS
 --------------------------
   Days on which the delivery list can be generated
   
-  Type: List of Integers representing days of the week
+  Type: List of Integers representing days of the week, where Monday is 0 and Sunday is 6.
 
   default value
 
   .. code-block:: python
 
-    [1,2,3,4,5,6,7]
+    [0,1,2,3,4,5,6]
 
 BILLING
 -------
