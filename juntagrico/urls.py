@@ -21,7 +21,7 @@ urlpatterns = [
     url('^my/contact/member/(?P<member_id>.*?)/(?P<job_id>.*?)/', juntagrico.contact_member),
     url('^my/assignments$', juntagrico.assignments),  #
     url('^my/assignments/all$', juntagrico.assingments_all),  #
-    url('^my/pastjobs$', juntagrico.pastjobs),
+    url('^my/pastjobs$', juntagrico.pastjobs),#
     url('^my/depot/(?P<depot_id>.*?)/', juntagrico.depot),
     url('^my/deliveries$', juntagrico.deliveries),
     url('^my/newpassword$', juntagrico.new_password),
