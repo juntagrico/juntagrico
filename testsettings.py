@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'impersonate',
+    'rest_framework',
     'juntagrico',
 ]
 

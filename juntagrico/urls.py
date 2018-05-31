@@ -7,6 +7,13 @@ from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico.personalisation import personal_urls
+from juntagrico.rest.user_serializer import UserViewSet
+from rest_framework import routers
+
+# Django - Restframework
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r'user', UserViewSet)
 
 urlpatterns = [
     # general juntagrico stuff
@@ -88,4 +95,10 @@ urlpatterns = [
     url('^my/maps', juntagrico_admin.maps),
 
     url(r'^my', include(personal_urls)),
+
+    # Django - Restframework
+    # Wire up our API using automatic URL routing.
+    # Additionally, we include login URLs for the browsable API.
+    url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
