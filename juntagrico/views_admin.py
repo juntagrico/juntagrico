@@ -47,7 +47,7 @@ def send_email_intern(request):
                                                                     flat=True)
         emails.update(m_emails)
     if request.POST.get('allshares') == 'on':
-        emails.update(MemberDao.members_with_shares().values_list('email', flat=True))
+        emails.update(MemberDao.members_for_email_with_shares().values_list('email', flat=True))
     if request.POST.get('all') == 'on':
         emails.update(MemberDao.members_for_email().values_list('email', flat=True))
     if request.POST.get('recipients'):
