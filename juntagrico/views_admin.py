@@ -353,7 +353,7 @@ def excel_export_members(request):
         'reachable_by_email',
         'inactive',
     ]
-    return generate_excell_from_model(fields, Member)
+    return generate_excel(fields, Member)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -371,7 +371,7 @@ def excel_export_shares(request):
         'member.last_name',
         'member.email',
     ]
-    return generate_excell_from_model(fields, Share)
+    return generate_excel(fields, Share)
 
 
 @permission_required('juntagrico.is_operations_group')
