@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from django.utils import timezone
 
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
@@ -32,19 +33,34 @@ def generate_ref_number(type, billable_id, recipient_id, start=None):
     cs = calculate_check_number(without_cs)
     return without_cs+cs
 
+def scale_subscription_price(subscription, fromdate, tilldate):
+    """
+    scale subscription price for a certain date interval.
+    """
+    if fromdate.year != tilldate.year:
+        raise Exception("price_by_date interval must be in one year.")
+
+    year_price = subscription.price
+
+    days_year = (date(fromdate.year, 12, 31)  - date(fromdate.year, 1, 1)).days + 1
+    subs_start = max(subscription.activation_date or date.min, fromdate)
+    subs_end = min(subscription.deactivation_date or date.max, tilldate)
+    days_subs = (subs_end - subs_start).days + 1
+
+    return year_price * days_subs / days_year
 
 def bill_subscription(subscription):
     now = timezone.now()
     start = start_of_business_year()
     end = start_of_next_business_year()
-    ref_date = max(subscription.activation_date, start)
-    total_days = (start-end).days-1
-    remaining_days = (ref_date-end).days-1
-    price = subscription.price*(remaining_days/total_days)
+    price = scale_subscription_price(subscription,
+        start_of_business_year(), end_of_business_year() - timedelta(1))
+
     refnumber = generate_ref_number('subscription',
                                     subscription.id,
                                     subscription.primary_member.id,
                                     start)
+
     bill = Bill.objects.create(billable=subscription,
                                ammount=price,
                                ref_number=refnumber,
