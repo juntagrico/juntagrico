@@ -1,4 +1,5 @@
 from io import BytesIO
+from xlsxwriter import Workbook
 
 from django.contrib.auth.decorators import permission_required
 from django.http import Http404
@@ -293,7 +294,7 @@ def excel_export_members_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
-    workbook = xlsxwriter.Workbook(output)
+    workbook = Workbook(output)
     worksheet_s = workbook.add_worksheet(Config.members_string())
 
     worksheet_s.write_string(0, 0, str('Name'))
