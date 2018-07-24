@@ -2,7 +2,7 @@ import unittest
 from datetime import date
 
 from juntagrico.util.temporal import start_of_business_year
-from juntagrico.util.temporal import start_of_specific_business_year,
+from juntagrico.util.temporal import start_of_specific_business_year,\
                                     end_of_specific_business_year
 
 
