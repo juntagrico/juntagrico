@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-
 from io import BytesIO
 from django.db import models
 from django.http import HttpResponse
 from xlsxwriter import Workbook
+
 
 def generate_excel(fields, data, download_name=None):
     """
     Generate an excel document and write it to a http response.
     Returns the response object.
 
-    fields may be a list of field-names or a list of tuples containing field-name and field-label.
+    fields may be a list of field-names or a list of tuples containing
+    field-name and field-label.
 
     data may be a list of objects or dictionaries or a model query-set.
-    In the case of query-set the field labels are determined from the model metadata.
+    In the case of query-set the field labels are determined from the 
+    model metadata.
     """
     if isinstance(data, models.Model):
         data_name = data.verbose_name
@@ -26,8 +28,10 @@ def generate_excel(fields, data, download_name=None):
     writer = ExcelWriter(fields, workbook)
     writer.write_data(data)
     workbook.close()
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename=%s.xlsx' % download_name
+    t = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    response = HttpResponse(content_type=t)
+    disposition = 'attachment; filename=%s.xlsx' % download_name
+    response['Content-Disposition'] = disposition
     response.write(output.getvalue())
 
     return response
@@ -37,13 +41,16 @@ class ExcelWriter(object):
     """
     Helper class for writing data to an excel workbook.
 
-    fields may be a list of field-names or a list of tuples containing field-name and field-label.
+    fields may be a list of field-names or a list of tuples containing 
+    field-name and field-label.
 
     data may be a list of objects or dictionaries or a model query-set.
-    In the case of query-set the field labels are determined from the model metadata.
-   
+    In the case of query-set the field labels are determined from the 
+    model metadata.
+
     Excel field-types are determined based on the data written.
-    Column-widths in excel are set automatically based on the column (field) labels.
+    Column-widths in excel are set automatically based on 
+    the column (field) labels.
     """
     def __init__(self, fields, workbook):
         self.fields = fields
@@ -51,8 +58,9 @@ class ExcelWriter(object):
         self.fieldtypes = [None for i in range(len(self.fields))]
 
     def write_data(self, data):
-        """ 
-        main method of ExcelWriter object, must be called when using a ExcelWriter.
+        """
+        main method of ExcelWriter object, must be called 
+        when using ExcelWriter.
         """
         if isinstance(data, models.base.ModelBase):
             list_data = data.objects.all()
@@ -78,9 +86,8 @@ class ExcelWriter(object):
                 self.worksheet.write(row, col, value)
 
                 # record field-type from value
-                if not self.fieldtypes[col]:
-                    if value:
-                        self.fieldtypes[col] = type(value).__name__
+                if (not self.fieldtypes[col]) and value:
+                    self.fieldtypes[col] = type(value).__name__
 
                 col += 1
             row += 1
@@ -106,7 +113,7 @@ class ExcelWriter(object):
         curr_format = self.workbook.add_format({'num_format': '#0.00'})
         date_format = self.workbook.add_format({'num_format': 'dd/mm/yy'})
 
-        for i, label in enumerate(self.get_header_labels()): 
+        for i, label in enumerate(self.get_header_labels()):
             fieldtype = self.fieldtypes[i]
 
             fmt = None
@@ -127,7 +134,7 @@ class ExcelWriter(object):
                     label = fielddef
             else:
                 fieldname, label = fielddef
-            result.append(label) 
+            result.append(label)
 
         return result
 

@@ -37,8 +37,8 @@ class SubscriptionDao:
     def subscriptions_by_date(fromdate, tilldate):
         """
         subscriptions that are active in a certain period
-        all subscriptions except those that ended before or 
+        all subscriptions except those that ended before or
         started after our date range.
         """
-        return Subscription.objects.exclude(deactivation_date__lt=fromdate).exclude(activation_date__gt=tilldate)
-
+        return Subscription.objects.\
+            exclude(deactivation_date__lt=fromdate).exclude(activation_date__gt=tilldate)
