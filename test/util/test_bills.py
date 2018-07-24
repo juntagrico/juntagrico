@@ -17,10 +17,13 @@ class ScaleSuscriptionPriceTest(SubscriptionTestBase):
 
     def test_price_by_date_shifted_business_year(self):
         settings.BUSINESS_YEAR_START = { 'day': 1, 'month': 7}
-        start_date = date(2018, 7, 1)
-        end_date = date(2019, 6, 30)
-        price_fullyear = scale_subscription_price(self.subscription, start_date, end_date)
-        self.assertEqual(1200.0, price_fullyear, "full year")
+        try:
+            start_date = date(2018, 7, 1)
+            end_date = date(2019, 6, 30)
+            price_fullyear = scale_subscription_price(self.subscription, start_date, end_date)
+            self.assertEqual(1200.0, price_fullyear, "full year")
+        finally:
+            del settings.BUSINESS_YEAR_START
 
     def test_price_by_date_quarter(self):
         start_date = date(2018, 4, 1)
