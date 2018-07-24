@@ -4,6 +4,8 @@ from django.utils import timezone
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
 from juntagrico.entity.billing import Bill
 from juntagrico.util.temporal import start_of_next_business_year
+from juntagrico.util.temporal import start_of_specific_business_year 
+from juntagrico.util.temporal import end_of_specific_business_year 
 from juntagrico.util.temporal import start_of_business_year
 from juntagrico.config import Config
 from juntagrico.mailer import send_bill_extrasub
@@ -37,12 +39,15 @@ def scale_subscription_price(subscription, fromdate, tilldate):
     """
     scale subscription price for a certain date interval.
     """
-    if fromdate.year != tilldate.year:
-        raise Exception("price_by_date interval must be in one year.")
-
     year_price = subscription.price
 
-    days_year = (date(fromdate.year, 12, 31)  - date(fromdate.year, 1, 1)).days + 1
+    start_of_year = start_of_specific_business_year(fromdate)
+    end_of_year = end_of_specific_business_year(fromdate)
+
+    if tilldate > end_of_year:
+        raise Exception("till-date is not in same business year as from-date")
+
+    days_year = (end_of_year  - start_of_year).days + 1
     subs_start = max(subscription.activation_date or date.min, fromdate)
     subs_end = min(subscription.deactivation_date or date.max, tilldate)
     days_subs = (subs_end - subs_start).days + 1
