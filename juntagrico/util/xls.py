@@ -14,7 +14,7 @@ def generate_excel(fields, data, download_name=None):
     field-name and field-label.
 
     data may be a list of objects or dictionaries or a model query-set.
-    In the case of query-set the field labels are determined from the 
+    In the case of query-set the field labels are determined from the
     model metadata.
     """
     if isinstance(data, models.Model):
@@ -41,15 +41,15 @@ class ExcelWriter(object):
     """
     Helper class for writing data to an excel workbook.
 
-    fields may be a list of field-names or a list of tuples containing 
+    fields may be a list of field-names or a list of tuples containing
     field-name and field-label.
 
     data may be a list of objects or dictionaries or a model query-set.
-    In the case of query-set the field labels are determined from the 
+    In the case of query-set the field labels are determined from the
     model metadata.
 
     Excel field-types are determined based on the data written.
-    Column-widths in excel are set automatically based on 
+    Column-widths in excel are set automatically based on
     the column (field) labels.
     """
     def __init__(self, fields, workbook):
@@ -59,7 +59,7 @@ class ExcelWriter(object):
 
     def write_data(self, data):
         """
-        main method of ExcelWriter object, must be called 
+        main method of ExcelWriter object, must be called
         when using ExcelWriter.
         """
         if isinstance(data, models.base.ModelBase):

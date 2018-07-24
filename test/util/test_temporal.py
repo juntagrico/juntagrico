@@ -3,7 +3,7 @@ from datetime import date
 
 from juntagrico.util.temporal import start_of_business_year
 from juntagrico.util.temporal import start_of_specific_business_year,
-                                     end_of_specific_business_year
+                                    end_of_specific_business_year
 
 
 class BusinessYearTests(unittest.TestCase):
@@ -13,17 +13,17 @@ class BusinessYearTests(unittest.TestCase):
         self.assertEqual(expected_start, start_of_business_year())
 
     def test_start_of_specific_business_year(self):
-        self.assertEqual(date(2018, 1, 1), 
+        self.assertEqual(date(2018, 1, 1),
                     start_of_specific_business_year(date(2018, 7, 24)))
-        self.assertEqual(date(2018, 1, 1), 
+        self.assertEqual(date(2018, 1, 1),
                     start_of_specific_business_year(date(2018, 1, 1)))
-        self.assertEqual(date(2018, 1, 1), 
+        self.assertEqual(date(2018, 1, 1),
                     start_of_specific_business_year(date(2018, 12, 31)))
 
     def test_end_of_specific_business_year(self):
-        self.assertEqual(date(2018, 12, 31), 
+        self.assertEqual(date(2018, 12, 31),
                     end_of_specific_business_year(date(2018, 7, 24)))
-        self.assertEqual(date(2018, 12, 31), 
+        self.assertEqual(date(2018, 12, 31),
                     end_of_specific_business_year(date(2018, 1, 1)))
-        self.assertEqual(date(2018, 12, 31), 
+        self.assertEqual(date(2018, 12, 31),
                     end_of_specific_business_year(date(2018, 12, 31)))

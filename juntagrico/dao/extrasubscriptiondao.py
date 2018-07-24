@@ -24,5 +24,6 @@ class ExtraSubscriptionDao:
         started after the date range.
         """
         return juntagrico.models.ExtraSubscription.objects.\
-            exclude(deactivation_date__lt=fromdate).exclude(activation_date__gt=tilldate)
+                            exclude(deactivation_date__lt=fromdate).\
+                            exclude(activation_date__gt=tilldate)
 
