@@ -66,7 +66,7 @@ def get_menu_dict(request):
         'userassignments_bound': userassignments_total,
         'userassignemnts_core_bound': userassignemnts_core,
         'partner_assignments_bound': userassignments_total + partner_assignments_total,
-        'partner_assignments__core_bound': userassignments_total + partner_assignments_core,
+        'partner_assignments_core_bound': userassignments_total + partner_assignments_core,
         'next_jobs': next_jobs,
         'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
         'can_filter_subscriptions': request.user.has_perm('juntagrico.can_filter_subscriptions'),
