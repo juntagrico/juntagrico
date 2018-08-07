@@ -19,3 +19,18 @@ Release Notes
 
 * Fixed profile error
 * IBAN field not nullable blank used for no value
+
+
+1.1.4
+-----
+ Has migrations
+
+* Fixed various errors and bugs in the onboarding process
+* Other various bugfixes
+
+
+Dev
+-----
+ Has no migrations
+
+* Work in progress
