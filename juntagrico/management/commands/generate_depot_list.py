@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 
 
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
@@ -119,7 +120,8 @@ class Command(BaseCommand):
             'categories': categories,
             'types': types,
             'datum': timezone.now(),
-            'weekdays': used_weekdays
+            'weekdays': used_weekdays,
+            'messages': ListMessageDao.all_active()
         }
 
         render_to_pdf_storage('exports/legacy.html', renderdict, 'dpl.pdf')

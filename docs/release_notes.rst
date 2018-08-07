@@ -31,6 +31,7 @@ Release Notes
 
 Dev
 -----
- Has no migrations
+ Has migrations
 
 * Work in progress
+* Ability to display messages at the bottom of depot lists. Added in the data administration.

@@ -184,6 +184,14 @@
         {% endif %}
         {% endfor %}
     </table>
+    <br/>
+    <br/>
+    <br/>
+    <div>
+    {% for message in messages %}
+        <div style="width: 100%; text-align: center; font-size: 18pt;">{{ message }}</div>
+    {% endfor %}
+    </div>
     <div class="page-break"></div>
 {% endfor %}
 </body>
