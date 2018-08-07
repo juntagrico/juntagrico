@@ -134,7 +134,7 @@
                 <td style="width:60px;" class="top-border left-border"></td>
                 <td style="width:60px;" class="top-border left-border right-border"></td>
             </tr>
-        {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 %}
+        {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 and not forloop.last%}
             </table>
             <div class="page-break"></div>
              <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} Fortsetzung</h2>
@@ -184,8 +184,6 @@
         {% endif %}
         {% endfor %}
     </table>
-    <br/>
-    <br/>
     <br/>
     <div>
     {% for message in messages %}
