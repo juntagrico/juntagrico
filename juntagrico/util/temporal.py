@@ -45,6 +45,24 @@ def end_of_next_business_year():
     return datetime.date(tmp.year+1, tmp.month, tmp.day)
 
 
+def start_of_specific_business_year(refdate):
+    day = Config.business_year_start()['day']
+    month = Config.business_year_start()['month']
+    return calculate_last_offset(day, month, refdate)
+
+
+def end_of_specific_business_year(refdate):
+    day = Config.business_year_start()['day']
+    month = Config.business_year_start()['month']
+
+    # calculate_next_offset of start of business year stays the same date
+    # we need to offset refdate by one day in this case
+    if refdate.month == month and refdate.day == day:
+        refdate = refdate + timedelta(days=1)
+
+    return calculate_next_offset(day, month, refdate) - timedelta(days=1)
+
+
 def next_cancelation_date():
     now = timezone.now()
     c_month = Config.business_year_cancelation_month()

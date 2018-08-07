@@ -48,7 +48,7 @@ def cs_select_subscription(request):
     if request.method == 'POST':
         selectedsubscription = request.POST.get('subscription')
         size = next(
-                iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__size', flat=True) or []),
+                iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list('size__units', flat=True) or []),
                 0)
         if size > 0:
             request.session['selectedsubscription'] = selectedsubscription
@@ -56,7 +56,7 @@ def cs_select_subscription(request):
         return redirect('/my/create/subscription/shares')
     renderdict = {    
         'hours_used': Config.assignment_unit()=='HOURS',
-        'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered(),
+        'subscriptionsizes': SubscriptionSizeDao.all_sizes_ordered(),
     }
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 
@@ -140,7 +140,7 @@ def cs_select_shares(request):
             else:
                update_member(member, subscription)
             shares = int(request.POST.get('shares_mainmember'))
-            if len(member.active_shares) > 0:
+            if len(member.active_shares) == 0:
                 shares = shares + 1
             for i in range(shares):
                 create_share(member)

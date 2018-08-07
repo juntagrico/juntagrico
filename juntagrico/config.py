@@ -189,6 +189,12 @@ class Config:
         return 'CHF'
 
     @staticmethod
+    def max_units():
+        if hasattr(settings, 'MAX_UNIT'):
+            return settings.MAX_UNIT
+        return -1
+
+    @staticmethod
     def assignment_unit():
         if hasattr(settings, 'ASSIGNMENT_UNIT'):
             return settings.ASSIGNMENT_UNIT
@@ -210,7 +216,7 @@ class Config:
     def depot_list_generation_days():
         if hasattr(settings, 'DEPOT_LIST_GENERATION_DAYS'):
             return settings.DEPOT_LIST_GENERATION_DAYS
-        return [1,2,3,4,5,6,7]	
+        return [0,1,2,3,4,5,6]
 
     @staticmethod
     def billing():

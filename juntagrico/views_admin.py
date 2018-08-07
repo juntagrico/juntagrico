@@ -1,4 +1,5 @@
 from io import BytesIO
+from xlsxwriter import Workbook
 
 from django.contrib.auth.decorators import permission_required
 from django.http import Http404
@@ -47,7 +48,7 @@ def send_email_intern(request):
                                                                     flat=True)
         emails.update(m_emails)
     if request.POST.get('allshares') == 'on':
-        emails.update(MemberDao.members_with_shares().values_list('email', flat=True))
+        emails.update(MemberDao.members_for_email_with_shares().values_list('email', flat=True))
     if request.POST.get('all') == 'on':
         emails.update(MemberDao.members_for_email().values_list('email', flat=True))
     if request.POST.get('recipients'):
@@ -293,7 +294,7 @@ def excel_export_members_filter(request):
     response = HttpResponse(content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
-    workbook = xlsxwriter.Workbook(output)
+    workbook = Workbook(output)
     worksheet_s = workbook.add_worksheet(Config.members_string())
 
     worksheet_s.write_string(0, 0, str('Name'))
@@ -353,7 +354,7 @@ def excel_export_members(request):
         'reachable_by_email',
         'inactive',
     ]
-    return generate_excell_from_model(fields, Member)
+    return generate_excel(fields, Member)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -371,7 +372,7 @@ def excel_export_shares(request):
         'member.last_name',
         'member.email',
     ]
-    return generate_excell_from_model(fields, Share)
+    return generate_excel(fields, Share)
 
 
 @permission_required('juntagrico.is_operations_group')

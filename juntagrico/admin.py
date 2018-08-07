@@ -170,7 +170,7 @@ class AssignmentInline(admin.TabularInline):
         #    return 0
         if obj is None:
             return 0
-        return obj.freie_plaetze()
+        return obj.free_slots()
 
     def get_max_num(self, request, obj=None, **kwargs):
         if obj is None:
@@ -185,12 +185,12 @@ class JobExtraInline(admin.TabularInline):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'type', 'time', 'slots', 'freie_plaetze']
+    list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name']
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
-    readonly_fields = ['freie_plaetze']
+    readonly_fields = ['free_slots']
     
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_job_inlines())
@@ -251,13 +251,13 @@ class JobAdmin(admin.ModelAdmin):
 
 
 class OneTimeJobAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'time', 'slots', 'freie_plaetze']
+    list_display = ['__str__', 'time', 'slots', 'free_slots']
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name']
     exclude = ['reminder_sent']
 
     inlines = [AssignmentInline, JobExtraInline]
-    readonly_fields = ['freie_plaetze']
+    readonly_fields = ['free_slots']
     
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_otjob_inlines())
@@ -293,7 +293,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'activityarea' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(member)
+            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -458,7 +458,7 @@ class AssignmentAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'job' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = JobDao.objects.filter(id__in=JobDao.ids_for_area_by_contact(request.user.member))
+            kwargs['queryset'] = JobDao.jobs_by_ids(JobDao.ids_for_area_by_contact(request.user.member))
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 

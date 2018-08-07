@@ -141,7 +141,7 @@ class Job(PolymorphicModel):
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
-    def freie_plaetze(self):
+    def free_slots(self):
         if not (self.slots is None):
             return self.slots - self.occupied_places()
         else:

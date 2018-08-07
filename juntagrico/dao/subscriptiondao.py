@@ -32,3 +32,13 @@ class SubscriptionDao:
     @staticmethod
     def canceled_subscriptions():
         return Subscription.objects.filter(active=True).filter(canceled=True).order_by('end_date')
+
+    @staticmethod
+    def subscriptions_by_date(fromdate, tilldate):
+        """
+        subscriptions that are active in a certain period
+        all subscriptions except those that ended before or
+        started after our date range.
+        """
+        return Subscription.objects.\
+            exclude(deactivation_date__lt=fromdate).exclude(activation_date__gt=tilldate)
