@@ -10,7 +10,7 @@ class HomeTests(TestCase):
 
 
     def testHome(self):
-        login = self.client.login(username='test@email.org', password='12345')
+        login = self.client.force_login(self.member.user)
         response = self.client.get('/my/home')
         self.assertEqual(response.status_code, 200)
 

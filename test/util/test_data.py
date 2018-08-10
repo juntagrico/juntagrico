@@ -50,3 +50,5 @@ def create_test_data(cls):
                        'member': cls.member,
                        'amount': 1}
     Assignment.objects.create(**assignment_data)
+
+    return cls.member.user
