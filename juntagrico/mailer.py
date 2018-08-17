@@ -119,6 +119,17 @@ def send_new_member_in_activityarea_to_operations(area, member):
               'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
               Config.info_email(), emails)
 
+def send_removed_member_in_activityarea_to_operations(area, member):
+    if area.email is not None:
+        emails = [area.email]
+    else:
+        emails = [area.coordinator.email]
+    send_mail('Mitglied verlässt Taetigkeitsbereich ' + area.name,
+              'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' aus dem Taetigkeitsbereich '
+              + area.name +
+              ' ausgetragen. Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern',
+              Config.info_email(), emails)
+
 def send_welcome_mail(email, password, hash, subscription):
     plaintext = get_template(Config.emails('welcome'))
 

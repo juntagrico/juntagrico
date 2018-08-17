@@ -208,6 +208,8 @@ def participation(request):
             member.save()
             for area in new_areas - old_areas:
                 send_new_member_in_activityarea_to_operations(area, member)
+            for area in old_areas - new_areas:
+                send_removed_member_in_activityarea_to_operations(area, member)
 
         success = True
 
