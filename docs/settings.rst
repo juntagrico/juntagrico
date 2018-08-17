@@ -64,6 +64,19 @@ ORGANISATION_NAME
 
     "Juntagrico"
 
+ORGANISATION_NAME_CONFIG
+------------------------
+  Additional information to enrich the organisation name with the type of the organisation and its corresponding article
+
+  Type: Dictionary
+
+  default value
+
+  .. code-block:: python
+
+    {"type" : "",
+        "gender" : ""}
+
 ORGANISATION_LONG_NAME
 ----------------------
   The long version of your organisation, if you have one otherwise also use the short one

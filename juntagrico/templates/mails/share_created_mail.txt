@@ -3,7 +3,7 @@
 {% block content %}
 Hallo
 
-Du hast bei der Genossenschaft {% config "organisation_name" %} einen Anteilschein bestellt.
+Du hast bei {% enriched_organisation "D" %} einen Anteilschein bestellt.
 Dieser Anteilschein hat die Systemnummer {{share.id}}.
 
 Bitte überweise den Betrag von {% config "currency" %} {% config "share_price" %} auf das folgende Konto ein:

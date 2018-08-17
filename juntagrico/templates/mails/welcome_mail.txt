@@ -1,7 +1,7 @@
 {% extends "mails/email.txt" %}
 {% load config %}
 {% block content %}
-Wir freuen uns, dich bei der Genossenschaft {% config "organisation_name" %} zu begrüssen.
+Wir freuen uns, dich bei {% enriched_organisation "D" %} zu begrüssen.
 
 Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten:
 Email: {{ username }}

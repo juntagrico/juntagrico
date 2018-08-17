@@ -1,7 +1,7 @@
 {% extends "mails/email.txt" %}
 {% load config %}
 {% block content %}
-Wir freuen uns, dich bei der Genossenschaft {% config "organisation_name" %} zu begrüssen.
+Wir freuen uns, dich bei {% enriched_organisation "D" %} zu begrüssen.
 Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt und für dich {{ shares }} Anteilsscheine(e) bestellt.
 
 Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten:
@@ -20,7 +20,7 @@ Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {
 
 Damit wir dich als Mitglied freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
 Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
-Damit bestätigst du, dass du damit einverstanden bist {% config "organisation_name" %}-GenossenschafterIn zu werden,dem Abo beizutreten, die bestellten Anteilscheine zu erwerben.
+Damit bestätigst du, dass du damit einverstanden bist {% config "organisation_name" %}-Mitglied zu werden,dem Abo beizutreten, die bestellten Anteilscheine zu erwerben.
 Ebenfalls bestätigst du, dass du die Statuten ({% config "bylaws" as bylaws %}{{ bylaws|safe }})
 {% config "business_regulations" as business_regulations %}{% if business_regulations.strip %} und das Betriebsreglement({{ business_regulations|safe }}){% endif %}
 

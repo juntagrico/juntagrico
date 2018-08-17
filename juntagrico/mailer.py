@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
-
-import os
 import re
 import hashlib
 
 from django.contrib.auth.models import Permission, User
-from django.contrib.sites.shortcuts import get_current_site
 from django.core import mail
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.conf import settings
 from django.template.loader import get_template
 
-from juntagrico.config import Config
 from juntagrico.util.ical import *
+from juntagrico.util.organisation_name import enriched_organisation
+
 
 def get_server():
     return 'http://' + Config.adminportal_server_url()
@@ -143,7 +140,7 @@ def send_welcome_mail(email, password, hash, subscription):
 
     content = plaintext.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei der Genossenschaft' + Config.organisation_name(), content, Config.info_email(),
+    msg = EmailMultiAlternatives('Willkommen bei '+ enriched_organisation('D'), content, Config.info_email(),
                                  [email])
     send_mail_multi(msg)
 

@@ -38,6 +38,13 @@ class Config:
         return 'Juntagrico'
 
     @staticmethod
+    def organisation_name_config():
+        if hasattr(settings, 'ORGANISATION_NAME_CONFIG'):
+            return settings.ORGANISATION_NAME_CONFIG
+        return {'type' : '',
+                'gender' : ''}
+
+    @staticmethod
     def organisation_long_name():
         if hasattr(settings, 'ORGANISATION_LONG_NAME'):
             return settings.ORGANISATION_LONG_NAME

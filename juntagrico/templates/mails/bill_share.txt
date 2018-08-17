@@ -10,7 +10,7 @@ Betrag:         {{ bill.amount}} {% config "currency" %}
 Referenznummer: {{ bill.ref_number }}
 Kontonummer:    {{ bank.ESR }}
 
-Solange dein Anteilschein nicht bezahlt wurde bist du nicht Genossenschafter. Der Betrag kann in Teilzahlungen bezahlt werden. 
+Solange dein Anteilschein nicht bezahlt wurde bist du nicht Mitglied bei {% enriched_organisation "D" %}. Der Betrag kann in Teilzahlungen bezahlt werden.
 Bei Teilzahlungen bitte beachten immer die Referenznummer anzugeben, damit das System genau abrechnen kann.
 
 dein {% config "organisation_name" %}-Team
