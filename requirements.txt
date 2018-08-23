@@ -1,4 +1,4 @@
-Django==2.1
+Django==2.0.8
 django-polymorphic==2.0.2
 XlsxWriter==1.0.5
 xhtml2pdf==0.2.2
