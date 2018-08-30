@@ -92,8 +92,8 @@ class Member(models.Model):
             instance.areas.clear()
 
     class Meta:
-        verbose_name = Config.member_string()
-        verbose_name_plural = Config.members_string()
+        verbose_name = Config.vocabulary('member')
+        verbose_name_plural = Config.vocabulary('member_pl')
         permissions = (('can_filter_members', _('Benutzer kann ') + Config.members_string() + _(' filtern')),)
 
     def get_name(self):

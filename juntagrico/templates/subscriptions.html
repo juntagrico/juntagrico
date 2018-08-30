@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Alle Abos im Überblick</h3>
+    <h3>Alle{% vocabulary "subscription_pl" %} im Überblick</h3>
 {% endblock %}
 
 
@@ -23,9 +23,9 @@
         <table id="filter-table" class="list table" style="display: table;">
             <thead>
             <tr>
-                <th>Haupt-{% config "member_string" %}</th>
-                <th>Weitere {% config "members_string" %}</th>
-                <th>Depot</th>
+                <th>Haupt-{% vocabulary "member" %}</th>
+                <th>Weitere {% vocabulary "member_pl" %}</th>
+                <th>{% vocabulary "depot" %}</th>
                 <th>Inhalt</th>
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
@@ -37,8 +37,8 @@
             <tfoot>
             <tr>
                 <th>Hauptmember</th>
-                <th>Weitere {% config "members_string" %}</th>
-                <th>Depot</th>
+                <th>Weitere {% vocabulary "member_pl" %}</th>
+                <th>{% vocabulary "depot" %}</th>
                 <th>Inhalt</th>
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
@@ -74,8 +74,8 @@
     </div>
     <br/><br/>
     <script>
-            var member_string = "{% config "member_string" %}";
-            var members_string = "{% config "members_string" %}";            
+            var member_string = "{% vocabulary "member" %}";
+            var members_string = "{% vocabulary "member_pl" %}";            
     </script>
 
 {% endblock %}

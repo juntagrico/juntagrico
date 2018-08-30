@@ -4,53 +4,33 @@ Settings
 You can use the following settings to configure juntagrico
 
 
-MEMBER_STRING
+VOCABULARY
 -------------
-  The description text for members, if you use something special
+  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in acordance to your oganisation form.
   
-  Type: String
+  Type: Dictionary
 
   default value
 
   .. code-block:: python
 
-    "Mitglied"
-
-MEMBERS_STRING
---------------
-  Plural of the above
-
-  Type: String
-
-  default value
-    
-  .. code-block:: python
-
-    "Mitglieder"
-
-ASSIGNMENT_STRING
------------------
-  The description text for job assignments, if you use something special
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "Arbeitseinsatz" 
-
-ASSIGNMENTS_STRING
-------------------
-  Plural of the above
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "Arbeitseinsätze"
+    {
+        'member': 'Mitglied',
+        'member_pl' : 'Mitglieder',
+        'assingment' : 'Arbeitseinsatz',
+        'assignment_pl' : 'Arbeitseinsätze',
+        'share' : 'Anteilschein',
+        'share_pl' : 'Anteilscheine',
+        'subscription' : 'Abo',
+        'subscription_pl' : 'Abos',
+        'co_member' : 'Mitabonnent',
+        'co_member_pl' : 'Mitabonnenten',
+        'price' : 'Betriebsbeitrag',
+        'member_type' : 'Mitglied',
+        'member_type_pl' : 'Mitglieder',
+        'depot' : 'Depot',
+        'depot_pl' : 'Depots'
+    }
 
 ORGANISATION_NAME
 -----------------

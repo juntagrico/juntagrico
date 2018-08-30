@@ -205,7 +205,7 @@ class Subscription(Billable):
 
     def clean(self):
         if self.old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(_('Deaktivierte Abos koennen nicht wieder aktiviert werden'), code='invalid')
+            raise ValidationError('Deaktivierte '+ Config.vocabulary('subscription_pl') +' koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -213,7 +213,7 @@ class Subscription(Billable):
             instance.activation_date = timezone.now().date()
             for member in instance.recipients_all_for_state('waiting'):
                 if member.subscription is not None:
-                    raise ValidationError('Ein Bezüger hat noch ein aktives Abo!', code='invalid')
+                    raise ValidationError('Ein Bezüger hat noch ein aktives ' + Config.vocabulary('subscription') + '!', code='invalid')
             for member in instance.recipients_all_for_state('waiting'):
                 member.subscription=instance
                 member.future_subscription=None
@@ -235,6 +235,6 @@ class Subscription(Billable):
         instance.old_canceled = instance.canceled
 
     class Meta:
-        verbose_name = _('Abo')
-        verbose_name_plural = _('Abos')
-        permissions = (('can_filter_subscriptions', _('Benutzer kann Abos filtern')),)
+        verbose_name = Config.vocabulary('subscription')
+        verbose_name_plural = Config.vocabulary('subscription_pl')
+        permissions = (('can_filter_subscriptions', 'Benutzer kann ' + Config.vocabulary('subscription') +' filtern'),)

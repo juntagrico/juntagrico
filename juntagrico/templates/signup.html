@@ -6,7 +6,7 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>Mitglied werden</h3>
+        <h3>{% vocabulary "member_type" %} werden</h3>
     </div>
 {% endblock %}
 
@@ -14,17 +14,17 @@
       {% config "business_regulations" as business_regulations %}
       Interessiert an {% enriched_organisation "D" %}?
       <br/><br/>
-      Die Mitgliedschaft bei {% enriched_organisation "D" %} ist geknüpft an den Erwerb von rückzahlbaren Anteilscheinen in der Höhe
-      von CHF {% config "share_price" %} pro Anteilschein. Die Anzahl Anteilscheine ist abhängig von der Abogrösse.. Die Anteilscheine sind das Kapital,
+      Die {% vocabulary "member_type" %}schaft bei {% enriched_organisation "D" %} ist geknüpft an den Erwerb von rückzahlbaren {% vocabulary "share_pl" %}n in der Höhe
+      von CHF {% config "share_price" %} pro {% vocabulary "share" %}. Die Anzahl {% vocabulary "share_pl" %} ist abhängig von der{% vocabulary "subscription" %}grösse.. Die {% vocabulary "share_pl" %} sind das Kapital,
       das vor allem zur Finanzierung von
       Investitionen – zum Beispiel Infrastruktur – verwendet wird.
       <br/><br/>
-      Die Mitglieder tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
+      Die {% vocabulary "member_type_pl" %} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
       Wer bei {% enriched_organisation "D" %} ein Gemüseabo bezieht, verpflichtet sich zur
       Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
       <br/>
       <br/>
-      Bevor du dich als Mitglied anmeldest, lies bitte die Statuten
+      Bevor du dich als {% vocabulary "member_type" %} anmeldest, lies bitte die Statuten
       {% if business_regulations.strip %} und das Betriebsreglement {% endif %}
       durch.
       <ul>

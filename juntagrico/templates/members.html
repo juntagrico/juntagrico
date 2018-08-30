@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Alle {% config "members_string" %} im Überblick</h3>
+    <h3>Alle {% vocabulary "member_pl" %} im Überblick</h3>
 {% endblock %}
 
 {% block content %}
@@ -26,7 +26,7 @@
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Taetigkeitsbereiche</th>
-                <th>Depot</th>
+                <th>{% vocabulary "depot" %}</th>
                 <th>Email</th>
                 <th>Telefon</th>
                 <th>Mobile</th>
@@ -38,7 +38,7 @@
                 <th>{% config "assignments_string" %}</th>
                 {% if show_core %}<th>{% config "assignments_string" %} Kernbereich</th>{% endif %}
                 <th>Taetigkeitsbereiche</th>
-                <th>Depot</th>
+                <th>{% vocabulary "depot" %}</th>
                 <th>Email</th>
                 <th>Telefon</th>
                 <th>Mobile</th>
@@ -73,7 +73,7 @@
                     <td>{% if member.subscription != None and member.subscription.active %}
 			{{ member.subscription.overview }}
 			{% else %}
-			Kein Abo
+			Kein{% vocabulary "subscription" %}
 			{% endif %}
 		</td>
                 </tr>
@@ -83,8 +83,8 @@
     </div>
     <br/><br/>
     <script>
-            var member_string = "{% config "member_string" %}";
-            var members_string = "{% config "members_string" %}";            
+            var member_string = "{% vocabulary "member" %}";
+            var members_string = "{% vocabulary "member_pl" %}";            
     </script>
 {% endblock %}
 

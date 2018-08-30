@@ -5,19 +5,19 @@
 {% endblock %}
 
 {% block content %}
-    Welchen Teil deines Abos möchtest du ändern?<br/><br/>
+    Welchen Teil deines{% vocabulary "subscription_pl" %} möchtest du ändern?<br/><br/>
     <br/>
     <div class="row">
         <div class="col-md-4">
-            Depot
+            {% vocabulary "depot" %}
             <br/>
              Du bist umgezogen oder möchtest aus einem anderen Grund dein Gemüse in einem anderen Quartierdepot abholen? 
-			 Du kannst das Depot jederzeit wechseln - die Änderung wird sobald aktiv von uns kommuniziert.
+			 Du kannst das {% vocabulary "depot" %} jederzeit wechseln - die Änderung wird sobald aktiv von uns kommuniziert.
         </div>
         <div class="col-md-4">
             Grösse
             <br/>
-            Die Grösse eines Abos (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende {{ next_cancel_date |date:"F" }} gemacht werden,
+            Die Grösse eines{% vocabulary "subscription_pl" %} (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende {{ next_cancel_date |date:"F" }} gemacht werden,
             damit die Änderung auf Anfang {{ next_business_year |date:"F" }} in Kraft tritt.
         </div>
         {% if has_extra_subscriptions %}
@@ -50,7 +50,7 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            Momentanes Depot: <br/>
+            Momentanes {% vocabulary "depot" %}: <br/>
             {{ subscription.depot.name }}
         </div>
         <div class="col-md-4">
@@ -83,7 +83,7 @@
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <a href="/my/subscription/change/depot/{{ subscription.id }}/" class="btn btn-success">Depot ändern</a>
+            <a href="/my/subscription/change/depot/{{ subscription.id }}/" class="btn btn-success">{% vocabulary "depot" %} ändern</a>
         </div>
         <div class="col-md-4">
             <a {% if change_size %}href="/my/subscription/change/size/{{ subscription.id }}/"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>

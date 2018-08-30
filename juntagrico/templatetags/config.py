@@ -14,6 +14,10 @@ def images(key):
     return Config.images(key)
 
 @register.simple_tag
+def vocabulary(key):
+    return Config.vocabulary(key)
+
+@register.simple_tag
 def enriched_organisation(case):
     return eo(case)
     

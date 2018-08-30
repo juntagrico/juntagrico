@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.util.temporal import weekday_choices, weekdays
 
+from juntagrico.config import Config
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.extrasubscriptioncategorydao \
@@ -18,7 +19,7 @@ class Depot(models.Model):
     '''
     code = models.CharField('Code', max_length=100,
                             validators=[validators.validate_slug], unique=True)
-    name = models.CharField('Depot Name', max_length=100, unique=True)
+    name = models.CharField(Config.vocabulary('depot')+' Name', max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
     latitude = models.CharField('Latitude', max_length=100, default='',
@@ -95,6 +96,6 @@ class Depot(models.Model):
         self.subscription_cache = self.active_subscriptions()
 
     class Meta:
-        verbose_name = _('Depot')
-        verbose_name_plural = _('Depots')
+        verbose_name = Config.vocabulary('depot')
+        verbose_name_plural = Config.vocabulary('depot_pl')
         permissions = (('is_depot_admin', _('Benutzer ist Depot Admin')),)

@@ -16,8 +16,8 @@
 
         Info:
 
-        Normalerweise kann ein neues Abo erst ab dem Start eines Geschäftsjahres bezogen werden. Das nächste Startdatum wäre der {{ start_date |date:"d.m.Y" }}. 
-        Es kann jedoch vorkommen, dass unter dem Jahr ein Abo frei wird. Würdest du gerne schon früher einsteigen falls ein Abo frei wird, dann kannst du das Startdatum unten anpassen.
+        Normalerweise kann ein neues{% vocabulary "subscription" %} erst ab dem Start eines Geschäftsjahres bezogen werden. Das nächste Startdatum wäre der {{ start_date |date:"d.m.Y" }}. 
+        Es kann jedoch vorkommen, dass unter dem Jahr ein{% vocabulary "subscription" %} frei wird. Würdest du gerne schon früher einsteigen falls ein{% vocabulary "subscription" %} frei wird, dann kannst du das Startdatum unten anpassen.
         <br/><br/>
 
         <form action="" method="post" class="form-horizontal createsubscription">
@@ -30,7 +30,7 @@
                     <label>
 
                         {{ subscriptionform.start_date }}
-                        Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein Abo zum gewünschten Datum frei ist.
+                        Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein{% vocabulary "subscription" %} zum gewünschten Datum frei ist.
                     </label>
                     {% if subscriptionform.start_date.errors %}
                         <div class="alert alert-danger">Das gewählte Startdatum ist nicht gültig</div>

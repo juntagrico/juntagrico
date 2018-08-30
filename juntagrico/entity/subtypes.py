@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
+
 class SubscriptionSize(models.Model):
     '''
     Subscription sizes
@@ -15,8 +17,8 @@ class SubscriptionSize(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = _('Abo Grösse')
-        verbose_name_plural = _('Abo Grössen')
+        verbose_name = Config.vocabulary('subscription') + ' ' + _('Grösse')
+        verbose_name_plural = Config.vocabulary('subscription') + ' ' + _('Grössen')
         
 
 class SubscriptionType(models.Model):
@@ -39,8 +41,8 @@ class SubscriptionType(models.Model):
         return self.pk < other.pk
 
     class Meta:
-        verbose_name = _('Abo Typ')
-        verbose_name_plural = _('Abo Typen')
+        verbose_name = Config.vocabulary('subscription') + ' ' + _('Typ')
+        verbose_name_plural = Config.vocabulary('subscription') + ' ' +_('Typen')
         
 '''
 through classes

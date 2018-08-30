@@ -5,7 +5,7 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>MitabonnentIn hinzufügen</h3>
+        <h3>{% vocabulary "co_member" %} hinzufügen</h3>
     </div>
 {% endblock %}
 
@@ -13,7 +13,7 @@
     <div class="col-md-2"></div>
     <div class="col-md-8">
         <br/>
-		Bei bestehenden {% config "members_string" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
+		Bei bestehenden {% vocabulary "member_pl" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
         <form action="" method="post" class="form-horizontal" id="new_member">
             {% csrf_token %}
             <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
@@ -117,7 +117,7 @@
                 </div>
             </div>
             <div class="form-group {% if shareeerror %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_shares">Anteilscheine</label>
+                <label class="col-md-3 control-label" for="id_shares">{% vocabulary "share_pl" %}</label>
 
                 <div class="controls col-md-2">
                     <input type="text" class="form-control" name="shares" id="id_shares" value="{{ shares }}">
@@ -129,11 +129,11 @@
             </div>
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
-                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem Abo dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
+                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem{% vocabulary "subscription" %} dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende {% vocabulary "member_type_pl" %} in euer{% vocabulary "subscription" %} aufnehmen möchtet.
                 </div>
             {% endif %}
             <div class="form-actions col-md-offset-3">
-                <button type="submit" class="btn btn-success" formnovalidate>MitabonnentIn hinzufügen</button>
+                <button type="submit" class="btn btn-success" formnovalidate>{% vocabulary "co_member" %} hinzufügen</button>
                 <a href="/my/subscription/{{subscription_id}}" class="btn">Abbrechen</a>
             </div>
         </form>

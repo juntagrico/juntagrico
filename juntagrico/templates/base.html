@@ -140,7 +140,7 @@
                                 <li class="inline">
                                     Filtern 
                                     {% if can_filter_members %}
-                                    <a href="/my/filters">{% config "members_string" %}</a> | 
+                                    <a href="/my/filters">{% vocabulary "member_pl" %}</a> | 
                                     {% endif %}
                                     {% if can_filter_subscriptions %}
                                     <a href="/my/subscriptions">Abos</a>
@@ -149,12 +149,12 @@
                             {% endif %}
                             {% for depot in depot_admin %}
                                 <li class="inline">
-                                    <a href="/my/filters/depot/{{ depot.id }}">{% config "members_string" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
+                                    <a href="/my/filters/depot/{{ depot.id }}">{% vocabulary "member_pl" %}</a> | <a href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
                                 </li>
                             {% endfor %}
                             {% for area in area_admin %}
                                 <li>
-                                    <a href="/my/filters/area/{{ area.id }}">{% config "members_string" %} in {{ area.name }}</a>
+                                    <a href="/my/filters/area/{{ area.id }}">{% vocabulary "member_pl" %} in {{ area.name }}</a>
                                 </li>
                             {% endfor %}
                             </ul>
@@ -178,12 +178,12 @@
                             {% endif %}
                             {% if operation_group %}
                                 <li>
-                                    <a href="/my/pdf/depotlist">Depotlisten</a>
+                                    <a href="/my/pdf/depotlist">{% vocabulary "depot" %}listen</a>
                                 </li>
                             {% endif %}
                             {% if operation_group %}
                                 <li>
-                                    <a href="/my/pdf/depotoverview">Depot Übersicht</a>
+                                    <a href="/my/pdf/depotoverview">{% vocabulary "depot" %} Übersicht</a>
                                 </li>
                             {% endif %}
                             </ul>
@@ -223,8 +223,8 @@
                                 <img alt="anderer Tätigkeitsbereich Partner" title="anderer Tätigkeitsbereich Partner" class="jobstatus"
                                      src="{% images "single_full" %}" style="opacity:0.5;"/>
                             {% else %}
-                                <img alt="noch zu erledigen (ganzes Abo)" class="jobstatus" src="{% images "single_empty" %}"
-                                     title="noch zu erledigen (ganzes Abo)"/>
+                                <img alt="noch zu erledigen (ganzes{% vocabulary "subscription" %})" class="jobstatus" src="{% images "single_empty" %}"
+                                     title="noch zu erledigen (ganzes{% vocabulary "subscription" %})"/>
                             {% endif %}
                         {% endfor %}
                     {% endblock %}

@@ -3,7 +3,7 @@
 {% block content %}
 Hallo
 
-Soeben wurde ein neues Abo bestellt
+Soeben wurde ein neues{% vocabulary "subscription" %} bestellt
 
 ID: {{subscription.id}}
 Beschrieb: {{subscription.overview}}

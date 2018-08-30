@@ -292,5 +292,5 @@ class Assignment(models.Model):
         instance.core_cache = instance.is_core()
 
     class Meta:
-        verbose_name = Config.assignment_string()
-        verbose_name_plural = Config.assignments_string()
+        verbose_name = Config.vocabulary('assignment')
+        verbose_name_plural = Config.vocabulary('assignment_pl')

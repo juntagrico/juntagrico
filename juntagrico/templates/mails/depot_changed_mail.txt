@@ -3,14 +3,14 @@
 {% block content %}
 Achtung:
 
-Dein {% config "organisation_name" %}-Depot hat wie von dir gewünscht gewechselt. 
+Dein {% config "organisation_name" %}-{% vocabulary "depot" %} hat wie von dir gewünscht gewechselt. 
 
 Details:
 
 Name:            {{ depot.name }}
 Ort:             {{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}
 Wochentag:       {{ depot.weekday_name}}
-Depotbetreuung:  {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
+{% vocabulary "depot" %}betreuung:  {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
 Beschreibung:    {{ depot.description }}
 
 

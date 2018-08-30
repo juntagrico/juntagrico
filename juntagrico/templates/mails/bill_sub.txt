@@ -4,7 +4,7 @@
 {% config "organisation_bank_connection" as bank%}
 Lieber {{ member.first_name }}
 
-Hier die aktuelle Rechnung für dein Ortoloco Abo:
+Hier die aktuelle Rechnung für dein Ortoloco{% vocabulary "subscription" %}:
 
 Start:          {{ start |date:"d.m.Y" }}
 Ende:           {{ end |date:"d.m.Y" }}
