@@ -3,6 +3,8 @@ from juntagrico.config import Config
 """
     c means case
 """
+
+
 def enriched_organisation(c):
     g = Config.organisation_name_config()['gender']
     if (c == 'N' and g == 'M') or ((c == 'G' or c == 'D') and g == 'F'):

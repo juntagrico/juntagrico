@@ -42,7 +42,7 @@ class SubscriptionType(models.Model):
 
     class Meta:
         verbose_name = Config.vocabulary('subscription') + ' ' + _('Typ')
-        verbose_name_plural = Config.vocabulary('subscription') + ' ' +_('Typen')
+        verbose_name_plural = Config.vocabulary('subscription') + ' ' + _('Typen')
         
 '''
 through classes
@@ -62,4 +62,3 @@ class TFSST(models.Model):
     '''
     subscription = models.ForeignKey('Subscription', related_name='STFSST', on_delete=models.CASCADE)
     type = models.ForeignKey('SubscriptionType', related_name='TTFSST', on_delete=models.PROTECT)
-
