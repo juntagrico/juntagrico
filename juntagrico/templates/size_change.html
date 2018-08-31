@@ -7,13 +7,13 @@
 {% block content %}
     {% if saved %}
         <div class="alert alert-success">
-            Die Abogrösse wurde erfolgreich geändert.<br/>
-            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">Zurück zur Abo-Übersicht</a>
+            Die {% vocabulary "subscription" %}-Grösse wurde erfolgreich geändert.<br/>
+            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">Zurück zur {% vocabulary "subscription" %}-Übersicht</a>
         </div>
     {% elif shareerror %}
         <div class="alert alert-danger">
-            Es sind zu wenig Anteilscheine vorhanden für diese Grösse!<br/>
-            Bestelle <a href="/my/order/share"class="alert-link">hier</a> mehr Anteilscheine.
+            Es sind zu wenig {% vocabulary "share_pl" %} vorhanden für diese Grösse!<br/>
+            Bestelle <a href="/my/order/share"class="alert-link">hier</a> mehr {% vocabulary "share_pl" %}.
         </div>
     {% else %}
         <br/>
@@ -42,7 +42,7 @@
                             <label for="{{ type.name }}" class="control-label col-md-7">
                                 {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif%}
                                 {% if type.description.strip %}{{ type.description }}<br/>{% endif%}
-                                Beitrag: {{ type.price }} {% config "currency" %}
+                                {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
                                 <br/>
                                 Anteilsscheine: {{ type.shares }}
                                 <br/>

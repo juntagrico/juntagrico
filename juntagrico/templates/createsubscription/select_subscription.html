@@ -5,7 +5,7 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>Wähle dein Abo</h3>
+        <h3>Wähle dein {% vocabulary "subscription" %}</h3>
     </div>
 {% endblock %}
 
@@ -37,9 +37,9 @@
                                 <label for="{{ type.name }}" class="control-label col-md-7">
                                     {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif%}
                                     {% if type.description.strip %}{{ type.description }}<br/>{% endif%}
-                                    Beitrag: {{ type.price }} {% config "currency" %}
+                                    {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
                                     <br/>
-                                    Anteilscheine: {{ type.shares }}
+                                    {% vocabulary "share_pl" %}: {{ type.shares }}
                                     <br/>
                                     Arbeitseinsätze: {{ type.required_assignments }} {% if hours_used %}Stunden{% endif %}
                                 </label>
@@ -52,7 +52,7 @@
                 <label class="col-md-3 control-label"> </label>
                 <div class="col-md-9 controls radio">     
                     <label for="{{ ss.name }}" class="control-label col-md-9">
-                        Kein Abo
+                        Kein {% vocabulary "subscription" %}
                     </label>
                 </div>
             </div>
@@ -63,10 +63,10 @@
                             <input type="radio" name="subscription" class="onoffswitch"  value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
                     </label>
                     <label class="col-md-7 control-label">
-                            Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-GenossenschafterIn sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.<br/>
+                            Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-{% vocabulary "member_type" %} sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.<br/>
                             {% config "base_fee" as base_fee%}
                             {% if base_fee.strip %}
-                                Genossenschafter ohne Abo bezahlen einen Jahresbeitrag von {{ base_fee }} {% config "currency" %}
+                                {% vocabulary "member_type_pl" %} ohne {% vocabulary "subscription" %} bezahlen einen Jahresbeitrag von {{ base_fee }} {% config "currency" %}
                             {% endif %}                            
                         </label>
                     

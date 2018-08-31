@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
-
-import os
 import re
 import hashlib
 
 from django.contrib.auth.models import Permission, User
-from django.contrib.sites.shortcuts import get_current_site
 from django.core import mail
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
 from django.conf import settings
 from django.template.loader import get_template
 
-from juntagrico.config import Config
 from juntagrico.util.ical import *
+from juntagrico.util.organisation_name import enriched_organisation
+
 
 def get_server():
     return 'http://' + Config.adminportal_server_url()
@@ -62,6 +59,7 @@ def send_mail_multi(email_multi_message):
         email_multi_message.send()
         print(('Mail sent to ' + ', '.join(okmails) + (', on whitelist' if settings.DEBUG else '')))
     return None
+
 
 def send_contact_form(subject, message, member, copy_to_member):
     send_mail('Anfrage per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [Config.info_email()])
@@ -119,6 +117,7 @@ def send_new_member_in_activityarea_to_operations(area, member):
               'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
               Config.info_email(), emails)
 
+
 def send_removed_member_in_activityarea_to_operations(area, member):
     if area.email is not None:
         emails = [area.email]
@@ -129,6 +128,7 @@ def send_removed_member_in_activityarea_to_operations(area, member):
               + area.name +
               ' ausgetragen. Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern',
               Config.info_email(), emails)
+
 
 def send_welcome_mail(email, password, hash, subscription):
     plaintext = get_template(Config.emails('welcome'))
@@ -143,7 +143,7 @@ def send_welcome_mail(email, password, hash, subscription):
 
     content = plaintext.render(d)
 
-    msg = EmailMultiAlternatives('Willkommen bei der Genossenschaft' + Config.organisation_name(), content, Config.info_email(),
+    msg = EmailMultiAlternatives('Willkommen bei ' + enriched_organisation('D'), content, Config.info_email(),
                                  [email])
     send_mail_multi(msg)
 
@@ -162,6 +162,7 @@ def send_share_created_mail(member, share):
                                  [member.email])
     send_mail_multi(msg)
 
+
 def send_subscription_created_mail(subscription):
     plaintext = get_template(Config.emails('n_sub'))
 
@@ -175,10 +176,11 @@ def send_subscription_created_mail(subscription):
     emails = []
     for user in users:
         emails.append(user.member.email)
-    if len(emails)==0:
+    if len(emails) == 0:
         emails = [Config.info_email()]
     msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', content, Config.info_email(), emails)
     send_mail_multi(msg)
+
 
 def send_been_added_to_subscription(email, password, hash, name, shares, welcome=True):
     if welcome:
@@ -327,7 +329,7 @@ def send_subscription_canceled(subscription, message):
     }
 
     content = plaintext.render(d)
-    emails = [Config.info_email(),]
+    emails = [Config.info_email()]
     msg = EmailMultiAlternatives(Config.organisation_name() + ' - Abo gekündigt', content, Config.info_email(),
                                  emails)
     send_mail_multi(msg)
@@ -343,7 +345,7 @@ def send_membership_canceled(member, end_date, message):
     }
 
     content = plaintext.render(d)
-    emails = [Config.info_email(),]
+    emails = [Config.info_email()]
     msg = EmailMultiAlternatives(Config.organisation_name() + ' - Abo gekündigt', content, Config.info_email(),
                                  emails)
     send_mail_multi(msg)

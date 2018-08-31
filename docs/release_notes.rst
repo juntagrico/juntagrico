@@ -36,3 +36,6 @@ Dev
 * Work in progress
 * Ability to display messages at the bottom of depot lists. Added in the data administration.
 * Area admins are now informed when a member leaves their activity area
+* New setting ORGANISATION_NAME_CONFIG to enrich the organisation name
+* made texts mor neutral on context of the organisation type
+* removed the MEMBER_STRING, MEMBERS_STRING, ASSIGNMENT_STRING and ASSIGNMENTS_STRING for the VOCABULARY setting

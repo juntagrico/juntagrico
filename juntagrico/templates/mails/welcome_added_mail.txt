@@ -1,7 +1,7 @@
 {% extends "mails/email.txt" %}
 {% load config %}
 {% block content %}
-Wir freuen uns, dich bei der Genossenschaft {% config "organisation_name" %} zu begrüssen.
+Wir freuen uns, dich bei {% enriched_organisation "D" %} zu begrüssen.
 Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt und für dich {{ shares }} Anteilsscheine(e) bestellt.
 
 Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten:
@@ -10,17 +10,17 @@ Passwort: {{ password }}
 Bitte setze dir hier gleich ein neues Passwort:
 {{serverurl}}/my/password
 
-Du erhälst für deine Anteilscheine separate Emails mit den Inforamtionen wie du diese bezalen kannst.
+Du erhälst für deine {% vocabulary "share_pl" %} separate Emails mit den Inforamtionen wie du diese bezalen kannst.
 
 {% if subscription is not None %}
-Sobald du Mitglied bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
+Sobald du {% vocabulary "member_type" %} bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
 
 {% endif %}
 Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. 
 
-Damit wir dich als Mitglied freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
+Damit wir dich als {% vocabulary "member_type" %} freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
 Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
-Damit bestätigst du, dass du damit einverstanden bist {% config "organisation_name" %}-GenossenschafterIn zu werden,dem Abo beizutreten, die bestellten Anteilscheine zu erwerben.
+Damit bestätigst du, dass du damit einverstanden bist {% config "organisation_name" %}-{% vocabulary "member_type" %} zu werden,dem{% vocabulary "subscription" %} beizutreten, die bestellten {% vocabulary "share_pl" %} zu erwerben.
 Ebenfalls bestätigst du, dass du die Statuten ({% config "bylaws" as bylaws %}{{ bylaws|safe }})
 {% config "business_regulations" as business_regulations %}{% if business_regulations.strip %} und das Betriebsreglement({{ business_regulations|safe }}){% endif %}
 

@@ -9,7 +9,7 @@
         <div class="alert alert-success">Personalien erfolgreich geändert</div>
     {% endif %}    
     {% if member.canceled %}
-        <div class="alert alert-warning">Deine Mitgliedschaft ist gekündigt.</div>
+        <div class="alert alert-warning">Deine {% vocabulary "member_type" %}schaft ist gekündigt.</div>
     {% endif %} 
         <form method="post" class="form-horizontal">
             {% csrf_token %}
@@ -112,7 +112,7 @@
                 {% endif %}
 			
             <div class="form-group">
-                <label class="control-label col-md-4" for="id_reachable_by_email">sollen andere {% config "members_string" %} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
+                <label class="control-label col-md-4" for="id_reachable_by_email">sollen andere {% vocabulary "member_pl" %} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
 
                 <div class="controls col-md-1">
                     {{ memberform.reachable_by_email }}

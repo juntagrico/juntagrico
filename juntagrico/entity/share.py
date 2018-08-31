@@ -1,9 +1,7 @@
 # encoding: utf-8
 
-from django.db import models
 from django.utils.translation import gettext as _
 
-from juntagrico.mailer import *
 from juntagrico.entity.billing import *
 from juntagrico.util.bills import *
 from juntagrico.config import Config
@@ -28,5 +26,5 @@ class Share(Billable):
         return _('Anteilschein #%s') % self.id
 
     class Meta:
-        verbose_name = _('Anteilschein')
-        verbose_name_plural = _('Anteilscheine')
+        verbose_name = Config.vocabulary('share')
+        verbose_name_plural = Config.vocabulary('share_pl')

@@ -7,17 +7,17 @@
 {% block content %}
     
         {% if future_subscription %}
-            <div class="alert alert-success">Du hast ein Abo auf der Warteliste<br/>Mehr Infos dazu findest du <a href="/my/subscription/detail/{{ member.future_subscription.id}}/">hier</a></div>
+            <div class="alert alert-success">Du hast ein {% vocabulary "subscription" %} auf der Warteliste<br/>Mehr Infos dazu findest du <a href="/my/subscription/detail/{{ member.future_subscription.id}}/">hier</a></div>
         {% elif can_order %}
-        <div class="alert alert-warning">Du hast noch kein Abo oder dein aktuelles ist gekündigt.<br/>Du möchtest ein neus Abo? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
+        <div class="alert alert-warning">Du hast noch kein{ % vocabulary "subscription" %} oder dein aktuelles ist gekündigt.<br/>Du möchtest ein neus{% vocabulary "subscription" %}? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
         {% endif %}
         
     {% if no_subscription %}
         <dl class="dl-horizontal">
-        <dt>Anteilscheine</dt>
+        <dt>{% vocabulary "share_pl" %}</dt>
             <dd>
                 {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/>
-                Bestelle mehr Anteilscheine <a href="/my/order/share">hier</a>
+                Bestelle mehr {% vocabulary "share_pl" %} <a href="/my/order/share">hier</a>
             </dd>
         </dl>
     {% else %}        
@@ -29,20 +29,20 @@
             <dt>Status</dt>
             <dd>
                 {% if subscription.state == 'active'%}
-                    Dein Abo ist aktiv, du erhältst wöchentlich dein Gemüse.
+                    Dein {% vocabulary "subscription" %} ist aktiv, du erhältst wöchentlich dein Gemüse.
                 {% elif subscription.state == 'canceled'%}
-                    Dein Abo ist gekündigt, du erhältst wöchentlich dein Gemüse bis zum {{end_date|date:"d.m.Y"}}.
+                    Dein {% vocabulary "subscription" %} ist gekündigt, du erhältst wöchentlich dein Gemüse bis zum {{end_date|date:"d.m.Y"}}.
                 {% elif subscription.state == 'waiting' %}
                     <span class="text-error">Auf der Warteliste</span> - du erhältst leider im Moment noch kein Gemüse.
                 {% elif subscription.state == 'inactive' %}
-                    <span class="text-error">Dein abo wurde deaktiviert</span> - du erhältst im Moment kein Gemüse.
+                    <span class="text-error">Dein {% vocabulary "subscription" %} wurde deaktiviert</span> - du erhältst im Moment kein Gemüse.
                 {% endif %}
             </dd>
-            <dt>Anteilscheine</dt>
+            <dt>{% vocabulary "share_pl" %}</dt>
             <dd>
                 {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/>
-                Bestelle mehr Anteilscheine <a href="/my/order/share">hier</a><br/><br/>
-                Anteilscheine von MitabonnentInnen:
+                Bestelle mehr {% vocabulary "share_pl" %} <a href="/my/order/share">hier</a><br/><br/>
+                {% vocabulary "share_pl" %} von {% vocabulary "co_member_pl" %}:
                 <ul>
                     {% for co_member in  co_members %}
                         <li>{{ co_member.share_set.count }} von {{ co_member.first_name }} {{ co_member.last_name }}
@@ -69,13 +69,13 @@
                         <br/>
                     {% endif %}
                 {% else %}
-                    Du hast noch keine MitabonnentInnen eingetragen.<br/>
+                    Du hast noch keine {% vocabulary "co_member_pl" %} eingetragen.<br/>
                 {% endif %}
-                <a href="/my/cosubmember/{{ subscription.id }}">Hier MitabonnentInnen eintragen</a>
+                <a href="/my/cosubmember/{{ subscription.id }}">Hier {% vocabulary "co_member_pl" %} eintragen</a>
             </dd>
-            <dt>Depot</dt>
+            <dt>{% vocabulary "depot" %}</dt>
             <dd>
-                {{ subscription.depot.name }} > <a href="/my/depot/{{ subscription.depot.id }}">Weitere Infos zum Depot</a>
+                {{ subscription.depot.name }} > <a href="/my/depot/{{ subscription.depot.id }}">Weitere Infos zum {% vocabulary "depot" %}</a>
             </dd>
             {% if has_extra_subscriptions %}
                 <dt>Zusatzabos</dt>
@@ -108,7 +108,7 @@
             {% endif %}
 
             {% if subscription.types_changed %}
-                <dt>Neue Abogrösse</dt>
+                <dt>Neue {% vocabulary "subscription" %}-Grösse</dt>
                 <dd>
                     (Die Änderung tritt am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)<br>
                     {{ subscription.future_size_name }}
@@ -120,7 +120,7 @@
                 <div class="form-actions">
                     <a href="{% if primary %}/my/subscription/change/overview/{{subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
                     {% if not primary %}
-                        * Das Abo kann nur der Hauptabonnnent ändern.
+                        * Das {% vocabulary "subscription" %} kann nur der Hauptabonnnent ändern.
                     {% endif %}
                 </div> 
                {% endif %}
@@ -129,7 +129,7 @@
                 <div class="form-actions">
                     <a href="{% if primary %}/my/subscription/cancel/{{subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo künden</a>
                     {% if not primary %}
-                        * Das Abo kann nur der Hauptabonnnent künden.
+                        * Das {% vocabulary "subscription" %} kann nur der Hauptabonnnent künden.
                     {% endif %}
                 </div>
                {% endif %}

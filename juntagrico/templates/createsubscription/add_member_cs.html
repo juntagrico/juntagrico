@@ -5,19 +5,19 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>MitabonnentIn hinzufügen</h3>
+        <h3>{% vocabulary "co_member" %} hinzufügen</h3>
     </div>
 {% endblock %}
 
 {% block allcontent %}
     <div class="col-md-2"></div>
     <div class="col-md-8">
-        Falls du dein Abo mit jemandem teilst und diese Person als MitabonnentIn hinzufügen möchtest, dann fülle bitte die untenstehenden Felder aus
-        und klicke anschliessend auf "MitabonnentIn hinzufügen". 
+        Falls du dein {% vocabulary "subscription" %} mit jemandem teilst und diese Person als {% vocabulary "co_member" %} hinzufügen möchtest, dann fülle bitte die untenstehenden Felder aus
+        und klicke anschliessend auf "{% vocabulary "co_member" %} hinzufügen". 
         <br/>
-		Bei bestehenden {% config "members_string" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
+		Bei bestehenden {% vocabulary "member_pl" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
         <br/>
-        Sobald du alle Mitabonnenten hinzugefügt hast, klicke auf "Weiter".
+        Sobald du alle {% vocabulary "co_member_pl" %} hinzugefügt hast, klicke auf "Weiter".
         <form action="" method="post" class="form-horizontal" id="new_member">
             {% csrf_token %}
             <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
@@ -122,12 +122,12 @@
             </div>
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
-                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem Abo dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
+                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem {% vocabulary "subscription" %} dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende {% vocabulary "member_type_pl" %} in euer{% vocabulary "subscription" %} aufnehmen möchtet.
                 </div>
             {% endif %}
             <div class="form-actions col-md-offset-3">
-                <button type="submit" class="btn btn-success" formnovalidate>MitabonnentIn hinzufügen</button>
-                <a href="/my/create/subscription/shares" class="btn btn-success">Ich möchte keine MitabonnentInnen hinzufügen </a>
+                <button type="submit" class="btn btn-success" formnovalidate>{% vocabulary "co_member" %} hinzufügen</button>
+                <a href="/my/create/subscription/shares" class="btn btn-success">Ich möchte keine {% vocabulary "co_member_pl" %} hinzufügen </a>
                 <a href="/my/create/subscription/shares" class="btn btn-success">Weiter</a>
                 <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
             </div>

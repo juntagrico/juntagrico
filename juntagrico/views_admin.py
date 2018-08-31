@@ -295,11 +295,11 @@ def excel_export_members_filter(request):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
-    worksheet_s = workbook.add_worksheet(Config.members_string())
+    worksheet_s = workbook.add_worksheet(Config.vocabulary('member_pl'))
 
     worksheet_s.write_string(0, 0, str('Name'))
-    worksheet_s.write_string(0, 1, str(Config.assignments_string()))
-    worksheet_s.write_string(0, 2, str(Config.assignments_string() + ' Kernbereich'))
+    worksheet_s.write_string(0, 1, str(Config.vocabulary('assignment')))
+    worksheet_s.write_string(0, 2, str(Config.vocabulary('assignment') + ' Kernbereich'))
     worksheet_s.write_string(0, 3, str('Taetigkeitsbereiche'))
     worksheet_s.write_string(0, 4, str('Depot'))
     worksheet_s.write_string(0, 5, str('Email'))

@@ -8,34 +8,39 @@ class Config:
         pass
 
     @staticmethod
-    def member_string():
-        if hasattr(settings, 'MEMBER_STRING'):
-            return settings.MEMBER_STRING
-        return 'Mitglied'
-
-    @staticmethod
-    def members_string():
-        if hasattr(settings, 'MEMBERS_STRING'):
-            return settings.MEMBERS_STRING
-        return 'Mitglieder'
-
-    @staticmethod
-    def assignment_string():
-        if hasattr(settings, 'ASSIGNMENT_STRING'):
-            return settings.ASSIGNMENT_STRING
-        return 'Arbeitseinsatz'
-
-    @staticmethod
-    def assignments_string():
-        if hasattr(settings, 'ASSIGNMENTS_STRING'):
-            return settings.ASSIGNMENTS_STRING
-        return 'Arbeitseinsätze'
+    def vocabulary(key):
+        if hasattr(settings, 'VOCABULARY') and key in settings.VOCABULARY:
+            return settings.VOCABULARY[key]
+        return {
+            'member': 'Mitglied',
+            'member_pl' : 'Mitglieder',
+            'assignment' : 'Arbeitseinsatz',
+            'assignment_pl' : 'Arbeitseinsätze',
+            'share' : 'Anteilschein',
+            'share_pl' : 'Anteilscheine',
+            'subscription' : 'Abo',
+            'subscription_pl' : 'Abos',
+            'co_member' : 'Mitabonnent',
+            'co_member_pl' : 'Mitabonnenten',
+            'price' : 'Betriebsbeitrag',
+            'member_type' : 'Mitglied',
+            'member_type_pl' : 'Mitglieder',
+            'depot' : 'Depot',
+            'depot_pl' : 'Depots'
+        }[key]
 
     @staticmethod
     def organisation_name():
         if hasattr(settings, 'ORGANISATION_NAME'):
             return settings.ORGANISATION_NAME
         return 'Juntagrico'
+
+    @staticmethod
+    def organisation_name_config():
+        if hasattr(settings, 'ORGANISATION_NAME_CONFIG'):
+            return settings.ORGANISATION_NAME_CONFIG
+        return {'type' : '',
+                'gender' : ''}
 
     @staticmethod
     def organisation_long_name():
