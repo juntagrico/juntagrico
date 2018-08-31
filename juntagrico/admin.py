@@ -514,12 +514,12 @@ class MemberAdmin(admin.ModelAdmin):
 
     def impersonate_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, 'Genau 1 ' + Config.member_string() + ' auswählen!', level=messages.ERROR)
+            self.message_user(request, 'Genau 1 ' + Config.vocabulary('member') + ' auswählen!', level=messages.ERROR)
             return HttpResponseRedirect('')
         inst, = queryset.all()
         return HttpResponseRedirect('/impersonate/%s/' % inst.user.id)
 
-    impersonate_job.short_description = Config.member_string() + ' imitieren (impersonate)...'
+    impersonate_job.short_description = Config.vocabulary('member') + ' imitieren (impersonate)...'
 
 
 class ExtraSubscriptionTypeAdmin(admin.ModelAdmin):

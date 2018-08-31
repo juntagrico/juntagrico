@@ -120,7 +120,7 @@ class JobType(AbstractJobType):
 class Job(PolymorphicModel):
     slots = models.PositiveIntegerField(_('Plaetze'))
     time = models.DateTimeField()
-    multiplier = models.PositiveIntegerField(Config.assignments_string()+' vielfaches', default=1)
+    multiplier = models.PositiveIntegerField(Config.vocabulary('assignment')+' vielfaches', default=1)
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(_('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
@@ -279,7 +279,7 @@ class Assignment(models.Model):
     amount = models.FloatField(_('Wert'))
 
     def __str__(self):
-        return '%s #%s' % (Config.assignment_string(), self.id)
+        return '%s #%s' % (Config.vocabulary('assignment'), self.id)
 
     def time(self):
         return self.job.time

@@ -94,7 +94,7 @@ class Member(models.Model):
     class Meta:
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
-        permissions = (('can_filter_members', _('Benutzer kann ') + Config.members_string() + _(' filtern')),)
+        permissions = (('can_filter_members', _('Benutzer kann ') + Config.vocabulary('member') + _(' filtern')),)
 
     def get_name(self):
         return '%s %s' % (self.first_name, self.last_name)
