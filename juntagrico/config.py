@@ -14,7 +14,7 @@ class Config:
         return {
             'member': 'Mitglied',
             'member_pl' : 'Mitglieder',
-            'assingment' : 'Arbeitseinsatz',
+            'assignment' : 'Arbeitseinsatz',
             'assignment_pl' : 'Arbeitseinsätze',
             'share' : 'Anteilschein',
             'share_pl' : 'Anteilscheine',

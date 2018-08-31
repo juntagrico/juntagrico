@@ -242,15 +242,15 @@ def pastjobs(request):
     member = request.user.member
 
     allassignments = AssignmentDao.assignments_for_member(member)
-    past_assingments = []
+    past_assignments = []
 
     for assignment in allassignments:
         if assignment.job.time < timezone.now():
-            past_assingments.append(assignment)
+            past_assignments.append(assignment)
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'assignments': past_assingments,
+        'assignments': past_assignments,
         'menu': {'participation': 'active'},
     })
     return render(request, 'pastjobs.html', renderdict)
@@ -299,7 +299,7 @@ def assignments(request):
 
 
 @login_required
-def assingments_all(request):
+def assignments_all(request):
     '''
     All jobs to be sorted etc.
     '''
