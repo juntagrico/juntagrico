@@ -13,7 +13,8 @@ class ExtraSubscriptionType(models.Model):
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    size = models.CharField(_('Groesse (gross,4, ...)'), max_length=100, default='')
+    size = models.CharField(_('Groesse (gross,4, ...)'),
+                            max_length=100, default='')
     description = models.TextField(_('Beschreibung'), max_length=1000)
     sort_order = models.FloatField(_('Groesse zum Sortieren'), default=1.0)
     visible = models.BooleanField(_('Sichtbar'), default=True)
@@ -34,7 +35,8 @@ class ExtraSubscriptionCategory(models.Model):
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, blank=True)
+    description = models.TextField(
+        _('Beschreibung'), max_length=1000, blank=True)
     sort_order = models.FloatField(_('Nummer zum Sortieren'), default=1.0)
     visible = models.BooleanField(_('Sichtbar'), default=True)
 
@@ -56,8 +58,10 @@ class ExtraSubscription(Billable):
     active = models.BooleanField(default=False)
 
     canceled = models.BooleanField(_('gekündigt'), default=False)
-    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
-    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
+    activation_date = models.DateField(
+        _('Aktivierungssdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(
+        _('Deaktivierungssdatum'), null=True, blank=True)
     type = models.ForeignKey(ExtraSubscriptionType, related_name='extra_subscriptions', null=False, blank=False,
                              on_delete=models.PROTECT)
 
@@ -65,7 +69,8 @@ class ExtraSubscription(Billable):
 
     @property
     def can_cancel(self):
-        period = ExtraSubBillingPeriodDao.get_current_period_per_type(self.type)
+        period = ExtraSubBillingPeriodDao.get_current_period_per_type(
+            self.type)
         print(period.get_actual_cancel())
         return timezone.now().date() <= period.get_actual_cancel()
 
@@ -85,13 +90,13 @@ class ExtraSubscription(Billable):
         if(instance.old_active != instance.active and
            instance.old_active is False and
            instance.deactivation_date is None):
-                instance.activation_date = timezone.now().date()
-                if Config.billing():
-                    bill_extra_subscription(instance)
+            instance.activation_date = timezone.now().date()
+            if Config.billing():
+                bill_extra_subscription(instance)
         elif(instance.old_active != instance.active and
              instance.old_active is True and
              instance.deactivation_date is None):
-                instance.deactivation_date = timezone.now().date()
+            instance.deactivation_date = timezone.now().date()
 
     @classmethod
     def post_init(cls, sender, instance, **kwds):
@@ -103,4 +108,3 @@ class ExtraSubscription(Billable):
     class Meta:
         verbose_name = _('Zusatz-Abo')
         verbose_name_plural = _('Zusatz-Abos')
-

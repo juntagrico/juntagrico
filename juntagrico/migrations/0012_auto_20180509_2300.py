@@ -12,12 +12,14 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='payment',
-            options={'verbose_name': 'Zahlung', 'verbose_name_plural': 'Zahlungen'},
+            options={'verbose_name': 'Zahlung',
+                     'verbose_name_plural': 'Zahlungen'},
         ),
-        migrations.RenameField('subscriptionsize','size','units'),
+        migrations.RenameField('subscriptionsize', 'size', 'units'),
         migrations.AlterField(
             model_name='jobextratype',
             name='display_empty',
-            field=models.CharField(max_length=1000, verbose_name='Icon für fehlendes Extra'),
+            field=models.CharField(
+                max_length=1000, verbose_name='Icon für fehlendes Extra'),
         ),
     ]

@@ -27,8 +27,10 @@ class Bill(models.Model):
                                  null=False, blank=False,
                                  on_delete=models.PROTECT)
     paid = models.BooleanField(_('bezahlt'), default=False)
-    bill_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
-    ref_number = models.CharField(_('Referenznummer'), max_length=30, unique=True)
+    bill_date = models.DateField(
+        _('Aktivierungssdatum'), null=True, blank=True)
+    ref_number = models.CharField(
+        _('Referenznummer'), max_length=30, unique=True)
     amount = models.FloatField(_('Betrag'), null=False, blank=False)
 
     def __str__(self):
@@ -55,23 +57,27 @@ class Payment(models.Model):
     class Meta:
         verbose_name = _('Zahlung')
         verbose_name_plural = _('Zahlungen')
-		
+
+
 class ExtraSubBillingPeriod(models.Model):
     '''
     Billing Period for Extra subscriptions for which a bill has to be issued
     '''
 
     type = models.ForeignKey('ExtraSubscriptionType', related_name='periods', null=False, blank=False,
-                                 on_delete=models.PROTECT)
+                             on_delete=models.PROTECT)
     price = models.DecimalField('Preis', max_digits=10, decimal_places=2)
     start_day = models.PositiveIntegerField(_('Start Tag'))
-    start_month = models.PositiveIntegerField(_('Start Monat'), choices=month_choices)
+    start_month = models.PositiveIntegerField(
+        _('Start Monat'), choices=month_choices)
     end_day = models.PositiveIntegerField(_('End Tag'))
-    end_month = models.PositiveIntegerField(_('End Monat'), choices=month_choices)
+    end_month = models.PositiveIntegerField(
+        _('End Monat'), choices=month_choices)
     cancel_day = models.PositiveIntegerField(_('Kündigungs Tag'))
-    cancel_month = models.PositiveIntegerField(_('Kündigungs Monat'), choices=month_choices)
-    code = models.TextField(_('Code für Teilabrechnung'), max_length=1000, default='', blank=True)
-	
+    cancel_month = models.PositiveIntegerField(
+        _('Kündigungs Monat'), choices=month_choices)
+    code = models.TextField(_('Code für Teilabrechnung'),
+                            max_length=1000, default='', blank=True)
 
     def partial_price(self):
         now = timezone.now()

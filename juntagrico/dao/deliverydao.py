@@ -9,7 +9,7 @@ class DeliveryDao:
     @staticmethod
     def all_deliveries():
         return Delivery.objects.all()
-    
+
     @staticmethod
     def all_deliveries_order_by_delivery_date_desc():
         return Delivery.objects.all().order_by("-delivery_date")
@@ -20,7 +20,7 @@ class DeliveryDao:
             member_subscription_size_ids = []
             for subscription_type in subscription.types.all():
                 member_subscription_size_ids.append(subscription_type.size)
-            member_subscription_weekday = (subscription.depot.weekday % 7) + 1        
+            member_subscription_weekday = (subscription.depot.weekday % 7) + 1
             return DeliveryDao.all_deliveries_order_by_delivery_date_desc().filter(delivery_date__week_day=member_subscription_weekday).filter(subscription_size__in=member_subscription_size_ids)
 
         return []

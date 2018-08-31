@@ -19,7 +19,8 @@ class Depot(models.Model):
     '''
     code = models.CharField('Code', max_length=100,
                             validators=[validators.validate_slug], unique=True)
-    name = models.CharField(Config.vocabulary('depot')+' Name', max_length=100, unique=True)
+    name = models.CharField(Config.vocabulary(
+        'depot')+' Name', max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
     latitude = models.CharField('Latitude', max_length=100, default='',
@@ -33,7 +34,6 @@ class Depot(models.Model):
     addr_location = models.CharField('Ort', max_length=50,
                                      null=True, blank=True)
     description = models.TextField('Beschreibung', max_length=1000, default='')
-
 
     overview_cache = None
     subscription_cache = None
@@ -85,7 +85,8 @@ class Depot(models.Model):
             amounts = self.subscription_amounts(cache, size_name)
             self.overview_cache.append(amounts)
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
-            types = ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category)
+            types = ExtraSubscriptionTypeDao.extra_types_by_category_ordered(
+                category)
             for extra_subscription in types:
                 code = extra_subscription.name
                 cache = self.subscription_cache

@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subscription',
             name='notes',
-            field=models.TextField(blank=True, max_length=1000, verbose_name='Notizen'),
+            field=models.TextField(
+                blank=True, max_length=1000, verbose_name='Notizen'),
         ),
     ]

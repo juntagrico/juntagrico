@@ -15,5 +15,5 @@ def generate_ical_for_job(job):
     e.description = job.type.description
     e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
     e.end = job.time.strftime('%Y%m%d %H:%M:%S')
-    #c.events.append(e)
+    # c.events.append(e)
     return str(c).replace('\n', '\r\n') + '\r\n'

@@ -14,36 +14,43 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='depot',
             name='addr_location',
-            field=models.CharField(blank=True, max_length=50, null=True, verbose_name='Ort'),
+            field=models.CharField(
+                blank=True, max_length=50, null=True, verbose_name='Ort'),
         ),
         migrations.AlterField(
             model_name='depot',
             name='addr_street',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Strasse'),
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name='Strasse'),
         ),
         migrations.AlterField(
             model_name='depot',
             name='addr_zipcode',
-            field=models.CharField(blank=True, max_length=10, null=True, verbose_name='PLZ'),
+            field=models.CharField(
+                blank=True, max_length=10, null=True, verbose_name='PLZ'),
         ),
         migrations.AlterField(
             model_name='depot',
             name='latitude',
-            field=models.CharField(blank=True, default='', max_length=100, null=True, verbose_name='Latitude'),
+            field=models.CharField(
+                blank=True, default='', max_length=100, null=True, verbose_name='Latitude'),
         ),
         migrations.AlterField(
             model_name='depot',
             name='longitude',
-            field=models.CharField(blank=True, default='', max_length=100, null=True, verbose_name='Longitude'),
+            field=models.CharField(
+                blank=True, default='', max_length=100, null=True, verbose_name='Longitude'),
         ),
         migrations.AlterField(
             model_name='tfsst',
             name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='TTFSST', to='juntagrico.SubscriptionType'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='TTFSST', to='juntagrico.SubscriptionType'),
         ),
         migrations.AlterField(
             model_name='tsst',
             name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='TTSST', to='juntagrico.SubscriptionType'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='TTSST', to='juntagrico.SubscriptionType'),
         ),
     ]

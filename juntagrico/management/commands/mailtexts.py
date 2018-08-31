@@ -18,17 +18,19 @@ from juntagrico.config import Config
 from juntagrico.util.ical import *
 from juntagrico.models import *
 
+
 def get_server():
     return 'http://' + Config.adminportal_server_url()
+
 
 class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         subscription = Subscription.objects.all()[0]
-        if ExtraSubscription.objects.all().count()>0:
+        if ExtraSubscription.objects.all().count() > 0:
             extrasub = ExtraSubscription.objects.all()[0]
         else:
-            extrasub=None
+            extrasub = None
         share = Share.objects.all()[0]
         job = RecuringJob.objects.all()[0]
         member = Member.objects.all()[0]
@@ -36,7 +38,7 @@ class Command(BaseCommand):
         bill = Bill(ref_number='123456789', amount='1234.99')
 
         print('*** welcome  mit abo***')
-        
+
         plaintext = get_template(Config.emails('welcome'))
         d = {
             'username': 'email@email.de',
@@ -50,7 +52,7 @@ class Command(BaseCommand):
         print()
 
         print('*** welcome  ohne abo***')
-        
+
         plaintext = get_template(Config.emails('welcome'))
         d = {
             'username': 'email@email.de',
@@ -64,10 +66,10 @@ class Command(BaseCommand):
         print()
 
         print('*** s_created ***')
-        
+
         plaintext = get_template(Config.emails('s_created'))
         d = {
-            'share': share,        
+            'share': share,
             'serverurl': get_server()
         }
         content = plaintext.render(d)
@@ -75,7 +77,7 @@ class Command(BaseCommand):
         print()
 
         print('*** n_sub ***')
-        
+
         plaintext = get_template(Config.emails('n_sub'))
         d = {
             'subscription': subscription,
@@ -86,7 +88,7 @@ class Command(BaseCommand):
         print()
 
         print('*** co_welcome ***')
-        
+
         plaintext = get_template(Config.emails('co_welcome'))
         d = {
             'username': 'email@email.org',
@@ -101,7 +103,7 @@ class Command(BaseCommand):
         print()
 
         print('*** co_added ***')
-        
+
         plaintext = get_template(Config.emails('co_added'))
         d = {
             'username': 'email@email.org',
@@ -116,7 +118,7 @@ class Command(BaseCommand):
         print()
 
         print('*** password ***')
-        
+
         plaintext = get_template(Config.emails('password'))
         d = {
             'email': 'email@email.org',
@@ -128,10 +130,11 @@ class Command(BaseCommand):
         print()
 
         print('*** j_reminder ***')
-        
+
         plaintext = get_template(Config.emails('j_reminder'))
         coordinator = job.type.activityarea.coordinator
-        contact = coordinator.first_name + ' ' + coordinator.last_name + ': ' + job.type.activityarea.contact()
+        contact = coordinator.first_name + ' ' + \
+            coordinator.last_name + ': ' + job.type.activityarea.contact()
         d = {
             'job': job,
             'participants': [member],
@@ -143,7 +146,7 @@ class Command(BaseCommand):
         print()
 
         print('*** j_canceled ***')
-        
+
         plaintext = get_template(Config.emails('j_canceled'))
         d = {
             'job': job,
@@ -154,7 +157,7 @@ class Command(BaseCommand):
         print()
 
         print('*** confirm ***')
-        
+
         plaintext = get_template(Config.emails('confirm'))
         d = {
             'hash': 'hash',
@@ -165,7 +168,7 @@ class Command(BaseCommand):
         print()
 
         print('*** j_changed ***')
-        
+
         plaintext = get_template(Config.emails('j_changed'))
         d = {
             'job': job,
@@ -176,7 +179,7 @@ class Command(BaseCommand):
         print()
 
         print('*** j_signup ***')
-        
+
         plaintext = get_template(Config.emails('j_signup'))
         d = {
             'job': job,
@@ -187,7 +190,7 @@ class Command(BaseCommand):
         print()
 
         print('*** d_changed ***')
-        
+
         plaintext = get_template(Config.emails('d_changed'))
         d = {
             'depot': depot,
@@ -198,7 +201,7 @@ class Command(BaseCommand):
         print()
 
         print('*** s_canceled ***')
-        
+
         plaintext = get_template(Config.emails('s_canceled'))
         d = {
             'subscription': subscription,
@@ -209,7 +212,7 @@ class Command(BaseCommand):
         print()
 
         print('*** m_canceled ***')
-        
+
         plaintext = get_template(Config.emails('m_canceled'))
         d = {
             'member': member,
@@ -221,7 +224,7 @@ class Command(BaseCommand):
         print()
 
         print('*** b_share ***')
-        
+
         plaintext = get_template(Config.emails('b_share'))
         d = {
             'member': member,
@@ -234,7 +237,7 @@ class Command(BaseCommand):
         print()
 
         print('*** b_sub ***')
-        
+
         plaintext = get_template(Config.emails('b_sub'))
         d = {
             'member': member,
@@ -247,10 +250,10 @@ class Command(BaseCommand):
         content = plaintext.render(d)
         print(content)
         print()
-        
+
         if extrasub is not None:
             print('*** b_esub ***')
-            
+
             plaintext = get_template(Config.emails('b_esub'))
             d = {
                 'member': member,

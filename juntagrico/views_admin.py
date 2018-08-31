@@ -45,12 +45,14 @@ def send_email_intern(request):
     sender = request.POST.get('sender')
     if request.POST.get('allsubscription') == 'on':
         m_emails = MemberDao.members_for_email_with_subscription().values_list('email',
-                                                                    flat=True)
+                                                                               flat=True)
         emails.update(m_emails)
     if request.POST.get('allshares') == 'on':
-        emails.update(MemberDao.members_for_email_with_shares().values_list('email', flat=True))
+        emails.update(MemberDao.members_for_email_with_shares(
+        ).values_list('email', flat=True))
     if request.POST.get('all') == 'on':
-        emails.update(MemberDao.members_for_email().values_list('email', flat=True))
+        emails.update(MemberDao.members_for_email(
+        ).values_list('email', flat=True))
     if request.POST.get('recipients'):
         emails.update(re.split(r'\s*,?\s*', request.POST.get('recipients')))
     if request.POST.get('allsingleemail'):
@@ -187,7 +189,7 @@ def filter_subscriptions_depot(request, depot_id):
     for subscription in SubscriptionDao.subscritions_by_depot(depot):
         assignments = 0
         core_assignments = 0
-        for member in  MemberDao.members_with_assignments_count_in_subscription(subscription):
+        for member in MemberDao.members_with_assignments_count_in_subscription(subscription):
             assignments += member.assignment_count if member.assignment_count is not None else 0
             core_assignments += member.core_assignment_count if member.core_assignment_count is not None else 0
 
@@ -212,14 +214,17 @@ def filter_subscriptions_depot(request, depot_id):
 def my_depotlists():
     return alldepots_list('')
 
+
 @permission_required('juntagrico.is_operations_group')
 def depotlist(request):
     return return_pdf_http('depotlist.pdf')
-    
+
+
 @permission_required('juntagrico.is_operations_group')
 def depot_overview(request):
     return return_pdf_http('depot_overview.pdf')
-    
+
+
 @permission_required('juntagrico.is_operations_group')
 def amount_overview(request):
     return return_pdf_http('amount_overview.pdf')
@@ -247,10 +252,11 @@ def future(request):
         }
     for subscription in SubscriptionDao.all_active_subscritions():
         for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['now'] += subscription.subscription_amount(subscription_size)
+            subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
+                subscription_size)
         for users_subscription in subscription.extra_subscriptions.all():
             extra_lines[users_subscription.type.name]['now'] += 1
-            
+
     for subscription in SubscriptionDao.future_subscriptions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
@@ -264,7 +270,6 @@ def future(request):
         'extra_lines': iter(extra_lines.values()),
     })
     return render(request, 'future.html', renderdict)
-
 
 
 @permission_required('juntagrico.can_load_templates')
@@ -299,7 +304,8 @@ def excel_export_members_filter(request):
 
     worksheet_s.write_string(0, 0, str('Name'))
     worksheet_s.write_string(0, 1, str(Config.vocabulary('assignment')))
-    worksheet_s.write_string(0, 2, str(Config.vocabulary('assignment') + ' Kernbereich'))
+    worksheet_s.write_string(
+        0, 2, str(Config.vocabulary('assignment') + ' Kernbereich'))
     worksheet_s.write_string(0, 3, str('Taetigkeitsbereiche'))
     worksheet_s.write_string(0, 4, str('Depot'))
     worksheet_s.write_string(0, 5, str('Email'))
@@ -384,25 +390,28 @@ def export(request):
 @permission_required('juntagrico.is_operations_group')
 def waitinglist(request):
     return subscription_management_list(SubscriptionDao.not_started_subscriptions(), get_menu_dict(request), 'waitinglist.html', request)
-    
+
+
 @permission_required('juntagrico.is_operations_group')
 def canceledlist(request):
     return subscription_management_list(SubscriptionDao.canceled_subscriptions(), get_menu_dict(request), 'canceledlist.html', request)
 
-    
+
 @permission_required('juntagrico.is_operations_group')
 def typechangelist(request):
     changedlist = []
     subscriptions = SubscriptionDao.all_active_subscritions()
     for subscription in subscriptions:
         if subscription.types_changed:
-            changedlist.append(subscription)    
+            changedlist.append(subscription)
     return subscription_management_list(changedlist, get_menu_dict(request), 'typechangelist.html', request)
-    
+
+
 @permission_required('juntagrico.is_operations_group')
 def extra_waitinglist(request):
     return subscription_management_list(ExtraSubscriptionDao.waiting_extra_subs(), get_menu_dict(request), 'extra_waitinglist.html', request)
-    
+
+
 @permission_required('juntagrico.is_operations_group')
 def extra_canceledlist(request):
     return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), get_menu_dict(request), 'extra_canceledlist.html', request)
