@@ -5,7 +5,7 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>Wähle dein{% vocabulary "subscription" %}</h3>
+        <h3>Wähle dein {% vocabulary "subscription" %}</h3>
     </div>
 {% endblock %}
 
@@ -52,7 +52,7 @@
                 <label class="col-md-3 control-label"> </label>
                 <div class="col-md-9 controls radio">     
                     <label for="{{ ss.name }}" class="control-label col-md-9">
-                        Kein{% vocabulary "subscription" %}
+                        Kein {% vocabulary "subscription" %}
                     </label>
                 </div>
             </div>
@@ -66,7 +66,7 @@
                             Du kannst auch ohne Gemüseabo {% config "organisation_name" %}-{% vocabulary "member_type" %} sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.<br/>
                             {% config "base_fee" as base_fee%}
                             {% if base_fee.strip %}
-                                {% vocabulary "member_type_pl" %} ohne{% vocabulary "subscription" %} bezahlen einen Jahresbeitrag von {{ base_fee }} {% config "currency" %}
+                                {% vocabulary "member_type_pl" %} ohne {% vocabulary "subscription" %} bezahlen einen Jahresbeitrag von {{ base_fee }} {% config "currency" %}
                             {% endif %}                            
                         </label>
                     

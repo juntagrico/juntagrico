@@ -5,9 +5,9 @@ Hallo
 Soeben hat {{ member.first_name }} {{ member.last_name }}
 email : {{ member.email }}
 
-seine {% vocabulary "member_type" %}shaft gekündet.
+seine Mitgliedshaft gekündet.
 
-Er möchte seine {% vocabulary "member_type" %}schaft auf den {{ end_date|date:"d.m.Y" }} künden.
+Er möchte seine Mitgliedshaft auf den {{ end_date|date:"d.m.Y" }} künden.
 
 ausserdem hat er folgende Nachricht für euch hinterlassen:
 {{ message}}

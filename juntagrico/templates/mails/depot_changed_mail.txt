@@ -10,7 +10,7 @@ Details:
 Name:            {{ depot.name }}
 Ort:             {{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}
 Wochentag:       {{ depot.weekday_name}}
-{% vocabulary "depot" %}betreuung:  {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
+{% vocabulary "depot" %}-Betreuung:  {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
 Beschreibung:    {{ depot.description }}
 
 

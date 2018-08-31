@@ -10,11 +10,11 @@
             {% if subscription.state == 'waiting' %}
                 Das {% vocabulary "depot" %} wurde geändert.
             {% else %}
-                !!!Achtung! Das {% vocabulary "depot" %} änderst erst bei der nächsten {% vocabulary "depot" %}listen Generierung. Solange keine Email an {{subscription.primary_member.email}} 
+                !!!Achtung! Das {% vocabulary "depot" %} änderst erst bei der nächsten {% vocabulary "depot" %}-Listen Generierung. Solange keine Email an {{subscription.primary_member.email}} 
                 mit der Bestätigung für das neue {% vocabulary "depot" %} gesendet wurde ist noch das alte {% vocabulary "depot" %} {{subscription.depot.name}} aktiv!!!
             {% endif %}
             <br/>
-            <a href="/my/subscription/detail/{{ subscription.id }}/">Zurück zur{% vocabulary "subscription" %}-Übersicht</a>
+            <a href="/my/subscription/detail/{{ subscription.id }}/">Zurück zur {% vocabulary "subscription" %}-Übersicht</a>
         </div>
     {% else %}
         <form method="post" class="form-horizontal createsubscription">
@@ -77,5 +77,5 @@
 {% endblock %}
 {% block scripts %}
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}"></script>
-<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChange{% vocabulary "depot" %}.js"></script>
+<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeDepot.js"></script>
 {% endblock %}

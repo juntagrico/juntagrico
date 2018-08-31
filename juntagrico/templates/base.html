@@ -143,7 +143,7 @@
                                     <a href="/my/filters">{% vocabulary "member_pl" %}</a> | 
                                     {% endif %}
                                     {% if can_filter_subscriptions %}
-                                    <a href="/my/subscriptions">Abos</a>
+                                    <a href="/my/subscriptions">{% vocabulary "subscription_pl" %}</a>
                                     {% endif %}
                                 </li>
                             {% endif %}
@@ -178,7 +178,7 @@
                             {% endif %}
                             {% if operation_group %}
                                 <li>
-                                    <a href="/my/pdf/depotlist">{% vocabulary "depot" %}listen</a>
+                                    <a href="/my/pdf/depotlist">{% vocabulary "depot" %}-Listen</a>
                                 </li>
                             {% endif %}
                             {% if operation_group %}
@@ -223,8 +223,8 @@
                                 <img alt="anderer Tätigkeitsbereich Partner" title="anderer Tätigkeitsbereich Partner" class="jobstatus"
                                      src="{% images "single_full" %}" style="opacity:0.5;"/>
                             {% else %}
-                                <img alt="noch zu erledigen (ganzes{% vocabulary "subscription" %})" class="jobstatus" src="{% images "single_empty" %}"
-                                     title="noch zu erledigen (ganzes{% vocabulary "subscription" %})"/>
+                                <img alt="noch zu erledigen (ganzes {% vocabulary "subscription" %})" class="jobstatus" src="{% images "single_empty" %}"
+                                     title="noch zu erledigen (ganzes {% vocabulary "subscription" %})"/>
                             {% endif %}
                         {% endfor %}
                     {% endblock %}

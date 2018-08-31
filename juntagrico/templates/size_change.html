@@ -7,8 +7,8 @@
 {% block content %}
     {% if saved %}
         <div class="alert alert-success">
-            Die{% vocabulary "subscription" %}grösse wurde erfolgreich geändert.<br/>
-            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">Zurück zur{% vocabulary "subscription" %}-Übersicht</a>
+            Die {% vocabulary "subscription" %}-Grösse wurde erfolgreich geändert.<br/>
+            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">Zurück zur {% vocabulary "subscription" %}-Übersicht</a>
         </div>
     {% elif shareerror %}
         <div class="alert alert-danger">

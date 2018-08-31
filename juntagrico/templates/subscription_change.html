@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    Welchen Teil deines{% vocabulary "subscription_pl" %} möchtest du ändern?<br/><br/>
+    Welchen Teil deines {% vocabulary "subscription_pl" %} möchtest du ändern?<br/><br/>
     <br/>
     <div class="row">
         <div class="col-md-4">
@@ -17,7 +17,7 @@
         <div class="col-md-4">
             Grösse
             <br/>
-            Die Grösse eines{% vocabulary "subscription_pl" %} (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende {{ next_cancel_date |date:"F" }} gemacht werden,
+            Die Grösse eines {% vocabulary "subscription_pl" %} (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende {{ next_cancel_date |date:"F" }} gemacht werden,
             damit die Änderung auf Anfang {{ next_business_year |date:"F" }} in Kraft tritt.
         </div>
         {% if has_extra_subscriptions %}

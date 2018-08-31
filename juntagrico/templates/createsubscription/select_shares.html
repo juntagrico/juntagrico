@@ -14,7 +14,7 @@
     <div class="col-md-8">
         <br/>
         {% if share_error %}
-            <div class="alert alert-danger">Du brauchst entweder mehr {% vocabulary "share_pl" %} für das gewählte{% vocabulary "subscription" %} oder eine deiner Eingaben ist keine postitive Zahl.(x &#8713; &#8469;) </div>
+            <div class="alert alert-danger">Du brauchst entweder mehr {% vocabulary "share_pl" %} für das gewählte {% vocabulary "subscription" %} oder eine deiner Eingaben ist keine postitive Zahl.(x &#8713; &#8469;) </div>
         {% endif %}
 
         Infos:
@@ -22,9 +22,9 @@
         Um {% vocabulary "member_type" %} {% enriched_organisation "G" %} zu werden, musst du mindestens einen {% vocabulary "share" %} ({% config "currency" %} {% config "share_price" %}) erwerben.
         Bei Austritt aus {% enriched_organisation "D" %} bekommst du deinen {% vocabulary "share" %} zurück erstattet.
         {% if selected_subscription > -1 %}
-        Für das von dir ausgewählte{% vocabulary "subscription" %} brauchst du insgesamt {{ total_shares }} {% vocabulary "share_pl" %}. Du kannst natürlich noch mehr erwerben. <br/>
+        Für das von dir ausgewählte {% vocabulary "subscription" %} brauchst du insgesamt {{ total_shares }} {% vocabulary "share_pl" %}. Du kannst natürlich noch mehr erwerben. <br/>
         {% else %}
-        Als {% vocabulary "member_type" %} ohne{% vocabulary "subscription" %} benötigst du einen {% vocabulary "share" %}. Du kannst natürlich noch mehr erwerben. <br/>
+        Als {% vocabulary "member_type" %} ohne {% vocabulary "subscription" %} benötigst du einen {% vocabulary "share" %}. Du kannst natürlich noch mehr erwerben. <br/>
         {% endif %}
         {% if has_com_members %}
         Teile die restlichen benötigten {{ required_shares }} {% vocabulary "share_pl" %} unter dir und deinen {% vocabulary "co_member_pl" %} auf.

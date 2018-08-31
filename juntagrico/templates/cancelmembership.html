@@ -7,7 +7,7 @@
 {% block content %}
     <div class="col-md-12">
         <br/>
-        Hier kannst du deine {% vocabulary "member_type" %}shaft kündigen. {% if coop_member%}Der nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.{% endif %}
+        Hier kannst du deine Mitgliedschaft bei {% enriched_organisation "D" %} kündigen. {% if coop_member%}Der nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.{% endif %}
         <br/>
         {% if coop_member%}
            <ul>
@@ -34,13 +34,13 @@
                 </div>
             </div>
             <div class="col-md-offset-4 form-actions">
-                <button type="submit" class="btn btn-success">{% vocabulary "member_type" %}schaft künden</button>
+                <button type="submit" class="btn btn-success">Migliedshaft künden</button>
             </div>
         </form>
         {% elif missing_iban%}
-            Du musst zuerst deine IBAN hinterlegen, damit deine Ateilscheine ausbezahlt werden können.
+            Du musst zuerst deine IBAN hinterlegen, damit deine {% vocabulary "share_pl" %} ausbezahlt werden können.
         {% else %}
-            Du bist entweder Hauptabonnent oder ohne deine {% vocabulary "share_pl" %} hat dein jetztiges{% vocabulary "subscription" %} nicht genug {% vocabulary "share_pl" %} um weiter zu existieren. 
+            Du bist entweder Hauptabonnent oder ohne deine {% vocabulary "share_pl" %} hat dein jetztiges {% vocabulary "subscription" %} nicht genug {% vocabulary "share_pl" %} um weiter zu existieren. 
             Falls du Hilfe brauchst um das Problem zu beheben wende dich an {% config "info_email" %}.
         {% endif %}
         

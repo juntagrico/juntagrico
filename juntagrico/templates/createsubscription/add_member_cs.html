@@ -12,7 +12,7 @@
 {% block allcontent %}
     <div class="col-md-2"></div>
     <div class="col-md-8">
-        Falls du dein{% vocabulary "subscription" %} mit jemandem teilst und diese Person als {% vocabulary "co_member" %} hinzufügen möchtest, dann fülle bitte die untenstehenden Felder aus
+        Falls du dein {% vocabulary "subscription" %} mit jemandem teilst und diese Person als {% vocabulary "co_member" %} hinzufügen möchtest, dann fülle bitte die untenstehenden Felder aus
         und klicke anschliessend auf "{% vocabulary "co_member" %} hinzufügen". 
         <br/>
 		Bei bestehenden {% vocabulary "member_pl" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
@@ -122,7 +122,7 @@
             </div>
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
-                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem{% vocabulary "subscription" %} dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende {% vocabulary "member_type_pl" %} in euer{% vocabulary "subscription" %} aufnehmen möchtet.
+                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem {% vocabulary "subscription" %} dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende {% vocabulary "member_type_pl" %} in euer{% vocabulary "subscription" %} aufnehmen möchtet.
                 </div>
             {% endif %}
             <div class="form-actions col-md-offset-3">
