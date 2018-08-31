@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from django.db import models
 
+
 class MailTemplate(models.Model):
     '''
     Mail template for rendering
@@ -18,4 +19,5 @@ class MailTemplate(models.Model):
     class Meta:
         verbose_name = _('MailTemplate')
         verbose_name_plural = _('MailTemplates')
-        permissions = (('can_load_templates', _('Benutzer kann Templates laden')),)
+        permissions = (('can_load_templates', _(
+            'Benutzer kann Templates laden')),)

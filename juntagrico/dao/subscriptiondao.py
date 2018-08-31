@@ -24,11 +24,11 @@ class SubscriptionDao:
     @staticmethod
     def not_started_subscriptions():
         return Subscription.objects.filter(active=False).filter(deactivation_date=None).order_by('start_date')
-        
+
     @staticmethod
     def future_subscriptions():
         return Subscription.objects.filter(canceled=False).filter(deactivation_date=None)
-        
+
     @staticmethod
     def canceled_subscriptions():
         return Subscription.objects.filter(active=True).filter(canceled=True).order_by('end_date')
@@ -41,4 +41,5 @@ class SubscriptionDao:
         started after our date range.
         """
         return Subscription.objects.\
-            exclude(deactivation_date__lt=fromdate).exclude(activation_date__gt=tilldate)
+            exclude(deactivation_date__lt=fromdate).exclude(
+                activation_date__gt=tilldate)

@@ -18,7 +18,7 @@ def load_modules():
     for app in settings.INSTALLED_APPS:
         j_app = app.startswith('juntagrico') and app != 'juntagrico'
         if j_app and util.find_spec(app + '.juntagricoapp') is not None:
-                modules[app] = importlib.import_module(app + '.juntagricoapp')
+            modules[app] = importlib.import_module(app + '.juntagricoapp')
     return modules
 
 

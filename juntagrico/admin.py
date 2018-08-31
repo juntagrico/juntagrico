@@ -36,13 +36,16 @@ class SubscriptionAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *a, **k)
         self.fields['primary_member'].queryset = self.instance.recipients
         if self.instance.pk is None:
-            self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription(self.instance)
+            self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription(
+                self.instance)
         elif self.instance.state == 'waiting':
-            self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(self.instance)
+            self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(
+                self.instance)
         elif self.instance.state == 'inactive':
             self.fields['subscription_members'].queryset = MemberDao.all_members()
         else:
-            self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(self.instance)
+            self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(
+                self.instance)
         self.fields['subscription_members'].initial = self.instance.recipients_all
 
     def clean(self):
@@ -104,7 +107,8 @@ class JobCopyForm(forms.ModelForm):
         super(JobCopyForm, self).__init__(*a, **k)
         inst = k.pop('instance')
 
-        self.fields['start_date'].initial = inst.time.date() + datetime.timedelta(days=1)
+        self.fields['start_date'].initial = inst.time.date() + \
+            datetime.timedelta(days=1)
         self.fields['time'].initial = inst.time
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
 
@@ -112,7 +116,8 @@ class JobCopyForm(forms.ModelForm):
         cleaned_data = forms.ModelForm.clean(self)
         if 'start_date' in cleaned_data and 'end_date' in cleaned_data:
             if not self.get_dates(cleaned_data):
-                raise ValidationError('Kein neuer Job fällt zwischen Anfangs- und Enddatum')
+                raise ValidationError(
+                    'Kein neuer Job fällt zwischen Anfangs- und Enddatum')
         return cleaned_data
 
     def save(self, commit=True):
@@ -123,7 +128,8 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = RecuringJob.objects.create(type=inst.type, slots=inst.slots, time=dt)
+            job = RecuringJob.objects.create(
+                type=inst.type, slots=inst.slots, time=dt)
             newjobs.append(job)
             job.save()
 
@@ -199,7 +205,8 @@ class JobAdmin(admin.ModelAdmin):
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, 'Genau 1 Job auswählen!', level=messages.ERROR)
+            self.message_user(
+                request, 'Genau 1 Job auswählen!', level=messages.ERROR)
             return HttpResponseRedirect('')
 
         inst, = queryset.all()
@@ -209,7 +216,8 @@ class JobAdmin(admin.ModelAdmin):
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = RecuringJob(type=inst.type, slots=inst.slots, time=inst.time)
+            newjob = RecuringJob(
+                type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
 
     copy_job.short_description = 'Jobs kopieren'
@@ -222,7 +230,8 @@ class JobAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(JobAdmin, self).get_urls()
         my_urls = [
-            url(r'^copy_job/(?P<jobid>.*?)/$', self.admin_site.admin_view(self.copy_job_view))
+            url(r'^copy_job/(?P<jobid>.*?)/$',
+                self.admin_site.admin_view(self.copy_job_view))
         ]
         return my_urls + urls
 
@@ -232,7 +241,8 @@ class JobAdmin(admin.ModelAdmin):
         tmp_inlines = self.inlines
         self.readonly_fields = []
         self.inlines = []
-        res = self.change_view(request, jobid, extra_context={'title': 'Copy job'})
+        res = self.change_view(request, jobid, extra_context={
+                               'title': 'Copy job'})
         self.readonly_fields = tmp_readonly
         self.inlines = tmp_inlines
         return res
@@ -247,7 +257,8 @@ class JobAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'type' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = JobTypeDao.types_by_coordinator(request.user.member)
+            kwargs['queryset'] = JobTypeDao.types_by_coordinator(
+                request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -294,7 +305,8 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'activityarea' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(request.user.member)
+            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(
+                request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -335,7 +347,8 @@ class JobTypeAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'activityarea' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(request.user.member)
+            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(
+                request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -363,11 +376,14 @@ class FutureSubscriptionTypeInline(admin.TabularInline):
 
 class SubscriptionAdmin(admin.ModelAdmin):
     form = SubscriptionAdminForm
-    list_display = ['__str__', 'recipients_names', 'primary_member_nullsave', 'depot', 'active']
+    list_display = ['__str__', 'recipients_names',
+                    'primary_member_nullsave', 'depot', 'active']
     # filter_horizontal = ['users']
-    search_fields = ['members__user__username', 'members__first_name', 'members__last_name', 'depot__name']
+    search_fields = ['members__user__username',
+                     'members__first_name', 'members__last_name', 'depot__name']
     # raw_id_fields = ['primary_member']
-    inlines = [SubscriptionTypeInline, FutureSubscriptionTypeInline, ExtraSubscriptionInline]
+    inlines = [SubscriptionTypeInline,
+               FutureSubscriptionTypeInline, ExtraSubscriptionInline]
 
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_subscription_inlines())
@@ -400,6 +416,7 @@ class DepotAdmin(admin.ModelAdmin):
 class ListMessageAdmin(admin.ModelAdmin):
     list_display = ['message', 'active']
     search_fields = ['message']
+
 
 class DeliveryInline(admin.TabularInline):
     model = DeliveryItem
@@ -463,7 +480,8 @@ class AssignmentAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'job' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = JobDao.jobs_by_ids(JobDao.ids_for_area_by_contact(request.user.member))
+            kwargs['queryset'] = JobDao.jobs_by_ids(
+                JobDao.ids_for_area_by_contact(request.user.member))
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -478,7 +496,8 @@ class MemberAdminForm(forms.ModelForm):
         if member is None:
             link = ''
         elif member.subscription:
-            url = reverse('admin:juntagrico_subscription_change', args=(member.subscription.id,))
+            url = reverse('admin:juntagrico_subscription_change',
+                          args=(member.subscription.id,))
             link = '<a href=%s>%s</a>' % (url, member.subscription)
         else:
             link = 'Kein Abo'
@@ -486,7 +505,8 @@ class MemberAdminForm(forms.ModelForm):
         if member is None:
             link = ''
         elif member.future_subscription:
-            url = reverse('admin:juntagrico_subscription_change', args=(member.future_subscription.id,))
+            url = reverse('admin:juntagrico_subscription_change',
+                          args=(member.future_subscription.id,))
             link = '<a href=%s>%s</a>' % (url, member.future_subscription)
         else:
             link = 'Kein Abo'
@@ -514,12 +534,14 @@ class MemberAdmin(admin.ModelAdmin):
 
     def impersonate_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, 'Genau 1 ' + Config.vocabulary('member') + ' auswählen!', level=messages.ERROR)
+            self.message_user(
+                request, 'Genau 1 ' + Config.vocabulary('member') + ' auswählen!', level=messages.ERROR)
             return HttpResponseRedirect('')
         inst, = queryset.all()
         return HttpResponseRedirect('/impersonate/%s/' % inst.user.id)
 
-    impersonate_job.short_description = Config.vocabulary('member') + ' imitieren (impersonate)...'
+    impersonate_job.short_description = Config.vocabulary(
+        'member') + ' imitieren (impersonate)...'
 
 
 class ExtraSubscriptionTypeAdmin(admin.ModelAdmin):

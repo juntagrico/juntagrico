@@ -22,6 +22,8 @@ def enriched_organisation(c):
     else:
         article = ''
 
-    name = article + ' ' + Config.organisation_name_config()['type'] + ' ' + Config.organisation_name()
+    name = article + ' ' + \
+        Config.organisation_name_config(
+        )['type'] + ' ' + Config.organisation_name()
 
     return name.strip()

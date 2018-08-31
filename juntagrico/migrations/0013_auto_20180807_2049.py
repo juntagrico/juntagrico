@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='subscriptionsize',
             name='units',
-            field=models.PositiveIntegerField(unique=True, verbose_name='Einheiten'),
+            field=models.PositiveIntegerField(
+                unique=True, verbose_name='Einheiten'),
         ),
     ]

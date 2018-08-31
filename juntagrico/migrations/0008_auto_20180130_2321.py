@@ -16,9 +16,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Delivery',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('delivery_date', models.DateField(verbose_name='Lieferdatum')),
-                ('subscription_size', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.SubscriptionSize', verbose_name='Abo-Grösse')),
+                ('subscription_size', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                                        to='juntagrico.SubscriptionSize', verbose_name='Abo-Grösse')),
             ],
             options={
                 'verbose_name': 'Lieferung',
@@ -28,11 +30,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DeliveryItem',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='', max_length=100, verbose_name='Name')),
-                ('amount', models.CharField(default='', max_length=100, verbose_name='Menge')),
-                ('comment', models.CharField(blank=True, default='', max_length=1000, verbose_name='Kommentar')),
-                ('delivery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.Delivery', verbose_name='Lieferung')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(default='',
+                                          max_length=100, verbose_name='Name')),
+                ('amount', models.CharField(default='',
+                                            max_length=100, verbose_name='Menge')),
+                ('comment', models.CharField(blank=True, default='',
+                                             max_length=1000, verbose_name='Kommentar')),
+                ('delivery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                               related_name='items', to='juntagrico.Delivery', verbose_name='Lieferung')),
             ],
             options={
                 'verbose_name': 'Lieferobjekt',
@@ -41,7 +48,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='specialroles',
-            options={'permissions': (('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'), ('new_subscription', 'Benutzer über Abobestellungen informieren'), ('can_send_mails', 'Benutzer kann im System Emails versenden'), ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'))},
+            options={'permissions': (('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'), ('new_subscription', 'Benutzer über Abobestellungen informieren'), (
+                'can_send_mails', 'Benutzer kann im System Emails versenden'), ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'))},
         ),
         migrations.RemoveField(
             model_name='member',
@@ -50,7 +58,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='cancelation_date',
-            field=models.DateField(blank=True, null=True, verbose_name='Kündigüngssdatum'),
+            field=models.DateField(blank=True, null=True,
+                                   verbose_name='Kündigüngssdatum'),
         ),
         migrations.AddField(
             model_name='member',
@@ -60,12 +69,14 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='future_subscription',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='members_future', to='juntagrico.Subscription'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                    related_name='members_future', to='juntagrico.Subscription'),
         ),
         migrations.AddField(
             model_name='member',
             name='iban',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='IBAN'),
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name='IBAN'),
         ),
         migrations.AddField(
             model_name='member',
@@ -75,7 +86,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='old_subscriptions',
-            field=models.ManyToManyField(related_name='members_old', to='juntagrico.Subscription'),
+            field=models.ManyToManyField(
+                related_name='members_old', to='juntagrico.Subscription'),
         ),
         migrations.AlterField(
             model_name='activityarea',

@@ -11,7 +11,7 @@ class ExtraSubscriptionDao:
     @staticmethod
     def canceled_extra_subs():
         return juntagrico.models.ExtraSubscription.objects.filter(active=True, canceled=True)
-        
+
     @staticmethod
     def waiting_extra_subs():
         return juntagrico.models.ExtraSubscription.objects.filter(active=False, deactivation_date=None)
@@ -24,6 +24,5 @@ class ExtraSubscriptionDao:
         started after the date range.
         """
         return juntagrico.models.ExtraSubscription.objects.\
-                            exclude(deactivation_date__lt=fromdate).\
-                            exclude(activation_date__gt=tilldate)
-
+            exclude(deactivation_date__lt=fromdate).\
+            exclude(activation_date__gt=tilldate)

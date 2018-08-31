@@ -61,7 +61,7 @@ def bill_subscription(subscription):
     start = start_of_business_year()
     end = start_of_next_business_year()
     price = scale_subscription_price(subscription,
-            start_of_business_year(), end_of_business_year() - timedelta(1))
+                                     start_of_business_year(), end_of_business_year() - timedelta(1))
 
     refnumber = generate_ref_number('subscription',
                                     subscription.id,

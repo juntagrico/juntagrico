@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='job',
             name='multiplier',
-            field=models.PositiveIntegerField(default=1, verbose_name='Arbeitseinsätze vielfaches'),
+            field=models.PositiveIntegerField(
+                default=1, verbose_name='Arbeitseinsätze vielfaches'),
         ),
     ]

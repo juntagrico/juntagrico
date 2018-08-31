@@ -13,10 +13,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ListMessage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.CharField(max_length=256, verbose_name='Nachricht')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('message', models.CharField(
+                    max_length=256, verbose_name='Nachricht')),
                 ('active', models.BooleanField(default=True, verbose_name='aktiv')),
-                ('sort_order', models.FloatField(default=1.0, verbose_name='Nummer zum Sortieren')),
+                ('sort_order', models.FloatField(
+                    default=1.0, verbose_name='Nummer zum Sortieren')),
             ],
             options={
                 'verbose_name': 'Depot Listen Nachricht',

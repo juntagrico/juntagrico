@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from django.db import models
 
+
 class ListMessage(models.Model):
     '''
     Message to display at the bottom of the depot list

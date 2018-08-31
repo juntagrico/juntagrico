@@ -9,7 +9,8 @@ def primary_member_of_subscription(view):
     def wrapper(request, *args, **kwargs):
         if request.user.is_authenticated:
             member = request.user.member
-            subscription = get_object_or_404(Subscription, id=kwargs['subscription_id'])
+            subscription = get_object_or_404(
+                Subscription, id=kwargs['subscription_id'])
             if subscription.primary_member.id == member.id:
                 return view(request, *args, **kwargs)
             else:

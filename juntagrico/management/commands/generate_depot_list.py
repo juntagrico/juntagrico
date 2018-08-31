@@ -35,7 +35,8 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         if not options['force'] and timezone.now().weekday() not in Config.depot_list_generation_days():
-            print('not the specified day for depot list generation, use --force to override')
+            print(
+                'not the specified day for depot list generation, use --force to override')
             return
 
         if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
@@ -64,7 +65,8 @@ class Command(BaseCommand):
             count = 0
             for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category):
                 count += 1
-                es_type = {'name': extra_subscription.name, 'size': extra_subscription.size, 'last': False}
+                es_type = {'name': extra_subscription.name,
+                           'size': extra_subscription.size, 'last': False}
                 types.append(es_type)
             es_type['last'] = True
             cat['count'] = count
@@ -107,7 +109,7 @@ class Command(BaseCommand):
         for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             for weekday in used_weekdays:
                 overview[weekday][insert_point] = overview[weekday][insert_point] + subscription_size.units * \
-                                                                                      overview[weekday][index]
+                    overview[weekday][index]
             overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.units * overview['all'][
                 index]
             index += 1
@@ -125,6 +127,9 @@ class Command(BaseCommand):
         }
 
         render_to_pdf_storage('exports/legacy.html', renderdict, 'dpl.pdf')
-        render_to_pdf_storage('exports/depotlist.html', renderdict, 'depotlist.pdf')
-        render_to_pdf_storage('exports/depot_overview.html', renderdict, 'depot_overview.pdf')
-        render_to_pdf_storage('exports/amount_overview.html', renderdict, 'amount_overview.pdf')
+        render_to_pdf_storage('exports/depotlist.html',
+                              renderdict, 'depotlist.pdf')
+        render_to_pdf_storage('exports/depot_overview.html',
+                              renderdict, 'depot_overview.pdf')
+        render_to_pdf_storage('exports/amount_overview.html',
+                              renderdict, 'amount_overview.pdf')

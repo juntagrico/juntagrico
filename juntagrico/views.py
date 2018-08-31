@@ -38,11 +38,14 @@ def get_menu_dict(request):
         for subscription_member in member.subscription.recipients_all:
             if subscription_member == member:
                 continue
-            partner_assignments.extend(AssignmentDao.assignments_for_member_current_business_year(subscription_member))
+            partner_assignments.extend(
+                AssignmentDao.assignments_for_member_current_business_year(subscription_member))
 
-        userassignments = AssignmentDao.assignments_for_member_current_business_year(member)
+        userassignments = AssignmentDao.assignments_for_member_current_business_year(
+            member)
         required_assignments = member.subscription.required_assignments
-        assignmentsrange = list(range(0, max(required_assignments, len(userassignments) + len(partner_assignments))))
+        assignmentsrange = list(range(
+            0, max(required_assignments, len(userassignments) + len(partner_assignments))))
 
         for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time'):
             next_jobs.append(assignment.job)
@@ -51,12 +54,15 @@ def get_menu_dict(request):
         partner_assignments = []
         userassignments = []
         next_jobs = []
-   
+
     userassignments_total = int(sum(a.amount for a in userassignments))
-    userassignemnts_core = int(sum(a.amount for a in userassignments if a.is_core()))
+    userassignemnts_core = int(
+        sum(a.amount for a in userassignments if a.is_core()))
     partner_assignments_total = int(sum(a.amount for a in partner_assignments))
-    partner_assignments_core = int(sum(a.amount for a in partner_assignments if a.is_core()))
-    assignmentsrange = list(range(0, max(required_assignments, userassignments_total+partner_assignments_total)))
+    partner_assignments_core = int(
+        sum(a.amount for a in partner_assignments if a.is_core()))
+    assignmentsrange = list(range(
+        0, max(required_assignments, userassignments_total+partner_assignments_total)))
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
@@ -75,11 +81,11 @@ def get_menu_dict(request):
         'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         'depot_admin': depot_admin,
         'area_admin': area_admin,
-        'show_core': ActivityAreaDao.all_core_areas().count()>0,
-        'show_extras': JobExtraDao.all_job_extras().count()>0,
-        'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription))>0,
-        'admin_menus' : get_admin_menus(),
-        'messages' : [],
+        'show_core': ActivityAreaDao.all_core_areas().count() > 0,
+        'show_extras': JobExtraDao.all_job_extras().count() > 0,
+        'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription)) > 0,
+        'admin_menus': get_admin_menus(),
+        'messages': [],
     }
     enrich_menu_dict(request, menu_dict)
     return menu_dict
@@ -115,17 +121,18 @@ def job(request, job_id):
     if request.method == 'POST':
         num = request.POST.get('jobs')
         # adding participants
-        amount=1
-        if Config.assignment_unit()=='ENTITY':
+        amount = 1
+        if Config.assignment_unit() == 'ENTITY':
             amount = job.multiplier
-        elif Config.assignment_unit()=='HOURS':
+        elif Config.assignment_unit() == 'HOURS':
             amount = job.multiplier*job.type.duration
         add = int(num)
         for i in range(add):
-            assignment=Assignment.objects.create(member=member, job=job, amount=amount)
+            assignment = Assignment.objects.create(
+                member=member, job=job, amount=amount)
         for extra in job.type.job_extras_set.all():
             if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
-                assignment.job_extras.add(extra)        
+                assignment.job_extras.add(extra)
         assignment.save()
 
         send_job_signup([member.email], job)
@@ -135,7 +142,8 @@ def job(request, job_id):
 
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
-    unique_participants = all_participants.annotate(assignment_for_job=Count('id')).distinct()
+    unique_participants = all_participants.annotate(
+        assignment_for_job=Count('id')).distinct()
 
     participants_summary = []
     emails = []
@@ -146,24 +154,27 @@ def job(request, job_id):
         elif member.assignment_for_job > 2:
             name += ' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
         contact_url = '/my/contact/member/{}/{}/'.format(member.id, job_id)
-        extras=[]
+        extras = []
         for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
         reachable = member.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == member
-        participants_summary.append((name, None, contact_url, reachable, ' '.join(extras)))
+        participants_summary.append(
+            (name, None, contact_url, reachable, ' '.join(extras)))
         emails.append(member.email)
 
     slotrange = list(range(0, job.slots))
-    allowed_additional_participants = list(range(1, job.slots - number_of_participants + 1))
+    allowed_additional_participants = list(
+        range(1, job.slots - number_of_participants + 1))
     job_fully_booked = len(allowed_additional_participants) == 0
     job_is_in_past = job.end_time() < timezone.now()
     job_is_running = job.start_time() < timezone.now()
     job_canceled = job.canceled
-    can_subscribe = not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
+    can_subscribe = not (
+        job_fully_booked or job_is_in_past or job_is_running or job_canceled)
 
     renderdict = get_menu_dict(request)
-    renderdict['messages'].extend(job_messages(request,job))
+    renderdict['messages'].extend(job_messages(request, job))
     renderdict.update({
         'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
         'emails': '\n'.join(emails),
@@ -319,7 +330,8 @@ def deliveries(request):
     All deliveries to be sorted etc.
     '''
     renderdict = get_menu_dict(request)
-    deliveries = DeliveryDao.deliveries_by_subscription(request.user.member.subscription)
+    deliveries = DeliveryDao.deliveries_by_subscription(
+        request.user.member.subscription)
     renderdict.update({
         'deliveries': deliveries,
         'menu': {'deliveries': 'active'},
@@ -338,7 +350,8 @@ def contact(request):
 
     if request.method == 'POST':
         # send mail to bg
-        send_contact_form(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
+        send_contact_form(request.POST.get('subject'), request.POST.get(
+            'message'), member, request.POST.get('copy'))
         is_sent = True
 
     renderdict = get_menu_dict(request)
@@ -361,7 +374,7 @@ def contact_member(request, member_id, job_id):
 
     if request.method == 'POST':
         # send mail to member
-        attachments = []        
+        attachments = []
         append_attachements(request, attachments)
         send_contact_member_form(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
                                  request.POST.get('copy'), attachments)
@@ -404,8 +417,8 @@ def profile(request):
     asc = member.active_shares_count
     sub = member.subscription
     f_sub = member.future_subscription
-    future = f_sub is not None and f_sub.share_overflow-asc<0 
-    current = sub is not None and sub.share_overflow-asc<0
+    future = f_sub is not None and f_sub.share_overflow-asc < 0
+    current = sub is not None and sub.share_overflow-asc < 0
     coop_cond = member != '' and not future and not current
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -415,11 +428,12 @@ def profile(request):
         'end_date': next_membership_end_date(),
         'member': member,
         'can_cancel': not member.is_cooperation_member or (coop_cond),
-        'missing_iban': member.iban is None ,
+        'missing_iban': member.iban is None,
         'menu': {'personalInfo': 'active'},
     })
     return render(request, 'profile.html', renderdict)
-    
+
+
 @login_required
 def cancel_membership(request):
     member = request.user.member
@@ -427,41 +441,40 @@ def cancel_membership(request):
         now = timezone.now().date()
         end_date = request.POST.get('end_date')
         message = request.POST.get('message')
-        member =  request.user.member
+        member = request.user.member
         member.canceled = True
         member.cancelation_date = now
         if member.is_cooperation_member:
             send_membership_canceled(member, end_date, message)
         else:
             member.inactive = True
-        
+
         member.save()
         for share in member.active_shares:
             share.cancelled_date = now
             share.termination_date = end_date
             share.save()
         return redirect('/my/profile')
-    
+
     missing_iban = member.iban == ''
-    coop_member =  member.is_cooperation_member
+    coop_member = member.is_cooperation_member
     asc = member.active_shares_count
     sub = member.subscription
     f_sub = member.future_subscription
-    future = f_sub is not None and f_sub.share_overflow-asc<0 
-    current = sub is not None and sub.share_overflow-asc<0
+    future = f_sub is not None and f_sub.share_overflow-asc < 0
+    current = sub is not None and sub.share_overflow-asc < 0
     share_error = future or current
-    can_cancel = not coop_member or (not missing_iban and not share_error) 
-    
+    can_cancel = not coop_member or (not missing_iban and not share_error)
+
     renderdict = get_menu_dict(request)
     renderdict.update({
         'coop_member': coop_member,
         'end_date': next_membership_end_date(),
         'member': member,
         'can_cancel': can_cancel,
-        'missing_iban': missing_iban ,
+        'missing_iban': missing_iban,
     })
     return render(request, 'cancelmembership.html', renderdict)
-    
 
 
 @login_required
@@ -469,11 +482,13 @@ def send_confirm(request):
     send_confirm_mail(request.user.member)
     renderdict = get_menu_dict(request)
     return render(request, 'info/confirmation_sent.html', renderdict)
-    
+
+
 @login_required
 def info_unpaid_shares(request):
     renderdict = get_menu_dict(request)
     return render(request, 'info/unpaid_shares.html', renderdict)
+
 
 @login_required
 def change_password(request):

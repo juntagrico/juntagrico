@@ -33,8 +33,10 @@ def send_mail(subject, message, from_email, to_emails):
 
     if len(okmails) > 0:
         for amail in okmails:
-            mail.send_mail(subject, message, from_email, [amail], fail_silently=False)
-        print(('Mail sent to ' + ', '.join(okmails) + (', on whitelist' if settings.DEBUG else '')))
+            mail.send_mail(subject, message, from_email,
+                           [amail], fail_silently=False)
+        print(('Mail sent to ' + ', '.join(okmails) +
+               (', on whitelist' if settings.DEBUG else '')))
 
     return None
 
@@ -57,14 +59,17 @@ def send_mail_multi(email_multi_message):
         email_multi_message.to = []
         email_multi_message.bcc = okmails
         email_multi_message.send()
-        print(('Mail sent to ' + ', '.join(okmails) + (', on whitelist' if settings.DEBUG else '')))
+        print(('Mail sent to ' + ', '.join(okmails) +
+               (', on whitelist' if settings.DEBUG else '')))
     return None
 
 
 def send_contact_form(subject, message, member, copy_to_member):
-    send_mail('Anfrage per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [Config.info_email()])
+    send_mail('Anfrage per ' + Config.adminportal_name() + ': ' +
+              subject, message, member.email, [Config.info_email()])
     if copy_to_member:
-        send_mail('Anfrage per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [member.email])
+        send_mail('Anfrage per ' + Config.adminportal_name() +
+                  ': ' + subject, message, member.email, [member.email])
 
 
 def send_contact_member_form(subject, message, member, contact_member, copy_to_member, attachments):
@@ -74,8 +79,9 @@ def send_contact_member_form(subject, message, member, contact_member, copy_to_m
         msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
     if copy_to_member:
-        send_mail('Nachricht per ' + Config.adminportal_name() + ': ' + subject, message, member.email, [member.email])
-        
+        send_mail('Nachricht per ' + Config.adminportal_name() +
+                  ': ' + subject, message, member.email, [member.email])
+
 
 def send_filtered_mail(subject, message, text_message, emails, attachments, sender):
     plaintext = get_template('mails/filtered_mail.txt')
@@ -96,13 +102,14 @@ def send_filtered_mail(subject, message, text_message, emails, attachments, send
     text_content = plaintext.render(textd)
     html_content = htmly.render(htmld)
 
-    msg = EmailMultiAlternatives(subject, text_content, sender, emails, headers={'Reply-To': sender})
+    msg = EmailMultiAlternatives(
+        subject, text_content, sender, emails, headers={'Reply-To': sender})
     msg.attach_alternative(html_content, 'text/html')
     for attachment in attachments:
         msg.attach(attachment.name, attachment.read())
     send_mail_multi(msg)
-    
-    
+
+
 '''
 Server generated Emails
 '''
@@ -114,7 +121,8 @@ def send_new_member_in_activityarea_to_operations(area, member):
     else:
         emails = [area.coordinator.email]
     send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
+              'Soeben hat sich ' + member.first_name + ' ' + member.last_name +
+              ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
               Config.info_email(), emails)
 
 
@@ -124,7 +132,8 @@ def send_removed_member_in_activityarea_to_operations(area, member):
     else:
         emails = [area.coordinator.email]
     send_mail('Mitglied verlässt Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + member.first_name + ' ' + member.last_name + ' aus dem Taetigkeitsbereich '
+              'Soeben hat sich ' + member.first_name + ' ' +
+              member.last_name + ' aus dem Taetigkeitsbereich '
               + area.name +
               ' ausgetragen. Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern',
               Config.info_email(), emails)
@@ -152,7 +161,7 @@ def send_share_created_mail(member, share):
     plaintext = get_template(Config.emails('s_created'))
 
     d = {
-        'share': share,        
+        'share': share,
         'serverurl': get_server()
     }
 
@@ -172,13 +181,15 @@ def send_subscription_created_mail(subscription):
     }
     content = plaintext.render(d)
     perm = Permission.objects.get(codename='new_subscription')
-    users = User.objects.filter(Q(groups__permissions=perm) | Q(user_permissions=perm)).distinct()
+    users = User.objects.filter(
+        Q(groups__permissions=perm) | Q(user_permissions=perm)).distinct()
     emails = []
     for user in users:
         emails.append(user.member.email)
     if len(emails) == 0:
         emails = [Config.info_email()]
-    msg = EmailMultiAlternatives('Neuer Anteilschein erstellt', content, Config.info_email(), emails)
+    msg = EmailMultiAlternatives(
+        'Neuer Anteilschein erstellt', content, Config.info_email(), emails)
     send_mail_multi(msg)
 
 
@@ -215,14 +226,16 @@ def send_mail_password_reset(email, password):
 
     content = plaintext.render(d)
 
-    msg = EmailMultiAlternatives(subject, content, Config.info_email(), [email])
+    msg = EmailMultiAlternatives(
+        subject, content, Config.info_email(), [email])
     send_mail_multi(msg)
 
 
 def send_job_reminder(emails, job, participants):
     plaintext = get_template(Config.emails('j_reminder'))
     coordinator = job.type.activityarea.coordinator
-    contact = coordinator.first_name + ' ' + coordinator.last_name + ': ' + job.type.activityarea.contact()
+    contact = coordinator.first_name + ' ' + \
+        coordinator.last_name + ': ' + job.type.activityarea.contact()
 
     d = {
         'job': job,
@@ -254,12 +267,12 @@ def send_job_canceled(emails, job):
 
 
 def send_confirm_mail(member):
-    
+
     plaintext = get_template(Config.emails('confirm'))
 
     d = {
         'hash': hashlib.sha1((member.email + str(
-                    member.id)).encode('utf8')).hexdigest(),
+            member.id)).encode('utf8')).hexdigest(),
         'serverurl': get_server()
     }
 
@@ -318,7 +331,7 @@ def send_depot_changed(emails, depot):
     msg = EmailMultiAlternatives(Config.organisation_name() + ' - Depot geändert', content, Config.info_email(),
                                  emails)
     send_mail_multi(msg)
-    
+
 
 def send_subscription_canceled(subscription, message):
     plaintext = get_template(Config.emails('s_canceled'))
@@ -333,7 +346,7 @@ def send_subscription_canceled(subscription, message):
     msg = EmailMultiAlternatives(Config.organisation_name() + ' - Abo gekündigt', content, Config.info_email(),
                                  emails)
     send_mail_multi(msg)
-    
+
 
 def send_membership_canceled(member, end_date, message):
     plaintext = get_template(Config.emails('m_canceled'))
@@ -367,7 +380,7 @@ def send_bill_share(bill, share, member):
                                  [member.email])
     send_mail_multi(msg)
 
-    
+
 def send_bill_sub(bill, subscription, start, end, member):
     plaintext = get_template(Config.emails('b_sub'))
 
@@ -386,7 +399,7 @@ def send_bill_sub(bill, subscription, start, end, member):
                                  [member.email])
     send_mail_multi(msg)
 
-    
+
 def send_bill_extrasub(bill, extrasub, start, end, member):
     plaintext = get_template(Config.emails('b_esub'))
 
