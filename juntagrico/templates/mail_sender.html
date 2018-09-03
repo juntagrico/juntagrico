@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
+{% config "enable_shares" as enable_shares %}
 <h3>Mails verschicken</h3>
 {% endblock %}
 
@@ -65,6 +66,7 @@
             {% vocabulary "subscription" %}-Bezieher (inkl. {% vocabulary "co_member_pl" %})
         </label>
     </div>
+    {% if enable_shares %}
     <div class="form-group">
         <div class="checkbox col-md-offset-2 col-md-1">
             <input type="checkbox" id="allshares" class="onoffswitch" name="allshares">
@@ -73,6 +75,7 @@
             Alle mit {% vocabulary "share" %}
         </label>
     </div>
+    {% endif %}
     <div class="form-group">
         <div class="checkbox col-md-offset-2 col-md-1">
             <input type="checkbox" class="onoffswitch" id="all" name="all">

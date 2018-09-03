@@ -293,6 +293,19 @@ SHARE_PRICE
 
     "250"
 
+
+ENABLE_SHARES
+-----------
+  Enable all share related funtionality
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    True
+
 BASE_FEE
 --------
   Yearly fee for members without a subscription

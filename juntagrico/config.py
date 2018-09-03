@@ -182,6 +182,12 @@ class Config:
         return '250'
 
     @staticmethod
+    def enable_shares():
+        if hasattr(settings, 'ENABLE_SHARES'):
+            return settings.ENABLE_SHARES
+        return True
+
+    @staticmethod
     def base_fee():
         if hasattr(settings, 'BASE_FEE'):
             return settings.BASE_FEE

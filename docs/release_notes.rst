@@ -39,3 +39,4 @@ Dev
 * New setting ORGANISATION_NAME_CONFIG to enrich the organisation name
 * made texts mor neutral on context of the organisation type
 * removed the MEMBER_STRING, MEMBERS_STRING, ASSIGNMENT_STRING and ASSIGNMENTS_STRING for the VOCABULARY setting
+* added new setting ENABLE_SHARES to enable or disable all share related functions

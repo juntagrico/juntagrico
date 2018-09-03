@@ -546,10 +546,13 @@ class MemberAdmin(admin.ModelAdmin):
 
 class ExtraSubscriptionTypeAdmin(admin.ModelAdmin):
     inlines = []
+    exclude = []
 
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_extrasubtype_inlines())
         super(ExtraSubscriptionTypeAdmin, self).__init__(*args, **kwargs)
+        if not Config.enable_shares():
+            self.exclude.append('shares')
 
 
 class ExtraSubscriptionCategoryAdmin(admin.ModelAdmin):
@@ -602,7 +605,6 @@ admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
-admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(JobExtra, JobExtraAdmin)
@@ -612,6 +614,8 @@ admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
 admin.site.register(ListMessage, ListMessageAdmin)
 admin.site.register(ExtraSubBillingPeriod)
+if Config.enable_shares():
+    admin.site.register(Share, ShareAdmin)
 if Config.billing():
     admin.site.register(Bill)
     admin.site.register(Payment)

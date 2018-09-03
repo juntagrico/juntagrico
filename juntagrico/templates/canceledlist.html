@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+    {% config "enable_shares" as enable_shares %}
     <style>
         body > .container {
             width: 95%;
@@ -18,7 +19,9 @@
                 <th>End Datum</th>
                 <th>Kontakt</th>
                 <th>Email</th>
-                <th>Bezahlte Anteilsscheine</th>
+                {% if enable_shares %}
+                    <th>Bezahlte Anteilsscheine</th>
+                {% endif %}
                 <th></th>
                 <th>Notizen</th>
             </tr>
@@ -37,7 +40,9 @@
                             <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();">{{ subscription.primary_member.email }}</a>
                         </form>
                     </td>
-                    <td>{{ subscription.paid_shares }}</td>
+                    {% if enable_shares %}
+                        <td>{{ subscription.paid_shares }}</td>
+                    {% endif %}
                     <td><a href="/my/subscription/deactivate/{{ subscription.id }}/" class="btn btn-success">deaktivieren</a></td>
                     <td>{{ subscription.notes }}</td>
                 </tr>

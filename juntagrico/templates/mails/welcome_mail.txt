@@ -1,6 +1,7 @@
 {% extends "mails/email.txt" %}
 {% load config %}
 {% block content %}
+{% config "enable_shares" as enable_shares %}
 Wir freuen uns, dich bei {% enriched_organisation "D" %} zu begrüssen.
 
 Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten:
@@ -9,7 +10,9 @@ Passwort: {{ password }}
 Bitte setze dir hier gleich ein neues Passwort:
 {{serverurl}}/my/password
 
+{% if enable_shares %}
 Du erhälst für deine {% vocabulary "share_pl" %} separate Emails mit den Inforamtionen wie du diese bezalen kannst.
+{% endif %}
 
 {% if subscription is not None %}
 Sobald du {% vocabulary "member_type" %} bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.

@@ -116,6 +116,8 @@
                     {% endif %}
                 </div>
             </div>
+            {%  config "enable_shares" as enable_shares %}
+            {%  if enable_shares %}
             <div class="form-group {% if shareeerror %}error{% endif %}">
                 <label class="col-md-3 control-label" for="id_shares">{% vocabulary "share_pl" %}</label>
 
@@ -127,6 +129,7 @@
                     {% endif %}
                 </div>
             </div>
+            {% endif %}
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
                     Diese Email-Adresse existiert bereits im System und ist bereits bei einem {% vocabulary "subscription" %} dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende {% vocabulary "member_type_pl" %} in euer{% vocabulary "subscription" %} aufnehmen möchtet.

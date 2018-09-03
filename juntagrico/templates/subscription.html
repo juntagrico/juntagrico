@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    
+{% config "enable_shares" as enable_shares %}
         {% if future_subscription %}
             <div class="alert alert-success">Du hast ein {% vocabulary "subscription" %} auf der Warteliste<br/>Mehr Infos dazu findest du <a href="/my/subscription/detail/{{ member.future_subscription.id}}/">hier</a></div>
         {% elif can_order %}
@@ -13,6 +13,7 @@
         {% endif %}
         
     {% if no_subscription %}
+        {% if enable_shares %}
         <dl class="dl-horizontal">
         <dt>{% vocabulary "share_pl" %}</dt>
             <dd>
@@ -20,6 +21,7 @@
                 Bestelle mehr {% vocabulary "share_pl" %} <a href="/my/order/share">hier</a>
             </dd>
         </dl>
+        {% endif %}
     {% else %}        
         <dl class="dl-horizontal">
             <dt>Abogrösse</dt>
@@ -38,6 +40,7 @@
                     <span class="text-error">Dein {% vocabulary "subscription" %} wurde deaktiviert</span> - du erhältst im Moment kein Gemüse.
                 {% endif %}
             </dd>
+        {% if enable_shares %}
             <dt>{% vocabulary "share_pl" %}</dt>
             <dd>
                 {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/>
@@ -53,6 +56,7 @@
                     {% endfor %}
                 </ul>
             </dd>
+            {% endif %}
             <dt>Abo geteilt mit</dt>
             <dd>
                 {% if co_members|length > 0 %}

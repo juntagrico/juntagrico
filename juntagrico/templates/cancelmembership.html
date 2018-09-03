@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+    {% config "enable_shares" as enable_shares %}
     <div class="col-md-12">
         <br/>
         Hier kannst du deine Mitgliedschaft bei {% enriched_organisation "D" %} kündigen. {% if coop_member%}Der nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.{% endif %}
@@ -13,7 +14,9 @@
            <ul>
                 <li>Du erhälst keine Emails mehr </li>
                 <li>Du wirst bei deinem{% vocabulary "subscription" %} ausgetragen</li>
+               {% if enable_shares %}
                 <li>Deine {% vocabulary "share_pl" %} werden gekündigt</li>
+               {% endif %}
            </ul>
         {% else %}
            <ul>
@@ -37,11 +40,13 @@
                 <button type="submit" class="btn btn-success">Migliedshaft künden</button>
             </div>
         </form>
-        {% elif missing_iban%}
+        {% elif missing_iban and enable_shares %}
             Du musst zuerst deine IBAN hinterlegen, damit deine {% vocabulary "share_pl" %} ausbezahlt werden können.
-        {% else %}
+        {% elif enable_shares %}
             Du bist entweder Hauptabonnent oder ohne deine {% vocabulary "share_pl" %} hat dein jetztiges {% vocabulary "subscription" %} nicht genug {% vocabulary "share_pl" %} um weiter zu existieren. 
             Falls du Hilfe brauchst um das Problem zu beheben wende dich an {% config "info_email" %}.
+        {% else %}
+            Du bist Hauptabonnent, wende dich an {% config "info_email" %} um das anzupassen.
         {% endif %}
         
         

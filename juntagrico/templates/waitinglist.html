@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block content %}
+{% config "enable_shares" as enable_shares %}
+
     <style>
         body > .container {
             width: 95%;
@@ -27,7 +29,9 @@
                 <th>Kontakt</th>
                 <th>Email</th>
                 <th>Tag</th>
+                {% if enable_shares %}
                 <th>Bezahlte Anteilsscheine</th>
+                {% endif %}
                 <th>Bestelldatum</th>
                 <th></th>
                 <th>Notizen</th>
@@ -48,6 +52,7 @@
                         </form>
                     </td>
                     <td>{{ subscription.depot.weekday_name }}</td>
+                    {% if enable_shares %}
                     <td>
                         {{ subscription.paid_shares }} 
                         {% if subscription.paid_shares %}
@@ -56,6 +61,7 @@
                             (N)
                         {% endif %}
                     </td>
+                    {% endif %}
                     <td>{{ subscription.creation_date|date:"Y-m-d" }}</td>
                     <td><a href="/my/subscription/activate/{{ subscription.id }}/" class="btn btn-success">aktivieren</a></td>
                     <td>{{ subscription.notes }}</td>
