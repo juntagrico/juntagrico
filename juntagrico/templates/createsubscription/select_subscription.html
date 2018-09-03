@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block allcontent %}
+    {% config "enable_shares" as enable_shares %}
     <div class="col-md-2">
     </div>
     <div class="col-md-8">
@@ -38,8 +39,10 @@
                                     {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif%}
                                     {% if type.description.strip %}{{ type.description }}<br/>{% endif%}
                                     {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+                                    {% if enable_shares %}
                                     <br/>
                                     {% vocabulary "share_pl" %}: {{ type.shares }}
+                                    {% endif %}
                                     <br/>
                                     Arbeitseinsätze: {{ type.required_assignments }} {% if hours_used %}Stunden{% endif %}
                                 </label>

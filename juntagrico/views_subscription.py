@@ -241,8 +241,9 @@ def add_member(request, subscription_id):
     if request.method == 'POST':
         memberform = RegisterMemberForm(request.POST)
         try:
-            shares = int(request.POST.get('shares'))
-            shareerror = shares < 0
+            if Config.enable_shares():
+                shares = int(request.POST.get('shares'))
+                shareerror = shares < 0
         except:
             shareerror = True
         member = next(iter(MemberDao.members_by_email(

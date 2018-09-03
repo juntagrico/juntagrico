@@ -1,10 +1,14 @@
 {% extends "mails/email.txt" %}
 {% load config %}
 {% block content %}
+{% config "enable_shares" as enable_shares %}
 Hallo
 
+{% if enable_shares %}
 Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt und für dich {{ shares }} Anteilsscheine(e) bestellt.
-
+{% else %}
+Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt.
+{% endif %}
 Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {% config "info_email" %}.
 Anderenfalls gehen wir davon aus, dass dies seine Richtigkeit hat.
 

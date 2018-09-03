@@ -122,7 +122,7 @@ def cs_select_shares(request):
         iter(SubscriptionTypeDao.get_by_id(selected_subscription).values_list('shares', flat=True) or []), 1)
     required_shares = max(0, total_shares-max(1, share_sum))
 
-    if request.method == 'POST':
+    if request.method == 'POST' or not Config.enable_shares():
         try:
             share_sum = int(request.POST.get('shares_mainmember'))
             for co_member in co_members:
@@ -130,7 +130,7 @@ def cs_select_shares(request):
             share_error = share_error or share_sum < required_shares
         except:
             share_error = True
-        if not share_error:
+        if not share_error or not Config.enable_shares():
             subscription = None
             if int(selected_subscription) > -1:
                 start_date = request.session['start_date']
@@ -141,13 +141,19 @@ def cs_select_shares(request):
                 create_member(member, subscription)
             else:
                 update_member(member, subscription)
-            shares = int(request.POST.get('shares_mainmember'))
-            if len(member.active_shares) == 0:
+            if Config.enable_shares():
+                shares = int(request.POST.get('shares_mainmember'))
+            else:
+                shares = 0
+            if len(member.active_shares) == 0 and Config.enable_shares():
                 shares = shares + 1
             for i in range(shares):
                 create_share(member)
             for co_member in co_members:
-                shares = int(request.POST.get(co_member.email))
+                if Config.enable_shares():
+                    shares = int(request.POST.get(co_member.email))
+                else:
+                    shares = 0
                 if co_member.pk is None:
                     create_member(co_member, subscription, member, shares)
                 else:

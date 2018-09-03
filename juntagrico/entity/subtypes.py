@@ -33,7 +33,8 @@ class SubscriptionType(models.Model):
     long_name = models.CharField(_('Langer Name'), max_length=100, blank=True)
     size = models.ForeignKey(
         'SubscriptionSize', on_delete=models.PROTECT, related_name='types')
-    shares = models.PositiveIntegerField(_('Anz benötigter Anteilsscheine'))
+    shares = models.PositiveIntegerField(
+        _('Anz benötigter Anteilsscheine'), default=0)
     required_assignments = models.PositiveIntegerField(
         _('Anz benötigter Arbeitseinsätze'))
     price = models.PositiveIntegerField(_('Preis'))

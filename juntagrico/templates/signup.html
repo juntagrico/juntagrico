@@ -2,6 +2,7 @@
 {% load config %}
 
 {% block all_page_title %}
+{% config "enable_shares" as enable_shares %}
     <div class="col-md-3"> 
             &nbsp;
     </div>
@@ -13,11 +14,13 @@
 {% block allcontent %}
       {% config "business_regulations" as business_regulations %}
       Interessiert an {% enriched_organisation "D" %}?
+    {% if enable_shares %}
       <br/><br/>
       Die Mitgliedschaft bei {% enriched_organisation "D" %} ist geknüpft an den Erwerb von rückzahlbaren {% vocabulary "share_pl" %}n in der Höhe
       von CHF {% config "share_price" %} pro {% vocabulary "share" %}. Die Anzahl {% vocabulary "share_pl" %} ist abhängig von der{% vocabulary "subscription" %}grösse.. Die {% vocabulary "share_pl" %} sind das Kapital,
       das vor allem zur Finanzierung von
       Investitionen – zum Beispiel Infrastruktur – verwendet wird.
+    {% endif %}
       <br/><br/>
       Die {% vocabulary "member_type_pl" %} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
       Wer bei {% enriched_organisation "D" %} ein Gemüseabo bezieht, verpflichtet sich zur
