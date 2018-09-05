@@ -9,7 +9,7 @@
         {% if future_subscription %}
             <div class="alert alert-success">Du hast ein {% vocabulary "subscription" %} auf der Warteliste<br/>Mehr Infos dazu findest du <a href="/my/subscription/detail/{{ member.future_subscription.id}}/">hier</a></div>
         {% elif can_order %}
-        <div class="alert alert-warning">Du hast noch kein{ % vocabulary "subscription" %} oder dein aktuelles ist gekündigt.<br/>Du möchtest ein neus{% vocabulary "subscription" %}? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
+        <div class="alert alert-warning">Du hast noch kein {% vocabulary "subscription" %} oder dein aktuelles ist gekündigt.<br/>Du möchtest ein neus{% vocabulary "subscription" %}? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
         {% endif %}
         
     {% if no_subscription %}
@@ -30,6 +30,7 @@
             </dd>
             <dt>Status</dt>
             <dd>
+                {{ subscription.state }}
                 {% if subscription.state == 'active'%}
                     Dein {% vocabulary "subscription" %} ist aktiv, du erhältst wöchentlich dein Gemüse.
                 {% elif subscription.state == 'canceled'%}

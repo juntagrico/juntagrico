@@ -461,8 +461,10 @@ def cancel_membership(request):
     asc = member.active_shares_count
     sub = member.subscription
     f_sub = member.future_subscription
-    future = f_sub is not None and f_sub.share_overflow-asc < 0
-    current = sub is not None and sub.share_overflow-asc < 0
+    future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
+    current_active = sub is not None and sub.state == 'active' and sub.state == 'waiting'
+    future = future_active and f_sub.share_overflow-asc < 0
+    current = current_active and sub.share_overflow-asc < 0
     share_error = future or current
     can_cancel = not coop_member or (not missing_iban and not share_error)
 
