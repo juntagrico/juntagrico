@@ -107,13 +107,13 @@ class Subscription(Billable):
     @property
     def state(self):
         if self.active is False and self.deactivation_date is None:
-            return _('waiting')
+            return 'waiting'
         elif self.active is True and self.canceled is False:
-            return _('active')
+            return 'active'
         elif self.active is True and self.canceled is True:
-            return _('canceled')
+            return 'canceled'
         elif self.active is False and self.deactivation_date is not None:
-            return _('inactive')
+            return 'inactive'
 
     @property
     def extra_subscriptions(self):
