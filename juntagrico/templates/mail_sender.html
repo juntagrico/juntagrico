@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-{% config "enable_shares" as enable_shares %}
 <h3>Mails verschicken</h3>
 {% endblock %}
 
 {% block content %}
+{% config "enable_shares" as enable_shares %}
 <br/>
 {% if can_load_templates %}
 <div class="form-horizontal">
