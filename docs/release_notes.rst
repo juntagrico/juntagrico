@@ -40,3 +40,4 @@ Dev
 * made texts mor neutral on context of the organisation type
 * removed the MEMBER_STRING, MEMBERS_STRING, ASSIGNMENT_STRING and ASSIGNMENTS_STRING for the VOCABULARY setting
 * added new setting ENABLE_SHARES to enable or disable all share related functions
+* upgrade to bootstrap 4.1.3
