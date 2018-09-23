@@ -7,16 +7,16 @@
 {% block content %}
     {% if success %}
         <div class="alert alert-success">Personalien erfolgreich geändert</div>
-    {% endif %}    
+    {% endif %}
     {% if member.canceled %}
         <div class="alert alert-warning">Deine {% vocabulary "member_type" %}schaft ist gekündigt.</div>
-    {% endif %} 
-        <form method="post" class="form-horizontal">
+    {% endif %}
+        <form method="post">
             {% csrf_token %}
-            <div class="form-group {% if memberform.first_name.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_first_name">Vorname</label>
+            <div class="form-group row {% if memberform.first_name.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_first_name">Vorname</label>
 
-                <div class="controls col-md-8">
+                <div class="col-md-9">
                     {{ memberform.first_name }}
                 </div>
             </div>
@@ -24,10 +24,10 @@
                 <div class="alert alert-danger">Vorname ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_last_name">Nachname</label>
+            <div class="form-group row {% if memberform.last_name.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_last_name">Nachname</label>
 
-                <div class="controls col-md-8">
+                <div class="col-md-9">
                     {{ memberform.last_name }}
                 </div>
             </div>
@@ -35,10 +35,10 @@
                 <div class="alert alert-danger">Nachname ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if memberform.addr_street.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_addr_street">{{ memberform.addr_street.label }}</label>
+            <div class="form-group row {% if memberform.addr_street.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_addr_street">{{ memberform.addr_street.label }}</label>
 
-                <div class="controls col-md-8">
+                <div class="col-md-9">
                     {{ memberform.addr_street }}
                 </div>
             </div>
@@ -46,10 +46,10 @@
                 <div class="alert alert-danger">Strasse ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if memberform.addr_zipcode.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }}</label>
+            <div class="form-group row {% if memberform.addr_zipcode.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }}</label>
 
-                <div class="controls col-md-8">
+                <div class="col-md-9">
                     {{ memberform.addr_zipcode }}
                 </div>
             </div>
@@ -57,10 +57,10 @@
                 <div class="alert alert-danger">PLZ ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if memberform.addr_location.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_addr_location">{{ memberform.addr_location.label }}</label>
+            <div class="form-group row {% if memberform.addr_location.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_addr_location">{{ memberform.addr_location.label }}</label>
 
-                <div class="controls col-md-8">
+                <div class="col-md-9">
                     {{ memberform.addr_location }}
                 </div>
             </div>
@@ -68,10 +68,10 @@
                 <div class="alert alert-danger">Ort ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if memberform.phone.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_phone">{{ memberform.phone.label }}</label>
+            <div class="form-group row {% if memberform.phone.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_phone">{{ memberform.phone.label }}</label>
 
-                <div class="controls col-md-8">
+                <div class="col-md-9">
                     {{ memberform.phone }}
                 </div>
             </div>
@@ -79,63 +79,66 @@
                 <div class="alert alert-danger">Telefon ungültig</div>
             {% endif %}
 
-            <div class="form-group {% if memberform.mobile_phone.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_mobile_phone">{{ memberform.mobile_phone.label }}</label>
+            <div class="form-group row {% if memberform.mobile_phone.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_mobile_phone">{{ memberform.mobile_phone.label }}</label>
 
-                <div class="controls col-md-8">
+                <div class="col-md-9">
                     {{ memberform.mobile_phone }}
                 </div>
             </div>
             {% if memberform.mobile_phone.errors %}
                 <div class="alert alert-danger">Mobile ungültig</div>
             {% endif %}
-			
-			<div class="form-group {% if memberform.email.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_email">E-Mail Adresse</label>
-				
-				<div class="controls col-md-8">
+
+			<div class="form-group row {% if memberform.email.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_email">E-Mail Adresse</label>
+
+				<div class="col-md-9">
 						{{ memberform.email }}
 				</div>
 			</div>
                 {% if memberform.email.errors %}
                     <div class="alert alert-danger">E-Mail ungültig</div>
                 {% endif %}
-			<div class="form-group {% if memberform.iban.errors %}error{% endif %}">
-                <label class="control-label col-md-4" for="id_iban">IBAN</label>
-				
-				<div class="controls col-md-8">
+			<div class="form-group row {% if memberform.iban.errors %}error{% endif %}">
+                <label class="col-md-3" for="id_iban">IBAN</label>
+
+				<div class="col-md-9">
 						{{ memberform.iban }}
 				</div>
 			</div>
                 {% if memberform.iban.errors %}
                     <div class="alert alert-danger">IBAN ungültig</div>
                 {% endif %}
-			
-            <div class="form-group">
-                <label class="control-label col-md-4" for="id_reachable_by_email">sollen andere {% vocabulary "member_pl" %} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
 
-                <div class="controls col-md-1">
-                    {{ memberform.reachable_by_email }}
+            <div class="form-group row">
+                <label class="col-md-3" for="id_reachable_by_email">sollen andere {% vocabulary "member_pl" %} dich via Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)</label>
+
+                <div class="col-md-1">
+                    <span class="switch switch-sm">
+                        {{ memberform.reachable_by_email }}
+                        <label for="{{ memberform.reachable_by_email.id_for_label }}"></label>
+                    </span>
                 </div>
             </div>
-			
-            <div class="form-group">
-                <label class="control-label col-md-4"></label>    
-                <div class="controls col-md-8">
+
+            <div class="form-group row">
+                <div class="offset-md-3 col-md-9">
                     <a href="/my/password">hier kannst du dein Passwort ändern</a>
                 </div>
             </div>
-            <div class="form-actions col-md-offset-4 col-md-8">
+        <div class="form-group row">
+            <div class="form-actions offset-md-3 col-md-9">
                 <button type="submit" class="btn btn-success">Personalien ändern</button>
             </div>
+        </div>
         </form>
-        
+
         {% if not member.canceled %}
-            <div class="form-actions col-md-offset-4 col-md-8">
-                &nbsp;
-            </div>
-            <div class="form-actions col-md-offset-4 col-md-8">
+            <div class="row">
+            <div class="form-actions offset-md-3 col-md-9">
                     <a href="/my/cancel/membership" class="btn btn-success" >Mitgliedschaft künden</a>
+            </div>
             </div>
         {% endif %}
 {% endblock %}

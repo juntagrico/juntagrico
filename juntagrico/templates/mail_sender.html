@@ -1,142 +1,159 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-<h3>Mails verschicken</h3>
+    <h3>Mails verschicken</h3>
 {% endblock %}
 
 {% block content %}
-{% config "enable_shares" as enable_shares %}
-<br/>
-{% if can_load_templates %}
-<div class="form-horizontal">
-    <div class="form-group">
-        <label for="templates" class="col-md-2 control-label">Templates</label>
-        <div class="col-md-8">
-            <select id="template-list" class="form-control">
-                {% for template in templates %}
-                <option value="{{template.id}}">{{template.name}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button id="template" class="btn btn-success">Template laden</button>
-        </div>
-    </div>
-</div>
-{% endif %}
-<form action="/my/mails/send{% if enhanced != None %}/{{ enhanced }}{% endif %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="sender-email" class="col-md-2 control-label">Absender</label>
-        <div class="col-md-10" id="sender-email">
-            <select name="sender" class="form-control">
-                {% for area in area_admin%}
-                {% if area.email is not None %}
-                 <option value="{{ area.email }}">{{ area.email }}</option>
-                 {% endif %}
-                 {% endfor %}
-                {% if can_use_general_email %}
-                <option value="{% config "info_email" %}">{% config "info_email" %}</option>
-                {% endif %}
-                <option value="{{ email }}">{{ email }}</option>
-            </select>
-        </div>
-    </div>
-    {% if recipients_count > 0 %}
-    <div class="form-group">
-        <label for="recipients" class="col-md-2 control-label">Empfänger <a id="edit-recipients-action" href="#">bearbeiten</a></label>
-        <div class="col-md-10 form-control-static">
-            <textarea name="recipients" id="recipients" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}" disabled="disabled">{{ recipients }}</textarea>
-        </div>
-    </div>
-    {% else %}
-    <div class="form-group">
-        <label for="sender-email--" class="col-md-2 control-label">Empfänger</label>
-        <div class="col-md-10">
-            <div class="form-control-static">
-                Wähle mind. eine der folgenden Gruppen:
+    {% config "enable_shares" as enable_shares %}
+    <form action="/my/mails/send{% if enhanced != None %}/{{ enhanced }}{% endif %}" method="POST"
+          class="form-horizontal" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group row">
+            <label for="sender-email" class="col-md-2">Absender</label>
+            <div class="col-md-10" id="sender-email">
+                <select name="sender" class="form-control">
+                    {% for area in area_admin %}
+                        {% if area.email is not None %}
+                            <option value="{{ area.email }}">{{ area.email }}</option>
+                        {% endif %}
+                    {% endfor %}
+                    {% if can_use_general_email %}
+                        <option value="{% config "info_email" %}">{% config "info_email" %}</option>
+                    {% endif %}
+                    <option value="{{ email }}">{{ email }}</option>
+                </select>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="checkbox col-md-offset-2 col-md-1">
-            <input type="checkbox" id="allsubscription" class="onoffswitch" name="allsubscription"> 
+        {% if recipients_count > 0 %}
+            <div class="form-group row">
+                <label for="recipients" class="col-md-2">Empfänger <a id="edit-recipients-action"
+                                                                      href="#">bearbeiten</a></label>
+                <div class="col-md-10 ">
+                    <textarea name="recipients" id="recipients"
+                              rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}"
+                              disabled="disabled">{{ recipients }}</textarea>
+                </div>
+            </div>
+        {% else %}
+            <div class="form-group row">
+                <label for="sender-email--" class="col-md-2">Empfänger</label>
+                <div class="col-md-10">
+                        Wähle mind. eine der folgenden Gruppen:
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="offset-md-2 col-md-1">
+            <span class="switch switch-sm">
+              <input type="checkbox" class="switch" id="allsubscription" name="allsubscription">
+              <label for="allsubscription"></label>
+            </span>
+                </div>
+                <label class="col-md-9" for="allsubscription">
+                    {% vocabulary "subscription" %}-Bezieher (inkl. {% vocabulary "co_member_pl" %})
+                </label>
+            </div>
+            {% if enable_shares %}
+                <div class="form-group row">
+                    <div class=" offset-md-2 col-md-1">
+            <span class="switch switch-sm">
+              <input type="checkbox" class="switch" id="allshares" name="allshares">
+              <label for="allshares"></label>
+            </span>
+                    </div>
+                    <label class="col-md-9" for="allshares">
+                        Alle mit {% vocabulary "share" %}
+                    </label>
+                </div>
+            {% endif %}
+            <div class="form-group row">
+                <div class="offset-md-2 col-md-1">
+            <span class="switch switch-sm">
+              <input type="checkbox" class="switch" id="all" name="all">
+              <label for="all"></label>
+            </span>
+                </div>
+                <label class="col-md-9" for="all">
+                    Alle (im System)
+                </label>
+            </div>
+            <div class="form-group row">
+                <div class="offset-md-2 col-md-1">
+            <span class="switch switch-sm">
+              <input type="checkbox" class="switch" id="allsingleemail" name="allsingleemail">
+              <label for="allsingleemail"></label>
+            </span>
+                </div>
+                <label class="col-md-9" for="allsingleemail">
+                    Nur an diese Email(s getrennt durch Leerzeichen):
+                </label>
+            </div>
+            <div class="form-group row">
+                <div class=" offset-md-2 col-md-10">
+                    <input type="text" class="form-control" id="singleemail" name="singleemail"
+                           placeholder="Nur an diese Email" style="display:none"/>
+                </div>
+            </div>
+        {% endif %}
+        <div class="form-group row">
+            <label for="subject" class="col-md-2">Betreff</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" name="subject" id="subject"
+                       placeholder="Betreff" {% if mail_subject %} value="{{ mail_subject }}" {% endif %}/>
+            </div>
         </div>
-        <label class="checkbox col-md-9" for="allsubscription">
-            {% vocabulary "subscription" %}-Bezieher (inkl. {% vocabulary "co_member_pl" %})
-        </label>
-    </div>
-    {% if enable_shares %}
-    <div class="form-group">
-        <div class="checkbox col-md-offset-2 col-md-1">
-            <input type="checkbox" id="allshares" class="onoffswitch" name="allshares">
+        <div class="form-group row">
+            <label for="message" class="col-md-2">Mitteilung</label>
+            <div class="col-md-10">
+                <textarea name="message" id="message" class="mailer" rows="12"
+                          placeholder="Nachricht hier eingeben">{% if mail_message %}
+                    {{ mail_message }} {% endif %}</textarea>
+                <input type="hidden" id="textMessage" name="textMessage"/>
+            </div>
         </div>
-        <label class="checkbox col-md-9" for="allshares">
-            Alle mit {% vocabulary "share" %}
-        </label>
-    </div>
-    {% endif %}
-    <div class="form-group">
-        <div class="checkbox col-md-offset-2 col-md-1">
-            <input type="checkbox" class="onoffswitch" id="all" name="all">
-        </div>
-        <label class="checkbox col-md-9" for="all">
-            Alle (im System)
-        </label>
-    </div>
-    <div class="form-group">
-        <div class="checkbox col-md-offset-2 col-md-1">
-            <input type="checkbox" id="allsingleemail" class="onoffswitch" name="allsingleemail">
-        </div>
-        <label class="checkbox col-md-9" for="allsingleemail">
-            Nur an diese Email(s getrennt durch Leerzeichen):
-        </label>
-    </div>
-    <div class="form-group">
-        <div class=" col-md-offset-2 col-md-10">
-            <input type="text" class="form-control" id="singleemail" name="singleemail" placeholder="Nur an diese Email" style="display:none"/>
-        </div>
-    </div>
-    {% endif %}
-    <div class="form-group">
-        <label for="subject" class="col-md-2 control-label">Betreff</label>
-        <div class="col-md-10">
-            <input type="text" class="form-control" name="subject" id="subject"
-                   placeholder="Betreff" {% if mail_subject %} value="{{mail_subject}}" {% endif %}/>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="message" class="col-md-2 control-label">Mitteilung</label>
-        <div class="col-md-10">
-            <textarea name="message" id="message" class="mailer" rows="12" placeholder="Nachricht hier eingeben">{% if mail_message %} {{ mail_message }} {% endif %}</textarea>
-            <input type="hidden" id="textMessage" name="textMessage"/>
-        </div>
-    </div>
 
-    <div class="form-group">
-        <label for="attachements" class="col-md-2 control-label">Anhänge</label>
-        <div class="col-md-10">
-            <div class="controls" id="attachements">
-                <div class="file-upload">
-                    <div class="file-upload-button">
-                        <input type="file" name="image-1">
-                        <button class="btn">Datei auswählen</button>
+        {% if can_load_templates and templates%}
+            <div class="form-group row">
+                <label for="templates" class="col-md-2">Templates</label>
+                <div class="col-md-10">
+                    <select id="template-list" class="form-control">
+                        {% for template in templates %}
+                            <option value="{{ template.id }}">{{ template.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="offset-md-2 col-md-2">
+                    <button id="template" class="btn btn-success">Template laden</button>
+                </div>
+            </div>
+            <hr>
+        {% endif %}
+        <div class="form-group row">
+            <label for="attachements" class="col-md-2">Anhänge</label>
+            <div class="col-md-10">
+                <div class="controls" id="attachements">
+                    <div class="file-upload">
+                        <div class="file-upload-button">
+                            <input type="file" name="image-1">
+                            <button class="btn">Datei auswählen</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <hr>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button id="sendmail" type="submit" class="btn btn-success">Nachricht verschicken</button>
+        <hr>
+        <div class="form-group row">
+            <div class="offset-md-2 col-md-10">
+                <button id="sendmail" type="submit" class="btn btn-success">Nachricht verschicken</button>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript" src="/static/external/attachment_appender.js"></script>
-<script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
-<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMailer.js"></script>
+    <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
+    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMailer.js"></script>
 {% endblock %}

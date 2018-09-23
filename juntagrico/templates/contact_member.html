@@ -5,75 +5,70 @@
 {% endblock %}
 
 {% block content %}
-	{% if is_sent %}
-        <div class="alert alert-success">Nachricht gesandt <a href="/my/jobs/{{job_id}}/" style="text-decoration: underline">zur&uuml;ck zum Einsatz</a></div>
-	{% else %}
-    <br/>
-    <form action="/my/contact/member/{{member_id}}/{{job_id}}/" method="POST" class="form-horizontal" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group">
-            <label class="control-label col-md-4">Absender</label>
-            <div class="controls col-md-8 form-control-static">
-                {{ usernameAndEmail }}
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-4">Empfänger</label>
-            <div class="controls col-md-8 form-control-static">
-                {{member_name}}
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-4" for="subject">Betreff</label>
-            <div class="controls col-md-8">
-                <input type="text" name="subject" id="subject" placeholder="Betreff" class="form-control"/>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-4" for="message">Mitteilung</label>
-            <div class="controls col-md-8">
-                <textarea name="message" id="message" class="form-control" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="control-label col-md-4"></div>
-            <div class="controls col-md-8">
-                <div class="checkbox">
-                    <label for="copy">
-                        <input type="checkbox" name="copy" id="copy">
-                        Kopie an mich
-                    </label>
+    {% if is_sent %}
+        <div class="alert alert-success">Nachricht gesandt <a href="/my/jobs/{{ job_id }}/"
+                                                              style="text-decoration: underline">zur&uuml;ck zum
+            Einsatz</a></div>
+    {% else %}
+        <br/>
+        <form action="/my/contact/member/{{ member_id }}/{{ job_id }}/" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group row">
+                <label class="col-md-3">Absender</label>
+                <div class="col-md-9">
+                    {{ usernameAndEmail }}
                 </div>
             </div>
-        </div>
-        {% if admin %}
-        <div class="form-group">
-            <label for="attachements" class="control-label col-md-4">Anhänge</label>
-            <div class="controls col-md-8">
-                <div class="controls" id="attachements">
-                    <div class="file-upload">
-                        <div class="file-upload-button">
-                            <input type="file" name="image-1">
-                            <button class="btn">Datei auswählen</button>
+            <div class="form-group row">
+                <label class="col-md-3">Empfänger</label>
+                <div class="col-md-9">
+                    {{ member_name }}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-3" for="subject">Betreff</label>
+                <div class="col-md-9">
+                    <input type="text" name="subject" id="subject" placeholder="Betreff" class="form-control"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-md-3" for="message">Mitteilung</label>
+                <div class="col-md-9">
+                    <textarea name="message" id="message" class="form-control" rows="12"
+                              placeholder="Hier Nachricht eingeben"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="offset-md-3 col-md-9">
+                <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="copy" name="copy">
+                              <label for="copy">Kopie an mich</label>
+                            </span>
+                </div>
+            </div>
+            {% if admin %}
+                <div class="form-group row">
+                    <label for="attachements" class="col-md-3">Anhänge</label>
+                    <div class="col-md-9">
+                        <div class="controls" id="attachements">
+                            <div class="file-upload">
+                                <div class="file-upload-button">
+                                    <input type="file" name="image-1">
+                                    <button class="btn">Datei auswählen</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        {% endif %}
-        <div class="form-group">
-            <div class="control-label col-md-4"></div>
-            <div class="controls col-md-8">
-                <div class="checkbox">
+            {% endif %}
+            <div class="form-group row">
+                <div class="form-actions offset-md-3 col-md-9">
+                    <button type="submit" class="btn btn-success">Nachricht verschicken</button>
                 </div>
             </div>
-        </div>
-        <div class="form-actions col-md-offset-4">
-            <button type="submit" class="btn btn-success">Nachricht verschicken</button>
-        </div>
-    </form>
-	{% endif %}
+        </form>
+    {% endif %}
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript" src="/static/external/attachment_appender.js"></script>

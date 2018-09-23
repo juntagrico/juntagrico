@@ -35,7 +35,7 @@ class MemberProfileForm(ModelForm):
             'mobile_phone': TextInput(attrs={'class': 'form-control'}),
             'email': TextInput(attrs={'readonly': 'readonly', 'class': 'form-control'}),
             'iban': TextInput(attrs={'class': 'form-control'}),
-            'reachable_by_email': CheckboxInput(attrs={'class': 'onoffswitch'}),
+            'reachable_by_email': CheckboxInput(attrs={'class': 'slider'}),
         }
 
     def clean_iban(self):

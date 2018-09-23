@@ -74,7 +74,7 @@ def cs_select_depot(request):
         request.session['selecteddepot'] = depot
         return redirect('/my/create/subscription/start')
     depots = DepotDao.all_depots()
-    requires_map = False
+    requires_map = True
     for depot in depots:
         requires_map = requires_map or depot.has_geo
     renderdict = {
@@ -113,6 +113,7 @@ def cs_select_shares(request):
     if member is None:
         return redirect('http://'+Config.server_url())
     share_error = False
+    mm_requires_one = len(member.active_shares) == 0
     share_sum = len(member.active_shares)
     co_members = request.session.get('create_co_members', [])
     for co_member in co_members:
@@ -128,6 +129,7 @@ def cs_select_shares(request):
             for co_member in co_members:
                 share_sum += int(request.POST.get(co_member.email))
             share_error = share_error or share_sum < required_shares
+            share_error = share_error or (int(request.POST.get('shares_mainmember'))==0 and mm_requires_one)
         except:
             share_error = True
         if not share_error or not Config.enable_shares():
@@ -145,8 +147,6 @@ def cs_select_shares(request):
                 shares = int(request.POST.get('shares_mainmember'))
             else:
                 shares = 0
-            if len(member.active_shares) == 0 and Config.enable_shares():
-                shares = shares + 1
             for i in range(shares):
                 create_share(member)
             for co_member in co_members:
@@ -179,7 +179,8 @@ def cs_select_shares(request):
         'member': member,
         'co_members': co_members,
         'selected_subscription': int(selected_subscription),
-        'has_com_members': len(co_members) > 0
+        'has_com_members': len(co_members) > 0,
+        'mm_requires_one': mm_requires_one
     }
     return render(request, 'createsubscription/select_shares.html', renderdict)
 

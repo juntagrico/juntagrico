@@ -20,7 +20,9 @@
                 <tr>
                     <td>{{ extra.type.name }}</td>
                     <td>{{ extra.state }}</td>
-                    <td>{% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}<a href="/my/extra/cancel/{{ extra.id }}/{{ sub_id }}/" class="btn btn-success">kündigen</a>{% endif %}</td>                    
+                    <td>{% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
+                        <a href="/my/extra/cancel/{{ extra.id }}/{{ sub_id }}/"
+                           class="btn btn-success">kündigen</a>{% endif %}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -29,26 +31,36 @@
     <br/><br/>
     Extra-Abos bestellen
     <br/>
+    <br/>
 
-    <form method="post" class="form-horizontal createsubscription">
+    <form method="post">
         {% csrf_token %}
-        <div class="form-group">
-                {% for type in types %}
-                <div class="controls col-md-1">
-                    <input type="text" name="extra{{ type.id }}"  class="col-md-1 form-control" value="0"/>
+        <div class="form-group row align-items-center h-100">
+            {% for type in types %}
+                <div class="col-md-2">
+                    <input type="number" name="extra{{ type.id }}" class="form-control" value="0" min="0"/>
                 </div>
-                <div class="controls col-md-11">
-                        {{ type.name }}<br/>
-                        {{ type.description }}<br/>
-                        {% for period in type.periods.all %}
-                        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}. {{ period.price }} {% config "currency" %}<br/>
-                        {% endfor %}
+                <div class="col-md-10">
+                    {{ type.name }}<br/>
+                    {{ type.description }}<br/>
+                    {% for period in type.periods.all %}
+                        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
+                        {{ period.price }} {% config "currency" %}<br/>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
+        </div>
         <div class="form-actions ">
             <button type="submit" class="btn btn-success">Extra-Abos bestellen</button>
         </div>
     </form>
+    <script>
 
+    </script>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js"></script>
 {% endblock %}

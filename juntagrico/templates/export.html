@@ -1,19 +1,31 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-        <h3>Exporte</h3>
+    <h3>Exporte</h3>
 {% endblock %}
 
 {% block content %}
-    <div id="depot">
-            <br/>
+    <div class="row mb-4">
+        <div class="col-md-3">
             {% vocabulary "member_pl" %}
+        </div>
+        <div class="col-md-9">
             <a href="/my/export/members/">exportieren</a>
-            <br/><br/>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
             {% vocabulary "member_pl" %} mit {% vocabulary "assignment_pl" %} und Tätigketsbereichen
+        </div>
+        <div class="col-md-9">
             <a href="/my/export/membersfilter">exportieren</a>
-            <br/><br/>
-            Anteilsscheine
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            {% vocabulary "share_pl" %}
+        </div>
+        <div class="col-md-9">
             <a href="/my/export/shares">exportieren</a>
         </div>
     </div>

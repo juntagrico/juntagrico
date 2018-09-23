@@ -4,31 +4,38 @@
     <h3>{% vocabulary "share_pl" %} bestellen</h3>
 {% endblock %}
 {% block content %}
-        Bestelle hier mehr Anteislscheine.
-        <br/><br/>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            Bestelle hier mehr Anteislscheine.
+        </div>
+    </div>
 
-        <form action="" method="post" class="form-horizontal">
-            <input type="hidden" value="{{ referer }}" name="referer"/>
-            {% csrf_token %}      
-            <div class="form-group">
-                <label class="col-md-3 control-label">{% vocabulary "share_pl" %}</label>
+    <form action="" method="post">
+        <input type="hidden" value="{{ referer }}" name="referer"/>
+        {% csrf_token %}
+        <div class="form-group row align-items-center h-100">
+            <label class="col-md-3">{% vocabulary "share_pl" %}</label>
 
-                <div class="col-md-9 controls">
-                    <label for="shares">
-
-                        <input type="text" name="shares" id="shares" class="col-md-1 form-control"/><br/>
-                        
-                    </label>
-                    {% if shareerror %}
-                        <div class="alert alert-danger">Deine Eingabe ist ungültig</div>
-                    {% endif %}
-                </div>
+            <div class="col-md-2">
+                <input type="number" name="extra{{ type.id }}" class="form-control" value="0" min="0"/>
             </div>
-
-            <div class="col-md-offset-4 form-actions">
+            <div class="col-md-7">
+                {% if shareerror %}
+                    <div class="alert alert-danger">Deine Eingabe ist ungültig</div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="offset-md-3 col-md-9">
                 <button type="submit" class="btn btn-success">bestellen</button>
             </div>
-        </form>
-        
+    </form>
 
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js"
+            data-main="/static/js/initChangeExtra.js"></script>
 {% endblock %}

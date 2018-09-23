@@ -7,8 +7,8 @@
 
 {% block content %}
     <style>
-        .container {
-            width: 1200px;
+        body > .container {
+            width: 95%;
         }
     </style>
         <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">

@@ -2,9 +2,8 @@
 {% load config %}
 
 {% block all_page_title %}
-{% config "enable_shares" as enable_shares %}
-    <div class="col-md-3"> 
-            &nbsp;
+    <div class="col-md-3">
+        &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
         <h3>{% vocabulary "member_type" %} werden</h3>
@@ -12,136 +11,153 @@
 {% endblock %}
 
 {% block allcontent %}
-      {% config "business_regulations" as business_regulations %}
-      Interessiert an {% enriched_organisation "D" %}?
+    {% config "enable_shares" as enable_shares %}
+    {% config "business_regulations" as business_regulations %}
+    <div class="row mb-3">
+        <div class="col-md-12">
+            Interessiert an {% enriched_organisation "D" %}?
+        </div>
+    </div>
     {% if enable_shares %}
-      <br/><br/>
-      Die Mitgliedschaft bei {% enriched_organisation "D" %} ist geknüpft an den Erwerb von rückzahlbaren {% vocabulary "share_pl" %}n in der Höhe
-      von CHF {% config "share_price" %} pro {% vocabulary "share" %}. Die Anzahl {% vocabulary "share_pl" %} ist abhängig von der{% vocabulary "subscription" %}grösse.. Die {% vocabulary "share_pl" %} sind das Kapital,
-      das vor allem zur Finanzierung von
-      Investitionen – zum Beispiel Infrastruktur – verwendet wird.
+        <div class="row mb-3">
+            <div class="col-md-12">
+                Die Mitgliedschaft bei {% enriched_organisation "D" %} ist geknüpft an den Erwerb von
+                rückzahlbaren {% vocabulary "share_pl" %}n in der Höhe
+                von CHF {% config "share_price" %} pro {% vocabulary "share" %}. Die Anzahl {% vocabulary "share_pl" %}
+                ist abhängig von der{% vocabulary "subscription" %}grösse.. Die {% vocabulary "share_pl" %} sind das
+                Kapital,
+                das vor allem zur Finanzierung von
+                Investitionen – zum Beispiel Infrastruktur – verwendet wird.
+            </div>
+        </div>
     {% endif %}
-      <br/><br/>
-      Die {% vocabulary "member_type_pl" %} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
-      Wer bei {% enriched_organisation "D" %} ein Gemüseabo bezieht, verpflichtet sich zur
-      Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
-      <br/>
-      <br/>
-      Bevor du dich als {% vocabulary "member_type" %} anmeldest, lies bitte die Statuten
-      {% if business_regulations.strip %} und das Betriebsreglement {% endif %}
-      durch.
-      <ul>
-          <li><a target="_blank" href="{% config "bylaws"|safe %}">Statuten</a></li>
-          {% if business_regulations.strip %}<li><a target="_blank" href="{{ business_regulations|safe }}">Betriebsreglement</a></li>{% endif %}
-      </ul>
-      <br/>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            Die {% vocabulary "member_type_pl" %} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten
+            gemeinsam zum Gelingen des Betriebes bei.
+            Wer bei {% enriched_organisation "D" %} ein Gemüseabo bezieht, verpflichtet sich zur
+            Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-12">
+            Bevor du dich als {% vocabulary "member_type" %} anmeldest, lies bitte die Statuten
+            {% if business_regulations.strip %} und das Betriebsreglement {% endif %}
+            durch.
+            <ul>
+                <li><a target="_blank" href="{% config "bylaws"|safe %}">Statuten</a></li>
+                {% if business_regulations.strip %}
+                    <li><a target="_blank" href="{{ business_regulations|safe }}">Betriebsreglement</a></li>{% endif %}
+            </ul>
+        </div>
+    </div>
 
 
 
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <br/>
-
-        <form action="" method="post" class="form-horizontal">
+    <div class="row">
+    <div class="offset-md-2 col-md-8">
+        <form action="" method="post">
             {% csrf_token %}
-            <div class="form-group {% if memberform.last_name.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_last_name">Name *</label>
+            <div class="form-group row{% if memberform.last_name.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_last_name">Name *</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.last_name }}
                     {% if memberform.last_name.errors %}
-                        <div class="help-block">Name ungültig</div>
+                        <div class="form-text">Name ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.first_name.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_first_name">Vorname *</label>
+            <div class="form-group row {% if memberform.first_name.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_first_name">Vorname *</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.first_name }}
                     {% if memberform.first_name.errors %}
-                        <div class="help-block">Vorname ungültig</div>
+                        <div class="form-text">Vorname ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.addr_street.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_street">Strasse/Nr. *</label>
+            <div class="form-group row {% if memberform.addr_street.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_addr_street">Strasse/Nr. *</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.addr_street }}
                     {% if memberform.addr_street.errors %}
-                        <div class="help-block">Strasse ungültig</div>
+                        <div class="form-text">Strasse ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.addr_zipcode.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_zipcode">PLZ *</label>
+            <div class="form-group row {% if memberform.addr_zipcode.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_addr_zipcode">PLZ *</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.addr_zipcode }}
                     {% if memberform.addr_zipcode.errors %}
-                        <div class="help-block">PLZ ungültig</div>
+                        <div class="form-text">PLZ ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.addr_location.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_location">Ort *</label>
+            <div class="form-group row {% if memberform.addr_location.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_addr_location">Ort *</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.addr_location }}
                     {% if memberform.addr_location.errors %}
-                        <div class="help-block">Ort ungültig</div>
+                        <div class="form-text">Ort ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.phone.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_phone">Telefon *</label>
+            <div class="form-group row {% if memberform.phone.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_phone">Telefon *</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.phone }}
                     {% if memberform.phone.errors %}
-                        <div class="help-block">Telefon ungültig</div>
+                        <div class="form-text">Telefon ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.mobile_phone.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_mobile_phone">Mobile &nbsp;</label>
+            <div class="form-group row {% if memberform.mobile_phone.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_mobile_phone">Mobile &nbsp;</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.mobile_phone }}
                     {% if memberform.mobile_phone.errors %}
-                        <div class="help-block">Mobile ungültig</div>
+                        <div class="form-text">Mobile ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.email.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_email">E-Mail Adresse *</label>
+            <div class="form-group row {% if memberform.email.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_email">E-Mail Adresse *</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.email }}
                     {% if memberform.email.errors %}
-                        <div class="help-block">E-Mail ungültig</div>
+                        <div class="form-text">E-Mail ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group {% if memberform.birthday.errors %}has-error{% endif %}">
-                <label class="col-md-3 control-label" for="id_birthday">Geburtstag &nbsp;</label>
+            <div class="form-group row {% if memberform.birthday.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_birthday">Geburtstag &nbsp;</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     {{ memberform.birthday }}
                     {% if memberform.birthday.errors %}
-                        <div class="help-block">Geburtstag ungültig</div>
+                        <div class="form-text">Geburtstag ungültig</div>
                     {% endif %}
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-md-offset-3 col-md-9">
+            <div class="form-group row">
+                <div class="offset-md-3 col-md-9">
                     <div class="checkbox">
                         <label>
                             {{ memberform.agb }}
                             <input type="checkbox" name="agb" id="agb" {% if agbchecked %}checked="checked"{% endif %}>
-                            Ich habe <a target="_blank" href="{% config "bylaws"|safe %}">die Statuten</a> 
-                            {% if business_regulations.strip %} und <a target="_blank" href="{{ business_regulations|safe }}">das Betriebsreglement</a> {% endif %}
+                            Ich habe <a target="_blank" href="{% config "bylaws"|safe %}">die Statuten</a>
+                            {% if business_regulations.strip %} und
+                                <a target="_blank" href="{{ business_regulations|safe }}">das
+                                    Betriebsreglement</a> {% endif %}
                             gelesen und erkläre meinen Willen, "{% config "organisation_long_name" %}"
                             beizutreten. Hiermit beantrage ich meine Aufnahme.
 
@@ -159,8 +175,10 @@
                 </div>
             {% endif %}
 
-            <div class="form-actions">
-                <button type="submit" class="col-md-offset-4 btn btn-success">Anmelden</button>
+            <div class="form-actions row">
+                <div class="offset-md-3 col-md-9">
+                    <button type="submit" class="btn btn-success">Anmelden</button>
+                </div>
             </div>
             <input type="hidden" name="next" value="{{ next|escape }}"/>
         </form>

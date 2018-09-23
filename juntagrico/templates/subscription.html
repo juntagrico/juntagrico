@@ -1,64 +1,77 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Abo Übersicht</h3>    
+    <h3>Abo Übersicht</h3>
 {% endblock %}
 
 {% block content %}
-{% config "enable_shares" as enable_shares %}
-        {% if future_subscription %}
-            <div class="alert alert-success">Du hast ein {% vocabulary "subscription" %} auf der Warteliste<br/>Mehr Infos dazu findest du <a href="/my/subscription/detail/{{ member.future_subscription.id}}/">hier</a></div>
-        {% elif can_order %}
-        <div class="alert alert-warning">Du hast noch kein {% vocabulary "subscription" %} oder dein aktuelles ist gekündigt.<br/>Du möchtest ein neus{% vocabulary "subscription" %}? Melde dich hier an: <a href="/my/create/subscrition">Abo erstellen</a></div>
-        {% endif %}
-        
+    {% config "enable_shares" as enable_shares %}
+    {% if future_subscription %}
+        <div class="alert alert-success">Du hast ein {% vocabulary "subscription" %} auf der Warteliste<br/>Mehr Infos
+            dazu findest du <a href="/my/subscription/detail/{{ member.future_subscription.id }}/">hier</a></div>
+    {% elif can_order %}
+        <div class="alert alert-warning">Du hast noch kein {% vocabulary "subscription" %} oder dein aktuelles ist
+            gekündigt.<br/>Du möchtest ein neus{% vocabulary "subscription" %}? Melde dich hier an: <a
+                    href="/my/create/subscrition">Abo erstellen</a></div>
+    {% endif %}
+
     {% if no_subscription %}
         {% if enable_shares %}
-        <dl class="dl-horizontal">
-        <dt>{% vocabulary "share_pl" %}</dt>
-            <dd>
-                {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/>
-                Bestelle mehr {% vocabulary "share_pl" %} <a href="/my/order/share">hier</a>
-            </dd>
-        </dl>
+            <div class="row mb-3">
+                <div class="col-md-3">{% vocabulary "share_pl" %}</div>
+                <div class="col-md-9">
+                    {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}
+                    <br/>
+                    Bestelle mehr {% vocabulary "share_pl" %} <a href="/my/order/share">hier</a>
+                </div>
+            </div>
         {% endif %}
-    {% else %}        
-        <dl class="dl-horizontal">
-            <dt>Abogrösse</dt>
-            <dd>
+    {% else %}
+        <div class="row mb-3">
+            <div class="col-md-3">Abogrösse</div>
+            <div class="col-md-9">
                 {{ subscription.size_name }}
-            </dd>
-            <dt>Status</dt>
-            <dd>
-                {% if subscription.state == 'active'%}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-3">Status</div>
+            <div class="col-md-9">
+                {% if subscription.state == 'active' %}
                     Dein {% vocabulary "subscription" %} ist aktiv, du erhältst wöchentlich dein Gemüse.
-                {% elif subscription.state == 'canceled'%}
-                    Dein {% vocabulary "subscription" %} ist gekündigt, du erhältst wöchentlich dein Gemüse bis zum {{end_date|date:"d.m.Y"}}.
+                {% elif subscription.state == 'canceled' %}
+                    Dein {% vocabulary "subscription" %} ist gekündigt, du erhältst wöchentlich dein Gemüse bis zum
+                    {{ end_date|date:"d.m.Y" }}.
                 {% elif subscription.state == 'waiting' %}
                     <span class="text-error">Auf der Warteliste</span> - du erhältst leider im Moment noch kein Gemüse.
                 {% elif subscription.state == 'inactive' %}
-                    <span class="text-error">Dein {% vocabulary "subscription" %} wurde deaktiviert</span> - du erhältst im Moment kein Gemüse.
+                    <span class="text-error">Dein {% vocabulary "subscription" %} wurde deaktiviert</span> - du erhältst
+                    im Moment kein Gemüse.
                 {% endif %}
-            </dd>
+            </div>
+        </div>
         {% if enable_shares %}
-            <dt>{% vocabulary "share_pl" %}</dt>
-            <dd>
-                {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}<br/>
-                Bestelle mehr {% vocabulary "share_pl" %} <a href="/my/order/share">hier</a><br/><br/>
-                {% vocabulary "share_pl" %} von {% vocabulary "co_member_pl" %}:
-                <ul>
-                    {% for co_member in  co_members %}
-                        <li>{{ co_member.share_set.count }} von {{ co_member.first_name }} {{ co_member.last_name }}
-                            {% if not co_member.confirmed %}
-                                (nicht bestätigt)
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </dd>
-            {% endif %}
-            <dt>Abo geteilt mit</dt>
-            <dd>
+            <div class="row mb-3">
+                <div class="col-md-3">{% vocabulary "share_pl" %}</div>
+                <div class="col-md-9">
+                    {{ shares }} {% if shares_unpaid > 0 %}(davon {{ shares_unpaid }} noch nicht bezahlt){% endif %}
+                    <br/>
+                    Bestelle mehr {% vocabulary "share_pl" %} <a href="/my/order/share">hier</a><br/><br/>
+                    {% vocabulary "share_pl" %} von {% vocabulary "co_member_pl" %}:
+                    <ul>
+                        {% for co_member in  co_members %}
+                            <li>{{ co_member.share_set.count }} von {{ co_member.first_name }} {{ co_member.last_name }}
+                                {% if not co_member.confirmed %}
+                                    (nicht bestätigt)
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+        <div class="row mb-3">
+            <div class="col-md-3">Abo geteilt mit</div>
+            <div class="col-md-9">
                 {% if co_members|length > 0 %}
                     {% if co_members|length > 1 %}
                         <ul>
@@ -76,14 +89,19 @@
                     Du hast noch keine {% vocabulary "co_member_pl" %} eingetragen.<br/>
                 {% endif %}
                 <a href="/my/cosubmember/{{ subscription.id }}">Hier {% vocabulary "co_member_pl" %} eintragen</a>
-            </dd>
-            <dt>{% vocabulary "depot" %}</dt>
-            <dd>
-                {{ subscription.depot.name }} > <a href="/my/depot/{{ subscription.depot.id }}">Weitere Infos zum {% vocabulary "depot" %}</a>
-            </dd>
-            {% if has_extra_subscriptions %}
-                <dt>Zusatzabos</dt>
-                <dd>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-3">{% vocabulary "depot" %}</div>
+            <div class="col-md-9">
+                {{ subscription.depot.name }} > <a href="/my/depot/{{ subscription.depot.id }}">Weitere Infos
+                zum {% vocabulary "depot" %}</a>
+            </div>
+        </div>
+        {% if has_extra_subscriptions %}
+            <div class="row mb-3">
+                <div class="col-md-3">Zusatzabos</div>
+                <div class="col-md-9">
                     {% if subscription.extra_subscriptions|length == 0 %}
                         Keine Zusatzabos
                     {% else %}
@@ -93,10 +111,12 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
-                </dd>
-                {% if subscription.extrasubscriptions_changed %}
-                    <dt>Neue Zusatzabos</dt>
-                    <dd>
+                </div>
+            </div>
+            {% if subscription.extrasubscriptions_changed %}
+                <div class="row mb-3">
+                    <div class="col-md-3">Neue Zusatzabos</div>
+                    <div class="col-md-9">
                         (Die Änderungen treten am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)
                         {% if not subscription.future_extra_subscriptions %}
                             <br>Keine Zusatzabos
@@ -107,37 +127,41 @@
                                 {% endfor %}
                             </ul>
                         {% endif %}
-                    </dd>
-                {% endif %}
+                    </div>
+                </div>
             {% endif %}
+        {% endif %}
 
-            {% if subscription.types_changed %}
-                <dt>Neue {% vocabulary "subscription" %}-Grösse</dt>
-                <dd>
+        {% if subscription.types_changed %}
+            <div class="row mb-3">
+                <div class="col-md-3">Neue {% vocabulary "subscription" %}-Grösse</div>
+                <div class="col-md-9">
                     (Die Änderung tritt am {{ next_extra_subscription_date |date:"d.m.Y" }} in Kraft)<br>
                     {{ subscription.future_size_name }}
-                </dd>
-            {% endif %}
-            <dt>&nbsp;</dt>
-            <dd>
-                {% if subscription.state != 'inactive' %}
-                <div class="form-actions">
-                    <a href="{% if primary %}/my/subscription/change/overview/{{subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo ändern</a>
+                </div>
+            </div>
+        {% endif %}
+        {% if subscription.state != 'inactive' %}
+            <div class="row mb-3">
+                <div class="offset-3 col-md-9">
+                    <a href="{% if primary %}/my/subscription/change/overview/{{ subscription.id }}/{% endif %}"
+                       class="btn btn-success {% if not primary %}disabled{% endif %}">Abo ändern</a>
                     {% if not primary %}
                         * Das {% vocabulary "subscription" %} kann nur der Hauptabonnnent ändern.
                     {% endif %}
-                </div> 
-               {% endif %}
-                <br/>
-                {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
-                <div class="form-actions">
-                    <a href="{% if primary %}/my/subscription/cancel/{{subscription.id}}/{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}" >Abo künden</a>
+                </div>
+            </div>
+        {% endif %}
+        {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
+            <div class="row mb-3">
+                <div class="offset-3 col-md-9">
+                    <a href="{% if primary %}/my/subscription/cancel/{{ subscription.id }}/{% endif %}"
+                       class="btn btn-success {% if not primary %}disabled{% endif %}">Abo künden</a>
                     {% if not primary %}
                         * Das {% vocabulary "subscription" %} kann nur der Hauptabonnnent künden.
                     {% endif %}
                 </div>
-               {% endif %}
-            </dd>
-        </dl>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}

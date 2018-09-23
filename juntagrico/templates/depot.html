@@ -1,27 +1,33 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-        <h3>{% vocabulary "depot" %} {{ depot.name }}</h3>
+    <h3>{% vocabulary "depot" %} {{ depot.name }}</h3>
 {% endblock %}
 
 {% block content %}
-    <div id="depot">
-
-        <div class="row">
+    <div class="row mb-3">
+        <div class="col-md-3">Adresse</div>
+        <div class="col-md-9">{{ depot.adivr_street }}<br/>{{ depot.adivr_zipcode }} {{ depot.adivr_location }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-3">Wochentag</div>
+        <div class="col-md-9">{{ depot.get_weekday_display }}</div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-3">Kontaktperson</div>
+        <div class="col-md-9">{{ depot.contact.first_name }} {{ depot.contact.last_name }} <a
+                href="mailto:{{ depot.contact.email }}">{{ depot.contact.email }}</a></div>
+    </div>
+    {% if depot.description %}
+        <div class="row mb-3">
+            <div class="col-md-3">Beschreibung</div>
+            <div class="col-md-9">{{ depot.description | linebreaksbr }}</div>
         </div>
-        <dl class="dl-horizontal">
-            <dt>Adresse</dt>
-            <dd>{{ depot.addr_street }}<br/>{{ depot.addr_zipcode }} {{ depot.addr_location }}</dd>
-            <dt>Wochentag</dt>
-            <dd>{{ depot.get_weekday_display }}</dd>
-            <dt>Kontaktperson</dt>
-            <dd>{{ depot.contact.first_name }} {{ depot.contact.last_name }} <a href="mailto:{{ depot.contact.email }}">{{ depot.contact.email }}</a></dd>
-            {% if depot.description %}
-            <dt>Beschreibung</dt>
-            <dd>{{ depot.description | linebreaksbr }}</dd>
-            {% endif %}
-        </dl>
-        <div id="map-canvas">
+    {% endif %}
+    <div class="row">
+        <div class="offset-md-3 col-md-9">
+            <div id="map-canvas">
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -33,9 +39,9 @@
             longitude: '{{ depot.longitude }}',
             latitude: '{{ depot.latitude }}',
             name: '{{ depot.name }}',
-            addr_street: '{{ depot.addr_street }}',
-            addr_zipcode: '{{ depot.addr_zipcode }}',
-            addr_location: '{{ depot.addr_location }}'
+            adivr_street: '{{ depot.adivr_street }}',
+            adivr_zipcode: '{{ depot.adivr_zipcode }}',
+            adivr_location: '{{ depot.adivr_location }}'
         }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}"></script>

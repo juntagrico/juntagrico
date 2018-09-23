@@ -5,24 +5,31 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-4"><strong>Beschreibung:</strong></div>
-        <div class="col-md-8">{{ team.description }}</div>
+    <div class="row mb-3">
+        <div class="col-md-3">Beschreibung:</div>
+        <div class="col-md-9">{{ team.description }}</div>
     </div>
-    <br/>
-    <div class="row">
-        <div class="col-md-4"><strong>Verantwortlicher:</strong></div>
-        <div class="col-md-8">{{ team.coordinator.first_name }} {{ team.coordinator.last_name }}<br/>
-        {% if team.email is not None%}
-        <a href="mailto:{{ team.email }}">{{ team.email }}</a></div>
-        {% else %}
-        <a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.email }}</a></div>
-        {% endif %}
+    <div class="row mb-4">
+        <div class="col-md-3">Verantwortlicher:</div>
+        <div class="col-md-9">{{ team.coordinator.first_name }} {{ team.coordinator.last_name }}<br/>
+            {% if team.email is not None %}
+                <a href="mailto:{{ team.email }}">{{ team.email }}</a>
+            {% else %}
+                <a href="mailto:{{ team.coordinator.email }}">{{ team.coordinator.email }}</a>
+            {% endif %}
+        </div>
     </div>
-    <br/>
-    <h4>Kommende Termine</h4>
-    {% include "snippet_jobs.html" %}
-    {% if jobs|length <= 0 %}
-        Keine Jobs ausgeschrieben
-    {% endif %}
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <h4>Kommende Termine</h4>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            {% include "snippet_jobs.html" %}
+            {% if jobs|length <= 0 %}
+                Keine Jobs ausgeschrieben
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

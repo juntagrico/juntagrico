@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load config %}
 {% block all_page_title %}
-    <div class="col-md-3"> 
-            &nbsp;
+    <div class="col-md-3">
+        &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
         <h3>Wähle dein {% vocabulary "depot" %}</h3>
@@ -10,33 +10,39 @@
 {% endblock %}
 
 {% block allcontent %}
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
+    <div class="offset-md-2 col-md-8">
 
-        <form action="" method="post" class="form-horizontal createsubscription">
+        <form action="" method="post">
             {% csrf_token %}
-            <div id="depot_container" class="form-group">
-                <label class="col-md-3 control-label" for="depot">{% vocabulary "depot" %}</label>
+            <div id="depot_container" class="form-group row">
+                <label class="col-md-3" for="depot">{% vocabulary "depot" %}</label>
 
-                <div class="col-md-9 controls">
+                <div class="col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
                         {% endfor %}
                     </select>
-
-                    <label for="depot">
-                        Wähle ein {% vocabulary "depot" %} aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
-                    </label>
+                </div>
+            </div>
+            <div id="depot_container" class="form-group row">
+                <label for="depot" class="offset-md-3 col-md-9">
+                    Wähle ein {% vocabulary "depot" %} aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
+                </label>
+            </div>
+            <div id="depot_container" class="form-group row">
+                <div class="offset-md-3 col-md-9">
                     {% if requires_map %}
                         <div id="map-canvas"></div>
                     {% endif %}
                 </div>
             </div>
 
-            <div class="col-md-offset-4 form-actions">
-                <button type="submit" class="btn btn-success">Weiter</button>
-                <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+            <div class="form-actions row">
+                <div class="offset-md-3 col-md-9">
+                    <button type="submit" class="btn btn-success">Weiter</button>
+                    <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+                </div>
             </div>
         </form>
     </div>
@@ -64,6 +70,8 @@
             {% endif %}
         {% endfor %}
     </script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={% config "google_api_key" %}"></script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initCreateSubscription.js"></script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={% config "google_api_key" %}"></script>
+    <script type="text/javascript" src="/static/external/require.min.js"
+            data-main="/static/js/initCreateSubscription.js"></script>
 {% endblock %}

@@ -1,28 +1,35 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-        <h3>Künde dein {% vocabulary "subscription" %}</h3>
+    <h3>Künde dein {% vocabulary "subscription" %}</h3>
 {% endblock %}
 
 {% block content %}
-    <div class="col-md-12">
-        <br/>
-        Hier kannst du dein {% vocabulary "subscription" %} kündigen. Der nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.
-        <br/><br/>
-
-        <form action="" method="post" class="form-horizontal">
-            {% csrf_token %}
-            <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden" />
-            <div class="form-group">
-            <label class="control-label col-md-3" for="message">Mitteilung</label>
-                <div class="controls col-md-9">
-                    <textarea name="message" id="message" class="form-control" rows="12" placeholder="Hier Nachricht eingeben"></textarea>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            Hier kannst du dein {% vocabulary "subscription" %} kündigen. Der nächste reguläre Kündigungstermin ist
+            der {{ end_date |date:"d.m.Y" }}.
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <form action="" method="post">
+                {% csrf_token %}
+                <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
+                <div class="form-group row">
+                    <label class="col-md-3" for="message">Mitteilung</label>
+                    <div class="col-md-9">
+                            <textarea name="message" id="message" class="form-control" rows="12"
+                                      placeholder="Hier Nachricht eingeben"></textarea>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-offset-4 form-actions">
-                <button type="submit" class="btn btn-success">Abo künden</button>
-            </div>
-        </form>
+                <div class="form-group row">
+                    <div class="offset-md-4 form-actions">
+                        <button type="submit" class="btn btn-success">Abo künden</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
 {% endblock %}

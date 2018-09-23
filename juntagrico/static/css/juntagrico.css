@@ -1,3 +1,58 @@
+/* general overrides of bootstrap */
+ul {
+    padding-left: 20px;
+}
+
+/* general stuff  checked */
+html, body {
+    font-family: "Source Sans Pro Light";
+    font-size: 18px;
+    background-color: #fefffa;
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Source Sans Pro Regular";
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
+    height: 30px;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro Light';
+    src: url('/static/fonts/SourceSansPro-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro Regular';
+    src: url('/static/fonts/SourceSansPro-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+a {
+    color: #66cc66;
+}
+
+a:hover, a:focus {
+    color: #999999;
+}
+
+a.canceled {
+    color: #ff3399;
+    text-decoration: line-through;
+}
+
+a.canceled:hover, a.canceled:focus {
+    color: #ff3399;
+}
+
+/* logo stuff checked */
 .juntagrico_logo {
     background: url(/static/img/juntagrico.png) 0 0px;
     display: inline-block;
@@ -5,62 +60,40 @@
     height: 161px;
 }
 
-.next-jobs {
-    margin-top: 5px;
+/* title stuff checked */
+.juntagrico h3 {
+    margin-top: 0;
+    margin-bottom: 40px;
+    color: #66cc66;
+    font-size: 30pt;
 }
 
-.next-jobs .time {
-    margin-bottom: 10px;
-    font-size: 14px;
+/* container stuff checked */
+.container {
+    min-height: 100%;
+    position: relative;
+    padding: 0px 40px 0 40px;
 }
 
-.jobs .date {
-    width: 150px;
+@media (min-width: 768px) {
+    .container {
+        width: 750px
+    }
 }
 
-.jobs .status {
-    padding-left: 30px;
+@media (min-width: 992px) {
+    .container {
+        width: 970px
+    }
 }
 
-.jobs .full {
-    opacity: 0.2;
+@media (min-width: 1200px) {
+    .container {
+        width: 1170px
+    }
 }
 
-#jobs .list {
-    width: 100%;
-}
-
-#jobs_header, #filter-locos_header {
-    margin-bottom: 20px;
-}
-
-#filter-members a {
-    color: white;
-    text-decoration: underline;
-}
-
-#jobs_footer, #filter-members_footer {
-    margin-top: 20px;
-}
-
-#jobs_page_prev, #jobs_page_next, #filter-locos_page_prev, #filter-locos_page_next {
-    display: none !important;
-}
-
-.jobstatus {
-    margin-right: -7px;
-}
-
-.delivery-table {
-	width: 70%;
-	font-size: 14px;
-	margin-bottom: 0px;
-}
-
-.delivery-row {
-    margin-bottom: 10px;
-}
-
+/* row size stuff checked */
 .juntagrico {
     margin-top: 0;
 }
@@ -75,58 +108,86 @@
     margin-bottom: 50px;
 }
 
-.juntagrico h3 {
-    margin-top: 0;
-	margin-bottom: 40px;
-	color: #66cc66;
-    font-size: 30pt;
+/* messages stuff checked */
+.messages {
+    margin-bottom: 2em;
 }
 
-.createsubscription .control-label {
-    font-size: 18px;
-    font-weight: regular;
+/* menu stuff checked */
+.main-menu {
+    font-size: 19px;
+    font-family: "Source Sans Pro Regular";
 }
 
-.createsubscription label {
-    font-weight: normal;
+.main-menu-small {
+    font-size: 14px;
 }
 
-.createsubscription #depot {
-    margin-bottom: 3px;
+.main-menu li a, .admin-menu li a {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 0px;
+    margin-top: 2px;
+    line-height: 22px;
 }
 
-#map-canvas {
-    width: 100%;
-    height: 400px;
+.main-menu.separator {
+    height: 12px;
 }
 
-
-.high-label {
-    line-height: 35px;
+.admin-menu {
+    font-family: "Source Sans Pro Light";
+    font-size: 14px;
 }
 
-.high-label input[type=checkbox] {
-    margin-top: 9px;
+ul.subadmin-menu {
+    padding-left: 7px;
 }
 
-.file-upload {
-    line-height: 30px;
-}
-
-.file-upload-button {
+li.inline {
     display: inline-block;
-    position: relative;
 }
 
-.file-upload-button > input[type=file] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
+a.inline {
+    display: inline-block;
+    padding-right: 0px;
 }
 
+.nav-link, .nav-link:focus {
+    color: black;
+}
+
+.nav-link.active, .nav-link.active:focus {
+    color: #66cc66;
+}
+
+.nav-link.active:hover {
+    color: black;
+}
+
+.nav-link:hover {
+    color: #66cc66;
+}
+
+.nav-link.yellow {
+    color: #ffcc66;
+}
+
+.nav-link.yellow:hover, .nav-link.yellow:focus {
+    color: #999999;
+}
+
+/* next jobs widget menu stuff checked */
+.next-jobs {
+    margin-top: 5px;
+}
+
+.next-jobs .time {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* mail recipients stuff checked */
 textarea#recipients {
     width: 100%;
 }
@@ -149,28 +210,67 @@ textarea#recipients[disabled=disabled] {
     content: ")";
 }
 
-.nav li.inline a {
-    display: inline-block;
-    padding-left: 0;
-    padding-right: 0;
-    margin-left: 0;
-}
-
-.nav li.inline a:hover {
-    background: none;
-}
-
-table.future {
-    width: 100%;
-    margin-top: 50px;
-}
-
-table.future th {
-    text-align: left;
-}
-
-table.future td {
+/* mail attachement stuff checked */
+.file-upload {
     line-height: 30px;
+}
+
+.file-upload-button {
+    display: inline-block;
+    position: relative;
+}
+
+.file-upload-button > input[type=file] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+}
+
+/* core assignment stuff checked */
+.core {
+    color: #780fff;
+}
+
+/* map stuff checked */
+#map-canvas {
+    width: 100%;
+    height: 400px;
+}
+
+/* job snippet detail toogle stuff checked */
+td.details-control, tr.shown td.details-control {
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    font-weight: 900;
+    font-size: 27px;
+    line-height: 1;
+    color: #66cc66;
+}
+
+td.details-control::before {
+    content: "\f105";
+}
+
+tr.shown td.details-control::before {
+    content: "\f107";
+}
+
+/* increment buttons stuff*/
+.btn-increment, .btn-decrement {
+    height: 30px;
+    line-height: 1;
+}
+
+/* data table stuff checked */
+th {
+    font-weight: normal;
+}
+
+.table th {
+    border-top-style: none;
 }
 
 #filter {
@@ -181,6 +281,7 @@ table.future td {
     width: 100%;
     font-size: 10px;
 }
+
 #waitinglist {
     width: 100%;
 }
@@ -190,231 +291,9 @@ table.future td {
     font-size: 14px;
 }
 
-.main-menu {
-    font-size: 18px;
-}
-
-.main-menu li a {
-    line-height: 15px;
-}
-
-.main-menu .separator {
-    height: 10px;
-}
-
-.main-menu-small {
+/* deliveries stuff checked */
+.delivery-table {
+    width: 70%;
     font-size: 14px;
-    color: #ffcc66
-}
-
-.admin-menu {
-    font-family: "Source Sans Pro Light";
-    font-size: 14px;
-}
-
-.subadmin-menu {
-    padding-left: 7px;
-}
-
-.admin-menu li a {
-    line-height: 10px;
-}
-
-.table th {
-    position: relative;
-}
-
-.table th:before {
-    position: absolute;
-    right: 10px;
-}
-
-.messages {
-   margin-bottom: 2em;
-}
-
-/* general overrides of bootstrap */
-@font-face {
-    font-family: 'Source Sans Pro Light';
-    src: url('/static/fonts/SourceSansPro-Light.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Source Sans Pro Regular';
-    src: url('/static/fonts/SourceSansPro-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-a {
-    color: #66cc66;
-}
-
-a.canceled {
-    color: #ff3399;
-    text-decoration: line-through;
-}
-
-a.canceled:hover, a.canceled:focus {
-    color: #ff3399;
-}
-
-ul {
-    padding-left: 20px;
-}
-
-a:hover, a:focus {
-    color: #999999;
-}
-
-html, body {
-    font-family: "Source Sans Pro Light";
-    font-size: 18px;
-    background-color: #fefffa;
-    height: 100%;
-}
-
-h1, h2, h3, h4, h5, h6, .main-menu {
-    font-family: "Source Sans Pro Regular";
-}
-
-select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
-    height: 30px;
-}
-
-/* general stuff */
-
-.main-menu {
-    font-size: 19px;
-}
-
-.main-menu li a {
-    padding: 0;
-    line-height: 34px;
-}
-
-.main-menu li a {
-    padding: 0;
-}
-
-.container {
-    min-height: 100%;
-    position: relative;
-    padding: 0px 40px 0 40px;
-}
-
-/* menu */
-.nav-pills > li > a {
-	color: black;
-}
-
-
-.nav-pills > li.active > a {
-    color: #66cc66;
-    background-color: transparent;
-}
-
-.nav-pills.nav-stacked > li > a, .nav-pills ul.nav-pills.nav-stacked > li:last-child > a {
-    background-color: transparent;
-}
-
-.nav-pills > li > a.yellow {
-    color: #ffcc66;;
-    background-color: transparent;
-}
-
-.nav-pills > li > a.yellow:hover, .nav-pills > li > a:focus {
-    color: #999999;
-    background-color: transparent;
-}
-
-.nav-pills > li.active > a:hover, .nav-pills > .active > a:focus {
-    color: black;
-    background-color: transparent;
-}
-
-.nav-pills > li > a {
-    border-radius: 0;
-    margin-top: 0;
-    line-height: 22px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    margin-left: -20px;
-    padding-left: 20px;
-}
-
-.nav-pills.nav-stacked > li {
-    width: 280px;
-}
-
-.nav-pills.nav-stacked > li > a, .nav-pills ul.nav-pills.nav-stacked > li:last-child > a {
-    margin-bottom: 0;
-}
-
-.nav-pills a:hover {
-    color: #66cc66;
-}
-
-.nav-pills ul {
-    margin-bottom: 0;
-    background-color: transparent;
-}
-
-.nav-pills ul.nav-pills > .active > a, .nav-pills ul.nav-pills > .active > a:hover, .nav-pills ul.nav-pills > .active > a:focus {
-    background-color: transparent;
-}
-
-/* contact */
-
-.impersonate {
-    position: relative;
-    top: 70px;
-}
-
-.jobs .core, .teams .core {
-    color: #780fff;
-}
-
-/* dl stuff*/
-.dl-horizontal dt, dd{
-    font-weight: normal;
-    margin-bottom: 1em;
-    text-align: left;
-    width: auto;
-}
-
-/* form stuff */
-.form-horizontal .control-label {
-    text-align: left;
-    padding-top: 0 px;
-    font-weight: normal;
-}
-
-/* label stuff */
-label {
-    font-weight: normal;
-}
-
-/* table stuff */
-th {
-    font-weight: normal;
-}
-
-td.details-control, tr.shown td.details-control {
-    font-family: 'Glyphicons Halflings';
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1;    
-	color: #66cc66;
-}
-
-
-td.details-control::before {
-    content: "\e080";
-}
-
-tr.shown td.details-control::before {
-    content: "\e114";
+    margin-bottom: 0px;
 }

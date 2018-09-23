@@ -14,12 +14,23 @@ define([], function () {
         },
         "drawCallback": function (settings) {
             // do not like this but it works so far till i get around to find the correct api call
-            updateSendEmailButton($("#filter-table tr").size()-1);
+            updateSendEmailButton($("#filter-table tr").length-2);
         },
         "language": {
             "search": "Suchen: "
         }
     });
+
+    $("#filter-table_filter label input").each(function () {
+        $(this).addClass("form-control input-sm");
+        $(this).css("width","auto");
+        $(this).css("display","inline");
+    });
+
+    $("#filter-table_filter").each(function () {
+        $(this).css("text-align","right");
+    });
+
     function updateSendEmailButton(count) {
         if (count == 0) {
             $("button#send-email")

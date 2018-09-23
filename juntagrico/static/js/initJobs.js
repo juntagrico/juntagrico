@@ -1,7 +1,7 @@
 /*global define*/
 define([], function () {
 
-    $("#filter-table thead th").each(function () {
+    $("#filter-table thead th.table-search").each(function () {
         var title = $(this).text();
         $(this).append("<input type='text' placeholder='' style='width: 100%;' class='form-control input-sm' />");
     });
@@ -17,6 +17,16 @@ define([], function () {
         "language": {
             "search": "Suchen: "
         }
+    });
+
+    $("#filter-table_filter label input").each(function () {
+        $(this).addClass("form-control input-sm");
+        $(this).css("width","auto");
+        $(this).css("display","inline");
+    });
+
+    $("#filter-table_filter").each(function () {
+        $(this).css("text-align","right");
     });
 
     table.columns().every(function () {
