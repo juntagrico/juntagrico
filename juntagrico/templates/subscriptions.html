@@ -62,8 +62,8 @@
                     <td>{{ subscription.subscription.recipients_names }}</td>
                     <td>{{ subscription.subscription.depot.name }}</td>
                     <td>{{ subscription.subscription.overview }}</td>
-                    <td>N$-{{ subscription.assignments|floatformat:"0" }} (von {{ subscription.subscription.required_assignments }})</td>
-                    {% if show_core %}<td>C$-{{ subscription.core_assignments|floatformat:"0" }} (von {{ subscription.subscription.required_core_assignments }})</td>{% endif %}
+                    <td>N%-{{ subscription.assignments|floatformat:"0" }} (von {{ subscription.subscription.required_assignments }})</td>
+                    {% if show_core %}<td>C%-{{ subscription.core_assignments|floatformat:"0" }} (von {{ subscription.subscription.required_core_assignments }})</td>{% endif %}
                     <td>{% if subscription.subscription.active %}<img src="{% images "single_full" %}"/> Aktiv{% else %}<img src="{% images "single_empty" %}"/> Wartend{% endif %}</td>
                     <td>{{ subscription.subscription.activation_date }}</td>
                     <td class="email">{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
