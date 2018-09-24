@@ -23,6 +23,7 @@ class Depot(models.Model):
         'depot')+' Name', max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
+    capacity = models.PositiveIntegerField('Kapazität', default=0)
     latitude = models.CharField('Latitude', max_length=100, default='',
                                 null=True, blank=True)
     longitude = models.CharField('Longitude', max_length=100, default='',

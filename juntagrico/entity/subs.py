@@ -196,6 +196,13 @@ class Subscription(Billable):
         return result
 
     @property
+    def required_core_assignments(self):
+        result = 0
+        for type in self.types.all():
+            result += type.required_core_assignments
+        return result
+
+    @property
     def price(self):
         result = 0
         for type in self.types.all():

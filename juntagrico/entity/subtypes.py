@@ -10,9 +10,10 @@ class SubscriptionSize(models.Model):
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
     long_name = models.CharField(_('Langer Name'), max_length=100, unique=True)
-    units = models.PositiveIntegerField(_('Einheiten'), unique=True)
+    units = models.FloatField(_('Einheiten'), unique=True)
     depot_list = models.BooleanField(
         _('Sichtbar auf Depotliste'), default=True)
+    visible = models.BooleanField(_('Sichtbar'), default=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
 
@@ -37,8 +38,12 @@ class SubscriptionType(models.Model):
         _('Anz benötigter Anteilsscheine'), default=0)
     required_assignments = models.PositiveIntegerField(
         _('Anz benötigter Arbeitseinsätze'))
-    price = models.PositiveIntegerField(_('Preis'))
+    required_core_assignments = models.PositiveIntegerField(
+        _('Anz benötigter Kern Arbeitseinsätze'), default=0)
+    price = models.IntegerField(_('Preis'))
     visible = models.BooleanField(_('Sichtbar'), default=True)
+    trial = models.BooleanField(_('ProbeAbo'), default=False)
+    trial_days = models.IntegerField(_('ProbeAbo Dauer in Tagen'),default=0)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
 

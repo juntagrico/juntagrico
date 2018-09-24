@@ -166,11 +166,8 @@ def subscriptions(request):
 
         subscriptions.append({
             'subscription': subscription,
-            'text': get_status_image_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
-            'core_assignments': core_assignments,
-            'icon': get_status_image(
-                100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
+            'core_assignments': core_assignments
         })
 
     renderdict = get_menu_dict(request)
@@ -195,11 +192,8 @@ def filter_subscriptions_depot(request, depot_id):
 
         subscriptions.append({
             'subscription': subscription,
-            'text': get_status_image_text(100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0),
             'assignments': assignments,
-            'core_assignments': core_assignments,
-            'icon': get_status_image(
-                100 / (subscription.size * 10) * assignments if subscription.size > 0 else 0)
+            'core_assignments': core_assignments
         })
 
     renderdict = get_menu_dict(request)
