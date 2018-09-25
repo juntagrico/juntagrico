@@ -196,7 +196,9 @@
                             <a class="nav-link" href="/my/export">Exporte</a>
                         </li>
                     {% endif %}
-                    
+                    {% for menu in admin_menus %}
+                        {{ menu }}
+                    {% endfor%}
                     {% for menu in admin_menus %}
                         {% include menu %}
                     {% endfor%}
