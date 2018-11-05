@@ -9,7 +9,7 @@ class MyHTMLWidget(forms.widgets.Widget):
     Widget that display (non-editably) arbitrary html.
     '''
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None,  renderer=None,):
         if value is None:
             return ''
         return format_html(value)
