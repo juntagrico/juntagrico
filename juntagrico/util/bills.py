@@ -69,7 +69,7 @@ def bill_subscription(subscription):
                                     start)
 
     bill = Bill.objects.create(billable=subscription,
-                               ammount=price,
+                               amount=price,
                                ref_number=refnumber,
                                bill_date=now)
     send_bill_sub(bill, subscription, start, end, subscription.primary_member)
@@ -80,7 +80,7 @@ def bill_share(share):
     price = float(Config.share_price())
     refnumber = generate_ref_number('share', share.id, share.member.id)
     bill = Bill.objects.create(billable=share,
-                               ammount=price,
+                               amount=price,
                                ref_number=refnumber,
                                bill_date=now)
     send_bill_share(bill, share, share.member)
@@ -101,7 +101,7 @@ def bill_extra_subscription(extra, period):
                                     extra.main_subscription.primary_member.id,
                                     start)
     bill = Bill.objects.create(billable=extra,
-                               ammount=price,
+                               amount=price,
                                ref_number=refnumber,
                                bill_date=now)
     member = extra.main_subscription.primary_member
