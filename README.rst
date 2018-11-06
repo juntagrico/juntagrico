@@ -30,6 +30,10 @@ juntagrico
 .. image:: https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico.svg
     :target: https://github.com/juntagrico/juntagrico
 
+.. image:: https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=master
+     :target: https://requires.io/github/juntagrico/juntagrico/requirements/?branch=master
+     :alt: Requirements Status
+
 **the easy solution for cooperative vegetable growers**
 
 juntagrico is a management platform for community gardens and vegetable cooperatives.
