@@ -88,7 +88,11 @@
                 {% else %}
                     Du hast noch keine {% vocabulary "co_member_pl" %} eingetragen.<br/>
                 {% endif %}
-                <a href="/my/cosubmember/{{ subscription.id }}">Hier {% vocabulary "co_member_pl" %} eintragen</a>
+                {% if primary %}
+                    <a href="/my/cosubmember/{{ subscription.id }}">Hier {% vocabulary "co_member_pl" %} eintragen</a>
+                {% else %}
+                    Der Hauptabonnnent kann weitere {% vocabulary "co_member_pl" %} hinzufügen.
+                {% endif %}
             </div>
         </div>
         <div class="row mb-3">
