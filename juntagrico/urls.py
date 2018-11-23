@@ -30,6 +30,7 @@ urlpatterns = [
     url('^my/info/unpaidshares$', juntagrico.info_unpaid_shares),
     url(r'^logout/$', juntagrico.logout_view),
     url(r'^accounts/login/$', LoginView.as_view()),
+    url('^my/json/profile$', juntagrico.profile_json),
 
     # subscription related juntagrico stuff
     url('^my/subscription/detail/$', juntagrico_subscription.subscription),
