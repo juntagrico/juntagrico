@@ -8,7 +8,7 @@ from datetime import date
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 
 from juntagrico.dao.depotdao import DepotDao
@@ -432,15 +432,6 @@ def profile(request):
         'menu': {'personalInfo': 'active'},
     })
     return render(request, 'profile.html', renderdict)
-
-
-@login_required
-def profile_json(request):
-    member = request.user.member
-    response = JsonResponse({'email': member.email,
-                             'first_name': member.first_name,
-                             'last_name': member.last_name})
-    return response
 
 
 @login_required
