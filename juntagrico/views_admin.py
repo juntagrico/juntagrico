@@ -14,6 +14,7 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.models import *
+from juntagrico.util.management_list import get_changedate
 from juntagrico.views import get_menu_dict
 from juntagrico.util.jobs import *
 from juntagrico.util.pdf import *
@@ -383,29 +384,61 @@ def export(request):
 
 @permission_required('juntagrico.is_operations_group')
 def waitinglist(request):
-    return subscription_management_list(SubscriptionDao.not_started_subscriptions(), get_menu_dict(request), 'management_lists/waitinglist.html', request)
+    render_dict = get_menu_dict(request)
+    render_dict.update(get_changedate(request))
+    return subscription_management_list(SubscriptionDao.not_started_subscriptions(), render_dict, 'management_lists/waitinglist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def canceledlist(request):
-    return subscription_management_list(SubscriptionDao.canceled_subscriptions(), get_menu_dict(request), 'management_lists/canceledlist.html', request)
+    render_dict = get_menu_dict(request)
+    render_dict.update(get_changedate(request))
+    return subscription_management_list(SubscriptionDao.canceled_subscriptions(), render_dict, 'management_lists/canceledlist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def typechangelist(request):
+    render_dict = get_menu_dict(request)
+    render_dict.update(get_changedate(request))
     changedlist = []
     subscriptions = SubscriptionDao.all_active_subscritions()
     for subscription in subscriptions:
         if subscription.types_changed:
             changedlist.append(subscription)
-    return subscription_management_list(changedlist, get_menu_dict(request), 'management_lists/typechangelist.html', request)
+    return subscription_management_list(changedlist, render_dict, 'management_lists/typechangelist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def extra_waitinglist(request):
-    return subscription_management_list(ExtraSubscriptionDao.waiting_extra_subs(), get_menu_dict(request), 'management_lists/extra_waitinglist.html', request)
+    render_dict = get_menu_dict(request)
+    render_dict.update(get_changedate(request))
+    return subscription_management_list(ExtraSubscriptionDao.waiting_extra_subs(),render_dict, 'management_lists/extra_waitinglist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def extra_canceledlist(request):
-    return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), get_menu_dict(request), 'management_lists/extra_canceledlist.html', request)
+    render_dict = get_menu_dict(request)
+    render_dict.update(get_changedate(request))
+    return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), render_dict, 'management_lists/extra_canceledlist.html', request)
+
+
+@permission_required('juntagrico.is_operations_group')
+def set_change_date(request):
+    if request.method != 'POST':
+        raise Http404
+    raw_date = request.POST.get('date')
+    date = timezone.datetime.strptime(raw_date, '%m/%d/%Y')
+    request.session['changedate'] = date
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('http://'+Config.adminportal_server_url())
+
+
+@permission_required('juntagrico.is_operations_group')
+def unset_change_date(request):
+    request.session['changedate'] = None
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('http://'+Config.adminportal_server_url())

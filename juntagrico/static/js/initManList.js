@@ -74,4 +74,6 @@ define([], function () {
         $("#recipients_count").val(emails.length);
         return;
     });
+
+    $('[data-toggle="datepicker"]').datepicker();
 });
