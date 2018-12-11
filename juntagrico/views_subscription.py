@@ -177,7 +177,7 @@ def extra_change(request, subscription_id):
         'extras': subscription.extra_subscription_set.all(),
         'sub_id': subscription_id
     })
-    return render(request, 'extra_change.html', renderdict)
+    return render(request, 'management_lists/templates/extra_change.html', renderdict)
 
 
 def signup(request):

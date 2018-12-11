@@ -282,13 +282,17 @@ th {
     font-size: 10px;
 }
 
-#waitinglist {
+#managementlist {
     width: 100%;
 }
 
-#waitinglist table {
+#managementlist table {
     width: 100%;
     font-size: 14px;
+}
+
+#managementlist table th {
+    vertical-align: top;
 }
 
 /* deliveries stuff checked */

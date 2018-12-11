@@ -383,12 +383,12 @@ def export(request):
 
 @permission_required('juntagrico.is_operations_group')
 def waitinglist(request):
-    return subscription_management_list(SubscriptionDao.not_started_subscriptions(), get_menu_dict(request), 'waitinglist.html', request)
+    return subscription_management_list(SubscriptionDao.not_started_subscriptions(), get_menu_dict(request), 'management_lists/waitinglist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def canceledlist(request):
-    return subscription_management_list(SubscriptionDao.canceled_subscriptions(), get_menu_dict(request), 'canceledlist.html', request)
+    return subscription_management_list(SubscriptionDao.canceled_subscriptions(), get_menu_dict(request), 'management_lists/canceledlist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -398,14 +398,14 @@ def typechangelist(request):
     for subscription in subscriptions:
         if subscription.types_changed:
             changedlist.append(subscription)
-    return subscription_management_list(changedlist, get_menu_dict(request), 'typechangelist.html', request)
+    return subscription_management_list(changedlist, get_menu_dict(request), 'management_lists/typechangelist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def extra_waitinglist(request):
-    return subscription_management_list(ExtraSubscriptionDao.waiting_extra_subs(), get_menu_dict(request), 'extra_waitinglist.html', request)
+    return subscription_management_list(ExtraSubscriptionDao.waiting_extra_subs(), get_menu_dict(request), 'management_lists/extra_waitinglist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def extra_canceledlist(request):
-    return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), get_menu_dict(request), 'extra_canceledlist.html', request)
+    return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), get_menu_dict(request), 'management_lists/extra_canceledlist.html', request)

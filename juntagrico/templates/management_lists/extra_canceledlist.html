@@ -1,0 +1,35 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load config %}
+{% block page_title %}
+    <h3>Extra-Abo Kündigungsliste</h3>
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+        <tr>
+            <th class="filter">Typ</th>
+            <th class="filter">Kontakt</th>
+            <th class="filter">Email</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for extrasubscription in management_list %}
+            <tr>
+                <td>{{ extrasubscription.type.name }}</td>
+                <td>{{ extrasubscription.main_subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}</td>
+                <td>
+                    <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="/my/mails">
+                        {% csrf_token %}
+                        <input type="hidden" name="recipients" value="{{ extrasubscription.main_subscription.primary_member.email }}"/>
+                        <input type="hidden" name="recipients_count" value="1"/>
+                        <a href="#" onclick="$('#extrasubscription{{ extrasubscription.id }}').submit();">{{ extrasubscription.main_subscription.primary_member.email }}</a>
+                    </form>
+                </td>
+                <td><a href="/my/extra/deactivate/{{ extrasubscription.id }}/" class="btn btn-success">deaktivieren</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
