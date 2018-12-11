@@ -21,7 +21,7 @@ Release Notes
 * IBAN field not nullable blank used for no value
 
 
-1.1.4
+1.1.5
 -----
  Has migrations
 
@@ -42,3 +42,4 @@ Dev
 * added new setting ENABLE_SHARES to enable or disable all share related functions
 * upgrade to bootstrap 4.1.3
 * upgraded requirements
+* added possibility to imitate specal daten when activating and deactivating subscriptions and extrasubscriptions

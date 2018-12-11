@@ -281,9 +281,11 @@ def add_member(request, subscription_id):
 @permission_required('juntagrico.is_operations_group')
 def activate_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
+    change_date = request.session.get('changedate', None)
     if subscription.active is False and subscription.deactivation_date is None:
         try:
             subscription.active = True
+            subscription.activation_date = change_date
             subscription.save()
         except ValidationError:
             renderdict = get_menu_dict(request)
@@ -297,12 +299,15 @@ def activate_subscription(request, subscription_id):
 @permission_required('juntagrico.is_operations_group')
 def deactivate_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
+    change_date = request.session.get('changedate', None)
     if subscription.active is True:
         subscription.active = False
+        subscription.deactivation_date = change_date
         subscription.save()
         for extra in subscription.extra_subscription_set.all():
             if extra.active is True:
                 extra.active = False
+                extra.deactivation_date = change_date
                 extra.save()
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
@@ -358,8 +363,10 @@ def cancel_subscription(request, subscription_id):
 @permission_required('juntagrico.is_operations_group')
 def activate_extra(request, extra_id):
     extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    change_date = request.session.get('changedate', None)
     if extra.active is False and extra.deactivation_date is None:
         extra.active = True
+        extra.activation_date = change_date
         extra.save()
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
@@ -370,8 +377,10 @@ def activate_extra(request, extra_id):
 @permission_required('juntagrico.is_operations_group')
 def deactivate_extra(request, extra_id):
     extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    change_date = request.session.get('changedate', None)
     if extra.active is True:
         extra.active = False
+        extra.deactivation_date = change_date
         extra.save()
     if request.META.get('HTTP_REFERER')is not None:
         return redirect(request.META.get('HTTP_REFERER'))
