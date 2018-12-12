@@ -470,7 +470,7 @@ DEFAULT_MAILER
 
   .. code-block:: python
 
-    'juntagrico.util.defaultmailer'
+    'juntagrico.util.defaultmailer.Mailer'
 
 IMAGES
 ------
