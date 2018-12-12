@@ -266,6 +266,12 @@ class Config:
         return ''
 
     @staticmethod
+    def default_mailer():
+        if hasattr(settings, 'DEFAULT_MAILER'):
+            return settings.DEFAULT_MAILER
+        return 'juntagrico.util.defaultmailer'
+
+    @staticmethod
     def images(key):
         if hasattr(settings, 'IMAGES'):
             if key in settings.IMAGES:

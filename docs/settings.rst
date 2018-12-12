@@ -450,6 +450,16 @@ DEMO_PWD
 
     ''
 
+DEFAULT_MAILER
+--------
+  The code to send mails. for more info see the code specified in the default value
+
+  default value
+
+  .. code-block:: python
+
+    'juntagrico.util.defaultmailer'
+
 IMAGES
 ------
   Defining the different images for core and job assignments etc
