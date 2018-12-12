@@ -188,6 +188,12 @@ class Config:
         return True
 
     @staticmethod
+    def enable_registration():
+        if hasattr(settings, 'ENABLE_REGISTRATION'):
+            return settings.ENABLE_REGISTRATION
+        return True
+
+    @staticmethod
     def base_fee():
         if hasattr(settings, 'BASE_FEE'):
             return settings.BASE_FEE

@@ -44,3 +44,4 @@ Dev
 * upgraded requirements
 * added possibility to imitate specal daten when activating and deactivating subscriptions and extrasubscriptions
 * overhauled mail stuff. possibility to exchange mail sending code with the following setting DEFAULT_MAILER
+* new setting ENABLE_REGISTRATION

@@ -6,6 +6,7 @@ import string
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import Http404
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
@@ -184,6 +185,8 @@ def signup(request):
     '''
     Become a member of juntagrico
     '''
+    if Config.enable_registration() is False:
+        raise Http404
     success = False
     agberror = False
     agbchecked = False

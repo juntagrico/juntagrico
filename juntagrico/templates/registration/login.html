@@ -2,6 +2,7 @@
 {% load config %}
 
 {% block allcontent %}
+    {% config "enable_registration" as enable_registration %}
         <div class="col-md-2"></div>
         <div class="col-md-8">
             <form action="" method="post">
@@ -28,11 +29,13 @@
                         <a href="/my/newpassword">Neues Passwort anfordern</a>
                     </div>
                 </div>
+                {% if enable_registration %}
                 <div class="form-group row">
                     <div class="offset-md-4 col-md-8">
                         <a href="/my/signup">Registrieren und mitmachen!</a>
                     </div>
                 </div>
+                {% endif %}
                 <input type="hidden" name="next" value="{{ next|escape }}"/>
             </form>
         </div>

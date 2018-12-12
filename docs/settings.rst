@@ -306,6 +306,18 @@ ENABLE_SHARES
 
     True
 
+ENABLE_REGISTRATION
+-----------
+  Decides if new member can registrate
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    True
+
 BASE_FEE
 --------
   Yearly fee for members without a subscription
