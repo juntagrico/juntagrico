@@ -58,51 +58,47 @@
                         {% endif %}
                     {% endfor %}
                     <br/>{% endif %}
-                <div class="row">
-                    <div class="col-md-4">
-                        Weitere Bereiche:
+                    <div class="row">
+                        <div class="col-md-4">
+                            Weitere Bereiche:
+                        </div>
+                        <div class="col-md-8">
+                            Koordiniert von:
+                        </div>
                     </div>
-                    <div class="col-md-8">
-                        Koordiniert von:
-                    </div>
-                </div>
-                <div class="row separator"></div>
-                {% for area in areas %}
-                    {% if not area.core %}
-                        <div class="row align-items-center h-100">
-                            <div class="col-md-1">
+                    <div class="row separator"></div>
+                    {% for area in areas %}
+                        {% if not area.core %}
+                            <div class="row align-items-center h-100">
                                 <div class="col-md-1">
                                     <span class="switch switch-sm">
-                                      <input type="checkbox" class="switch" id="area{{ area.id }}" name="area{{ area.id }}"
-                                             {% if area.checked %}checked="checked"{% endif %}/>
+                                    <input type="checkbox" class="switch" id="area{{ area.id }}" name="area{{ area.id }}"
+                                            {% if area.checked %}checked="checked"{% endif %}/>
                                         <label for="area{{ area.id }}"></label>
                                     </span>
                                 </div>
+                                <div class="col-md-3">
+                                    {{ area.name }}
+                                </div>
+                                <div class="col-md-7">
+                                    {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
+                                    {% if area.email is not None %}
+                                        <a href="mailto:{{ area.email }}">{{ area.email }}</a>
+                                    {% else %}
+                                        <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                {{ area.name }}
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
-                            {% if area.email is not None %}
-                                <a href="mailto:{{ area.email }}">{{ area.email }}</a>
-                            {% else %}
-                                <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
-                            {% endif %}
-                        </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-        {% if success %}
-            <br/>
-            <div class="alert alert-success">Tätigkeitsbereiche erfolgreich geändert</div>
-        {% endif %}
-        <div class="form-actions">
-            <button type="submit" class="btn btn-success">Tätigkeitsbereiche ändern</button>
+                        {% endif %}
+                    {% endfor %}
+                {% if success %}
+                    <br/>
+                    <div class="alert alert-success">Tätigkeitsbereiche erfolgreich geändert</div>
+                {% endif %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Tätigkeitsbereiche ändern</button>
+                </div>
+            </form>
         </div>
-        </form>
-
-    </div>
     </div>
 {% endblock %}
