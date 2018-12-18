@@ -153,7 +153,7 @@ def size_change(request, subscription_id):
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': subscription.future_types.all()[0].id,
-        'subscription_sizes': SubscriptionSizeDao.all_sizes_ordered()
+        'subscription_sizes': SubscriptionSizeDao.all_visible_sizes_ordered()
     })
     return render(request, 'size_change.html', renderdict)
 
