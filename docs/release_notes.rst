@@ -29,7 +29,7 @@ Release Notes
 * Other various bugfixes
 
 
-Dev
+1.1.6
 -----
  Has migrations
 
@@ -46,3 +46,8 @@ Dev
 * overhauled mail stuff. possibility to exchange mail sending code with the following setting DEFAULT_MAILER
 * new setting ENABLE_REGISTRATION
 * possibility to hide subscription sizes in subscription creation
+
+
+Dev
+-----
+ Has no migrations
