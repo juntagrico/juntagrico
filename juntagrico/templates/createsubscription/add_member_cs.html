@@ -5,25 +5,28 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>MitabonnentIn hinzufügen</h3>
+        <h3>{% vocabulary "co_member" %} hinzufügen</h3>
     </div>
 {% endblock %}
 
 {% block allcontent %}
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        Falls du dein Abo mit jemandem teilst und diese Person als MitabonnentIn hinzufügen möchtest, dann fülle bitte die untenstehenden Felder aus
-        und klicke anschliessend auf "MitabonnentIn hinzufügen". 
+    <div class="offset-md-2 col-md-8">
+    <div class="row mb-4">
+    <div class="col-md-12">
+        Falls du dein {% vocabulary "subscription" %} mit jemandem teilst und diese Person als {% vocabulary "co_member" %} hinzufügen möchtest, dann fülle bitte die untenstehenden Felder aus
+        und klicke anschliessend auf "{% vocabulary "co_member" %} hinzufügen". 
         <br/>
-		Bei bestehenden {% config "members_string" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
+		Bei bestehenden {% vocabulary "member_pl" %} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.
         <br/>
-        Sobald du alle Mitabonnenten hinzugefügt hast, klicke auf "Weiter".
-        <form action="" method="post" class="form-horizontal" id="new_member">
+        Sobald du alle {% vocabulary "co_member_pl" %} hinzugefügt hast, klicke auf "Weiter".
+    </div>
+    </div>
+        <form action="" method="post"id="new_member">
             {% csrf_token %}
-            <div class="form-group {% if memberform.last_name.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_last_name">Name *</label>
+            <div class="form-group row {% if memberform.last_name.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_last_name">Name *</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.last_name }}
                     {% if memberform.last_name.errors %}
                         <span class="help-inline">Name ungültig</span>
@@ -31,10 +34,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.first_name.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_first_name">Vorname *</label>
+            <div class="form-group row {% if memberform.first_name.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_first_name">Vorname *</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.first_name }}
                     {% if memberform.first_name.errors %}
                         <span class="help-inline">Vorname ungültig</span>
@@ -42,10 +45,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.addr_street.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_street">{{ memberform.addr_street.label }} *</label>
+            <div class="form-group row {% if memberform.addr_street.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_addr_street">{{ memberform.addr_street.label }} *</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.addr_street }}
                     {% if memberform.addr_street.errors %}
                         <span class="help-inline">Strasse ungültig</span>
@@ -53,10 +56,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.addr_zipcode.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }} *</label>
+            <div class="form-group row {% if memberform.addr_zipcode.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }} *</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.addr_zipcode }}
                     {% if memberform.addr_zipcode.errors %}
                         <span class="help-inline">PLZ ungültig</span>
@@ -64,10 +67,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.addr_location.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_location">{{ memberform.addr_location.label }} *</label>
+            <div class="form-group row {% if memberform.addr_location.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_addr_location">{{ memberform.addr_location.label }} *</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.addr_location }}
                     {% if memberform.addr_location.errors %}
                         <span class="help-inline">Ort ungültig</span>
@@ -75,10 +78,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.phone.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_phone">{{ memberform.phone.label }} *</label>
+            <div class="form-group row {% if memberform.phone.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_phone">{{ memberform.phone.label }} *</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.phone }}
                     {% if memberform.phone.errors %}
                         <span class="help-inline">Telefon ungültig</span>
@@ -86,10 +89,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.mobile_phone.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_mobile_phone">{{ memberform.mobile_phone.label }} &nbsp;</label>
+            <div class="form-group row {% if memberform.mobile_phone.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_mobile_phone">{{ memberform.mobile_phone.label }} &nbsp;</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.mobile_phone }}
                     {% if memberform.mobile_phone.errors %}
                         <span class="help-inline">Mobile ungültig</span>
@@ -97,10 +100,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.email.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_email">E-Mail Adresse *</label>
+            <div class="form-group row {% if memberform.email.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="id_email">E-Mail Adresse *</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.email }}
 
                     {% if memberform.email.errors %}
@@ -109,10 +112,10 @@
                 </div>
             </div>
 
-            <div class="form-group {% if memberform.birthday.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="birthday">Geburtstag &nbsp;</label>
+            <div class="form-group row {% if memberform.birthday.errors %}invalid{% endif %}">
+                <label class="col-md-3" for="birthday">Geburtstag &nbsp;</label>
 
-                <div class="controls col-md-9">
+                <div class="col-md-9">
                     {{ memberform.birthday }}
 
                     {% if memberform.birthday.errors %}
@@ -122,14 +125,16 @@
             </div>
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
-                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem Abo dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende Mitglieder in euer Abo aufnehmen möchtet.
+                    Diese Email-Adresse existiert bereits im System und ist bereits bei einem {% vocabulary "subscription" %} dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende {% vocabulary "member_type_pl" %} in euer{% vocabulary "subscription" %} aufnehmen möchtet.
                 </div>
             {% endif %}
-            <div class="form-actions col-md-offset-3">
-                <button type="submit" class="btn btn-success" formnovalidate>MitabonnentIn hinzufügen</button>
-                <a href="/my/create/subscription/shares" class="btn btn-success">Ich möchte keine MitabonnentInnen hinzufügen </a>
+            <div class="form-actions row">
+                <div class="offset-md-3 col-md-9">
+                <button type="submit" class="btn btn-success" formnovalidate>{% vocabulary "co_member" %} hinzufügen</button>
+                <a href="/my/create/subscription/shares" class="btn btn-success">Ich möchte keine {% vocabulary "co_member_pl" %} hinzufügen </a>
                 <a href="/my/create/subscription/shares" class="btn btn-success">Weiter</a>
                 <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+                </div>
             </div>
         </form>
     </div>

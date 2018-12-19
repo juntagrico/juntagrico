@@ -22,21 +22,23 @@
     <div class="row">
         <div class="col-md-3">Status:</div>
         <div class="col-md-5">
+        {% spaceless %}
             {% for i in slotrange %}
                 {% if i < number_of_participants %}
-                    <img class="jobstatus" src="{% images "single_full" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    <img class="" src="{% images "single_full" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% else %}
-                    <img class="jobstatus" src="{% images "single_empty" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    <img class="" src="{% images "single_empty" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% endif %}
             {% endfor %}
+        {% endspaceless %}
         </div>
     </div>
     <br/>
     {% if job.multiplier != 1 %}
     <div class="row">
-        <div class="col-md-3">{% config "assignments_string" %}:</div>
+        <div class="col-md-3">{% vocabulary "assignment_pl" %}:</div>
         <div class="col-md-5">
-            Du erhälst für diesen Job das {{ job.multiplier }} fachen an {% config "assignments_string" %} gutgeschrieben.
+            Du erhälst für diesen Job das {{ job.multiplier }} fachen an {% vocabulary "assignment_pl" %} gutgeschrieben.
         </div>
     </div>
     <br/>
@@ -96,7 +98,7 @@
                             </a>
                             {{extras|safe}}
 							{% if reachable %}
-								&nbsp;<a href="{{url}}"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></a>
+								&nbsp;<a href="{{url}}"><i class="far fa-envelope"></i></a>
 							{% endif %}
                             <br>
                             {% for comment in comments %}
@@ -114,10 +116,9 @@
     {% if can_subscribe %}
         <div class="row">
             <div class="col-md-3">Ich trage mich ein:</div>
-            <div class="col-md-5">
+            <div class="col-md-3">
                 <form action=""
                     method="POST"
-                    class="form-inline"
                     onsubmit="return confirm('Möchtest du dich sicher für diesen Job verbindlich eintragen?')">
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}

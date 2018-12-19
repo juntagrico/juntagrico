@@ -12,15 +12,18 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='assignment',
-            options={'verbose_name': 'Arbeitseinsatz', 'verbose_name_plural': 'Arbeitseinsätze'},
+            options={'verbose_name': 'Arbeitseinsatz',
+                     'verbose_name_plural': 'Arbeitseinsätze'},
         ),
         migrations.AlterModelOptions(
             name='billable',
-            options={'verbose_name': 'Verrechenbare Einheit', 'verbose_name_plural': 'Verrechenbare Einheiten'},
+            options={'verbose_name': 'Verrechenbare Einheit',
+                     'verbose_name_plural': 'Verrechenbare Einheiten'},
         ),
         migrations.AlterField(
             model_name='member',
             name='iban',
-            field=models.CharField(blank=True, default='', max_length=100, verbose_name='IBAN'),
+            field=models.CharField(
+                blank=True, default='', max_length=100, verbose_name='IBAN'),
         ),
     ]

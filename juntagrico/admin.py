@@ -36,13 +36,15 @@ class SubscriptionAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *a, **k)
         self.fields['primary_member'].queryset = self.instance.recipients
         if self.instance.pk is None:
-            self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription(self.instance)
-        elif self.instance.state == 'waiting':            
-            self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(self.instance)
+            self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription()
+        elif self.instance.state == 'waiting':
+            self.fields['subscription_members'].queryset = MemberDao.members_for_future_subscription(
+                self.instance)
         elif self.instance.state == 'inactive':
-            self.fields['subscription_members'].queryset = MemberDao.all_members()            
+            self.fields['subscription_members'].queryset = MemberDao.all_members()
         else:
-            self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(self.instance)
+            self.fields['subscription_members'].queryset = MemberDao.members_for_subscription(
+                self.instance)
         self.fields['subscription_members'].initial = self.instance.recipients_all
 
     def clean(self):
@@ -64,18 +66,18 @@ class SubscriptionAdminForm(forms.ModelForm):
         old_members = set(self.instance.members.all())
         new_members = set(self.cleaned_data['subscription_members'])
         for obj in old_members - new_members:
-            if self.instance.state == 'waiting':            
+            if self.instance.state == 'waiting':
                 obj.future_subscription = None
             elif self.instance.state == 'inactive':
-                obj.old_subscriptions.remove(self.instance)           
+                obj.old_subscriptions.remove(self.instance)
             else:
                 obj.subscription = None
             obj.save()
         for obj in new_members - old_members:
-            if self.instance.state == 'waiting':            
+            if self.instance.state == 'waiting':
                 obj.future_subscription = self.instance
             elif self.instance.state == 'inactive':
-                obj.old_subscriptions.add(self.instance)           
+                obj.old_subscriptions.add(self.instance)
             else:
                 obj.subscription = self.instance
             obj.save()
@@ -104,7 +106,8 @@ class JobCopyForm(forms.ModelForm):
         super(JobCopyForm, self).__init__(*a, **k)
         inst = k.pop('instance')
 
-        self.fields['start_date'].initial = inst.time.date() + datetime.timedelta(days=1)
+        self.fields['start_date'].initial = inst.time.date() + \
+            datetime.timedelta(days=1)
         self.fields['time'].initial = inst.time
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
 
@@ -112,7 +115,8 @@ class JobCopyForm(forms.ModelForm):
         cleaned_data = forms.ModelForm.clean(self)
         if 'start_date' in cleaned_data and 'end_date' in cleaned_data:
             if not self.get_dates(cleaned_data):
-                raise ValidationError('Kein neuer Job fällt zwischen Anfangs- und Enddatum')
+                raise ValidationError(
+                    'Kein neuer Job fällt zwischen Anfangs- und Enddatum')
         return cleaned_data
 
     def save(self, commit=True):
@@ -123,7 +127,8 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = RecuringJob.objects.create(type=inst.type, slots=inst.slots, time=dt)
+            job = RecuringJob.objects.create(
+                type=inst.type, slots=inst.slots, time=dt)
             newjobs.append(job)
             job.save()
 
@@ -177,6 +182,7 @@ class AssignmentInline(admin.TabularInline):
             return 0
         return obj.slots
 
+
 class JobExtraInline(admin.TabularInline):
     model = JobExtra
 
@@ -191,14 +197,15 @@ class JobAdmin(admin.ModelAdmin):
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_job_inlines())
-        super(JobAdmin,self).__init__(*args, **kwargs)
+        super(JobAdmin, self).__init__(*args, **kwargs)
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, 'Genau 1 Job auswählen!', level=messages.ERROR)
+            self.message_user(
+                request, 'Genau 1 Job auswählen!', level=messages.ERROR)
             return HttpResponseRedirect('')
 
         inst, = queryset.all()
@@ -208,7 +215,8 @@ class JobAdmin(admin.ModelAdmin):
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = RecuringJob(type=inst.type, slots=inst.slots, time=inst.time)
+            newjob = RecuringJob(
+                type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
 
     copy_job.short_description = 'Jobs kopieren'
@@ -221,7 +229,8 @@ class JobAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(JobAdmin, self).get_urls()
         my_urls = [
-            url(r'^copy_job/(?P<jobid>.*?)/$', self.admin_site.admin_view(self.copy_job_view))
+            url(r'^copy_job/(?P<jobid>.*?)/$',
+                self.admin_site.admin_view(self.copy_job_view))
         ]
         return my_urls + urls
 
@@ -231,7 +240,8 @@ class JobAdmin(admin.ModelAdmin):
         tmp_inlines = self.inlines
         self.readonly_fields = []
         self.inlines = []
-        res = self.change_view(request, jobid, extra_context={'title': 'Copy job'})
+        res = self.change_view(request, jobid, extra_context={
+                               'title': 'Copy job'})
         self.readonly_fields = tmp_readonly
         self.inlines = tmp_inlines
         return res
@@ -246,7 +256,8 @@ class JobAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'type' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = JobTypeDao.types_by_coordinator(request.user.member)
+            kwargs['queryset'] = JobTypeDao.types_by_coordinator(
+                request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -258,10 +269,10 @@ class OneTimeJobAdmin(admin.ModelAdmin):
 
     inlines = [AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_otjob_inlines())
-        super(OneTimeJobAdmin,self).__init__(*args, **kwargs)
+        super(OneTimeJobAdmin, self).__init__(*args, **kwargs)
 
     def transform_job(self, request, queryset):
         for inst in queryset.all():
@@ -293,7 +304,8 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'activityarea' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(request.user.member)
+            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(
+                request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -301,10 +313,10 @@ class JobTypeAdmin(admin.ModelAdmin):
     list_display = ['__str__']
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_jobtype_inlines())
-        super(JobTypeAdmin,self).__init__(*args, **kwargs)
+        super(JobTypeAdmin, self).__init__(*args, **kwargs)
 
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
@@ -334,7 +346,8 @@ class JobTypeAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'activityarea' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(request.user.member)
+            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(
+                request.user.member)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -352,23 +365,28 @@ class SubscriptionTypeInline(admin.TabularInline):
     verbose_name_plural = 'Abo Typen'
     extra = 0
 
+
 class FutureSubscriptionTypeInline(admin.TabularInline):
     model = Subscription.future_types.through
     verbose_name = 'Zukunft Abo Typ'
     verbose_name_plural = 'Zukunft Abo Typen'
     extra = 0
 
+
 class SubscriptionAdmin(admin.ModelAdmin):
     form = SubscriptionAdminForm
-    list_display = ['__str__', 'recipients_names', 'primary_member_nullsave', 'depot', 'active']
+    list_display = ['__str__', 'recipients_names',
+                    'primary_member_nullsave', 'depot', 'active']
     # filter_horizontal = ['users']
-    search_fields = ['members__user__username', 'members__first_name', 'members__last_name', 'depot__name']
+    search_fields = ['members__user__username',
+                     'members__first_name', 'members__last_name', 'depot__name']
     # raw_id_fields = ['primary_member']
-    inlines = [SubscriptionTypeInline, FutureSubscriptionTypeInline, ExtraSubscriptionInline]
-    
+    inlines = [SubscriptionTypeInline,
+               FutureSubscriptionTypeInline, ExtraSubscriptionInline]
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_subscription_inlines())
-        super(SubscriptionAdmin,self).__init__(*args, **kwargs)
+        super(SubscriptionAdmin, self).__init__(*args, **kwargs)
 
 
 class ShareAdmin(admin.ModelAdmin):
@@ -378,46 +396,51 @@ class ShareAdmin(admin.ModelAdmin):
                      'issue_date', 'booking_date', 'cancelled_date', 'termination_date', 'payback_date']
     raw_id_fields = ['member']
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_share_inlines())
-        super(ShareAdmin,self).__init__(*args, **kwargs)
+        super(ShareAdmin, self).__init__(*args, **kwargs)
 
 
 class DepotAdmin(admin.ModelAdmin):
     raw_id_fields = ['contact']
     list_display = ['name', 'code', 'weekday', 'contact']
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_depot_inlines())
-        super(DepotAdmin,self).__init__(*args, **kwargs)
+        super(DepotAdmin, self).__init__(*args, **kwargs)
+
+
+class ListMessageAdmin(admin.ModelAdmin):
+    list_display = ['message', 'active']
+    search_fields = ['message']
 
 
 class DeliveryInline(admin.TabularInline):
     model = DeliveryItem
-    
+
 
 class DeliveryAdmin(admin.ModelAdmin):
     list_display = ("__str__", "delivery_date", "subscription_size")
-    ordering = ("-delivery_date","subscription_size")
+    ordering = ("-delivery_date", "subscription_size")
     actions = ["copy_delivery"]
     search_fields = ["delivery_date", "subscription_size"]
     inlines = [DeliveryInline]
     save_as = True
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_delivery_inlines())
-        super(DeliveryAdmin,self).__init__(*args, **kwargs)
+        super(DeliveryAdmin, self).__init__(*args, **kwargs)
 
 
 class ExtraSubscriptionAdmin(admin.ModelAdmin):
     raw_id_fields = ['main_subscription']
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_extrasub_inlines())
-        super(ExtraSubscriptionAdmin,self).__init__(*args, **kwargs)
+        super(ExtraSubscriptionAdmin, self).__init__(*args, **kwargs)
 
 
 class AreaAdmin(admin.ModelAdmin):
@@ -425,10 +448,10 @@ class AreaAdmin(admin.ModelAdmin):
     raw_id_fields = ['coordinator']
     list_display = ['name', 'core', 'hidden', 'coordinator']
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_area_inlines())
-        super(AreaAdmin,self).__init__(*args, **kwargs)
+        super(AreaAdmin, self).__init__(*args, **kwargs)
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
@@ -439,14 +462,12 @@ class AreaAdmin(admin.ModelAdmin):
 
 
 class AssignmentAdmin(admin.ModelAdmin):
-        
     raw_id_fields = ['member', 'job']
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_assignment_inlines())
-        super(AssignmentAdmin,self).__init__(*args, **kwargs)
-    
+        super(AssignmentAdmin, self).__init__(*args, **kwargs)
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)
@@ -458,7 +479,8 @@ class AssignmentAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'job' and request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = JobDao.jobs_by_ids(JobDao.ids_for_area_by_contact(request.user.member))
+            kwargs['queryset'] = JobDao.jobs_by_ids(
+                JobDao.ids_for_area_by_contact(request.user.member))
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -473,7 +495,8 @@ class MemberAdminForm(forms.ModelForm):
         if member is None:
             link = ''
         elif member.subscription:
-            url = reverse('admin:juntagrico_subscription_change', args=(member.subscription.id,))
+            url = reverse('admin:juntagrico_subscription_change',
+                          args=(member.subscription.id,))
             link = '<a href=%s>%s</a>' % (url, member.subscription)
         else:
             link = 'Kein Abo'
@@ -481,7 +504,8 @@ class MemberAdminForm(forms.ModelForm):
         if member is None:
             link = ''
         elif member.future_subscription:
-            url = reverse('admin:juntagrico_subscription_change', args=(member.future_subscription.id,))
+            url = reverse('admin:juntagrico_subscription_change',
+                          args=(member.future_subscription.id,))
             link = '<a href=%s>%s</a>' % (url, member.future_subscription)
         else:
             link = 'Kein Abo'
@@ -490,75 +514,85 @@ class MemberAdminForm(forms.ModelForm):
     subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
                                        label='Abo')
     future_subscription_link = forms.URLField(widget=admin_util.MyHTMLWidget(), required=False,
-                                       label='Zukünftiges Abo')
+                                              label='Zukünftiges Abo')
+
 
 class MemberAdmin(admin.ModelAdmin):
     form = MemberAdminForm
     list_display = ['email', 'first_name', 'last_name']
     search_fields = ['first_name', 'last_name', 'email']
     # raw_id_fields = ['subscription']
-    exclude = ['future_subscription','subscription','old_subscriptions']
+    exclude = ['future_subscription', 'subscription', 'old_subscriptions']
     readonly_fields = ['user']
     actions = ['impersonate_job']
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_member_inlines())
-        super(MemberAdmin,self).__init__(*args, **kwargs)
+        super(MemberAdmin, self).__init__(*args, **kwargs)
 
     def impersonate_job(self, request, queryset):
         if queryset.count() != 1:
-            self.message_user(request, 'Genau 1 ' + Config.member_string() + ' auswählen!', level=messages.ERROR)
+            self.message_user(
+                request, 'Genau 1 ' + Config.vocabulary('member') + ' auswählen!', level=messages.ERROR)
             return HttpResponseRedirect('')
         inst, = queryset.all()
         return HttpResponseRedirect('/impersonate/%s/' % inst.user.id)
 
-    impersonate_job.short_description = Config.member_string() + ' imitieren (impersonate)...'
+    impersonate_job.short_description = Config.vocabulary(
+        'member') + ' imitieren (impersonate)...'
 
 
 class ExtraSubscriptionTypeAdmin(admin.ModelAdmin):
     inlines = []
-    
+    exclude = []
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_extrasubtype_inlines())
-        super(ExtraSubscriptionTypeAdmin,self).__init__(*args, **kwargs)
+        super(ExtraSubscriptionTypeAdmin, self).__init__(*args, **kwargs)
+        if not Config.enable_shares():
+            self.exclude.append('shares')
+
 
 class ExtraSubscriptionCategoryAdmin(admin.ModelAdmin):
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_extrasubcat_inlines())
-        super(ExtraSubscriptionCategoryAdmin,self).__init__(*args, **kwargs)
+        super(ExtraSubscriptionCategoryAdmin, self).__init__(*args, **kwargs)
+
 
 class SubscriptionSizeAdmin(admin.ModelAdmin):
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_subsize_inlines())
-        super(SubscriptionSizeAdmin,self).__init__(*args, **kwargs)
+        super(SubscriptionSizeAdmin, self).__init__(*args, **kwargs)
+
 
 class SubscriptionTypeAdmin(admin.ModelAdmin):
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_subtype_inlines())
-        super(SubscriptionTypeAdmin,self).__init__(*args, **kwargs)
+        super(SubscriptionTypeAdmin, self).__init__(*args, **kwargs)
+
 
 class JobExtraAdmin(admin.ModelAdmin):
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_jobextra_inlines())
-        super(JobExtraAdmin,self).__init__(*args, **kwargs)
+        super(JobExtraAdmin, self).__init__(*args, **kwargs)
+
 
 class JobExtraTypeAdmin(admin.ModelAdmin):
     inlines = []
-    
+
     def __init__(self, *args, **kwargs):
         self.inlines.extend(get_jobextratype_inlines())
-        super(JobExtraTypeAdmin,self).__init__(*args, **kwargs)
+        super(JobExtraTypeAdmin, self).__init__(*args, **kwargs)
 
-    
 
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraSubscription, ExtraSubscriptionAdmin)
@@ -570,7 +604,6 @@ admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Member, MemberAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
-admin.site.register(Share, ShareAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(JobExtra, JobExtraAdmin)
@@ -578,7 +611,10 @@ admin.site.register(JobExtraType, JobExtraTypeAdmin)
 admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
+admin.site.register(ListMessage, ListMessageAdmin)
 admin.site.register(ExtraSubBillingPeriod)
+if Config.enable_shares():
+    admin.site.register(Share, ShareAdmin)
 if Config.billing():
     admin.site.register(Bill)
     admin.site.register(Payment)

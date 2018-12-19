@@ -5,7 +5,7 @@ from juntagrico.models import Member
 
 class AuthenticateWithEmail(object):
     @staticmethod
-    def authenticate(username=None, password=None):
+    def authenticate(request, username=None, password=None):
         try:
             user = Member.objects.get(email__iexact=username).user
             if user.check_password(password) and not user.member.inactive:

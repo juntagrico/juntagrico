@@ -52,6 +52,7 @@ class ExcelWriter(object):
     Column-widths in excel are set automatically based on
     the column (field) labels.
     """
+
     def __init__(self, fields, workbook):
         self.fields = fields
         self.workbook = workbook

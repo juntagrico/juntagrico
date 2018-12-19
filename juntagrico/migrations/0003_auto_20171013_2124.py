@@ -16,14 +16,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SubscriptionType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, verbose_name='Name')),
-                ('long_name', models.CharField(blank=True, max_length=100, verbose_name='Langer Name')),
-                ('shares', models.PositiveIntegerField(verbose_name='Anz benötigter Anteilsscheine')),
-                ('required_assignments', models.PositiveIntegerField(verbose_name='Anz benötigter Arbeitseinsätze')),
+                ('long_name', models.CharField(blank=True,
+                                               max_length=100, verbose_name='Langer Name')),
+                ('shares', models.PositiveIntegerField(
+                    verbose_name='Anz benötigter Anteilsscheine')),
+                ('required_assignments', models.PositiveIntegerField(
+                    verbose_name='Anz benötigter Arbeitseinsätze')),
                 ('price', models.PositiveIntegerField(verbose_name='Preis')),
-                ('visible', models.BooleanField(default=True, verbose_name='Sichtbar')),
-                ('description', models.TextField(blank=True, max_length=1000, verbose_name='Beschreibung')),
+                ('visible', models.BooleanField(
+                    default=True, verbose_name='Sichtbar')),
+                ('description', models.TextField(blank=True,
+                                                 max_length=1000, verbose_name='Beschreibung')),
             ],
             options={
                 'verbose_name': 'Abo Typ',
@@ -33,13 +39,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TFSST',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='TSST',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.RemoveField(
@@ -75,36 +83,43 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tsst',
             name='subscription',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='STSST', to='juntagrico.Subscription'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='STSST', to='juntagrico.Subscription'),
         ),
         migrations.AddField(
             model_name='tsst',
             name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='TTSST', to='juntagrico.SubscriptionType'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='TTSST', to='juntagrico.SubscriptionType'),
         ),
         migrations.AddField(
             model_name='tfsst',
             name='subscription',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='STFSST', to='juntagrico.Subscription'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='STFSST', to='juntagrico.Subscription'),
         ),
         migrations.AddField(
             model_name='tfsst',
             name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='TTFSST', to='juntagrico.SubscriptionType'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='TTFSST', to='juntagrico.SubscriptionType'),
         ),
         migrations.AddField(
             model_name='subscriptiontype',
             name='size',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='types', to='juntagrico.SubscriptionSize'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='types', to='juntagrico.SubscriptionSize'),
         ),
         migrations.AddField(
             model_name='subscription',
             name='future_types',
-            field=models.ManyToManyField(related_name='future_subscription_set', through='juntagrico.TFSST', to='juntagrico.SubscriptionType'),
+            field=models.ManyToManyField(related_name='future_subscription_set',
+                                         through='juntagrico.TFSST', to='juntagrico.SubscriptionType'),
         ),
         migrations.AddField(
             model_name='subscription',
             name='types',
-            field=models.ManyToManyField(related_name='subscription_set', through='juntagrico.TSST', to='juntagrico.SubscriptionType'),
+            field=models.ManyToManyField(
+                related_name='subscription_set', through='juntagrico.TSST', to='juntagrico.SubscriptionType'),
         ),
     ]

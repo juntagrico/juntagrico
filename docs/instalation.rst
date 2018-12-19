@@ -141,3 +141,5 @@ For your convenience all settings with default values to copy into your settings
     }
     BASE_FEE = ''
     ORGANISATION_PHONE = ''
+    DEFAULT_MAILER = 'juntagrico.util.defaultmailer.Mailer'
+    ENABLE_REGISTRATION = True'

@@ -22,47 +22,59 @@ class Subscription(Billable):
     '''
     One Subscription that may be shared among several people.
     '''
-    depot = models.ForeignKey('Depot', on_delete=models.PROTECT, related_name='subscription_set')
+    depot = models.ForeignKey(
+        'Depot', on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey('Depot', on_delete=models.PROTECT, related_name='future_subscription_set', null=True,
                                      blank=True, )
-    types = models.ManyToManyField('SubscriptionType',through='TSST', related_name='subscription_set')
-    future_types = models.ManyToManyField('SubscriptionType',through='TFSST', related_name='future_subscription_set')
+    types = models.ManyToManyField(
+        'SubscriptionType', through='TSST', related_name='subscription_set')
+    future_types = models.ManyToManyField(
+        'SubscriptionType', through='TFSST', related_name='future_subscription_set')
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
                                        on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
     canceled = models.BooleanField(_('gekündigt'), default=False)
-    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
-    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
-    cancelation_date = models.DateField(_('Kündigüngssdatum'), null=True, blank=True)
-    creation_date = models.DateField(_('Erstellungsdatum'), null=True, blank=True, auto_now_add=True)
-    start_date = models.DateField(_('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
-    end_date = models.DateField(_('Gewünschtes Enddatum'), null=True,blank=True)
+    activation_date = models.DateField(
+        _('Aktivierungssdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(
+        _('Deaktivierungssdatum'), null=True, blank=True)
+    cancelation_date = models.DateField(
+        _('Kündigüngssdatum'), null=True, blank=True)
+    creation_date = models.DateField(
+        _('Erstellungsdatum'), null=True, blank=True, auto_now_add=True)
+    start_date = models.DateField(
+        _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
+    end_date = models.DateField(
+        _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
     old_active = None
     old_canceled = None
 
     def __str__(self):
-        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount)d Einheiten') % {'amount':self.size}]
-        namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
-        return _('Abo (%(namelist)s) %(id)s') % {'namelist':' + '.join(namelist),'id': self.id}
+        namelist = [_('1 Einheit') if self.size == 1 else _(
+            '%(amount)d Einheiten') % {'amount': self.size}]
+        namelist.extend(
+            extra.type.name for extra in self.extra_subscriptions.all())
+        return _('Abo (%(namelist)s) %(id)s') % {'namelist': ' + '.join(namelist), 'id': self.id}
 
     @property
     def overview(self):
-        namelist = [_('1 Einheit') if self.size == 1 else _('%(amount)s Einheiten') % {'amount':self.size}]
-        namelist.extend(extra.type.name for extra in self.extra_subscriptions.all())
+        namelist = [_('1 Einheit') if self.size == 1 else _(
+            '%(amount)s Einheiten') % {'amount': self.size}]
+        namelist.extend(
+            extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
-       
-    @property   
+
+    @property
     def size(self):
-        result=0
+        result = 0
         for type in self.types.all():
             result += type.size.units
         return result
-    
+
     @property
     def types_changed(self):
-        return sorted(list(self.types.all()))!=sorted(list(self.future_types.all()))
-    
+        return sorted(list(self.types.all())) != sorted(list(self.future_types.all()))
 
     def recipients_names(self):
         members = self.recipients
@@ -75,11 +87,11 @@ class Subscription(Billable):
     @property
     def recipients(self):
         return self.recipients_all.filter(inactive=False)
-        
+
     @property
     def recipients_all(self):
         return self.recipients_all_for_state(self.state)
-    
+
     def recipients_all_for_state(self, state):
         if state == 'waiting':
             return self.members_future.all()
@@ -95,13 +107,13 @@ class Subscription(Billable):
     @property
     def state(self):
         if self.active is False and self.deactivation_date is None:
-            return _('waiting')
+            return 'waiting'
         elif self.active is True and self.canceled is False:
-            return _('active')
+            return 'active'
         elif self.active is True and self.canceled is True:
-            return _('canceled')
+            return 'canceled'
         elif self.active is False and self.deactivation_date is not None:
-            return _('inactive')
+            return 'inactive'
 
     @property
     def extra_subscriptions(self):
@@ -114,7 +126,7 @@ class Subscription(Billable):
     @property
     def all_shares(self):
         return ShareDao.all_shares_subscription(self).count()
-    
+
     @property
     def share_overflow(self):
         return self.all_shares - self.required_shares
@@ -123,14 +135,13 @@ class Subscription(Billable):
     def future_extra_subscriptions(self):
         return self.extra_subscription_set.filter(
             Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
-            
+
     @property
     def extrasubscriptions_changed(self):
         current_extrasubscriptions = self.extra_subscriptions.all()
         future_extrasubscriptions = self.future_extra_subscriptions.all()
         return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
-    
     def subscription_amount(self, size_name):
         return self.calc_subscritpion_amount(self.types, size_name)
 
@@ -143,17 +154,19 @@ class Subscription(Billable):
         for type in types.all():
             if type.size.name == size_name:
                 result += 1
-        return result        
+        return result
 
     @staticmethod
     def next_extra_change_date():
         month = int(time.strftime('%m'))
         if month >= 7:
-            next_extra = datetime.date(day=1, month=1, year=timezone.now().today().year + 1)
+            next_extra = datetime.date(
+                day=1, month=1, year=timezone.now().today().year + 1)
         else:
-            next_extra = datetime.date(day=1, month=7, year=timezone.now().today().year)
+            next_extra = datetime.date(
+                day=1, month=7, year=timezone.now().today().year)
         return next_extra
-        
+
     @staticmethod
     def next_size_change_date():
         return start_of_next_business_year()
@@ -166,22 +179,29 @@ class Subscription(Billable):
         if len(size_names) > 0:
             return ', '.join(size_names)
 
-        return 'kein Abo'    
-    
+        return 'kein Abo'
+
     @property
     def required_shares(self):
         result = 0
         for type in self.types.all():
             result += type.shares
         return result
-      
+
     @property
     def required_assignments(self):
         result = 0
         for type in self.types.all():
             result += type.required_assignments
         return result
-       
+
+    @property
+    def required_core_assignments(self):
+        result = 0
+        for type in self.types.all():
+            result += type.required_core_assignments
+        return result
+
     @property
     def price(self):
         result = 0
@@ -205,26 +225,28 @@ class Subscription(Billable):
 
     def clean(self):
         if self.old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(_('Deaktivierte Abos koennen nicht wieder aktiviert werden'), code='invalid')
+            raise ValidationError('Deaktivierte ' + Config.vocabulary(
+                'subscription_pl') + ' koennen nicht wieder aktiviert werden', code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         if instance.old_active != instance.active and instance.old_active is False and instance.deactivation_date is None:
-            instance.activation_date = timezone.now().date()
+            instance.activation_date = instance.activation_date if instance.activation_date is not None else timezone.now().date()
             for member in instance.recipients_all_for_state('waiting'):
                 if member.subscription is not None:
-                    raise ValidationError('Ein Bezüger hat noch ein aktives Abo!', code='invalid')
+                    raise ValidationError('Ein Bezüger hat noch ein aktives ' +
+                                          Config.vocabulary('subscription') + '!', code='invalid')
             for member in instance.recipients_all_for_state('waiting'):
-                member.subscription=instance
-                member.future_subscription=None
+                member.subscription = instance
+                member.future_subscription = None
                 member.save()
             if Config.billing():
                 bill_subscription(instance)
         elif instance.old_active != instance.active and instance.old_active is True and instance.deactivation_date is None:
-            instance.deactivation_date = timezone.now().date()
+            instance.deactivation_date = instance.deactivation_date if instance.deactivation_date is not None else timezone.now().date()
             for member in instance.recipients_all_for_state('active'):
                 member.old_subscriptions.add(instance)
-                member.subscription=None
+                member.subscription = None
                 member.save()
         if instance.old_canceled != instance.canceled:
             instance.cancelation_date = timezone.now().date()
@@ -235,6 +257,7 @@ class Subscription(Billable):
         instance.old_canceled = instance.canceled
 
     class Meta:
-        verbose_name = _('Abo')
-        verbose_name_plural = _('Abos')
-        permissions = (('can_filter_subscriptions', _('Benutzer kann Abos filtern')),)
+        verbose_name = Config.vocabulary('subscription')
+        verbose_name_plural = Config.vocabulary('subscription_pl')
+        permissions = (('can_filter_subscriptions', 'Benutzer kann ' +
+                        Config.vocabulary('subscription') + ' filtern'),)

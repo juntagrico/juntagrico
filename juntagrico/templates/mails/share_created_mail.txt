@@ -3,8 +3,8 @@
 {% block content %}
 Hallo
 
-Du hast bei der Genossenschaft {% config "organisation_name" %} einen Anteilschein bestellt.
-Dieser Anteilschein hat die Systemnummer {{share.id}}.
+Du hast bei {% enriched_organisation "D" %} einen {% vocabulary "share" %} bestellt.
+Dieser {% vocabulary "share" %} hat die Systemnummer {{share.id}}.
 
 Bitte überweise den Betrag von {% config "currency" %} {% config "share_price" %} auf das folgende Konto ein:
     {% config "organisation_address" as addr%}
@@ -20,8 +20,8 @@ Bitte überweise den Betrag von {% config "currency" %} {% config "share_price" 
     IBAN: {{ bank.IBAN }}
     BIC: {{ bank.BIC }}
 
-Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur einen Anteilschein auf einmal.
-Zusätzlich gib im Betreff die Systemnummer an und die Emailadresse des Halters des Anteilscheines (dies ist vorallem wichtig wenn du den Anteilschein für jemand anderen bezahlst)
+Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur einen {% vocabulary "share" %} auf einmal.
+Zusätzlich gib im Betreff die Systemnummer an und die Emailadresse des Halters des {% vocabulary "share_pl" %}s (dies ist vorallem wichtig wenn du den {% vocabulary "share" %} für jemand anderen bezahlst)
 
 Bis bald und liebe Grüsse, die {% config "organisation_name" %}-Betriebsgruppe
 {% endblock %}

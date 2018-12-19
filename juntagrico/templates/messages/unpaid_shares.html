@@ -1,8 +1,9 @@
+{% load config %}
 <div class="alert alert-warning">
   Du hast {{ amount }} 
   {% if amount == 1%}
-    unbezahlter Anteilsschein
+    unbezahlter {% vocabulary "share" %}
   {% else %}
-    unbezahlte Anteilsscheine
+    unbezahlte {% vocabulary "share_pl" %}
   {% endif%}. Finde <a href="/my/info/unpaidshares" class="alert-link">hier</a> mehr dazu.
 </div>

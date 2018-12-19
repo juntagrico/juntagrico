@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='share',
             name='member',
-            field=models.ForeignKey(blank=True, on_delete=django.db.models.deletion.PROTECT, to='juntagrico.Member'),
+            field=models.ForeignKey(
+                blank=True, on_delete=django.db.models.deletion.PROTECT, to='juntagrico.Member'),
         ),
     ]

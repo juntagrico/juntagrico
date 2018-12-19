@@ -8,34 +8,39 @@ class Config:
         pass
 
     @staticmethod
-    def member_string():
-        if hasattr(settings, 'MEMBER_STRING'):
-            return settings.MEMBER_STRING
-        return 'Mitglied'
-
-    @staticmethod
-    def members_string():
-        if hasattr(settings, 'MEMBERS_STRING'):
-            return settings.MEMBERS_STRING
-        return 'Mitglieder'
-
-    @staticmethod
-    def assignment_string():
-        if hasattr(settings, 'ASSIGNMENT_STRING'):
-            return settings.ASSIGNMENT_STRING
-        return 'Arbeitseinsatz'
-
-    @staticmethod
-    def assignments_string():
-        if hasattr(settings, 'ASSIGNMENTS_STRING'):
-            return settings.ASSIGNMENTS_STRING
-        return 'Arbeitseinsätze'
+    def vocabulary(key):
+        if hasattr(settings, 'VOCABULARY') and key in settings.VOCABULARY:
+            return settings.VOCABULARY[key]
+        return {
+            'member': 'Mitglied',
+            'member_pl': 'Mitglieder',
+            'assignment': 'Arbeitseinsatz',
+            'assignment_pl': 'Arbeitseinsätze',
+            'share': 'Anteilschein',
+            'share_pl': 'Anteilscheine',
+            'subscription': 'Abo',
+            'subscription_pl': 'Abos',
+            'co_member': 'Mitabonnent',
+            'co_member_pl': 'Mitabonnenten',
+            'price': 'Betriebsbeitrag',
+            'member_type': 'Mitglied',
+            'member_type_pl': 'Mitglieder',
+            'depot': 'Depot',
+            'depot_pl': 'Depots'
+        }[key]
 
     @staticmethod
     def organisation_name():
         if hasattr(settings, 'ORGANISATION_NAME'):
             return settings.ORGANISATION_NAME
         return 'Juntagrico'
+
+    @staticmethod
+    def organisation_name_config():
+        if hasattr(settings, 'ORGANISATION_NAME_CONFIG'):
+            return settings.ORGANISATION_NAME_CONFIG
+        return {'type': '',
+                'gender': ''}
 
     @staticmethod
     def organisation_long_name():
@@ -47,12 +52,12 @@ class Config:
     def organisation_address():
         if hasattr(settings, 'ORGANISATION_ADDRESS'):
             return settings.ORGANISATION_ADDRESS
-        return {'name':'Juntagrico', 
-                'street' : 'Fakestreet',
-                'number' : '123',
-                'zip' : '12456',
-                'city' : 'Springfield',
-                'extra' : ''}
+        return {'name': 'Juntagrico',
+                'street': 'Fakestreet',
+                'number': '123',
+                'zip': '12456',
+                'city': 'Springfield',
+                'extra': ''}
 
     @staticmethod
     def organisation_phone():
@@ -62,11 +67,11 @@ class Config:
     def organisation_bank_connection():
         if hasattr(settings, 'ORGANISATION_BANK_CONNECTION'):
             return settings.ORGANISATION_BANK_CONNECTION
-        return {'PC' : '01-123-5',
-                'IBAN' : 'CH 00 12345 67890 12345 67890 10',
-                'BIC' : 'BIC12345XX',
-                'NAME' : 'Juntagrico Bank',
-                'ESR' : '01-123-45'}
+        return {'PC': '01-123-5',
+                'IBAN': 'CH 00 12345 67890 12345 67890 10',
+                'BIC': 'BIC12345XX',
+                'NAME': 'Juntagrico Bank',
+                'ESR': '01-123-45'}
 
     @staticmethod
     def info_email():
@@ -108,31 +113,31 @@ class Config:
     def mail_template():
         if hasattr(settings, 'MAIL_TEMPLATE'):
             return settings.MAIL_TEMPLATE
-        return 'mails/email.html'    
+        return 'mails/email.html'
 
     @staticmethod
     def emails(key):
         if hasattr(settings, 'EMAILS'):
             if key in settings.EMAILS:
-                return settings.EMAILS[key]            
+                return settings.EMAILS[key]
         return {'welcome': 'mails/welcome_mail.txt',
-            'co_welcome': 'mails/welcome_added_mail.txt',
-            'co_added': 'mails/added_mail.txt',
-            'password': 'mails/password_reset_mail.txt',
-            'j_reminder': 'mails/job_reminder_mail.txt',
-            'j_canceled': 'mails/job_canceled_mail.txt',
-            'confirm': 'mails/confirm.txt',
-            'j_changed': 'mails/job_time_changed_mail.txt',
-            'j_signup': 'mails/job_signup_mail.txt',
-            'd_changed': 'mails/depot_changed_mail.txt',
-            's_created': 'mails/share_created_mail.txt',
-            'n_sub': 'mails/new_subscription.txt',
-            's_canceled': 'mails/subscription_canceled_mail.txt',
-            'm_canceled': 'mails/membership_canceled_mail.txt',
-            'b_share': 'mails/bill_share.txt',
-            'b_sub': 'mails/bill_sub.txt',
-            'b_esub': 'mails/bill_extrasub.txt'
-        }[key]
+                'co_welcome': 'mails/welcome_added_mail.txt',
+                'co_added': 'mails/added_mail.txt',
+                'password': 'mails/password_reset_mail.txt',
+                'j_reminder': 'mails/job_reminder_mail.txt',
+                'j_canceled': 'mails/job_canceled_mail.txt',
+                'confirm': 'mails/confirm.txt',
+                'j_changed': 'mails/job_time_changed_mail.txt',
+                'j_signup': 'mails/job_signup_mail.txt',
+                'd_changed': 'mails/depot_changed_mail.txt',
+                's_created': 'mails/share_created_mail.txt',
+                'n_sub': 'mails/new_subscription.txt',
+                's_canceled': 'mails/subscription_canceled_mail.txt',
+                'm_canceled': 'mails/membership_canceled_mail.txt',
+                'b_share': 'mails/bill_share.txt',
+                'b_sub': 'mails/bill_sub.txt',
+                'b_esub': 'mails/bill_extrasub.txt'
+                }[key]
 
     @staticmethod
     def style_sheet():
@@ -150,7 +155,7 @@ class Config:
     def bootstrap():
         if hasattr(settings, 'BOOTSTRAP'):
             return settings.BOOTSTRAP
-        return '/static/external/bootstrap-3.3.1/css/bootstrap.min.css'
+        return '/static/external/bootstrap-4.1.3/css/bootstrap.min.css'
 
     @staticmethod
     def faq_doc():
@@ -175,7 +180,19 @@ class Config:
         if hasattr(settings, 'SHARE_PRICE'):
             return settings.SHARE_PRICE
         return '250'
-        
+
+    @staticmethod
+    def enable_shares():
+        if hasattr(settings, 'ENABLE_SHARES'):
+            return settings.ENABLE_SHARES
+        return True
+
+    @staticmethod
+    def enable_registration():
+        if hasattr(settings, 'ENABLE_REGISTRATION'):
+            return settings.ENABLE_REGISTRATION
+        return True
+
     @staticmethod
     def base_fee():
         if hasattr(settings, 'BASE_FEE'):
@@ -216,7 +233,7 @@ class Config:
     def depot_list_generation_days():
         if hasattr(settings, 'DEPOT_LIST_GENERATION_DAYS'):
             return settings.DEPOT_LIST_GENERATION_DAYS
-        return [0,1,2,3,4,5,6]
+        return [0, 1, 2, 3, 4, 5, 6]
 
     @staticmethod
     def billing():
@@ -228,7 +245,7 @@ class Config:
     def business_year_start():
         if hasattr(settings, 'BUSINESS_YEAR_START'):
             return settings.BUSINESS_YEAR_START
-        return {'day':1, 'month':1}
+        return {'day': 1, 'month': 1}
 
     @staticmethod
     def business_year_cancelation_month():
@@ -255,23 +272,26 @@ class Config:
         return ''
 
     @staticmethod
+    def default_mailer():
+        if hasattr(settings, 'DEFAULT_MAILER'):
+            return settings.DEFAULT_MAILER
+        return 'juntagrico.util.defaultmailer.Mailer'
+
+    @staticmethod
     def images(key):
         if hasattr(settings, 'IMAGES'):
             if key in settings.IMAGES:
                 return settings.IMAGES[key]
         return {'status_100': '/static/img/status_100.png',
-            'status_75': '/static/img/status_75.png',
-            'status_50': '/static/img/status_50.png',
-            'status_25': '/static/img/status_25.png',
-            'status_0': '/static/img/status_0.png',
-            'single_full': '/static/img/single_full.png',
-            'single_empty': '/static/img/single_empty.png',
-            'single_core': '/static/img/single_core.png',
-            'core': '/static/img/core.png'
-        }[key]
-
-
-
+                'status_75': '/static/img/status_75.png',
+                'status_50': '/static/img/status_50.png',
+                'status_25': '/static/img/status_25.png',
+                'status_0': '/static/img/status_0.png',
+                'single_full': '/static/img/single_full.png',
+                'single_empty': '/static/img/single_empty.png',
+                'single_core': '/static/img/single_core.png',
+                'core': '/static/img/core.png'
+                }[key]
 
     @staticmethod
     def google_api_key():

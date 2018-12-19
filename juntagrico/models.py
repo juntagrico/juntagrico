@@ -11,6 +11,7 @@ from juntagrico.entity.share import *
 from juntagrico.entity.jobs import *
 from juntagrico.entity.mailing import *
 from juntagrico.entity.delivery import *
+from juntagrico.entity.listmessage import *
 
 
 class SpecialRoles(models.Model):
@@ -38,7 +39,8 @@ signals.pre_save.connect(OneTimeJob.pre_save, sender=OneTimeJob)
 signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
 signals.pre_save.connect(Subscription.pre_save, sender=Subscription)
 signals.post_init.connect(Subscription.post_init, sender=Subscription)
-signals.post_init.connect(ExtraSubscription.post_init, sender=ExtraSubscription)
+signals.post_init.connect(ExtraSubscription.post_init,
+                          sender=ExtraSubscription)
 signals.pre_save.connect(ExtraSubscription.pre_save, sender=ExtraSubscription)
 signals.pre_save.connect(Assignment.pre_save, sender=Assignment)
 signals.post_save.connect(Share.create, sender=Share)

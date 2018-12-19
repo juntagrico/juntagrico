@@ -4,11 +4,13 @@ juntagrico
 .. image:: https://travis-ci.org/juntagrico/juntagrico.svg?branch=master
     :target: https://travis-ci.org/juntagrico/juntagrico
    
-.. image:: https://img.shields.io/gemnasium/juntagrico/juntagrico.svg
-    :target: https://gemnasium.com/github.com/juntagrico/juntagrico
+.. image:: https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/maintainability
+   :target: https://codeclimate.com/github/juntagrico/juntagrico/maintainability
+   :alt: Maintainability
 
-.. image:: https://img.shields.io/codeclimate/github/juntagrico/juntagrico.svg
-    :target: https://codeclimate.com/github/juntagrico/juntagrico
+.. image:: https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/test_coverage
+   :target: https://codeclimate.com/github/juntagrico/juntagrico/test_coverage
+   :alt: Test Coverage
 
 .. image:: https://img.shields.io/pypi/v/juntagrico.svg
     :target: https://pypi.python.org/pypi/juntagrico
@@ -27,6 +29,10 @@ juntagrico
     
 .. image:: https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico.svg
     :target: https://github.com/juntagrico/juntagrico
+
+.. image:: https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=master
+     :target: https://requires.io/github/juntagrico/juntagrico/requirements/?branch=master
+     :alt: Requirements Status
 
 **the easy solution for cooperative vegetable growers**
 

@@ -12,16 +12,20 @@ from juntagrico.util.temporal import *
 from juntagrico.config import Config
 from juntagrico.mailer import *
 
+
 class ActivityArea(models.Model):
 
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(
+        _('Beschreibung'), max_length=1000, default='')
     email = models.EmailField(null=True, blank=True)
     core = models.BooleanField(_('Kernbereich'), default=False)
     hidden = models.BooleanField(_('versteckt'), default=False)
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT)
-    members = models.ManyToManyField('Member', related_name='areas', blank=True)
-    show_coordinator_phonenumber = models.BooleanField(_('Koordinator Tel Nr Veröffentlichen'), default=False)
+    members = models.ManyToManyField(
+        'Member', related_name='areas', blank=True)
+    show_coordinator_phonenumber = models.BooleanField(
+        _('Koordinator Tel Nr Veröffentlichen'), default=False)
 
     def __str__(self):
         return '%s' % self.name
@@ -37,45 +41,51 @@ class ActivityArea(models.Model):
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
         verbose_name_plural = _('Tätigkeitsbereiche')
-        permissions = (('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
+        permissions = (
+            ('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
+
 
 class JobExtraType(models.Model):
     '''
     Types of extras which a job type might need or can have
-    '''    
+    '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    display_empty = models.CharField(_('Icon für fehlendes Extra'), max_length=1000, blank=False, null=False)
-    display_full = models.CharField(_('Icon für Extra'), max_length=1000, blank=False, null=False)
-    
+    display_empty = models.CharField(
+        _('Icon für fehlendes Extra'), max_length=1000, blank=False, null=False)
+    display_full = models.CharField(
+        _('Icon für Extra'), max_length=1000, blank=False, null=False)
+
     class Meta:
         verbose_name = _('JobExtraTyp')
         verbose_name_plural = _('JobExtraTypen')
+
 
 class JobExtra(models.Model):
     '''
     Actual Extras mapping
     '''
     recuring_type = models.ForeignKey('JobType', related_name='job_extras_set', null=True,
-                                          blank=True,
-                                          on_delete=models.PROTECT)
+                                      blank=True,
+                                      on_delete=models.PROTECT)
     onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras_set', null=True,
-                                          blank=True,
-                                          on_delete=models.PROTECT)
+                                     blank=True,
+                                     on_delete=models.PROTECT)
     extra_type = models.ForeignKey('JobExtraType', related_name='job_types_set', null=False,
-                                          blank=False,
-                                          on_delete=models.PROTECT)
-    per_member = models.BooleanField(_('jeder kann Extra auswählen'), default=False)
+                                   blank=False,
+                                   on_delete=models.PROTECT)
+    per_member = models.BooleanField(
+        _('jeder kann Extra auswählen'), default=False)
 
-    def empty(self,assignment_set):
-        ids=[assignment.id for assignment in assignment_set]
-        return self.assignments.filter(id__in=ids).count()==0
+    def empty(self, assignment_set):
+        ids = [assignment.id for assignment in assignment_set]
+        return self.assignments.filter(id__in=ids).count() == 0
 
     @property
     def type(self):
         if recuring_type is not None:
             return recuring_type
         return onetime_type
-    
+
     class Meta:
         verbose_name = _('JobExtra')
         verbose_name_plural = _('JobExtras')
@@ -86,8 +96,10 @@ class AbstractJobType(models.Model):
     Abstract type of job.
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    displayed_name = models.CharField(
+        _('Angezeigter Name'), max_length=100, blank=True, null=True)
+    description = models.TextField(
+        _('Beschreibung'), max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField(_('Dauer in Stunden'))
     location = models.CharField('Ort', max_length=100, default='')
@@ -120,9 +132,11 @@ class JobType(AbstractJobType):
 class Job(PolymorphicModel):
     slots = models.PositiveIntegerField(_('Plaetze'))
     time = models.DateTimeField()
-    multiplier = models.PositiveIntegerField(Config.assignments_string()+' vielfaches', default=1)
+    multiplier = models.PositiveIntegerField(
+        Config.vocabulary('assignment')+' vielfaches', default=1)
     pinned = models.BooleanField(default=False)
-    reminder_sent = models.BooleanField(_('Reminder verschickt'), default=False)
+    reminder_sent = models.BooleanField(
+        _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
     old_canceled = None
     old_time = None
@@ -166,23 +180,23 @@ class Job(PolymorphicModel):
         return self.type.activityarea.core
 
     def extras(self):
-        extras_result =[]
+        extras_result = []
         for extra in self.type.job_extras_set.all():
             if extra.empty(self.assignment_set.all()):
                 extras_result.append(extra.extra_type.display_empty)
-            else:           
+            else:
                 extras_result.append(extra.extra_type.display_full)
         return ' '.join(extras_result)
 
     def empty_per_job_extras(self):
-        extras_result =[]
+        extras_result = []
         for extra in self.type.job_extras_set.filter(per_member=False):
             if extra.empty(self.assignment_set.all()):
                 extras_result.append(extra)
         return extras_result
 
     def full_per_job_extras(self):
-        extras_result =[]
+        extras_result = []
         for extra in self.type.job_extras_set.filter(per_member=False):
             if not extra.empty(self.assignment_set.all()):
                 extras_result.append(extra)
@@ -193,8 +207,8 @@ class Job(PolymorphicModel):
 
     def clean(self):
         if self.old_canceled != self.canceled and self.old_canceled is True:
-            raise ValidationError(_('Abgesagte jobs koennen nicht wieder aktiviert werden'), code='invalid')
-   
+            raise ValidationError(
+                _('Abgesagte jobs koennen nicht wieder aktiviert werden'), code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -275,11 +289,12 @@ class Assignment(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     member = models.ForeignKey('Member', on_delete=models.PROTECT)
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
-    job_extras = models.ManyToManyField(JobExtra,related_name='assignments', blank=True)
+    job_extras = models.ManyToManyField(
+        JobExtra, related_name='assignments', blank=True)
     amount = models.FloatField(_('Wert'))
 
     def __str__(self):
-        return '%s #%s' % (Config.assignment_string(), self.id)
+        return '%s #%s' % (Config.vocabulary('assignment'), self.id)
 
     def time(self):
         return self.job.time
@@ -292,5 +307,5 @@ class Assignment(models.Model):
         instance.core_cache = instance.is_core()
 
     class Meta:
-        verbose_name = Config.assignment_string()
-        verbose_name_plural = Config.assignments_string()
+        verbose_name = Config.vocabulary('assignment')
+        verbose_name_plural = Config.vocabulary('assignment_pl')

@@ -4,53 +4,33 @@ Settings
 You can use the following settings to configure juntagrico
 
 
-MEMBER_STRING
+VOCABULARY
 -------------
-  The description text for members, if you use something special
+  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in acordance to your oganisation form.
   
-  Type: String
+  Type: Dictionary
 
   default value
 
   .. code-block:: python
 
-    "Mitglied"
-
-MEMBERS_STRING
---------------
-  Plural of the above
-
-  Type: String
-
-  default value
-    
-  .. code-block:: python
-
-    "Mitglieder"
-
-ASSIGNMENT_STRING
------------------
-  The description text for job assignments, if you use something special
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "Arbeitseinsatz" 
-
-ASSIGNMENTS_STRING
-------------------
-  Plural of the above
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "Arbeitseinsätze"
+    {
+        'member': 'Mitglied',
+        'member_pl' : 'Mitglieder',
+        'assignment' : 'Arbeitseinsatz',
+        'assignment_pl' : 'Arbeitseinsätze',
+        'share' : 'Anteilschein',
+        'share_pl' : 'Anteilscheine',
+        'subscription' : 'Abo',
+        'subscription_pl' : 'Abos',
+        'co_member' : 'Mitabonnent',
+        'co_member_pl' : 'Mitabonnenten',
+        'price' : 'Betriebsbeitrag',
+        'member_type' : 'Mitglied',
+        'member_type_pl' : 'Mitglieder',
+        'depot' : 'Depot',
+        'depot_pl' : 'Depots'
+    }
 
 ORGANISATION_NAME
 -----------------
@@ -63,6 +43,19 @@ ORGANISATION_NAME
   .. code-block:: python
 
     "Juntagrico"
+
+ORGANISATION_NAME_CONFIG
+------------------------
+  Additional information to enrich the organisation name with the type of the organisation and its corresponding article
+
+  Type: Dictionary
+
+  default value
+
+  .. code-block:: python
+
+    {"type" : "",
+        "gender" : ""}
 
 ORGANISATION_LONG_NAME
 ----------------------
@@ -300,6 +293,31 @@ SHARE_PRICE
 
     "250"
 
+
+ENABLE_SHARES
+-----------
+  Enable all share related funtionality
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    True
+
+ENABLE_REGISTRATION
+-----------
+  Decides if new member can registrate
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    True
+
 BASE_FEE
 --------
   Yearly fee for members without a subscription
@@ -443,6 +461,16 @@ DEMO_PWD
   .. code-block:: python
 
     ''
+
+DEFAULT_MAILER
+--------
+  The code to send mails. for more info see the code specified in the default value
+
+  default value
+
+  .. code-block:: python
+
+    'juntagrico.util.defaultmailer.Mailer'
 
 IMAGES
 ------

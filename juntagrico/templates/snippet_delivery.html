@@ -1,19 +1,19 @@
 {% load config %}
-<div class="container">
   {% for delivery in deliveries %}
-  <div class="row delivery-row">
-    <div class="col-md-2">
-	    <a data-toggle="collapse" href="#{{ delivery.id }}">
-	    	<span class="glyphicon glyphicon-chevron-{% if forloop.first %}down{% else %}right{% endif %}"> </span>&nbsp;{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}
+  <div class="row mb-2">
+    <div class="col-md-3">
+	    <a data-toggle="collapse" href="#dev{{ delivery.id }}">
+	    	<i class="fas fa-angle-{% if forloop.first %}down{% else %}right{% endif %}"></i>&nbsp;{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}
 		</a>
 	</div>
-	<div class="col-md-10">
-		<a data-toggle="collapse" href="#{{ delivery.id }}">
+	<div class="col-md-9">
+		<a data-toggle="collapse" href="#dev{{ delivery.id }}">
 			{{ delivery.subscription_size.long_name }}
 		</a>
 	</div>
-   
-    <div class="col-md-12 collapse {% if forloop.first %} in {% endif %}" id="{{ delivery.id }}">
+  </div>
+  <div class="row mb-4">
+    <div class="col-md-12 collapse {% if forloop.first %} show {% endif %}" id="dev{{ delivery.id }}">
         <table class='table table-sm delivery-table'>
             <thead>
                 <tr>

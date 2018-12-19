@@ -8,13 +8,13 @@ def migrate_subscriptions(apps, schema_editor):
     for sub in Subscription.objects.all():
         if sub.active is False and sub.deactivation_date is None:
             for member in sub.members.all():
-                    member.subscription=None
-                    member.future_subscription=sub
-                    member.save()
+                member.subscription = None
+                member.future_subscription = sub
+                member.save()
         if sub.active is False and sub.deactivation_date is not None:
             for member in sub.members.all():
                 member.old_subscriptions.add(sub)
-                member.subscription=None
+                member.subscription = None
                 member.save()
 
 

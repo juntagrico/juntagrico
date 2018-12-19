@@ -78,9 +78,11 @@ Filter('grosses Abo', lambda member: member.subscription.big_subscriptions())
 Filter('Haussubscription', lambda member: member.subscription.house_subscriptions())
 
 FilterGen(lambda za: 'Zusatzsubscription {0}'.format(za.name),
-          lambda za, member: za.subscription_set.filter(id=member.subscription.id),
+          lambda za, member: za.subscription_set.filter(
+              id=member.subscription.id),
           ExtraSubscriptionType.objects.all)
 
 FilterGen(lambda activityarea: 'Taetigkeitsbereich {0}'.format(activityarea.name),
-          lambda activityarea, member: activityarea.users.filter(id=member.user.id),
+          lambda activityarea, member: activityarea.users.filter(
+              id=member.user.id),
           ActivityArea.objects.all)

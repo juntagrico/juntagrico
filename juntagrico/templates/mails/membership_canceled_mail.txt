@@ -7,7 +7,7 @@ email : {{ member.email }}
 
 seine Mitgliedshaft gekündet.
 
-Er möchte seine Mitgliedschaft auf den {{ end_date|date:"d.m.Y" }} künden.
+Er möchte seine Mitgliedshaft auf den {{ end_date|date:"d.m.Y" }} künden.
 
 ausserdem hat er folgende Nachricht für euch hinterlassen:
 {{ message}}

@@ -1,7 +1,8 @@
 {% load depot_extras %}
+{% load config %}
 <html>
 <head>
-    <title>Depotlisten</title>
+    <title>{% vocabulary "depot" %}listen</title>
     <meta charset="utf-8">
     <style>
         @page {
@@ -10,7 +11,7 @@
         left: 50pt;
             width: 512pt;
             top: 90pt;
-            height: 632pt;
+            height: 660pt;
         }
                 @frame header_frame {
         -pdf-frame-content:header_content;
@@ -77,7 +78,7 @@
 {% for depot in depots %}
     <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
     <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
-    Depotbetreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}
+    {% vocabulary "depot" %}betreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}
     <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
         <tr>
             <td style="width:180px;" class="name"></td>
@@ -134,7 +135,7 @@
                 <td style="width:60px;" class="top-border left-border"></td>
                 <td style="width:60px;" class="top-border left-border right-border"></td>
             </tr>
-        {% if forloop.counter0|divisibleby:17 and forloop.counter0 > 0 %}
+        {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 and not forloop.last%}
             </table>
             <div class="page-break"></div>
              <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} Fortsetzung</h2>
@@ -184,6 +185,12 @@
         {% endif %}
         {% endfor %}
     </table>
+    <br/>
+    <div>
+    {% for message in messages %}
+        <div style="width: 100%; text-align: center; font-size: 18pt;">{{ message }}</div>
+    {% endfor %}
+    </div>
     <div class="page-break"></div>
 {% endfor %}
 </body>

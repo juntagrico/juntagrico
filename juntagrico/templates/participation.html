@@ -7,88 +7,90 @@
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            Wer bei der Genossenschat {% config "organisation_name" %} Gemüse bezieht verpflichtet sich jedeR, im Rahmen der eigenen Motivationen, Prioritäten und
+            Wer bei {% enriched_organisation "D" %} Gemüse bezieht verpflichtet sich jedeR, im Rahmen der eigenen
+            Motivationen, Prioritäten und
             Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen. <br/><br/>
             <a href="/my/assignments">Hier gehts zu den Arbeitseinsätzen</a><br/><br/>
             <a href="/my/pastjobs">Zu deinen bisherigen Einsätzen</a><br/><br/>
             Alle wählen zwei Tätigkeitsbereiche, in denen sie regelmässig mitarbeiten und Verantwortung übernehmen.
             <br/><br/>
-            {% config "activity_area_info" as activity_area_info%} 
+            {% config "activity_area_info" as activity_area_info %}
             {% if activity_area_info.strip %}
-            Infos zu den Tätigkeitsbereichen erhältst du im <a target="_blank" href="{{activity_area_info}}">Infoblatt</a>.
+                Infos zu den Tätigkeitsbereichen erhältst du im
+                <a target="_blank" href="{{ activity_area_info }}">Infoblatt</a>.
             {% endif %}
             <br/><br/>
             <form action="/my/participation" method="post">
                 {% csrf_token %}
-                {% if show_core %}<div class="row">
-                    <div class="col-md-4">
-                        Kernbereiche: <img alt="core_area" title="core_area" class="jobstatus" src="{% images "core" %}"/>
-                    </div>
-                    <div class="col-md-4">
-                        Koordiniert von:
-                    </div>
-                </div>
-                {% for area in areas %}
-                    {% if area.core %}
+                {% if show_core %}
                     <div class="row">
-                        <div class="col-md-1">
-                            <div class="checkbox">
-                                  <input type="checkbox" class="onoffswitch" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
+                        <div class="col-md-4">
+                            Kernbereiche: <img alt="core_area" title="core_area"
+                                               src="{% images "core" %}"/>
+                        </div>
+                        <div class="col-md-4">
+                            Koordiniert von:
+                        </div>
+                    </div>
+                    <div class="row separator"></div>
+                    {% for area in areas %}
+                        {% if area.core %}
+                            <div class="row align-items-center h-100">
+                                <div class="col-md-1">
+                            <span class="switch switch-sm">
+                              <input type="checkbox" class="switch" id="area{{ area.id }}" name="area{{ area.id }}"
+                                     {% if area.checked %}checked="checked"{% endif %}/>
+                              <label for="area{{ area.id }}"></label>
+                            </span>
+                                </div>
+                                <div class="col-md-3">
+                                    {{ area.name }}
+                                </div>
+                                <div class="col-md-7">
+                                    {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
+                                    {% if area.email is not None %}
+                                        <a href="mailto:{{ area.email }}">{{ area.email }}</a>
+                                    {% else %}
+                                        <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="checkbox">
-                                <label>
-                                  {{ area.name }}
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
-                            {% if area.email is not None%}
-                            <a href="mailto:{{ area.email }}">{{ area.email }}</a>
-                            {% else %}
-                            <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-                <br/>{% endif %}
-                <div class="row">
-                    <div class="col-md-4">
-                        Weitere Bereiche:
-                    </div>
-                    <div class="col-md-8">
-                        Koordiniert von:
-                    </div>
-                </div>
-                {% for area in areas %}
-                    {% if not area.core %}
+                        {% endif %}
+                    {% endfor %}
+                    <br/>{% endif %}
                     <div class="row">
-                        <div class="col-md-1">
-                            <div class="checkbox">
-                                  <input type="checkbox" class="onoffswitch" name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}>
-                            </div>
+                        <div class="col-md-4">
+                            Weitere Bereiche:
                         </div>
-                        <div class="col-md-3">
-                            <div class="checkbox">
-                                <label>
-                                  {{ area.name }}
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
-                             {% if area.email is not None%}
-                            <a href="mailto:{{ area.email }}">{{ area.email }}</a>
-                            {% else %}
-                            <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
-                            {% endif %}
+                        <div class="col-md-8">
+                            Koordiniert von:
                         </div>
                     </div>
-                    {% endif %}
-                {% endfor %}
+                    <div class="row separator"></div>
+                    {% for area in areas %}
+                        {% if not area.core %}
+                            <div class="row align-items-center h-100">
+                                <div class="col-md-1">
+                                    <span class="switch switch-sm">
+                                    <input type="checkbox" class="switch" id="area{{ area.id }}" name="area{{ area.id }}"
+                                            {% if area.checked %}checked="checked"{% endif %}/>
+                                        <label for="area{{ area.id }}"></label>
+                                    </span>
+                                </div>
+                                <div class="col-md-3">
+                                    {{ area.name }}
+                                </div>
+                                <div class="col-md-7">
+                                    {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
+                                    {% if area.email is not None %}
+                                        <a href="mailto:{{ area.email }}">{{ area.email }}</a>
+                                    {% else %}
+                                        <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 {% if success %}
                     <br/>
                     <div class="alert alert-success">Tätigkeitsbereiche erfolgreich geändert</div>
@@ -97,7 +99,6 @@
                     <button type="submit" class="btn btn-success">Tätigkeitsbereiche ändern</button>
                 </div>
             </form>
-
         </div>
     </div>
 {% endblock %}

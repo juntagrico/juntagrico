@@ -30,7 +30,7 @@ class Command(BaseCommand):
         Share.objects.create(**share_all_fields)
         Share.objects.create(**share_all_fields)
         subsize_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': 1, 'shares': 2,
-                          'depot_list': True, 'required_assignments':10, 'price': 1000,
+                          'depot_list': True, 'required_assignments': 10, 'price': 1000,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
         SubscriptionSize.objects.create(**subsize_fields)
         depot1_fields = {'code': 'D1', 'name': 'Toblerplatz', 'weekday': 2, 'latitude': '47.379308',
@@ -80,14 +80,3 @@ class Command(BaseCommand):
         for x in range(0, 10):
             job1_all_fields['time'] += timezone.timedelta(days=7)
             RecuringJob.objects.create(**job2_all_fields)
-
-
-
-
-
-
-
-
-
-
-

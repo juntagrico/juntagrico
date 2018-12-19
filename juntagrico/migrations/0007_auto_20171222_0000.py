@@ -15,6 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='extrasubbillingperiod',
             name='price',
-            field=models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Preis'),
+            field=models.DecimalField(
+                decimal_places=2, max_digits=10, verbose_name='Preis'),
         ),
     ]

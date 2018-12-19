@@ -13,6 +13,10 @@ class SubscriptionSizeDao:
         return juntagrico.models.SubscriptionSize.objects.order_by('units')
 
     @staticmethod
+    def all_visible_sizes_ordered():
+        return juntagrico.models.SubscriptionSize.objects.filter(visible=True).order_by('units')
+
+    @staticmethod
     def sizes_by_size(units):
         return juntagrico.models.SubscriptionSize.objects.filter(units=units)
 

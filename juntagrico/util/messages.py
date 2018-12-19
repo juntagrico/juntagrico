@@ -23,12 +23,14 @@ def home_messages(request):
         result.append(render_result)
     return result
 
-def job_messages(request,job):
+
+def job_messages(request, job):
     result = []
     member = request.user.member
     all_participants = list(MemberDao.members_by_job(job))
     number_of_participants = len(all_participants)
-    allowed_additional_participants = list(range(1, job.slots - number_of_participants + 1))
+    allowed_additional_participants = list(
+        range(1, job.slots - number_of_participants + 1))
     if job.canceled:
         result.append(get_template('messages/job_canceled.html').render())
     elif job.end_time() < timezone.now():

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from django.utils import timezone 
-from django.utils import bills 
+from django.utils import timezone
+from django.utils import bills
 
 from juntagrico.config import Config
 
@@ -19,6 +19,6 @@ class Command(BaseCommand):
             for extra in period.type.extra_subscriptions.filter(active=True):
                 bill_extra_subscription(extra, period)
         bs = Config.business_year_start()
-        if now.day==bs['day'] and now.month==bs['month']:
+        if now.day == bs['day'] and now.month == bs['month']:
             for subscription in SubscriptionDao.all_active_subscritions():
                 bill_subscription(subscrtption)

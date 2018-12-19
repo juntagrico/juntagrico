@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load config %}
+
+{% block styles %}
+    <link href="/static/external/datepicker/datepicker.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    {% config "enable_shares" as enable_shares %}
+
+    <style>
+        body > .container {
+            width: 95%;
+        }
+    </style>
+    {% if can_change_date %}
+    <form action="/my/changedate" method="POST">
+    {% csrf_token %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <input name="date" data-toggle="datepicker">
+            </div>
+            <div class="col-md-6">
+                Lege das Datum für die Änderung fest.
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-success">ändern</button>
+            </div>
+        </div>
+    </form>
+    {% else %}
+        <div class="alert alert-warning">
+                    Das Änderungsdatum ist auf {{ change_date }} gesetzt. <a
+                        href="/my/changedate/stop">Beende dies hier</a>.
+                </div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="recipients" id="recipients"/>
+                <input type="hidden" name="recipients_count" id="recipients_count"/>
+                {% if can_send_mails %}
+                    <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    <div id="managementlist" class="row">
+        <div class="col-md-12">
+            {% block list %}
+            {% endblock %}
+        </div>
+    </div>
+    <br/><br/>
+    <script>
+        var member_string = "{% vocabulary "member" %}";
+        var members_string = "{% vocabulary "member_pl" %}";
+    </script>
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
+    <script type="text/javascript" src="/static/external/datepicker/datepicker.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js"
+            data-main="/static/js/initManList.js"></script>
+{% endblock %}

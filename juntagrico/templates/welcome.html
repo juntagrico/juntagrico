@@ -5,16 +5,16 @@
             &nbsp;
     </div>
     <div class="col-md-9 juntagrico">
-        <h3>Herzlich willkommen bei der Genossenschaft {% config "organisation_name" %}!</h3>
+        <h3>Herzlich willkommen bei {% enriched_organisation "D" %}!</h3>
     </div>
 {% endblock %}
 
 {% block allcontent %}
     <div class="alert alert-success">
         {% if no_subscription %}
-        Du bist jetzt Mitglied bei der Genossenschaft {% config "organisation_name" %}.
+        Du bist jetzt {% vocabulary "member_type" %} bei {% enriched_organisation "D" %}.
         {% else %}
-        Dein Abo wurde erstellt und wartet nun darauf aktiviert zu werden. 
+        Dein {% vocabulary "subscription" %} wurde erstellt und wartet nun darauf aktiviert zu werden. 
         {% endif %}
         Du erhälst eine Email mit allen weiteren infos an die von dir angegebene Emailadresse ( unsere Mails verirren sich manchmal in den SPAM Ordner ).
     </div><br/><br/>
