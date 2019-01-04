@@ -164,11 +164,11 @@ def subscriptions(request):
             assignments += member.assignment_count if member.assignment_count is not None else 0
             core_assignments += member.core_assignment_count if member.core_assignment_count is not None else 0
 
-            subscriptions_list.append({
-                'subscription': subscription,
-                'assignments': assignments,
-                'core_assignments': core_assignments
-            })
+        subscriptions_list.append({
+            'subscription': subscription,
+            'assignments': assignments,
+            'core_assignments': core_assignments
+        })
 
     renderdict = get_menu_dict(request)
     renderdict.update({
