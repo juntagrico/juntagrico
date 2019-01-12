@@ -5,6 +5,9 @@ from juntagrico.util.addons import get_assignment_inlines
 
 
 class AssignmentAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'member',
+                    'job']
+    search_fields = ['member__first_name', 'member__last_name']
     raw_id_fields = ['member', 'job']
     inlines = []
 

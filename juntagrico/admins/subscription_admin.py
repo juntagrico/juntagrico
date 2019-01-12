@@ -11,10 +11,8 @@ class SubscriptionAdmin(admin.ModelAdmin):
     form = SubscriptionAdminForm
     list_display = ['__str__', 'recipients_names',
                     'primary_member_nullsave', 'depot', 'active']
-    # filter_horizontal = ['users']
     search_fields = ['members__user__username',
                      'members__first_name', 'members__last_name', 'depot__name']
-    # raw_id_fields = ['primary_member']
     inlines = [SubscriptionTypeInline,
                FutureSubscriptionTypeInline, ExtraSubscriptionInline]
 

@@ -146,7 +146,7 @@ class Job(PolymorphicModel):
         raise NotImplementedError
 
     def __str__(self):
-        return _('Job #%s') % self.id
+        return _('Job #%s') % (self.id)
 
     def weekday_name(self):
         day = self.time.isoweekday()
