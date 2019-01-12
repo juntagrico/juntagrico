@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from django.db import models
+from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
@@ -82,9 +83,9 @@ class JobExtra(models.Model):
 
     @property
     def type(self):
-        if recuring_type is not None:
-            return recuring_type
-        return onetime_type
+        if self.recuring_type is not None:
+            return self.recuring_type
+        return self.onetime_type
 
     class Meta:
         verbose_name = _('JobExtra')
