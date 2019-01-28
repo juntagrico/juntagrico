@@ -34,8 +34,16 @@ def set_admin_menus(admin_menus):
     set_cache('admin_menus', admin_menus)
 
 
+def set_user_menus(user_menus):
+    set_cache('user_menus', user_menus)
+
+
 def get_admin_menus():
     return get_cache('admin_menus')
+
+
+def get_user_menus():
+    return get_cache('user_menus')
 
 
 def get_member_inlines():
