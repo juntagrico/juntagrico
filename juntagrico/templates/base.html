@@ -76,8 +76,8 @@
                     <li class="nav-item">
                         <a class="nav-link {{ menu.contact }}" href="/my/contact">Kontakt</a>
                     </li>
-                    {% for menu in user_menus %}
-                        {% include menu %}
+                    {% for user_menu in user_menus %}
+                        {% include user_menu %}
                     {% endfor%}
                     <li class="separator"></li>
                     <li class="nav-item main-menu-small">
