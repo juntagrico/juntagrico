@@ -3,43 +3,45 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-03-07 08:59-0600\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2019-02-13 08:17+0000\n"
+"Last-Translator: Weblate Admin <admin@admin.admin>\n"
+"Language-Team: English <http://weblate.juntagrico.science/projects/"
+"juntagrico/juntagrico/en/>\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.4\n"
+
 #: entity/billing.py:18
 msgid "Verrechenbare Einheit"
-msgstr ""
+msgstr "Billable Unit"
 
 #: entity/billing.py:19
 msgid "Verrechenbare Einheiten"
-msgstr ""
+msgstr "Billable Units"
 
 #: entity/billing.py:29
 msgid "bezahlt"
-msgstr ""
+msgstr "paid"
 
 #: entity/billing.py:30 entity/extrasubs.py:59 entity/subs.py:34
 msgid "Aktivierungssdatum"
-msgstr ""
+msgstr "activation date"
 
 #: entity/billing.py:31
 msgid "Referenznummer"
-msgstr ""
+msgstr "reference number"
 
 #: entity/billing.py:32 entity/billing.py:50
 msgid "Betrag"
-msgstr ""
+msgstr "amount"
 
 #: entity/billing.py:38
 msgid "Rechnung"
