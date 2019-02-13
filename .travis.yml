@@ -18,7 +18,8 @@ after_success:
   - git add . *.po
   - git status
   - git remote -v
-  - git remote add origin-pages https://${GH_TOKEN}@github.com/juntagrico/juntagrico.git
+  - git diff
+  - git remote add gettext https://${GH_TOKEN}@github.com/juntagrico/juntagrico.git
 env:
   global:
     - PYTHONPATH=.
