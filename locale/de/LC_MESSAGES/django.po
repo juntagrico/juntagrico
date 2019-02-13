@@ -1,2 +1,500 @@
 msgid ""
-msgstr "X-Generator: Weblate\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit"
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-02-13 21:37+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Weblate\n"
+
+#: .\juntagrico\entity\billing.py:18
+msgid "Verrechenbare Einheit"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:19
+msgid "Verrechenbare Einheiten"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:29
+msgid "bezahlt"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:31 .\juntagrico\entity\extrasubs.py:62
+#: .\juntagrico\entity\subs.py:38
+msgid "Aktivierungssdatum"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:33
+msgid "Referenznummer"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:34 .\juntagrico\entity\billing.py:52
+msgid "Betrag"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:40
+msgid "Rechnung"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:41
+msgid "Rechnungen"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:51
+msgid "Bezahldatum"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:58
+msgid "Zahlung"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:59
+msgid "Zahlungen"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:70
+msgid "Start Tag"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:72
+msgid "Start Monat"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:73
+msgid "End Tag"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:75
+msgid "End Monat"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:76
+msgid "Kündigungs Tag"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:78
+msgid "Kündigungs Monat"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:79
+msgid "Code für Teilabrechnung"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:127
+msgid "Verechnungsperdiode Zusatzabos"
+msgstr ""
+
+#: .\juntagrico\entity\billing.py:128
+msgid "Verechnungsperdioden Zusatzabos"
+msgstr ""
+
+#: .\juntagrico\entity\depot.py:59
+msgid "Unbekannt"
+msgstr ""
+
+#: .\juntagrico\entity\depot.py:103
+msgid "Benutzer ist Depot Admin"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:15 .\juntagrico\entity\extrasubs.py:37
+#: .\juntagrico\entity\jobs.py:19 .\juntagrico\entity\jobs.py:53
+#: .\juntagrico\entity\jobs.py:99 .\juntagrico\entity\mailing.py:12
+#: .\juntagrico\entity\subtypes.py:11 .\juntagrico\entity\subtypes.py:33
+msgid "Name"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:16
+msgid "Groesse (gross,4, ...)"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:18 .\juntagrico\entity\extrasubs.py:39
+#: .\juntagrico\entity\jobs.py:21 .\juntagrico\entity\jobs.py:103
+#: .\juntagrico\entity\subtypes.py:18 .\juntagrico\entity\subtypes.py:48
+msgid "Beschreibung"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:19
+msgid "Groesse zum Sortieren"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:20 .\juntagrico\entity\extrasubs.py:41
+#: .\juntagrico\entity\subtypes.py:16 .\juntagrico\entity\subtypes.py:44
+msgid "Sichtbar"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:29
+msgid "Zusatz-Abo-Typ"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:30
+msgid "Zusatz-Abo-Typen"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:40 .\juntagrico\entity\listmessage.py:14
+msgid "Nummer zum Sortieren"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:47
+msgid "Zusatz-Abo-Kategorie"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:48
+msgid "Zusatz-Abo-Kategorien"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:60 .\juntagrico\entity\subs.py:36
+msgid "gekündigt"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:64 .\juntagrico\entity\subs.py:40
+msgid "Deaktivierungssdatum"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:80
+msgid "wartend"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:82 .\juntagrico\entity\listmessage.py:13
+msgid "aktiv"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:84
+msgid "aktiv - gekündigt"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:86
+msgid "inaktiv-gekündigt"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:109
+msgid "Zusatz-Abo"
+msgstr ""
+
+#: .\juntagrico\entity\extrasubs.py:110
+msgid "Zusatz-Abos"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:23 .\juntagrico\entity\jobs.py:292
+msgid "Kernbereich"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:24
+msgid "versteckt"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:29
+msgid "Koordinator Tel Nr Veröffentlichen"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:43
+msgid "Tätigkeitsbereich"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:44
+msgid "Tätigkeitsbereiche"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:46
+msgid "Benutzer ist TätigkeitsbereichskoordinatorIn"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:55
+msgid "Icon für fehlendes Extra"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:57
+msgid "Icon für Extra"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:60
+msgid "JobExtraTyp"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:61
+msgid "JobExtraTypen"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:78
+msgid "jeder kann Extra auswählen"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:91
+msgid "JobExtra"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:92
+msgid "JobExtras"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:101
+msgid "Angezeigter Name"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:105
+msgid "Dauer in Stunden"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:118
+msgid "AbstractJobart"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:119
+msgid "AbstractJobarten"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:129
+msgid "Jobart"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:130
+msgid "Jobarten"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:134
+msgid "Plaetze"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:140
+msgid "Reminder verschickt"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:141
+msgid "abgesagt"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:150
+#, python-format
+msgid "Job #%s"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:212
+msgid "Abgesagte jobs koennen nicht wieder aktiviert werden"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:241
+msgid "AbstractJob"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:242
+msgid "AbstractJobs"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:257
+msgid "Job"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:258
+msgid "Jobs"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:282
+msgid "EinzelJob"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:283
+msgid "EinzelJobs"
+msgstr ""
+
+#: .\juntagrico\entity\jobs.py:295
+msgid "Wert"
+msgstr ""
+
+#: .\juntagrico\entity\listmessage.py:12
+msgid "Nachricht"
+msgstr ""
+
+#: .\juntagrico\entity\listmessage.py:20
+msgid "Depot Listen Nachricht"
+msgstr ""
+
+#: .\juntagrico\entity\listmessage.py:21
+msgid "Depot Listen Nachrichten"
+msgstr ""
+
+#: .\juntagrico\entity\mailing.py:13
+msgid "Template"
+msgstr ""
+
+#: .\juntagrico\entity\mailing.py:14
+msgid "Code"
+msgstr ""
+
+#: .\juntagrico\entity\mailing.py:20
+msgid "MailTemplate"
+msgstr ""
+
+#: .\juntagrico\entity\mailing.py:21
+msgid "MailTemplates"
+msgstr ""
+
+#: .\juntagrico\entity\mailing.py:23
+msgid "Benutzer kann Templates laden"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:21
+msgid "Vorname"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:22
+msgid "Nachname"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:25
+msgid "Strasse"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:26
+msgid "PLZ"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:27
+msgid "Ort"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:28
+msgid "Geburtsdatum"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:29
+msgid "Telefonnr"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:31
+msgid "Mobile"
+msgstr ""
+
+#: .\juntagrico\entity\member.py:100
+msgid "Benutzer kann "
+msgstr ""
+
+#: .\juntagrico\entity\member.py:101
+msgid " filtern"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:12
+msgid "Bezahlt am"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:13
+msgid "Ausgestellt am"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:14
+msgid "Eingebucht am"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:15
+msgid "Gekündigt am"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:17
+msgid "Gekündigt auf"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:19
+msgid "Zurückbezahlt am"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:21
+msgid "Anteilschein Nummer"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:23 .\juntagrico\entity\subs.py:49
+msgid "Notizen"
+msgstr ""
+
+#: .\juntagrico\entity\share.py:31
+#, python-format
+msgid "Anteilschein #%s"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:42
+msgid "Kündigüngssdatum"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:44
+msgid "Erstellungsdatum"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:46
+msgid "Gewünschtes Startdatum"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:48
+msgid "Gewünschtes Enddatum"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:54 .\juntagrico\entity\subs.py:62
+msgid "1 Einheit"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:55
+#, python-format
+msgid "%(amount)d Einheiten"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:58
+#, python-format
+msgid "Abo (%(namelist)s) %(id)s"
+msgstr ""
+
+#: .\juntagrico\entity\subs.py:63
+#, python-format
+msgid "%(amount)s Einheiten"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:12 .\juntagrico\entity\subtypes.py:34
+msgid "Langer Name"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:13
+msgid "Einheiten"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:15
+msgid "Sichtbar auf Depotliste"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:24
+msgid "Grösse"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:26
+msgid "Grössen"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:38
+msgid "Anz benötigter Anteilsscheine"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:40
+msgid "Anz benötigter Arbeitseinsätze"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:42
+msgid "Anz benötigter Kern Arbeitseinsätze"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:43
+msgid "Preis"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:45
+msgid "ProbeAbo"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:46
+msgid "ProbeAbo Dauer in Tagen"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:51
+msgid " - Grösse: "
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:57
+msgid "Typ"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:59
+msgid "Typen"
+msgstr ""

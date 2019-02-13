@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-07 08:59-0600\n"
+"POT-Creation-Date: 2019-02-13 21:37+0100\n"
 "PO-Revision-Date: 2019-02-13 08:17+0000\n"
 "Last-Translator: Weblate Admin <admin@admin.admin>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -19,508 +19,494 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 3.4\n"
 
-#: entity/billing.py:18
+#: .\juntagrico\entity\billing.py:18
 msgid "Verrechenbare Einheit"
 msgstr "Billable Unit"
 
-#: entity/billing.py:19
+#: .\juntagrico\entity\billing.py:19
 msgid "Verrechenbare Einheiten"
 msgstr "Billable Units"
 
-#: entity/billing.py:29
+#: .\juntagrico\entity\billing.py:29
 msgid "bezahlt"
 msgstr "paid"
 
-#: entity/billing.py:30 entity/extrasubs.py:59 entity/subs.py:34
+#: .\juntagrico\entity\billing.py:31 .\juntagrico\entity\extrasubs.py:62
+#: .\juntagrico\entity\subs.py:38
 msgid "Aktivierungssdatum"
 msgstr "activation date"
 
-#: entity/billing.py:31
+#: .\juntagrico\entity\billing.py:33
 msgid "Referenznummer"
 msgstr "reference number"
 
-#: entity/billing.py:32 entity/billing.py:50
+#: .\juntagrico\entity\billing.py:34 .\juntagrico\entity\billing.py:52
 msgid "Betrag"
 msgstr "amount"
 
-#: entity/billing.py:38
+#: .\juntagrico\entity\billing.py:40
 msgid "Rechnung"
 msgstr ""
 
-#: entity/billing.py:39
+#: .\juntagrico\entity\billing.py:41
 msgid "Rechnungen"
 msgstr ""
 
-#: entity/billing.py:49
+#: .\juntagrico\entity\billing.py:51
 msgid "Bezahldatum"
 msgstr ""
 
-#: entity/billing.py:56
+#: .\juntagrico\entity\billing.py:58
 msgid "Zahlung"
 msgstr ""
 
-#: entity/billing.py:57
+#: .\juntagrico\entity\billing.py:59
 msgid "Zahlungen"
 msgstr ""
 
-#: entity/billing.py:67
+#: .\juntagrico\entity\billing.py:70
 msgid "Start Tag"
 msgstr ""
 
-#: entity/billing.py:68
+#: .\juntagrico\entity\billing.py:72
 msgid "Start Monat"
 msgstr ""
 
-#: entity/billing.py:69
+#: .\juntagrico\entity\billing.py:73
 msgid "End Tag"
 msgstr ""
 
-#: entity/billing.py:70
+#: .\juntagrico\entity\billing.py:75
 msgid "End Monat"
 msgstr ""
 
-#: entity/billing.py:71
+#: .\juntagrico\entity\billing.py:76
 msgid "Kündigungs Tag"
 msgstr ""
 
-#: entity/billing.py:72
+#: .\juntagrico\entity\billing.py:78
 msgid "Kündigungs Monat"
 msgstr ""
 
-#: entity/billing.py:73
+#: .\juntagrico\entity\billing.py:79
 msgid "Code für Teilabrechnung"
 msgstr ""
 
-#: entity/billing.py:121
+#: .\juntagrico\entity\billing.py:127
 msgid "Verechnungsperdiode Zusatzabos"
 msgstr ""
 
-#: entity/billing.py:122
+#: .\juntagrico\entity\billing.py:128
 msgid "Verechnungsperdioden Zusatzabos"
 msgstr ""
 
-#: entity/depot.py:57
+#: .\juntagrico\entity\depot.py:59
 msgid "Unbekannt"
 msgstr ""
 
-#: entity/depot.py:98
-msgid "Depot"
-msgstr ""
-
-#: entity/depot.py:99
-msgid "Depots"
-msgstr ""
-
-#: entity/depot.py:100
+#: .\juntagrico\entity\depot.py:103
 msgid "Benutzer ist Depot Admin"
 msgstr ""
 
-#: entity/extrasubs.py:15 entity/extrasubs.py:36 entity/jobs.py:17
-#: entity/jobs.py:46 entity/jobs.py:88 entity/mailing.py:11
-#: entity/subtypes.py:8 entity/subtypes.py:26
+#: .\juntagrico\entity\extrasubs.py:15 .\juntagrico\entity\extrasubs.py:37
+#: .\juntagrico\entity\jobs.py:19 .\juntagrico\entity\jobs.py:53
+#: .\juntagrico\entity\jobs.py:99 .\juntagrico\entity\mailing.py:12
+#: .\juntagrico\entity\subtypes.py:11 .\juntagrico\entity\subtypes.py:33
 msgid "Name"
 msgstr ""
 
-#: entity/extrasubs.py:16
+#: .\juntagrico\entity\extrasubs.py:16
 msgid "Groesse (gross,4, ...)"
 msgstr ""
 
-#: entity/extrasubs.py:17 entity/extrasubs.py:37 entity/jobs.py:18
-#: entity/jobs.py:90 entity/subtypes.py:12 entity/subtypes.py:33
+#: .\juntagrico\entity\extrasubs.py:18 .\juntagrico\entity\extrasubs.py:39
+#: .\juntagrico\entity\jobs.py:21 .\juntagrico\entity\jobs.py:103
+#: .\juntagrico\entity\subtypes.py:18 .\juntagrico\entity\subtypes.py:48
 msgid "Beschreibung"
 msgstr ""
 
-#: entity/extrasubs.py:18
+#: .\juntagrico\entity\extrasubs.py:19
 msgid "Groesse zum Sortieren"
 msgstr ""
 
-#: entity/extrasubs.py:19 entity/extrasubs.py:39 entity/subtypes.py:32
+#: .\juntagrico\entity\extrasubs.py:20 .\juntagrico\entity\extrasubs.py:41
+#: .\juntagrico\entity\subtypes.py:16 .\juntagrico\entity\subtypes.py:44
 msgid "Sichtbar"
 msgstr ""
 
-#: entity/extrasubs.py:28
+#: .\juntagrico\entity\extrasubs.py:29
 msgid "Zusatz-Abo-Typ"
 msgstr ""
 
-#: entity/extrasubs.py:29
+#: .\juntagrico\entity\extrasubs.py:30
 msgid "Zusatz-Abo-Typen"
 msgstr ""
 
-#: entity/extrasubs.py:38
+#: .\juntagrico\entity\extrasubs.py:40 .\juntagrico\entity\listmessage.py:14
 msgid "Nummer zum Sortieren"
 msgstr ""
 
-#: entity/extrasubs.py:45
+#: .\juntagrico\entity\extrasubs.py:47
 msgid "Zusatz-Abo-Kategorie"
 msgstr ""
 
-#: entity/extrasubs.py:46
+#: .\juntagrico\entity\extrasubs.py:48
 msgid "Zusatz-Abo-Kategorien"
 msgstr ""
 
-#: entity/extrasubs.py:58 entity/subs.py:33
+#: .\juntagrico\entity\extrasubs.py:60 .\juntagrico\entity\subs.py:36
 msgid "gekündigt"
 msgstr ""
 
-#: entity/extrasubs.py:60 entity/subs.py:35
+#: .\juntagrico\entity\extrasubs.py:64 .\juntagrico\entity\subs.py:40
 msgid "Deaktivierungssdatum"
 msgstr ""
 
-#: entity/extrasubs.py:75
+#: .\juntagrico\entity\extrasubs.py:80
 msgid "wartend"
 msgstr ""
 
-#: entity/extrasubs.py:77
+#: .\juntagrico\entity\extrasubs.py:82 .\juntagrico\entity\listmessage.py:13
 msgid "aktiv"
 msgstr ""
 
-#: entity/extrasubs.py:79
+#: .\juntagrico\entity\extrasubs.py:84
 msgid "aktiv - gekündigt"
 msgstr ""
 
-#: entity/extrasubs.py:81
+#: .\juntagrico\entity\extrasubs.py:86
 msgid "inaktiv-gekündigt"
 msgstr ""
 
-#: entity/extrasubs.py:104
+#: .\juntagrico\entity\extrasubs.py:109
 msgid "Zusatz-Abo"
 msgstr ""
 
-#: entity/extrasubs.py:105
+#: .\juntagrico\entity\extrasubs.py:110
 msgid "Zusatz-Abos"
 msgstr ""
 
-#: entity/jobs.py:20 entity/jobs.py:277
+#: .\juntagrico\entity\jobs.py:23 .\juntagrico\entity\jobs.py:292
 msgid "Kernbereich"
 msgstr ""
 
-#: entity/jobs.py:21
+#: .\juntagrico\entity\jobs.py:24
 msgid "versteckt"
 msgstr ""
 
-#: entity/jobs.py:24
+#: .\juntagrico\entity\jobs.py:29
 msgid "Koordinator Tel Nr Veröffentlichen"
 msgstr ""
 
-#: entity/jobs.py:38
+#: .\juntagrico\entity\jobs.py:43
 msgid "Tätigkeitsbereich"
 msgstr ""
 
-#: entity/jobs.py:39
+#: .\juntagrico\entity\jobs.py:44
 msgid "Tätigkeitsbereiche"
 msgstr ""
 
-#: entity/jobs.py:40
+#: .\juntagrico\entity\jobs.py:46
 msgid "Benutzer ist TätigkeitsbereichskoordinatorIn"
 msgstr ""
 
-#: entity/jobs.py:47
+#: .\juntagrico\entity\jobs.py:55
 msgid "Icon für fehlendes Extra"
 msgstr ""
 
-#: entity/jobs.py:48
+#: .\juntagrico\entity\jobs.py:57
 msgid "Icon für Extra"
 msgstr ""
 
-#: entity/jobs.py:51
+#: .\juntagrico\entity\jobs.py:60
 msgid "JobExtraTyp"
 msgstr ""
 
-#: entity/jobs.py:52
+#: .\juntagrico\entity\jobs.py:61
 msgid "JobExtraTypen"
 msgstr ""
 
-#: entity/jobs.py:67
+#: .\juntagrico\entity\jobs.py:78
 msgid "jeder kann Extra auswählen"
 msgstr ""
 
-#: entity/jobs.py:80
+#: .\juntagrico\entity\jobs.py:91
 msgid "JobExtra"
 msgstr ""
 
-#: entity/jobs.py:81
+#: .\juntagrico\entity\jobs.py:92
 msgid "JobExtras"
 msgstr ""
 
-#: entity/jobs.py:89
+#: .\juntagrico\entity\jobs.py:101
 msgid "Angezeigter Name"
 msgstr ""
 
-#: entity/jobs.py:92
+#: .\juntagrico\entity\jobs.py:105
 msgid "Dauer in Stunden"
 msgstr ""
 
-#: entity/jobs.py:105
+#: .\juntagrico\entity\jobs.py:118
 msgid "AbstractJobart"
 msgstr ""
 
-#: entity/jobs.py:106
+#: .\juntagrico\entity\jobs.py:119
 msgid "AbstractJobarten"
 msgstr ""
 
-#: entity/jobs.py:116
+#: .\juntagrico\entity\jobs.py:129
 msgid "Jobart"
 msgstr ""
 
-#: entity/jobs.py:117
+#: .\juntagrico\entity\jobs.py:130
 msgid "Jobarten"
 msgstr ""
 
-#: entity/jobs.py:121
+#: .\juntagrico\entity\jobs.py:134
 msgid "Plaetze"
 msgstr ""
 
-#: entity/jobs.py:125
+#: .\juntagrico\entity\jobs.py:140
 msgid "Reminder verschickt"
 msgstr ""
 
-#: entity/jobs.py:126
+#: .\juntagrico\entity\jobs.py:141
 msgid "abgesagt"
 msgstr ""
 
-#: entity/jobs.py:135
+#: .\juntagrico\entity\jobs.py:150
 #, python-format
 msgid "Job #%s"
 msgstr ""
 
-#: entity/jobs.py:196
+#: .\juntagrico\entity\jobs.py:212
 msgid "Abgesagte jobs koennen nicht wieder aktiviert werden"
 msgstr ""
 
-#: entity/jobs.py:226
+#: .\juntagrico\entity\jobs.py:241
 msgid "AbstractJob"
 msgstr ""
 
-#: entity/jobs.py:227
+#: .\juntagrico\entity\jobs.py:242
 msgid "AbstractJobs"
 msgstr ""
 
-#: entity/jobs.py:242
+#: .\juntagrico\entity\jobs.py:257
 msgid "Job"
 msgstr ""
 
-#: entity/jobs.py:243
+#: .\juntagrico\entity\jobs.py:258
 msgid "Jobs"
 msgstr ""
 
-#: entity/jobs.py:267
+#: .\juntagrico\entity\jobs.py:282
 msgid "EinzelJob"
 msgstr ""
 
-#: entity/jobs.py:268
+#: .\juntagrico\entity\jobs.py:283
 msgid "EinzelJobs"
 msgstr ""
 
-#: entity/jobs.py:279
+#: .\juntagrico\entity\jobs.py:295
 msgid "Wert"
 msgstr ""
 
-#: entity/mailing.py:12
+#: .\juntagrico\entity\listmessage.py:12
+msgid "Nachricht"
+msgstr ""
+
+#: .\juntagrico\entity\listmessage.py:20
+msgid "Depot Listen Nachricht"
+msgstr ""
+
+#: .\juntagrico\entity\listmessage.py:21
+msgid "Depot Listen Nachrichten"
+msgstr ""
+
+#: .\juntagrico\entity\mailing.py:13
 msgid "Template"
 msgstr ""
 
-#: entity/mailing.py:13
+#: .\juntagrico\entity\mailing.py:14
 msgid "Code"
 msgstr ""
 
-#: entity/mailing.py:19
+#: .\juntagrico\entity\mailing.py:20
 msgid "MailTemplate"
 msgstr ""
 
-#: entity/mailing.py:20
+#: .\juntagrico\entity\mailing.py:21
 msgid "MailTemplates"
 msgstr ""
 
-#: entity/mailing.py:21
+#: .\juntagrico\entity\mailing.py:23
 msgid "Benutzer kann Templates laden"
 msgstr ""
 
-#: entity/member.py:19
+#: .\juntagrico\entity\member.py:21
 msgid "Vorname"
 msgstr ""
 
-#: entity/member.py:20
+#: .\juntagrico\entity\member.py:22
 msgid "Nachname"
 msgstr ""
 
-#: entity/member.py:23
+#: .\juntagrico\entity\member.py:25
 msgid "Strasse"
 msgstr ""
 
-#: entity/member.py:24
+#: .\juntagrico\entity\member.py:26
 msgid "PLZ"
 msgstr ""
 
-#: entity/member.py:25
+#: .\juntagrico\entity\member.py:27
 msgid "Ort"
 msgstr ""
 
-#: entity/member.py:26
+#: .\juntagrico\entity\member.py:28
 msgid "Geburtsdatum"
 msgstr ""
 
-#: entity/member.py:27
+#: .\juntagrico\entity\member.py:29
 msgid "Telefonnr"
 msgstr ""
 
-#: entity/member.py:28
+#: .\juntagrico\entity\member.py:31
 msgid "Mobile"
 msgstr ""
 
-#: entity/member.py:97
+#: .\juntagrico\entity\member.py:100
 msgid "Benutzer kann "
 msgstr ""
 
-#: entity/member.py:97
+#: .\juntagrico\entity\member.py:101
 msgid " filtern"
 msgstr ""
 
-#: entity/share.py:14
+#: .\juntagrico\entity\share.py:12
 msgid "Bezahlt am"
 msgstr ""
 
-#: entity/share.py:15
+#: .\juntagrico\entity\share.py:13
 msgid "Ausgestellt am"
 msgstr ""
 
-#: entity/share.py:16
+#: .\juntagrico\entity\share.py:14
 msgid "Eingebucht am"
 msgstr ""
 
-#: entity/share.py:17
+#: .\juntagrico\entity\share.py:15
 msgid "Gekündigt am"
 msgstr ""
 
-#: entity/share.py:18
+#: .\juntagrico\entity\share.py:17
 msgid "Gekündigt auf"
 msgstr ""
 
-#: entity/share.py:19
+#: .\juntagrico\entity\share.py:19
 msgid "Zurückbezahlt am"
 msgstr ""
 
-#: entity/share.py:20
+#: .\juntagrico\entity\share.py:21
 msgid "Anteilschein Nummer"
 msgstr ""
 
-#: entity/share.py:21 entity/subs.py:40
+#: .\juntagrico\entity\share.py:23 .\juntagrico\entity\subs.py:49
 msgid "Notizen"
 msgstr ""
 
-#: entity/share.py:28
+#: .\juntagrico\entity\share.py:31
 #, python-format
 msgid "Anteilschein #%s"
 msgstr ""
 
-#: entity/share.py:31
-msgid "Anteilschein"
-msgstr ""
-
-#: entity/share.py:32
-msgid "Anteilscheine"
-msgstr ""
-
-#: entity/subs.py:36
+#: .\juntagrico\entity\subs.py:42
 msgid "Kündigüngssdatum"
 msgstr ""
 
-#: entity/subs.py:37
+#: .\juntagrico\entity\subs.py:44
 msgid "Erstellungsdatum"
 msgstr ""
 
-#: entity/subs.py:38
+#: .\juntagrico\entity\subs.py:46
 msgid "Gewünschtes Startdatum"
 msgstr ""
 
-#: entity/subs.py:39
+#: .\juntagrico\entity\subs.py:48
 msgid "Gewünschtes Enddatum"
 msgstr ""
 
-#: entity/subs.py:45 entity/subs.py:51
+#: .\juntagrico\entity\subs.py:54 .\juntagrico\entity\subs.py:62
 msgid "1 Einheit"
 msgstr ""
 
-#: entity/subs.py:45 entity/subs.py:51
+#: .\juntagrico\entity\subs.py:55
 #, python-format
-msgid "%(amount) Einheiten"
+msgid "%(amount)d Einheiten"
 msgstr ""
 
-#: entity/subs.py:47
-msgid "Abo (%(namelist)) %(id)"
+#: .\juntagrico\entity\subs.py:58
+#, python-format
+msgid "Abo (%(namelist)s) %(id)s"
 msgstr ""
 
-#: entity/subs.py:98
-msgid "waiting"
+#: .\juntagrico\entity\subs.py:63
+#, python-format
+msgid "%(amount)s Einheiten"
 msgstr ""
 
-#: entity/subs.py:100
-msgid "active"
-msgstr ""
-
-#: entity/subs.py:102
-msgid "canceled"
-msgstr ""
-
-#: entity/subs.py:104
-msgid "inactive"
-msgstr ""
-
-#: entity/subs.py:205
-msgid "Deaktivierte Abos koennen nicht wieder aktiviert werden"
-msgstr ""
-
-#: entity/subs.py:235
-msgid "Abo"
-msgstr ""
-
-#: entity/subs.py:236
-msgid "Abos"
-msgstr ""
-
-#: entity/subs.py:237
-msgid "Benutzer kann Abos filtern"
-msgstr ""
-
-#: entity/subtypes.py:9 entity/subtypes.py:27
+#: .\juntagrico\entity\subtypes.py:12 .\juntagrico\entity\subtypes.py:34
 msgid "Langer Name"
 msgstr ""
 
-#: entity/subtypes.py:10
-msgid "Grösse"
+#: .\juntagrico\entity\subtypes.py:13
+msgid "Einheiten"
 msgstr ""
 
-#: entity/subtypes.py:11
+#: .\juntagrico\entity\subtypes.py:15
 msgid "Sichtbar auf Depotliste"
 msgstr ""
 
-#: entity/subtypes.py:18
-msgid "Abo Grösse"
+#: .\juntagrico\entity\subtypes.py:24
+msgid "Grösse"
 msgstr ""
 
-#: entity/subtypes.py:19
-msgid "Abo Grössen"
+#: .\juntagrico\entity\subtypes.py:26
+msgid "Grössen"
 msgstr ""
 
-#: entity/subtypes.py:29
+#: .\juntagrico\entity\subtypes.py:38
 msgid "Anz benötigter Anteilsscheine"
 msgstr ""
 
-#: entity/subtypes.py:30
+#: .\juntagrico\entity\subtypes.py:40
 msgid "Anz benötigter Arbeitseinsätze"
 msgstr ""
 
-#: entity/subtypes.py:31
+#: .\juntagrico\entity\subtypes.py:42
+msgid "Anz benötigter Kern Arbeitseinsätze"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:43
 msgid "Preis"
 msgstr ""
 
-#: entity/subtypes.py:36
+#: .\juntagrico\entity\subtypes.py:45
+msgid "ProbeAbo"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:46
+msgid "ProbeAbo Dauer in Tagen"
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:51
 msgid " - Grösse: "
 msgstr ""
 
-#: entity/subtypes.py:39
-msgid "Abo Typ"
+#: .\juntagrico\entity\subtypes.py:57
+msgid "Typ"
 msgstr ""
 
-#: entity/subtypes.py:40
-msgid "Abo Typen"
+#: .\juntagrico\entity\subtypes.py:59
+msgid "Typen"
 msgstr ""
