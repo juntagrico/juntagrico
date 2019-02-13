@@ -16,6 +16,7 @@ script:
   - git status
   - git add . *.po
   - git status
+  - git remote -v
 env:
   global:
     - PYTHONPATH=.
