@@ -2,7 +2,7 @@
 {% load config %}
 
 {% block content %}
-    <h3>Aktuelle Arbeitseinsätze</h3>
+    <h3>{% trans "Aktuelle Arbeitseinsätze" %}</h3>
     <div class="row mb-3">
         <div class="col-md-12">
 
@@ -11,12 +11,12 @@
     </div>
     <div class="row mb-5">
         <div class="col-md-12">
-            <a href="/my/assignments">Hier alle Arbeitseinsätze anzeigen</a>
+            <a href="/my/assignments">{% trans "Hier alle Arbeitseinsätze anzeigen" %}</a>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-            <h4>Zu den Kalendern der einzelnen Tätigkeitsbereiche</h4>
+            <h4>{% trans "Zu den Kalendern der einzelnen Tätigkeitsbereiche" %}</h4>
         </div>
     </div>
     {% for team in teams %}

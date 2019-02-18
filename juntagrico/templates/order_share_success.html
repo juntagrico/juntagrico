@@ -4,7 +4,7 @@
 {% block content %}
     <div class="row mb-4">
         <div class="col-md-12">
-            Deine Anteilsscheine wurden bestellt, bitte bezahle sie and die untenstehende Bankverbindung
+            {% trans "Deine Anteilsscheine wurden bestellt, bitte bezahle sie and die untenstehende Bankverbindung" %}
         </div>
     </div>
     <div class="row mb-4">
@@ -25,13 +25,13 @@
     </div>
     <div class="row mb-4">
         <div class="col-md-12">
-            Solltest du Fragen dazu haben sende eine Email an <a
-                href="mailto:{% config "info_email" %}?subject=Frage zu unbezahltem Anteilsschein {% config "server_url" %}">{% config "info_email" %}</a>.
+            {% trans "Solltest du Fragen dazu haben sende eine Email an" %}
+            <a href="mailto:{% config "info_email" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">{% config "info_email" %}</a>.
         </div>
     </div>
     <div class="row mb-4">
         <div class="col-md-12">
-            <a href="{{ referer }}" class="btn btn-success">zurück</a>
+            <a href="{{ referer }}" class="btn btn-success">{% trans "zurück" %}</a>
         </div>
     </div>
 {% endblock %}

@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Künde dein {% vocabulary "subscription" %}</h3>
+    {% vocabulary "subscription" as v_subscription %}
+    <h3>{% blocktrans %}Künde dein {{ v_subscription }}{% endblocktrans %}</h3>
 {% endblock %}
 
 {% block content %}
+    {% vocabulary "subscription" as v_subscription %}
     <div class="row mb-3">
         <div class="col-md-12">
-            Hier kannst du dein {% vocabulary "subscription" %} kündigen. Der nächste reguläre Kündigungstermin ist
-            der {{ end_date |date:"d.m.Y" }}.
+            {% blocktrans %}
+                Hier kannst du dein {{ v_subscription }} kündigen. Der nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.
+            {% endblocktrans %}
         </div>
     </div>
     <div class="row mb-3">
@@ -17,20 +20,19 @@
                 {% csrf_token %}
                 <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                 <div class="form-group row">
-                    <label class="col-md-3" for="message">Mitteilung</label>
+                    <label class="col-md-3" for="message">{% trans "Mitteilung" %}</label>
                     <div class="col-md-9">
                             <textarea name="message" id="message" class="form-control" rows="12"
-                                      placeholder="Hier Nachricht eingeben"></textarea>
+                                      placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="offset-md-4 form-actions">
-                        <button type="submit" class="btn btn-success">Abo künden</button>
+                        <button type="submit" class="btn btn-success">{% trans "Abo künden" %}</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-
 {% endblock %}
 

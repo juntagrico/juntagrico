@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Mails verschickt!</h3>
+    <h3>{% trans "Mails verschickt!" %}</h3>
 {% endblock %}
 
 {% block content %}
-    <div class="alert alert-success">Email wurde an {{ sent }} Empfänger verschickt.</div>
+    <div class="alert alert-success">
+        {% blocktrans %}
+            Email wurde an {{ sent }} Empfänger verschickt.
+        {% endblocktrans %}
+    </div>
 
 {% endblock %}

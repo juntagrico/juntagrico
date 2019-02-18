@@ -2,7 +2,7 @@
 {% load config %}
 
 {% block page_title %}
-    <h3>Alle Einsätze im Überblick</h3>
+    <h3>{% trans "Alle Einsätze im Überblick" %}</h3>
 {% endblock %}
 {% block content %}
     <div id="jobs">        
@@ -10,7 +10,7 @@
     </div>
     <br/><br/>
     {% if show_all %}
-        <a href="/my/assignments/all">Auch vergangene Jobs anzeigen</a>
+        <a href="/my/assignments/all">{% trans "Auch vergangene Jobs anzeigen" %}</a>
     {% endif %}
 {% endblock %}
 

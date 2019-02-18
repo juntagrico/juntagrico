@@ -6,21 +6,21 @@
 
 {% block content %}
     <div class="row mb-3">
-        <div class="col-md-3">Adresse</div>
+        <div class="col-md-3">{% trans "Adresse" %}</div>
         <div class="col-md-9">{{ depot.adivr_street }}<br/>{{ depot.adivr_zipcode }} {{ depot.adivr_location }}</div>
     </div>
     <div class="row mb-3">
-        <div class="col-md-3">Wochentag</div>
+        <div class="col-md-3">{% trans "Wochentag" %}</div>
         <div class="col-md-9">{{ depot.get_weekday_display }}</div>
     </div>
     <div class="row mb-3">
-        <div class="col-md-3">Kontaktperson</div>
+        <div class="col-md-3">{% trans "Kontaktperson" %}</div>
         <div class="col-md-9">{{ depot.contact.first_name }} {{ depot.contact.last_name }} <a
                 href="mailto:{{ depot.contact.email }}">{{ depot.contact.email }}</a></div>
     </div>
     {% if depot.description %}
         <div class="row mb-3">
-            <div class="col-md-3">Beschreibung</div>
+            <div class="col-md-3">{% trans "Beschreibung" %}</div>
             <div class="col-md-9">{{ depot.description | linebreaksbr }}</div>
         </div>
     {% endif %}

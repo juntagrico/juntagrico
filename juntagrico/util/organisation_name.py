@@ -6,7 +6,7 @@ from juntagrico.config import Config
 
 
 def enriched_organisation(c):
-    g = Config.organisation_name_config()['gender']
+    g = Config.organisation_name_config()['gender'].upper()
     if (c == 'N' and g == 'M') or ((c == 'G' or c == 'D') and g == 'F'):
         article = 'der'
     elif c == 'G' and (g == 'M' or g == 'N'):

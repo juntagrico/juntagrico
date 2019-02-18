@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block content %}
+    {% vocabulary "subscription" as v_subscription %}
     <div class="alert alert-danger">
-        Einer der Bezüger hat noch ein aktives{% vocabulary "subscription" %}!
+        {% blocktrans %}Einer der Bezüger hat noch ein aktives {{ v_subscription }}!{% endblocktrans %}
     </div><br/><br/>
 {% endblock %}

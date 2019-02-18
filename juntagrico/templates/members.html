@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% load config %}
 {% block page_title %}
-    <h3>Alle {% vocabulary "member_pl" %} im Überblick</h3>
+    {% vocabulary "member_pl" as v_member_pl %}
+    <h3>{% blocktrans %}Alle {{ v_member_pl }} im Überblick{% endblocktrans %}</h3>
 {% endblock %}
 
 {% block content %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
     <style>
         body > .container {
             width: 95%;
@@ -15,34 +17,34 @@
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden" name="recipients_count" id="recipients_count"/>
         {% if can_send_mails %}
-        <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
+        <button type="submit" class="btn btn-success" id="send-email">{% trans "Email senden" %}</button>
         {% endif %}
     </form>
     <div id="filter">
         <table id="filter-table" class="list table" style="display: table;">
             <thead>
             <tr>
-                <th>Name</th>
+                <th>{% trans "Name" %}</th>
                 <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}<th>{% vocabulary "assignment_pl" %} Kernbereich</th>{% endif %}
-                <th>Taetigkeitsbereiche</th>
+                {% if show_core %}<th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
+                <th>{% trans "Taetigkeitsbereiche" %}</th>
                 <th>{% vocabulary "depot" %}</th>
-                <th>Email</th>
-                <th>Telefon</th>
-                <th>Mobile</th>
-                <th>Abo</th>
+                <th>{% trans "Email" %}</th>
+                <th>{% trans "Telefon" %}</th>
+                <th>{% trans "Mobile" %}</th>
+                <th>{% trans "Abo" %}</th>
             </tr>
             <tfoot>
             <tr>
-                <th>Name</th>
+                <th>{% trans "Name" %}</th>
                 <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}<th>{% vocabulary "assignment_pl" %} Kernbereich</th>{% endif %}
-                <th>Taetigkeitsbereiche</th>
+                {% if show_core %}<th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
+                <th>{% trans "Taetigkeitsbereiche" %}</th>
                 <th>{% vocabulary "depot" %}</th>
-                <th>Email</th>
-                <th>Telefon</th>
-                <th>Mobile</th>
-                <th>Abo</th>
+                <th>{% trans "Email" %}</th>
+                <th>{% trans "Telefon" %}</th>
+                <th>{% trans "Mobile" %}</th>
+                <th>{% trans "Abo" %}</th>
             </tr>
             </tfoot>
             <tbody>
