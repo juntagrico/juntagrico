@@ -1,8 +1,10 @@
 {% load depot_extras %}
+{% load i18n %}
 {% load config %}
+{% vocabulary "depot" as v_depot %}
 <html>
 <head>
-    <title>{% vocabulary "depot" %}listen</title>
+    <title>{% blocktrans %}{{ v_depot }}-Listen{% endblocktrans %}</title>
     <meta charset="utf-8">
     <style>
         @page {
@@ -72,18 +74,18 @@
 <body>
 
 <div id="header_content">
-    Erstellt am {{ datum |date:"d.m.Y H:i" }}
+    {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
 </div>
 
 {% for depot in depots %}
     <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
     <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
-    {% vocabulary "depot" %}betreuung: {{ depot.contact.first_name }} {{ depot.contact.last_name }}
+    {% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}: {{ depot.contact.first_name }} {{ depot.contact.last_name }}
     <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
         <tr>
             <td style="width:180px;" class="name"></td>
             <td style="width:180px;" class="name"></td>
-            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">ABO</th>
+            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">{% vocabulary "subscription" %}</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}
@@ -103,7 +105,7 @@
         </tr>
         <tr>
             <td></td>
-            <td>TOTAL</td>
+            <td>{% trans "TOTAL" %}</td>
             {% for value in depot.overview_cache %}
                 <td>{{ value }}</td>
             {% endfor %}
@@ -111,16 +113,16 @@
             <td></td>
         </tr>
         <tr>
-            <th style="width:180px;">Name</th>
-            <th style="width:180px;">Abo mit</th>
+            <th style="width:180px;">{% trans "Name" %}</th>
+            <th style="width:180px;">{% vocabulary "co_member_pl" %}</th>
             {% for subscription_name in subscription_names %}
                 <th></th>
             {% endfor %}
             {% for type in types %}
                 <th></th>
             {% endfor %}
-            <th>abgeholt</th>
-            <th>Tasche retour</th>
+            <th>{% trans "abgeholt" %}</th>
+            <th>{% trans "Tasche retour" %}</th>
         </tr>
         {% for subscription in depot.subscription_cache.all %}
             <tr>
@@ -138,7 +140,7 @@
         {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 and not forloop.last%}
             </table>
             <div class="page-break"></div>
-             <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} Fortsetzung</h2>
+             <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} {% trans "Fortsetzung" %}</h2>
     <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
         <tr>
             <td style="width:180px;" class="name"></td>
@@ -163,7 +165,7 @@
         </tr>
         <tr>
             <td></td>
-            <td>TOTAL</td>
+            <td>{% trans "TOTAL" %}</td>
             {% for value in depot.overview_cache %}
                 <td>{{ value }}</td>
             {% endfor %}
@@ -171,16 +173,16 @@
             <td></td>
         </tr>
         <tr>
-            <th style="width:180px;">Name</th>
-            <th style="width:180px;">Abo mit</th>
+            <th style="width:180px;">{% trans "Name" %}</th>
+            <th style="width:180px;">{% vocabulary "co_member_pl" %}</th>
             {% for subscription_name in subscription_names %}
                 <th></th>
             {% endfor %}
             {% for type in types %}
                 <th></th>
             {% endfor %}
-            <th>abgeholt</th>
-            <th>Tasche retour</th>
+            <th>{% trans "abgeholt" %}</th>
+            <th>{% trans "Tasche retour" %}</th>
         </tr>
         {% endif %}
         {% endfor %}

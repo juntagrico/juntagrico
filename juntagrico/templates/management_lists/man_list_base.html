@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 
 {% block styles %}
@@ -21,17 +22,17 @@
                 <input name="date" data-toggle="datepicker">
             </div>
             <div class="col-md-6">
-                Lege das Datum für die Änderung fest.
+                {% trans "Lege das Datum für die Änderung fest." %}
             </div>
             <div class="col-md-3">
-                <button type="submit" class="btn btn-success">ändern</button>
+                <button type="submit" class="btn btn-success">{% trans "ändern" %}</button>
             </div>
         </div>
     </form>
     {% else %}
         <div class="alert alert-warning">
-                    Das Änderungsdatum ist auf {{ change_date }} gesetzt. <a
-                        href="/my/changedate/stop">Beende dies hier</a>.
+                {% trans "Das Änderungsdatum ist auf {{ change_date }} gesetzt." %}
+                <a href="/my/changedate/stop">{% trans "Beende dies hier" %}</a>.
                 </div>
     {% endif %}
     <div class="row">
@@ -41,7 +42,7 @@
                 <input type="hidden" name="recipients" id="recipients"/>
                 <input type="hidden" name="recipients_count" id="recipients_count"/>
                 {% if can_send_mails %}
-                    <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
+                    <button type="submit" class="btn btn-success" id="send-email">{% trans "Email senden" %}</button>
                 {% endif %}
             </form>
         </div>

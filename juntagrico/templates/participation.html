@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
     <h3>{% trans "Mitarbeit" %}</h3>
@@ -9,13 +10,13 @@
     <div class="row">
         <div class="col-md-12">
             {% blocktrans %}
-                Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich jedeR, im Rahmen der eigenen
+                Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
                 Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
             {% endblocktrans %}
             <br/><br/>
             <a href="/my/assignments">{% trans "Hier gehts zu den Arbeitseinsätzen" %}</a><br/><br/>
             <a href="/my/pastjobs">{% trans "Zu deinen bisherigen Einsätzen" %}</a><br/><br/>
-            {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen sie regelmässig mitarbeiten und Verantwortung übernehmen möchtest." %}
+            {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
             <br/><br/>
             {% config "activity_area_info" as activity_area_info %}
             {% if activity_area_info.strip %}

@@ -1,9 +1,13 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 
 {% block content %}
-    Im System sind gewisse deiner Anteilsscheine als nicht bezahlt markiert. Solltest du die Zahlung bereits vorgenommen haben wurde sie noch nicht ins System übertragen.
-    Dies kann einige Tage dauern. Falls du die {% vocabulary "share_pl" %} noch nicht bezahlt hast benutze diese Bankverbindung
+    {% vocabulary "share_pl" as v_share_pl %}
+    {% blocktrans %}
+    Im System sind gewisse deiner {{ v_share_pl }} als nicht bezahlt markiert. Solltest du die Zahlung bereits vorgenommen haben wurde sie noch nicht ins System übertragen.
+    Dies kann einige Tage dauern. Falls du die {{ v_share_pl }} noch nicht bezahlt hast benutze diese Bankverbindung
+    {% endblocktrans %}
     <br/>
         {% config "organisation_address" as addr%}
         {{ addr.name }}<br/>
@@ -14,10 +18,11 @@
         {{ addr.zip }} {{ addr.city }}<br/>
         {% config "organisation_bank_connection" as bank%}
         {{ bank.NAME }}<br/>
-        Postkonto-Nummer: {{ bank.PC }}<br/>
-        IBAN: {{ bank.IBAN }}<br/>
-        BIC: {{ bank.BIC }}<br/><br/>
-    Solltest du Fragen dazu haben sende eine Email an <a href="mailto:{% config "info_email" %}?subject=Frage zu unbezahltem Anteilsschein {% config "server_url" %}">{% config "info_email" %}</a>.
+        {% trans "Postkonto-Nummer" %}: {{ bank.PC }}<br/>
+        {% trans "IBAN" %}: {{ bank.IBAN }}<br/>
+        {% trans "BIC" %}: {{ bank.BIC }}<br/><br/>
+    {% trans "Solltest du Fragen dazu haben sende eine Email an" %}
+    <a href="mailto:{% config "info_email" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">{% config "info_email" %}</a>.
 {% endblock %}    
 
 {% block scripts %}

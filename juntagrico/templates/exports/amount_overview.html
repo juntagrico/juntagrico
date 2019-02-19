@@ -1,8 +1,9 @@
 {% load depot_extras %}
+{% load i18n %}
 {% load config %}
 <html>
 <head>
-    <title>Mengen Übersicht</title>
+    <title>{% trans "Mengen Übersicht" %}</title>
     <meta charset="utf-8">
     <style>
         @page {
@@ -72,14 +73,14 @@
 <body>
 
 <div id="header_content">
-    Erstellt am {{ datum |date:"d.m.Y H:i" }}
+    {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
 </div>
 
 <div>
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
             <td style="width:200px"></td>
-            <th colspan="{{ subscriptioncount}}" class="top-border left-border right-border">ABO</th>
+            <th colspan="{{ subscriptioncount}}" class="top-border left-border right-border">{% vocabulary "subscription" %}</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}
@@ -90,7 +91,7 @@
             {% for subscription_name in subscription_names %}
                 <td class="small {% if forloop.first %}left-border{% endif %} bottom-border">{{ subscription_name }}</td>
             {% endfor %}
-            <td class="small bottom-border right-border">Einheiten</td>
+            <td class="small bottom-border right-border">{% trans "Einheiten" %}</td>
             {% for type in types %}
                 <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}

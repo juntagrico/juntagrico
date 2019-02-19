@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load config %}
 <!DOCTYPE html>
 <html lang="de">
@@ -32,8 +33,8 @@
         <div class="row myjuntagrico">
             <div class="col-md-12">
                 <div class="alert alert-warning">
-                    Du imitierst derzeit den Benutzer “{{ user.member.first_name }} {{ user.member.last_name }}”. <a
-                        href="/impersonate/stop">Beende dies hier</a>.
+                    {% blocktrans %}Du imitierst derzeit den Benutzer “{{ user.member.first_name }} {{ user.member.last_name }}”.{% endblocktrans %}
+                    <a href="/impersonate/stop">{% trans "Beende dies hier" %}</a>.
                 </div>
             </div>
         </div>
@@ -53,204 +54,12 @@
     <div class="row juntagrico">
         {% block allcontent %}
             <div class="col-md-3">
-                <ul class="nav flex-column main-menu">
-                    <li><h5>Dein Menu {{ user.member.first_name }}</h5>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.subscription }}" href="/my/subscription/detail/">Abo</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.participation }}" href="/my/participation">Mitarbeit</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.jobs }}" href="/my/assignments">Einsätze</a>
-                    </li>
-                    {% if show_deliveries %}
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.deliveries }}" href="/my/deliveries">Lieferungen</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.personalInfo }}" href="/my/profile">Personalien</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.contact }}" href="/my/contact">Kontakt</a>
-                    </li>
-                    {% for user_menu in user_menus %}
-                        {% include user_menu %}
-                    {% endfor%}
-                    <li class="separator"></li>
-                    <li class="nav-item main-menu-small">
-                        <a class="nav-link yellow" href="http://{% config "server_url" %}">{% config "server_url" %}</a>
-                    </li>
-                    <li class=" nav-item main-menu-small">
-                        <a class="nav-link yellow" href="/logout">Abmelden</a>
-                    </li>
-                </ul>
+                {% include "menu/user_menu.html" %}
                 {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group%}
-                <hr>
-                <h5>Administration</h5>
-                <ul class="nav flex-column admin-menu">
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin">Daten Administration</a>
-                        </li>
-                    {% endif %}                    
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" href="#subman">Abo Management <i class="fas fa-angle-right"></i></a>
-                            <div class="collapse" id="subman">
-                            <ul class="nav flex-column admin-menu subadmin-menu">
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/waitinglist">Warteliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/typechangedlist">Grössen Änderungen</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/canceledlist">Kündigungsliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group and has_extra_subscriptions %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/extra/waitinglist">Zusatzabos Warteliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group and has_extra_subscriptions %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/extra/canceledlist">Zusatzabos Kündigungsliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/future">Zukunftsblick</a>
-                                </li>
-                            {% endif %}
-                            </ul>
-                            </div>
-                        </li>
-                    {% endif %}
-                                        
-                    {% if can_filter_members or can_filter_subscriptions or  depot_admin|length > 0 or area_admin|length > 0 %}
-                        <li  class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" href="#filterman">Filter <i class="fas fa-angle-right"></i></a>
-                            <div class="collapse" id="filterman">
-                            <ul class="nav flex-column admin-menu subadmin-menu">
-                            {% if can_filter_members or can_filter_subscriptions %}
-                                <li class="nav-item inline">
-                                    {% if can_filter_members %}
-                                    <a class="nav-link inline" href="/my/filters">{% vocabulary "member_pl" %}</a> |
-                                    {% endif %}
-                                    {% if can_filter_subscriptions %}
-                                    <a class="nav-link inline" href="/my/subscriptions">{% vocabulary "subscription_pl" %}</a>
-                                    {% endif %}
-                                </li>
-                            {% endif %}
-                            {% for depot in depot_admin %}
-                                <li class="nav-item inline">
-                                    <a class="nav-link inline" href="/my/filters/depot/{{ depot.id }}">{% vocabulary "member_pl" %}</a> |
-                                    <a class="nav-link inline" href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
-                                </li>
-                            {% endfor %}
-                            {% for area in area_admin %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/filters/area/{{ area.id }}">{% vocabulary "member_pl" %} in {{ area.name }}</a>
-                                </li>
-                            {% endfor %}
-                            </ul>
-                            </div>
-                        </li>
-                    {% endif %}
-                    {% if can_send_mails %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/my/mails">Mails verschicken</a>
-                        </li>
-                    {% endif %}
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" href="#lists">Listen <i class="fas fa-angle-right"></i></a>
-                            <div class="collapse" id="lists">
-                            <ul class="nav flex-column admin-menu subadmin-menu">
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/pdf/amountoverview">Mengen Übersicht</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/pdf/depotlist">{% vocabulary "depot" %}-Listen</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/pdf/depotoverview">{% vocabulary "depot" %} Übersicht</a>
-                                </li>
-                            {% endif %}
-                            </ul>
-                            </div>
-                        </li>
-                    {% endif %}
-                    
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/my/export">Exporte</a>
-                        </li>
-                    {% endif %}
-                    {% for menu in admin_menus %}
-                        {% include menu %}
-                    {% endfor%}
-                </ul>
+                {% include "menu/admin_menu.html" %}
                 {% endif %}
-
-                <hr>
-                <div class="bohnen">
-                    {% block bohnen %}
-                        <h5>Abo {% vocabulary "assignment_pl" %}-Konto</h5>
-                        {% spaceless %}
-                        {% for i in assignmentsrange %}
-                            {% if i < userassignemnts_core_bound %}
-                                <img alt="Kernbereich" title="Kernbereich"
-                                     src="{% images "single_core" %}"/>
-                            {% elif i < userassignments_bound %}
-                                <img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich"
-                                     src="{% images "single_full" %}"/>
-                            {% elif i < partner_assignments_core_bound %}
-                                <img alt="Kernbereich Partner" title="Kernbereich Partner"
-                                     src="{% images "single_core" %}" style="opacity:0.5;"/>
-                            {% elif i < partner_assignments_bound %}
-                                <img alt="anderer Tätigkeitsbereich Partner" title="anderer Tätigkeitsbereich Partner"
-                                     src="{% images "single_full" %}" style="opacity:0.5;"/>
-                            {% else %}
-                                <img alt="noch zu erledigen (ganzes {% vocabulary "subscription" %})" src="{% images "single_empty" %}"
-                                     title="noch zu erledigen (ganzes {% vocabulary "subscription" %})"/>
-                            {% endif %}
-                        {% endfor %}
-                        {% endspaceless %}
-                    {% endblock %}
-                </div>
-                <hr>
-                <div class="jobs">
-                    {% block next_jobs %}
-                        <h5>Nächste Einsätze</h5>
-                        {% if next_jobs|length > 0 %}
-                            <ul class="unstyled next-jobs">
-                                {% for job in next_jobs %}
-                                    <li><a href="/my/jobs/{{ job.id }}" {% if job.canceled %} class="canceled"{% endif %}>{{ job.type.name }}</a><br/>
-
-                                        <div class="time">{{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}</div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            Noch für keine Jobs angemeldet
-                        {% endif %}
-                    {% endblock %}
-                </div>
+                {% include "widgets/assignements.html" %}
+                {% include "widgets/jobs.html" %}
             </div>
             <div class="col-md-9">
                 <div class="row">

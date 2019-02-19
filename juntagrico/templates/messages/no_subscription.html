@@ -1,4 +1,6 @@
+{% load i18n %}
 {% load config %}
+{% vocabulary "subscription" as v_subscription%}
 <div class="alert alert-warning">
-  Du hast kein{% vocabulary "subscription" %}.
+  {% blocktrans %}Du bist nicht {{ v_subscription }}-Bezieher {% endblocktrans %}
 </div>

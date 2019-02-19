@@ -1,11 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Alle {% vocabulary "subscription_pl" %} im Überblick</h3>
+    {% vocabulary "subscription_pl" as v_subscription_pl%}
+    <h3>{% blocktrans %}Alle {{ v_subscription_pl }} im Überblick{% endblocktrans %}</h3>
 {% endblock %}
 
 
 {% block content %}
+    {% vocabulary "assignment_pl" as v_assignment_pl%}
     <style>
         body > .container {
             width: 95%;
@@ -16,37 +19,37 @@
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden" name="recipients_count" id="recipients_count"/>
         {% if can_send_mails %}
-        <button type="submit" class="btn btn-success" id="send-email">Email senden</button>
+        <button type="submit" class="btn btn-success" id="send-email">{% trans "Email senden" %}</button>
         {% endif %}
     </form>
    <div id="filter">
         <table id="filter-table" class="list table" style="display: table;">
             <thead>
             <tr>
-                <th>Haupt-{% vocabulary "member" %}</th>
-                <th>Weitere {% vocabulary "member_pl" %}</th>
+                <th>{% trans "Hauptbezieher" %}</th>
+                <th>{% trans "Weitere Bezieher" %}</th>
                 <th>{% vocabulary "depot" %}</th>
-                <th>Inhalt</th>
+                <th>{% trans "Inhalt" %}</th>
                 <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}<th>{% vocabulary "assignment_pl" %} Kernbereich</th>{% endif %}
-                <th>Aktiv</th>
-                <th>Aktivierungsdatum</th>
-                <th>Emails</th>
+                {% if show_core %}<th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
+                <th>{% trans "Aktiv" %}</th>
+                <th>{% trans "Aktivierungsdatum" %}</th>
+                <th>{% trans "Emails" %}</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
-                <th>Hauptmember</th>
-                <th>Weitere {% vocabulary "member_pl" %}</th>
+                <th>{% trans "Hauptbezieher" %}</th>
+                <th>{% trans "Weitere Bezieher" %}</th>
                 <th>{% vocabulary "depot" %}</th>
-                <th>Inhalt</th>
+                <th>{% trans "Inhalt" %}</th>
                 <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}<th>{% vocabulary "assignment_pl" %} Kernbereich</th>{% endif %}
-                <th>Aktiv</th>
-                <th>Aktivierungsdatum</th>
-                <th>Emails</th>
+                {% if show_core %}<th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
+                <th>{% trans "Aktiv" %}</th>
+                <th>{% trans "Aktivierungsdatum" %}</th>
+                <th>{% trans "Emails" %}</th>
             </tr>
-            </foot>
+            </tfoot>
             <tbody>
             {% for subscription in subscriptions %}
                 <tr>
@@ -64,7 +67,7 @@
                     <td>{{ subscription.subscription.overview }}</td>
                     <td>N%-{{ subscription.assignments|floatformat:"0" }} (von {{ subscription.subscription.required_assignments }})</td>
                     {% if show_core %}<td>C%-{{ subscription.core_assignments|floatformat:"0" }} (von {{ subscription.subscription.required_core_assignments }})</td>{% endif %}
-                    <td>{% if subscription.subscription.active %}<img src="{% images "single_full" %}"/> Aktiv{% else %}<img src="{% images "single_empty" %}"/> Wartend{% endif %}</td>
+                    <td>{% if subscription.subscription.active %}<img src="{% images "single_full" %}"/>{% trans "Aktiv" %}{% else %}<img src="{% images "single_empty" %}"/>{% trans "Wartend" %}{% endif %}</td>
                     <td>{{ subscription.subscription.activation_date }}</td>
                     <td class="email">{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                 </tr>

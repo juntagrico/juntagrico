@@ -1,27 +1,33 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Abogrösse ändern</h3>
+    {% vocabulary "subscription" as v_subscription%}
+    <h3>{% blocktrans %}{{ v_subscription }}-Grösse ändern{% endblocktrans %}</h3>
 {% endblock %}
 
 {% block content %}
+    {% config "enable_shares" as c_enable_shares %}
+    {% vocabulary "subscription" as v_subscription%}
+    {% vocabulary "share_pl" as v_share_pl%}
     {% if saved %}
         <div class="alert alert-success">
-            Die {% vocabulary "subscription" %}-Grösse wurde erfolgreich geändert.<br/>
-            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">Zurück
-                zur {% vocabulary "subscription" %}-Übersicht</a>
+            {% blocktrans %}Die {{ v_subscription }}-Grösse wurde erfolgreich geändert.{% endblocktrans %}<br/>
+            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">
+                {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
+            </a>
         </div>
     {% elif shareerror %}
         <div class="alert alert-danger">
-            Es sind zu wenig {% vocabulary "share_pl" %} vorhanden für diese Grösse!<br/>
-            Bestelle <a href="/my/order/share" class="alert-link">hier</a> mehr {% vocabulary "share_pl" %}.
+            {% blocktrans %}Es sind zu wenig {{ v_share_pl }} vorhanden für diese Grösse!{% endblocktrans %}<br/>
+            {% blocktrans %}Bestelle <a href="/my/order/share" class="alert-link">hier</a> mehr {{ v_share_pl }}.{% endblocktrans %}
         </div>
     {% else %}
         <form method="post">
             {% csrf_token %}
             {% for subscription_size in subscription_sizes %}
                 <div class="form-group row">
-                    <label class="col-md-3">{% if forloop.first %}{% vocabulary "subscription" %}-Grösse{% endif %}</label>
+                    <label class="col-md-3">{% if forloop.first %}{% blocktrans %}{{ v_subscription }}-Grösse{% endblocktrans %}{% endif %}</label>
 
                     <div class="col-md-9">
                             {{ subscription_size.long_name }}
@@ -46,11 +52,13 @@
                                         {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif %}
                                         {% if type.description.strip %}{{ type.description }}<br/>{% endif %}
                                         {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+                                        {% if c_enable_shares %}
+                                                <br/>
+                                                {% vocabulary "share_pl" %}: {{ type.shares }}
+                                            {% endif %}
                                         <br/>
-                                        Anteilsscheine: {{ type.shares }}
-                                        <br/>
-                                        Arbeitseinsätze: {{ type.required_assignments }} {% if hours_used %}
-                                        Stunden{% endif %}
+                                        {% trans "Arbeitseinsätze" %}: {{ type.required_assignments }} {% if hours_used %}
+                                        {% trans "Stunden" %}{% endif %}
                                     </label>
                                 </div>
                             </div>
@@ -63,7 +71,7 @@
             <div class="form-group row">
                 <label class="col-md-3"></label>
                 <div class="col-md-9">
-                    <button type="submit" class="btn btn-success">Abogrösse ändern</button>
+                    <button type="submit" class="btn btn-success">{% blocktrans %}{{ v_subscription }}-Grösse ändern{% endblocktrans %}</button>
                 </div>
             </div>
 

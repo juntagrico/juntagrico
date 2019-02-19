@@ -1,18 +1,19 @@
 {% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Grössen Änderungsliste</h3>
+    <h3>{% trans "Grössen Änderungsliste"%}</h3>
 {% endblock %}
 
 {% block list %}
     <table id="filter-table" class="list table" style="display: table;">
         <thead>
         <tr>
-            <th class="filter">Abo</th>
-            <th class="filter">Kontakt</th>
-            <th class="filter">Email</th>
-            <th class="filter">Aktuelle Grösse</th>
-            <th class="filter">Neue Grösse</th>
+            <th class="filter">{% vocabulary "subscription" %}</th>
+            <th class="filter">{% trans "Kontakt" %}</th>
+            <th class="filter">{% trans "Email" %}</th>
+            <th class="filter">{% trans "Aktuelle Grösse" %}</th>
+            <th class="filter">{% trans "Neue Grösse" %}</th>
             <th></th>
         </tr>
         </thead>
@@ -31,7 +32,7 @@
                 </td>
                 <td>{{ subscription.size_name }}</td>
                 <td>{{ subscription.future_size_name }}</td>
-                <td><a href="/my/type/change/{{ subscription.id }}/" class="btn btn-success">ändern</a></td>
+                <td><a href="/my/type/change/{{ subscription.id }}/" class="btn btn-success">{% trans "ändern" %}</a></td>
             </tr>
         {% endfor %}
         </tbody>

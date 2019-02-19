@@ -1,8 +1,10 @@
 {% load depot_extras %}
+{% load i18n %}
 {% load config %}
+{% vocabulary "depot" as v_depot%}
 <html>
 <head>
-    <title>{% vocabulary "depot" %} Uebersicht</title>
+    <title>{% blocktrans %}{{ v_depot }} Uebersicht{% endblocktrans %}</title>
     <meta charset="utf-8">
     <style>
         @page {
@@ -72,13 +74,13 @@
 <body>
 
 <div id="header_content">
-    Erstellt am {{ datum |date:"d.m.Y H:i" }}
+    {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
 </div>
     <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
         <tr>
             <td></td>
             <td></td>
-            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">ABO</th>
+            <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">{% vocabulary "subscription" %}</th>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span style="font-size:11px">{{ category.description }}</span></th>
             {% endfor %}

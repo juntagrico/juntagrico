@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load config %}
   {% for delivery in deliveries %}
   <div class="row mb-2">
@@ -17,9 +18,9 @@
         <table class='table table-sm delivery-table'>
             <thead>
                 <tr>
-            	    <th class="col-md-3">Bezeichnung</th>
-            	    <th class="col-md-2">Menge</th>
-            	    <th class="col-md-7">Kommentar</th>
+            	    <th class="col-md-3">{% trans "Bezeichnung" %}</th>
+            	    <th class="col-md-2">{% trans "Menge" %}</th>
+            	    <th class="col-md-7">{% trans "Kommentar" %}</th>
                 </tr>
             </thead>
             <tbody>
