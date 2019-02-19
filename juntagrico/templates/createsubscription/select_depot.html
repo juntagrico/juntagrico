@@ -1,15 +1,14 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block all_page_title %}
-    <div class="col-md-3">
-        &nbsp;
-    </div>
-    <div class="col-md-9 juntagrico">
-        <h3>Wähle dein {% vocabulary "depot" %}</h3>
+    <div class="offset-md-3 col-md-9 juntagrico">
+        <h3>{% vocabulary "depot" %}</h3>
     </div>
 {% endblock %}
 
 {% block allcontent %}
+    {% vocabulary "subscription" % as v_subscription %}
     <div class="offset-md-2 col-md-8">
 
         <form action="" method="post">
@@ -27,7 +26,9 @@
             </div>
             <div id="depot_container" class="form-group row">
                 <label for="depot" class="offset-md-3 col-md-9">
-                    Wähle ein {% vocabulary "depot" %} aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
+                    {% blocktrans %}
+                    Wähle einen {{ v_subscription }}-Abholort aus.
+                    {% endblocktrans %}
                 </label>
             </div>
             <div id="depot_container" class="form-group row">
@@ -40,8 +41,8 @@
 
             <div class="form-actions row">
                 <div class="offset-md-3 col-md-9">
-                    <button type="submit" class="btn btn-success">Weiter</button>
-                    <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+                    <button type="submit" class="btn btn-success">{% trans "Weiter" %}</button>
+                    <a href="/my/create/subscription/cancel" class="btn">{% trans "Abbrechen" %}</a>
                 </div>
             </div>
         </form>
