@@ -3,7 +3,7 @@
 {% block content %}
 {% trans "Hallo" %}
 
-{% blocktrans with fn= member.first_name ln=member.last_name e=member.email ed=end_date|date:"d.m.Y" %}
+{% blocktrans with fn=member.first_name ln=member.last_name e=member.email ed=end_date|date:"d.m.Y" %}
 Soeben hat {{ fn }} {{ ln }}
 email : {{ e }}
 seine Mitgliedshaft gekündet.
@@ -12,7 +12,6 @@ Er möchte seine Mitgliedshaft auf den {{ ed }} künden.
 {% endblocktrans %}
 {% trans "ausserdem hat er folgende Nachricht für euch hinterlassen" %}:
 {{ message}}
-{% endblocktrans %}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}
