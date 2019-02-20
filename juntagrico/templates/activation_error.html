@@ -2,12 +2,14 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3></h3>
+    <h3>
+    </h3>
 {% endblock %}
-
 {% block content %}
     {% vocabulary "subscription" as v_subscription %}
     <div class="alert alert-danger">
-        {% blocktrans %}Einer der Bezüger ist noch aktiver {{ v_subscription }}-Bezieher!{% endblocktrans %}
-    </div><br/><br/>
+        {% blocktrans %}Einer der Bezger ist noch aktiver {{ v_subscription }}-Bezieher!{% endblocktrans %}
+    </div>
+    <br/>
+    <br/>
 {% endblock %}

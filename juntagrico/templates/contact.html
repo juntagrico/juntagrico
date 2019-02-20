@@ -2,67 +2,89 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>{% trans "Kontakt" %}</h3>
+    <h3>
+        {% trans "Kontakt" %}
+    </h3>
 {% endblock %}
-
 {% block content %}
     {% config "organisation_address" as organisation_address %}
     {% if is_sent %}
-        <div class="alert alert-success">{% trans "Nachricht gesandt" %}</div>
+        <div class="alert alert-success">
+            {% trans "Nachricht gesandt" %}
+        </div>
     {% else %}
         <br/>
         <form action="/my/contact" method="POST">
             {% csrf_token %}
             <div class="form-group row">
-                <label class="col-md-3">{% trans "Absender" %}</label>
+                <label class="col-md-3">
+                    {% trans "Absender" %}
+                </label>
                 <div class="col-md-9">
                     {{ usernameAndEmail }}
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-md-3">{% trans "Empfänger" %}</label>
+                <label class="col-md-3">
+                    {% trans "Empfnger" %}
+                </label>
                 <div class="col-md-9">
                     {% config "info_email" %}
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-md-3" for="subject">{% trans "Betreff" %}</label>
+                <label class="col-md-3" for="subject">
+                    {% trans "Betreff" %}
+                </label>
                 <div class="col-md-9">
-                    <input type="text" name="subject" id="subject" placeholder="{% trans "Betreff" %}"
-                           class="form-control"/>
+                    <input type="text" name="subject" id="subject" placeholder="{% trans "Betreff" %}"class="form-control"/>
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-md-3" for="message">{% trans "Mitteilung" %}</label>
+                <label class="col-md-3" for="message">
+                    {% trans "Mitteilung" %}
+                </label>
                 <div class="col-md-9">
-                    <textarea name="message" id="message" class="form-control" rows="12"
-                              placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
+                    <textarea name="message" id="message" class="form-control" rows="12"placeholder="{% trans "Hier Nachricht eingeben" %}">
+                    </textarea>
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-md-3"></div>
+                <div class="col-md-3">
+                </div>
                 <div class="col-md-9">
-                <span class="switch switch-sm">
-                              <input type="checkbox" class="switch" id="copy" name="copy">
-                              <label for="copy">{% trans "Kopie an mich" %}</label>
-                            </span>
+                    <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="copy" name="copy">
+                            <label for="copy">
+                                {% trans "Kopie an mich" %}
+                            </label>
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <div class="form-actions offset-md-3 col-md-9">
-                    <button type="submit" class="btn btn-success">{% trans "Nachricht verschicken" %}</button>
+                <div class="form-group row">
+                    <div class="form-actions offset-md-3 col-md-9">
+                        <button type="submit" class="btn btn-success">
+                            {% trans "Nachricht verschicken" %}
+                        </button>
+                    </div>
                 </div>
+            </form>
+        {% endif %}
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="offset-md-3 col-md-3">
+                {{ organisation_address.name }}
+                <br/>
+                {{ organisation_address.extra }}
+                <br/>
+                {{ organisation_address.street }} {{ organisation_address.number }}
+                <br/>
+                {{ organisation_address.zip }} {{ organisation_address.city }}
+                <br/>
+                {% config "info_email" %}
+                <br/>
+                {% config "organisation_phone" %}
             </div>
-        </form>
-    {% endif %}
-    <br/>
-    <br/>
-    <div class="row">
-        <div class="offset-md-3 col-md-3">
-            {{ organisation_address.name }} <br/> {{ organisation_address.extra }}
-            <br/> {{ organisation_address.street }} {{ organisation_address.number }}
-            <br/> {{ organisation_address.zip }} {{ organisation_address.city }} <br/> {% config "info_email" %}
-            <br/> {% config "organisation_phone" %}
         </div>
-    </div>
-{% endblock %}
+    {% endblock %}

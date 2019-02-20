@@ -3,7 +3,9 @@
 {% load config %}
 {% block page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
-    <h3>{% blocktrans %}{{ v_share_pl }} bestellen{% endblocktrans %}</h3>
+    <h3>
+        {% blocktrans %}{{ v_share_pl }} bestellen{% endblocktrans %}
+    </h3>
 {% endblock %}
 {% block content %}
     <div class="row mb-4">
@@ -11,32 +13,35 @@
             {% trans "Bestelle hier mehr Anteislscheine." %}
         </div>
     </div>
-
     <form action="" method="post">
-        <input type="hidden" value="{{ referer }}" name="referer"/> {% csrf_token %}
+        <input type="hidden" value="{{ referer }}" name="referer"/>
+        {% csrf_token %}
         <div class="form-group row align-items-center h-100">
-            <label class="col-md-3">{% vocabulary "share_pl" %}</label>
-
+            <label class="col-md-3">
+                {% vocabulary "share_pl" %}
+            </label>
             <div class="col-md-2">
                 <input type="number" name="shares" class="form-control" value="0" min="0"/>
             </div>
             <div class="col-md-7">
                 {% if shareerror %}
-                    <div class="alert alert-danger">{% trans "Deine Eingabe ist ungültig" %}</div>
+                    <div class="alert alert-danger">
+                        {% trans "Deine Eingabe ist ungltig" %}
+                    </div>
                 {% endif %}
             </div>
         </div>
         <div class="form-group row">
             <div class="offset-md-3 col-md-9">
-                <button type="submit" class="btn btn-success">{% trans "bestellen" %}</button>
+                <button type="submit" class="btn btn-success">
+                    {% trans "bestellen" %}
+                </button>
             </div>
-    </form>
-
-
-{% endblock %}
-
-{% block scripts %}
-    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"
-            data-main="/static/js/initChangeExtra.js"></script>
-{% endblock %}
+        </form>
+    {% endblock %}
+    {% block scripts %}
+        <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
+        </script>
+        <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initChangeExtra.js">
+        </script>
+    {% endblock %}

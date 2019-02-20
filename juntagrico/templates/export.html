@@ -2,9 +2,10 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>{% trans "Exporte" %}</h3>
+    <h3>
+        {% trans "Exporte" %}
+    </h3>
 {% endblock %}
-
 {% block content %}
     {% vocabulary "member_pl" as v_member_pl %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -14,15 +15,19 @@
             {{ v_member_pl }}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/members/">{% trans "exportieren" %}</a>
+            <a href="/my/export/members/">
+                {% trans "exportieren" %}
+            </a>
         </div>
     </div>
     <div class="row mb-4">
         <div class="col-md-3">
-            {% blocktrans %}{{ v_member_pl }} mit {{ v_assignment_pl }} und Tätigketsbereichen{% endblocktrans %}
+            {% blocktrans %}{{ v_member_pl }} mit {{ v_assignment_pl }} und Ttigketsbereichen{% endblocktrans %}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/membersfilter">{% trans "exportieren" %}</a>
+            <a href="/my/export/membersfilter">
+                {% trans "exportieren" %}
+            </a>
         </div>
     </div>
     <div class="row mb-4">
@@ -30,10 +35,9 @@
             {{ v_share_pl }}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/shares">{% trans "exportieren" %}</a>
+            <a href="/my/export/shares">
+                {% trans "exportieren" %}
+            </a>
         </div>
     </div>
 {% endblock %}
-
-
-

@@ -2,152 +2,178 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>{% trans "Personalien ändern" %}</h3>
+    <h3>
+        {% trans "Personalien ndern" %}
+    </h3>
 {% endblock %}
-
 {% block content %}
     {% vocabulary "member_type" as v_member_type %}
     {% vocabulary "member_pl" as v_member_pl %}
     {% if success %}
-        <div class="alert alert-success">{% trans "Personalien erfolgreich geändert" %}</div>
+        <div class="alert alert-success">
+            {% trans "Personalien erfolgreich gendert" %}
+        </div>
     {% endif %}
     {% if member.canceled %}
         <div class="alert alert-warning">
-            {% blocktrans %}Deine {{ v_member_type }}schaft ist gekündigt.{% endblocktrans %}
+            {% blocktrans %}Deine {{ v_member_type }}schaft ist gekndigt.{% endblocktrans %}
         </div>
     {% endif %}
     <form method="post">
         {% csrf_token %}
         <div class="form-group row {% if memberform.first_name.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_first_name">{% trans "Vorname" %}</label>
-
+            <label class="col-md-3" for="id_first_name">
+                {% trans "Vorname" %}
+            </label>
             <div class="col-md-9">
                 {{ memberform.first_name }}
             </div>
         </div>
         {% if memberform.first_name.errors %}
-            <div class="alert alert-danger">{% trans "Vorname ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "Vorname ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row {% if memberform.last_name.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_last_name">{% trans "Nachname" %}</label>
-
+            <label class="col-md-3" for="id_last_name">
+                {% trans "Nachname" %}
+            </label>
             <div class="col-md-9">
                 {{ memberform.last_name }}
             </div>
         </div>
         {% if memberform.last_name.errors %}
-            <div class="alert alert-danger">{% trans "Nachname ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "Nachname ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row {% if memberform.addr_street.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_addr_street">{{ memberform.addr_street.label }}</label>
-
+            <label class="col-md-3" for="id_addr_street">
+                {{ memberform.addr_street.label }}
+            </label>
             <div class="col-md-9">
                 {{ memberform.addr_street }}
             </div>
         </div>
         {% if memberform.addr_street.errors %}
-            <div class="alert alert-danger">{% trans "Strasse ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "Strasse ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row {% if memberform.addr_zipcode.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }}</label>
-
+            <label class="col-md-3" for="id_addr_zipcode">
+                {{ memberform.addr_zipcode.label }}
+            </label>
             <div class="col-md-9">
                 {{ memberform.addr_zipcode }}
             </div>
         </div>
         {% if memberform.addr_zipcode.errors %}
-            <div class="alert alert-danger">{% trans "PLZ ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "PLZ ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row {% if memberform.addr_location.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_addr_location">{{ memberform.addr_location.label }}</label>
-
+            <label class="col-md-3" for="id_addr_location">
+                {{ memberform.addr_location.label }}
+            </label>
             <div class="col-md-9">
                 {{ memberform.addr_location }}
             </div>
         </div>
         {% if memberform.addr_location.errors %}
-            <div class="alert alert-danger">{% trans "Ort ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "Ort ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row {% if memberform.phone.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_phone">{{ memberform.phone.label }}</label>
-
+            <label class="col-md-3" for="id_phone">
+                {{ memberform.phone.label }}
+            </label>
             <div class="col-md-9">
                 {{ memberform.phone }}
             </div>
         </div>
         {% if memberform.phone.errors %}
-            <div class="alert alert-danger">{% trans "Telefon ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "Telefon ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row {% if memberform.mobile_phone.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_mobile_phone">{{ memberform.mobile_phone.label }}</label>
-
+            <label class="col-md-3" for="id_mobile_phone">
+                {{ memberform.mobile_phone.label }}
+            </label>
             <div class="col-md-9">
                 {{ memberform.mobile_phone }}
             </div>
         </div>
         {% if memberform.mobile_phone.errors %}
-            <div class="alert alert-danger">{% trans "Mobile ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "Mobile ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row {% if memberform.email.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_email">{% trans "E-Mail Adresse" %}</label>
-
+            <label class="col-md-3" for="id_email">
+                {% trans "E-Mail Adresse" %}
+            </label>
             <div class="col-md-9">
                 {{ memberform.email }}
             </div>
         </div>
         {% if memberform.email.errors %}
-            <div class="alert alert-danger">{% trans "E-Mail ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "E-Mail ungltig" %}
+            </div>
         {% endif %}
         <div class="form-group row {% if memberform.iban.errors %}error{% endif %}">
-            <label class="col-md-3" for="id_iban">{% trans "IBAN" %}</label>
-
+            <label class="col-md-3" for="id_iban">
+                {% trans "IBAN" %}
+            </label>
             <div class="col-md-9">
                 {{ memberform.iban }}
             </div>
         </div>
         {% if memberform.iban.errors %}
-            <div class="alert alert-danger">{% trans "IBAN ungültig" %}</div>
+            <div class="alert alert-danger">
+                {% trans "IBAN ungltig" %}
+            </div>
         {% endif %}
-
         <div class="form-group row">
             <label class="col-md-3" for="id_reachable_by_email">
                 {% blocktrans trimmed %}
-                    sollen andere {{ v_member_pl }} dich via
-                    Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)
+                sollen andere {{ v_member_pl }} dich via
+                Kontaktformular erreichen k&ouml;nnen (Email nicht sichtbar)
                 {% endblocktrans %}
             </label>
-
             <div class="col-md-1">
-                    <span class="switch switch-sm">
-                        {{ memberform.reachable_by_email }}
-                        <label for="{{ memberform.reachable_by_email.id_for_label }}"></label>
-                    </span>
+                <span class="switch switch-sm">
+                    {{ memberform.reachable_by_email }}
+                    <label for="{{ memberform.reachable_by_email.id_for_label }}">
+                    </label>
+                </span>
             </div>
         </div>
-
         <div class="form-group row">
             <div class="offset-md-3 col-md-9">
-                <a href="/my/password">{% trans "hier kannst du dein Passwort ändern" %}</a>
+                <a href="/my/password">
+                    {% trans "hier kannst du dein Passwort ndern" %}
+                </a>
             </div>
         </div>
         <div class="form-group row">
             <div class="form-actions offset-md-3 col-md-9">
-                <button type="submit" class="btn btn-success">{% trans "Personalien ändern" %}</button>
+                <button type="submit" class="btn btn-success">
+                    {% trans "Personalien ndern" %}
+                </button>
             </div>
         </div>
     </form>
-
     {% if not member.canceled %}
         <div class="row">
             <div class="form-actions offset-md-3 col-md-9">
-                <a href="/my/cancel/membership" class="btn btn-success">{% trans "Mitgliedschaft künden" %}</a>
+                <a href="/my/cancel/membership" class="btn btn-success">
+                    {% trans "Mitgliedschaft knden" %}
+                </a>
             </div>
         </div>
     {% endif %}

@@ -4,10 +4,11 @@
 {% block all_page_title %}
     {% vocabulary "co_member" as v_co_member %}
     <div class="offset-md-3 col-md-9 juntagrico">
-        <h3>{% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}</h3>
+        <h3>
+            {% blocktrans %}{{ v_co_member }} hinzufgen{% endblocktrans %}
+        </h3>
     </div>
 {% endblock %}
-
 {% block allcontent %}
     {% config "info_email" as c_info_email %}
     {% vocabulary "subscription" as v_subscription %}
@@ -19,141 +20,167 @@
         <div class="row mb-4">
             <div class="col-md-12">
                 {% blocktrans trimmed %}
-                    Du kannst weitere {{ v_subscription }}-Bezieher als {{ v_co_member }} hinzufügen. Fülle bitte die
-                    untenstehenden Felder aus
-                    und klicke anschliessend auf "{{ v_co_member }} hinzufügen".
+                Du kannst weitere {{ v_subscription }}-Bezieher als {{ v_co_member }} hinzufgen. Flle bitte die
+                untenstehenden Felder aus
+                und klicke anschliessend auf "{{ v_co_member }} hinzufgen".
                 {% endblocktrans %}
                 <br/>
                 {% blocktrans trimmed %}
-                    Bei bestehenden {{ v_member_pl }} reicht es, die Emailadresse einzutragen. Alle anderen Felder
-                    werden in diesem Falle ignoriert.
+                Bei bestehenden {{ v_member_pl }} reicht es, die Emailadresse einzutragen. Alle anderen Felder
+                werden in diesem Falle ignoriert.
                 {% endblocktrans %}
                 <br/>
                 {% blocktrans trimmed %}
-                    Sobald du alle {{ v_co_member_pl }} hinzugefügt hast, klicke auf "Weiter".
+                Sobald du alle {{ v_co_member_pl }} hinzugefgt hast, klicke auf "Weiter".
                 {% endblocktrans %}
             </div>
         </div>
         <form action="" method="post" id="new_member">
             {% csrf_token %}
             <div class="form-group row {% if memberform.last_name.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_last_name">{% trans "Name" %} *</label>
-
+                <label class="col-md-3" for="id_last_name">
+                    {% trans "Name" %} *
+                </label>
                 <div class="col-md-9">
                     {{ memberform.last_name }}
                     {% if memberform.last_name.errors %}
-                        <span class="help-inline">{% trans "Name ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "Name ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.first_name.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_first_name">{% trans "Vorname" %} *</label>
-
+                <label class="col-md-3" for="id_first_name">
+                    {% trans "Vorname" %} *
+                </label>
                 <div class="col-md-9">
                     {{ memberform.first_name }}
                     {% if memberform.first_name.errors %}
-                        <span class="help-inline">{% trans "Vorname ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "Vorname ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.addr_street.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_addr_street">{{ memberform.addr_street.label }} *</label>
-
+                <label class="col-md-3" for="id_addr_street">
+                    {{ memberform.addr_street.label }} *
+                </label>
                 <div class="col-md-9">
                     {{ memberform.addr_street }}
                     {% if memberform.addr_street.errors %}
-                        <span class="help-inline">{% trans "Strasse ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "Strasse ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.addr_zipcode.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }} *</label>
-
+                <label class="col-md-3" for="id_addr_zipcode">
+                    {{ memberform.addr_zipcode.label }} *
+                </label>
                 <div class="col-md-9">
                     {{ memberform.addr_zipcode }}
                     {% if memberform.addr_zipcode.errors %}
-                        <span class="help-inline">{% trans "PLZ ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "PLZ ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.addr_location.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_addr_location">{{ memberform.addr_location.label }} *</label>
-
+                <label class="col-md-3" for="id_addr_location">
+                    {{ memberform.addr_location.label }} *
+                </label>
                 <div class="col-md-9">
                     {{ memberform.addr_location }}
                     {% if memberform.addr_location.errors %}
-                        <span class="help-inline">{% trans "Ort ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "Ort ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.phone.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_phone">{{ memberform.phone.label }} *</label>
-
+                <label class="col-md-3" for="id_phone">
+                    {{ memberform.phone.label }} *
+                </label>
                 <div class="col-md-9">
                     {{ memberform.phone }}
                     {% if memberform.phone.errors %}
-                        <span class="help-inline">{% trans "Telefon ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "Telefon ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.mobile_phone.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_mobile_phone">{{ memberform.mobile_phone.label }} &nbsp;</label>
-
+                <label class="col-md-3" for="id_mobile_phone">
+                    {{ memberform.mobile_phone.label }} &nbsp;
+                </label>
                 <div class="col-md-9">
                     {{ memberform.mobile_phone }}
                     {% if memberform.mobile_phone.errors %}
-                        <span class="help-inline">{% trans "Mobile ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "Mobile ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.email.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_email">{% trans "E-Mail Adresse" %} *</label>
-
+                <label class="col-md-3" for="id_email">
+                    {% trans "E-Mail Adresse" %} *
+                </label>
                 <div class="col-md-9">
                     {{ memberform.email }}
-
                     {% if memberform.email.errors %}
-                        <span class="help-inline">{% trans "E-Mail ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "E-Mail ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-group row {% if memberform.birthday.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="birthday">{% trans "Geburtstag" %} </label>
-
+                <label class="col-md-3" for="birthday">
+                    {% trans "Geburtstag" %}
+                </label>
                 <div class="col-md-9">
                     {{ memberform.birthday }}
-
                     {% if memberform.birthday.errors %}
-                        <span class="help-inline">{% trans "Geburtstag ungültig" %}</span>
+                        <span class="help-inline">
+                            {% trans "Geburtstag ungltig" %}
+                        </span>
                     {% endif %}
                 </div>
             </div>
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
                     {% blocktrans trimmed %}
-                        Die Person mit dieser Email-Adresse ist bereits aktive {{ v_subscription }}-BezierIn.
-                        Bitte meldet euch bei <a href="mailto:{{ c_info_email }}">{{ c_info_email }}</a>, wenn ihr
-                        bestehende {{ v_member_type_pl }} als {{ v_co_member_pl }} hinzufügen möchtet.
+                    Die Person mit dieser Email-Adresse ist bereits aktive {{ v_subscription }}-BezierIn.
+                    Bitte meldet euch bei
+                    <a href="mailto:{{ c_info_email }}">
+                        {{ c_info_email }}
+                    </a>
+                    , wenn ihr
+                    bestehende {{ v_member_type_pl }} als {{ v_co_member_pl }} hinzufgen mchtet.
                     {% endblocktrans %}
                 </div>
             {% endif %}
             <div class="form-actions row">
                 <div class="offset-md-3 col-md-9">
                     <button type="submit" class="btn btn-success" formnovalidate>
-                        {% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}</button>
+                        {% blocktrans %}{{ v_co_member }} hinzufgen{% endblocktrans %}
+                    </button>
                     <a href="/my/create/subscription/shares" class="btn btn-success">
-                        {% blocktrans %}Ich möchte keine {{ v_co_member_pl }} hinzufügen{% endblocktrans %}
+                        {% blocktrans %}Ich mchte keine {{ v_co_member_pl }} hinzufgen{% endblocktrans %}
                     </a>
-                    <a href="/my/create/subscription/shares" class="btn btn-success">{% trans "Weiter" %}</a>
-                    <a href="/my/create/subscription/cancel" class="btn">{% trans "Abbrechen" %}</a>
+                    <a href="/my/create/subscription/shares" class="btn btn-success">
+                        {% trans "Weiter" %}
+                    </a>
+                    <a href="/my/create/subscription/cancel" class="btn">
+                        {% trans "Abbrechen" %}
+                    </a>
                 </div>
             </div>
         </form>

@@ -3,99 +3,160 @@
 {% load config %}
 {% block page_title %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
-    <h3>{% blocktrans %}Alle {{ v_subscription_pl }} im Überblick{% endblocktrans %}</h3>
+    <h3>
+        {% blocktrans %}Alle {{ v_subscription_pl }} im berblick{% endblocktrans %}
+    </h3>
 {% endblock %}
-
-
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
     <style>
-        body > .container {
-            width: 95%;
-        }
+        body > .container
+        {width: 95%;}
     </style>
     <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
-        {% csrf_token %} <input type="hidden" name="recipients" id="recipients"/> <input type="hidden"
-                                                                                         name="recipients_count"
-                                                                                         id="recipients_count"/>
+        {% csrf_token %}
+        <input type="hidden" name="recipients" id="recipients"/>
+        <input type="hidden"name="recipients_count"id="recipients_count"/>
         {% if can_send_mails %}
-            <button type="submit" class="btn btn-success" id="send-email">{% trans "Email senden" %}</button>
+            <button type="submit" class="btn btn-success" id="send-email">
+                {% trans "Email senden" %}
+            </button>
         {% endif %}
     </form>
     <div id="filter">
         <table id="filter-table" class="list table" style="display: table;">
             <thead>
-            <tr>
-                <th>{% trans "Hauptbezieher" %}</th>
-                <th>{% trans "Weitere Bezieher" %}</th>
-                <th>{% vocabulary "depot" %}</th>
-                <th>{% trans "Inhalt" %}</th>
-                <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}
-                    <th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
-                <th>{% trans "Aktiv" %}</th>
-                <th>{% trans "Aktivierungsdatum" %}</th>
-                <th>{% trans "Emails" %}</th>
-            </tr>
+                <tr>
+                    <th>
+                        {% trans "Hauptbezieher" %}
+                    </th>
+                    <th>
+                        {% trans "Weitere Bezieher" %}
+                    </th>
+                    <th>
+                        {% vocabulary "depot" %}
+                    </th>
+                    <th>
+                        {% trans "Inhalt" %}
+                    </th>
+                    <th>
+                        {% vocabulary "assignment_pl" %}
+                    </th>
+                    {% if show_core %}
+                        <th>
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
+                        </th>
+                    {% endif %}
+                    <th>
+                        {% trans "Aktiv" %}
+                    </th>
+                    <th>
+                        {% trans "Aktivierungsdatum" %}
+                    </th>
+                    <th>
+                        {% trans "Emails" %}
+                    </th>
+                </tr>
             </thead>
             <tfoot>
-            <tr>
-                <th>{% trans "Hauptbezieher" %}</th>
-                <th>{% trans "Weitere Bezieher" %}</th>
-                <th>{% vocabulary "depot" %}</th>
-                <th>{% trans "Inhalt" %}</th>
-                <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}
-                    <th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
-                <th>{% trans "Aktiv" %}</th>
-                <th>{% trans "Aktivierungsdatum" %}</th>
-                <th>{% trans "Emails" %}</th>
-            </tr>
+                <tr>
+                    <th>
+                        {% trans "Hauptbezieher" %}
+                    </th>
+                    <th>
+                        {% trans "Weitere Bezieher" %}
+                    </th>
+                    <th>
+                        {% vocabulary "depot" %}
+                    </th>
+                    <th>
+                        {% trans "Inhalt" %}
+                    </th>
+                    <th>
+                        {% vocabulary "assignment_pl" %}
+                    </th>
+                    {% if show_core %}
+                        <th>
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
+                        </th>
+                    {% endif %}
+                    <th>
+                        {% trans "Aktiv" %}
+                    </th>
+                    <th>
+                        {% trans "Aktivierungsdatum" %}
+                    </th>
+                    <th>
+                        {% trans "Emails" %}
+                    </th>
+                </tr>
             </tfoot>
             <tbody>
-            {% for subscription in subscriptions %}
-                <tr>
-                    <td>
-                        {% if operation_group %}
-                            <a href="/impersonate/{{ subscription.subscription.primary_member.user.id }}"
-                               target="__blank">
+                {% for subscription in subscriptions %}
+                    <tr>
+                        <td>
+                            {% if operation_group %}
+                                <a href="/impersonate/{{ subscription.subscription.primary_member.user.id }}"target="__blank">
+                                {% endif %}
+                                {{ subscription.subscription.primary_member.first_name }} {{ subscription.subscription.primary_member.last_name }}
+                                {% if operation_group %}
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ subscription.subscription.recipients_names }}
+                        </td>
+                        <td>
+                            {{ subscription.subscription.depot.name }}
+                        </td>
+                        <td>
+                            {{ subscription.subscription.overview }}
+                        </td>
+                        <td>
+                            N%-{{ subscription.assignments|floatformat:"0" }}
+                            (von {{ subscription.subscription.required_assignments }})
+                        </td>
+                        {% if show_core %}
+                            <td>
+                                C%-{{ subscription.core_assignments|floatformat:"0" }}
+                                (von {{ subscription.subscription.required_core_assignments }})
+                            </td>
                         {% endif %}
-                        {{ subscription.subscription.primary_member.first_name }} {{ subscription.subscription.primary_member.last_name }}
-                        {% if operation_group %}
-                            </a>
-                        {% endif %}
-                    </td>
-                    <td>{{ subscription.subscription.recipients_names }}</td>
-                    <td>{{ subscription.subscription.depot.name }}</td>
-                    <td>{{ subscription.subscription.overview }}</td>
-                    <td>N%-{{ subscription.assignments|floatformat:"0" }}
-                        (von {{ subscription.subscription.required_assignments }})
-                    </td>
-                    {% if show_core %}
-                        <td>C%-{{ subscription.core_assignments|floatformat:"0" }}
-                            (von {{ subscription.subscription.required_core_assignments }})
-                        </td>{% endif %}
-                    <td>{% if subscription.subscription.active %}<img src="{% images "single_full" %}"/>
-                        {% trans "Aktiv" %}{% else %}<img src="{% images "single_empty" %}"/>
-                        {% trans "Wartend" %}{% endif %}</td>
-                    <td>{{ subscription.subscription.activation_date }}</td>
-                    <td class="email">{% for recipient in subscription.subscription.recipients %}{{ recipient.email }}
-                        {% if not forloop.last %}, {% endif %}{% endfor %}</td>
-                </tr>
-            {% endfor %}
+                        <td>
+                            {% if subscription.subscription.active %}
+                                <img src="{% images "single_full" %}"/>
+                                {% trans "Aktiv" %}
+                            {% else %}
+                                <img src="{% images "single_empty" %}"/>
+                                {% trans "Wartend" %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ subscription.subscription.activation_date }}
+                        </td>
+                        <td class="email">
+                            {% for recipient in subscription.subscription.recipients %}
+                                {{ recipient.email }}
+                                {% if not forloop.last %}
+                                    ,
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-    <br/><br/>
+    <br/>
+    <br/>
     <script>
         var member_string = "{% vocabulary "member" %}";
         var members_string = "{% vocabulary "member_pl" %}";
     </script>
-
 {% endblock %}
-
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"
-            data-main="/static/js/initSubscriptions.js"></script>
+    <script type="text/javascript" src="/static/external/datatables.min.js">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initSubscriptions.js">
+    </script>
 {% endblock %}

@@ -3,27 +3,28 @@
 {% load config %}
 {% block page_title %}
     {% vocabulary "depot" as v_depot %}
-    <h3>{% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}</h3>
+    <h3>
+        {% blocktrans %}{{ v_depot }} ndern{% endblocktrans %}
+    </h3>
 {% endblock %}
-
 {% block content %}
     {% vocabulary "depot" as v_depot %}
     {% vocabulary "subscription" as v_subscription %}
     {% if saved %}
         <div class="alert alert-success">
             {% if subscription.state == 'waiting' %}
-                {% blocktrans %}Das {{ v_depot }} wurde geändert.{% endblocktrans %}
+                {% blocktrans %}Das {{ v_depot }} wurde gendert.{% endblocktrans %}
             {% else %}
                 {% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name%}
-                    !!!Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}-Listen Generierung.
-                    Solange keine Email an {{ spe }}
-                    mit der Bestätigung für das neue {{ v_depot }} gesendet wurde ist noch das alte {{ v_depot }}
-                    {{ sde }} aktiv!!!
+                !!!Achtung! Das {{ v_depot }} nderst erst bei der nchsten {{ v_depot }}-Listen Generierung.
+                Solange keine Email an {{ spe }}
+                mit der Besttigung fr das neue {{ v_depot }} gesendet wurde ist noch das alte {{ v_depot }}
+                {{ sde }} aktiv!!!
                 {% endblocktrans %}
             {% endif %}
             <br/>
             <a href="/my/subscription/detail/{{ subscription.id }}/">
-            {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
+                {% blocktrans %}Zurck zur {{ v_subscription }}-bersicht{% endblocktrans %}
             </a>
         </div>
     {% else %}
@@ -44,56 +45,57 @@
                 <div class="controls col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
+                            <option value="{{ depot.id }}" id="depot{{ depot.code }}">
+                                {{ depot.name }}
+                            </option>
                         {% endfor %}
                     </select>
-
                     <label for="depot">
-                        {% blocktrans %}Wähle ein neues {{ v_depot }} aus. {% endblocktrans %}
+                        {% blocktrans %}Whle ein neues {{ v_depot }} aus. {% endblocktrans %}
                     </label>
                     {% if requires_map %}
-                        <div id="map-canvas"></div>
+                        <div id="map-canvas">
+                        </div>
                     {% endif %}
                 </div>
             </div>
             <div class="offset-md-3 form-actions">
                 {% blocktrans trimmed %}
-                    Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}listen Generierung. Du wirst
-                    darüber informiert wenn dein {{ v_depot }} ändert.
+                Achtung! Das {{ v_depot }} nderst erst bei der nchsten {{ v_depot }}listen Generierung. Du wirst
+                darber informiert wenn dein {{ v_depot }} ndert.
                 {% endblocktrans %}
-                <br/><br/>
+                <br/>
+                <br/>
                 <button type="submit" class="btn btn-success">
-                    {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}</button>
+                    {% blocktrans %}{{ v_depot }} ndern{% endblocktrans %}
+                </button>
             </div>
         </form>
-
         <script>
             var depot_id = {{ subscription.depot.id }};
             var member_addr = '{{ member.addr_street }}+{{ member.addr_zipcode }}+{{ member.addr_location }}';
-
             var destinations = [];
             var depots = [];
             {% for depot in depots %}
                 {% if depot.has_geo %}
                     destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}")
-                    depots.push({
-                        name: '{{ depot.name }}',
-                        addr_street: '{{ depot.addr_street }}',
-                        addr_zipcode: '{{ depot.addr_zipcode }}',
-                        addr_location: '{{ depot.addr_location }}',
-                        latitude: '{{ depot.latitude }}',
-                        longitude: '{{ depot.longitude }}',
-                        code: '{{ depot.code }}'
+                    depots.push(
+                    {name: '{{ depot.name }}',
+                    addr_street: '{{ depot.addr_street }}',
+                    addr_zipcode: '{{ depot.addr_zipcode }}',
+                    addr_location: '{{ depot.addr_location }}',
+                    latitude: '{{ depot.latitude }}',
+                    longitude: '{{ depot.longitude }}',
+                    code: '{{ depot.code }}'
                     });
                 {% endif %}
             {% endfor %}
         </script>
     {% endif %}
-
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript"
-            src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"
-            data-main="/static/js/initChangeDepot.js"></script>
+    <script type="text/javascript"src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initChangeDepot.js">
+    </script>
 {% endblock %}

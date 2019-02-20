@@ -3,205 +3,257 @@
 {% load config %}
 {% vocabulary "depot" as v_depot %}
 <html>
-<head>
-    <title>{% blocktrans %}{{ v_depot }}-Listen{% endblocktrans %}</title>
-    <meta charset="utf-8">
-    <style>
-        @page {
-            size: A4;
-            @frame content_frame {
-            left: 50pt;
-            width: 512pt;
-            top: 90pt;
-            height: 660pt;
-        }
-        @frame header_frame {
-        -pdf-frame-content:header_content;
-        left: 50pt;
-        width: 512pt;
-        top: 50pt;
-        height: 40pt;
-        text-align:center;
-        }
-
-        }
-
-        .page-break {
-            page-break-after: always;
-        }
-
-        .full-border {
-            border: 1px black solid;
-        }
-
-        .left-border {
-            border-left: 1px black solid;
-        }
-
-        .top-border {
-            border-top: 1px black solid;
-        }
-
-        .right-border {
-            border-right: 1px black solid;
-        }
-
-        .bottom-border {
-            border-bottom: 1px black solid;
-        }
-
-        th {
-            text-align: left;
-        }
-
-        td {
-            font-size: 14px;
-            line-height: 14px;
-        }
-
-        table {
-            table-layout: fixed;
-        }
-
-        .name {
-            width: 180px;
-        }
-
-
-    </style>
-</head>
-
-<body>
-
-<div id="header_content">
-    {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
-</div>
-
-{% for depot in depots %}
-    <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
-    <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
-    {% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}: {{ depot.contact.first_name }}
-    {{ depot.contact.last_name }}
-    <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
-        <tr>
-            <td style="width:180px;" class="name"></td>
-            <td style="width:180px;" class="name"></td>
-            <th colspan="{{ subscription_names|length }}"
-                class="top-border left-border right-border">{% vocabulary "subscription" %}</th>
-            {% for category in categories %}
-                <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span
-                        style="font-size:11px">{{ category.description }}</span></th>
-            {% endfor %}
-            <th colspan="2" class="top-border right-border"></th>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            {% for subscription_name in subscription_names %}
-                <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ subscription_name }}</td>
-            {% endfor %}
-            {% for type in types %}
-                <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
-            {% endfor %}
-            <td class="small bottom-border"></td>
-            <td class="small bottom-border right-border"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>{% trans "TOTAL" %}</td>
-            {% for value in depot.overview_cache %}
-                <td>{{ value }}</td>
-            {% endfor %}
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <th style="width:180px;">{% trans "Name" %}</th>
-            <th style="width:180px;">{% vocabulary "co_member_pl" %}</th>
-            {% for subscription_name in subscription_names %}
-                <th></th>
-            {% endfor %}
-            {% for type in types %}
-                <th></th>
-            {% endfor %}
-            <th>{% trans "abgeholt" %}</th>
-            <th>{% trans "Tasche retour" %}</th>
-        </tr>
-        {% for subscription in depot.subscription_cache.all %}
-            <tr>
-                <td style="width:180px;" class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
-                <td style="width:180px;" class="top-border left-border">{{ subscription.other_recipients_names }}</td>
-                {% for subscription_name in subscription_names %}
-                    <td style="width:40px;" class="top-border left-border">
-                        {% if subscription|subscriptions_amount:subscription_name %}
-                            {{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
-                {% endfor %}
-                {% for type in types %}
-                    <td style="width:40px;" class="top-border left-border">
-                        {% if subscription|extra_subscription:type.name %}
-                            {{ subscription|extra_subscription_amount:type.name }}{% endif %}</td>
-                {% endfor %}
-                <td style="width:60px;" class="top-border left-border"></td>
-                <td style="width:60px;" class="top-border left-border right-border"></td>
-            </tr>
-            {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 and not forloop.last %}
-                </table>
-                <div class="page-break"></div>
-                <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} {% trans "Fortsetzung" %}</h2>
+    <head>
+        <title>
+            {% blocktrans %}{{ v_depot }}-Listen{% endblocktrans %}
+        </title>
+        <meta charset="utf-8">
+            <style>
+                @page
+                {size: A4;@frame content_frame {left: 50pt;width: 512pt;top: 90pt;height: 660pt;}
+                @frame header_frame
+                {-pdf-frame-content:header_content;left: 50pt;width: 512pt;top: 50pt;height: 40pt;text-align:center;}
+                }
+                .page-break
+                {page-break-after: always;}
+                .full-border
+                {border: 1px black solid;}
+                .left-border
+                {border-left: 1px black solid;}
+                .top-border
+                {border-top: 1px black solid;}
+                .right-border
+                {border-right: 1px black solid;}
+                .bottom-border
+                {border-bottom: 1px black solid;}
+                th
+                {text-align: left;}
+                td
+                {font-size: 14px;line-height: 14px;}
+                table
+                {table-layout: fixed;}
+                .name
+                {width: 180px;}
+            </style>
+        </head>
+        <body>
+            <div id="header_content">
+                {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
+            </div>
+            {% for depot in depots %}
+                <h2 style="font-size: 18px;">
+                    {{ depot.weekday_name }} - {{ depot.name }}
+                </h2>
+                <h3 style="font-size: 16px;">
+                    {{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}
+                </h3>
+                {% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}: {{ depot.contact.first_name }}
+                {{ depot.contact.last_name }}
                 <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
-                <tr>
-                    <td style="width:180px;" class="name"></td>
-                    <td style="width:180px;" class="name"></td>
-                    <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">ABO</th>
-                    {% for category in categories %}
-                        <th colspan="{{ category.count }}" class="top-border right-border">{{ category.name }}<br/><span
-                                style="font-size:11px">{{ category.description }}</span></th>
+                    <tr>
+                        <td style="width:180px;" class="name">
+                        </td>
+                        <td style="width:180px;" class="name">
+                        </td>
+                        <th colspan="{{ subscription_names|length }}"class="top-border left-border right-border">
+                            {% vocabulary "subscription" %}
+                        </th>
+                        {% for category in categories %}
+                            <th colspan="{{ category.count }}" class="top-border right-border">
+                                {{ category.name }}
+                                <br/>
+                                <spanstyle="font-size:11px">
+                                    {{ category.description }}
+                                </span>
+                            </th>
+                        {% endfor %}
+                        <th colspan="2" class="top-border right-border">
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        {% for subscription_name in subscription_names %}
+                            <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">
+                                {{ subscription_name }}
+                            </td>
+                        {% endfor %}
+                        {% for type in types %}
+                            <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">
+                                {{ type.size }}
+                            </td>
+                        {% endfor %}
+                        <td class="small bottom-border">
+                        </td>
+                        <td class="small bottom-border right-border">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            {% trans "TOTAL" %}
+                        </td>
+                        {% for value in depot.overview_cache %}
+                            <td>
+                                {{ value }}
+                            </td>
+                        {% endfor %}
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="width:180px;">
+                            {% trans "Name" %}
+                        </th>
+                        <th style="width:180px;">
+                            {% vocabulary "co_member_pl" %}
+                        </th>
+                        {% for subscription_name in subscription_names %}
+                            <th>
+                            </th>
+                        {% endfor %}
+                        {% for type in types %}
+                            <th>
+                            </th>
+                        {% endfor %}
+                        <th>
+                            {% trans "abgeholt" %}
+                        </th>
+                        <th>
+                            {% trans "Tasche retour" %}
+                        </th>
+                    </tr>
+                    {% for subscription in depot.subscription_cache.all %}
+                        <tr>
+                            <td style="width:180px;" class="top-border left-border">
+                                {{ subscription.primary_member.get_name }}
+                            </td>
+                            <td style="width:180px;" class="top-border left-border">
+                                {{ subscription.other_recipients_names }}
+                            </td>
+                            {% for subscription_name in subscription_names %}
+                                <td style="width:40px;" class="top-border left-border">
+                                    {% if subscription|subscriptions_amount:subscription_name %}
+                                        {{ subscription|subscriptions_amount:subscription_name }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            {% for type in types %}
+                                <td style="width:40px;" class="top-border left-border">
+                                    {% if subscription|extra_subscription:type.name %}
+                                        {{ subscription|extra_subscription_amount:type.name }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            <td style="width:60px;" class="top-border left-border">
+                            </td>
+                            <td style="width:60px;" class="top-border left-border right-border">
+                            </td>
+                        </tr>
+                        {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 and not forloop.last %}
+                        </table>
+                        <div class="page-break">
+                        </div>
+                        <h2 style="font-size: 18px;">
+                            {{ depot.weekday_name }} - {{ depot.name }} {% trans "Fortsetzung" %}
+                        </h2>
+                        <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
+                            <tr>
+                                <td style="width:180px;" class="name">
+                                </td>
+                                <td style="width:180px;" class="name">
+                                </td>
+                                <th colspan="{{ subscription_names|length }}" class="top-border left-border right-border">
+                                    ABO
+                                </th>
+                                {% for category in categories %}
+                                    <th colspan="{{ category.count }}" class="top-border right-border">
+                                        {{ category.name }}
+                                        <br/>
+                                        <spanstyle="font-size:11px">
+                                            {{ category.description }}
+                                        </span>
+                                    </th>
+                                {% endfor %}
+                                <th colspan="2" class="top-border right-border">
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                {% for subscription_name in subscription_names %}
+                                    <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">
+                                        {{ subscription_name }}
+                                    </td>
+                                {% endfor %}
+                                {% for type in types %}
+                                    <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">
+                                        {{ type.size }}
+                                    </td>
+                                {% endfor %}
+                                <td class="small bottom-border">
+                                </td>
+                                <td class="small bottom-border right-border">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                </td>
+                                <td>
+                                    {% trans "TOTAL" %}
+                                </td>
+                                {% for value in depot.overview_cache %}
+                                    <td>
+                                        {{ value }}
+                                    </td>
+                                {% endfor %}
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="width:180px;">
+                                    {% trans "Name" %}
+                                </th>
+                                <th style="width:180px;">
+                                    {% vocabulary "co_member_pl" %}
+                                </th>
+                                {% for subscription_name in subscription_names %}
+                                    <th>
+                                    </th>
+                                {% endfor %}
+                                {% for type in types %}
+                                    <th>
+                                    </th>
+                                {% endfor %}
+                                <th>
+                                    {% trans "abgeholt" %}
+                                </th>
+                                <th>
+                                    {% trans "Tasche retour" %}
+                                </th>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
-                    <th colspan="2" class="top-border right-border"></th>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    {% for subscription_name in subscription_names %}
-                        <td class="small {% if forloop.first %}left-border{% endif %} bottom-border {% if forloop.last %}right-border{% endif %}">{{ subscription_name }}</td>
+                </table>
+                <br/>
+                <div>
+                    {% for message in messages %}
+                        <div style="width: 100%; text-align: center; font-size: 18pt;">
+                            {{ message }}
+                        </div>
                     {% endfor %}
-                    {% for type in types %}
-                        <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
-                    {% endfor %}
-                    <td class="small bottom-border"></td>
-                    <td class="small bottom-border right-border"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>{% trans "TOTAL" %}</td>
-                    {% for value in depot.overview_cache %}
-                        <td>{{ value }}</td>
-                    {% endfor %}
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th style="width:180px;">{% trans "Name" %}</th>
-                    <th style="width:180px;">{% vocabulary "co_member_pl" %}</th>
-                    {% for subscription_name in subscription_names %}
-                        <th></th>
-                    {% endfor %}
-                    {% for type in types %}
-                        <th></th>
-                    {% endfor %}
-                    <th>{% trans "abgeholt" %}</th>
-                    <th>{% trans "Tasche retour" %}</th>
-                </tr>
-            {% endif %}
-        {% endfor %}
-        </table>
-    <br/>
-    <div>
-        {% for message in messages %}
-            <div style="width: 100%; text-align: center; font-size: 18pt;">{{ message }}</div>
-        {% endfor %}
-    </div>
-    <div class="page-break"></div>
-{% endfor %}
-</body>
-</html>
+                </div>
+                <div class="page-break">
+                </div>
+            {% endfor %}
+        </body>
+    </html>

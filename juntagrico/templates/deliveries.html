@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
-
 {% block page_title %}
-    <h3>{% trans "Alle Lieferungen im Überblick" %}</h3>
+    <h3>
+        {% trans "Alle Lieferungen im berblick" %}
+    </h3>
 {% endblock %}
 {% block content %}
     {% include "snippet_delivery.html" %}
 {% endblock %}
-
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"
-            data-main="/static/js/initDeliveries.js"></script>
+    <script type="text/javascript" src="/static/external/datatables.min.js">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initDeliveries.js">
+    </script>
 {% endblock %}

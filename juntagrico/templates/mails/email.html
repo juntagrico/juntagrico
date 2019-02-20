@@ -1,31 +1,34 @@
 {% load config %}
 <style type="text/css">
-    @media screen {
-        @font-face {
-            font-family: 'Source Sans Pro Light';
-            src: url('http://{% config "server_url" %}/static/fonts/SourceSansPro-Light.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Source Sans Pro Regular';
-            src: url('http://{% config "server_url" %}/static/fonts/SourceSansPro-Regular.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
+    @media screen
+    {@font-face {font-family: 'Source Sans Pro Light';src: url('http://{% config "server_url" %}/static/fonts/SourceSansPro-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    }
+    @font-face
+    {font-family: 'Source Sans Pro Regular';src: url('http://{% config "server_url" %}/static/fonts/SourceSansPro-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    }
     }
 </style>
 <table width="600px">
     <tr>
-        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;
+        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">
+            &nbsp;
         </td>
-        <td style="font-size:14px;font-family: 'Source Sans Pro Regular', monospace; font-weight: bold;padding:20px;">{{ subject }}</td>
-        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">&nbsp;
+        <td style="font-size:14px;font-family: 'Source Sans Pro Regular', monospace; font-weight: bold;padding:20px;">
+            {{ subject }}
+        </td>
+        <td rowspan="2" class="border_y" width="20" style="padding:0; margin:0; font-size:12px; height:20px;">
+            &nbsp;
         </td>
     </tr>
     <tr>
         <td style="font-size:14px;font-family: 'Source Sans Pro Light', monospace; padding:20px; */word-break: break-all;">
-            {% block content %}{% endblock %}</td>
+            {% block content %}
+            {% endblock %}
+        </td>
     </tr>
     <tr>
         <td colspan="3" style="padding-top:25px;">
