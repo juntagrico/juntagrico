@@ -1,41 +1,40 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+
 {% block content %}
     {% vocabulary "depot_pl" as v_depot_pl %}
     {% vocabulary "member_pl" as v_member_pl %}
     <div id="maps">
-        <h3>
-            {% blocktrans %}Alle {{ v_depot_pl }} und {{ v_member_pl }}{% endblocktrans %}
-        </h3>
-        <div class="row">
-        </div>
-        <div id="map-canvas">
-        </div>
+        <h3>{% blocktrans %}Alle {{ v_depot_pl }} und {{ v_member_pl }}{% endblocktrans %}</h3>
+        <div class="row"></div>
+        <div id="map-canvas"></div>
     </div>
 {% endblock %}
+
+
 {% block scripts %}
     <script type="text/javascript">
         var depots = [
-        {% for depot in depots %}
-            {name: '{{ depot.name }}',
-            addr_street: '{{ depot.addr_street }}',
-            addr_zipcode: '{{ depot.addr_zipcode }}',
-            addr_location: '{{ depot.addr_location }}',
-            latitude: '{{ depot.latitude }}',
-            longitude: '{{ depot.longitude }}',
-            code: '{{ depot.code }}'
-            },
-        {% endfor %}
+            {% for depot in depots %}
+                {
+                    name: '{{ depot.name }}',
+                    addr_street: '{{ depot.addr_street }}',
+                    addr_zipcode: '{{ depot.addr_zipcode }}',
+                    addr_location: '{{ depot.addr_location }}',
+                    latitude: '{{ depot.latitude }}',
+                    longitude: '{{ depot.longitude }}',
+                    code: '{{ depot.code }}'
+                },
+            {% endfor %}
         ]
         var members = [
-        {% for subscription in subscriptions %}
-            '{{ subscription.primary_member.addr_street }} {{subscription.primary_member.addr_zipcode}} {{subscription.primary_member.addr_location}}',
-        {% endfor %}
+            {% for subscription in subscriptions %}
+                '{{ subscription.primary_member.addr_street }} {{subscription.primary_member.addr_zipcode}} {{subscription.primary_member.addr_location}}',
+            {% endfor %}
         ]
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMaps.js">
-    </script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key={% config "google_api_key" %}"type="text/javascript">
-    </script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMaps.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={% config "google_api_key" %}"
+            type="text/javascript"></script>
 {% endblock %}

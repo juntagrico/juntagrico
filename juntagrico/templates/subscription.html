@@ -3,10 +3,9 @@
 {% load config %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
-    <h3>
-        {% blocktrans %}{{ v_subscription }} bersicht{% endblocktrans %}
-    </h3>
+    <h3>{% blocktrans %}{{ v_subscription }} Übersicht{% endblocktrans %}</h3>
 {% endblock %}
+
 {% block content %}
     {% config "enable_shares" as c_enable_shares %}
     {% vocabulary "subscription" as v_subscription %}
@@ -15,76 +14,61 @@
     {% vocabulary "depot" as v_depot %}
     {% if future_subscription %}
         <div class="alert alert-success">
-            {% trans "Du bist auf der Warteliste" %}
-            <br/>
+            {% trans "Du bist auf der Warteliste" %}<br/>
             <a href="/my/subscription/detail/{{ member.future_subscription.id }}/">
                 {% trans "Mehr Infos dazu findest du hier" %}
             </a>
         </div>
     {% elif can_order %}
         <div class="alert alert-warning">
-            {% blocktrans %}Du bist entweder kein {{ v_subscription }}-Bezieher oder hast gekndigt.{% endblocktrans %}
+            {% blocktrans %}Du bist entweder kein {{ v_subscription }}-Bezieher oder hast gekündigt.{% endblocktrans %}
             <br/>
             {% blocktrans %}{{ v_subscription }} (wieder) neu beziehen?{% endblocktrans %}
-            {% trans "Melde dich hier an" %}:
-            <a href="/my/create/subscrition">
-                {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}
-            </a>
-        </div>
+            {% trans "Melde dich hier an" %}: <a href="/my/create/subscrition">
+            {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}</a></div>
     {% endif %}
+
     {% if no_subscription %}
         {% if c_enable_shares %}
             <div class="row mb-3">
-                <div class="col-md-3">
-                    {% vocabulary "share_pl" %}
-                </div>
+                <div class="col-md-3">{% vocabulary "share_pl" %}</div>
                 <div class="col-md-9">
                     {{ shares }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="/my/order/share">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
-                    </a>
+                     <a href="/my/order/share">
+                         {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                     </a>
                 </div>
             </div>
         {% endif %}
     {% else %}
         <div class="row mb-3">
-            <div class="col-md-3">
-                {% blocktrans %}{{ v_subscription }}grsse{% endblocktrans %}
-            </div>
+            <div class="col-md-3">{% blocktrans %}{{ v_subscription }}grösse{% endblocktrans %}</div>
             <div class="col-md-9">
                 {{ subscription.size_name }}
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-md-3">
-                {% trans "Status" %}
-            </div>
+            <div class="col-md-3">{% trans "Status" %}</div>
             <div class="col-md-9">
                 {% if subscription.state == 'active' %}
                     {% trans "aktiv" %}
                 {% elif subscription.state == 'canceled' %}
-                    {% trans "gekndigt" %},
+                    {% trans "gekündigt" %},
                     {% blocktrans with ed=end_date|date:"d.m.Y" %}wird am {{ ed }} deaktiviert{% endblocktrans %}.
                 {% elif subscription.state == 'waiting' %}
-                    <span class="text-error">
-                        {% trans "Auf der Warteliste" %}
-                    </span>
+                    <span class="text-error">{% trans "Auf der Warteliste" %}</span>
                 {% elif subscription.state == 'inactive' %}
-                    <span class="text-error">
-                        {% trans "deaktiviert" %}
-                    </span>
+                    <span class="text-error">{% trans "deaktiviert" %}</span>
                 {% endif %}
             </div>
         </div>
         {% if c_enable_shares %}
             <div class="row mb-3">
-                <div class="col-md-3">
-                    {% vocabulary "share_pl" %}
-                </div>
+                <div class="col-md-3">{% vocabulary "share_pl" %}</div>
                 <div class="col-md-9">
                     {{ shares }}
                     {% if shares_unpaid > 0 %}
@@ -92,20 +76,17 @@
                     {% endif %}
                     <br/>
                     <a href="/my/order/share">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
                     </a>
-                    <br/>
-                    <br/>
-                    {% blocktrans %}{{ v_share_pl }} von {{ v_co_member_pl }}{% endblocktrans %}:
+                    <br/><br/> {% blocktrans %}{{ v_share_pl }} von {{ v_co_member_pl }}{% endblocktrans %}:
                     <ul>
                         {% for co_member in  co_members %}
-                            <li>
-                                {% blocktrans trimmed with csc=co_member.share_set.count fn=co_member.first_name ln=co_member.last_name %}
+                            <li>{% blocktrans trimmed with csc=co_member.share_set.count fn=co_member.first_name ln=co_member.last_name %}
                                 {{ csc }} von {{ fn }}
                                 {{ ln }}
-                                {% endblocktrans %}
+                            {% endblocktrans %}
                                 {% if not co_member.confirmed %}
-                                    ({% trans "nicht besttigt" %})
+                                    ({% trans "nicht bestätigt" %})
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -114,17 +95,13 @@
             </div>
         {% endif %}
         <div class="row mb-3">
-            <div class="col-md-3">
-                {% blocktrans %}{{ v_subscription }} geteilt mit{% endblocktrans %}
-            </div>
+            <div class="col-md-3">{% blocktrans %}{{ v_subscription }} geteilt mit{% endblocktrans %}</div>
             <div class="col-md-9">
                 {% if co_members|length > 0 %}
                     {% if co_members|length > 1 %}
                         <ul>
                             {% for sharee in co_members %}
-                                <li>
-                                    {{ sharee.first_name }} {{ sharee.last_name }}
-                                </li>
+                                <li>{{ sharee.first_name }} {{ sharee.last_name }}</li>
                             {% endfor %}
                         </ul>
                     {% else %}
@@ -134,8 +111,7 @@
                         <br/>
                     {% endif %}
                 {% else %}
-                    {% blocktrans %}Du hast noch keine {{ v_co_member_pl }} eingetragen.{% endblocktrans %}
-                    <br/>
+                    {% blocktrans %}Du hast noch keine {{ v_co_member_pl }} eingetragen.{% endblocktrans %}<br/>
                 {% endif %}
                 {% if primary %}
                     <a href="/my/cosubmember/{{ subscription.id }}">
@@ -143,36 +119,29 @@
                     </a>
                 {% else %}
                     {% blocktrans trimmed %}
-                    Nur der Hauptabonnnent kann weitere {{ v_co_member_pl }} hinzufgen.
+                        Nur der Hauptabonnnent kann weitere {{ v_co_member_pl }} hinzufügen.
                     {% endblocktrans %}
                 {% endif %}
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-md-3">
-                {% vocabulary "depot" %}
-            </div>
+            <div class="col-md-3">{% vocabulary "depot" %}</div>
             <div class="col-md-9">
-                {{ subscription.depot.name }}
-                <a href="/my/depot/{{ subscription.depot.id }}">
-                    {% blocktrans %}Weitere Infos zum {{ v_depot }}{% endblocktrans %}
-                </a>
+                {{ subscription.depot.name }} <a href="/my/depot/{{ subscription.depot.id }}">
+                {% blocktrans %}Weitere Infos zum {{ v_depot }}{% endblocktrans %}
+            </a>
             </div>
         </div>
         {% if has_extra_subscriptions %}
             <div class="row mb-3">
-                <div class="col-md-3">
-                    {% trans "Zusatzabos" %}
-                </div>
+                <div class="col-md-3">{% trans "Zusatzabos" %}</div>
                 <div class="col-md-9">
                     {% if subscription.extra_subscriptions|length == 0 %}
                         {% trans "Keine Zusatzabos" %}
                     {% else %}
                         <ul>
                             {% for extra_subscription in subscription.extra_subscriptions %}
-                                <li>
-                                    {{ extra_subscription.type.name }}
-                                </li>
+                                <li>{{ extra_subscription.type.name }}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}
@@ -180,66 +149,58 @@
             </div>
             {% if subscription.extrasubscriptions_changed %}
                 <div class="row mb-3">
-                    <div class="col-md-3">
-                        {% trans "Neue Zusatzabos" %}
-                    </div>
+                    <div class="col-md-3">{% trans "Neue Zusatzabos" %}</div>
                     <div class="col-md-9">
                         ({% blocktrans trimmed with nes=next_extra_subscription_date |date:"d.m.Y" %}
-                        Die nderungen treten voraussichtlich am {{ nes }} in Kraft
-                        {% endblocktrans %})
+                        Die Änderungen treten voraussichtlich am {{ nes }} in Kraft
+                    {% endblocktrans %})
                         {% if not subscription.future_extra_subscriptions %}
-                            <br>
-                                {% trans "Keine Zusatzabos" %}
-                            {% else %}
-                                <ul>
-                                    {% for extra_subscription in subscription.future_extra_subscriptions %}
-                                        <li>
-                                            {{ extra_subscription.type.name }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </div>
+                            <br>{% trans "Keine Zusatzabos" %}
+                        {% else %}
+                            <ul>
+                                {% for extra_subscription in subscription.future_extra_subscriptions %}
+                                    <li>{{ extra_subscription.type.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
                     </div>
-                {% endif %}
+                </div>
             {% endif %}
-            {% if subscription.types_changed %}
-                <div class="row mb-3">
-                    <div class="col-md-3">
-                        {% blocktrans %}Neue {{ v_subscription }}-Grsse{% endblocktrans %}
-                    </div>
-                    <div class="col-md-9">
-                        ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
-                        Die nderung tritt voraussichtlich am {{ nes }} in Kraft
-                        {% endblocktrans %})
-                        <br>
-                            {{ subscription.future_size_name }}
-                        </div>
-                    </div>
-                {% endif %}
-                {% if subscription.state != 'inactive' %}
-                    <div class="row mb-3">
-                        <div class="offset-3 col-md-9">
-                            <a href="{% if primary %}/my/subscription/change/overview/{{ subscription.id }}/{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
-                                {% blocktrans %}{{ v_subscription }}  ndern{% endblocktrans %}
-                            </a>
-                            {% if not primary %}
-                                {% trans "Nur der Hauptbezieher kann nderungen durchfhren." %}
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
-                {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
-                    <div class="row mb-3">
-                        <div class="offset-3 col-md-9">
-                            <a href="{% if primary %}/my/subscription/cancel/{{ subscription.id }}/{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
-                                {% blocktrans %}{{ v_subscription }} knden{% endblocktrans %}
-                            </a>
-                            {% if not primary %}
-                                {% trans "Nur der Hauptabezieher kann knden." %}
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endif %}
-        {% endblock %}
+        {% endif %}
+
+        {% if subscription.types_changed %}
+            <div class="row mb-3">
+                <div class="col-md-3">{% blocktrans %}Neue {{ v_subscription }}-Grösse{% endblocktrans %}</div>
+                <div class="col-md-9">
+                    ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
+                    Die Änderung tritt voraussichtlich am {{ nes }} in Kraft
+                {% endblocktrans %})<br> {{ subscription.future_size_name }}
+                </div>
+            </div>
+        {% endif %}
+        {% if subscription.state != 'inactive' %}
+            <div class="row mb-3">
+                <div class="offset-3 col-md-9">
+                    <a href="{% if primary %}/my/subscription/change/overview/{{ subscription.id }}/{% endif %}"
+                       class="btn btn-success {% if not primary %}disabled{% endif %}">
+                        {% blocktrans %}{{ v_subscription }}  ändern{% endblocktrans %}</a>
+                    {% if not primary %}
+                        {% trans "Nur der Hauptbezieher kann Änderungen durchführen." %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
+            <div class="row mb-3">
+                <div class="offset-3 col-md-9">
+                    <a href="{% if primary %}/my/subscription/cancel/{{ subscription.id }}/{% endif %}"
+                       class="btn btn-success {% if not primary %}disabled{% endif %}">
+                        {% blocktrans %}{{ v_subscription }} künden{% endblocktrans %}</a>
+                    {% if not primary %}
+                        {% trans "Nur der Hauptabezieher kann künden." %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,27 +1,22 @@
 {% load i18n %}
 {% load config %}
+
 <hr>
-    <div class="jobs">
-        {% block next_jobs %}
-            <h5>
-                {% trans "N‰chste Eins‰tze" %}
-            </h5>
-            {% if next_jobs|length > 0 %}
-                <ul class="unstyled next-jobs">
-                    {% for job in next_jobs %}
-                        <li>
-                            <a href="/my/jobs/{{ job.id }}" {% if job.canceled %}class="canceled"{% endif %}>
-                                {{ job.type.name }}
-                            </a>
-                            <br/>
-                            <div class="time">
-                                {{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                {% trans "Noch f¸r keine Eins‰tzte angemeldet" %}
-            {% endif %}
-        {% endblock %}
-    </div>
+<div class="jobs">
+    {% block next_jobs %}
+        <h5>{% trans "N√§chste Eins√§tze" %}</h5>
+        {% if next_jobs|length > 0 %}
+            <ul class="unstyled next-jobs">
+                {% for job in next_jobs %}
+                    <li><a href="/my/jobs/{{ job.id }}" {% if job.canceled %}
+                           class="canceled"{% endif %}>{{ job.type.name }}</a><br/>
+
+                        <div class="time">{{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}</div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {% trans "Noch f√ºr keine Eins√§tzte angemeldet" %}
+        {% endif %}
+    {% endblock %}
+</div>
