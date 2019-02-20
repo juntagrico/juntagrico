@@ -12,11 +12,11 @@
         <div class="col-md-5">
             {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }} <br>
             {% if job_is_in_past %}
-            (vor {{ job.end_time|timesince }})
+                (vor {{ job.end_time|timesince }})
             {% elif job_is_running %}
-            (seit {{ job.time|timesince }})
+                (seit {{ job.time|timesince }})
             {% else %}
-            (in {{ job.time|timeuntil }})
+                (in {{ job.time|timeuntil }})
             {% endif %}
         </div>
     </div>
@@ -24,48 +24,49 @@
     <div class="row">
         <div class="col-md-3">{% trans "Status" %}:</div>
         <div class="col-md-5">
-        {% spaceless %}
-            {% for i in slotrange %}
-                {% if i < number_of_participants %}
-                    <img class="" src="{% images "single_full" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
-                {% else %}
-                    <img class="" src="{% images "single_empty" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
-                {% endif %}
-            {% endfor %}
-        {% endspaceless %}
+            {% spaceless %}
+                {% for i in slotrange %}
+                    {% if i < number_of_participants %}
+                        <img class="" src="{% images "single_full" %}"
+                             title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    {% else %}
+                        <img class="" src="{% images "single_empty" %}"
+                             title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    {% endif %}
+                {% endfor %}
+            {% endspaceless %}
         </div>
     </div>
     <br/>
     {% if job.multiplier != 1 %}
-    <div class="row">
-        <div class="col-md-3">{% vocabulary "assignment_pl" %}:</div>
-        <div class="col-md-5">
-            {% blocktrans %}
-                Du erhälst für diesen Job das {{ job.multiplier }} fachen an {{ v_assignment_pl }} gutgeschrieben.
-            {% endblocktrans %}
+        <div class="row">
+            <div class="col-md-3">{% vocabulary "assignment_pl" %}:</div>
+            <div class="col-md-5">
+                {% blocktrans trimmed with jm=job.multiplier %}
+                    Du erhälst für diesen Job das {{ jm }} fachen an {{ v_assignment_pl }} gutgeschrieben.
+                {% endblocktrans %}
+            </div>
         </div>
-    </div>
-    <br/>
+        <br/>
     {% endif %}
     {% if job.extras.strip %}
-    <div class="row">
-        <div class="col-md-3">{% trans "Extras" %}:</div>
-        <div class="col-md-5">
-            {% for extra in job.empty_per_job_extras %}
-                {{ extra.extra_type.display_empty|safe }}
-            {% endfor %}
-            {% for extra in job.full_per_job_extras %}
-                {{ extra.extra_type.display_full|safe }}
-            {% endfor %}
+        <div class="row">
+            <div class="col-md-3">{% trans "Extras" %}:</div>
+            <div class="col-md-5">
+                {% for extra in job.empty_per_job_extras %}
+                    {{ extra.extra_type.display_empty|safe }}
+                {% endfor %}
+                {% for extra in job.full_per_job_extras %}
+                    {{ extra.extra_type.display_full|safe }}
+                {% endfor %}
+            </div>
         </div>
-    </div>
-    <br/>
+        <br/>
     {% endif %}
     <div class="row">
         <div class="col-md-3">{% trans "Ort" %}:</div>
         <div class="col-md-5">
-            {{ job.type.location }}
-            (<a href="https://www.google.ch/maps/place/{{ job.type.location }}" target="_blank">Karte</a>)
+            {{ job.type.location }} (<a href="https://www.google.ch/maps/place/{{ job.type.location }}" target="_blank">Karte</a>)
         </div>
     </div>
     <br/>
@@ -75,18 +76,18 @@
     </div>
     <br/>
     {% if admin %}
-    <div class="row">
-        <div class="col-md-3">{% trans "Kontaktieren" %}:</div>
-        <div class="col-md-5">
-            <form id="email-sender" action="/my/mails" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="recipients" id="recipients" value="{{emails}}"/>
-                <input type="hidden" name="recipients_count" id="recipients_count" value="{{number_of_participants}}"/>
-                <button type="submit" class="btn" id="send-email">{% trans "Allen eine Email senden" %}</button>
-            </form>
-            <br/>
+        <div class="row">
+            <div class="col-md-3">{% trans "Kontaktieren" %}:</div>
+            <div class="col-md-5">
+                <form id="email-sender" action="/my/mails" method="POST">
+                    {% csrf_token %} <input type="hidden" name="recipients" id="recipients" value="{{ emails }}"/>
+                    <input type="hidden" name="recipients_count" id="recipients_count"
+                           value="{{ number_of_participants }}"/>
+                    <button type="submit" class="btn" id="send-email">{% trans "Allen eine Email senden" %}</button>
+                </form>
+                <br/>
+            </div>
         </div>
-    </div>
     {% endif %}
     <div class="row">
         <div class="col-md-3">{% trans "Dabei sind" %}:</div>
@@ -99,11 +100,10 @@
                         <li>
                             <a class="job-participant" member-id="{{ participant }}" href="#">
                                 {{ participant }}
-                            </a>
-                            {{extras|safe}}
-							{% if reachable %}
-								&nbsp;<a href="{{url}}"><i class="far fa-envelope"></i></a>
-							{% endif %}
+                            </a> {{ extras|safe }}
+                            {% if reachable %}
+                                &nbsp;<a href="{{ url }}"><i class="far fa-envelope"></i></a>
+                            {% endif %}
                             <br>
                             {% for comment in comments %}
                                 <span class="member-job-comments">{% trans "Hinweis" %}: {{ comment }}</span>
@@ -121,9 +121,8 @@
         <div class="row">
             <div class="col-md-3">{% trans "Ich trage mich ein" %}:</div>
             <div class="col-md-3">
-                <form action=""
-                    method="POST"
-                    onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
+                <form action="" method="POST"
+                      onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}
                         <div>
@@ -148,11 +147,13 @@
                         <input type="hidden" name="jobs" value="1">
                     {% endif %}
                     {% for extra in job.empty_per_job_extras %}
-                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}" /> {{ extra.extra_type.name }}<br/>
-                    {% endfor %} 
+                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                        {{ extra.extra_type.name }}<br/>
+                    {% endfor %}
                     {% for extra in job.per_member_extras %}
-                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"  /> {{ extra.extra_type.name }}<br/>
-                    {% endfor %} 
+                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                        {{ extra.extra_type.name }}<br/>
+                    {% endfor %}
                     <div>
                         <button type="submit" class="btn btn-success">{% trans "Bestätigen" %}</button>
                     </div>

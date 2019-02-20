@@ -10,16 +10,16 @@
     {% vocabulary "subscription" as v_subscription %}
     <div class="row mb-3">
         <div class="col-md-12">
-            {% blocktrans %}
-                Hier kannst du dein {{ v_subscription }} kündigen. Der nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.
+            {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
+                Hier kannst du dein {{ v_subscription }} kündigen. Der nächste
+                reguläre Kündigungstermin ist der {{ ed }}.
             {% endblocktrans %}
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
             <form action="" method="post">
-                {% csrf_token %}
-                <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
+                {% csrf_token %} <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                 <div class="form-group row">
                     <label class="col-md-3" for="message">{% trans "Mitteilung" %}</label>
                     <div class="col-md-9">

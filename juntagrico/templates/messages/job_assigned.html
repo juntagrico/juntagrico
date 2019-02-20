@@ -1,9 +1,9 @@
 {% load i18n %}
 {% load config %}
 <div class="alert alert-success">{% trans "Du hast dich bereits für den Einsatz eingeschrieben." %}
-{% blocktrans count a=amount %}
-Zusammen mit einer weiteren Person.
-{% plural%}
-Zusammen mit {{ a }} weiteren Personen.
-{% endblocktrans %}
+    {% blocktrans trimmed count a=amount %}
+        Zusammen mit einer weiteren Person.
+    {% plural %}
+        Zusammen mit {{ a }} weiteren Personen.
+    {% endblocktrans %}
 </div>

@@ -20,9 +20,9 @@
     <div class="offset-md-2 col-md-8">
         {% if share_error %}
             <div class="alert alert-danger">
-                {% blocktrans %}
-                Du brauchst entweder mehr {{ v_share_pl }} für die von dir gewählte {{ v_subscription }}-Grösse
-                oder eine deiner Eingaben ist keine postitive Zahl.
+                {% blocktrans trimmed %}
+                    Du brauchst entweder mehr {{ v_share_pl }} für die von dir gewählte {{ v_subscription }}-Grösse
+                    oder eine deiner Eingaben ist keine postitive Zahl.
                 {% endblocktrans %}
                 (x &#8713; &#8469;)
             </div>
@@ -30,29 +30,29 @@
         <div class="row mb-4">
             <div class="col-md-12">
                 {% trans "Infos" %}:
-                {% blocktrans %}
-                Um {{ v_member_type }} bei  {{ v_d_enriched_organisation }} zu werden, musst du mindestens
-                1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
-                Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }} zurück
-                erstattet.
+                {% blocktrans trimmed %}
+                    Um {{ v_member_type }} bei  {{ v_d_enriched_organisation }} zu werden, musst du mindestens
+                    1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
+                    Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }} zurück
+                    erstattet.
                 {% endblocktrans %}
                 {% if selected_subscription > -1 %}
-                    {% blocktrans %}
-                    Für die von dir ausgewählte {{ v_subscription }}-Grösse brauchst du insgesamt {{ total_shares }}
-                    {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
+                    {% blocktrans trimmed %}
+                        Für die von dir ausgewählte {{ v_subscription }}-Grösse brauchst du insgesamt {{ total_shares }}
+                        {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                     {% endblocktrans %}
                     <br/>
                 {% else %}
-                    {% blocktrans %}
-                    Als {{ v_member_type }} ohne {{ v_subscription }} benötigst du 1
-                    {{ v_share }}. Du kannst natürlich noch mehr erwerben.
+                    {% blocktrans trimmed %}
+                        Als {{ v_member_type }} ohne {{ v_subscription }} benötigst du 1
+                        {{ v_share }}. Du kannst natürlich noch mehr erwerben.
                     {% endblocktrans %}
                     <br/>
                 {% endif %}
                 {% if has_co_members %}
-                    {% blocktrans %}
-                    Teile die restlichen benötigten {{ required_shares }} {{ v_share_pl }} unter dir und
-                    deinen {{ v_co_member_pl }} auf.
+                    {% blocktrans trimmed %}
+                        Teile die restlichen benötigten {{ required_shares }} {{ v_share_pl }} unter dir und
+                        deinen {{ v_co_member_pl }} auf.
                     {% endblocktrans %}
                 {% endif %}
             </div>
@@ -62,9 +62,7 @@
             {% csrf_token %}
             <div class="form-group row">
                 <label class="col-md-3">
-                    {%  blocktrans %}
-                    Deine {{ v_share_pl }}
-                    {% endblocktrans %}
+                    {% blocktrans %}Deine {{ v_share_pl }}{% endblocktrans %}
                 </label>
                 <div class="col-md-3">
                     <input type="number" name="shares_mainmember" class="form-control" value="{{ total_shares }}"
@@ -72,12 +70,12 @@
                 </div>
                 <label class="col-md-6">
                     {% if mm_requires_one %}
-                        {% blocktrans %}
-                        Du brauchst als Haupt-Bezieher mindestens 1 {{ v_share }}.
+                        {% blocktrans trimmed %}
+                            Du brauchst als Haupt-Bezieher mindestens 1 {{ v_share }}.
                         {% endblocktrans %}
                     {% else %}
-                        {% blocktrans %}
-                        Du hast bereits {{ member.active_shares.count }} {{ v_share_pl }}
+                        {% blocktrans trimmed with msc=member.active_shares.count%}
+                            Du hast bereits {{ msc }} {{ v_share_pl }}
                         {% endblocktrans %}
                     {% endif %}
                 </label>
@@ -89,8 +87,8 @@
                         <input type="number" name="{{ co_member.email }}" class="form-control" value="0" min="0"/>
                     </div>
                     <label class="col-md-6">
-                        {% blocktrans %}
-                        besitzt bereits {{ co_member.active_shares.count }} {{ v_share_pl }}
+                        {% blocktrans trimmed with cac=co_member.active_shares.count %}
+                            besitzt bereits {{ cac }} {{ v_share_pl }}
                         {% endblocktrans %}
                     </label>
                 </div>

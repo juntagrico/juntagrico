@@ -6,12 +6,13 @@
 {% endblock %}
 
 {% block content %}
-        {% for assignment in assignments %}
-            <div class="row align-items-center mt-2">
-                <div class="col-md-3"><a href="/my/jobs/{{ assignment.job.id }}">{{ assignment.job.type }}</a></div>
-                <div class="col-md-3">{{ assignment.job.time|date:"d.m.y H:i" }}-{{ assignment.job.end_time|date:"H:i" }}</div>
-                <div class="col-md-2">{% if assignment.job.type.activityarea.core %}<img alt="Kernbereich" title="Kernbereich" src="{% images "core" %}"/>{% endif %}</div>
-            </div>
-        {% endfor %}
+    {% for assignment in assignments %}
+        <div class="row align-items-center mt-2">
+            <div class="col-md-3"><a href="/my/jobs/{{ assignment.job.id }}">{{ assignment.job.type }}</a></div>
+            <div class="col-md-3">{{ assignment.job.time|date:"d.m.y H:i" }}-{{ assignment.job.end_time|date:"H:i" }}</div>
+            <div class="col-md-2">{% if assignment.job.type.activityarea.core %}
+                <img alt="Kernbereich" title="Kernbereich" src="{% images "core" %}"/>{% endif %}</div>
+        </div>
+    {% endfor %}
     </ul>
 {% endblock %}

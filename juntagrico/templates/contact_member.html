@@ -8,10 +8,9 @@
 {% block content %}
     {% if is_sent %}
         <div class="alert alert-success">
-            {% trans "Nachricht gesandt" %}
-            <a href="/my/jobs/{{ job_id }}/" style="text-decoration: underline">
-                {% trans "zurück zum Einsatz" %}
-            </a>
+            {% trans "Nachricht gesandt" %} <a href="/my/jobs/{{ job_id }}/" style="text-decoration: underline">
+            {% trans "zurück zum Einsatz" %}
+        </a>
         </div>
     {% else %}
         <br/>
@@ -32,7 +31,8 @@
             <div class="form-group row">
                 <label class="col-md-3" for="subject">{% trans "Betreff" %}</label>
                 <div class="col-md-9">
-                    <input type="text" name="subject" id="subject" placeholder="{% trans "Betreff" %} class="form-control"/>
+                    <input type="text" name="subject" id="subject" placeholder="{% trans "Betreff" %} class="
+                           form-control"/>
                 </div>
             </div>
             <div class="form-group row">

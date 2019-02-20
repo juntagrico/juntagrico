@@ -4,23 +4,31 @@
     <thead>
     <tr>
         <th class="align-top"></th>
-        {% if show_core %}<th class="align-top">{% trans "Kern" %}</th>{% endif %}
+        {% if show_core %}
+            <th class="align-top">{% trans "Kern" %}</th>{% endif %}
         <th class="align-top table-search">{% trans "Datum" %}</th>
         <th class="align-top table-search">{% trans "Job" %}</th>
         <th class="align-top">{% trans "Status" %}</th>
-        {% if show_extras %}<th class="align-top">{% trans "Extras" %}</th>{% endif %}
+        {% if show_extras %}
+            <th class="align-top">{% trans "Extras" %}</th>{% endif %}
     </tr>
     </thead>
     <tbody>
     {% for job in jobs %}
-        <tr data-place="{{ job.type.location }}" data-starttime="{{ job.time |date:'H:i' }}" data-endtime="{{ job.end_time |date:'H:i' }}" data-area="{{ job.type.activityarea.name }}">
+        <tr data-place="{{ job.type.location }}" data-starttime="{{ job.time |date:'H:i' }}"
+            data-endtime="{{ job.end_time |date:'H:i' }}" data-area="{{ job.type.activityarea.name }}">
             <td class="details-control"></td>
-            {% if show_core %}<td>{% if job.type.activityarea.core %}<img alt="{% trans "Kernbereich" %}" src="{% images "core" %}"/>{% endif %}</td>{% endif %}
+            {% if show_core %}
+                <td>{% if job.type.activityarea.core %}
+                    <img alt="{% trans "Kernbereich" %}" src="{% images "core" %}"/>{% endif %}</td>{% endif %}
             <td>
                 {{ job.weekday_name }}&nbsp;{{ job.time |date:"d." }}{{ job.time |date:"m." }}{{ job.time |date:"Y" }}</td>
-            <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %} class="canceled"{% endif %}>{{ job.type.get_name }}</a></td>
-            <td><img alt="{% trans "Status" %}: {{ job.get_status_percentage }}" src="{% images job.get_status_percentage %}"/></td>
-            {% if show_extras %}<td>{{ job.extras|safe }}</td>{% endif %}
+            <td><a href="/my/jobs/{{ job.id }}"{% if job.canceled %}
+                   class="canceled"{% endif %}>{{ job.type.get_name }}</a></td>
+            <td><img alt="{% trans "Status" %}: {{ job.get_status_percentage }}"
+                     src="{% images job.get_status_percentage %}"/></td>
+            {% if show_extras %}
+                <td>{{ job.extras|safe }}</td>{% endif %}
         </tr>
     {% endfor %}
     </tbody>

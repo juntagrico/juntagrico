@@ -28,7 +28,8 @@
             <div class="form-group row">
                 <label class="col-md-3" for="subject">{% trans "Betreff" %}</label>
                 <div class="col-md-9">
-                    <input type="text" name="subject" id="subject" placeholder="{% trans "Betreff" %}" class="form-control"/>
+                    <input type="text" name="subject" id="subject" placeholder="{% trans "Betreff" %}"
+                           class="form-control"/>
                 </div>
             </div>
             <div class="form-group row">
@@ -58,17 +59,10 @@
     <br/>
     <div class="row">
         <div class="offset-md-3 col-md-3">
-            {{ organisation_address.name }}
-            <br/>
-            {{ organisation_address.extra }}
-            <br/>
-            {{ organisation_address.street }} {{ organisation_address.number }}
-            <br/>
-            {{ organisation_address.zip }} {{ organisation_address.city }}
-            <br/>
-            {% config "info_email" %}
-            <br/>
-            {% config "organisation_phone" %}
+            {{ organisation_address.name }} <br/> {{ organisation_address.extra }}
+            <br/> {{ organisation_address.street }} {{ organisation_address.number }}
+            <br/> {{ organisation_address.zip }} {{ organisation_address.city }} <br/> {% config "info_email" %}
+            <br/> {% config "organisation_phone" %}
         </div>
     </div>
 {% endblock %}

@@ -2,37 +2,45 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
-    {% vocabulary "depot" as v_depot%}
+    {% vocabulary "depot" as v_depot %}
     <h3>{% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}</h3>
 {% endblock %}
 
 {% block content %}
-    {% vocabulary "depot" as v_depot%}
+    {% vocabulary "depot" as v_depot %}
     {% vocabulary "subscription" as v_subscription %}
     {% if saved %}
         <div class="alert alert-success">
             {% if subscription.state == 'waiting' %}
                 {% blocktrans %}Das {{ v_depot }} wurde geändert.{% endblocktrans %}
             {% else %}
-                {% blocktrans %}
-                    !!!Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}-Listen Generierung. Solange keine Email an {{subscription.primary_member.email}}
-                    mit der Bestätigung für das neue {{ v_depot }} gesendet wurde ist noch das alte {{ v_depot }} {{subscription.depot.name}} aktiv!!!
+                {% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name%}
+                    !!!Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}-Listen Generierung.
+                    Solange keine Email an {{ spe }}
+                    mit der Bestätigung für das neue {{ v_depot }} gesendet wurde ist noch das alte {{ v_depot }}
+                    {{ sde }} aktiv!!!
                 {% endblocktrans %}
             {% endif %}
             <br/>
-            <a href="/my/subscription/detail/{{ subscription.id }}/">{% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}</a>
+            <a href="/my/subscription/detail/{{ subscription.id }}/">
+            {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
+            </a>
         </div>
     {% else %}
         <form method="post" class="createsubscription">
             {% csrf_token %}
             <div class="form-group row">
-                <label class="control-label col-md-3" for="depot">{% blocktrans %}Altes {{ v_depot }}{% endblocktrans %}</label>
+                <label class="control-label col-md-3" for="depot">
+                    {% blocktrans %}Altes {{ v_depot }}{% endblocktrans %}
+                </label>
                 <div class="controls col-md-9">
                     {{ subscription.depot.name }}
                 </div>
             </div>
             <div class="form-group row">
-                <label class="control-label col-md-3" for="depot">{% blocktrans %}Neues {{ v_depot }}{% endblocktrans %}</label>
+                <label class="control-label col-md-3" for="depot">
+                    {% blocktrans %}Neues {{ v_depot }}{% endblocktrans %}
+                </label>
                 <div class="controls col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
@@ -49,11 +57,13 @@
                 </div>
             </div>
             <div class="offset-md-3 form-actions">
-                {% blocktrans %}
-                    Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}listen Generierung. Du wirst darüber informiert wenn dein {{ v_depot }} ändert.
-                {%  endblocktrans %}
+                {% blocktrans trimmed %}
+                    Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}listen Generierung. Du wirst
+                    darüber informiert wenn dein {{ v_depot }} ändert.
+                {% endblocktrans %}
                 <br/><br/>
-                <button type="submit" class="btn btn-success">{% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}</button>
+                <button type="submit" class="btn btn-success">
+                    {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}</button>
             </div>
         </form>
 
@@ -82,6 +92,8 @@
 
 {% endblock %}
 {% block scripts %}
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}"></script>
-<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeDepot.js"></script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}"></script>
+    <script type="text/javascript" src="/static/external/require.min.js"
+            data-main="/static/js/initChangeDepot.js"></script>
 {% endblock %}

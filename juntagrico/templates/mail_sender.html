@@ -32,7 +32,7 @@
         {% if recipients_count > 0 %}
             <div class="form-group row">
                 <label for="recipients" class="col-md-2">{% trans "Empfänger" %} <a id="edit-recipients-action"
-                                                                      href="#">{% trans "bearbeiten" %}</a></label>
+                                                                                    href="#">{% trans "bearbeiten" %}</a></label>
                 <div class="col-md-10 ">
                     <textarea name="recipients" id="recipients"
                               rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}"
@@ -43,7 +43,7 @@
             <div class="form-group row">
                 <label for="sender-email--" class="col-md-2">Empfänger</label>
                 <div class="col-md-10">
-                        {% trans "Wähle mindestens eine der folgenden Gruppen" %}:
+                    {% trans "Wähle mindestens eine der folgenden Gruppen" %}:
                 </div>
             </div>
             <div class="form-group row">
@@ -54,7 +54,7 @@
             </span>
                 </div>
                 <label class="col-md-9" for="allsubscription">
-                    {% blocktrans %}
+                    {% blocktrans trimmed %}
                         {{ v_subscription }}-Bezieher (inkl. {{ v_co_member_pl }}
                     {% endblocktrans %}
                 </label>
@@ -68,7 +68,7 @@
             </span>
                     </div>
                     <label class="col-md-9" for="allshares">
-                        {% blocktrans %}
+                        {% blocktrans trimmed %}
                             Alle mit {{ v_share }}
                         {% endblocktrans %}
                     </label>
@@ -93,8 +93,7 @@
             </span>
                 </div>
                 <label class="col-md-9" for="allsingleemail">
-                    {% trans "Nur an diese Email(s getrennt durch Leerzeichen)" %}:
-                </label>
+                    {% trans "Nur an diese Email(s getrennt durch Leerzeichen)" %}: </label>
             </div>
             <div class="form-group row">
                 <div class=" offset-md-2 col-md-10">
@@ -106,8 +105,8 @@
         <div class="form-group row">
             <label for="subject" class="col-md-2">{% trans "Betreff" %}</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" name="subject" id="subject"
-                       placeholder="Betreff" {% if mail_subject %} value="{{ mail_subject }}" {% endif %}/>
+                <input type="text" class="form-control" name="subject" id="subject" placeholder="Betreff"
+                        {% if mail_subject %} value="{{ mail_subject }}" {% endif %}/>
             </div>
         </div>
         <div class="form-group row">
@@ -115,12 +114,11 @@
             <div class="col-md-10">
                 <textarea name="message" id="message" class="mailer" rows="12"
                           placeholder="{% trans "Nachricht hier eingeben" %}">{% if mail_message %}
-                    {{ mail_message }} {% endif %}</textarea>
-                <input type="hidden" id="textMessage" name="textMessage"/>
+                    {{ mail_message }} {% endif %}</textarea> <input type="hidden" id="textMessage" name="textMessage"/>
             </div>
         </div>
 
-        {% if can_load_templates and templates%}
+        {% if can_load_templates and templates %}
             <div class="form-group row">
                 <label for="templates" class="col-md-2">{% trans "Templates" %}</label>
                 <div class="col-md-10">

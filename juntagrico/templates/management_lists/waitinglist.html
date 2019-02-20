@@ -32,11 +32,12 @@
                 <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
                 <td>
                     <form id="subscription{{ subscription.id }}" method="post" action="/my/mails">
-                        {% csrf_token %}
-                        <input type="hidden" name="recipients" value="{{ subscription.primary_member.email }}"/>
-                        <input type="hidden" name="recipients_count" value="1"/>
-                        <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();"
-                           class="email">{{ subscription.primary_member.email }}</a>
+                        {% csrf_token %} <input type="hidden" name="recipients"
+                                                value="{{ subscription.primary_member.email }}"/> <input type="hidden"
+                                                                                                         name="recipients_count"
+                                                                                                         value="1"/> <a
+                            href="#" onclick="$('#subscription{{ subscription.id }}').submit();"
+                            class="email">{{ subscription.primary_member.email }}</a>
                     </form>
                 </td>
                 <td>{{ subscription.depot.weekday_name }}</td>

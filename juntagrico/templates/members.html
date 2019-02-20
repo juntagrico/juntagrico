@@ -13,12 +13,12 @@
             width: 95%;
         }
     </style>
-        <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="recipients" id="recipients"/>
-        <input type="hidden" name="recipients_count" id="recipients_count"/>
+    <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
+        {% csrf_token %} <input type="hidden" name="recipients" id="recipients"/> <input type="hidden"
+                                                                                         name="recipients_count"
+                                                                                         id="recipients_count"/>
         {% if can_send_mails %}
-        <button type="submit" class="btn btn-success" id="send-email">{% trans "Email senden" %}</button>
+            <button type="submit" class="btn btn-success" id="send-email">{% trans "Email senden" %}</button>
         {% endif %}
     </form>
     <div id="filter">
@@ -27,7 +27,8 @@
             <tr>
                 <th>{% trans "Name" %}</th>
                 <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}<th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
+                {% if show_core %}
+                    <th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
                 <th>{% trans "Taetigkeitsbereiche" %}</th>
                 <th>{% vocabulary "depot" %}</th>
                 <th>{% trans "Email" %}</th>
@@ -39,7 +40,8 @@
             <tr>
                 <th>{% trans "Name" %}</th>
                 <th>{% vocabulary "assignment_pl" %}</th>
-                {% if show_core %}<th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
+                {% if show_core %}
+                    <th>{% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}</th>{% endif %}
                 <th>{% trans "Taetigkeitsbereiche" %}</th>
                 <th>{% vocabulary "depot" %}</th>
                 <th>{% trans "Email" %}</th>
@@ -52,16 +54,17 @@
             {% for member in members %}
                 <tr>
                     <td>
-                    {% if operation_group %}
-                    <a href="/impersonate/{{ member.user.id}}" target="__blank">
-                    {% endif %}
-                    {{ member.first_name }} {{ member.last_name }}                    
-                    {% if operation_group %}
-                    </a>
-                    {% endif %}
+                        {% if operation_group %}
+                            <a href="/impersonate/{{ member.user.id }}" target="__blank">
+                        {% endif %}
+                        {{ member.first_name }} {{ member.last_name }}
+                        {% if operation_group %}
+                            </a>
+                        {% endif %}
                     </td>
                     <td>{{ member.assignment_count }}</td>
-                    {% if show_core %}<td>{{ member.core_assignment_count }}</td>{% endif %}
+                    {% if show_core %}
+                        <td>{{ member.core_assignment_count }}</td>{% endif %}
                     <td>
                         {% for area in member.areas.all %}
                             {{ area.name }},
@@ -74,11 +77,11 @@
                     <td>{{ member.phone }}</td>
                     <td>{{ member.mobile_phone }}</td>
                     <td>{% if member.subscription != None and member.subscription.active %}
-			{{ member.subscription.overview }}
-			{% else %}
-			Kein {% vocabulary "subscription" %}
-			{% endif %}
-		</td>
+                        {{ member.subscription.overview }}
+                    {% else %}
+                        Kein {% vocabulary "subscription" %}
+                    {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -86,8 +89,8 @@
     </div>
     <br/><br/>
     <script>
-            var member_string = "{% vocabulary "member" %}";
-            var members_string = "{% vocabulary "member_pl" %}";            
+        var member_string = "{% vocabulary "member" %}";
+        var members_string = "{% vocabulary "member_pl" %}";
     </script>
 {% endblock %}
 

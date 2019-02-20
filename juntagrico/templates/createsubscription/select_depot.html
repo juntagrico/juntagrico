@@ -9,6 +9,7 @@
 
 {% block allcontent %}
     {% vocabulary "subscription" % as v_subscription %}
+    {% vocabulary "depot" as v_depot %}
     <div class="offset-md-2 col-md-8">
 
         <form action="" method="post">
@@ -26,9 +27,7 @@
             </div>
             <div id="depot_container" class="form-group row">
                 <label for="depot" class="offset-md-3 col-md-9">
-                    {% blocktrans %}
-                    Wähle einen {{ v_subscription }}-Abholort aus.
-                    {% endblocktrans %}
+                    {% blocktrans %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
                 </label>
             </div>
             <div id="depot_container" class="form-group row">

@@ -42,8 +42,7 @@
                     <input type="number" name="extra{{ type.id }}" class="form-control" value="0" min="0"/>
                 </div>
                 <div class="col-md-10">
-                    {{ type.name }}<br/>
-                    {{ type.description }}<br/>
+                    {{ type.name }}<br/> {{ type.description }}<br/>
                     {% for period in type.periods.all %}
                         {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
                         {{ period.price }} {% config "currency" %}<br/>
@@ -63,5 +62,6 @@
 
 {% block scripts %}
     <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js"
+            data-main="/static/js/initChangeExtra.js"></script>
 {% endblock %}

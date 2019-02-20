@@ -14,12 +14,12 @@
             <div class="row co-md-12">
 
                 {% trans "Info" %}:
-                {% blocktrans %}
-                Normalerweise ist der {{ v_subscription }}-Start der Start eines Geschäftsjahres.
-                Das nächste Startdatum wäre der {{ start_date |date:"d.m.Y" }}.
-                Es kann jedoch vorkommen, dass unter dem Jahr 1 {{ v_subscription }} frei wird. Würdest du
-                gerne schon früher einsteigen falls 1 {{ v_subscription }} frei wird, dann kannst du das
-                Startdatum unten anpassen.
+                {% blocktrans trimmed with sd=start_date|date:"d.m.Y" %}
+                    Normalerweise ist der {{ v_subscription }}-Start der Start eines Geschäftsjahres. Das nächste
+                    Startdatum wäre der {{ sd }}.
+                    Es kann jedoch vorkommen, dass unter dem Jahr 1 {{ v_subscription }} frei wird. Würdest du
+                    gerne schon früher einsteigen falls 1 {{ v_subscription }} frei wird, dann kannst du das
+                    Startdatum unten anpassen.
                 {% endblocktrans %}
             </div>
         </div>
@@ -31,9 +31,9 @@
                 <div class="col-md-9">
                     <label>
                         {{ subscriptionform.start_date }}
-                        {% blocktrans %}
-                        Gilt nur insofern 1 {{ v_subscription }}
-                        zum gewünschten Datum frei ist.
+                        {% blocktrans trimmed %}
+                            Gilt nur insofern 1 {{ v_subscription }}
+                            zum gewünschten Datum frei ist.
                         {% endblocktrans %}
                     </label>
                     {% if subscriptionform.start_date.errors %}
@@ -44,8 +44,8 @@
 
             <div class="form-actions row">
                 <div class="offset-md-3 col-md-9">
-                <button type="submit" class="btn btn-success">{% trans "Weiter" %}</button>
-                <a href="/my/create/subscription/cancel" class="btn">{% trans "Abbrechen" %}</a>
+                    <button type="submit" class="btn btn-success">{% trans "Weiter" %}</button>
+                    <a href="/my/create/subscription/cancel" class="btn">{% trans "Abbrechen" %}</a>
                 </div>
             </div>
         </form>

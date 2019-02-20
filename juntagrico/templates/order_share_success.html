@@ -10,24 +10,18 @@
     </div>
     <div class="row mb-4">
         <div class="col-md-12">
-            {% config "organisation_address" as addr %}
-            {{ addr.name }}<br/>
+            {% config "organisation_address" as addr %} {{ addr.name }}<br/>
             {% if addr.extra %}
                 {{ addr.extra }}<br/>
             {% endif %}
-            {{ addr.street }} {{ addr.number }}<br/>
-            {{ addr.zip }} {{ addr.city }}<br/>
-            {% config "organisation_bank_connection" as bank %}
-            {{ bank.NAME }}<br/>
-            Postkonto-Nummer: {{ bank.PC }}<br/>
-            IBAN: {{ bank.IBAN }}<br/>
-            BIC: {{ bank.BIC }}
+            {{ addr.street }} {{ addr.number }}<br/> {{ addr.zip }} {{ addr.city }}<br/> {% config "organisation_bank_connection" as bank %} {{ bank.NAME }}<br/>
+            Postkonto-Nummer: {{ bank.PC }}<br/> IBAN: {{ bank.IBAN }}<br/> BIC: {{ bank.BIC }}
         </div>
     </div>
     <div class="row mb-4">
         <div class="col-md-12">
-            {% trans "Solltest du Fragen dazu haben sende eine Email an" %}
-            <a href="mailto:{% config "info_email" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">{% config "info_email" %}</a>.
+            {% trans "Solltest du Fragen dazu haben sende eine Email an" %} <a
+                href="mailto:{% config "info_email" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">{% config "info_email" %}</a>.
         </div>
     </div>
     <div class="row mb-4">

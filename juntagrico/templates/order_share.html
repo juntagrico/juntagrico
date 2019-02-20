@@ -8,13 +8,12 @@
 {% block content %}
     <div class="row mb-4">
         <div class="col-md-12">
-            {%  trans "Bestelle hier mehr Anteislscheine." %}
+            {% trans "Bestelle hier mehr Anteislscheine." %}
         </div>
     </div>
 
     <form action="" method="post">
-        <input type="hidden" value="{{ referer }}" name="referer"/>
-        {% csrf_token %}
+        <input type="hidden" value="{{ referer }}" name="referer"/> {% csrf_token %}
         <div class="form-group row align-items-center h-100">
             <label class="col-md-3">{% vocabulary "share_pl" %}</label>
 
@@ -23,13 +22,13 @@
             </div>
             <div class="col-md-7">
                 {% if shareerror %}
-                    <div class="alert alert-danger">{%  trans "Deine Eingabe ist ungültig" %}</div>
+                    <div class="alert alert-danger">{% trans "Deine Eingabe ist ungültig" %}</div>
                 {% endif %}
             </div>
         </div>
         <div class="form-group row">
             <div class="offset-md-3 col-md-9">
-                <button type="submit" class="btn btn-success">{%  trans "bestellen" %}</button>
+                <button type="submit" class="btn btn-success">{% trans "bestellen" %}</button>
             </div>
     </form>
 

@@ -6,8 +6,8 @@
     <h3>{% trans "Alle Einsätze im Überblick" %}</h3>
 {% endblock %}
 {% block content %}
-    <div id="jobs">        
-    {% include "snippet_jobs.html" %}
+    <div id="jobs">
+        {% include "snippet_jobs.html" %}
     </div>
     <br/><br/>
     {% if show_all %}
@@ -16,6 +16,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript" src="/static/external/datatables.min.js"></script>
-<script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initJobs.js"></script>
+    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initJobs.js"></script>
 {% endblock %}

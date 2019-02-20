@@ -3,10 +3,10 @@
 {% vocabulary "share" as v_share %}
 {% vocabulary "share_pl" as v_share_pl %}
 <div class="alert alert-warning">
-    {% blocktrans count a=amount %}
-    unbezahlter {{ v_share }}
-    {% plural%}
-    unbezahlte {{ v_share_pl }}
+    {% blocktrans trimmed count a=amount %}
+        unbezahlter {{ v_share }}
+    {% plural %}
+        unbezahlte {{ v_share_pl }}
     {% endblocktrans %}
     Finde <a href="/my/info/unpaidshares" class="alert-link">hier</a> mehr dazu.
 </div>

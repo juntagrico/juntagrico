@@ -10,11 +10,19 @@
 {% endblock %}
 
 {% block allcontent %}
+    {% config "info_email" as c_info_email %}
+    {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "member_pl" as v_member_pl %}
+    {% vocabulary "member_type_pl" as v_member_type_pl %}
+    {% vocabulary "co_member" as v_co_member %}
+    {% vocabulary "co_member_pl" as v_co_member_pl %}
     <div class="offset-md-2 col-md-8">
         <br/>
-		{% blocktrans %}Bei bestehenden {{ v_member_pl }} reicht es, die Emailadresse einzutragen. Alle anderen Felder werden in diesem Falle ignoriert.{% endblocktrans %}
-        <form action="" method="post"id="new_member">
+        {% blocktrans trimmed%}
+            Bei bestehenden {{ v_member_pl }} reicht es, die Emailadresse einzutragen. Alle anderen Felder
+            werden in diesem Falle ignoriert.
+        {% endblocktrans %}
+        <form action="" method="post" id="new_member">
             {% csrf_token %}
             <div class="form-group row {% if memberform.last_name.errors %}error{% endif %}">
                 <label class="col-md-3 control-label" for="id_last_name">{% trans "Name" %} *</label>
@@ -50,7 +58,8 @@
             </div>
 
             <div class="form-group row {% if memberform.addr_zipcode.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }} *</label>
+                <label class="col-md-3 control-label" for="id_addr_zipcode">{{ memberform.addr_zipcode.label }}
+                    *</label>
 
                 <div class="controls col-md-9">
                     {{ memberform.addr_zipcode }}
@@ -61,7 +70,8 @@
             </div>
 
             <div class="form-group row {% if memberform.addr_location.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_addr_location">{{ memberform.addr_location.label }} *</label>
+                <label class="col-md-3 control-label" for="id_addr_location">{{ memberform.addr_location.label }}
+                    *</label>
 
                 <div class="controls col-md-9">
                     {{ memberform.addr_location }}
@@ -83,7 +93,8 @@
             </div>
 
             <div class="form-group row {% if memberform.mobile_phone.errors %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_mobile_phone">{{ memberform.mobile_phone.label }} &nbsp;</label>
+                <label class="col-md-3 control-label" for="id_mobile_phone">{{ memberform.mobile_phone.label }}
+                    &nbsp;</label>
 
                 <div class="controls col-md-9">
                     {{ memberform.mobile_phone }}
@@ -116,30 +127,35 @@
                     {% endif %}
                 </div>
             </div>
-            {%  config "enable_shares" as enable_shares %}
-            {%  if enable_shares %}
-            <div class="form-group row {% if shareeerror %}error{% endif %}">
-                <label class="col-md-3 control-label" for="id_shares">{% vocabulary "share_pl" %}</label>
+            {% config "enable_shares" as enable_shares %}
+            {% if enable_shares %}
+                <div class="form-group row {% if shareeerror %}error{% endif %}">
+                    <label class="col-md-3 control-label" for="id_shares">{% vocabulary "share_pl" %}</label>
 
-                <div class="controls col-md-2">
-                    <input type="text" class="form-control" name="shares" id="id_shares" value="{{ shares }}">
+                    <div class="controls col-md-2">
+                        <input type="text" class="form-control" name="shares" id="id_shares" value="{{ shares }}">
 
-                    {% if scheineerror %}
-                        <span class="help-inline">{% trans "Bitte positive Zahl eingeben" %}</span>
-                    {% endif %}
+                        {% if scheineerror %}
+                            <span class="help-inline">{% trans "Bitte positive Zahl eingeben" %}</span>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
             {% endif %}
             {% if memberexists and memberblocked %}
                 <div class="alert alert-danger">
-                    {% blocktrans %}Diese Email-Adresse existiert bereits im System und ist bereits bei einem {{ v_subscription }} dabei. Bitte meldet euch bei <a href="mailto:{% config "info_email" %}">{% config "info_email" %}</a>, wenn ihr bestehende {% vocabulary "member_type_pl" %} in euer{% vocabulary "subscription" %} aufnehmen möchtet.{% endblocktrans %}
+                    {% blocktrans trimmed %}
+                        Die Person mit dieser Email-Adresse ist bereits aktive {{ v_subscription }}-BezierIn.
+                        Bitte meldet euch bei <a href="mailto:{{ c_info_email }}">{{ c_info_email }}</a>, wenn ihr
+                        bestehende {{ v_member_type_pl }} als {{ v_co_member_pl }} hinzufügen möchtet.
+                    {% endblocktrans %}
                 </div>
             {% endif %}
             <div class="form-actions row">
                 <div class="offset-md-3 col-md-9">
-                <button type="submit" class="btn btn-success" formnovalidate>{% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}</button>
-                <a href="/my/subscription/{{subscription_id}}" class="btn">{% trans "Abbrechen" %}</a>
-            </div>
+                    <button type="submit" class="btn btn-success" formnovalidate>
+                        {% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}</button>
+                    <a href="/my/subscription/{{ subscription_id }}" class="btn">{% trans "Abbrechen" %}</a>
+                </div>
             </div>
         </form>
     </div>

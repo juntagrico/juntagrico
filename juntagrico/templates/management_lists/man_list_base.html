@@ -15,32 +15,32 @@
         }
     </style>
     {% if can_change_date %}
-    <form action="/my/changedate" method="POST">
-    {% csrf_token %}
-        <div class="row mb-3">
-            <div class="col-md-3">
-                <input name="date" data-toggle="datepicker">
+        <form action="/my/changedate" method="POST">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <input name="date" data-toggle="datepicker">
+                </div>
+                <div class="col-md-6">
+                    {% trans "Lege das Datum für die Änderung fest." %}
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success">{% trans "ändern" %}</button>
+                </div>
             </div>
-            <div class="col-md-6">
-                {% trans "Lege das Datum für die Änderung fest." %}
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-success">{% trans "ändern" %}</button>
-            </div>
-        </div>
-    </form>
+        </form>
     {% else %}
         <div class="alert alert-warning">
-                {% trans "Das Änderungsdatum ist auf {{ change_date }} gesetzt." %}
-                <a href="/my/changedate/stop">{% trans "Beende dies hier" %}</a>.
-                </div>
+            {% trans "Das Änderungsdatum ist auf {{ change_date }} gesetzt." %} <a
+                href="/my/changedate/stop">{% trans "Beende dies hier" %}</a>.
+        </div>
     {% endif %}
     <div class="row">
         <div class="col-md-12">
             <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="recipients" id="recipients"/>
-                <input type="hidden" name="recipients_count" id="recipients_count"/>
+                {% csrf_token %} <input type="hidden" name="recipients" id="recipients"/> <input type="hidden"
+                                                                                                 name="recipients_count"
+                                                                                                 id="recipients_count"/>
                 {% if can_send_mails %}
                     <button type="submit" class="btn btn-success" id="send-email">{% trans "Email senden" %}</button>
                 {% endif %}
@@ -64,6 +64,5 @@
 {% block scripts %}
     <script type="text/javascript" src="/static/external/datatables.min.js"></script>
     <script type="text/javascript" src="/static/external/datepicker/datepicker.min.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"
-            data-main="/static/js/initManList.js"></script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initManList.js"></script>
 {% endblock %}
