@@ -1,19 +1,25 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
-Nicht vergessen:
+{% config "organisation_name" as c_organisation_name %}
+{% trans "Nicht vergessen" %}:
 
-Am {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} findet dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.get_name }}" statt.
+{% blocktrans trimmed with jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
+Am {{ jt }}-{{ jet }} findet dein {{ c }}-Arbeitseinsatz "{{ jtg }}" statt.
+{% endblocktrans %}
 
-Details:
+{% trans "Details" %}:
 
-Job:             {{ job.type.description }}
-Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-Teilnehmer:        {{ participants }}
-Verantwortlich:  {{ contact }}
-
+{% trans "Job" %}:             {{ job.type.description }}
+{% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+{% trans "Teilnehmer" %}:        {{ participants }}
+{% trans "Verantwortlich" %}:  {{ contact }}
+{% blocktrans trimmed %}
 Wir freuen uns, dich zu sehen und zählen auf dich!
+{% endblocktrans %}
 
-Herzlich grüsst,
-dein {% config "organisation_name" %}-Team
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}

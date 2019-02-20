@@ -1,10 +1,12 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
-Klicke bitte auf den Bestätigungslink:
-Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
+{% config "organisation_name" as c_organisation_name %}
+{% blocktrans %}Klicke bitte auf den Bestätigungslink:
+Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}{% endblocktrans %}
 
-
-Herzlich grüsst,
-die {% config "organisation_name" %}-Betriebsgruppe
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}
