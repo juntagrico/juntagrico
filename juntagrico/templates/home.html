@@ -1,36 +1,42 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
-
 {% block content %}
-    <h3>{% trans "Aktuelle Arbeitseinsätze" %}</h3>
+    <h3>
+        {% trans "Aktuelle Arbeitseinsätze" %}
+    </h3>
     <div class="row mb-3">
         <div class="col-md-12">
-
             {% include "snippet_jobs.html" %}
         </div>
     </div>
     <div class="row mb-5">
         <div class="col-md-12">
-            <a href="/my/assignments">{% trans "Hier alle Arbeitseinsätze anzeigen" %}</a>
+            <a href="/my/assignments">
+                {% trans "Hier alle Arbeitseinsätze anzeigen" %}
+            </a>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-            <h4>{% trans "Zu den Kalendern der einzelnen Tätigkeitsbereiche" %}</h4>
+            <h4>
+                {% trans "Zu den Kalendern der einzelnen Tätigkeitsbereiche" %}
+            </h4>
         </div>
     </div>
     {% for team in teams %}
         <div class="row mb-1">
-            <div class="col-md-12"><a href="/my/teams/{{ team.id }}"
-                                      class="{% if team.core %}core{% endif %}">{{ team.name }}</a>
+            <div class="col-md-12">
+                <a href="/my/teams/{{ team.id }}"class="{% if team.core %}core{% endif %}">
+                    {{ team.name }}
+                </a>
             </div>
         </div>
     {% endfor %}
 {% endblock %}
-
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"
-            data-main="/static/js/initHomeJobs.js"></script>
+    <script type="text/javascript" src="/static/external/datatables.min.js">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initHomeJobs.js">
+    </script>
 {% endblock %}

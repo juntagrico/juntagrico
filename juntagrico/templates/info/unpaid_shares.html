@@ -1,31 +1,40 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
-
 {% block content %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% blocktrans trimmed %}
-        Im System sind gewisse deiner {{ v_share_pl }} als nicht bezahlt markiert. Solltest du die Zahlung bereits
-        vorgenommen haben wurde sie noch nicht ins System übertragen.
-        Dies kann einige Tage dauern. Falls du die {{ v_share_pl }} noch nicht bezahlt hast benutze diese Bankverbindung
+    Im System sind gewisse deiner {{ v_share_pl }} als nicht bezahlt markiert. Solltest du die Zahlung bereits
+    vorgenommen haben wurde sie noch nicht ins System übertragen.
+    Dies kann einige Tage dauern. Falls du die {{ v_share_pl }} noch nicht bezahlt hast benutze diese Bankverbindung
     {% endblocktrans %}
     <br/>
     {% config "organisation_address" as addr %}
-    {{ addr.name }}<br/>
+    {{ addr.name }}
+    <br/>
     {% if addr.extra %}
-        {{ addr.extra }}<br/>
+        {{ addr.extra }}
+        <br/>
     {% endif %}
-    {{ addr.street }} {{ addr.number }}<br/>
-    {{ addr.zip }} {{ addr.city }}<br/>
+    {{ addr.street }} {{ addr.number }}
+    <br/>
+    {{ addr.zip }} {{ addr.city }}
+    <br/>
     {% config "organisation_bank_connection" as bank %}
-    {{ bank.NAME }}<br/>
-    {% trans "Postkonto-Nummer" %}: {{ bank.PC }}<br/>
-    {% trans "IBAN" %}: {{ bank.IBAN }}<br/>
-    {% trans "BIC" %}: {{ bank.BIC }}<br/><br/>
+    {{ bank.NAME }}
+    <br/>
+    {% trans "Postkonto-Nummer" %}: {{ bank.PC }}
+    <br/>
+    {% trans "IBAN" %}: {{ bank.IBAN }}
+    <br/>
+    {% trans "BIC" %}: {{ bank.BIC }}
+    <br/>
+    <br/>
     {% trans "Solltest du Fragen dazu haben sende eine Email an" %}
-    <a href="mailto:{% config "info_email" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">{% config "info_email" %}</a>
+    <a href="mailto:{% config "info_email" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">
+        {% config "info_email" %}
+    </a>
     .
 {% endblock %}
-
 {% block scripts %}
 {% endblock %}

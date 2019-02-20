@@ -2,63 +2,88 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>{% trans "Mitarbeit" %}</h3>
+    <h3>
+        {% trans "Mitarbeit" %}
+    </h3>
 {% endblock %}
-
 {% block content %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     <div class="row">
         <div class="col-md-12">
             {% blocktrans trimmed%}
-                Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
-                Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
+            Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
+            Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
             {% endblocktrans %}
-            <br/><br/> <a href="/my/assignments">{% trans "Hier gehts zu den Arbeitseinsätzen" %}</a><br/><br/> <a
-                href="/my/pastjobs">{% trans "Zu deinen bisherigen Einsätzen" %}</a><br/><br/> {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
-            <br/><br/> {% config "activity_area_info" as activity_area_info %}
+            <br/>
+            <br/>
+            <a href="/my/assignments">
+                {% trans "Hier gehts zu den Arbeitseinsätzen" %}
+            </a>
+            <br/>
+            <br/>
+            <ahref="/my/pastjobs">
+                {% trans "Zu deinen bisherigen Einsätzen" %}
+            </a>
+            <br/>
+            <br/>
+            {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
+            <br/>
+            <br/>
+            {% config "activity_area_info" as activity_area_info %}
             {% if activity_area_info.strip %}
                 {% trans "Infos zu den Tätigkeitsbereichen erhältst du im" %}
-                <a target="_blank" href="{{ activity_area_info }}">{% trans "Infoblatt" %}</a>.
+                <a target="_blank" href="{{ activity_area_info }}">
+                    {% trans "Infoblatt" %}
+                </a>
+                .
             {% endif %}
-            <br/><br/>
+            <br/>
+            <br/>
             <form action="/my/participation" method="post">
                 {% csrf_token %}
                 {% if show_core %}
                     <div class="row">
                         <div class="col-md-4">
-                            {% trans "Kernbereiche " %}: <img alt="core_area" title="core_area"
-                                                              src="{% images "core" %}"/>
+                            {% trans "Kernbereiche " %}:
+                            <img alt="core_area" title="core_area"src="{% images "core" %}"/>
                         </div>
                         <div class="col-md-4">
                             {% trans "Koordiniert von" %}:
                         </div>
                     </div>
-                    <div class="row separator"></div>
+                    <div class="row separator">
+                    </div>
                     {% for area in areas %}
                         {% if area.core %}
                             <div class="row align-items-center h-100">
                                 <div class="col-md-1">
-                            <span class="switch switch-sm">
-                              <input type="checkbox" class="switch" id="area{{ area.id }}" name="area{{ area.id }}"
-                                     {% if area.checked %}checked="checked"{% endif %}/>
-                              <label for="area{{ area.id }}"></label>
-                            </span>
+                                    <span class="switch switch-sm">
+                                        <input type="checkbox" class="switch" id="area{{ area.id }}" name="area{{ area.id }}"{% if area.checked %}checked="checked"{% endif %}/>
+                                        <label for="area{{ area.id }}">
+                                        </label>
+                                    </span>
                                 </div>
                                 <div class="col-md-3">
                                     {{ area.name }}
                                 </div>
                                 <div class="col-md-7">
-                                    {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
+                                    {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
+                                    <br/>
                                     {% if area.email is not None %}
-                                        <a href="mailto:{{ area.email }}">{{ area.email }}</a>
+                                        <a href="mailto:{{ area.email }}">
+                                            {{ area.email }}
+                                        </a>
                                     {% else %}
-                                        <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
+                                        <a href="mailto:{{ area.coordinator.email }}">
+                                            {{ area.coordinator.email }}
+                                        </a>
                                     {% endif %}
                                 </div>
                             </div>
                         {% endif %}
                     {% endfor %}
-                    <br/>{% endif %}
+                    <br/>
+                {% endif %}
                 <div class="row">
                     <div class="col-md-4">
                         {% trans "Weitere Bereiche" %}:
@@ -67,26 +92,32 @@
                         {% trans "Koordiniert von" %}:
                     </div>
                 </div>
-                <div class="row separator"></div>
+                <div class="row separator">
+                </div>
                 {% for area in areas %}
                     {% if not area.core %}
                         <div class="row align-items-center h-100">
                             <div class="col-md-1">
-                                    <span class="switch switch-sm">
-                                    <input type="checkbox" class="switch" id="area{{ area.id }}"
-                                           name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}/>
-                                        <label for="area{{ area.id }}"></label>
-                                    </span>
+                                <span class="switch switch-sm">
+                                    <input type="checkbox" class="switch" id="area{{ area.id }}"name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}/>
+                                    <label for="area{{ area.id }}">
+                                    </label>
+                                </span>
                             </div>
                             <div class="col-md-3">
                                 {{ area.name }}
                             </div>
                             <div class="col-md-7">
-                                {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}<br/>
+                                {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
+                                <br/>
                                 {% if area.email is not None %}
-                                    <a href="mailto:{{ area.email }}">{{ area.email }}</a>
+                                    <a href="mailto:{{ area.email }}">
+                                        {{ area.email }}
+                                    </a>
                                 {% else %}
-                                    <a href="mailto:{{ area.coordinator.email }}">{{ area.coordinator.email }}</a>
+                                    <a href="mailto:{{ area.coordinator.email }}">
+                                        {{ area.coordinator.email }}
+                                    </a>
                                 {% endif %}
                             </div>
                         </div>
@@ -94,10 +125,14 @@
                 {% endfor %}
                 {% if success %}
                     <br/>
-                    <div class="alert alert-success">{% trans "Tätigkeitsbereiche erfolgreich geändert" %}</div>
+                    <div class="alert alert-success">
+                        {% trans "Tätigkeitsbereiche erfolgreich geändert" %}
+                    </div>
                 {% endif %}
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-success">{% trans "Tätigkeitsbereiche ändern" %}</button>
+                    <button type="submit" class="btn btn-success">
+                        {% trans "Tätigkeitsbereiche ändern" %}
+                    </button>
                 </div>
             </form>
         </div>

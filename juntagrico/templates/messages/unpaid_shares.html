@@ -4,9 +4,13 @@
 {% vocabulary "share_pl" as v_share_pl %}
 <div class="alert alert-warning">
     {% blocktrans trimmed count a=amount %}
-        unbezahlter {{ v_share }}
+    unbezahlter {{ v_share }}
     {% plural %}
-        unbezahlte {{ v_share_pl }}
+    unbezahlte {{ v_share_pl }}
     {% endblocktrans %}
-    Finde <a href="/my/info/unpaidshares" class="alert-link">hier</a> mehr dazu.
+    Finde
+    <a href="/my/info/unpaidshares" class="alert-link">
+        hier
+    </a>
+    mehr dazu.
 </div>
