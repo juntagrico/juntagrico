@@ -92,11 +92,11 @@ def home(request):
 
     next_jobs = set(JobDao.get_current_jobs()[:7])
     pinned_jobs = set(JobDao.get_pinned_jobs())
-    next_pormotedjobs = set(JobDao.get_promoted_jobs())
+    next_promotedjobs = set(JobDao.get_promoted_jobs())
     renderdict = get_menu_dict(request)
     renderdict['messages'].extend(home_messages(request))
     renderdict.update({
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_pormotedjobs), key=lambda job: job.time),
+        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda job: job.time),
         'teams': ActivityAreaDao.all_visible_areas_ordered(),
     })
 
