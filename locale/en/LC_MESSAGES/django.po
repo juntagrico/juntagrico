@@ -644,6 +644,7 @@ msgstr ""
 #: .\juntagrico\entity\member.py:100 .\juntagrico\entity\subs.py:263
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
+
 msgstr ""
 
 #: .\juntagrico\entity\share.py:12
@@ -4178,4 +4179,5 @@ msgstr ""
 
 #: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:408
 msgid "Connect, get help, or contribute"
+
 msgstr ""
