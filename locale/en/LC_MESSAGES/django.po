@@ -3,21 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-26 14:18+0100\n"
-"PO-Revision-Date: 2019-02-13 08:17+0000\n"
-"Last-Translator: Weblate Admin <admin@admin.admin>\n"
-"Language-Team: English <http://weblate.juntagrico.science/projects/"
-"juntagrico/juntagrico/en/>\n"
-"Language: en\n"
+"POT-Creation-Date: 2019-02-26 14:40+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:18
 msgid "Wochentage"
@@ -32,10 +31,8 @@ msgid "Zeit"
 msgstr ""
 
 #: .\juntagrico\admins\forms\job_copy_form.py:24
-#, fuzzy
-#| msgid "Aktivierungssdatum"
 msgid "Anfangsdatum"
-msgstr "activation date"
+msgstr ""
 
 #: .\juntagrico\admins\forms\job_copy_form.py:26
 msgid "Enddatum"
@@ -164,34 +161,34 @@ msgstr ""
 
 #: .\juntagrico\entity\billing.py:16
 msgid "Verrechenbare Einheit"
-msgstr "Billable Unit"
+msgstr ""
 
 #: .\juntagrico\entity\billing.py:17
 msgid "Verrechenbare Einheiten"
-msgstr "Billable Units"
+msgstr ""
 
 #: .\juntagrico\entity\billing.py:27
 msgid "bezahlt"
-msgstr "paid"
+msgstr ""
 
 #: .\juntagrico\entity\billing.py:29 .\juntagrico\entity\extrasubs.py:62
 #: .\juntagrico\entity\subs.py:38
 msgid "Aktivierungssdatum"
-msgstr "activation date"
+msgstr ""
 
 #: .\juntagrico\entity\billing.py:31
 #: .\juntagrico\templates\mails\bill_extrasub.txt:15
 #: .\juntagrico\templates\mails\bill_share.txt:15
 #: .\juntagrico\templates\mails\bill_sub.txt:15
 msgid "Referenznummer"
-msgstr "reference number"
+msgstr ""
 
 #: .\juntagrico\entity\billing.py:32 .\juntagrico\entity\billing.py:50
 #: .\juntagrico\templates\mails\bill_extrasub.txt:14
 #: .\juntagrico\templates\mails\bill_share.txt:14
 #: .\juntagrico\templates\mails\bill_sub.txt:14
 msgid "Betrag"
-msgstr "amount"
+msgstr ""
 
 #: .\juntagrico\entity\billing.py:38
 msgid "Rechnung"
@@ -644,7 +641,6 @@ msgstr ""
 #: .\juntagrico\entity\member.py:100 .\juntagrico\entity\subs.py:263
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
-
 msgstr ""
 
 #: .\juntagrico\entity\share.py:12
@@ -1144,10 +1140,8 @@ msgstr ""
 #: .\juntagrico\templates\contact_member.html:39
 #: .\juntagrico\templates\contact_member.html:42
 #: .\juntagrico\templates\mail_sender.html:125
-#, fuzzy
-#| msgid "Betrag"
 msgid "Betreff"
-msgstr "amount"
+msgstr ""
 
 #: .\juntagrico\templates\contact.html:59
 #: .\juntagrico\templates\contact_member.html:59
@@ -2814,10 +2808,8 @@ msgstr ""
 
 #: .\juntagrico\templates\subscriptions.html:54
 #: .\juntagrico\templates\subscriptions.html:87
-#, fuzzy
-#| msgid "Aktivierungssdatum"
 msgid "Aktivierungsdatum"
-msgstr "activation date"
+msgstr ""
 
 #: .\juntagrico\templates\subscriptions.html:57
 #: .\juntagrico\templates\subscriptions.html:90
@@ -4179,5 +4171,4 @@ msgstr ""
 
 #: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:408
 msgid "Connect, get help, or contribute"
-
 msgstr ""
