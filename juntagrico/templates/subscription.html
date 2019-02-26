@@ -184,7 +184,7 @@
                         {% trans "Neue Zusatzabos" %}
                     </div>
                     <div class="col-md-9">
-                        ({% blocktrans trimmed with nes=next_extra_subscription_date |date:"d.m.Y" %}
+                        ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
                         Die Änderungen treten voraussichtlich am {{ nes }} in Kraft
                         {% endblocktrans %})
                         {% if not subscription.future_extra_subscriptions %}
