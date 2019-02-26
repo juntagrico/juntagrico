@@ -198,7 +198,7 @@ def send_job_reminder(emails, job, participants):
         'contact': contact
     }
     content = plaintext.render(d)
-    send_mail( _('{0} - Einsatz-Erinnerung').format(Config.organisation_name()),
+    send_mail(_('{0} - Einsatz-Erinnerung').format(Config.organisation_name()),
                content, Config.info_email(), emails)
 
 
@@ -209,7 +209,7 @@ def send_job_canceled(emails, job):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail( _('{0} - Einsatz abgesagt').format(Config.organisation_name()),
+    send_mail(_('{0} - Einsatz abgesagt').format(Config.organisation_name()),
                content, Config.info_email(), emails)
 
 
@@ -221,7 +221,7 @@ def send_confirm_mail(member):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail( _('{0} - Email Adresse ändern').format(Config.organisation_name()),
+    send_mail(_('{0} - Email Adresse ändern').format(Config.organisation_name()),
                content, Config.info_email(), [member.email])
 
 
@@ -233,7 +233,7 @@ def send_job_time_changed(emails, job):
     }
     content = plaintext.render(d)
     #    ical_content = genecrate_ical_for_job(job)
-    send_mail( _('{0} - Einsatz-Zeit geändert').format(Config.organisation_name()),
+    send_mail(_('{0} - Einsatz-Zeit geändert').format(Config.organisation_name()),
                content, Config.info_email(), emails)
     #   msg.attach('einsatz.ics', ical_content, 'text/calendar')
 
@@ -246,7 +246,7 @@ def send_job_signup(emails, job):
     }
     content = plaintext.render(d)
     # ical_content = generate_ical_for_job(job)
-    send_mail( _('{0} - für Einsatz angemeldet').format(Config.organisation_name()),
+    send_mail(_('{0} - für Einsatz angemeldet').format(Config.organisation_name()),
                content, Config.info_email(), emails)
     # Not attaching ics as it is not correct
     # msg.attach('einsatz.ics', ical_content, 'text/calendar')

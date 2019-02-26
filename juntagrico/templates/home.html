@@ -27,7 +27,7 @@
     {% for team in teams %}
         <div class="row mb-1">
             <div class="col-md-12">
-                <a href="/my/teams/{{ team.id }}"class="{% if team.core %}core{% endif %}">
+                <a href="/my/teams/{{ team.id }}" class="{% if team.core %}core{% endif %}">
                     {{ team.name }}
                 </a>
             </div>
@@ -37,6 +37,6 @@
 {% block scripts %}
     <script type="text/javascript" src="/static/external/datatables.min.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initHomeJobs.js">
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initHomeJobs.js">
     </script>
 {% endblock %}
