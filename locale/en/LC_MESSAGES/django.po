@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-26 14:05+0100\n"
+"POT-Creation-Date: 2019-02-26 14:18+0100\n"
 "PO-Revision-Date: 2019-02-13 08:17+0000\n"
 "Last-Translator: Weblate Admin <admin@admin.admin>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -2110,9 +2110,30 @@ msgid "Das Änderungsdatum ist auf {{ change_date }} gesetzt."
 msgstr ""
 
 #: .\juntagrico\templates\management_lists\man_list_base.html:48
+#: .\juntagrico\templates\management_lists\man_list_base.html:63
 #: .\juntagrico\templates\members.html:22
+#: .\juntagrico\templates\members.html:148
 #: .\juntagrico\templates\subscriptions.html:22
+#: .\juntagrico\templates\subscriptions.html:153
 msgid "Email senden"
+msgstr ""
+
+#: .\juntagrico\templates\management_lists\man_list_base.html:64
+#: .\juntagrico\templates\members.html:149
+#: .\juntagrico\templates\subscriptions.html:154
+msgid "senden"
+msgstr ""
+
+#: .\juntagrico\templates\management_lists\man_list_base.html:65
+#: .\juntagrico\templates\members.html:150
+#: .\juntagrico\templates\subscriptions.html:155
+msgid "Email an diesen"
+msgstr ""
+
+#: .\juntagrico\templates\management_lists\man_list_base.html:66
+#: .\juntagrico\templates\members.html:151
+#: .\juntagrico\templates\subscriptions.html:156
+msgid "Email an diese"
 msgstr ""
 
 #: .\juntagrico\templates\management_lists\typechangelist.html:6
