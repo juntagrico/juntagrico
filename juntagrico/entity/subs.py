@@ -189,7 +189,6 @@ class Subscription(Billable):
             formatted.append(key + ': ' + value.__str__())
         return '<br>'.join(formatted)
 
-
     @property
     def required_shares(self):
         result = 0
