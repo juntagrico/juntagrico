@@ -12,7 +12,6 @@ script:
   - pwd
   - ls -la
   - codeclimate-test-reporter --token 89d74b27f8d96964e6842103d41e4d361f63da1bf3e9f7820454ed4778bffb7e
-  - django-admin.py makemessages -d django 
 after_success:
   - git status
   - git add . *.po
