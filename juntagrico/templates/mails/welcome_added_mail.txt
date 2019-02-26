@@ -1,45 +1,54 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
-{% config "enable_shares" as enable_shares %}
-Wir freuen uns, dich bei {% enriched_organisation "D" %} zu begrüssen.
-{% if enable_shares %}
-Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt und für dich {{ shares }} Anteilsscheine(e) bestellt.
+{% config "enable_shares" as c_enable_shares %}
+{% config "info_email" as c_info_email %}
+{% config "bylaws" as c_bylaws %}
+{% config "business_regulations" as c_business_regulations %}
+{% config "faq_doc" as c_faq_doc %}
+{% config "organisation_name" as c_organisation_name %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% vocabulary "co_member" as v_co_member %}
+{% vocabulary "share_pl" as v_share_pl %}
+{% vocabulary "member_type" as v_member_type %}
+{% vocabulary "subscription" as v_subscription %}
+{% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
+
+{% if c_enable_shares %}
+{% blocktrans %}Soeben hat dich '{{name}}' als {{ v_co_member }} hinzugefügt und für dich {{ shares }} {{ v_share_pl }} bestellt.{% endblocktrans %}
 {% else %}
-Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt.
+{% blocktrans %}Soeben hat dich '{{name}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
 {% endif %}
 
-Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten:
-Email: {{ username }}
-Passwort: {{ password }}
-Bitte setze dir hier gleich ein neues Passwort:
+
+{% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten{% endblocktrans %}:
+{% trans "Email" %}: {{ username }}
+{% trans "Passwort" %}: {{ password }}" %}
+{% trans "Bitte setze dir hier gleich ein neues Passwort:" %}
 {{serverurl}}/my/password
 
-{% if enable_shares %}
-Du erhälst für deine {% vocabulary "share_pl" %} separate Emails mit den Inforamtionen wie du diese bezalen kannst.
+{% blocktrans %}Damit wir dich als {{ v_member_type }} freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.{% endblocktrans %}
+{% trans "Bestätigungslink" %}: {{ serverurl }}/my/confirm/{{ onetime_code }}
+{% trans "Damit bestätigst du dass du damit einverstanden bist" %}:
+- {% blocktrans %}{{ c_organisation_name }}-{{ v_member_type }} zu werden{% endblocktrans %}
+- {% blocktrans %}dem/r {{ v_subscription }} beizutreten{% endblocktrans %}
+- {% blocktrans %}die bestellten {{ v_share_pl }} zu erwerben{% endblocktrans %}
+{% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:
+ - {% trans "die Statuten" %} ({{ c_bylaws|safe }})
+{% if c_business_regulations.strip %}
+- {% trans "das Betriebsreglement" %} ({{ c_business_regulations|safe }})
 {% endif %}
-{% if subscription is not None %}
-Sobald du {% vocabulary "member_type" %} bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
 
-{% endif %}
-Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. 
+{% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {{ c_info_email }}.{% endblocktrans %}
 
-Damit wir dich als {% vocabulary "member_type" %} freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
-Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
-Damit bestätigst du, dass du damit einverstanden bist {% config "organisation_name" %}-{% vocabulary "member_type" %} zu werden,dem{% vocabulary "subscription" %} beizutreten, die bestellten {% vocabulary "share_pl" %} zu erwerben.
-Ebenfalls bestätigst du, dass du die Statuten ({% config "bylaws" as bylaws %}{{ bylaws|safe }})
-{% config "business_regulations" as business_regulations %}{% if business_regulations.strip %} und das Betriebsreglement({{ business_regulations|safe }}){% endif %}
-
- gelesen hast.
-
-Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {% config "info_email" %}.
-
-{% config "faq_doc" as faq_doc %}
-{% if faq_doc.strip %}
-Für weitere Fragen schaust du in den FAQ ({{ faq_doc|safe }}) nach oder schreibst eine Mail an {% config "info_email" %}.
+{% if c_faq_doc.strip %}
+{% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ c_info_email }}.{% endblocktrans %}
 {% else %}
-Für weitere Fragen schreibe eine Mail an {% config "info_email" %}.
+{% blocktrans %}Für weitere Fragen schreibe eine Mail an {{ c_info_email }}.{% endblocktrans %}
 {% endif %}
 
-Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}

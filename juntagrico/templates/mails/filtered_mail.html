@@ -1,6 +1,6 @@
 {% extends mail_template %}
 {% block content %}
-{% autoescape off %}
+    {% autoescape off %}
     {{ content }}
-{% endautoescape %}
+    {% endautoescape %}
 {% endblock %}

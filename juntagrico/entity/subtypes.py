@@ -21,9 +21,8 @@ class SubscriptionSize(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = Config.vocabulary('subscription') + ' ' + _('Grösse')
-        verbose_name_plural = Config.vocabulary(
-            'subscription') + ' ' + _('Grössen')
+        verbose_name =_('{0}-Grösse').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
 
 
 class SubscriptionType(models.Model):
@@ -54,9 +53,8 @@ class SubscriptionType(models.Model):
         return self.pk < other.pk
 
     class Meta:
-        verbose_name = Config.vocabulary('subscription') + ' ' + _('Typ')
-        verbose_name_plural = Config.vocabulary(
-            'subscription') + ' ' + _('Typen')
+        verbose_name = _('{0}-Typ').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{0}-Typen').format(Config.vocabulary('subscription'))
 
 
 '''

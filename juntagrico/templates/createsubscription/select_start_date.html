@@ -1,54 +1,59 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block all_page_title %}
-    <div class="col-md-3">
-        &nbsp;
-    </div>
-    <div class="col-md-9 juntagrico">
-        <h3>Wähle dein Startdatum</h3>
+    <div class="offset-md-3 col-md-9 juntagrico">
+        <h3>
+            {% trans "Wähle dein Startdatum" %}
+        </h3>
     </div>
 {% endblock %}
-
 {% block allcontent %}
+    {% vocabulary "subscription" as v_subscription %}
     <div class="offset-md-2 col-md-8">
         <div class="row mb-4">
             <div class="row co-md-12">
-
-                Info:
-
-                Normalerweise kann ein neues {% vocabulary "subscription" %} erst ab dem Start eines Geschäftsjahres
-                bezogen werden. Das nächste Startdatum wäre der {{ start_date |date:"d.m.Y" }}.
-                Es kann jedoch vorkommen, dass unter dem Jahr ein {% vocabulary "subscription" %} frei wird. Würdest du
-                gerne schon früher einsteigen falls ein {% vocabulary "subscription" %} frei wird, dann kannst du das
+                {% trans "Info" %}:
+                {% blocktrans trimmed with sd=start_date|date:"d.m.Y" %}
+                Normalerweise ist der {{ v_subscription }}-Start der Start eines Geschäftsjahres. Das nächste
+                Startdatum wäre der {{ sd }}.
+                Es kann jedoch vorkommen, dass unter dem Jahr 1 {{ v_subscription }} frei wird. Würdest du
+                gerne schon früher einsteigen falls 1 {{ v_subscription }} frei wird, dann kannst du das
                 Startdatum unten anpassen.
-
+                {% endblocktrans %}
             </div>
         </div>
-
         <form action="" method="post">
             {% csrf_token %}
             <div id="start_date" class="form-group row">
-                <label class="col-md-3">Gewünschtes Startdatum</label>
-
+                <label class="col-md-3">
+                    {% trans "Gewünschtes Startdatum" %}
+                </label>
                 <div class="col-md-9">
                     <label>
                         {{ subscriptionform.start_date }}
-                        Ab wann möchtest du dein Gemüse erhalten. Gilt nur insofern ein {% vocabulary "subscription" %}
+                        {% blocktrans trimmed %}
+                        Gilt nur insofern 1 {{ v_subscription }}
                         zum gewünschten Datum frei ist.
+                        {% endblocktrans %}
                     </label>
                     {% if subscriptionform.start_date.errors %}
-                        <div class="alert alert-danger">Das gewählte Startdatum ist nicht gültig</div>
+                        <div class="alert alert-danger">
+                            {% trans "Das gewählte Startdatum ist nicht gültig" %}
+                        </div>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-actions row">
                 <div class="offset-md-3 col-md-9">
-                <button type="submit" class="btn btn-success">Weiter</button>
-                <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+                    <button type="submit" class="btn btn-success">
+                        {% trans "Weiter" %}
+                    </button>
+                    <a href="/my/create/subscription/cancel" class="btn">
+                        {% trans "Abbrechen" %}
+                    </a>
                 </div>
             </div>
         </form>
     </div>
-
 {% endblock %}

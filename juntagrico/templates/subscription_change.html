@@ -1,85 +1,141 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Abo ändern</h3>
+    <h3>
+        Abo ändern
+    </h3>
 {% endblock %}
-
 {% block content %}
-    Welchen Teil deines {% vocabulary "subscription_pl" %} möchtest du ändern?<br/><br/>
+    {% vocabulary "depot" as v_depot %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% trans "Welchen Teil möchtest du ändern?" %}
+    <br/>
+    <br/>
     <br/>
     <div class="row">
         <div class="col-md-4">
-            <div class="row"><div class="col-md-12">
-                {% vocabulary "depot" %} <br/>Du bist umgezogen oder möchtest aus einem anderen Grund dein Gemüse in einem anderen Quartierdepot abholen?
-			    Du kannst das {% vocabulary "depot" %} jederzeit wechseln - die Änderung wird sobald aktiv von uns kommuniziert.
-            </div></div>
-            <div class="row"><div class="col-md-12">
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                Momentanes {% vocabulary "depot" %}: <br/>
-                {{ subscription.depot.name }}
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                <a href="/my/subscription/change/depot/{{ subscription.id }}/" class="btn btn-success">{% vocabulary "depot" %} ändern</a>
-            </div></div>
+            <div class="row">
+                <div class="col-md-12">
+                    {% vocabulary "depot" %}
+                    <br/>
+                    {% trans "Du bist umgezogen oder möchtest aus einem anderen Grund wechseln?" %} {% trans "Du kannst jederzeit wechseln - die Änderung wird sobald aktiv von uns kommuniziert." %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {% trans "Aktuell" %}:
+                    <br/>
+                    {{ subscription.depot.name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="/my/subscription/change/depot/{{ subscription.id }}/" class="btn btn-success">
+                        {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="col-md-4">
-            <div class="row"><div class="col-md-12">
-                Grösse <br/>
-                Die Grösse eines {% vocabulary "subscription_pl" %} (auch die Kündigung) kann nur jährlich geändert werden und muss bis spätestens Ende {{ next_cancel_date |date:"F" }} gemacht werden,
-                damit die Änderung auf Anfang {{ next_business_year |date:"F" }} in Kraft tritt.
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                Nächstmögliches Datum:
-                {{ next_business_year |date:"d.m.Y" }}
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                Zukünftige Grösse: <br/>
-                {{ subscription.future_size_name }}
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                <a {% if change_size %}href="/my/subscription/change/size/{{ subscription.id }}/"{% endif %} class="btn btn-success" {% if not change_size %}disabled="disabled"{% endif %}>Grösse ändern</a><br/>
-                {% if not change_size %}* nur {{ next_business_year |date:"F" }}-{{ next_cancel_date |date:"F" }} möglich{% endif %}
-            </div></div>
+            <div class="row">
+                <div class="col-md-12">
+                    {% trans "Grösse" %}
+                    <br/>
+                    {% blocktrans trimmed with ncd=next_cancel_date|date:"F" nby=next_business_year|date:"F" %}
+                    Die {{ v_subscription }}-Grösse (auch die Kündigung) kann in der Regel nur jährlich geändert
+                    werden
+                    und muss bis spätestens Ende {{ ncd }} gemacht werden,
+                    damit die Änderung auf Anfang {{ nby }} in Kraft tritt.
+                    {% endblocktrans %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {% trans "Nächstmögliches Datum" %}: {{ next_business_year |date:"d.m.Y" }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {% trans "Zukünftige Grösse" %}:
+                    <br/>
+                    {{ subscription.future_size_name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a {% if change_size %}href="/my/subscription/change/size/{{ subscription.id }}/"{% endif %}class="btn btn-success"{% if not change_size %}disabled="disabled"{% endif %}>
+                        {% trans "Grösse ändern" %}
+                    </a>
+                    <br/>
+                    {% if not change_size %}
+                        {% blocktrans trimmed with nby=next_business_year|date:"F" ncd=next_cancel_date|date:"F" %}
+                        nur {{ nby }}-{{ ncd }} möglich
+                        {% endblocktrans %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
         {% if has_extra_subscriptions %}
-        <div class="col-md-4">
-            <div class="row"><div class="col-md-12">
-                Zusatz-Abos <br/>
-                Zusatz-Abos können halbjährlich auf Januar und Juli, mit einer Frist von mind. einem Monat geändert werden. <br>
-                {% config "extra_sub_info" as extra_sub_info %}
-                {% if extra_sub_info.strip %}
-                    <a href="{{ extra_sub_info }}" target="_blank">Weitere Infos zu den Zusatzabos</a>
-                {% endif %}
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                Nächstmögliches Datum:
-                {{ next_extra_subscription_date |date:"d.m.Y" }}
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                Zukünftige Zusatz-Abos: <br/>
-                {% if not  subscription.extrasubscriptions_changed %}
-                    {% if subscription.extra_subscriptions.all|length == 0 %}
-                        Keine Zusatz-Abos
-                    {% else %}
-                        {% for extrasubscription in subscription.extra_subscriptions.all %}
-                            <li>{{ extrasubscription.type.name }}</li>
-                        {% endfor %}
-                    {% endif %}
-                {% else %}
-                    {% if subscription.future_extra_subscriptions.all|length == 0 %}
-                        Keine Zusatz-Abos
-                    {% else %}
-                        {% for extrasubscription in subscription.future_extra_subscriptions.all %}
-                            <li>{{ extrasubscription.type.name }}</li>
-                        {% endfor %}
-                    {% endif %}
-                {% endif %}
-            </div></div>
-            <div class="row"><div class="col-md-12">
-                <a href="/my/subscription/change/extra/{{ subscription.id }}/" class="btn btn-success">Zusatz-Abos ändern</a>
-            </div></div>
-        </div>
-       {% endif %}
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        {% trans "Zusatz-Abos" %}
+                        <br/>
+                        {% trans "Zusatz-Abos können nur mit einer Frist von mind. einem Monat geändert werden für die betreffende Verechnungsperiode." %}
+                        <br/>
+                        {% config "extra_sub_info" as extra_sub_info %}
+                        {% if extra_sub_info.strip %}
+                            <a href="{{ extra_sub_info }}"target="_blank">
+                                {% trans "Weitere Infos zu den Zusatzabos" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% trans "Nächstmögliches Datum" %}: {{ next_extra_subscription_date |date:"d.m.Y" }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% trans "Zukünftige Zusatz-Abos" %}:
+                        <br/>
+                        {% if not  subscription.extrasubscriptions_changed %}
+                            {% if subscription.extra_subscriptions.all|length == 0 %}
+                                {% trans "Keine Zusatz-Abos" %}
+                            {% else %}
+                                {% for extrasubscription in subscription.extra_subscriptions.all %}
+                                    <li>
+                                        {{ extrasubscription.type.name }}
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        {% else %}
+                            {% if subscription.future_extra_subscriptions.all|length == 0 %}
+                                {% trans "Keine Zusatz-Abos" %}
+                            {% else %}
+                                {% for extrasubscription in subscription.future_extra_subscriptions.all %}
+                                    <li>
+                                        {{ extrasubscription.type.name }}
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="/my/subscription/change/extra/{{ subscription.id }}/"class="btn btn-success">
+                            {% trans "Zusatz-Abos ändern" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

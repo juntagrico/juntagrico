@@ -1,0 +1,57 @@
+{% load i18n %}
+{% load config %}
+{% vocabulary "subscription" as v_subscription %}
+<ul class="nav flex-column main-menu">
+    <li>
+        <h5>
+            {% blocktrans with fn=user.member.first_name %}Dein Menu {{ fn }}{% endblocktrans %}
+        </h5>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ menu.subscription }}" href="/my/subscription/detail/">
+            {{ v_subscription }}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ menu.participation }}" href="/my/participation">
+            {% trans "Mitarbeit" %}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ menu.jobs }}" href="/my/assignments">
+            {% trans "Einsätze" %}
+        </a>
+    </li>
+    {% if show_deliveries %}
+        <li class="nav-item">
+            <a class="nav-link {{ menu.deliveries }}" href="/my/deliveries">
+                {% trans "Lieferungen" %}
+            </a>
+        </li>
+    {% endif %}
+    <li class="nav-item">
+        <a class="nav-link {{ menu.personalInfo }}" href="/my/profile">
+            {% trans "Personalien" %}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ menu.contact }}" href="/my/contact">
+            {% trans "Kontakt" %}
+        </a>
+    </li>
+    {% for user_menu in user_menus %}
+        {% include user_menu %}
+    {% endfor %}
+    <li class="separator">
+    </li>
+    <li class="nav-item main-menu-small">
+        <a class="nav-link yellow" href="http://{% config "server_url" %}">
+            {% config "server_url" %}
+        </a>
+    </li>
+    <li class=" nav-item main-menu-small">
+        <a class="nav-link yellow" href="/logout">
+            {% trans "Abmelden" %}
+        </a>
+    </li>
+</ul>

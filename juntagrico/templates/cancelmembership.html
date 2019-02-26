@@ -1,68 +1,93 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Künde deine Migliedshaft</h3>
+    <h3>
+        {% trans "Künde deine Migliedshaft" %}
+    </h3>
 {% endblock %}
-
 {% block content %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    {% config "info_email" as c_info_email %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "share_pl" as v_share_pl %}
     {% config "enable_shares" as enable_shares %}
     <div class="row mb-3">
         <div class="col-md-12">
-            Hier kannst du deine Mitgliedschaft bei {% enriched_organisation "D" %} kündigen. {% if coop_member %}
-            Der
-            nächste reguläre Kündigungstermin ist der {{ end_date |date:"d.m.Y" }}.{% endif %}
+            {% blocktrans trimmed %}
+            Hier kannst du deine Mitgliedschaft bei {{ v_d_enriched_organisation }} kündigen.
+            {% endblocktrans %}
+            {% if coop_member %}
+                {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
+                Der nächste reguläre Kündigungstermin ist der {{ ed }}.
+                {% endblocktrans %}
+            {% endif %}
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
             {% if coop_member %}
                 <ul class="list-unstyled">
-                    <li>Du erhälst keine Emails mehr</li>
-                    <li>Du wirst bei deinem{% vocabulary "subscription" %} ausgetragen</li>
+                    <li>
+                        {% trans "Du erhälst keine Emails mehr" %}
+                    </li>
+                    <li>
+                        {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}
+                    </li>
                     {% if enable_shares %}
-                        <li>Deine {% vocabulary "share_pl" %} werden gekündigt</li>
+                        <li>
+                            {% blocktrans %}Deine {{ v_share_pl }} werden gekündigt{% endblocktrans %}
+                        </li>
                     {% endif %}
                 </ul>
             {% else %}
                 <ul>
-                    <li>Du erhälst keine Emails mehr</li>
-                    <li>Du wirst bei deinem{% vocabulary "subscription" %} ausgetragen</li>
+                    <li>
+                        {% trans "Du erhälst keine Emails mehr" %}
+                    </li>
+                    <li>
+                        {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}
+                    </li>
                 </ul>
             {% endif %}
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-
             {% if can_cancel %}
                 <form action="" method="post">
                     {% csrf_token %}
                     <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                     <div class="form-group row">
-                        <label class="col-md-3" for="message">Mitteilung</label>
+                        <label class="col-md-3" for="message">
+                            {% trans "Mitteilung" %}
+                        </label>
                         <div class="col-md-9">
-                        <textarea name="message" id="message" class="form-control" rows="12"
-                                  placeholder="Hier Nachricht eingeben"></textarea>
+                            <textarea name="message" id="message" class="form-control" rows="12"placeholder="{% trans "Hier Nachricht eingeben" %}">
+                            </textarea>
                         </div>
                     </div>
                     <div class="form-group row">
                         <div class="offset-md-3 col-md-9">
-                            <button type="submit" class="btn btn-success">Migliedshaft künden</button>
+                            <button type="submit" class="btn btn-success">
+                                {% trans "Migliedshaft künden" %}
+                            </button>
                         </div>
                     </div>
                 </form>
             {% elif missing_iban and enable_shares %}
-                Du musst zuerst deine IBAN hinterlegen, damit deine {% vocabulary "share_pl" %} ausbezahlt werden
-                können.
+                {% blocktrans trimmed %}
+                Du musst zuerst deine IBAN hinterlegen, damit deine {{ v_share_pl }} ausbezahlt werden können.
+                {% endblocktrans %}
             {% elif enable_shares %}
-                Du bist entweder Hauptabonnent oder ohne deine {% vocabulary "share_pl" %} hat dein jetztiges
-                {% vocabulary "subscription" %} nicht genug {% vocabulary "share_pl" %} um weiter zu existieren.
-                Falls du Hilfe brauchst um das Problem zu beheben wende dich an {% config "info_email" %}.
+                {% blocktrans trimmed %}
+                Du bist entweder Hauptabonnent oder ohne deine {{ v_share_pl }} hat dein/e jetztige/r/s
+                {{ v_subscription }} nicht genug {{ v_share_pl }} um weiter zu existieren. Falls du Hilfe brauchst
+                um das Problem zu beheben wende dich an {{ c_info_email }}.
+                {% endblocktrans %}
             {% else %}
-                Du bist Hauptabonnent, wende dich an {% config "info_email" %} um das anzupassen.
+                {% blocktrans%}Du bist Hauptabonnent, wende dich an {{ c_info_email }} um das anzupassen.{% endblocktrans %}
             {% endif %}
         </div>
     </div>
-
 {% endblock %}
-

@@ -1,61 +1,79 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Kontakt</h3>
+    <h3>
+        {% trans "Kontakt" %}
+    </h3>
 {% endblock %}
-
 {% block content %}
     {% if is_sent %}
-        <div class="alert alert-success">Nachricht gesandt <a href="/my/jobs/{{ job_id }}/"
-                                                              style="text-decoration: underline">zur&uuml;ck zum
-            Einsatz</a></div>
+        <div class="alert alert-success">
+            {% trans "Nachricht gesandt" %}
+            <a href="/my/jobs/{{ job_id }}/" style="text-decoration: underline">
+                {% trans "zurück zum Einsatz" %}
+            </a>
+        </div>
     {% else %}
         <br/>
         <form action="/my/contact/member/{{ member_id }}/{{ job_id }}/" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group row">
-                <label class="col-md-3">Absender</label>
+                <label class="col-md-3">
+                    {% trans "Absender" %}
+                </label>
                 <div class="col-md-9">
                     {{ usernameAndEmail }}
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-md-3">Empfänger</label>
+                <label class="col-md-3">
+                    {% trans "Empfänger" %}
+                </label>
                 <div class="col-md-9">
                     {{ member_name }}
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-md-3" for="subject">Betreff</label>
+                <label class="col-md-3" for="subject">
+                    {% trans "Betreff" %}
+                </label>
                 <div class="col-md-9">
-                    <input type="text" name="subject" id="subject" placeholder="Betreff" class="form-control"/>
+                    <input type="text" name="subject" id="subject" placeholder="{% trans "Betreff" %}" class="form-control"/>
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-md-3" for="message">Mitteilung</label>
+                <label class="col-md-3" for="message">
+                    {% trans "Mitteilung" %}
+                </label>
                 <div class="col-md-9">
-                    <textarea name="message" id="message" class="form-control" rows="12"
-                              placeholder="Hier Nachricht eingeben"></textarea>
+                    <textarea name="message" id="message" class="form-control" rows="12"placeholder="{% trans "Hier Nachricht eingeben" %}">
+                    </textarea>
                 </div>
             </div>
-
             <div class="form-group row">
                 <div class="offset-md-3 col-md-9">
-                <span class="switch switch-sm">
-                              <input type="checkbox" class="switch" id="copy" name="copy">
-                              <label for="copy">Kopie an mich</label>
-                            </span>
+                    <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" id="copy" name="copy"/>
+                        <label for="copy">
+                            {% trans "Kopie an mich" %}
+                        </label>
+                    </span>
                 </div>
             </div>
             {% if admin %}
                 <div class="form-group row">
-                    <label for="attachements" class="col-md-3">Anhänge</label>
+                    <label for="attachements" class="col-md-3">
+                        {% trans "Anhänge" %}
+                    </label>
                     <div class="col-md-9">
                         <div class="controls" id="attachements">
                             <div class="file-upload">
                                 <div class="file-upload-button">
-                                    <input type="file" name="image-1">
-                                    <button class="btn">Datei auswählen</button>
+                                    <input type="file" name="image-1"/>
+                                    <button class="btn">
+                                        {% trans "Datei auswählen" %}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -64,12 +82,15 @@
             {% endif %}
             <div class="form-group row">
                 <div class="form-actions offset-md-3 col-md-9">
-                    <button type="submit" class="btn btn-success">Nachricht verschicken</button>
+                    <button type="submit" class="btn btn-success">
+                        {% trans "Nachricht verschicken" %}
+                    </button>
                 </div>
             </div>
         </form>
     {% endif %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/attachment_appender.js"></script>
+    <script type="text/javascript" src="/static/external/attachment_appender.js">
+    </script>
 {% endblock %}

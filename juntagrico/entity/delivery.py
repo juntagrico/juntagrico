@@ -1,16 +1,18 @@
 from django.db import models
+from django.utils.translation import gettext as _
 
 from juntagrico.util.temporal import weekday_short
 from juntagrico.entity.subs import SubscriptionSize
+from juntagrico.config import Config
 
 
 class Delivery(models.Model):
     """
     Delivery with a specific date (usually Tuesday or Thursday)
     """
-    delivery_date = models.DateField("Lieferdatum")
+    delivery_date = models.DateField(_('Lieferdatum'))
     subscription_size = models.ForeignKey(SubscriptionSize,
-                                          verbose_name='Abo-Grösse',
+                                          verbose_name=_('{0}-Grösse').format(Config.vocabulary('subscription')),
                                           on_delete=models.PROTECT)
 
     def __str__(self):
@@ -25,20 +27,20 @@ class Delivery(models.Model):
         return weekday_short(day, 2)
 
     class Meta:
-        verbose_name = 'Lieferung'
-        verbose_name_plural = 'Lieferungen'
+        verbose_name = _('Lieferung')
+        verbose_name_plural = _('Lieferungen')
         unique_together = ("delivery_date", "subscription_size")
 
 
 class DeliveryItem(models.Model):
-    delivery = models.ForeignKey(Delivery, verbose_name='Lieferung',
+    delivery = models.ForeignKey(Delivery, verbose_name=_('Lieferung'),
                                  related_name='items',
                                  on_delete=models.CASCADE)
-    name = models.CharField("Name", max_length=100, default="")
-    amount = models.CharField("Menge", max_length=100, default="")
-    comment = models.CharField("Kommentar", max_length=1000,
+    name = models.CharField(_('Name'), max_length=100, default="")
+    amount = models.CharField(_('Menge'), max_length=100, default="")
+    comment = models.CharField(_('Kommentar'), max_length=1000,
                                default="", blank=True)
 
     class Meta:
-        verbose_name = 'Lieferobjekt'
-        verbose_name_plural = 'Lieferobjekte'
+        verbose_name = _('Lieferobjekt')
+        verbose_name_plural = _('Lieferobjekte')

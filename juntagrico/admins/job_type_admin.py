@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext as _
 
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.entity.jobs import OneTimeJob
@@ -34,7 +35,7 @@ class JobTypeAdmin(admin.ModelAdmin):
                 rj.delete()
             inst.delete()
 
-    transform_job_type.short_description = 'Jobart in EinzelJobs konvertieren'
+    transform_job_type.short_description = _('Jobart in EinzelJobs konvertieren')
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)

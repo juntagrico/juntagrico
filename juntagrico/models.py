@@ -1,6 +1,5 @@
-# encoding: utf-8
-from django.db import models
 from django.db.models import signals
+from django.utils.translation import gettext as _
 
 from juntagrico.entity.billing import *
 from juntagrico.entity.extrasubs import *
@@ -21,11 +20,11 @@ class SpecialRoles(models.Model):
     '''
 
     class Meta:
-        permissions = (('is_operations_group', 'Benutzer ist in der BG'),
-                       ('is_book_keeper', 'Benutzer ist Buchhalter'),
-                       ('new_subscription', 'Benutzer über Abobestellungen informieren'),
-                       ('can_send_mails', 'Benutzer kann im System Emails versenden'),
-                       ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),)
+        permissions = (('is_operations_group', _('Benutzer ist in der BG')),
+                       ('is_book_keeper', _('Benutzer ist Buchhalter')),
+                       ('new_subscription', _('Benutzer über Abobestellungen informieren')),
+                       ('can_send_mails', _('Benutzer kann im System Emails versenden')),
+                       ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),)
 
 
 signals.post_save.connect(Member.create, sender=Member)

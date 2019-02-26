@@ -1,18 +1,19 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% block content %}
-Hallo
+{% trans "Hallo" %}
 
-Soeben hat {{ member.first_name }} {{ member.last_name }}
-email : {{ member.email }}
-
+{% blocktrans with fn=member.first_name ln=member.last_name e=member.email ed=end_date|date:"d.m.Y" %}
+Soeben hat {{ fn }} {{ ln }}
+email : {{ e }}
 seine Mitgliedshaft gekündet.
 
-Er möchte seine Mitgliedshaft auf den {{ end_date|date:"d.m.Y" }} künden.
-
-ausserdem hat er folgende Nachricht für euch hinterlassen:
+Er möchte seine Mitgliedshaft auf den {{ ed }} künden.
+{% endblocktrans %}
+{% trans "ausserdem hat er folgende Nachricht für euch hinterlassen" %}:
 {{ message}}
 
-Liebe Grüsse und einen schönen Tag noch
-Dein Server
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
 
 {% endblock %}

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.forms import CharField, PasswordInput, Form, ValidationError, ModelForm, TextInput, CheckboxInput, DateInput
+from django.utils.translation import gettext as _
 
 from schwifty import IBAN
 
@@ -7,14 +8,14 @@ from juntagrico.models import Member, Subscription
 
 
 class PasswordForm(Form):
-    password = CharField(label='Passwort', min_length=4,
+    password = CharField(label=_('Passwort'), min_length=4,
                          widget=PasswordInput())
     passwordRepeat = CharField(
-        label='Passwort (wiederholen)', min_length=4, widget=PasswordInput())
+        label=_('Passwort (wiederholen)'), min_length=4, widget=PasswordInput())
 
     def clean_password_repeat(self):
         if self.data['password'] != self.data['passwordRepeat']:
-            raise ValidationError('Passwörter stimmen nicht überein')
+            raise ValidationError(_('Passwörter stimmen nicht überein'))
         return self.data['passwordRepeat']
 
 
@@ -43,7 +44,7 @@ class MemberProfileForm(ModelForm):
             try:
                 iban = IBAN(self.data['iban'])
             except:
-                raise ValidationError('IBAN ist nicht gültig')
+                raise ValidationError(_('IBAN ist nicht gültig'))
         return self.data['iban']
 
 

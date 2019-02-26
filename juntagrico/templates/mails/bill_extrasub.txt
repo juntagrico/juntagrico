@@ -1,19 +1,25 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
-{% config "organisation_bank_connection" as bank%}
-Lieber {{ member.first_name }}
+{% config "organisation_bank_connection" as c_bank %}
+{% config "organisation_name" as c_organisation_name %}
+{% blocktrans with fn=member.first_name %} Lieber {{ fn }}{% endblocktrans %}
 
-Hier die aktuelle Rechnung für dein Zusatzabo:
+{% trans "Hier die aktuelle Rechnung für dein Zusatzabo" %}:
 
-Typ:            {{ extrasub.type.name }}
-Start:          {{ start |date:"d.m.Y" }}
-Ende:           {{ end |date:"d.m.Y" }}
-Betrag:         {{ bill.amount}} {% config "currency" %}
-Referenznummer: {{ bill.ref_number }}
-Kontonummer:    {{ bank.ESR }}
+{% trans "Typ" %}:            {{ extrasub.type.name }}
+{% trans "Start" %}:          {{ start |date:"d.m.Y" }}
+{% trans "Ende" %}:           {{ end |date:"d.m.Y" }}
+{% trans "Betrag" %}:         {{ bill.amount}} {% config "currency" %}
+{% trans "Referenznummer" %}: {{ bill.ref_number }}
+{% trans "Kontonummer" %}:    {{ c_bank.ESR }}
 
+{% blocktrans trimmed %}
 Der Betrag ist Zahlbar bis {{ end }} und kann in Teilzahlungen bezahlt werden. Bei Teilzahlungen bitte beachten immer die Referenznummer anzugeben, damit das System genau abrechnen kann.
+{% endblocktrans %}
 
-dein {% config "organisation_name" %}-Team
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}

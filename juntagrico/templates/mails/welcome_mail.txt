@@ -1,31 +1,30 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
-{% config "enable_shares" as enable_shares %}
-Wir freuen uns, dich bei {% enriched_organisation "D" %} zu begrüssen.
+{% config "enable_shares" as c_enable_shares %}
+{% config "info_email" as c_info_email %}
+{% config "faq_doc" as c_faq_doc %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% vocabulary "member_type" as v_member_type %}
+{% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
 
-Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten:
-Email: {{ username }}
-Passwort: {{ password }}
-Bitte setze dir hier gleich ein neues Passwort:
+{% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten{% endblocktrans %}:
+{% trans "Email" %}: {{ username }}
+{% trans "Passwort" %}: {{ password }}" %}
+{% trans "Bitte setze dir hier gleich ein neues Passwort:" %}
 {{serverurl}}/my/password
 
-{% if enable_shares %}
-Du erhälst für deine {% vocabulary "share_pl" %} separate Emails mit den Inforamtionen wie du diese bezalen kannst.
+{% blocktrans %}Damit wir dich als {{ v_member_type }} freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.{% endblocktrans %}
+{% trans "Bestätigungslink" %}: {{ serverurl }}/my/confirm/{{ onetime_code }}
+
+{% if c_faq_doc.strip %}
+{% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ c_info_email }}.{% endblocktrans %}
+{% else %}
+{% blocktrans %}Für weitere Fragen schreibe eine Mail an {{ c_info_email }}.{% endblocktrans %}
 {% endif %}
 
-{% if subscription is not None %}
-Sobald du {% vocabulary "member_type" %} bist, setzen wir dich auf die Warteliste für ein Gemüse-Abo. Wird eines frei, melden wir uns bei dir.
-
-{% endif %}
-Gerne darfst du im Garten vorbeikommen – schau dich auf der Online-Plattform {{serverurl}}/my/home um und melde dich für einen Einsatz an, wenn du Lust hast. 
-
-Damit wir dich als {% vocabulary "member_type" %} freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.
-Bestätigungslink: {{ serverurl }}/my/confirm/{{ hash }}
-
-{% config "faq_doc" as faq_doc %}
-{% if faq_doc.strip %}Für weitere Fragen schaust du in den FAQ ({{ faq_doc }}) nach oder schreibst eine Mail an {% config "info_email" %}.{% else %}Für weitere Fragen schreibe eine Mail an {% config "info_email" %}.
-{% endif %}
-
-Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}

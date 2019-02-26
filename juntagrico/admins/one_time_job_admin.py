@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext as _
 
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
@@ -40,7 +41,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
             t.name = name
             t.save()
 
-    transform_job.short_description = 'EinzelJobs in Jobart konvertieren'
+    transform_job.short_description = _('EinzelJobs in Jobart konvertieren')
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)

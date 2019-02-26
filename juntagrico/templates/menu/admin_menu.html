@@ -1,0 +1,169 @@
+{% load i18n %}
+{% load config %}
+{% vocabulary "subscription" as v_subscription %}
+{% vocabulary "subscription_pl" as v_subscription_pl %}
+<hr/>
+<h5>
+    {% trans "Administration" %}
+</h5>
+<ul class="nav flex-column admin-menu">
+    {% if operation_group %}
+        <li class="nav-item">
+            <a class="nav-link" href="/admin">
+                {% trans "Daten Administration" %}
+            </a>
+        </li>
+    {% endif %}
+    {% if operation_group %}
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#subman">
+                {% blocktrans %}{{ v_subscription }} Management{% endblocktrans %}
+                <iclass="fas fa-angle-right">
+                </i>
+            </a>
+            <div class="collapse" id="subman">
+                <ul class="nav flex-column admin-menu subadmin-menu">
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/my/waitinglist">
+                                {% trans "Warteliste" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/my/typechangedlist">
+                                {% trans "Grössen Änderungen" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/my/canceledlist">
+                                {% trans "Kündigungsliste" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group and has_extra_subscriptions %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/my/extra/waitinglist">
+                                {% trans "Zusatzabos Warteliste" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group and has_extra_subscriptions %}
+                        <li class="nav-item">
+                            <a class="nav-link"href="/my/extra/canceledlist">
+                                {% trans "Zusatzabos Kündigungsliste" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/my/future">
+                                {% trans "Zukunftsblick" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
+    {% if can_filter_members or can_filter_subscriptions or  depot_admin|length > 0 or area_admin|length > 0 %}
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#filterman">
+                {% trans "Filter" %}
+                <iclass="fas fa-angle-right">
+                </i>
+            </a>
+            <div class="collapse" id="filterman">
+                <ul class="nav flex-column admin-menu subadmin-menu">
+                    {% if can_filter_members or can_filter_subscriptions %}
+                        <li class="nav-item inline">
+                            {% if can_filter_members %}
+                                <a class="nav-link inline" href="/my/filters">
+                                    {% vocabulary "member_pl" %}
+                                </a>
+                                |
+                            {% endif %}
+                            {% if can_filter_subscriptions %}
+                                <a class="nav-link inline"href="/my/subscriptions">
+                                    {% vocabulary "subscription_pl" %}
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                    {% for depot in depot_admin %}
+                        <li class="nav-item inline">
+                            <a class="nav-link inline"href="/my/filters/depot/{{ depot.id }}">
+                                {% vocabulary "member_pl" %}
+                            </a>
+                            |
+                            <aclass="nav-link inline" href="/my/subscriptions/depot/{{ depot.id }}">
+                                {% blocktrans with dn=depot.name %}{{ v_subscription_pl }} im {{ dn }}{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% for area in area_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link"href="/my/filters/area/{{ area.id }}">
+                                {% vocabulary "member_pl" %} {% trans "in" %} {{ area.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
+    {% if can_send_mails %}
+        <li class="nav-item">
+            <a class="nav-link" href="/my/mails">
+                {% trans "Mails verschicken" %}
+            </a>
+        </li>
+    {% endif %}
+    {% if operation_group %}
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#lists">
+                {% trans "Listen" %}
+                <iclass="fas fa-angle-right">
+                </i>
+            </a>
+            <div class="collapse" id="lists">
+                <ul class="nav flex-column admin-menu subadmin-menu">
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/my/pdf/amountoverview">
+                                {% trans "Mengen Übersicht" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link"href="/my/pdf/depotlist">
+                                {% vocabulary "depot" %}-{% trans "Listen" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link"href="/my/pdf/depotoverview">
+                                {% vocabulary "depot" %} {% trans "Übersicht" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
+    {% if operation_group %}
+        <li class="nav-item">
+            <a class="nav-link" href="/my/export">
+                {% trans "Exporte" %}
+            </a>
+        </li>
+    {% endif %}
+    {% for menu in admin_menus %}
+        {% include menu %}
+    {% endfor %}
+</ul>

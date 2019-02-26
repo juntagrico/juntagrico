@@ -39,14 +39,14 @@ class Member(models.Model):
     old_subscriptions = models.ManyToManyField(
         'Subscription', related_name='members_old')
 
-    confirmed = models.BooleanField('bestätigt', default=False)
+    confirmed = models.BooleanField(_('bestätigt'), default=False)
     reachable_by_email = models.BooleanField(
-        'Kontaktierbar von der Job Seite aus', default=False)
+        _('Kontaktierbar von der Job Seite aus'), default=False)
 
-    canceled = models.BooleanField('gekündigt', default=False)
+    canceled = models.BooleanField(_('gekündigt'), default=False)
     cancelation_date = models.DateField(
-        'Kündigüngssdatum', null=True, blank=True)
-    inactive = models.BooleanField('inaktiv', default=False)
+        _('Kündigüngssdatum'), null=True, blank=True)
+    inactive = models.BooleanField(_('inaktiv'), default=False)
 
     @property
     def is_cooperation_member(self):
@@ -97,8 +97,7 @@ class Member(models.Model):
     class Meta:
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
-        permissions = (('can_filter_members', _('Benutzer kann ') +
-                        Config.vocabulary('member_pl') + _(' filtern')),)
+        permissions = (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
 
     def get_name(self):
         return '%s %s' % (self.first_name, self.last_name)

@@ -34,15 +34,15 @@ define([], function () {
         if (count == 0) {
             $("button#send-email")
                 .prop("disabled", true)
-                .text("Email senden");
+                .text(email_string);
         } else if (count == 1) {
             $("button#send-email")
                 .prop("disabled", false)
-                .text("Email an diesen "+member_string+" senden");
+                .text(email_single_string+" "+member_string+" "+send_string);
         } else {
             $("button#send-email")
                 .prop("disabled", false)
-                .text("Email an diese " + count + " "+members_string+" senden");
+                .text( email_multi_string+" " + count + " "+members_string+" "+send_string);
         }
     }
 

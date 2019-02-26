@@ -1,39 +1,68 @@
 {% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Kündigungsliste</h3>
+    <h3>
+        {% trans "Kündigungsliste" %}
+    </h3>
 {% endblock %}
-
 {% block list %}
     <table id="filter-table" class="list table" style="display: table;">
         <thead>
-        <tr>
-            <th class="filter">Abo</th>
-            <th class="filter">End Datum</th>
-            <th class="filter">Kontakt</th>
-            <th class="filter">Email</th>
-            <th></th>
-            <th>Notizen</th>
-        </tr>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+                <th class="filter">
+                    {% trans "End Datum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
+                <th class="filter">
+                    {% trans "Email" %}
+                </th>
+                <th>
+                </th>
+                <th>
+                    {% trans "Notizen" %})
+                </th>
+            </tr>
         </thead>
         <tbody>
-        {% for subscription in management_list %}
-            <tr>
-                <td><a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">{{ subscription.overview }}</a></td>
-                <td>{{ subscription.end_date |date:"Y-m-d" }}</td>
-                <td>{{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}</td>
-                <td>
-                    <form id="subscription{{ subscription.id }}" method="post" action="/my/mails">
-                        {% csrf_token %}
-                        <input type="hidden" name="recipients" value="{{ subscription.primary_member.email }}"/>
-                        <input type="hidden" name="recipients_count" value="1"/>
-                        <a href="#" onclick="$('#subscription{{ subscription.id }}').submit();">{{ subscription.primary_member.email }}</a>
-                    </form>
-                </td>
-                <td><a href="/my/subscription/deactivate/{{ subscription.id }}/" class="btn btn-success">deaktivieren</a></td>
-                <td>{{ subscription.notes }}</td>
-            </tr>
-        {% endfor %}
+            {% for subscription in management_list %}
+                <tr>
+                    <td>
+                        <a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">
+                            {{ subscription.overview }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ subscription.end_date |date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
+                    </td>
+                    <td>
+                        <form id="subscription{{ subscription.id }}" method="post" action="/my/mails">
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients"value="{{ subscription.primary_member.email }}"/>
+                            <input type="hidden"name="recipients_count"value="1"/>
+                            <ahref="#"onclick="$('#subscription{{ subscription.id }}').submit();">
+                                {{ subscription.primary_member.email }}
+                            </a>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="/my/subscription/deactivate/{{ subscription.id }}/"class="btn btn-success">
+                            {% trans "deaktivieren" %}
+                        </a>
+                    </td>
+                    <td>
+                        {{ subscription.notes }}
+                    </td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 {% endblock %}

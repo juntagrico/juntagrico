@@ -7,6 +7,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -289,15 +290,15 @@ def excel_export_members_filter(request):
     workbook = Workbook(output)
     worksheet_s = workbook.add_worksheet(Config.vocabulary('member_pl'))
 
-    worksheet_s.write_string(0, 0, str('Name'))
+    worksheet_s.write_string(0, 0, str(_('Name')))
     worksheet_s.write_string(0, 1, str(Config.vocabulary('assignment')))
     worksheet_s.write_string(
-        0, 2, str(Config.vocabulary('assignment') + ' Kernbereich'))
-    worksheet_s.write_string(0, 3, str('Taetigkeitsbereiche'))
-    worksheet_s.write_string(0, 4, str('Depot'))
-    worksheet_s.write_string(0, 5, str('Email'))
-    worksheet_s.write_string(0, 6, str('Telefon'))
-    worksheet_s.write_string(0, 7, str('Mobile'))
+        0, 2, str(Config.vocabulary('assignment') + ' ' + _('Kernbereich')))
+    worksheet_s.write_string(0, 3, str(_('Taetigkeitsbereiche')))
+    worksheet_s.write_string(0, 4, str(_('Depot')))
+    worksheet_s.write_string(0, 5, str(_('Email')))
+    worksheet_s.write_string(0, 6, str(_('Telefon')))
+    worksheet_s.write_string(0, 7, str(_('Mobile')))
     members = MemberDao.members_with_assignments_count()
 
     row = 1
@@ -306,9 +307,9 @@ def excel_export_members_filter(request):
         for area in member.areas.all():
             member.all_areas = member.all_areas + area.name + ' '
         if member.all_areas == '':
-            member.all_areas = str('-Kein Tätigkeitsbereich-')
+            member.all_areas = str(_('-Kein Tätigkeitsbereich-'))
 
-        member.depot_name = str('Kein Depot definiert')
+        member.depot_name = str(_('Kein Depot definiert'))
         if member.subscription is not None:
             member.depot_name = member.subscription.depot.name
         looco_full_name = member.first_name + ' ' + member.last_name
