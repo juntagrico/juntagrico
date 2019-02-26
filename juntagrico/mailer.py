@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.template.loader import get_template
 from django.utils.module_loading import import_string
+from django.utils.translation import gettext as _
 
 # from juntagrico.util.ical import *
 from juntagrico.config import Config
@@ -46,14 +47,14 @@ From forms Emails
 
 
 def send_contact_form(subject, message, member, copy_to_member):
-    subject = 'Anfrage per ' + Config.adminportal_name() + ': ' + subject
+    subject = _('Anfrage per {0}:').format(Config.adminportal_name()) + subject
     send_mail(subject, message, Config.info_email(), [Config.info_email()], reply_to_email=member.email)
     if copy_to_member:
         send_mail(subject, message, Config.info_email(), [member.email])
 
 
 def send_contact_member_form(subject, message, member, contact_member, copy_to_member, attachments):
-    subject = 'Nachricht per ' + Config.adminportal_name() + ': ' + subject
+    subject = _('Nachricht per {0}:').format(Config.adminportal_name()) + subject
     send_mail(subject, message, Config.info_email(), [contact_member.email], reply_to_email=member.email,
               attachments=attachments)
     if copy_to_member:
@@ -97,19 +98,20 @@ def get_area_email(area):
 
 def send_new_member_in_activityarea_to_operations(area, member):
     emails = get_area_email(area)
-    send_mail('Neues Mitglied im Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + member.first_name + ' ' + member.last_name +
-              ' in den Taetigkeitsbereich ' + area.name + ' eingetragen',
+    send_mail(
+        _('Neues Mitglied im Taetigkeitsbereich {0}').format(area.name),
+        _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
+            member.first_name, member.last_name, area.name),
               Config.info_email(), emails)
 
 
 def send_removed_member_in_activityarea_to_operations(area, member):
     emails = get_area_email(area)
-    send_mail('Mitglied verlässt Taetigkeitsbereich ' + area.name,
-              'Soeben hat sich ' + member.first_name + ' ' +
-              member.last_name + ' aus dem Taetigkeitsbereich '
-              + area.name +
-              ' ausgetragen. Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern',
+    send_mail(
+        _('Mitglied verlässt Taetigkeitsbereich {0}').format(area.name),
+        _('Soeben hat sich {0} {1} aus dem Taetigkeitsbereich {2} ausgetragen. '
+          'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
+            member.first_name, member.last_name, area.name),
               Config.info_email(), emails)
 
 
@@ -123,7 +125,7 @@ def send_welcome_mail(email, password, onetime_code, subscription):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail('Willkommen bei ' + enriched_organisation('D'), content, Config.info_email(), [email])
+    send_mail(_('Willkommen bei {0}').format(enriched_organisation('D')), content, Config.info_email(), [email])
 
 
 def send_share_created_mail(member, share):
@@ -133,7 +135,7 @@ def send_share_created_mail(member, share):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail('Dein neuer Anteilschein', content, Config.info_email(), [member.email])
+    send_mail(_('Dein neuer Anteilschein'), content, Config.info_email(), [member.email])
 
 
 def send_subscription_created_mail(subscription):
@@ -151,7 +153,7 @@ def send_subscription_created_mail(subscription):
         emails.append(user.member.email)
     if len(emails) == 0:
         emails = [Config.info_email()]
-    send_mail('Neuer Anteilschein erstellt', content, Config.info_email(), emails)
+    send_mail(_('Neuer Anteilschein erstellt'), content, Config.info_email(), emails)
 
 
 def send_been_added_to_subscription(email, password, onetime_code, name, shares, welcome=True):
@@ -168,12 +170,13 @@ def send_been_added_to_subscription(email, password, onetime_code, name, shares,
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail('Willkommen bei ' + Config.organisation_name(), content, Config.info_email(), [email])
+    send_mail(_('Willkommen bei {0}').format(enriched_organisation('D')),
+              content, Config.info_email(), [email])
 
 
 def send_mail_password_reset(email, password):
     plaintext = get_template(Config.emails('password'))
-    subject = 'Dein neues ' + Config.organisation_name() + ' Passwort'
+    subject = _('Dein neues {0} Passwort').fromat(Config.organisation_name())
     d = {
         'email': email,
         'password': password,
@@ -195,7 +198,8 @@ def send_job_reminder(emails, job, participants):
         'contact': contact
     }
     content = plaintext.render(d)
-    send_mail(Config.organisation_name() + ' - Job-Erinnerung', content, Config.info_email(), emails)
+    send_mail( _('{0} - Einsatz-Erinnerung').format(Config.organisation_name()),
+               content, Config.info_email(), emails)
 
 
 def send_job_canceled(emails, job):
@@ -205,7 +209,8 @@ def send_job_canceled(emails, job):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail(Config.organisation_name() + ' - Job-Abgesagt', content, Config.info_email(), emails)
+    send_mail( _('{0} - Einsatz abgesagt').format(Config.organisation_name()),
+               content, Config.info_email(), emails)
 
 
 def send_confirm_mail(member):
@@ -216,7 +221,8 @@ def send_confirm_mail(member):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail(Config.organisation_name() + ' - Email Adresse bestätigen', content, Config.info_email(), [member.email])
+    send_mail( _('{0} - Email Adresse ändern').format(Config.organisation_name()),
+               content, Config.info_email(), [member.email])
 
 
 def send_job_time_changed(emails, job):
@@ -227,7 +233,8 @@ def send_job_time_changed(emails, job):
     }
     content = plaintext.render(d)
     #    ical_content = genecrate_ical_for_job(job)
-    send_mail(Config.organisation_name() + ' - Job-Zeit geändert', content, Config.info_email(), emails)
+    send_mail( _('{0} - Einsatz-Zeit geändert').format(Config.organisation_name()),
+               content, Config.info_email(), emails)
     #   msg.attach('einsatz.ics', ical_content, 'text/calendar')
 
 
@@ -239,7 +246,8 @@ def send_job_signup(emails, job):
     }
     content = plaintext.render(d)
     # ical_content = generate_ical_for_job(job)
-    send_mail(Config.organisation_name() + ' - für Job Angemeldet', content, Config.info_email(), emails)
+    send_mail( _('{0} - für Einsatz angemeldet').format(Config.organisation_name()),
+               content, Config.info_email(), emails)
     # Not attaching ics as it is not correct
     # msg.attach('einsatz.ics', ical_content, 'text/calendar')
 
@@ -251,7 +259,8 @@ def send_depot_changed(emails, depot):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail(Config.organisation_name() + ' - Depot geändert', content, Config.info_email(), emails)
+    send_mail(_('{0} - {1} geändert').format(Config.organisation_name(), Config.vocabulary('depot')),
+              content, Config.info_email(), emails)
 
 
 def send_subscription_canceled(subscription, message):
@@ -262,7 +271,8 @@ def send_subscription_canceled(subscription, message):
     }
     content = plaintext.render(d)
     emails = [Config.info_email()]
-    send_mail(Config.organisation_name() + ' - Abo gekündigt', content, Config.info_email(), emails)
+    send_mail(_('{0} - {1} gekündigt').format(Config.organisation_name(), Config.vocabulary('subscription')),
+              content, Config.info_email(), emails)
 
 
 def send_membership_canceled(member, end_date, message):
@@ -274,7 +284,8 @@ def send_membership_canceled(member, end_date, message):
     }
     content = plaintext.render(d)
     emails = [Config.info_email()]
-    send_mail(Config.organisation_name() + ' - Abo gekündigt', content, Config.info_email(), emails)
+    send_mail(_('{0} - {1} gekündigt').format(Config.organisation_name(), Config.vocabulary('member_type')),
+              content, Config.info_email(), emails)
 
 
 def send_bill_share(bill, share, member):
@@ -286,7 +297,8 @@ def send_bill_share(bill, share, member):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail(Config.organisation_name() + ' - Rechnung Anteilschein', content, Config.info_email(), [member.email])
+    send_mail(_('{0} - Rechnung {1}').format(Config.organisation_name(), Config.vocabulary('share')),
+              content, Config.info_email(), [member.email])
 
 
 def send_bill_sub(bill, subscription, start, end, member):
@@ -300,7 +312,8 @@ def send_bill_sub(bill, subscription, start, end, member):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail(Config.organisation_name() + ' - Rechnung Abo', content, Config.info_email(), [member.email])
+    send_mail(_('{0} - Rechnung {1}').format(Config.organisation_name(), Config.vocabulary('subscription')),
+              content, Config.info_email(), [member.email])
 
 
 def send_bill_extrasub(bill, extrasub, start, end, member):
@@ -314,4 +327,5 @@ def send_bill_extrasub(bill, extrasub, start, end, member):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail(Config.organisation_name() + ' - Rechnung ExtraAbo', content, Config.info_email(), [member.email])
+    send_mail(_('{0} - Rechnung Extra-Abo').format(Config.organisation_name()),
+              content, Config.info_email(), [member.email])

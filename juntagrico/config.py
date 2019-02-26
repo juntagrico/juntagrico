@@ -1,3 +1,5 @@
+from django.utils.translation import gettext as _
+
 from django.conf import settings
 
 
@@ -10,21 +12,21 @@ class Config:
         if hasattr(settings, 'VOCABULARY') and key in settings.VOCABULARY:
             return settings.VOCABULARY[key]
         return {
-            'member': 'Mitglied',
-            'member_pl': 'Mitglieder',
-            'assignment': 'Arbeitseinsatz',
-            'assignment_pl': 'Arbeitseinsätze',
-            'share': 'Anteilschein',
-            'share_pl': 'Anteilscheine',
-            'subscription': 'Abo',
-            'subscription_pl': 'Abos',
-            'co_member': 'Mitabonnent',
-            'co_member_pl': 'Mitabonnenten',
-            'price': 'Betriebsbeitrag',
-            'member_type': 'Mitglied',
-            'member_type_pl': 'Mitglieder',
-            'depot': 'Depot',
-            'depot_pl': 'Depots'
+            'member': _('Mitglied'),
+            'member_pl': _('Mitglieder'),
+            'assignment': _('Arbeitseinsatz'),
+            'assignment_pl': _('Arbeitseinsätze'),
+            'share': _('Anteilschein'),
+            'share_pl': _('Anteilscheine'),
+            'subscription': _('Abo'),
+            'subscription_pl': _('Abos'),
+            'co_member': _('Mitabonnent'),
+            'co_member_pl': _('Mitabonnenten'),
+            'price': _('Betriebsbeitrag'),
+            'member_type': _('Mitglied'),
+            'member_type_pl': _('Mitglieder'),
+            'depot': _('Depot'),
+            'depot_pl': _('Depots')
         }[key]
 
     @staticmethod

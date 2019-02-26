@@ -1,5 +1,7 @@
 from ics import Calendar, Event
 
+from django.utils.translation import gettext as _
+
 from juntagrico.config import Config
 
 '''
@@ -10,7 +12,7 @@ from juntagrico.config import Config
 def generate_ical_for_job(job):
     c = Calendar()
     e = Event()
-    e.name = Config.organisation_name() + ' Einsatz:' + job.type.name
+    e.name = Config.organisation_name() + ' ' +_('Einsatz')+':' + job.type.name
     e.location = job.type.location
     e.description = job.type.description
     e.begin = job.time.strftime('%Y%m%d %H:%M:%S')

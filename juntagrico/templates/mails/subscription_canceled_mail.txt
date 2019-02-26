@@ -8,7 +8,7 @@
 Soeben hat {{ fn }} {{ ln }}
 email : {{e }}
 
-sein {{ v_subscription }} gekündet.
+sein/e/n {{ v_subscription }} gekündet.
 {% endblocktrans %}
 
 {% blocktrans trimmed with sd=subscription.end_date|date:"d.m.Y" %}

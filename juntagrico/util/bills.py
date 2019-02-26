@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
 from juntagrico.entity.billing import Bill
-from juntagrico.util.temporal import start_of_next_business_year
+from juntagrico.util.temporal import start_of_next_business_year, end_of_business_year
 from juntagrico.util.temporal import start_of_specific_business_year
 from juntagrico.util.temporal import end_of_specific_business_year
 from juntagrico.util.temporal import start_of_business_year

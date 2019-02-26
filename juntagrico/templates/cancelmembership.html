@@ -32,7 +32,7 @@
                         {% trans "Du erhälst keine Emails mehr" %}
                     </li>
                     <li>
-                        {% blocktrans %}Du wirst bei deinem {{ v_subscription }} ausgetragen{% endblocktrans %}
+                        {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}
                     </li>
                     {% if enable_shares %}
                         <li>
@@ -46,7 +46,7 @@
                         {% trans "Du erhälst keine Emails mehr" %}
                     </li>
                     <li>
-                        {% blocktrans %}Du wirst bei deinem {{ v_subscription }} ausgetragen{% endblocktrans %}
+                        {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}
                     </li>
                 </ul>
             {% endif %}
@@ -81,7 +81,7 @@
                 {% endblocktrans %}
             {% elif enable_shares %}
                 {% blocktrans trimmed %}
-                Du bist entweder Hauptabonnent oder ohne deine {{ v_share_pl }} hat dein jetztiges
+                Du bist entweder Hauptabonnent oder ohne deine {{ v_share_pl }} hat dein/e jetztige/r/s
                 {{ v_subscription }} nicht genug {{ v_share_pl }} um weiter zu existieren. Falls du Hilfe brauchst
                 um das Problem zu beheben wende dich an {{ c_info_email }}.
                 {% endblocktrans %}

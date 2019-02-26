@@ -29,7 +29,7 @@ Diese/r/s {{ v_share }} hat die Systemnummer {{ sid }}.{% endblocktrans %}
 
 {% blocktrans %}Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur 1 {{ v_share }} auf einmal.
 Zusätzlich gib im Betreff die Systemnummer an und die Emailadresse des Halters des/r {{ v_share }} an
-(dies ist vorallem wichtig wenn du den {{ v_share }} für jemand anderen bezahlst){% endblocktrans %}
+(dies ist vor allem wichtig wenn du diese/n/s {{ v_share }} für jemand anderen bezahlst){% endblocktrans %}
 
 {% blocktrans trimmed %}
 Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe

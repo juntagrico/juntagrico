@@ -1,19 +1,20 @@
-# -*- coding: utf-8 -*-
 import calendar
 import datetime
 from datetime import timedelta
 from django.utils import timezone
 
+from django.utils.translation import gettext as _
+
 from juntagrico.config import Config
 
 
-weekday_choices = ((1, 'Montag'),
-                   (2, 'Dienstag'),
-                   (3, 'Mittwoch'),
-                   (4, 'Donnerstag'),
-                   (5, 'Freitag'),
-                   (6, 'Samstag'),
-                   (7, 'Sonntag'))
+weekday_choices = ((1, _('Montag')),
+                   (2, _('Dienstag')),
+                   (3, _('Mittwoch')),
+                   (4, _('Donnerstag')),
+                   (5, _('Freitag')),
+                   (6, _('Samstag')),
+                   (7, _('Sonntag')))
 
 
 weekdays = dict(weekday_choices)
@@ -128,15 +129,15 @@ def calculate_last_offset(day, month, offset):
     return datetime.date(year, month, day)
 
 
-month_choices = ((1, 'Januar'),
-                 (2, 'Februar'),
-                 (3, 'März'),
-                 (4, 'April'),
-                 (5, 'Mai'),
-                 (6, 'Juni'),
-                 (7, 'Juli'),
-                 (8, 'August'),
-                 (9, 'September'),
-                 (10, 'Oktober'),
-                 (11, 'November'),
-                 (12, 'Dezember'))
+month_choices = ((1, _('Januar')),
+                 (2, _('Februar')),
+                 (3, _('März')),
+                 (4, _('April')),
+                 (5, _('Mai')),
+                 (6, _('Juni')),
+                 (7, _('Juli')),
+                 (8, _('August')),
+                 (9, _('September')),
+                 (10, _('Oktober')),
+                 (11, _('November')),
+                 (12, _('Dezember')))

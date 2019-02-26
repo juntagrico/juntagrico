@@ -134,7 +134,7 @@ class Job(PolymorphicModel):
     slots = models.PositiveIntegerField(_('Plaetze'))
     time = models.DateTimeField()
     multiplier = models.PositiveIntegerField(
-        Config.vocabulary('assignment')+' vielfaches', default=1)
+        _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)

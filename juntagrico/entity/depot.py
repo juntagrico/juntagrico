@@ -17,24 +17,23 @@ class Depot(models.Model):
     '''
     Location where stuff is picked up.
     '''
-    code = models.CharField('Code', max_length=100,
+    code = models.CharField(_('Sortier-Code'), max_length=100,
                             validators=[validators.validate_slug], unique=True)
-    name = models.CharField(Config.vocabulary(
-        'depot')+' Name', max_length=100, unique=True)
+    name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
-    capacity = models.PositiveIntegerField('Kapazität', default=0)
-    latitude = models.CharField('Latitude', max_length=100, default='',
+    weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)
+    capacity = models.PositiveIntegerField(_('Kapazität'), default=0)
+    latitude = models.CharField(_('Latitude'), max_length=100, default='',
                                 null=True, blank=True)
-    longitude = models.CharField('Longitude', max_length=100, default='',
+    longitude = models.CharField(_('Longitude'), max_length=100, default='',
                                  null=True, blank=True)
-    addr_street = models.CharField('Strasse', max_length=100,
+    addr_street = models.CharField(_('Strasse'), max_length=100,
                                    null=True, blank=True)
-    addr_zipcode = models.CharField('PLZ', max_length=10,
+    addr_zipcode = models.CharField(_('PLZ'), max_length=10,
                                     null=True, blank=True)
-    addr_location = models.CharField('Ort', max_length=50,
+    addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
-    description = models.TextField('Beschreibung', max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
 
     overview_cache = None
     subscription_cache = None

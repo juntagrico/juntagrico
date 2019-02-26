@@ -13,12 +13,12 @@
     {% if saved %}
         <div class="alert alert-success">
             {% if subscription.state == 'waiting' %}
-                {% blocktrans %}Das {{ v_depot }} wurde geändert.{% endblocktrans %}
+                {% blocktrans %}Dein/e {{ v_depot }} wurde geändert.{% endblocktrans %}
             {% else %}
                 {% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name%}
-                !!!Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}-Listen Generierung.
+                !!!Achtung! Dein/e {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}-Listen Generierung.
                 Solange keine Email an {{ spe }}
-                mit der Bestätigung für das neue {{ v_depot }} gesendet wurde ist noch das alte {{ v_depot }}
+                mit der Bestätigung für dein/e/n neue/s/n {{ v_depot }} gesendet wurde ist noch dein/e/n alte/s/n {{ v_depot }}
                 {{ sde }} aktiv!!!
                 {% endblocktrans %}
             {% endif %}
@@ -32,7 +32,7 @@
             {% csrf_token %}
             <div class="form-group row">
                 <label class="control-label col-md-3" for="depot">
-                    {% blocktrans %}Altes {{ v_depot }}{% endblocktrans %}
+                    {% blocktrans %}Alte/s/r {{ v_depot }}{% endblocktrans %}
                 </label>
                 <div class="controls col-md-9">
                     {{ subscription.depot.name }}
@@ -40,7 +40,7 @@
             </div>
             <div class="form-group row">
                 <label class="control-label col-md-3" for="depot">
-                    {% blocktrans %}Neues {{ v_depot }}{% endblocktrans %}
+                    {% blocktrans %}Neue/s/r {{ v_depot }}{% endblocktrans %}
                 </label>
                 <div class="controls col-md-9">
                     <select name="depot" id="depot" class="form-control">
@@ -51,7 +51,7 @@
                         {% endfor %}
                     </select>
                     <label for="depot">
-                        {% blocktrans %}Wähle ein neues {{ v_depot }} aus. {% endblocktrans %}
+                        {% blocktrans %}Wähle 1 {{ v_depot }} aus als zukünftiger {{ v_subscription }}-Abholort. {% endblocktrans %}
                     </label>
                     {% if requires_map %}
                         <div id="map-canvas">
@@ -61,8 +61,8 @@
             </div>
             <div class="offset-md-3 form-actions">
                 {% blocktrans trimmed %}
-                Achtung! Das {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}listen Generierung. Du wirst
-                darüber informiert wenn dein {{ v_depot }} ändert.
+                Achtung! Dein/e {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}listen Generierung. Du wirst
+                darüber informiert wenn dein/e {{ v_depot }} ändert.
                 {% endblocktrans %}
                 <br/>
                 <br/>

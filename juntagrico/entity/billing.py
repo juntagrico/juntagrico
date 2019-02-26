@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.db import models
 from polymorphic.models import PolymorphicModel
 from django.utils import timezone
@@ -66,7 +64,7 @@ class ExtraSubBillingPeriod(models.Model):
 
     type = models.ForeignKey('ExtraSubscriptionType', related_name='periods', null=False, blank=False,
                              on_delete=models.PROTECT)
-    price = models.DecimalField('Preis', max_digits=10, decimal_places=2)
+    price = models.DecimalField(_('Preis'), max_digits=10, decimal_places=2)
     start_day = models.PositiveIntegerField(_('Start Tag'))
     start_month = models.PositiveIntegerField(
         _('Start Monat'), choices=month_choices)

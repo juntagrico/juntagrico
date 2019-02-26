@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.conf.urls import url
+from django.utils.translation import gettext as _
 
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.dao.jobtypedao import JobTypeDao
@@ -24,13 +25,13 @@ class JobAdmin(admin.ModelAdmin):
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
             self.message_user(
-                request, 'Genau 1 Job auswählen!', level=messages.ERROR)
+                request, _('Genau 1 Job auswählen!'), level=messages.ERROR)
             return HttpResponseRedirect('')
 
         inst, = queryset.all()
         return HttpResponseRedirect('copy_job/%s/' % inst.id)
 
-    mass_copy_job.short_description = 'Job mehrfach kopieren...'
+    mass_copy_job.short_description = _('Job mehrfach kopieren...')
 
     def copy_job(self, request, queryset):
         for inst in queryset.all():
@@ -38,7 +39,7 @@ class JobAdmin(admin.ModelAdmin):
                 type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
 
-    copy_job.short_description = 'Jobs kopieren'
+    copy_job.short_description = _('Jobs kopieren')
 
     def get_form(self, request, obj=None, **kwds):
         if 'copy_job' in request.path:

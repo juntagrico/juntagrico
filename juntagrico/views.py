@@ -1,23 +1,15 @@
-# -*- coding: utf-8 -*-
-
-import random
-import string
-from datetime import date
-
-
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.translation import gettext as _
 
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.forms import *
 from juntagrico.models import *
@@ -151,9 +143,9 @@ def job(request, job_id):
     for member in unique_participants:
         name = '{} {}'.format(member.first_name, member.last_name)
         if member.assignment_for_job == 2:
-            name += ' (mit einer weiteren Person)'
+            name += _(' (mit einer weiteren Person)')
         elif member.assignment_for_job > 2:
-            name += ' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
+            name += _(' (mit {} weiteren Personen)').format(member.assignment_for_job - 1)
         contact_url = '/my/contact/member/{}/{}/'.format(member.id, job_id)
         extras = []
         for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):

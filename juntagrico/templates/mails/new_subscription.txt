@@ -5,7 +5,7 @@
 {% vocabulary "subscription" as v_subscription %}
 {% trans "Hallo" %}
 
-{% blocktrans %}Soeben wurde ein neues {{ v_subscription }} bestellt{% endblocktrans %}
+{% blocktrans %}Soeben wurde ein/e neue/s/r {{ v_subscription }} bestellt{% endblocktrans %}
 
 {% trans "ID" %}: {{subscription.id}}
 {% trans "Beschrieb" %}: {{subscription.overview}}

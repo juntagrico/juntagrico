@@ -1,5 +1,7 @@
 from juntagrico.config import Config
 
+from django.utils.translation import gettext as _
+
 """
     c means case
 """
@@ -8,17 +10,17 @@ from juntagrico.config import Config
 def enriched_organisation(c):
     g = Config.organisation_name_config()['gender'].upper()
     if (c == 'N' and g == 'M') or ((c == 'G' or c == 'D') and g == 'F'):
-        article = 'der'
+        article = _('der')
     elif c == 'G' and (g == 'M' or g == 'N'):
-        article = 'des'
+        article = _('des')
     elif c == 'D' and (g == 'M' or g == 'N'):
-        article = 'dem'
+        article = _('dem')
     elif c == 'A' and g == 'M':
-        article = 'den'
+        article = _('den')
     elif (c == 'N' or c == 'A') and g == 'F':
-        article = 'die'
+        article = _('die')
     elif (c == 'N' or c == 'A') and g == 'N':
-        article = 'des'
+        article = _('des')
     else:
         article = ''
 
