@@ -173,13 +173,22 @@ class Subscription(Billable):
 
     @staticmethod
     def get_size_name(types=[]):
-        size_names = []
+        size_names = {}
         for type in types.all():
-            size_names.append(type.__str__())
-        if len(size_names) > 0:
-            return ', '.join(size_names)
+            name = type.__str__()
+            if name in size_names:
+                size_names[name] = size_names[name] + 1
+            else:
+                size_names[name] = 1
 
-        return 'kein Abo'
+        if len(size_names) == 0:
+            return _('kein/e/n {0}').format(Config.vocabulary('subscription'))
+
+        formatted = []
+        for key, value in size_names.items():
+            formatted.append(key + ': ' + value.__str__())
+        return '<br>'.join(formatted)
+
 
     @property
     def required_shares(self):
