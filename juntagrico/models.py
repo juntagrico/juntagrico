@@ -15,7 +15,7 @@ from juntagrico.entity.listmessage import *
 
 class SpecialRoles(models.Model):
     '''
-    No instances should be created of this class it i just the place to create permissions
+    No instances should be created of this class it is just the place to create permissions
     like bookkeeper or operation group
     '''
 
