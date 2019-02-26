@@ -190,7 +190,7 @@ def send_job_reminder(emails, job, participants):
     plaintext = get_template(Config.emails('j_reminder'))
     coordinator = job.type.activityarea.coordinator
     contact = coordinator.first_name + ' ' + \
-              coordinator.last_name + ': ' + job.type.activityarea.contact()
+        coordinator.last_name + ': ' + job.type.activityarea.contact()
     d = {
         'job': job,
         'participants': participants,
