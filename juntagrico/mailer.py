@@ -25,7 +25,7 @@ def filter_whitelist_emails(to_emails):
 
 
 # sends mail only to specified email-addresses if dev mode
-def send_mail(subject, message, from_email, to_emails, reply_to_email=None,  html_message=None, attachments=None):
+def send_mail(subject, message, from_email, to_emails, reply_to_email=None, html_message=None, attachments=None):
     okmails = to_emails if settings.DEBUG is False else filter_whitelist_emails(to_emails)
     if len(okmails) > 0:
         msg = EmailMultiAlternatives(subject, message, from_email, bcc=okmails, reply_to=[reply_to_email])
@@ -102,7 +102,7 @@ def send_new_member_in_activityarea_to_operations(area, member):
         _('Neues Mitglied im Taetigkeitsbereich {0}').format(area.name),
         _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
             member.first_name, member.last_name, area.name),
-              Config.info_email(), emails)
+        Config.info_email(), emails)
 
 
 def send_removed_member_in_activityarea_to_operations(area, member):
@@ -112,7 +112,7 @@ def send_removed_member_in_activityarea_to_operations(area, member):
         _('Soeben hat sich {0} {1} aus dem Taetigkeitsbereich {2} ausgetragen. '
           'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
             member.first_name, member.last_name, area.name),
-              Config.info_email(), emails)
+        Config.info_email(), emails)
 
 
 def send_welcome_mail(email, password, onetime_code, subscription):
@@ -198,8 +198,8 @@ def send_job_reminder(emails, job, participants):
         'contact': contact
     }
     content = plaintext.render(d)
-    send_mail( _('{0} - Einsatz-Erinnerung').format(Config.organisation_name()),
-               content, Config.info_email(), emails)
+    send_mail(_('{0} - Einsatz-Erinnerung').format(Config.organisation_name()),
+              content, Config.info_email(), emails)
 
 
 def send_job_canceled(emails, job):
@@ -209,8 +209,8 @@ def send_job_canceled(emails, job):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail( _('{0} - Einsatz abgesagt').format(Config.organisation_name()),
-               content, Config.info_email(), emails)
+    send_mail(_('{0} - Einsatz abgesagt').format(Config.organisation_name()),
+              content, Config.info_email(), emails)
 
 
 def send_confirm_mail(member):
@@ -221,8 +221,8 @@ def send_confirm_mail(member):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    send_mail( _('{0} - Email Adresse ändern').format(Config.organisation_name()),
-               content, Config.info_email(), [member.email])
+    send_mail(_('{0} - Email Adresse ändern').format(Config.organisation_name()),
+              content, Config.info_email(), [member.email])
 
 
 def send_job_time_changed(emails, job):
@@ -233,8 +233,8 @@ def send_job_time_changed(emails, job):
     }
     content = plaintext.render(d)
     #    ical_content = genecrate_ical_for_job(job)
-    send_mail( _('{0} - Einsatz-Zeit geändert').format(Config.organisation_name()),
-               content, Config.info_email(), emails)
+    send_mail(_('{0} - Einsatz-Zeit geändert').format(Config.organisation_name()),
+              content, Config.info_email(), emails)
     #   msg.attach('einsatz.ics', ical_content, 'text/calendar')
 
 
@@ -246,8 +246,8 @@ def send_job_signup(emails, job):
     }
     content = plaintext.render(d)
     # ical_content = generate_ical_for_job(job)
-    send_mail( _('{0} - für Einsatz angemeldet').format(Config.organisation_name()),
-               content, Config.info_email(), emails)
+    send_mail(_('{0} - für Einsatz angemeldet').format(Config.organisation_name()),
+              content, Config.info_email(), emails)
     # Not attaching ics as it is not correct
     # msg.attach('einsatz.ics', ical_content, 'text/calendar')
 
