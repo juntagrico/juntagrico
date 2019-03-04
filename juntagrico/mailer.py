@@ -176,7 +176,7 @@ def send_been_added_to_subscription(email, password, onetime_code, name, shares,
 
 def send_mail_password_reset(email, password):
     plaintext = get_template(Config.emails('password'))
-    subject = _('Dein neues {0} Passwort').fromat(Config.organisation_name())
+    subject = _('Dein neues {0} Passwort').format(Config.organisation_name())
     d = {
         'email': email,
         'password': password,
