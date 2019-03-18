@@ -12,9 +12,9 @@
             {% trans "Adresse" %}
         </div>
         <div class="col-md-9">
-            {{ depot.adivr_street }}
+            {{ depot.addr_street }}
             <br/>
-            {{ depot.adivr_zipcode }} {{ depot.adivr_location }}
+            {{ depot.addr_zipcode }} {{ depot.addr_location }}
         </div>
     </div>
     <div class="row mb-3">
@@ -59,9 +59,9 @@
         {longitude: '{{ depot.longitude }}',
         latitude: '{{ depot.latitude }}',
         name: '{{ depot.name }}',
-        adivr_street: '{{ depot.adivr_street }}',
-        adivr_zipcode: '{{ depot.adivr_zipcode }}',
-        adivr_location: '{{ depot.adivr_location }}'
+        addr_street: '{{ depot.addr_street }}',
+        addr_zipcode: '{{ depot.addr_zipcode }}',
+        addr_location: '{{ depot.addr_location }}'
         }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key={% config "google_api_key" %}">
