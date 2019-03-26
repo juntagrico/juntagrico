@@ -6,6 +6,7 @@ from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico import views_create_subscription as juntagrico_cs
+from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico.personalisation import personal_urls
 
 urlpatterns = [
@@ -62,7 +63,9 @@ urlpatterns = [
     url('^my/extra/cancel/(?P<extra_id>.*?)/(?P<subscription_id>.*?)/',
         juntagrico_subscription.cancel_extra),
     url('^my/order/share/$', juntagrico_subscription.order_shares),
+    url('^my/order/share/$', juntagrico_subscription.order_shares),
     url('^my/order/share/success$', juntagrico_subscription.order_shares_success),
+    url('^my/payout/share/(?P<share_id>.*?)/', juntagrico_subscription.payout_share),
 
     url('^my/create/subscrition$', juntagrico_cs.cs_select_subscription),
     url('^my/create/subscription/selectdepot$', juntagrico_cs.cs_select_depot),
@@ -101,10 +104,13 @@ urlpatterns = [
     url('^my/typechangedlist', juntagrico_admin.typechangelist),
     url('^my/extra/waitinglist', juntagrico_admin.extra_waitinglist),
     url('^my/extra/canceledlist', juntagrico_admin.extra_canceledlist),
+    url('^my/share/canceledlist', juntagrico_admin.share_canceledlist),
     url('^my/pdf/depotlist', juntagrico_admin.depotlist),
     url('^my/pdf/depotoverview', juntagrico_admin.depot_overview),
     url('^my/pdf/amountoverview', juntagrico_admin.amount_overview),
     url('^my/maps', juntagrico_admin.maps),
+
+    url('^my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001),
 
     url(r'^my', include(personal_urls)),
 ]

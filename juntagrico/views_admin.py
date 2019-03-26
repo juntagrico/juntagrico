@@ -15,6 +15,7 @@ from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.extrasubscriptiondao import ExtraSubscriptionDao
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.models import Depot, ActivityArea, Member, Share
@@ -415,6 +416,14 @@ def extra_canceledlist(request):
     render_dict.update(get_changedate(request))
     return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), render_dict,
                                         'management_lists/extra_canceledlist.html', request)
+
+
+@permission_required('juntagrico.is_operations_group')
+def share_canceledlist(request):
+    render_dict = get_menu_dict(request)
+    render_dict.update({'change_date_disabled': True})
+    return subscription_management_list(ShareDao.canceled_shares(), render_dict,
+                                        'management_lists/share_canceledlist.html', request)
 
 
 @permission_required('juntagrico.is_operations_group')

@@ -1,0 +1,80 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <h3>
+        {% blocktrans %}{{ v_share_pl }} Kündigungsliste{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block management_cmd %}
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <a href="/my/iso20022/shares/pain001"class="btn btn-success">
+                {% trans "Zahlungsdatei" %}
+            </a>
+        </div>
+    </div>
+{% endblock %}
+{% block list %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "Nummer" %}
+                </th>
+                <th class="filter">
+                    {% trans "Name" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kündigungsdatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "IBAN" %}
+                </th>
+                <th class="filter">
+                    {% trans "Email" %}
+                </th>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for share in management_list %}
+                <tr>
+                    <td>
+                        {{ share.id }}
+                    </td>
+                    <td>
+                        {{ share.member.first_name }} {{ share.member.last_name }}
+                    </td>
+                    <td>
+                        {{ share.cancelled_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% if share.member.iban %}
+                        {{ share.member.iban }}
+                        {% else %}
+                        {% trans "keine IBAN angegeben" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form id="share{{ share.id }}" method="post" action="/my/mails">
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients"value="{{ share.member.email }}"/>
+                            <input type="hidden" name="recipients_count" value="1"/>
+                            <a href="#"onclick="$('#share{{ share.id }}').submit();">
+                                {{ share.member.email }}
+                            </a>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="/my/payout/share/{{ share.id }}/"class="btn btn-success">
+                            {% trans "ausbuchen" %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

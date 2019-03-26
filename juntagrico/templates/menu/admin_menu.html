@@ -1,7 +1,9 @@
 {% load i18n %}
 {% load config %}
+{% config "enable_shares" as c_enable_shares %}
 {% vocabulary "subscription" as v_subscription %}
 {% vocabulary "subscription_pl" as v_subscription_pl %}
+{% vocabulary "share_pl" as v_share_pl %}
 <hr/>
 <h5>
     {% trans "Administration" %}
@@ -18,7 +20,7 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#subman">
                 {% blocktrans %}{{ v_subscription }} Management{% endblocktrans %}
-                <iclass="fas fa-angle-right">
+                <i class="fas fa-angle-right">
                 </i>
             </a>
             <div class="collapse" id="subman">
@@ -69,11 +71,32 @@
             </div>
         </li>
     {% endif %}
+{% if operation_group and c_enable_shares %}
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#shareman">
+                {% blocktrans %}{{ v_share_pl }} Management{% endblocktrans %}
+                <i class="fas fa-angle-right">
+                </i>
+            </a>
+            <div class="collapse" id="shareman">
+                <ul class="nav flex-column admin-menu subadmin-menu">
+
+                    {% if operation_group%}
+                        <li class="nav-item">
+                            <a class="nav-link"href="/my/share/canceledlist">
+                                 {% blocktrans %}{{ v_share_pl }} Kündigungsliste{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
     {% if can_filter_members or can_filter_subscriptions or  depot_admin|length > 0 or area_admin|length > 0 %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#filterman">
                 {% trans "Filter" %}
-                <iclass="fas fa-angle-right">
+                <i class="fas fa-angle-right">
                 </i>
             </a>
             <div class="collapse" id="filterman">
@@ -99,7 +122,7 @@
                                 {% vocabulary "member_pl" %}
                             </a>
                             |
-                            <aclass="nav-link inline" href="/my/subscriptions/depot/{{ depot.id }}">
+                            <a class="nav-link inline" href="/my/subscriptions/depot/{{ depot.id }}">
                                 {% blocktrans with dn=depot.name %}{{ v_subscription_pl }} im {{ dn }}{% endblocktrans %}
                             </a>
                         </li>
@@ -126,7 +149,7 @@
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#lists">
                 {% trans "Listen" %}
-                <iclass="fas fa-angle-right">
+                <i class="fas fa-angle-right">
                 </i>
             </a>
             <div class="collapse" id="lists">

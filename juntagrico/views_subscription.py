@@ -445,3 +445,18 @@ def order_shares_success(request):
         'referer': referer
     })
     return render(request, 'order_share_success.html', renderdict)
+
+
+@permission_required('juntagrico.is_operations_group')
+def payout_share(request, share_id):
+    share = get_object_or_404(Share, id=share_id)
+    share.payback_date = timezone.now()
+    share.save()
+    member = share.member
+    if member.active_shares_count == 0 and member.canceled is True:
+        member.inactive=True
+        member.save()
+    if request.META.get('HTTP_REFERER')is not None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return redirect('http://'+Config.adminportal_server_url())

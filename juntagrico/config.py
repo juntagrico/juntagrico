@@ -69,7 +69,7 @@ class Config:
             return settings.ORGANISATION_BANK_CONNECTION
         return {'PC': '01-123-5',
                 'IBAN': 'CH 00 12345 67890 12345 67890 10',
-                'BIC': 'BIC12345XX',
+                'BIC': 'BIC1234500',
                 'NAME': 'Juntagrico Bank',
                 'ESR': '01-123-45'}
 

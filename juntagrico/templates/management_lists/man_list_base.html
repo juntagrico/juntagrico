@@ -10,31 +10,33 @@
         body > .container
         {width: 95%;}
     </style>
-    {% if can_change_date %}
-        <form action="/my/changedate" method="POST">
-            {% csrf_token %}
-            <div class="row mb-3">
-                <div class="col-md-3">
-                    <input name="date" data-toggle="datepicker"/>
+    {% if not change_date_disabled %}
+        {% if can_change_date %}
+            <form action="/my/changedate" method="POST">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <input name="date" data-toggle="datepicker"/>
+                    </div>
+                    <div class="col-md-6">
+                        {% trans "Lege das Datum für die Änderung fest." %}
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success">
+                            {% trans "ändern" %}
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    {% trans "Lege das Datum für die Änderung fest." %}
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-success">
-                        {% trans "ändern" %}
-                    </button>
-                </div>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">
+                {% trans "Das Änderungsdatum ist auf {{ change_date }} gesetzt." %}
+                <a href="/my/changedate/stop">
+                    {% trans "Beende dies hier" %}
+                </a>
+                .
             </div>
-        </form>
-    {% else %}
-        <div class="alert alert-warning">
-            {% trans "Das Änderungsdatum ist auf {{ change_date }} gesetzt." %}
-            <ahref="/my/changedate/stop">
-                {% trans "Beende dies hier" %}
-            </a>
-            .
-        </div>
+        {% endif %}
     {% endif %}
     <div class="row">
         <div class="col-md-12">
@@ -51,6 +53,8 @@
             </form>
         </div>
     </div>
+    {% block management_cmd %}
+    {% endblock %}
     <div id="managementlist" class="row">
         <div class="col-md-12">
             {% block list %}
