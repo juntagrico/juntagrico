@@ -22,7 +22,7 @@ from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 def get_menu_dict(request):
     member = request.user.member
-    next_jobs = []
+    next_jobs = [a.job for a in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time')]
 
     required_assignments = 0
     if member.subscription is not None:
@@ -36,16 +36,9 @@ def get_menu_dict(request):
         userassignments = AssignmentDao.assignments_for_member_current_business_year(
             member)
         required_assignments = member.subscription.required_assignments
-        assignmentsrange = list(range(
-            0, max(required_assignments, len(userassignments) + len(partner_assignments))))
-
-        for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time'):
-            next_jobs.append(assignment.job)
     else:
-        assignmentsrange = None
         partner_assignments = []
         userassignments = []
-        next_jobs = []
 
     userassignments_total = int(sum(a.amount for a in userassignments))
     userassignemnts_core = int(
