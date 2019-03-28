@@ -2,8 +2,8 @@ from django.contrib import admin
 
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
 from juntagrico.admins.inlines.extra_subscription_inline import ExtraSubscriptionInline
-from juntagrico.admins.inlines.future_subscription_type_inline import FutureSubscriptionTypeInline
-from juntagrico.admins.inlines.subscription_type_inline import SubscriptionTypeInline
+from juntagrico.admins.inlines.subscription_type_inlines import FutureSubscriptionTypeInline
+from juntagrico.admins.inlines.subscription_type_inlines import SubscriptionTypeInline
 from juntagrico.util.addons import get_subscription_inlines
 
 

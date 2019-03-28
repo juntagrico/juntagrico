@@ -1,7 +1,10 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.admin import widgets
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.entity.subs import Subscription
 from juntagrico.dao.memberdao import MemberDao
 
@@ -38,7 +41,8 @@ class SubscriptionAdminForm(forms.ModelForm):
         primary = self.cleaned_data['primary_member']
         if primary not in members:
             self.cleaned_data['primary_member'] = members[0] if members else None
-
+        new_members = set(self.cleaned_data['subscription_members'])
+        self.instance._future_members = new_members
         return forms.ModelForm.clean(self)
 
     def save(self, commit=True):
