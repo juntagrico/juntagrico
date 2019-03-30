@@ -110,6 +110,12 @@ class Config:
         return ''
 
     @staticmethod
+    def gdpr_info():
+        if hasattr(settings, 'GDPR_INFO'):
+            return settings.GDPR_INFO
+        return ''
+
+    @staticmethod
     def mail_template():
         if hasattr(settings, 'MAIL_TEMPLATE'):
             return settings.MAIL_TEMPLATE

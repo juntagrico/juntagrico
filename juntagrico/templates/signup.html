@@ -12,6 +12,7 @@
 {% block allcontent %}
     {% config "enable_shares" as c_enable_shares %}
     {% config "business_regulations" as c_business_regulations %}
+    {% config "gdpr_info" as c_gdpr_info %}
     {% config "share_price" as c_share_price %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     {% vocabulary "share" as v_share %}
@@ -204,8 +205,13 @@
                                 {% if c_business_regulations.strip %}
                                     und
                                     <a target="_blank" href="{{ c_business_regulations|safe }}">
-                                        das
-                                        Betriebsreglement
+                                        das Betriebsreglement
+                                    </a>
+                                {% endif %}
+                                {% if c_gdpr_info.strip %}
+                                    und
+                                    <a target="_blank" href="{{ c_gdpr_info|safe }}">
+                                        die DSGVO Infos
                                     </a>
                                 {% endif %}
                                 gelesen und erkläre meinen Willen, "{% config "organisation_long_name" %}" beizutreten.

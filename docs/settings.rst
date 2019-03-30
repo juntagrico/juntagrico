@@ -197,6 +197,18 @@ BYLAWS
 
     ""
 
+GDPR_INFO
+------
+  URL to your gdpr document
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    ""
+
 MAIL_TEMPLATE
 -------------
   Path to your custom html email template if you want to overwrite the look and feel of the html emails
