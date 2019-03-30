@@ -1,21 +1,14 @@
-# encoding: utf-8
 import time
-import datetime
 
-from django.db import models
-from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-
-from juntagrico.mailer import *
-from juntagrico.util.temporal import *
-from juntagrico.util.bills import *
-from juntagrico.config import Config
-
 from juntagrico.entity.billing import *
 from juntagrico.entity.subtypes import *
+from juntagrico.mailer import *
+from juntagrico.util.bills import *
+from juntagrico.util.temporal import *
 
 
 class Subscription(Billable):
