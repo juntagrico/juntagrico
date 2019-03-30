@@ -10,8 +10,8 @@ class SubscriptionDao:
         return Subscription.objects.all()
 
     @staticmethod
-    def subscritions_by_depot(depot):
-        return Subscription.objects.filter(depot=depot)
+    def active_subscritions_by_depot(depot):
+        return Subscription.objects.filter(depot=depot).filter(active=True)
 
     @staticmethod
     def subscritions_with_future_depots():

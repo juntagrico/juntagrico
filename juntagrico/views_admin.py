@@ -122,7 +122,7 @@ def my_mails_intern(request, enhanced, error_message=None):
 
 @permission_required('juntagrico.can_filter_members')
 def filters(request):
-    members = MemberDao.members_with_assignments_count()
+    members = MemberDao.active_members_with_assignments_count()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'members': members
@@ -159,7 +159,7 @@ def filters_area(request, area_id):
 @permission_required('juntagrico.can_filter_subscriptions')
 def subscriptions(request):
     subscriptions_list = []
-    for subscription in SubscriptionDao.all_subscritions():
+    for subscription in SubscriptionDao.all_active_subscritions():
         assignments = 0
         core_assignments = 0
         for member in MemberDao.members_with_assignments_count_in_subscription(subscription):
@@ -184,7 +184,7 @@ def subscriptions(request):
 def filter_subscriptions_depot(request, depot_id):
     subscriptions_list = []
     depot = get_object_or_404(Depot, id=int(depot_id))
-    for subscription in SubscriptionDao.subscritions_by_depot(depot):
+    for subscription in SubscriptionDao.active_subscritions_by_depot(depot):
         assignments = 0
         core_assignments = 0
         for member in MemberDao.members_with_assignments_count_in_subscription(subscription):
