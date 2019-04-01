@@ -5,6 +5,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.models import *
@@ -60,6 +61,20 @@ class Command(BaseCommand):
 
         categories = []
         types = []
+
+        for product in SubscriptionProductDao.get_all():
+            cat = {'name': product.name, 'description': product.description}
+            count = 0
+            for subscription_size in SubscriptionSizeDao.sizes_for_depot_list_by_product(product):
+                count += 1
+                es_type = {'name': subscription_size.name,
+                           'size': subscription_size, 'last': False}
+                types.append(es_type)
+            es_type['last'] = True
+            cat['count'] = count
+            categories.append(cat)
+
+
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             cat = {'name': category.name, 'description': category.description}
             count = 0

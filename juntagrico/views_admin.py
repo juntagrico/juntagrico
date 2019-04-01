@@ -230,7 +230,7 @@ def future(request):
     for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
         subscriptionsizes.append(subscription_size.name)
         subscription_lines[subscription_size.name] = {
-            'name': subscription_size.name,
+            'name': subscription_size.product.name + '-' + subscription_size.name,
             'future': 0,
             'now': 0
         }

@@ -44,26 +44,24 @@ class Subscription(Billable):
     _old_canceled = None
 
     def __str__(self):
-        namelist = [_('1 Einheit') if self.size == 1 else _(
-            '%(amount)d Einheiten') % {'amount': self.size}]
+        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
         return _('Abo (%(namelist)s) %(id)s') % {'namelist': ' + '.join(namelist), 'id': self.id}
 
     @property
     def overview(self):
-        namelist = [_('1 Einheit') if self.size == 1 else _(
-            '%(amount)s Einheiten') % {'amount': self.size}]
+        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
 
     @property
     def size(self):
-        result = 0
+        sizes = {}
         for type in self.types.all():
-            result += type.size.units
-        return result
+            sizes[type.size.product.name] = type.size.units + sizes.get(type.size.product.name,0)
+        return ', '.join([key+':'+value for key, value in sizes.items()])
 
     @property
     def types_changed(self):
@@ -166,13 +164,13 @@ class Subscription(Billable):
 
     @staticmethod
     def get_size_name(types=[]):
-        size_names = []
+        size_dict = {}
         for type in types.all():
-            size_names.append(type.__str__())
+            size_dict[type.__str__()] = 1 + size_dict.get(type.__str__(), 0)
+        size_names = [key + ':' + value for key, value in size_dict.items()]
         if len(size_names) > 0:
-            return ', '.join(size_names)
-
-        return 'kein Abo'
+            return '<br>'.join(size_names)
+        return _('kein/e/n {0}').format(Config.vocabulary('subscription'))
 
     @property
     def required_shares(self):

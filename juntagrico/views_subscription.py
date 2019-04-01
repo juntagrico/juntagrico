@@ -1,29 +1,16 @@
-# -*- coding: utf-8 -*-
-
-import random
-import string
-
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
-from django.utils import timezone
-from django.core.exceptions import ValidationError
+from django.shortcuts import render, get_object_or_404, redirect
 
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.decorators import primary_member_of_subscription
 from juntagrico.forms import *
 from juntagrico.models import *
-from juntagrico.views import get_menu_dict
 from juntagrico.util import temporal
-
 from juntagrico.util.management import *
+from juntagrico.views import get_menu_dict
 
 
 @login_required
@@ -153,7 +140,7 @@ def size_change(request, subscription_id):
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': subscription.future_types.all()[0].id,
-        'subscription_sizes': SubscriptionSizeDao.all_visible_sizes_ordered()
+        'products': SubscriptionProductDao.get_all()
     })
     return render(request, 'size_change.html', renderdict)
 

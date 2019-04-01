@@ -1,24 +1,10 @@
-# -*- coding: utf-8 -*-
+from django.shortcuts import render, redirect
 
-import random
-import string
-
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import render, get_object_or_404, redirect
-from django.utils import timezone
-
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.decorators import primary_member_of_subscription
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.forms import *
 from juntagrico.models import *
-from juntagrico.views import get_menu_dict
 from juntagrico.util import temporal
 from juntagrico.util.management import *
 
@@ -57,7 +43,7 @@ def cs_select_subscription(request):
         return redirect('/my/create/subscription/shares')
     renderdict = {
         'hours_used': Config.assignment_unit() == 'HOURS',
-        'subscriptionsizes': SubscriptionSizeDao.all_visible_sizes_ordered(),
+        'products': SubscriptionProductDao.get_all(),
     }
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 

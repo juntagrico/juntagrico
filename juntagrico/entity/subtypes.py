@@ -4,16 +4,11 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 
 
-class SubscriptionSize(models.Model):
+class SubscriptionProduct(models.Model):
     '''
-    Subscription sizes
+    Product of subscription
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    long_name = models.CharField(_('Langer Name'), max_length=100, unique=True)
-    units = models.FloatField(_('Einheiten'), unique=True)
-    depot_list = models.BooleanField(
-        _('Sichtbar auf Depotliste'), default=True)
-    visible = models.BooleanField(_('Sichtbar'), default=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
 
@@ -21,8 +16,33 @@ class SubscriptionSize(models.Model):
         return self.name
 
     class Meta:
+        verbose_name =_('{0}-Produkt').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
+
+
+class SubscriptionSize(models.Model):
+    '''
+    Subscription sizes
+    '''
+    name = models.CharField(_('Name'), max_length=100)
+    long_name = models.CharField(_('Langer Name'), max_length=100)
+    units = models.FloatField(_('Einheiten'))
+    depot_list = models.BooleanField(
+        _('Sichtbar auf Depotliste'), default=True)
+    visible = models.BooleanField(_('Sichtbar'), default=True)
+    description = models.TextField(
+        _('Beschreibung'), max_length=1000, blank=True)
+    product = models.ForeignKey(
+        'SubscriptionProduct', on_delete=models.PROTECT, related_name='sizes')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
         verbose_name =_('{0}-Grösse').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
+        unique_together = ('name', 'product',)
+        unique_together = ('units', 'product',)
 
 
 class SubscriptionType(models.Model):
@@ -47,7 +67,8 @@ class SubscriptionType(models.Model):
         _('Beschreibung'), max_length=1000, blank=True)
 
     def __str__(self):
-        return self.name + _(' - Grösse: ') + self.size.name
+        return self.name + ' - ' + _('Grösse') + ': ' + self.size.name \
+               + ' - ' + _('Produkt') + ': ' + self.size.product.name
 
     def __lt__(self, other):
         return self.pk < other.pk
