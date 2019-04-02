@@ -62,6 +62,10 @@ def get_jobextratype_inlines():
     return load_config('jobextratype_inlines', [], load_modules())
 
 
+def get_subproduct_inlines():
+    return load_config('subproduct_inlines', [], load_modules())
+
+
 def get_subsize_inlines():
     return load_config('subsize_inlines', [], load_modules())
 
