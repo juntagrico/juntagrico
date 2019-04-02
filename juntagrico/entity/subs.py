@@ -61,7 +61,7 @@ class Subscription(Billable):
         sizes = {}
         for type in self.types.all():
             sizes[type.size.product.name] = type.size.units + sizes.get(type.size.product.name,0)
-        return ', '.join([key+':'+value for key, value in sizes.items()])
+        return ', '.join([key+':'+str(value) for key, value in sizes.items()])
 
     @property
     def types_changed(self):
@@ -167,7 +167,7 @@ class Subscription(Billable):
         size_dict = {}
         for type in types.all():
             size_dict[type.__str__()] = 1 + size_dict.get(type.__str__(), 0)
-        size_names = [key + ':' + value for key, value in size_dict.items()]
+        size_names = [key + ':' + str(value) for key, value in size_dict.items()]
         if len(size_names) > 0:
             return '<br>'.join(size_names)
         return _('kein/e/n {0}').format(Config.vocabulary('subscription'))
