@@ -104,11 +104,20 @@
                             {% endif %}
                         </td>
                         <td>
-                            {{ member.assignment_count }}
+                            {% if member.assignment_count %}
+                            N%-{% if member.assignment_count >= 1 and member.assignment_count < 10 %}0{% endif %}{{ member.assignment_count|floatformat }}
+                            {% else %}
+                            N%-0
+                            {% endif %}
+
                         </td>
                         {% if show_core %}
                             <td>
-                                {{ member.core_assignment_count }}
+                            {% if member.core_assignment_count %}
+                            C%-{% if member.core_assignment_count >= 1 and member.core_assignment_count < 10 %}0{% endif %}{{ member.core_assignment_count|floatformat }}
+                            {% else %}
+                            C%-0
+                            {% endif %}
                             </td>
                         {% endif %}
                         <td>

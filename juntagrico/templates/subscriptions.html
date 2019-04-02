@@ -113,12 +113,12 @@
                             {{ subscription.subscription.overview }}
                         </td>
                         <td>
-                            N%-{{ subscription.assignments|floatformat:"0" }}
+                            N%-{% if subscription.assignments >= 1 and subscription.assignments < 10 %}0{% endif %}{{ subscription.assignments|floatformat }}
                             (von {{ subscription.subscription.required_assignments }})
                         </td>
                         {% if show_core %}
                             <td>
-                                C%-{{ subscription.core_assignments|floatformat:"0" }}
+                                C%-{% if subscription.core_assignments >= 1 and subscription.core_assignments < 10 %}0{% endif %}{{ subscription.core_assignments|floatformat }}
                                 (von {{ subscription.subscription.required_core_assignments }})
                             </td>
                         {% endif %}
@@ -132,7 +132,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {{ subscription.subscription.activation_date }}
+                            {{ subscription.subscription.activation_date|date:"Y-m-d" }}
                         </td>
                         <td class="email">
                             {% for recipient in subscription.subscription.recipients %}
