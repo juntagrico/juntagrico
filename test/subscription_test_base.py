@@ -1,5 +1,5 @@
 import django.test
-from datetime import date
+
 from juntagrico.models import *
 
 
@@ -19,10 +19,15 @@ class SubscriptionTestBase(django.test.TestCase):
             phone="01234567"
             )
 
+        subs_prod = SubscriptionProduct.objects.create(
+            name="Gemüse"
+        )
+
         subs_size = SubscriptionSize.objects.create(
             name="Normal",
             long_name="Normale Grösse",
-            units=1
+            units=1,
+            product=subs_prod
             )
 
         subs_type = SubscriptionType.objects.create(

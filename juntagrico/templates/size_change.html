@@ -32,19 +32,19 @@
             {% csrf_token %}
             {% for p in products %}
                 <div class="form-group row">
-                    <div class="col-md-9 offset-md-3">
+                    <label class="col-md-3">
+                        {% if forloop.first %}
+                            {% blocktrans %}{{ v_subscription }}-Grösse{% endblocktrans %}
+                        {% endif %}
+                    </label>
+                    <div class="col-md-9">
                         {{ p.name }}
                         <br/>
                         {{ p.description }}
                     </div>
                 </div>
-                {% for subscription_size in p.sizes %}
-                    <div class="form-group row">
-                        <label class="col-md-3">
-                            {% if forloop.first %}
-                                {% blocktrans %}{{ v_subscription }}-Grösse{% endblocktrans %}
-                            {% endif %}
-                        </label>
+                {% for subscription_size in p.sizes.all %}
+                    <div class="form-group row offset-md-4">
                         <div class="col-md-9">
                             {{ subscription_size.long_name }}
                             <br/>
@@ -54,7 +54,7 @@
                     {% for type in subscription_size.types.all %}
                         {% if type.visible %}
                             <div class="form-group row">
-                                <div class="offset-md-3 col-md-9">
+                                <div class="offset-md-4 col-md-9">
                                     <div class="row align-items-center h-100 no-gutters">
                                         <div class="col-md-2">
                                             <span class="switch switch-sm">
