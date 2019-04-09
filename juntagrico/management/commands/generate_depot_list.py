@@ -97,7 +97,7 @@ class Command(BaseCommand):
         for weekday in used_weekdays:
             overview[weekday] = None
 
-        count = len(types) + len(subscription_names)
+        count = len(types)
         for weekday in used_weekdays:
             overview[weekday] = [0] * count
         overview['all'] = [0] * count
