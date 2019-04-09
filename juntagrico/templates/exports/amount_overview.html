@@ -86,8 +86,8 @@
             {% endfor %}
         </tr>
         <tr>
-            <td></td>
-            <td class="small bottom-border {% if forloop.first %}left-border{% endif %} right-border">{% trans "Einheiten" %}</td>
+            <td class="small bottom-border left-border right-border">{% trans "Einheiten" %}</td>
+            <td class="small bottom-border  right-border">{% trans "Total" %}</td>
             {% for type in types %}
                 <td class="small bottom-border {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}
@@ -96,14 +96,14 @@
             <tr>
                 <td>{{ weekday }}</td>
                 {% for value in overview|get_item:weekday %}
-                    <td style="text-align:right">{{ value }}</td>
+                    <td style="text-align:right">{{ value|floatformat }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
         <tr>
-            <td><b>Alle</b></td>
+            <td><b>{% trans "Alle" %}</b></td>
             {% for value in overview.all %}
-                <td style="text-align:right">{{ value }}</td>
+                <td style="text-align:right">{{ value|floatformat }}</td>
             {% endfor %}
         </tr>
     </table>

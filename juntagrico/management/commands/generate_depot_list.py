@@ -115,7 +115,7 @@ class Command(BaseCommand):
                 all[count] += depot.overview_cache[count]
                 count += 1
 
-        insert_point = len(subscription_names)
+        insert_point = 0
         for weekday in used_weekdays:
             overview[weekday].insert(insert_point, 0)
         overview['all'].insert(insert_point, 0)
@@ -136,6 +136,7 @@ class Command(BaseCommand):
             'subscriptioncount': len(subscription_names)+1,
             'categories': categories,
             'types': types,
+            'es_types': types[len(subscription_names):],
             'datum': timezone.now(),
             'weekdays': used_weekdays,
             'messages': ListMessageDao.all_active()

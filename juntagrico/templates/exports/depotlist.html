@@ -128,7 +128,7 @@
                         {% if subscription|subscriptions_amount:subscription_name %}
                             {{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
                 {% endfor %}
-                {% for type in types %}
+                {% for type in es_types %}
                     <td style="width:40px;" class="top-border left-border">
                         {% if subscription|extra_subscription:type.name %}
                             {{ subscription|extra_subscription_amount:type.name }}{% endif %}</td>
