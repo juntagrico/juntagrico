@@ -51,3 +51,5 @@ Release Notes
 Dev
 -----
  Has migrations
+
+* New setting GDPR_INFO to make it EU compliant
