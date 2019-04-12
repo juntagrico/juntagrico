@@ -48,8 +48,25 @@ Release Notes
 * possibility to hide subscription sizes in subscription creation
 
 
-Dev
+1.1.7
 -----
  Has migrations
 
 * New setting GDPR_INFO to make it EU compliant
+* Introduced Products in order to have multiple sizes for different Products. on existing Instances a default product called Product will be added
+* Added gettext so that strings can be translated
+* Texts where adapted
+* Shares are controlled more thoroughly if enabled
+* Possibility to easily pay back canceled shares by generating iso20022 pain001 xml file
+* Only active subscriptions and members are shown in the filters
+* Better sorting in the filters, also added textmarkers to be able to use better regex filtering
+* Next jobs bug fixed so that all see there next jobs
+* Subscription list bug with the duplicate subscription was fixed
+* More information shown for Assignemnts on the admin overview page
+* upgraded requirements
+* added menu hooks for apps
+
+
+Dev
+-----
+ Has no migrations
