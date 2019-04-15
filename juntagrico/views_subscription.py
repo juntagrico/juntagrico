@@ -1,3 +1,4 @@
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -174,6 +175,7 @@ def signup(request):
     '''
     if Config.enable_registration() is False:
         raise Http404
+    logout(request)
     success = False
     agberror = False
     agbchecked = False
