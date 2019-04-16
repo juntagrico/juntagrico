@@ -44,5 +44,3 @@ class CreateSubscriptionTests(TestCase):
 
         response = self.client.get('/my/welcome')
         self.assertEqual(response.status_code, 302)
-
-
