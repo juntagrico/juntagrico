@@ -17,9 +17,9 @@ class CreateSubscriptionTests(TestCase):
         self.assertEqual(str(auth.get_user(self.client)), 'AnonymousUser')
 
     def testRedirect(self):
-        response =self.client.get('/my/create/subscrition')
+        response = self.client.get('/my/create/subscrition')
         self.assertEqual(response.status_code, 302)
-        response =self.client.post('/my/create/subscrition')
+        response = self.client.post('/my/create/subscrition')
         self.assertEqual(response.status_code, 302)
 
         response = self.client.get('/my/create/subscription/selectdepot')

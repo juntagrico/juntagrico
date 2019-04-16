@@ -101,8 +101,8 @@ def cs_select_shares(request):
             for co_member in co_members:
                 share_sum += int(request.POST.get(co_member.email))
             share_error = share_error or share_sum < required_shares
-            share_error = share_error or (int(request.POST.get('shares_mainmember'))==0 and mm_requires_one)
-        except:
+            share_error = share_error or (int(request.POST.get('shares_mainmember')) == 0 and mm_requires_one)
+        except ValueError:
             share_error = True
         if not share_error or not Config.enable_shares():
             subscription = None
