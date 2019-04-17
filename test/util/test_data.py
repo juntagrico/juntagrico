@@ -21,8 +21,10 @@ def create_test_data(cls):
                    }
     cls.member = Member.objects.create(**member_data)
     cls.member.user.set_password("12345")
-    cls.member.user.user_permissions.add(Permission.objects.get(codename='is_depot_admin'))
-    cls.member.user.user_permissions.add(Permission.objects.get(codename='can_filter_subscriptions'))
+    cls.member.user.user_permissions.add(
+        Permission.objects.get(codename='is_depot_admin'))
+    cls.member.user.user_permissions.add(
+        Permission.objects.get(codename='can_filter_subscriptions'))
     cls.member.user.save()
 
     """
@@ -57,10 +59,10 @@ def create_test_data(cls):
     """
     depot
     """
-    depot_data ={
+    depot_data = {
         'code': 'c1',
         'name': 'depot',
         'contact': cls.member,
-        'weekday': 1 }
+        'weekday': 1}
     cls.depot = Depot.objects.create(**depot_data)
     return cls.member.user
