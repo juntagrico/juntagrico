@@ -6,7 +6,8 @@ def subscriptions_with_assignments(subscriptions):
     for subscription in subscriptions:
         assignments = 0
         core_assignments = 0
-        members = MemberDao.members_with_assignments_count_in_subscription(subscription)
+        members = MemberDao.members_with_assignments_count_in_subscription(
+            subscription)
         for member in members:
             assignments += member.assignment_count \
                 if member.assignment_count is not None else 0

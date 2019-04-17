@@ -15,4 +15,5 @@ class FilterTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def testSubscritionDepot(self):
-        test_simple_get(self, '/my/subscriptions/depot/'+str(self.depot.pk)+'/')
+        url = '/my/subscriptions/depot/'+str(self.depot.pk)+'/'
+        test_simple_get(self, url)

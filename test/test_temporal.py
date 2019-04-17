@@ -1,12 +1,14 @@
-import unittest
 from datetime import date
+
+from django.test import TestCase
 
 from juntagrico.util.temporal import start_of_business_year
 from juntagrico.util.temporal import start_of_specific_business_year,\
                                     end_of_specific_business_year
 
 
-class BusinessYearTests(unittest.TestCase):
+class BusinessYearTests(TestCase):
+
     def test_start_of_business_year(self):
         today = date.today()
         expected_start = date(today.year, 1, 1)
@@ -14,16 +16,16 @@ class BusinessYearTests(unittest.TestCase):
 
     def test_start_of_specific_business_year(self):
         self.assertEqual(date(2018, 1, 1),
-                    start_of_specific_business_year(date(2018, 7, 24)))
+                         start_of_specific_business_year(date(2018, 7, 24)))
         self.assertEqual(date(2018, 1, 1),
-                    start_of_specific_business_year(date(2018, 1, 1)))
+                         start_of_specific_business_year(date(2018, 1, 1)))
         self.assertEqual(date(2018, 1, 1),
-                    start_of_specific_business_year(date(2018, 12, 31)))
+                         start_of_specific_business_year(date(2018, 12, 31)))
 
     def test_end_of_specific_business_year(self):
         self.assertEqual(date(2018, 12, 31),
-                    end_of_specific_business_year(date(2018, 7, 24)))
+                         end_of_specific_business_year(date(2018, 7, 24)))
         self.assertEqual(date(2018, 12, 31),
-                    end_of_specific_business_year(date(2018, 1, 1)))
+                         end_of_specific_business_year(date(2018, 1, 1)))
         self.assertEqual(date(2018, 12, 31),
-                    end_of_specific_business_year(date(2018, 12, 31)))
+                         end_of_specific_business_year(date(2018, 12, 31)))

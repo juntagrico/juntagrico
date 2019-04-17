@@ -1,10 +1,7 @@
-import django.test
 from datetime import date
 from django.conf import settings
 
-from test.subscription_test_base import SubscriptionTestBase
-from juntagrico.models import Subscription, Depot, Member, SubscriptionSize
-from juntagrico.models import SubscriptionType, TSST
+from test.util.subscription_test_base import SubscriptionTestBase
 from juntagrico.util.bills import scale_subscription_price
 
 
