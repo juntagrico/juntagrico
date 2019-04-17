@@ -20,6 +20,7 @@ from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.models import Depot, ActivityArea, Member, Share
 from juntagrico.mailer import send_filtered_mail
+from juntagrico.util import return_to_previous_location
 from juntagrico.util.subs import subscriptions_with_assignments
 from juntagrico.views import get_menu_dict
 from juntagrico.util.management_list import get_changedate
@@ -410,16 +411,10 @@ def set_change_date(request):
     raw_date = request.POST.get('date')
     date = timezone.datetime.strptime(raw_date, '%m/%d/%Y')
     request.session['changedate'] = date
-    if request.META.get('HTTP_REFERER') is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://' + Config.adminportal_server_url())
+    return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def unset_change_date(request):
     request.session['changedate'] = None
-    if request.META.get('HTTP_REFERER') is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://' + Config.adminportal_server_url())
+    return return_to_previous_location(request)
