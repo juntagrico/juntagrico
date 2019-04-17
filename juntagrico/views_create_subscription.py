@@ -6,30 +6,25 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util import temporal
+from juntagrico.util.create_sub import get_main_member
 from juntagrico.util.management import *
 
 
 def cs_welcome(request):
-    if request.user.is_authenticated:
-        member = request.user.member
-    else:
-        member = request.session.get('main_member')
-    if member is None:
+    main_member = get_main_member(request)
+    if main_member is None:
         return redirect('http://'+Config.server_url())
 
     renderdict = {
-        'no_subscription': member.future_subscription is None
+        'no_subscription': main_member.future_subscription is None
     }
 
     return render(request, 'welcome.html', renderdict)
 
 
 def cs_select_subscription(request):
-    if request.user.is_authenticated:
-        member = request.user.member
-    else:
-        member = request.session.get('main_member')
-    if member is None:
+    main_member = get_main_member(request)
+    if main_member is None:
         return redirect('http://'+Config.server_url())
     if request.method == 'POST':
         selectedsubscription = request.POST.get('subscription')
@@ -49,11 +44,8 @@ def cs_select_subscription(request):
 
 
 def cs_select_depot(request):
-    if request.user.is_authenticated:
-        member = request.user.member
-    else:
-        member = request.session.get('main_member')
-    if member is None:
+    main_member = get_main_member(request)
+    if main_member is None:
         return redirect('http://'+Config.server_url())
     if request.method == 'POST':
         depot = DepotDao.depot_by_id(request.POST.get('depot'))
@@ -64,7 +56,7 @@ def cs_select_depot(request):
     for depot in depots:
         requires_map = requires_map or depot.has_geo
     renderdict = {
-        'member': member,
+        'member': main_member,
         'depots': depots,
         'requires_map': requires_map,
     }
@@ -72,11 +64,8 @@ def cs_select_depot(request):
 
 
 def cs_select_start_date(request):
-    if request.user.is_authenticated:
-        member = request.user.member
-    else:
-        member = request.session.get('main_member')
-    if member is None:
+    main_member = get_main_member(request)
+    if main_member is None:
         return redirect('http://'+Config.server_url())
     subscriptionform = SubscriptionForm()
     if request.method == 'POST':
@@ -92,15 +81,12 @@ def cs_select_start_date(request):
 
 
 def cs_select_shares(request):
-    if request.user.is_authenticated:
-        member = request.user.member
-    else:
-        member = request.session.get('main_member')
-    if member is None:
+    main_member = get_main_member(request)
+    if main_member is None:
         return redirect('http://'+Config.server_url())
     share_error = False
-    mm_requires_one = len(member.active_shares) == 0
-    share_sum = len(member.active_shares)
+    mm_requires_one = len(main_member.active_shares) == 0
+    share_sum = len(main_member.active_shares)
     co_members = request.session.get('create_co_members', [])
     for co_member in co_members:
         share_sum += len(co_member.active_shares)
@@ -115,8 +101,8 @@ def cs_select_shares(request):
             for co_member in co_members:
                 share_sum += int(request.POST.get(co_member.email))
             share_error = share_error or share_sum < required_shares
-            share_error = share_error or (int(request.POST.get('shares_mainmember'))==0 and mm_requires_one)
-        except:
+            share_error = share_error or (int(request.POST.get('shares_mainmember')) == 0 and mm_requires_one)
+        except ValueError:
             share_error = True
         if not share_error or not Config.enable_shares():
             subscription = None
@@ -125,29 +111,29 @@ def cs_select_shares(request):
                 depot = request.session['selecteddepot']
                 subscription = create_subscription(
                     start_date, depot, selected_subscription)
-            if member.pk is None:
-                create_member(member, subscription)
+            if main_member.pk is None:
+                create_member(main_member, subscription)
             else:
-                update_member(member, subscription)
+                update_member(main_member, subscription)
             if Config.enable_shares():
                 shares = int(request.POST.get('shares_mainmember'))
             else:
                 shares = 0
             for i in range(shares):
-                create_share(member)
+                create_share(main_member)
             for co_member in co_members:
                 if Config.enable_shares():
                     shares = int(request.POST.get(co_member.email))
                 else:
                     shares = 0
                 if co_member.pk is None:
-                    create_member(co_member, subscription, member, shares)
+                    create_member(co_member, subscription, main_member, shares)
                 else:
-                    update_member(co_member, subscription, member, shares)
+                    update_member(co_member, subscription, main_member, shares)
                 for i in range(shares):
                     create_share(co_member)
             if subscription is not None:
-                subscription.primary_member = member
+                subscription.primary_member = main_member
                 subscription.save()
                 send_subscription_created_mail(subscription)
             request.session['selected_subscription'] = None
@@ -162,7 +148,7 @@ def cs_select_shares(request):
         'share_error': share_error,
         'total_shares': total_shares,
         'required_shares': required_shares,
-        'member': member,
+        'member': main_member,
         'co_members': co_members,
         'selected_subscription': int(selected_subscription),
         'has_com_members': len(co_members) > 0,
@@ -172,15 +158,12 @@ def cs_select_shares(request):
 
 
 def cs_add_member(request):
+    main_member = get_main_member(request)
+    if main_member is None:
+        return redirect('http://'+Config.server_url())
     memberexists = False
     memberblocked = False
     co_members = request.session.get('create_co_members', [])
-    if request.user.is_authenticated:
-        main_member = request.user.member
-    else:
-        main_member = request.session.get('main_member')
-    if main_member is None:
-        return redirect('http://'+Config.server_url())
     if request.method == 'POST':
         memberform = RegisterMemberForm(request.POST)
         member = next(iter(MemberDao.members_by_email(

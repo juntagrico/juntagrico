@@ -1,9 +1,10 @@
 from django.test import TestCase
 
+from test.util.test import test_simple_get
 from test.util.test_data import create_test_data
 
 
-class HomeTests(TestCase):
+class JobTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         create_test_data(cls)
@@ -11,7 +12,6 @@ class HomeTests(TestCase):
     def testAssignments(self):
         self.client.force_login(self.member.user)
         response = self.client.get('/my/assignments')
-        print(response)
         self.assertEqual(response.status_code, 200)
 
     def testAssignmentsAll(self):
@@ -20,9 +20,7 @@ class HomeTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def testJob(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/jobs/' + str(self.job1.pk) + '/')
-        self.assertEqual(response.status_code, 200)
+        test_simple_get(self, '/my/jobs/' + str(self.job1.pk) + '/')
 
     def testPastJob(self):
         self.client.force_login(self.member.user)
@@ -35,9 +33,7 @@ class HomeTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def testTeam(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/teams/'+str(self.area.pk)+'/')
-        self.assertEqual(response.status_code, 200)
+        test_simple_get(self, '/my/teams/'+str(self.area.pk)+'/')
 
     def testParticipationPost(self):
         self.client.force_login(self.member.user)

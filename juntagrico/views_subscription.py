@@ -9,7 +9,7 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.decorators import primary_member_of_subscription
 from juntagrico.forms import *
 from juntagrico.models import *
-from juntagrico.util import temporal
+from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.management import *
 from juntagrico.views import get_menu_dict
 
@@ -282,10 +282,7 @@ def activate_subscription(request, subscription_id):
         except ValidationError:
             renderdict = get_menu_dict(request)
             return render(request, 'activation_error.html', renderdict)
-    if request.META.get('HTTP_REFERER')is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://'+Config.adminportal_server_url())
+    return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -301,10 +298,7 @@ def deactivate_subscription(request, subscription_id):
                 extra.active = False
                 extra.deactivation_date = change_date
                 extra.save()
-    if request.META.get('HTTP_REFERER')is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://'+Config.adminportal_server_url())
+    return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -314,10 +308,7 @@ def activate_future_types(request, subscription_id):
         type.delete()
     for type in TFSST.objects.filter(subscription=subscription):
         TSST.objects.create(subscription=subscription, type=type.type)
-    if request.META.get('HTTP_REFERER')is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://'+Config.adminportal_server_url())
+    return return_to_previous_location(request)
 
 
 @primary_member_of_subscription
@@ -360,10 +351,7 @@ def activate_extra(request, extra_id):
         extra.active = True
         extra.activation_date = change_date
         extra.save()
-    if request.META.get('HTTP_REFERER')is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://'+Config.adminportal_server_url())
+    return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -374,10 +362,7 @@ def deactivate_extra(request, extra_id):
         extra.active = False
         extra.deactivation_date = change_date
         extra.save()
-    if request.META.get('HTTP_REFERER')is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://'+Config.adminportal_server_url())
+    return return_to_previous_location(request)
 
 
 @primary_member_of_subscription
@@ -388,11 +373,7 @@ def cancel_extra(request, extra_id, subscription_id):
     else:
         extra.canceled = True
         extra.save()
-
-    if request.META.get('HTTP_REFERER')is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://'+Config.adminportal_server_url())
+    return return_to_previous_location(request)
 
 
 @login_required
@@ -445,7 +426,4 @@ def payout_share(request, share_id):
     if member.active_shares_count == 0 and member.canceled is True:
         member.inactive=True
         member.save()
-    if request.META.get('HTTP_REFERER')is not None:
-        return redirect(request.META.get('HTTP_REFERER'))
-    else:
-        return redirect('http://'+Config.adminportal_server_url())
+    return return_to_previous_location(request)

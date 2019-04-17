@@ -1,5 +1,7 @@
+from django.contrib.auth.models import Permission
 from django.utils import timezone
 
+from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment
 
@@ -19,6 +21,10 @@ def create_test_data(cls):
                    }
     cls.member = Member.objects.create(**member_data)
     cls.member.user.set_password("12345")
+    cls.member.user.user_permissions.add(
+        Permission.objects.get(codename='is_depot_admin'))
+    cls.member.user.user_permissions.add(
+        Permission.objects.get(codename='can_filter_subscriptions'))
     cls.member.user.save()
 
     """
@@ -50,5 +56,13 @@ def create_test_data(cls):
                        'member': cls.member,
                        'amount': 1}
     Assignment.objects.create(**assignment_data)
-
+    """
+    depot
+    """
+    depot_data = {
+        'code': 'c1',
+        'name': 'depot',
+        'contact': cls.member,
+        'weekday': 1}
+    cls.depot = Depot.objects.create(**depot_data)
     return cls.member.user
