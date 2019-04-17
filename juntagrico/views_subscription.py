@@ -324,7 +324,7 @@ def cancel_subscription(request, subscription_id):
             subscription.canceled = True
             subscription.end_date = request.POST.get('end_date')
             subscription.save()
-            message = request.POST.get('end_date')
+            message = request.POST.get('message')
             send_subscription_canceled(subscription, message)
             for extra in subscription.extra_subscription_set.all():
                 if extra.active is True:
