@@ -20,6 +20,7 @@ from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.models import Depot, ActivityArea, Member, Share
 from juntagrico.mailer import send_filtered_mail
+from juntagrico.util.subs import subscriptions_with_assignments
 from juntagrico.views import get_menu_dict
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
@@ -158,19 +159,7 @@ def filters_area(request, area_id):
 
 @permission_required('juntagrico.can_filter_subscriptions')
 def subscriptions(request):
-    subscriptions_list = []
-    for subscription in SubscriptionDao.all_active_subscritions():
-        assignments = 0
-        core_assignments = 0
-        for member in MemberDao.members_with_assignments_count_in_subscription(subscription):
-            assignments += member.assignment_count if member.assignment_count is not None else 0
-            core_assignments += member.core_assignment_count if member.core_assignment_count is not None else 0
-
-        subscriptions_list.append({
-            'subscription': subscription,
-            'assignments': assignments,
-            'core_assignments': core_assignments
-        })
+    subscriptions_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -182,20 +171,8 @@ def subscriptions(request):
 
 @permission_required('juntagrico.is_depot_admin')
 def filter_subscriptions_depot(request, depot_id):
-    subscriptions_list = []
     depot = get_object_or_404(Depot, id=int(depot_id))
-    for subscription in SubscriptionDao.active_subscritions_by_depot(depot):
-        assignments = 0
-        core_assignments = 0
-        for member in MemberDao.members_with_assignments_count_in_subscription(subscription):
-            assignments += member.assignment_count if member.assignment_count is not None else 0
-            core_assignments += member.core_assignment_count if member.core_assignment_count is not None else 0
-
-        subscriptions_list.append({
-            'subscription': subscription,
-            'assignments': assignments,
-            'core_assignments': core_assignments
-        })
+    subscriptions_list = subscriptions_with_assignments(SubscriptionDao.active_subscritions_by_depot(depot))
 
     renderdict = get_menu_dict(request)
     renderdict.update({
