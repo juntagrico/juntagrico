@@ -4,7 +4,8 @@ from django.utils.html import format_html
 
 def queryset_for_coordinator(request, field_name, perm, query_function, **kwargs):
     if field_name == 'type' and request.user.has_perm(perm) and (
-            not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
+            not (request.user.is_superuser or
+                 request.user.has_perm('juntagrico.is_operations_group'))):
         kwargs['queryset'] = query_function(request.user.member)
     return kwargs
 
