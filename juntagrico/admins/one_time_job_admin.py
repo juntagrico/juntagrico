@@ -7,6 +7,7 @@ from juntagrico.entity.jobs import JobType, RecuringJob
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.util.addons import get_otjob_inlines
+from juntagrico.util.admin import queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
@@ -51,8 +52,8 @@ class OneTimeJobAdmin(admin.ModelAdmin):
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'activityarea' and request.user.has_perm('juntagrico.is_area_admin') and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(
-                request.user.member)
+        kwargs = queryset_for_coordinator(request,
+                                          'activityarea',
+                                          'juntagrico.is_area_admin',
+                                          ActivityAreaDao.areas_by_coordinator)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
