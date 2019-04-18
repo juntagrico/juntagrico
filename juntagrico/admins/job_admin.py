@@ -8,6 +8,7 @@ from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.util.addons import get_job_inlines
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
+from juntagrico.util.admin import queryset_for_coordinator
 
 
 class JobAdmin(admin.ModelAdmin):
@@ -74,8 +75,8 @@ class JobAdmin(admin.ModelAdmin):
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'type' and request.user.has_perm('juntagrico.is_area_admin') and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = JobTypeDao.types_by_coordinator(
-                request.user.member)
+        kwargs = queryset_for_coordinator(request,
+                                          'type',
+                                          'juntagrico.is_area_admin',
+                                          JobTypeDao.types_by_coordinator)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)

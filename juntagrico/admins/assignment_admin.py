@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.util.addons import get_assignment_inlines
+from juntagrico.util.admin import queryset_for_coordinator
 
 
 class AssignmentAdmin(admin.ModelAdmin):
@@ -23,8 +24,8 @@ class AssignmentAdmin(admin.ModelAdmin):
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'job' and request.user.has_perm('juntagrico.is_area_admin') and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = JobDao.jobs_by_ids(
-                JobDao.ids_for_area_by_contact(request.user.member))
+        kwargs = queryset_for_coordinator(request,
+                                          'job',
+                                          'juntagrico.is_area_admin',
+                                          JobDao.ids_for_area_by_contact)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
