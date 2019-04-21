@@ -14,7 +14,7 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 class JobAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     actions = ['copy_job', 'mass_copy_job']
-    search_fields = ['type__name', 'type__activityarea__name']
+    search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']

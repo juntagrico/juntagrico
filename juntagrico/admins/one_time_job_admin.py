@@ -14,7 +14,7 @@ from juntagrico.util.models import attribute_copy
 class OneTimeJobAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'time', 'slots', 'free_slots']
     actions = ['transform_job']
-    search_fields = ['name', 'activityarea__name']
+    search_fields = ['name', 'activityarea__name', 'time']
     exclude = ['reminder_sent']
 
     inlines = [AssignmentInline, JobExtraInline]
