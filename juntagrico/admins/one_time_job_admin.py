@@ -7,7 +7,7 @@ from juntagrico.entity.jobs import JobType, RecuringJob
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.util.addons import get_otjob_inlines
-from juntagrico.util.admin import queryset_for_coordinator
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
@@ -45,15 +45,11 @@ class OneTimeJobAdmin(admin.ModelAdmin):
     transform_job.short_description = _('EinzelJobs in Jobart konvertieren')
 
     def get_queryset(self, request):
-        qs = super(admin.ModelAdmin, self).get_queryset(request)
-        if request.user.has_perm('juntagrico.is_area_admin') and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            return qs.filter(activityarea__coordinator=request.user.member)
-        return qs
+        return queryset_for_coordinator(self, request, 'activityarea__coordinator')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        kwargs = queryset_for_coordinator(request,
-                                          'activityarea',
-                                          'juntagrico.is_area_admin',
-                                          ActivityAreaDao.areas_by_coordinator)
+        kwargs = formfield_for_coordinator(request,
+                                           'activityarea',
+                                           'juntagrico.is_area_admin',
+                                           ActivityAreaDao.areas_by_coordinator)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
