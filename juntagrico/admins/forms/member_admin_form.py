@@ -15,26 +15,24 @@ class MemberAdminForm(forms.ModelForm):
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
         member = k.get('instance')
+        link = self.get_subscription_link(member, member.subscription)
+        self.fields['subscription_link'].initial = link
+        link = self.get_subscription_link(member, member.future_subscription)
+        self.fields['future_subscription_link'].initial = link
+
+    @staticmethod
+    def get_subscription_link(member, subscription):
         if member is None:
             link = ''
-        elif member.subscription:
+        elif subscription:
             url = reverse('admin:juntagrico_subscription_change',
-                          args=(member.subscription.id,))
-            link = '<a href=%s>%s</a>' % (url, member.subscription)
+                          args=(subscription.id,))
+            link = '<a href=%s>%s</a>' % (url, subscription)
         else:
             link = _('Kein/e/n {0}').format(Config.vocabulary('subscription'))
-        self.fields['subscription_link'].initial = link
-        if member is None:
-            link = ''
-        elif member.future_subscription:
-            url = reverse('admin:juntagrico_subscription_change',
-                          args=(member.future_subscription.id,))
-            link = '<a href=%s>%s</a>' % (url, member.future_subscription)
-        else:
-            link =  _('Kein/e/n {0}').format(Config.vocabulary('subscription'))
-        self.fields['future_subscription_link'].initial = link
+        return link
 
     subscription_link = forms.URLField(widget=MyHTMLWidget(), required=False,
                                        label='Abo')
     future_subscription_link = forms.URLField(widget=MyHTMLWidget(), required=False,
-                                              label= _('Zukünftige/r/s {0}').format(Config.vocabulary('subscription')))
+                                              label=_('Zukünftige/r/s {0}').format(Config.vocabulary('subscription')))
