@@ -24,7 +24,7 @@ checks:
       threshold: 4
   similar-code:
     config:
-      threshold: 50
+      threshold: 75
   identical-code:
     config:
       threshold: 80
