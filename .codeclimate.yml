@@ -30,7 +30,7 @@ checks:
       threshold: 50
 plugins:
   csslint:
-    enabled: true
+    enabled: false
   eslint:
     enabled: true
   pep8:
