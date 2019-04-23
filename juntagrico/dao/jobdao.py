@@ -19,8 +19,7 @@ class JobDao:
         otjidlist = list(
             OneTimeJob.objects.filter(activityarea__coordinator=member).values_list('id', flat=True))
         rjidlist = list(
-            RecuringJob.objects.filter(type__activityarea__coordinator=member).values_list('id',
-                                                                                          flat=True))
+            RecuringJob.objects.filter(type__activityarea__coordinator=member).values_list('id', flat=True))
         return otjidlist + rjidlist
 
     @staticmethod

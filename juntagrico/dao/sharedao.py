@@ -23,4 +23,3 @@ class ShareDao:
     def canceled_shares():
         return juntagrico.models.Share.objects.filter(cancelled_date__isnull=False).filter(
             payback_date__isnull=True)
-
