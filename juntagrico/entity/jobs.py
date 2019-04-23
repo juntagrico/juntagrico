@@ -1,17 +1,15 @@
 # encoding: utf-8
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
-from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
 from juntagrico.dao.assignmentdao import AssignmentDao
-
+from juntagrico.mailer import *
 from juntagrico.util.jobs import *
 from juntagrico.util.temporal import *
-from juntagrico.config import Config
-from juntagrico.mailer import *
 
 
 class ActivityArea(models.Model):

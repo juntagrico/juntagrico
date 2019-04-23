@@ -1,3 +1,3 @@
 class Mailer:
-    def send(msg):
+    def send(self, msg):
         msg.send()

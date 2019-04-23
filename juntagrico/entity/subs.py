@@ -60,7 +60,7 @@ class Subscription(Billable):
     def size(self):
         sizes = {}
         for type in self.types.all():
-            sizes[type.size.product.name] = type.size.units + sizes.get(type.size.product.name,0)
+            sizes[type.size.product.name] = type.size.units + sizes.get(type.size.product.name, 0)
         return ', '.join([key+':'+str(value) for key, value in sizes.items()])
 
     @property
@@ -216,8 +216,8 @@ class Subscription(Billable):
 
     def clean(self):
         if self._old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(_('Deaktivierte {0}  koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl'))
-                , code='invalid')
+            raise ValidationError(_('Deaktivierte {0}  koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
+                                  code='invalid')
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -225,8 +225,8 @@ class Subscription(Billable):
             instance.activation_date = instance.activation_date if instance.activation_date is not None else timezone.now().date()
             for member in instance.recipients_all_for_state('waiting'):
                 if member.subscription is not None:
-                    raise ValidationError(_('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription_'))
-                        , code='invalid')
+                    raise ValidationError(_('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription_')),
+                                          code='invalid')
             for member in instance.recipients_all_for_state('waiting'):
                 member.subscription = instance
                 member.future_subscription = None
