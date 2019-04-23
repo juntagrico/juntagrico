@@ -37,6 +37,7 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 
 a {
     color: #66cc66;
+    vertical-align: middle;
 }
 
 a:hover, a:focus {
@@ -240,8 +241,8 @@ textarea#recipients[disabled=disabled] {
     height: 400px;
 }
 
-/* job snippet detail toogle stuff checked */
-td.details-control, tr.shown td.details-control {
+/* arrows for collapsible list elements */
+.details-control, .shown .details-control {
     font-family: 'Font Awesome 5 Free';
     font-style: normal;
     font-weight: 900;
@@ -250,11 +251,11 @@ td.details-control, tr.shown td.details-control {
     color: #66cc66;
 }
 
-td.details-control::before {
+.details-control::before {
     content: "\f105";
 }
 
-tr.shown td.details-control::before {
+.shown .details-control::before {
     content: "\f107";
 }
 
