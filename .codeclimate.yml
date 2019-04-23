@@ -27,7 +27,7 @@ checks:
       threshold: 75
   identical-code:
     config:
-      threshold: 80
+      threshold: 50
 plugins:
   csslint:
     enabled: true
