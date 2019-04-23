@@ -333,7 +333,7 @@ def cancel_subscription(request, subscription_id):
                     extra.delete()
         elif subscription.active is False and subscription.deactivation_date is None:
             subscription.delete()
-        return redirect('/my/subscription')
+        return redirect('/my/subscription/detail')
 
     renderdict = get_menu_dict(request)
     renderdict.update({

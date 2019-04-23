@@ -2,20 +2,14 @@
 {% load i18n %}
 {% load config %}
 {% block content %}
-{% vocabulary "subscription" as v_subscription %}
+{% vocabulary "subscription_pl" as v_subscriptions %}
 {% trans "Hallo" %}
-{% blocktrans with fn=subscription.primary_member.first_name ln=subscription.primary_member.last_name e=subscription.primary_member.email %}
-Soeben hat {{ fn }} {{ ln }}
+{% blocktrans with fn=subscription.primary_member.first_name ln=subscription.primary_member.last_name e=subscription.primary_member.email sd=subscription.end_date %}
+Soeben hat {{ fn }} {{ ln }} die {{ v_subscriptions }} per {{ sd }} gekündet.
 email : {{e }}
-
-sein/e/n {{ v_subscription }} gekündet.
 {% endblocktrans %}
 
-{% blocktrans trimmed with sd=subscription.end_date|date:"d.m.Y" %}
-Er möchte sein/e/n {{ v_subscription }} auf den {{ sd }} künden.
-{% endblocktrans %}
-
-{% trans "ausserdem hat er folgende Nachricht für euch hinterlassen" %}:
+{% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
 {{ message}}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
