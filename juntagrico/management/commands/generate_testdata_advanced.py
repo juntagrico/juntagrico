@@ -1,18 +1,15 @@
 ﻿# -*- coding: utf-8 -*-
 import json
-import urllib.request
+import ssl
+import sys
 import urllib.error
 import urllib.parse
-import ssl
-import math
-import sys
+import urllib.request
 
 from django.core.management.base import BaseCommand
-from django.utils import timezone
-from django.template.defaultfilters import slugify
 
-from juntagrico.models import *
 from juntagrico.config import Config
+from juntagrico.models import *
 
 
 class Command(BaseCommand):

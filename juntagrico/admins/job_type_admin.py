@@ -7,6 +7,7 @@ from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.util.addons import get_jobtype_inlines
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
@@ -38,15 +39,11 @@ class JobTypeAdmin(admin.ModelAdmin):
     transform_job_type.short_description = _('Jobart in EinzelJobs konvertieren')
 
     def get_queryset(self, request):
-        qs = super(admin.ModelAdmin, self).get_queryset(request)
-        if request.user.has_perm('juntagrico.is_area_admin') and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            return qs.filter(activityarea__coordinator=request.user.member)
-        return qs
+        return queryset_for_coordinator(self, request, 'activityarea__coordinator')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'activityarea' and request.user.has_perm('juntagrico.is_area_admin') and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            kwargs['queryset'] = ActivityAreaDao.areas_by_coordinator(
-                request.user.member)
+        kwargs = formfield_for_coordinator(request,
+                                           'activityarea',
+                                           'juntagrico.is_area_admin',
+                                           ActivityAreaDao.areas_by_coordinator)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)

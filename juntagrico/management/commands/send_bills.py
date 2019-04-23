@@ -1,12 +1,7 @@
 from django.core.management.base import BaseCommand
-from django.utils import timezone
-from django.utils import bills
 
-from juntagrico.config import Config
-
-from juntagrico.models import *
-from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.models import *
 
 
 class Command(BaseCommand):
@@ -21,4 +16,4 @@ class Command(BaseCommand):
         bs = Config.business_year_start()
         if now.day == bs['day'] and now.month == bs['month']:
             for subscription in SubscriptionDao.all_active_subscritions():
-                bill_subscription(subscrtption)
+                bill_subscription(subscription)

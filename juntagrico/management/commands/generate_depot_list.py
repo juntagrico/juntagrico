@@ -1,13 +1,9 @@
 from django.core.management.base import BaseCommand
 
-
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.models import *
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.temporal import weekdays
@@ -73,7 +69,6 @@ class Command(BaseCommand):
             es_type['last'] = True
             cat['count'] = count
             categories.append(cat)
-
 
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             cat = {'name': category.name, 'description': category.description}

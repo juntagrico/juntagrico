@@ -2,6 +2,7 @@ import math
 
 from django.utils.translation import gettext as _
 
+
 def get_status_image(percent=0):
     status_number = min(100, int(25 * math.floor(float(percent)/25)))
     result = 'status_' + str(status_number)

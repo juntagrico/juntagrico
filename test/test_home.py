@@ -8,10 +8,7 @@ class HomeTests(TestCase):
     def setUpTestData(cls):
         create_test_data(cls)
 
-
     def testHome(self):
-        login = self.client.force_login(self.member.user)
+        self.client.force_login(self.member.user)
         response = self.client.get('/my/home')
         self.assertEqual(response.status_code, 200)
-
-

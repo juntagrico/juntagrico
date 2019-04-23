@@ -70,3 +70,5 @@ Release Notes
 Dev
 -----
  Has no migrations
+
+* personal template loader removed adapt your settings acoordingly

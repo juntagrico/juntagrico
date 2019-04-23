@@ -37,7 +37,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ extrasubscription.main_subscription.primary_member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#"onclick="$('#extrasubscription{{ extrasubscription.id }}').submit();">
+                            <a href="#"onclick="$('#extrasubscription{{ extrasubscription.id }}').submit();" class="email">
                                 {{ extrasubscription.main_subscription.primary_member.email }}
                             </a>
                         </form>
