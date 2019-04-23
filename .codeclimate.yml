@@ -31,9 +31,11 @@ checks:
 plugins:
   csslint:
     enabled: false
-  eslint:
-    enabled: true
   pep8:
+    enabled: true
+  radon:
+    enabled: true
+  sonar-python:
     enabled: true
 exclude_patterns:
   - "**/static/external/"
