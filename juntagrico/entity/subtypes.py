@@ -16,7 +16,7 @@ class SubscriptionProduct(models.Model):
         return self.name
 
     class Meta:
-        verbose_name =_('{0}-Produkt').format(Config.vocabulary('subscription'))
+        verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
 
 
@@ -39,7 +39,7 @@ class SubscriptionSize(models.Model):
         return self.name
 
     class Meta:
-        verbose_name =_('{0}-Grösse').format(Config.vocabulary('subscription'))
+        verbose_name = _('{0}-Grösse').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
         unique_together = ('name', 'product',)
         unique_together = ('units', 'product',)
@@ -62,7 +62,7 @@ class SubscriptionType(models.Model):
     price = models.IntegerField(_('Preis'))
     visible = models.BooleanField(_('Sichtbar'), default=True)
     trial = models.BooleanField(_('ProbeAbo'), default=False)
-    trial_days = models.IntegerField(_('ProbeAbo Dauer in Tagen'),default=0)
+    trial_days = models.IntegerField(_('ProbeAbo Dauer in Tagen'), default=0)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
 

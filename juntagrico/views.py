@@ -17,7 +17,6 @@ from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
 from juntagrico.util.management import *
 from juntagrico.util.addons import *
-from juntagrico.personalisation.personal_utils import enrich_menu_dict
 
 
 def get_menu_dict(request):
@@ -73,7 +72,6 @@ def get_menu_dict(request):
         'user_menus': get_user_menus(),
         'messages': [],
     }
-    enrich_menu_dict(request, menu_dict)
     return menu_dict
 
 

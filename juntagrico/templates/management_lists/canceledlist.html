@@ -48,7 +48,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ subscription.primary_member.email }}"/>
                             <input type="hidden"name="recipients_count"value="1"/>
-                            <ahref="#"onclick="$('#subscription{{ subscription.id }}').submit();">
+                            <a href="#"onclick="$('#subscription{{ subscription.id }}').submit();" class="email">
                                 {{ subscription.primary_member.email }}
                             </a>
                         </form>

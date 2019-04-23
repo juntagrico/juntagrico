@@ -65,8 +65,7 @@ def subscription_change(request, subscription_id):
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
     now = timezone.now().date()
-    can_change = not (now >= temporal.cancelation_date()
-                      and now < temporal.start_of_next_business_year())
+    can_change = not (temporal.cancelation_date() <= now < temporal.start_of_next_business_year())
     renderdict = get_menu_dict(request)
     renderdict.update({
         'subscription': subscription,
@@ -236,7 +235,7 @@ def add_member(request, subscription_id):
             if Config.enable_shares():
                 shares = int(request.POST.get('shares'))
                 shareerror = shares < 0
-        except:
+        except ValueError:
             shareerror = True
         member = next(iter(MemberDao.members_by_email(
             request.POST.get('email')) or []), None)
@@ -383,7 +382,7 @@ def order_shares(request):
         try:
             shares = int(request.POST.get('shares'))
             shareerror = shares < 1
-        except:
+        except ValueError:
             shareerror = True
         if not shareerror:
             member = request.user.member
@@ -424,6 +423,6 @@ def payout_share(request, share_id):
     share.save()
     member = share.member
     if member.active_shares_count == 0 and member.canceled is True:
-        member.inactive=True
+        member.inactive = True
         member.save()
     return return_to_previous_location(request)

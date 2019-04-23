@@ -1,13 +1,11 @@
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.conf.urls import url
 from django.contrib.auth.views import LoginView
 
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
-from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
-from juntagrico.personalisation import personal_urls
+from juntagrico import views_subscription as juntagrico_subscription
 
 urlpatterns = [
     # general juntagrico stuff
@@ -111,6 +109,4 @@ urlpatterns = [
     url('^my/maps', juntagrico_admin.maps),
 
     url('^my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001),
-
-    url(r'^my', include(personal_urls)),
 ]

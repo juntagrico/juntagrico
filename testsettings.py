@@ -107,8 +107,7 @@ TEMPLATES = [
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-                'juntagrico.personalisation.loaders.personal_directories.Loader'
+                'django.template.loaders.app_directories.Loader'
             ],
             'debug' : True
         },

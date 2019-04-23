@@ -1,21 +1,5 @@
-# -*- coding: utf-8 -*-
-
-import os
-import re
-import hashlib
-
-from django.contrib.auth.models import Permission, User
-from django.contrib.sites.shortcuts import get_current_site
-from django.core import mail
-from django.core.mail import EmailMultiAlternatives
-from django.db.models import Q
-from django.conf import settings
-from django.template.loader import get_template
-from django.utils import timezone
 from django.core.management.base import BaseCommand
 
-from juntagrico.config import Config
-from juntagrico.util.ical import *
 from juntagrico.models import *
 
 

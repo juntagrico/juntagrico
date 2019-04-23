@@ -55,7 +55,7 @@ a.canceled:hover, a.canceled:focus {
 
 /* logo stuff checked */
 .juntagrico_logo {
-    background: url(/static/img/juntagrico.png) 0 0px;
+    background: url(/static/img/juntagrico.png) 0 0;
     display: inline-block;
     width: 580px;
     height: 161px;
@@ -73,7 +73,7 @@ a.canceled:hover, a.canceled:focus {
 .container {
     min-height: 100%;
     position: relative;
-    padding: 0px 40px 0 40px;
+    padding: 0 40px 0 40px;
 }
 
 @media (min-width: 768px) {
@@ -127,7 +127,7 @@ a.canceled:hover, a.canceled:focus {
 .main-menu li a, .admin-menu li a {
     padding-top: 6px;
     padding-bottom: 6px;
-    padding-left: 0px;
+    padding-left: 0;
     margin-top: 2px;
     line-height: 22px;
 }
@@ -151,7 +151,7 @@ li.inline {
 
 a.inline {
     display: inline-block;
-    padding-right: 0px;
+    padding-right: 0;
 }
 
 .nav-link, .nav-link:focus {
@@ -294,12 +294,12 @@ th {
 
 #managementlist table th {
     vertical-align: top;
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 /* deliveries stuff checked */
 .delivery-table {
     width: 70%;
     font-size: 14px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }

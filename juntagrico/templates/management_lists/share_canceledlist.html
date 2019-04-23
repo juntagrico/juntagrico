@@ -63,7 +63,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ share.member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#"onclick="$('#share{{ share.id }}').submit();">
+                            <a href="#"onclick="$('#share{{ share.id }}').submit();" class="email">
                                 {{ share.member.email }}
                             </a>
                         </form>
