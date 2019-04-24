@@ -1,6 +1,6 @@
 Django==2.2
 django-polymorphic==2.0.3
-XlsxWriter==1.1.6
+XlsxWriter==1.1.7
 xhtml2pdf==0.2.3
 ics==0.4
 django-impersonate==1.4
