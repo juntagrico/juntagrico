@@ -323,7 +323,7 @@ def cancel_subscription(request, subscription_id):
             subscription.canceled = True
             subscription.end_date = request.POST.get('end_date')
             subscription.save()
-            message = request.POST.get('end_date')
+            message = request.POST.get('message')
             send_subscription_canceled(subscription, message)
             for extra in subscription.extra_subscription_set.all():
                 if extra.active is True:
@@ -333,7 +333,7 @@ def cancel_subscription(request, subscription_id):
                     extra.delete()
         elif subscription.active is False and subscription.deactivation_date is None:
             subscription.delete()
-        return redirect('/my/subscription')
+        return redirect('/my/subscription/detail')
 
     renderdict = get_menu_dict(request)
     renderdict.update({
