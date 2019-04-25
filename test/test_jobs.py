@@ -33,13 +33,13 @@ class JobTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def testTeam(self):
-        test_simple_get(self, '/my/teams/'+str(self.area.pk)+'/')
+        test_simple_get(self, '/my/area/'+str(self.area.pk)+'/')
 
-    def testParticipationPost(self):
-        self.client.force_login(self.member.user)
-        response = self.client.post('/my/participation', {'area'+str(self.area.pk): 1})
-        self.assertEqual(response.status_code, 200)
+    def testAreaJoinAndLeave(self):
+        test_simple_get(self, '/my/area/'+str(self.area.pk)+'/join')
         self.assertEqual(self.area.members.count(), 1)
+        test_simple_get(self, '/my/area/'+str(self.area.pk)+'/leave')
+        self.assertEqual(self.area.members.count(), 0)
 
     def testJobPost(self):
         self.client.force_login(self.member.user)

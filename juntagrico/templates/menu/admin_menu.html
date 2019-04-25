@@ -9,7 +9,7 @@
     {% trans "Administration" %}
 </h5>
 <ul class="nav flex-column admin-menu">
-    {% if operation_group %}
+    {% if operation_group or area_admin %}
         <li class="nav-item">
             <a class="nav-link" href="/admin">
                 {% trans "Daten Administration" %}

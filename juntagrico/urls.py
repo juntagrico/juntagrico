@@ -12,7 +12,6 @@ urlpatterns = [
     url('^my/home$', juntagrico.home),  #
     url('^my/password$', juntagrico.change_password),
     url('^my/jobs/(?P<job_id>.*?)/', juntagrico.job),  #
-    url('^my/teams/(?P<area_id>.*?)/', juntagrico.team),  #
     url('^my/profile$', juntagrico.profile),
     url('^my/cancel/membership$', juntagrico.cancel_membership),
     url('^my/participation$', juntagrico.participation),  #
@@ -29,6 +28,11 @@ urlpatterns = [
     url('^my/info/unpaidshares$', juntagrico.info_unpaid_shares),
     url(r'^logout/$', juntagrico.logout_view),
     url(r'^accounts/login/$', LoginView.as_view()),
+
+    #area stuff
+    url('^my/area/(?P<area_id>.*?)/$', juntagrico.show_area),  #
+    url('^my/area/(?P<area_id>.*?)/join$', juntagrico.area_join),  #
+    url('^my/area/(?P<area_id>.*?)/leave$', juntagrico.area_leave),  #
 
     # subscription related juntagrico stuff
     url('^my/subscription/detail/$', juntagrico_subscription.subscription),

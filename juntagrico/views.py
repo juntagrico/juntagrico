@@ -1,7 +1,7 @@
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import gettext as _
 
@@ -88,7 +88,7 @@ def home(request):
     renderdict['messages'].extend(home_messages(request))
     renderdict.update({
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda job: job.time),
-        'teams': ActivityAreaDao.all_visible_areas_ordered(),
+        'areas': ActivityAreaDao.all_visible_areas_ordered(),
     })
 
     return render(request, 'home.html', renderdict)
@@ -193,21 +193,6 @@ def participation(request):
     '''
     member = request.user.member
     my_areas = []
-    success = False
-    if request.method == 'POST':
-        old_areas = set(member.areas.all())
-        new_areas = set(area for area in ActivityAreaDao.all_visible_areas()
-                        if request.POST.get('area' + str(area.id)))
-        if old_areas != new_areas:
-            member.areas.set(new_areas)
-            member.save()
-            for area in new_areas - old_areas:
-                send_new_member_in_activityarea_to_operations(area, member)
-            for area in old_areas - new_areas:
-                send_removed_member_in_activityarea_to_operations(area, member)
-
-        success = True
-
     for area in ActivityAreaDao.all_visible_areas():
         if area.hidden:
             continue
@@ -223,7 +208,6 @@ def participation(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'areas': my_areas,
-        'success': success,
         'menu': {'participation': 'active'},
     })
     return render(request, 'participation.html', renderdict)
@@ -252,28 +236,46 @@ def pastjobs(request):
 
 
 @login_required
-def team(request, area_id):
+def show_area(request, area_id):
     '''
-    Details for a team
+    Details for an area
     '''
-
+    area = get_object_or_404(ActivityArea, id=int(area_id))
     job_types = JobTypeDao.types_by_area(area_id)
-
     otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
-
     jobs = list(rjobs)
-
     if len(otjobs) > 0:
         jobs.extend(list(otjobs))
         jobs.sort(key=lambda job: job.time)
-
+    area_checked = request.user.member in area.members.all()
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'team': get_object_or_404(ActivityArea, id=int(area_id)),
+        'area': area,
         'jobs': jobs,
+        'area_checked': area_checked,
     })
-    return render(request, 'team.html', renderdict)
+    return render(request, 'area.html', renderdict)
+
+
+@login_required
+def area_join(request, area_id):
+    new_area = get_object_or_404(ActivityArea, id=int(area_id))
+    member = request.user.member
+    new_area.members.add(member)
+    send_new_member_in_activityarea_to_operations(new_area, member)
+    new_area.save()
+    return HttpResponse('')
+
+
+@login_required
+def area_leave(request, area_id):
+    old_area = get_object_or_404(ActivityArea, id=int(area_id))
+    member = request.user.member
+    old_area.members.remove(member)
+    send_removed_member_in_activityarea_to_operations(old_area, member)
+    old_area.save()
+    return HttpResponse('')
 
 
 @login_required
