@@ -15,10 +15,11 @@ class MemberAdminForm(forms.ModelForm):
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
         member = k.get('instance')
-        link = self.get_subscription_link(member, member.subscription)
-        self.fields['subscription_link'].initial = link
-        link = self.get_subscription_link(member, member.future_subscription)
-        self.fields['future_subscription_link'].initial = link
+        if member is not None:
+            link = self.get_subscription_link(member, member.subscription)
+            self.fields['subscription_link'].initial = link
+            link = self.get_subscription_link(member, member.future_subscription)
+            self.fields['future_subscription_link'].initial = link
 
     @staticmethod
     def get_subscription_link(member, subscription):
