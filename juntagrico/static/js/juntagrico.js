@@ -101,3 +101,16 @@ function default_data_table() {
 function default_job_format(place,starttime,endtime,area) {
       return '<div>Zeit: ' + starttime + '-' + endtime + '<br/>Ort: ' +place + '<br/>Bereich: ' +area + '</div>';
 }
+
+function area_slider() {
+    $("input.switch").change(function () {
+        if($(this).is(':checked')){
+            $.get( "/my/area/"+$(this).attr('value')+"/join");
+        }
+        else {
+            $.get( "/my/area/"+$(this).attr('value')+"/leave");
+        }
+
+    })
+
+}

@@ -3,7 +3,7 @@
 {% load config %}
 {% block page_title %}
     <h3>
-        {{ team.name }}
+        {{ area.name }}
     </h3>
 {% endblock %}
 {% block content %}
@@ -12,7 +12,7 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-9">
-            {{ team.description }}
+            {{ area.description|urlize }}
         </div>
     </div>
     <div class="row mb-4">
@@ -20,17 +20,27 @@
             {% trans "Verantwortlicher" %}:
         </div>
         <div class="col-md-9">
-            {{ team.coordinator.first_name }} {{ team.coordinator.last_name }}
+            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
             <br/>
-            {% if team.email is not None %}
-                <a href="mailto:{{ team.email }}">
-                    {{ team.email }}
+            {% if area.email is not None %}
+                <a href="mailto:{{ area.email }}">
+                    {{ area.email }}
                 </a>
             {% else %}
-                <a href="mailto:{{ team.coordinator.email }}">
-                    {{ team.coordinator.email }}
+                <a href="mailto:{{ area.coordinator.email }}">
+                    {{ area.coordinator.email }}
                 </a>
             {% endif %}
+        </div>
+    </div>
+    <div class="row mb-3 no-gutters">
+        <div class="offset-md-3 col-md-9">
+            <span class="switch switch-sm">
+                <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area_checked %}checked="checked"{% endif %}/>
+                <label for="area{{ area.id }}">
+                    {% trans "Mitmachen" %}
+                </label>
+            </span>
         </div>
     </div>
     <div class="row mb-3">
@@ -48,4 +58,8 @@
             {% endif %}
         </div>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initArea.js">
+    </script>
 {% endblock %}

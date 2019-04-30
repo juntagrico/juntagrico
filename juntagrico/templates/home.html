@@ -24,11 +24,11 @@
             </h4>
         </div>
     </div>
-    {% for team in teams %}
+    {% for area in areas %}
         <div class="row mb-1">
             <div class="col-md-12">
-                <a href="/my/teams/{{ team.id }}" class="{% if team.core %}core{% endif %}">
-                    {{ team.name }}
+                <a href="/my/area/{{ area.id }}" class="{% if area.core %}core{% endif %}">
+                    {{ area.name }}
                 </a>
             </div>
         </div>
