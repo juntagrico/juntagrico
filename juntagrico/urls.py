@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^logout/$', juntagrico.logout_view),
     url(r'^accounts/login/$', LoginView.as_view()),
 
-    #area stuff
+    # area stuff
     url('^my/area/(?P<area_id>.*?)/$', juntagrico.show_area),  #
     url('^my/area/(?P<area_id>.*?)/join$', juntagrico.area_join),  #
     url('^my/area/(?P<area_id>.*?)/leave$', juntagrico.area_leave),  #
