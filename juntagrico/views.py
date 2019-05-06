@@ -13,6 +13,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.forms import *
 from juntagrico.models import *
+from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
 from juntagrico.util.management import *
@@ -167,7 +168,8 @@ def job(request, job_id):
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
-        'can_subscribe': can_subscribe
+        'can_subscribe': can_subscribe,
+        'edit_url': get_job_admin_url(request, job)
     })
     return render(request, 'job.html', renderdict)
 

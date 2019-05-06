@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html
+
+from juntagrico.entity.jobs import OneTimeJob, RecuringJob
 
 
 def formfield_for_coordinator(request, field_name, perm, query_function, **kwargs):
@@ -28,3 +31,16 @@ class MyHTMLWidget(forms.widgets.Widget):
         if value is None:
             return ''
         return format_html(value)
+
+
+def get_job_admin_url(request, job):
+    user = request.user
+    if (user.has_perm('juntagrico.change_recuringjob') or user.has_perm('juntagrico.change_onetimejob')) and \
+        (user.is_superuser or
+         user.has_perm('juntagrico.is_operations_group') or
+         job.type.area.coordinator == user.member):
+        if isinstance(job, OneTimeJob):
+            return reverse('admin:juntagrico_onetimejob_change', args=(job.id,))
+        if isinstance(job, RecuringJob):
+            return reverse('admin:juntagrico_recuringjob_change', args=(job.id,))
+    return ''

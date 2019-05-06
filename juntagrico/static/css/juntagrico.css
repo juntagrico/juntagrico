@@ -69,6 +69,14 @@ a.canceled:hover, a.canceled:focus {
     font-size: 30pt;
 }
 
+.edit i {
+    font-size: 0.7em;
+}
+
+.edit {
+    vertical-align: top;
+}
+
 /* container stuff checked */
 .container {
     min-height: 100%;

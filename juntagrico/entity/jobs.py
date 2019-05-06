@@ -8,7 +8,7 @@ from polymorphic.models import PolymorphicModel
 
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.mailer import *
-from juntagrico.util.jobs import *
+from juntagrico.util.jobs import get_status_image
 from juntagrico.util.temporal import *
 
 

@@ -4,6 +4,12 @@
 {% block page_title %}
     <h3>
         {{ job.type.name }}
+        {% if edit_url.strip %}
+         <a href="{{ edit_url }}" class="edit">
+            <i class="fas fa-pen">
+            </i>
+        </a>
+        {% endif %}
     </h3>
 {% endblock %}
 {% block content %}
