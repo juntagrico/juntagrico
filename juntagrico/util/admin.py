@@ -35,12 +35,11 @@ class MyHTMLWidget(forms.widgets.Widget):
 
 def get_job_admin_url(request, job):
     user = request.user
-    if (user.has_perm('juntagrico.change_recuringjob') or user.has_perm('juntagrico.change_onetimejob')) and \
-        (user.is_superuser or
-         user.has_perm('juntagrico.is_operations_group') or
-         job.type.area.coordinator == user.member):
-        if isinstance(job, OneTimeJob):
+    if user.is_superuser or \
+            user.has_perm('juntagrico.is_operations_group') or \
+            job.type.area.coordinator == user.member:
+        if isinstance(job, OneTimeJob) and user.has_perm('juntagrico.change_onetimejob'):
             return reverse('admin:juntagrico_onetimejob_change', args=(job.id,))
-        if isinstance(job, RecuringJob):
+        if isinstance(job, RecuringJob) and user.has_perm('juntagrico.change_recuringjob'):
             return reverse('admin:juntagrico_recuringjob_change', args=(job.id,))
     return ''
