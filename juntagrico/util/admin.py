@@ -37,7 +37,7 @@ def get_job_admin_url(request, job):
     user = request.user
     if user.is_superuser or \
             user.has_perm('juntagrico.is_operations_group') or \
-            job.type.area.coordinator == user.member:
+            job.type.activityarea.coordinator == user.member:
         if isinstance(job, OneTimeJob) and user.has_perm('juntagrico.change_onetimejob'):
             return reverse('admin:juntagrico_onetimejob_change', args=(job.id,))
         if isinstance(job, RecuringJob) and user.has_perm('juntagrico.change_recuringjob'):
