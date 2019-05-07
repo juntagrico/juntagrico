@@ -58,7 +58,7 @@
                 <div class="col-md-10">
                     {{ type.name }}
                     <br/>
-                    {{ type.description }}
+                    {{ type.description|linebreaksbr|urlize }}
                     <br/>
                     {% for period in type.periods.all %}
                         {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.

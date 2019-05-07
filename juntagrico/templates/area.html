@@ -12,7 +12,7 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-9">
-            {{ area.description|urlize }}
+            {{ area.description|linebreaksbr|urlize }}
         </div>
     </div>
     <div class="row mb-4">
@@ -52,7 +52,7 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-            {% include "snippet_jobs.html" %}
+            {% include "snippets/snippet_jobs.html" %}
             {% if jobs|length <= 0 %}
                 {% trans "Keine Einsätze ausgeschrieben" %}
             {% endif %}
