@@ -131,7 +131,11 @@
                 {% trans "Mitteilung" %}
             </label>
             <div class="col-md-10">
-                <textarea name="message" id="message" class="mailer" rows="12"placeholder="{% trans "Nachricht hier eingeben" %}">{% if mail_message %}{{ mail_message }}{% endif %}</textarea>
+                <textarea name="message" id="message" class="mailer" rows="12"placeholder="{% trans "Nachricht hier eingeben" %}">
+                    {% if mail_message %}
+                        {{ mail_message }}
+                    {% endif %}
+                </textarea>
                 <input type="hidden" id="textMessage" name="textMessage"/>
             </div>
         </div>
