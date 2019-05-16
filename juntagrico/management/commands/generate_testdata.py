@@ -28,8 +28,10 @@ class Command(BaseCommand):
         share_all_fields['member'] = member_2
         Share.objects.create(**share_all_fields)
         Share.objects.create(**share_all_fields)
+        subprod_fields = {'name': 'Gemüse'}
+        subproduct = SubscriptionProduct.objects.create(**subprod_fields)
         subsize_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'units': 1, 'visible': True,
-                          'depot_list': True,
+                          'depot_list': True, 'product': subproduct,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
         subsize = SubscriptionSize.objects.create(**subsize_fields)
         subtrype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': subsize, 'shares': 2,
