@@ -285,7 +285,7 @@ class Assignment(models.Model):
     '''
     Single assignment (work unit).
     '''
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.PROTECT)
     member = models.ForeignKey('Member', on_delete=models.PROTECT)
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
     job_extras = models.ManyToManyField(
