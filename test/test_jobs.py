@@ -1,44 +1,30 @@
-from django.test import TestCase
-
-from test.util.test import test_simple_get
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class JobTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class JobTests(JuntagricoTestCase):
 
     def testAssignments(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/assignments')
-        self.assertEqual(response.status_code, 200)
+        self.assertSimpleGet('/my/assignments')
 
     def testAssignmentsAll(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/assignments/all')
-        self.assertEqual(response.status_code, 200)
+        self.assertSimpleGet('/my/assignments/all')
 
     def testJob(self):
-        test_simple_get(self, '/my/jobs/' + str(self.job1.pk) + '/')
+        self.assertSimpleGet('/my/jobs/' + str(self.job1.pk) + '/')
 
     def testPastJob(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/pastjobs')
-        self.assertEqual(response.status_code, 200)
+        self.assertSimpleGet('/my/pastjobs')
 
     def testParticipation(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/participation')
-        self.assertEqual(response.status_code, 200)
+        self.assertSimpleGet('/my/participation')
 
     def testTeam(self):
-        test_simple_get(self, '/my/area/'+str(self.area.pk)+'/')
+        self.assertSimpleGet('/my/area/' + str(self.area.pk) + '/')
 
     def testAreaJoinAndLeave(self):
-        test_simple_get(self, '/my/area/'+str(self.area.pk)+'/join')
+        self.assertSimpleGet('/my/area/' + str(self.area.pk) + '/join')
         self.assertEqual(self.area.members.count(), 1)
-        test_simple_get(self, '/my/area/'+str(self.area.pk)+'/leave')
+        self.assertSimpleGet('/my/area/' + str(self.area.pk) + '/leave')
         self.assertEqual(self.area.members.count(), 0)
 
     def testJobPost(self):

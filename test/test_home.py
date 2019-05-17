@@ -1,14 +1,7 @@
-from django.test import TestCase
-
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class HomeTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class HomeTests(JuntagricoTestCase):
 
     def testHome(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/home')
-        self.assertEqual(response.status_code, 200)
+        self.assertSimpleGet('/my/home')

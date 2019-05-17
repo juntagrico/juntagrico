@@ -1,19 +1,11 @@
-from django.test import TestCase
-
-from test.util.test import test_simple_get
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class FilterTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class FilterTests(JuntagricoTestCase):
 
     def testSubscrition(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/subscriptions')
-        self.assertEqual(response.status_code, 200)
+        self.assertSimpleGet('/my/subscriptions')
 
     def testSubscritionDepot(self):
         url = '/my/subscriptions/depot/'+str(self.depot.pk)+'/'
-        test_simple_get(self, url)
+        self.assertSimpleGet(url)

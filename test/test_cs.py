@@ -1,13 +1,9 @@
 from django.contrib import auth
-from django.test import TestCase
 
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class CreateSubscriptionTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class CreateSubscriptionTests(JuntagricoTestCase):
 
     def testSignupLogout(self):
         self.client.force_login(self.member.user)

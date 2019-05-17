@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.core.management.base import BaseCommand
 
 from juntagrico.models import *
@@ -34,10 +32,10 @@ class Command(BaseCommand):
                           'depot_list': True, 'product': subproduct,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
         subsize = SubscriptionSize.objects.create(**subsize_fields)
-        subtrype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': subsize, 'shares': 2,
+        subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': subsize, 'shares': 2,
                           'visible': True, 'required_assignments': 10, 'price': 1000,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
-        subtype = SubscriptionType.objects.create(**subtrype_fields)
+        subtype = SubscriptionType.objects.create(**subtype_fields)
         depot1_fields = {'code': 'D1', 'name': 'Toblerplatz', 'weekday': 2, 'latitude': '47.379308',
                          'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
                          'addr_location': 'Zürich', 'description': 'Hinter dem Migros', 'contact': member_2}
@@ -48,10 +46,10 @@ class Command(BaseCommand):
         depot2 = Depot.objects.create(**depot2_fields)
         sub_1_fields = {'depot': depot1, 'future_depot': None, 'active': True,
                         'activation_date': '2017-03-27', 'deactivation_date': None, 'creation_date': '2017-03-27',
-                        'start_date': '2018-01-01'}
+                        'start_date': '2018-01-01', 'primary_member': member_1}
         sub_2_fields = {'depot': depot2, 'future_depot': None,
                         'active': True, 'activation_date': '2017-03-27', 'deactivation_date': None,
-                        'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
+                        'creation_date': '2017-03-27', 'start_date': '2018-01-01', 'primary_member': member_2}
         subscription_1 = Subscription.objects.create(**sub_1_fields)
         member_1.subscription = subscription_1
         member_1.save()
