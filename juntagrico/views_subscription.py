@@ -1,16 +1,33 @@
+import hashlib
+
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 
+from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.decorators import primary_member_of_subscription
-from juntagrico.forms import *
-from juntagrico.models import *
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subtypes import TSST, TFSST
+from juntagrico.forms import RegisterMemberForm
+from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
-from juntagrico.util.management import *
+from juntagrico.util.management import create_member, update_member, create_share
+from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
+    cancelation_date
 from juntagrico.views import get_menu_dict
 
 
@@ -117,7 +134,7 @@ def size_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     shareerror = False
-    if request.method == 'POST' and int(time.strftime('%m')) <= Config.business_year_cancelation_month() and int(request.POST.get('subscription')) > 0:
+    if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month() and int(request.POST.get('subscription')) > 0:
         type = SubscriptionTypeDao.get_by_id(
             int(request.POST.get('subscription')))[0]
         shares = subscription.all_shares
