@@ -46,10 +46,10 @@ class Command(BaseCommand):
                          'addr_location': 'Zürich', 'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
         depot1 = Depot.objects.create(**depot1_fields)
         depot2 = Depot.objects.create(**depot2_fields)
-        sub_1_fields = {'depot': depot1, 'future_depot': None, 'active': True,
+        sub_1_fields = {'depot': depot1,'primary_member': member_1, 'future_depot': None, 'active': True,
                         'activation_date': '2017-03-27', 'deactivation_date': None, 'creation_date': '2017-03-27',
                         'start_date': '2018-01-01'}
-        sub_2_fields = {'depot': depot2, 'future_depot': None,
+        sub_2_fields = {'depot': depot2, 'primary_member': member_2,'future_depot': None,
                         'active': True, 'activation_date': '2017-03-27', 'deactivation_date': None,
                         'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
         subscription_1 = Subscription.objects.create(**sub_1_fields)
