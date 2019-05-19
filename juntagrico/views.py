@@ -20,6 +20,12 @@ from juntagrico.util.management import *
 from juntagrico.util.addons import *
 
 
+def get_page_dict(request):
+    return {
+        'view_name': request.resolver_match.view_name.replace('.', '-'),
+    }
+
+
 def get_menu_dict(request):
     member = request.user.member
     next_jobs = [a.job for a in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time')]
@@ -51,7 +57,8 @@ def get_menu_dict(request):
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
-    menu_dict = {
+    menu_dict = get_page_dict(request)
+    menu_dict.update({
         'user': request.user,
         'assignmentsrange': assignmentsrange,
         'userassignments_bound': userassignments_total,
@@ -72,7 +79,8 @@ def get_menu_dict(request):
         'admin_menus': get_admin_menus(),
         'user_menus': get_user_menus(),
         'messages': [],
-    }
+
+    })
     return menu_dict
 
 
@@ -402,21 +410,11 @@ def profile(request):
             success = True
     else:
         memberform = MemberProfileForm(instance=member)
-    asc = member.active_shares_count
-    sub = member.subscription
-    f_sub = member.future_subscription
-    future = f_sub is not None and f_sub.share_overflow-asc < 0
-    current = sub is not None and sub.share_overflow-asc < 0
-    coop_cond = member != '' and not future and not current
     renderdict = get_menu_dict(request)
     renderdict.update({
         'memberform': memberform,
         'success': success,
-        'coop_member': member.is_cooperation_member,
-        'end_date': next_membership_end_date(),
         'member': member,
-        'can_cancel': not member.is_cooperation_member or (coop_cond),
-        'missing_iban': member.iban is None,
         'menu': {'personalInfo': 'active'},
     })
     return render(request, 'profile.html', renderdict)
@@ -512,9 +510,10 @@ def new_password(request):
             member.user.save()
             send_mail_password_reset(member.email, pw)
 
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'sent': sent
-    }
+    })
     return render(request, 'newpassword.html', renderdict)
 
 

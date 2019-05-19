@@ -16,14 +16,14 @@
     <form action="" method="post">
         <input type="hidden" value="{{ referer }}" name="referer"/>
         {% csrf_token %}
-        <div class="form-group row align-items-center h-100">
-            <label class="col-md-3">
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">
                 {% vocabulary "share_pl" %}
             </label>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <input type="number" name="shares" class="form-control" value="0" min="0"/>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-6">
                 {% if shareerror %}
                     <div class="alert alert-danger">
                         {% trans "Deine Eingabe ist ungültig" %}

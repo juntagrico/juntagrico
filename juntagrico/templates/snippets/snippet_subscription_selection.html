@@ -15,7 +15,7 @@
     </div>
     {% for subscription_size in p.sizes.all %}
         <div class="form-group row">
-            <div class="col-md-9 offset-md-4">
+            <div class="offset-md-3 col-md-9">
                 {{ subscription_size.long_name }}
                 <br/>
                 {{ subscription_size.description|linebreaksbr }}
@@ -24,7 +24,7 @@
         {% for type in subscription_size.types.all %}
             {% if type.visible %}
                 <div class="form-group row">
-                    <div class="col-md-9 offset-md-4">
+                    <div class="offset-md-4 col-md-8">
                         <div class="row align-items-center h-100 no-gutters">
                             <div class="col-md-2">
                                 <span class="switch switch-sm">

@@ -3,7 +3,7 @@
 {% load config %}
 {% block all_page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
-    <div class="offset-md-3 col-md-9 juntagrico">
+    <div id="page-title" class="offset-md-2 col-md-8">
         <h3>
             {% blocktrans %}{{ v_share_pl }} erwerben{% endblocktrans %}
         </h3>
@@ -61,13 +61,13 @@
         <form action="" method="post">
             {% csrf_token %}
             <div class="form-group row">
-                <label class="col-md-3">
+                <label class="col-md-3 col-form-label">
                     {% blocktrans %}Deine {{ v_share_pl }}{% endblocktrans %}
                 </label>
                 <div class="col-md-3">
                     <input type="number" name="shares_mainmember" class="form-control" value="{{ total_shares }}"min="{% if mm_requires_one %}1{% else %}0{% endif %}"/>
                 </div>
-                <label class="col-md-6">
+                <label class="col-md-6 col-form-label">
                     {% if mm_requires_one %}
                         {% blocktrans trimmed %}
                         Du brauchst als Haupt-Bezieher mindestens 1 {{ v_share }}.
@@ -81,20 +81,20 @@
             </div>
             {% for co_member in co_members %}
                 <div class="form-group row">
-                    <label class="col-md-3">
+                    <label class="col-md-3 col-form-label">
                         {{ co_member.first_name }} {{ co_member.last_name }}
                     </label>
                     <div class="col-md-3">
                         <input type="number" name="{{ co_member.email }}" class="form-control" value="0" min="0"/>
                     </div>
-                    <label class="col-md-6">
+                    <label class="col-md-6 col-form-label">
                         {% blocktrans trimmed with cac=co_member.active_shares.count %}
                         besitzt bereits {{ cac }} {{ v_share_pl }}
                         {% endblocktrans %}
                     </label>
                 </div>
             {% endfor %}
-            <div class="form-actions row">
+            <div class="form-group row">
                 <div class="offset-md-3 col-md-9">
                     <button type="submit" class="btn btn-success">
                         {% trans "Bestellen" %}

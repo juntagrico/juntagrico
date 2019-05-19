@@ -1,15 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% block body_extra_classes %}wide-layout{% endblock %}
 {% block styles %}
     <link href="/static/external/datepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 {% block content %}
     {% config "enable_shares" as enable_shares %}
-    <style>
-        body > .container
-        {width: 95%;}
-    </style>
     {% if not change_date_disabled %}
         {% if can_change_date %}
             <form action="/my/changedate" method="POST">

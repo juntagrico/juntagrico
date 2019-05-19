@@ -2,7 +2,6 @@ import hashlib
 
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -22,13 +21,13 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
-from juntagrico.forms import RegisterMemberForm
+from juntagrico.forms import RegisterMemberForm, RegisterCoMemberForm
 from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.management import create_member, update_member, create_share
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
-from juntagrico.views import get_menu_dict
+from juntagrico.views import get_menu_dict, get_page_dict
 
 
 @login_required
@@ -193,35 +192,21 @@ def signup(request):
         raise Http404
     logout(request)
     success = False
-    agberror = False
-    agbchecked = False
-    userexists = False
     if request.method == 'POST':
-        agbchecked = request.POST.get('agb') == 'on'
         memberform = RegisterMemberForm(request.POST)
-        if not agbchecked:
-            agberror = True
-        else:
-            if memberform.is_valid():
-                # check if user already exists
-                email = memberform.cleaned_data['email']
-                if User.objects.filter(email__iexact=email).__len__() > 0:
-                    userexists = True
-                else:
-                    member = Member(**memberform.cleaned_data)
-                    request.session['main_member'] = member
-                    return redirect('/my/create/subscrition')
+        if memberform.is_valid():
+            member = Member(**{field: memberform.cleaned_data[field] for field in memberform.Meta.fields})
+            request.session['main_member'] = member
+            return redirect('/my/create/subscrition')
     else:
         memberform = RegisterMemberForm()
 
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'memberform': memberform,
         'success': success,
-        'agberror': agberror,
-        'agbchecked': agbchecked,
-        'userexists': userexists,
         'menu': {'join': 'active'},
-    }
+    })
     return render(request, 'signup.html', renderdict)
 
 
@@ -240,33 +225,23 @@ def confirm(request, hash):
 
 @primary_member_of_subscription
 def add_member(request, subscription_id):
-    shareerror = False
-    shares = 0
-    memberexists = False
-    memberblocked = False
     main_member = request.user.member
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
-        memberform = RegisterMemberForm(request.POST)
-        try:
-            if Config.enable_shares():
-                shares = int(request.POST.get('shares'))
-                shareerror = shares < 0
-        except ValueError:
-            shareerror = True
+        memberform = RegisterCoMemberForm(request.POST)
         member = next(iter(MemberDao.members_by_email(
             request.POST.get('email')) or []), None)
-        if member is not None:
-            memberexists = True
-            memberblocked = member.blocked
-        if memberform.is_valid()or (memberexists is True and memberblocked is False):
-            if memberexists is False:
-                member = Member(**memberform.cleaned_data)
+        member_addable = member is not None and not member.blocked
+        if memberform.is_valid() or member_addable:
+            shares = memberform.cleaned_data.get('shares', 0)
+            if not member_addable:
+                member = Member(**{field: memberform.cleaned_data[field] for field in memberform.Meta.fields})
                 create_member(member, subscription, main_member, shares)
             else:
                 update_member(member, subscription, main_member, shares)
-            for i in range(shares):
-                create_share(member)
+            if Config.enable_shares():
+                for i in range(shares):
+                    create_share(member)
             return redirect('/my/subscription/detail/'+str(subscription_id)+'/')
     else:
         initial = {'addr_street': main_member.addr_street,
@@ -274,15 +249,12 @@ def add_member(request, subscription_id):
                    'addr_location': main_member.addr_location,
                    'phone': main_member.phone,
                    }
-        memberform = RegisterMemberForm(initial=initial)
-    renderdict = {
-        'shares': shares,
-        'memberexists': memberexists,
-        'memberblocked': memberblocked,
-        'shareerror': shareerror,
+        memberform = RegisterCoMemberForm(initial=initial)
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'memberform': memberform,
         'subscription_id': subscription_id
-    }
+    })
     return render(request, 'add_member.html', renderdict)
 
 

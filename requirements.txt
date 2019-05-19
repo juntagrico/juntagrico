@@ -5,3 +5,4 @@ xhtml2pdf==0.2.3
 ics==0.4
 django-impersonate==1.4
 schwifty==2018.9.1
+django-crispy-forms==1.7.2

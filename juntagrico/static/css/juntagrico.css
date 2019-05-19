@@ -17,10 +17,6 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 10px;
 }
 
-select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
-    height: 30px;
-}
-
 @font-face {
     font-family: 'Source Sans Pro Light';
     src: url('/static/fonts/SourceSansPro-Light.ttf') format('truetype');
@@ -37,7 +33,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 
 a {
     color: #66cc66;
-    vertical-align: middle;
 }
 
 a:hover, a:focus {
@@ -53,8 +48,17 @@ a.canceled:hover, a.canceled:focus {
     color: #ff3399;
 }
 
+/* crispy-form */
+.asteriskField {
+    padding-left: 0.2em;
+}
+
+body#juntagrico-views-profile .asteriskField {
+    display: none;
+}
+
 /* logo stuff checked */
-.juntagrico_logo {
+#juntagrico-logo {
     background: url(/static/img/juntagrico.png) 0 0;
     display: inline-block;
     width: 580px;
@@ -62,7 +66,7 @@ a.canceled:hover, a.canceled:focus {
 }
 
 /* title stuff checked */
-.juntagrico h3 {
+#page-title h3 {
     margin-top: 0;
     margin-bottom: 40px;
     color: #66cc66;
@@ -78,41 +82,52 @@ a.canceled:hover, a.canceled:focus {
 }
 
 /* container stuff checked */
-.container {
+#page-container {
     min-height: 100%;
     position: relative;
     padding: 0 40px 0 40px;
 }
 
 @media (min-width: 768px) {
-    .container {
+    #page-container {
         width: 750px
     }
 }
 
 @media (min-width: 992px) {
-    .container {
+    #page-container {
         width: 970px
     }
 }
 
 @media (min-width: 1200px) {
-    .container {
+    #page-container {
         width: 1170px
     }
 }
 
-/* row size stuff checked */
-.juntagrico {
-    margin-top: 0;
+/* layouts */
+body.wide-layout > #page-container {
+    width: 95%;
+    max-width: 95%;
 }
 
-.myjuntagrico {
+/* row size stuff checked */
+#page-container > div.row {
     margin-top: 60px;
     margin-bottom: 50px;
 }
 
-.footer {
+div#allcontent.row {
+    margin-top: 0;
+}
+
+div#all-page-title.row {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#footer {
     margin-top: 60px;
     margin-bottom: 50px;
 }
@@ -123,7 +138,7 @@ a.canceled:hover, a.canceled:focus {
 }
 
 /* menu stuff checked */
-.main-menu {
+#main-menu {
     font-size: 19px;
     font-family: "Source Sans Pro Regular";
 }
@@ -132,7 +147,7 @@ a.canceled:hover, a.canceled:focus {
     font-size: 14px;
 }
 
-.main-menu li a, .admin-menu li a {
+#main-menu li a, #admin-menu li a {
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 0;
@@ -140,11 +155,11 @@ a.canceled:hover, a.canceled:focus {
     line-height: 22px;
 }
 
-.main-menu.separator {
+#main-menu.separator {
     height: 12px;
 }
 
-.admin-menu {
+#admin-menu {
     font-family: "Source Sans Pro Light";
     font-size: 14px;
 }
@@ -187,11 +202,11 @@ a.inline {
 }
 
 /* next jobs widget menu stuff checked */
-.next-jobs {
+#jobs-widget .next-jobs {
     margin-top: 5px;
 }
 
-.next-jobs .time {
+#jobs-widget .next-jobs .time {
     margin-bottom: 10px;
     font-size: 14px;
 }
@@ -269,7 +284,6 @@ textarea#recipients[disabled=disabled] {
 
 /* increment buttons stuff*/
 .btn-increment, .btn-decrement {
-    height: 30px;
     line-height: 1;
 }
 

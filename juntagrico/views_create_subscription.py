@@ -8,6 +8,7 @@ from juntagrico.models import *
 from juntagrico.util import temporal
 from juntagrico.util.create_sub import get_main_member
 from juntagrico.util.management import *
+from juntagrico.views import get_page_dict
 
 
 def cs_welcome(request):
@@ -15,9 +16,10 @@ def cs_welcome(request):
     if main_member is None:
         return redirect('http://'+Config.server_url())
 
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'no_subscription': main_member.future_subscription is None
-    }
+    })
 
     return render(request, 'welcome.html', renderdict)
 
@@ -36,10 +38,11 @@ def cs_select_subscription(request):
             request.session['selectedsubscription'] = selectedsubscription
             return redirect('/my/create/subscription/selectdepot')
         return redirect('/my/create/subscription/shares')
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'hours_used': Config.assignment_unit() == 'HOURS',
         'products': SubscriptionProductDao.get_all(),
-    }
+    })
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 
 
@@ -55,11 +58,12 @@ def cs_select_depot(request):
     requires_map = True
     for depot in depots:
         requires_map = requires_map or depot.has_geo
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'member': main_member,
         'depots': depots,
         'requires_map': requires_map,
-    }
+    })
     return render(request, 'createsubscription/select_depot.html', renderdict)
 
 
@@ -73,10 +77,11 @@ def cs_select_start_date(request):
         if subscriptionform.is_valid():
             request.session['start_date'] = subscriptionform.cleaned_data['start_date']
             return redirect('/my/create/subscription/addmembers')
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'start_date': temporal.start_of_next_business_year(),
         'subscriptionform': subscriptionform,
-    }
+    })
     return render(request, 'createsubscription/select_start_date.html', renderdict)
 
 
@@ -144,7 +149,8 @@ def cs_select_shares(request):
                 return redirect('/my/subscription/detail/')
             else:
                 return redirect('/my/welcome')
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'share_error': share_error,
         'total_shares': total_shares,
         'required_shares': required_shares,
@@ -153,39 +159,38 @@ def cs_select_shares(request):
         'selected_subscription': int(selected_subscription),
         'has_com_members': len(co_members) > 0,
         'mm_requires_one': mm_requires_one
-    }
+    })
     return render(request, 'createsubscription/select_shares.html', renderdict)
 
 
 def cs_add_member(request):
+    clear_form = True
     main_member = get_main_member(request)
     if main_member is None:
         return redirect('http://'+Config.server_url())
-    memberexists = False
-    memberblocked = False
     co_members = request.session.get('create_co_members', [])
     if request.method == 'POST':
-        memberform = RegisterMemberForm(request.POST)
+        clear_form = False
+        memberform = RegisterMultiCoMemberForm(request.POST)
         member = next(iter(MemberDao.members_by_email(
             request.POST.get('email')) or []), None)
-        if member is not None:
-            memberexists = True
-            memberblocked = member.blocked
-        if memberform.is_valid()or (memberexists is True and memberblocked is False):
-            if memberexists is False:
-                member = Member(**memberform.cleaned_data)
+        member_addable = member is not None and not member.blocked
+        if memberform.is_valid() or member_addable:
+            if not member_addable:
+                member = Member(**{field: memberform.cleaned_data[field] for field in memberform.Meta.fields})
             co_members.append(member)
             request.session['create_co_members'] = co_members
-    initial = {'addr_street': main_member.addr_street,
-               'addr_zipcode': main_member.addr_zipcode,
-               'addr_location': main_member.addr_location,
-               }
-    memberform = RegisterMemberForm(initial=initial)
-    renderdict = {
-        'memberexists': memberexists,
-        'memberblocked': memberblocked,
+            clear_form = True
+    if clear_form:
+        initial = {'addr_street': main_member.addr_street,
+                   'addr_zipcode': main_member.addr_zipcode,
+                   'addr_location': main_member.addr_location,
+                   }
+        memberform = RegisterMultiCoMemberForm(initial=initial)
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'memberform': memberform,
-    }
+    })
     return render(request, 'createsubscription/add_member_cs.html', renderdict)
 
 

@@ -41,12 +41,12 @@
             <div class="form-group row">
                 <label for="recipients" class="col-md-2">
                     {% trans "Empfänger" %}
-                    <a id="edit-recipients-action"href="#">
+                    <a id="edit-recipients-action" href="#">
                         {% trans "bearbeiten" %}
                     </a>
                 </label>
                 <div class="col-md-10 ">
-                    <textarea name="recipients" id="recipients"rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}"disabled="disabled">{{ recipients }}</textarea>
+                    <textarea name="recipients" id="recipients" rows="{% if recipients_count < 12 %}{{ recipients_count }}{% else %}12{% endif %}" disabled="disabled">{{ recipients }}</textarea>
                 </div>
             </div>
         {% else %}
