@@ -13,7 +13,7 @@
         <div class="col-md-12">
             {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
             Hier kannst du dein/e/n {{ v_subscription }} kündigen. Der nächste
-            reguläre Kündigungstermin ist der {{ ed }}.
+            reguläre Kündigungstermin ist der <b>{{ ed }}</b>.
             {% endblocktrans %}
         </div>
     </div>
@@ -23,7 +23,7 @@
                 {% csrf_token %}
                 <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                 <div class="form-group row">
-                    <label class="col-md-3" for="message">
+                    <label class="col-md-2" for="message">
                         {% trans "Mitteilung" %}
                     </label>
                     <div class="col-md-9">
@@ -31,8 +31,8 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="offset-md-4 form-actions">
-                        <button type="submit" class="btn btn-success">
+                    <div class="offset-md-2 col-md-9">
+                        <button type="submit" class="btn btn-danger">
                             {% trans "Abo künden" %}
                         </button>
                     </div>

@@ -7,55 +7,57 @@
     </h3>
 {% endblock %}
 {% block content %}
-    {% trans "Übersicht" %}
-    <div>
-        <table id="filter-table" class="table" style="display: table;">
-            <thead>
-                <tr>
-                    <th>
-                        {% trans "Abo" %}
-                    </th>
-                    <th>
-                        {% trans "Status" %}
-                    </th>
-                    <th>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for extra in extras %}
+    <b>{% trans "Übersicht" %}</b>
+    {% if extras|length == 0 %}
+        {% trans "Du hast noch keine Zusatz-Abos" %}
+    {% else %}
+        <div>
+            <table id="filter-table" class="table" style="display: table;">
+                <thead>
                     <tr>
-                        <td>
-                            {{ extra.type.name }}
-                        </td>
-                        <td>
-                            {{ extra.state }}
-                        </td>
-                        <td>
-                            {% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
-                                <a href="/my/extra/cancel/{{ extra.id }}/{{ sub_id }}/"class="btn btn-success">
-                                    {% trans "kündigen" %}
-                                </a>
-                            {% endif %}
-                        </td>
+                        <th>
+                            {% trans "Abo" %}
+                        </th>
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+                        <th>
+                        </th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for extra in extras %}
+                        <tr>
+                            <td>
+                                {{ extra.type.name }}
+                            </td>
+                            <td>
+                                {{ extra.state }}
+                            </td>
+                            <td>
+                                {% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
+                                    <a href="/my/extra/cancel/{{ extra.id }}/{{ sub_id }}/"class="btn btn-success">
+                                        {% trans "kündigen" %}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    <div class="row mt-3 mb-3">
+        <b class="col-md-12">{% trans "Extra-Abos bestellen" %}</b>
     </div>
-    <br/>
-    <br/>
-    {% trans "Extra-Abos bestellen" %}
-    <br/>
-    <br/>
     <form method="post">
         {% csrf_token %}
         <div class="form-group row align-items-center h-100">
             {% for type in types %}
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <input type="number" name="extra{{ type.id }}" class="form-control" value="0" min="0"/>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-9">
                     {{ type.name }}
                     <br/>
                     {{ type.description|linebreaksbr|urlize }}
@@ -80,6 +82,6 @@
 {% block scripts %}
     <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initChangeExtra.js">
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js">
     </script>
 {% endblock %}

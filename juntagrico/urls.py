@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import path
 from django.contrib.auth.views import LoginView
 
 from juntagrico import views as juntagrico
@@ -42,7 +43,9 @@ urlpatterns = [
         juntagrico_subscription.subscription_change),
     url('^my/subscription/change/depot/(?P<subscription_id>.*?)/',
         juntagrico_subscription.depot_change),
-    url('^my/subscription/change/size/(?P<subscription_id>.*?)/',
+    path('my/subscription/change/size/<int:subscription_id>/multi',
+        juntagrico_subscription.size_change, {'multi': True}),
+    path('my/subscription/change/size/<int:subscription_id>/',
         juntagrico_subscription.size_change),
     url('^my/subscription/change/extra/(?P<subscription_id>.*?)/',
         juntagrico_subscription.extra_change),

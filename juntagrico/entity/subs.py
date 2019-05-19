@@ -134,18 +134,21 @@ class Subscription(Billable):
         return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
     def subscription_amount(self, size_name):
-        return self.calc_subscritpion_amount(self.types, size_name)
+        return self.calc_subscription_amount(self.types, size_name)
 
     def subscription_amount_future(self, size_name):
-        return self.calc_subscritpion_amount(self.future_types, size_name)
+        return self.calc_subscription_amount(self.future_types, size_name)
 
     @staticmethod
-    def calc_subscritpion_amount(types, size_name):
+    def calc_subscription_amount(types, size_name):
         result = 0
         for type in types.all():
             if type.size.name == size_name:
                 result += 1
         return result
+
+    def future_amount_by_type(self, type):
+        return len(self.future_types.filter(id=type))
 
     @staticmethod
     def next_extra_change_date():

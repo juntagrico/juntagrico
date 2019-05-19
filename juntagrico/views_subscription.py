@@ -127,28 +127,46 @@ def depot_change(request, subscription_id):
 
 
 @primary_member_of_subscription
-def size_change(request, subscription_id):
+def size_change(request, subscription_id, multi=False):
     '''
-    change the size of an subscription
+    change the size of a subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     shareerror = False
-    if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month() and int(request.POST.get('subscription')) > 0:
-        type = SubscriptionTypeDao.get_by_id(
-            int(request.POST.get('subscription')))[0]
-        shares = subscription.all_shares
-        if shares < type.shares:
-            shareerror = True
+    if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month():
+        amount_by_type = {}
+        total_amount = 0
+        required_shares = 0
+        if request.POST.get('multi'):
+            for type in SubscriptionTypeDao.get_all():
+                amount_by_type[type] = int(request.POST.get('amount['+str(type.id)+']'))
+                total_amount += amount_by_type[type]
+                required_shares += type.shares*amount_by_type[type]
         else:
+            total_amount = int(request.POST.get('subscription')) > 0
+            type = SubscriptionTypeDao.get_by_id(
+                int(request.POST.get('subscription')))[0]
+            amount_by_type[type] = 1
+            required_shares = type.shares
+
+        shares = subscription.all_shares
+        if shares < required_shares:
+            shareerror = True
+        elif total_amount > 0:
             if subscription.state == 'waiting':
                 for t in TSST.objects.filter(subscription=subscription):
                     t.delete()
-                TSST.objects.create(subscription=subscription, type=type)
+                for type, amount in amount_by_type.items():
+                    for i in range(amount):
+                        TSST.objects.create(subscription=subscription, type=type)
             for t in TFSST.objects.filter(subscription=subscription):
                 t.delete()
-            TFSST.objects.create(subscription=subscription, type=type)
+            for type, amount in amount_by_type.items():
+                for i in range(amount):
+                    TFSST.objects.create(subscription=subscription, type=type)
             saved = True
+    products = SubscriptionProductDao.get_all()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
@@ -157,7 +175,8 @@ def size_change(request, subscription_id):
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': subscription.future_types.all()[0].id,
-        'products': SubscriptionProductDao.get_all()
+        'products': products,
+        'multi_edit': multi or subscription.types.count() > 1,
     })
     return render(request, 'size_change.html', renderdict)
 
