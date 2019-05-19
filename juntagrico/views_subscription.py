@@ -229,16 +229,17 @@ def add_member(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
         memberform = RegisterCoMemberForm(request.POST)
-        member = next(iter(MemberDao.members_by_email(
-            request.POST.get('email')) or []), None)
-        member_addable = member is not None and not member.blocked
-        if memberform.is_valid() or member_addable:
+        if memberform.is_valid():
             shares = memberform.cleaned_data.get('shares', 0)
-            if not member_addable:
+            # use existing member if available
+            member = next(iter(MemberDao.members_by_email(
+                memberform.cleaned_data.get('email')) or []), None)
+            if member:
+                update_member(member, subscription, main_member, shares)
+            else:
+                # create new member otherwise
                 member = Member(**{field: memberform.cleaned_data[field] for field in memberform.Meta.fields})
                 create_member(member, subscription, main_member, shares)
-            else:
-                update_member(member, subscription, main_member, shares)
             if Config.enable_shares():
                 for i in range(shares):
                     create_share(member)

@@ -135,7 +135,7 @@ class RegisterMemberForm(RegisterMemberBaseForm):
             )
         )
         self.fields['email'].error_messages['unique'] = mark_safe(
-            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + \
+            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) +
             ' <a href="/my/home">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
         )
 
