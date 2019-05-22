@@ -14,20 +14,15 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
         random.choice(chars) for x in range(size))
 
 
-def create_subscription(start_date, depot, selectedsubscription):
+def create_subscription(start_date, depot, selected_subscriptions):
     subscription = Subscription()
     subscription.start_date = start_date
     subscription.depot = depot
     subscription.save()
-    if type(selectedsubscription) is int:
-        sub_type = SubscriptionTypeDao.get_by_id(int(selectedsubscription))[0]
-        TSST.objects.create(type=sub_type, subscription=subscription)
-        TFSST.objects.create(type=sub_type, subscription=subscription)
-    else:
-        for sub_type, amount in selectedsubscription.items():
-            for i in range(amount):
-                TSST.objects.create(type=sub_type, subscription=subscription)
-                TFSST.objects.create(type=sub_type, subscription=subscription)
+    for sub_type, amount in selected_subscriptions.items():
+        for i in range(amount):
+            TSST.objects.create(type=sub_type, subscription=subscription)
+            TFSST.objects.create(type=sub_type, subscription=subscription)
     return subscription
 
 

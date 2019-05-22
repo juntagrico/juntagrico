@@ -27,24 +27,18 @@ def cs_select_subscription(request, multi=False):
     if main_member is None:
         return redirect('http://'+Config.server_url())
     if request.method == 'POST':
-        if request.POST.get('multi'):
-            size = 0
-            amount_by_type = {}
-            for type in SubscriptionTypeDao.get_all():
-                amount_by_type[type] = int(request.POST.get('amount['+str(type.id)+']'))
-                size += type.size.units*amount_by_type[type]
-            if size > 0:
-                request.session['selectedsubscription'] = amount_by_type
-                return redirect('/my/create/subscription/selectdepot')
-        else:
-            selectedsubscription = request.POST.get('subscription')
-            size = next(
-                iter(SubscriptionTypeDao.get_by_id(selectedsubscription).values_list(
-                    'size__units', flat=True) or []),
-                0)
-            if size > 0:
-                request.session['selectedsubscription'] = int(selectedsubscription)
-                return redirect('/my/create/subscription/selectdepot')
+        selected = {}
+        size = 0
+        for sub_type in SubscriptionTypeDao.get_all():
+            if request.POST.get('multi') == '1':
+                selected[sub_type] = int(request.POST.get('amount['+str(sub_type.id)+']'))
+                size += sub_type.size.units * selected[sub_type]
+            elif int(request.POST.get('subscription')) == sub_type.id:
+                selected[sub_type] = 1
+                size += sub_type.size.units
+        request.session['selected_subscriptions'] = selected
+        if size > 0:
+            return redirect('/my/create/subscription/selectdepot')
         return redirect('/my/create/subscription/shares')
     renderdict = {
         'hours_used': Config.assignment_unit() == 'HOURS',
@@ -101,12 +95,8 @@ def cs_select_shares(request):
     co_members = request.session.get('create_co_members', [])
     for co_member in co_members:
         share_sum += len(co_member.active_shares)
-    selected_subscription = request.session.get('selectedsubscription', -1)
-    if type(selected_subscription) is int:
-        total_shares = next(
-            iter(SubscriptionTypeDao.get_by_id(selected_subscription).values_list('shares', flat=True) or []), 1)
-    else:
-        total_shares = sum([type.shares * amount for type, amount in selected_subscription.items()])
+    selected_subscriptions = request.session.get('selected_subscriptions', {})
+    total_shares = sum([sub_type.shares * amount for sub_type, amount in selected_subscriptions.items()])
     required_shares = max(0, total_shares-max(0, share_sum))
 
     if request.method == 'POST' or not Config.enable_shares():
@@ -120,11 +110,11 @@ def cs_select_shares(request):
             share_error = True
         if not share_error or not Config.enable_shares():
             subscription = None
-            if selected_subscription is not -1:
+            if selected_subscriptions is not {}:
                 start_date = request.session['start_date']
                 depot = request.session['selecteddepot']
                 subscription = create_subscription(
-                    start_date, depot, selected_subscription)
+                    start_date, depot, selected_subscriptions)
             if main_member.pk is None:
                 create_member(main_member, subscription)
             else:
@@ -150,7 +140,7 @@ def cs_select_shares(request):
                 subscription.primary_member = main_member
                 subscription.save()
                 send_subscription_created_mail(subscription)
-            request.session['selected_subscription'] = None
+            request.session['selected_subscriptions'] = None
             request.session['selecteddepot'] = None
             request.session['start_date'] = None
             request.session['create_co_members'] = []
