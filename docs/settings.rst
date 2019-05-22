@@ -322,13 +322,25 @@ ENABLE_REGISTRATION
 -----------
   Decides if new member can registrate
 
-  Type: String
+  Type: Boolean
 
   default value
 
   .. code-block:: python
 
     True
+
+ALLOW_MULTIPLE_SUBSCRIPTIONS
+-----------
+  Decides if members can accumulate subscriptions of same or different type
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
 
 BASE_FEE
 --------

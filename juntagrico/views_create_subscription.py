@@ -49,7 +49,7 @@ def cs_select_subscription(request, multi=False):
     renderdict = {
         'hours_used': Config.assignment_unit() == 'HOURS',
         'products': SubscriptionProductDao.get_all(),
-        'multi_edit': multi,
+        'multi_edit': multi and Config.allow_multiple_subscriptions(),
     }
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 

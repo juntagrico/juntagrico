@@ -176,7 +176,7 @@ def size_change(request, subscription_id, multi=False):
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': subscription.future_types.all()[0].id,
         'products': products,
-        'multi_edit': multi or subscription.types.count() > 1,
+        'multi_edit': (multi or subscription.types.count() > 1) and Config.allow_multiple_subscriptions(),
     })
     return render(request, 'size_change.html', renderdict)
 

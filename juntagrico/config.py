@@ -298,3 +298,9 @@ class Config:
         if hasattr(settings, 'GOOGLE_API_KEY'):
             return settings.GOOGLE_API_KEY
         return 'GOOGLE_API_KEY'
+
+    @staticmethod
+    def allow_multiple_subscriptions():
+        if hasattr(settings, 'ALLOW_MULTIPLE_SUBSCRIPTIONS'):
+            return settings.ALLOW_MULTIPLE_SUBSCRIPTIONS
+        return False
