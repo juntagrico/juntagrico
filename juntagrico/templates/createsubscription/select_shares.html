@@ -37,9 +37,9 @@
                 Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }} zurück
                 erstattet.
                 {% endblocktrans %}
-                {% if selected_subscription > -1 %}
+                {% if required_shares > 0 %}
                     {% blocktrans trimmed %}
-                    Für die von dir ausgewählte {{ v_subscription }}-Grösse brauchst du insgesamt {{ total_shares }}
+                    Für die von dir ausgewählte {{ v_subscription }}-Grösse(n) brauchst du insgesamt {{ total_shares }}
                     {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                     {% endblocktrans %}
                     <br/>

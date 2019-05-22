@@ -71,8 +71,8 @@ urlpatterns = [
     url('^my/order/share/$', juntagrico_subscription.order_shares),
     url('^my/order/share/success$', juntagrico_subscription.order_shares_success),
     url('^my/payout/share/(?P<share_id>.*?)/', juntagrico_subscription.payout_share),
-
-    url('^my/create/subscrition$', juntagrico_cs.cs_select_subscription),
+    path('my/create/subscription/multi', juntagrico_cs.cs_select_subscription, {'multi': True}),
+    path('my/create/subscription', juntagrico_cs.cs_select_subscription),
     url('^my/create/subscription/selectdepot$', juntagrico_cs.cs_select_depot),
     url('^my/create/subscription/start$', juntagrico_cs.cs_select_start_date),
     url('^my/create/subscription/addmembers$', juntagrico_cs.cs_add_member),

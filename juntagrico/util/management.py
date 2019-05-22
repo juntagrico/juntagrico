@@ -19,9 +19,15 @@ def create_subscription(start_date, depot, selectedsubscription):
     subscription.start_date = start_date
     subscription.depot = depot
     subscription.save()
-    sub_type = SubscriptionTypeDao.get_by_id(int(selectedsubscription))[0]
-    TSST.objects.create(type=sub_type, subscription=subscription)
-    TFSST.objects.create(type=sub_type, subscription=subscription)
+    if type(selectedsubscription) is int:
+        sub_type = SubscriptionTypeDao.get_by_id(int(selectedsubscription))[0]
+        TSST.objects.create(type=sub_type, subscription=subscription)
+        TFSST.objects.create(type=sub_type, subscription=subscription)
+    else:
+        for sub_type, amount in selectedsubscription.items():
+            for i in range(amount):
+                TSST.objects.create(type=sub_type, subscription=subscription)
+                TFSST.objects.create(type=sub_type, subscription=subscription)
     return subscription
 
 

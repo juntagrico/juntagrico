@@ -229,7 +229,7 @@ def signup(request):
                 else:
                     member = Member(**memberform.cleaned_data)
                     request.session['main_member'] = member
-                    return redirect('/my/create/subscrition')
+                    return redirect('/my/create/subscription')
     else:
         memberform = RegisterMemberForm()
 
