@@ -14,7 +14,6 @@ from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategor
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.decorators import primary_member_of_subscription
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
@@ -25,6 +24,7 @@ from juntagrico.entity.subtypes import TSST, TFSST
 from juntagrico.forms import RegisterMemberForm
 from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
+from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_member, update_member, create_share, replace_subscription_types
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
@@ -136,13 +136,7 @@ def size_change(request, subscription_id, multi=False):
     share_error = False
     if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month():
         # create dict with subscription type -> selected amount
-        selected = {
-            sub_type: int(
-                request.POST.get('amount[' + str(sub_type.id) + ']',  # if multi selection
-                                 int(request.POST.get('subscription', -1)) == sub_type.id)  # if single selection
-            ) for sub_type in SubscriptionTypeDao.get_all()
-        }
-
+        selected = selected_subscription_types(request.POST)
         # check if members of sub have enough shares
         if subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
             share_error = True

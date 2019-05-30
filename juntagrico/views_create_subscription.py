@@ -3,11 +3,11 @@ from django.shortcuts import render, redirect
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util import temporal
 from juntagrico.util.create_sub import get_main_member
+from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import *
 
 
@@ -29,12 +29,7 @@ def cs_select_subscription(request, multi=False):
         return redirect('http://'+Config.server_url())
     if request.method == 'POST':
         # create dict with subscription type -> selected amount
-        selected = {
-            sub_type: int(
-                request.POST.get('amount[' + str(sub_type.id) + ']',  # if multi selection
-                                 int(request.POST.get('subscription', -1)) == sub_type.id)  # if single selection
-            ) for sub_type in SubscriptionTypeDao.get_all()
-        }
+        selected = selected_subscription_types(request.POST)
         request.session['selected_subscriptions'] = selected
         if sum([sub_type.size.units * amount for sub_type, amount in selected.items()]) > 0:
             return redirect('/my/create/subscription/selectdepot')
