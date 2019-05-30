@@ -1,9 +1,9 @@
 import hashlib
+import itertools
 import random
 import string
 
 from juntagrico.models import Share, Subscription, TSST, TFSST
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.mailer import send_welcome_mail
 from juntagrico.mailer import send_been_added_to_subscription
 from juntagrico.mailer import send_share_created_mail
@@ -11,7 +11,7 @@ from juntagrico.mailer import send_share_created_mail
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
     return ''.join(
-        random.choice(chars) for x in range(size))
+        random.choice(chars) for _ in range(size))
 
 
 def create_subscription(start_date, depot, selected_subscriptions):
@@ -19,10 +19,7 @@ def create_subscription(start_date, depot, selected_subscriptions):
     subscription.start_date = start_date
     subscription.depot = depot
     subscription.save()
-    for sub_type, amount in selected_subscriptions.items():
-        for i in range(amount):
-            TSST.objects.create(type=sub_type, subscription=subscription)
-            TFSST.objects.create(type=sub_type, subscription=subscription)
+    replace_subscription_types(subscription, selected_subscriptions)
     return subscription
 
 
@@ -64,3 +61,22 @@ def add_subscription_to_member(member, subscription):
             member.old_subscriptions.add(subscription)
         else:
             member.subscription = subscription
+
+
+def replace_subscription_types(subscription, selected_types, _obj=TFSST):
+    """
+    Deletes all types of a subscription and replace them with the types and amounts given by selected_types
+    :param subscription: The Subscription object whose types should be replaced
+    :param selected_types: dictionary of subscription types as key and amount as value
+    :param _obj: for internal use
+    :type _obj: type(TFSST) or type(TSST)
+    :return: None
+    """
+    _obj.objects.filter(subscription=subscription).delete()
+    _obj.objects.bulk_create(
+        itertools.chain(*[[_obj(subscription=subscription, type=sub_type)] * amount
+                          for sub_type, amount in selected_types.items()])
+    )
+    # replace the current sub types as well, if the subscription is not active yet:
+    if _obj is TFSST and subscription.state == 'waiting':
+        replace_subscription_types(subscription, selected_types, TSST)

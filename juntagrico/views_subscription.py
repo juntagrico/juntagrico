@@ -25,7 +25,7 @@ from juntagrico.entity.subtypes import TSST, TFSST
 from juntagrico.forms import RegisterMemberForm
 from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
-from juntagrico.util.management import create_member, update_member, create_share
+from juntagrico.util.management import create_member, update_member, create_share, replace_subscription_types
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict
@@ -128,50 +128,33 @@ def depot_change(request, subscription_id):
 
 @primary_member_of_subscription
 def size_change(request, subscription_id, multi=False):
-    '''
+    """
     change the size of a subscription
-    '''
+    """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
-    shareerror = False
+    share_error = False
     if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month():
-        amount_by_type = {}
-        total_amount = 0
-        required_shares = 0
-        if request.POST.get('multi'):
-            for type in SubscriptionTypeDao.get_all():
-                amount_by_type[type] = int(request.POST.get('amount['+str(type.id)+']'))
-                total_amount += amount_by_type[type]
-                required_shares += type.shares*amount_by_type[type]
-        else:
-            total_amount = int(request.POST.get('subscription')) > 0
-            type = SubscriptionTypeDao.get_by_id(
-                int(request.POST.get('subscription')))[0]
-            amount_by_type[type] = 1
-            required_shares = type.shares
+        # create dict with subscription type -> selected amount
+        selected = {
+            sub_type: int(
+                request.POST.get('amount[' + str(sub_type.id) + ']',  # if multi selection
+                                 int(request.POST.get('subscription', -1)) == sub_type.id)  # if single selection
+            ) for sub_type in SubscriptionTypeDao.get_all()
+        }
 
-        shares = subscription.all_shares
-        if shares < required_shares:
-            shareerror = True
-        elif total_amount > 0:
-            if subscription.state == 'waiting':
-                for t in TSST.objects.filter(subscription=subscription):
-                    t.delete()
-                for type, amount in amount_by_type.items():
-                    for i in range(amount):
-                        TSST.objects.create(subscription=subscription, type=type)
-            for t in TFSST.objects.filter(subscription=subscription):
-                t.delete()
-            for type, amount in amount_by_type.items():
-                for i in range(amount):
-                    TFSST.objects.create(subscription=subscription, type=type)
+        # check if members of sub have enough shares
+        if subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
+            share_error = True
+        elif sum(selected.values()) > 0:  # check that at least one subscription was selected
+            replace_subscription_types(subscription, selected)
             saved = True
     products = SubscriptionProductDao.get_all()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'subscription': subscription,
-        'shareerror': shareerror,
+        'shareerror': share_error,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': subscription.future_types.all()[0].id,

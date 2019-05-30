@@ -47,5 +47,6 @@ class CreateSubscriptionTests(TestCase):
         response = self.client.put('/my/create/subscription/shares')
         self.assertEqual(response.status_code, 302)
 
+    def testWelcome(self):
         response = self.client.get('/my/welcome')
         self.assertEqual(response.status_code, 302)
