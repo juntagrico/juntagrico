@@ -25,7 +25,7 @@ from juntagrico.forms import RegisterMemberForm
 from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
-from juntagrico.util.management import create_member, update_member, create_share, replace_subscription_types
+from juntagrico.util.management import create_or_update_member, replace_subscription_types
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict
@@ -236,34 +236,31 @@ def confirm(request, hash):
 
 @primary_member_of_subscription
 def add_member(request, subscription_id):
-    shareerror = False
+    share_error = False
     shares = 0
-    memberexists = False
-    memberblocked = False
+    member_exists = False
+    member_blocked = False
     main_member = request.user.member
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
-        memberform = RegisterMemberForm(request.POST)
+        # validate shares
         try:
             if Config.enable_shares():
                 shares = int(request.POST.get('shares'))
-                shareerror = shares < 0
+                share_error = shares < 0
         except ValueError:
-            shareerror = True
-        member = next(iter(MemberDao.members_by_email(
-            request.POST.get('email')) or []), None)
+            share_error = True
+
+        memberform = RegisterMemberForm(request.POST)
+        member = MemberDao.member_by_email(request.POST.get('email'))
+        if member is not None:  # use existing member
+            member_exists = True
+            member_blocked = member.blocked
+        elif memberform.is_valid():  # or create new member
+            member = Member(**memberform.cleaned_data)
         if member is not None:
-            memberexists = True
-            memberblocked = member.blocked
-        if memberform.is_valid()or (memberexists is True and memberblocked is False):
-            if memberexists is False:
-                member = Member(**memberform.cleaned_data)
-                create_member(member, subscription, main_member, shares)
-            else:
-                update_member(member, subscription, main_member, shares)
-            for i in range(shares):
-                create_share(member)
-            return redirect('/my/subscription/detail/'+str(subscription_id)+'/')
+            create_or_update_member(member, subscription, shares, main_member)
+            return redirect('/my/subscription/detail/' + str(subscription_id) + '/')
     else:
         initial = {'addr_street': main_member.addr_street,
                    'addr_zipcode': main_member.addr_zipcode,
@@ -273,9 +270,9 @@ def add_member(request, subscription_id):
         memberform = RegisterMemberForm(initial=initial)
     renderdict = {
         'shares': shares,
-        'memberexists': memberexists,
-        'memberblocked': memberblocked,
-        'shareerror': shareerror,
+        'memberexists': member_exists,
+        'memberblocked': member_blocked,
+        'shareerror': share_error,
         'memberform': memberform,
         'subscription_id': subscription_id
     }

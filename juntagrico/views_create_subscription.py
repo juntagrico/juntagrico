@@ -6,27 +6,13 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util import temporal
-from juntagrico.util.create_sub import get_main_member
+from juntagrico.decorators import requires_main_member
 from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import *
 
 
-def cs_welcome(request):
-    main_member = get_main_member(request)
-    if main_member is None:
-        return redirect('http://'+Config.server_url())
-
-    renderdict = {
-        'no_subscription': main_member.future_subscription is None
-    }
-
-    return render(request, 'welcome.html', renderdict)
-
-
-def cs_select_subscription(request, multi=False):
-    main_member = get_main_member(request)
-    if main_member is None:
-        return redirect('http://'+Config.server_url())
+@requires_main_member
+def cs_select_subscription(request, _, multi=False):
     if request.method == 'POST':
         # create dict with subscription type -> selected amount
         selected = selected_subscription_types(request.POST)
@@ -42,10 +28,8 @@ def cs_select_subscription(request, multi=False):
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 
 
-def cs_select_depot(request):
-    main_member = get_main_member(request)
-    if main_member is None:
-        return redirect('http://'+Config.server_url())
+@requires_main_member
+def cs_select_depot(request, main_member):
     if request.method == 'POST':
         depot = DepotDao.depot_by_id(request.POST.get('depot'))
         request.session['selecteddepot'] = depot
@@ -62,10 +46,8 @@ def cs_select_depot(request):
     return render(request, 'createsubscription/select_depot.html', renderdict)
 
 
-def cs_select_start_date(request):
-    main_member = get_main_member(request)
-    if main_member is None:
-        return redirect('http://'+Config.server_url())
+@requires_main_member
+def cs_select_start_date(request, _):
     subscriptionform = SubscriptionForm()
     if request.method == 'POST':
         subscriptionform = SubscriptionForm(request.POST)
@@ -79,69 +61,81 @@ def cs_select_start_date(request):
     return render(request, 'createsubscription/select_start_date.html', renderdict)
 
 
-def cs_select_shares(request):
-    main_member = get_main_member(request)
-    if main_member is None:
-        return redirect('http://'+Config.server_url())
-    share_error = False
-    mm_requires_one = len(main_member.active_shares) == 0
-    share_sum = len(main_member.active_shares)
+@requires_main_member
+def cs_add_member(request, main_member):
+    member_exists = False
+    member_blocked = False
+    if request.method == 'POST':
+        memberform = RegisterMemberForm(request.POST)
+        member = MemberDao.member_by_email(request.POST.get('email'))
+        if member is not None:  # use existing member
+            member_exists = True
+            member_blocked = member.blocked
+        elif memberform.is_valid():  # or create new member
+            member = Member(**memberform.cleaned_data)
+        if member is not None:
+            request.session['create_co_members'] = request.session.get('create_co_members', []) + [member]
+
+    initial = {'addr_street': main_member.addr_street,
+               'addr_zipcode': main_member.addr_zipcode,
+               'addr_location': main_member.addr_location,
+               }
+    memberform = RegisterMemberForm(initial=initial)
+    renderdict = {
+        'memberexists': member_exists,
+        'memberblocked': member_blocked,
+        'memberform': memberform,
+    }
+    return render(request, 'createsubscription/add_member_cs.html', renderdict)
+
+
+@requires_main_member
+def cs_select_shares(request, main_member):
     co_members = request.session.get('create_co_members', [])
-    for co_member in co_members:
-        share_sum += len(co_member.active_shares)
+    share_error = False
+    # count current shares
+    share_sum = len(main_member.active_shares)
+    mm_requires_one = share_sum == 0
+    share_sum += sum([len(co_member.active_shares) for co_member in co_members])
+    # count required shares
     selected_subscriptions = request.session.get('selected_subscriptions', {})
     total_shares = sum([sub_type.shares * amount for sub_type, amount in selected_subscriptions.items()])
     required_shares = max(0, total_shares-max(0, share_sum))
 
     if request.method == 'POST' or not Config.enable_shares():
-        try:
-            share_sum = int(request.POST.get('shares_mainmember'))
-            for co_member in co_members:
-                share_sum += int(request.POST.get(co_member.email))
-            share_error = share_error or share_sum < required_shares
-            share_error = share_error or (int(request.POST.get('shares_mainmember')) == 0 and mm_requires_one)
-        except ValueError:
-            share_error = True
-        if not share_error or not Config.enable_shares():
+        # evaluate number of ordered shares
+        if Config.enable_shares():
+            try:
+                share_sum = int(request.POST.get('shares_mainmember'))
+                share_error |= share_sum == 0 and mm_requires_one
+                share_sum += sum([int(request.POST.get(co_member.email)) for co_member in co_members])
+                share_error |= share_sum < required_shares
+            except ValueError:
+                share_error = True
+
+        if not share_error:
+            # create subscriptions
             subscription = None
             if selected_subscriptions is not {}:
                 start_date = request.session['start_date']
                 depot = request.session['selecteddepot']
                 subscription = create_subscription(
                     start_date, depot, selected_subscriptions)
-            if main_member.pk is None:
-                create_member(main_member, subscription)
-            else:
-                update_member(main_member, subscription)
-            if Config.enable_shares():
-                shares = int(request.POST.get('shares_mainmember'))
-            else:
-                shares = 0
-            for i in range(shares):
-                create_share(main_member)
+
+            # create and/or add members to subscription and create their shares
+            create_or_update_member(main_member, subscription, int(request.POST.get('shares_mainmember')))
             for co_member in co_members:
-                if Config.enable_shares():
-                    shares = int(request.POST.get(co_member.email))
-                else:
-                    shares = 0
-                if co_member.pk is None:
-                    create_member(co_member, subscription, main_member, shares)
-                else:
-                    update_member(co_member, subscription, main_member, shares)
-                for i in range(shares):
-                    create_share(co_member)
+                create_or_update_member(co_member, subscription, int(request.POST.get(co_member.email)), main_member)
+
+            # set primary member of subscription
             if subscription is not None:
                 subscription.primary_member = main_member
                 subscription.save()
                 send_subscription_created_mail(subscription)
-            request.session['selected_subscriptions'] = None
-            request.session['selecteddepot'] = None
-            request.session['start_date'] = None
-            request.session['create_co_members'] = []
-            if request.user.is_authenticated:
-                return redirect('/my/subscription/detail/')
-            else:
-                return redirect('/my/welcome')
+
+            # finish registration
+            return cs_finish(request)
+
     renderdict = {
         'share_error': share_error,
         'total_shares': total_shares,
@@ -154,45 +148,26 @@ def cs_select_shares(request):
     return render(request, 'createsubscription/select_shares.html', renderdict)
 
 
-def cs_add_member(request):
-    main_member = get_main_member(request)
-    if main_member is None:
-        return redirect('http://'+Config.server_url())
-    memberexists = False
-    memberblocked = False
-    co_members = request.session.get('create_co_members', [])
-    if request.method == 'POST':
-        memberform = RegisterMemberForm(request.POST)
-        member = next(iter(MemberDao.members_by_email(
-            request.POST.get('email')) or []), None)
-        if member is not None:
-            memberexists = True
-            memberblocked = member.blocked
-        if memberform.is_valid()or (memberexists is True and memberblocked is False):
-            if memberexists is False:
-                member = Member(**memberform.cleaned_data)
-            co_members.append(member)
-            request.session['create_co_members'] = co_members
-    initial = {'addr_street': main_member.addr_street,
-               'addr_zipcode': main_member.addr_zipcode,
-               'addr_location': main_member.addr_location,
-               }
-    memberform = RegisterMemberForm(initial=initial)
-    renderdict = {
-        'memberexists': memberexists,
-        'memberblocked': memberblocked,
-        'memberform': memberform,
-    }
-    return render(request, 'createsubscription/add_member_cs.html', renderdict)
-
-
-def cs_cancel_create_subscription(request):
-    request.session['main_member'] = None
+def cs_finish(request, cancelled=False):
     request.session['selected_subscription'] = None
     request.session['selecteddepot'] = None
     request.session['start_date'] = None
     request.session['create_co_members'] = []
     if request.user.is_authenticated:
+        request.session['main_member'] = None
         return redirect('/my/subscription/detail/')
-    else:
+    elif cancelled:
+        request.session['main_member'] = None
         return redirect('http://'+Config.server_url())
+    else:
+        # keep main_member for welcome message
+        return redirect('/my/welcome')
+
+
+@requires_main_member
+def cs_welcome(request, main_member):
+    renderdict = {
+        'no_subscription': main_member.future_subscription is None
+    }
+    request.session['main_member'] = None
+    return render(request, 'welcome.html', renderdict)

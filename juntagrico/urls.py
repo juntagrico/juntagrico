@@ -77,9 +77,8 @@ urlpatterns = [
     url('^my/create/subscription/start$', juntagrico_cs.cs_select_start_date),
     url('^my/create/subscription/addmembers$', juntagrico_cs.cs_add_member),
     url('^my/create/subscription/shares$', juntagrico_cs.cs_select_shares),
-    url('^my/create/subscription/cancel$',
-        juntagrico_cs.cs_cancel_create_subscription),
-    url('^my/welcome$', juntagrico_cs.cs_welcome),
+    path('my/create/subscription/cancel', juntagrico_cs.cs_finish, {'cancelled': True}),
+    path('my/welcome', juntagrico_cs.cs_welcome),
 
     # admin related juntagrico stuff
     url('^my/mails/send/depot$', juntagrico_admin.send_email_depot),
