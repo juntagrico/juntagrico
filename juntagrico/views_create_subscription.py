@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
@@ -89,63 +91,80 @@ def cs_add_member(request, main_member):
     return render(request, 'createsubscription/add_member_cs.html', renderdict)
 
 
-@requires_main_member
-def cs_select_shares(request, main_member):
-    co_members = request.session.get('create_co_members', [])
+class CSSelectSharesView(TemplateView):
+    template_name = 'createsubscription/select_shares.html'
     share_error = False
-    # count current shares
-    share_sum = len(main_member.active_shares)
-    mm_requires_one = share_sum == 0
-    share_sum += sum([len(co_member.active_shares) for co_member in co_members])
-    # count required shares
-    selected_subscriptions = request.session.get('selected_subscriptions', {})
-    total_shares = sum([sub_type.shares * amount for sub_type, amount in selected_subscriptions.items()])
-    required_shares = max(0, total_shares-max(0, share_sum))
+    total_shares = 0
+    required_shares = 0
+    mm_requires_one = False
+    co_members = []
+    main_member = None
 
-    if request.method == 'POST' or not Config.enable_shares():
+    def get_context_data(self, **kwargs):
+        return {
+            'share_error': self.share_error,
+            'total_shares': self.total_shares,
+            'required_shares': self.required_shares,
+            'member': self.main_member,
+            'co_members': self.co_members,
+            'has_com_members': len(self.co_members) > 0,
+            'mm_requires_one': self.mm_requires_one
+        }
+
+    @method_decorator(requires_main_member)
+    def dispatch(self, request, main_member, *args, **kwargs):
+        # initialize
+        self.main_member = main_member
+        self.co_members = request.session.get('create_co_members', [])
+        # count current shares
+        share_sum = len(main_member.active_shares)
+        self.mm_requires_one = share_sum == 0
+        share_sum += sum([len(co_member.active_shares) for co_member in self.co_members])
+        # count required shares
+        selected_subscriptions = request.session.get('selected_subscriptions', {})
+        self.total_shares = sum([sub_type.shares * amount for sub_type, amount in selected_subscriptions.items()])
+        self.required_shares = max(0, self.total_shares - max(0, share_sum))
+        if not Config.enable_shares():  # if no shares are required: create subscription directly
+            return self.create_subscription(request)
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         # evaluate number of ordered shares
-        if Config.enable_shares():
-            try:
-                share_sum = int(request.POST.get('shares_mainmember'))
-                share_error |= share_sum == 0 and mm_requires_one
-                share_sum += sum([int(request.POST.get(co_member.email)) for co_member in co_members])
-                share_error |= share_sum < required_shares
-            except ValueError:
-                share_error = True
+        try:
+            share_sum = int(request.POST.get('shares_mainmember'))
+            self.share_error |= share_sum == 0 and self.mm_requires_one
+            share_sum += sum([int(request.POST.get(co_member.email)) for co_member in self.co_members])
+            self.share_error |= share_sum < self.required_shares
+        except ValueError:
+            self.share_error = True
+        if not self.share_error:
+            return self.create_subscription(request)
+        return self.get(request, *args, **kwargs)
 
-        if not share_error:
-            # create subscriptions
-            subscription = None
-            if selected_subscriptions is not {}:
-                start_date = request.session['start_date']
-                depot = request.session['selecteddepot']
-                subscription = create_subscription(
-                    start_date, depot, selected_subscriptions)
+    def create_subscription(self, request):
+        # create subscription
+        subscription = None
+        selected_subscriptions = request.session.get('selected_subscriptions', {})
+        if selected_subscriptions is not {}:
+            start_date = request.session['start_date']
+            depot = request.session['selecteddepot']
+            subscription = create_subscription(
+                start_date, depot, selected_subscriptions)
 
-            # create and/or add members to subscription and create their shares
-            create_or_update_member(main_member, subscription, int(request.POST.get('shares_mainmember')))
-            for co_member in co_members:
-                create_or_update_member(co_member, subscription, int(request.POST.get(co_member.email)), main_member)
+        # create and/or add members to subscription and create their shares
+        create_or_update_member(self.main_member, subscription, int(request.POST.get('shares_mainmember')))
+        for co_member in self.co_members:
+            create_or_update_member(co_member, subscription,
+                                    int(request.POST.get(co_member.email)), self.main_member)
 
-            # set primary member of subscription
-            if subscription is not None:
-                subscription.primary_member = main_member
-                subscription.save()
-                send_subscription_created_mail(subscription)
+        # set primary member of subscription
+        if subscription is not None:
+            subscription.primary_member = self.main_member
+            subscription.save()
+            send_subscription_created_mail(subscription)
 
-            # finish registration
-            return cs_finish(request)
-
-    renderdict = {
-        'share_error': share_error,
-        'total_shares': total_shares,
-        'required_shares': required_shares,
-        'member': main_member,
-        'co_members': co_members,
-        'has_com_members': len(co_members) > 0,
-        'mm_requires_one': mm_requires_one
-    }
-    return render(request, 'createsubscription/select_shares.html', renderdict)
+        # finish registration
+        return cs_finish(request)
 
 
 def cs_finish(request, cancelled=False):

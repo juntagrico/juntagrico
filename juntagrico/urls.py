@@ -76,7 +76,7 @@ urlpatterns = [
     url('^my/create/subscription/selectdepot$', juntagrico_cs.cs_select_depot),
     url('^my/create/subscription/start$', juntagrico_cs.cs_select_start_date),
     url('^my/create/subscription/addmembers$', juntagrico_cs.cs_add_member),
-    url('^my/create/subscription/shares$', juntagrico_cs.cs_select_shares),
+    path('my/create/subscription/shares', juntagrico_cs.CSSelectSharesView.as_view()),
     path('my/create/subscription/cancel', juntagrico_cs.cs_finish, {'cancelled': True}),
     path('my/welcome', juntagrico_cs.cs_welcome),
 
