@@ -116,6 +116,9 @@ class CSSelectSharesView(TemplateView):
         # initialize
         self.main_member = main_member
         self.co_members = request.session.get('create_co_members', [])
+        # if no shares are required: create subscription directly
+        if not Config.enable_shares():
+            return self.create_subscription(request)
         # count current shares
         share_sum = len(main_member.active_shares)
         self.mm_requires_one = share_sum == 0
@@ -124,8 +127,6 @@ class CSSelectSharesView(TemplateView):
         selected_subscriptions = request.session.get('selected_subscriptions', {})
         self.total_shares = sum([sub_type.shares * amount for sub_type, amount in selected_subscriptions.items()])
         self.required_shares = max(0, self.total_shares - max(0, share_sum))
-        if not Config.enable_shares():  # if no shares are required: create subscription directly
-            return self.create_subscription(request)
         return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -152,10 +153,10 @@ class CSSelectSharesView(TemplateView):
                 start_date, depot, selected_subscriptions)
 
         # create and/or add members to subscription and create their shares
-        create_or_update_member(self.main_member, subscription, int(request.POST.get('shares_mainmember')))
+        create_or_update_member(self.main_member, subscription, int(request.POST.get('shares_mainmember', 0)))
         for co_member in self.co_members:
             create_or_update_member(co_member, subscription,
-                                    int(request.POST.get(co_member.email)), self.main_member)
+                                    int(request.POST.get(co_member.email, 0)), self.main_member)
 
         # set primary member of subscription
         if subscription is not None:
