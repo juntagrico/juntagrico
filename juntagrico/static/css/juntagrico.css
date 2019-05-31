@@ -57,7 +57,7 @@ body#juntagrico-views-profile .asteriskField {
 }
 
 /* logo stuff checked */
-#juntagrico-logo {
+.juntagrico-logo {
     background: url(/static/img/juntagrico.png) 0 0;
     display: inline-block;
     width: 580px;
@@ -65,7 +65,7 @@ body#juntagrico-views-profile .asteriskField {
 }
 
 /* title stuff checked */
-#page-title h3 {
+.page-title h3 {
     margin-top: 0;
     margin-bottom: 40px;
     color: #66cc66;
@@ -81,52 +81,52 @@ body#juntagrico-views-profile .asteriskField {
 }
 
 /* container stuff checked */
-#page-container {
+.page-container {
     min-height: 100%;
     position: relative;
     padding: 0 40px 0 40px;
 }
 
 @media (min-width: 768px) {
-    #page-container {
+    .page-container {
         width: 750px
     }
 }
 
 @media (min-width: 992px) {
-    #page-container {
+    .page-container {
         width: 970px
     }
 }
 
 @media (min-width: 1200px) {
-    #page-container {
+    .page-container {
         width: 1170px
     }
 }
 
 /* layouts */
-body.wide-layout > #page-container {
+body.wide-layout > .page-container {
     width: 95%;
     max-width: 95%;
 }
 
 /* row size stuff checked */
-#page-container > div.row {
+.page-container > div.row {
     margin-top: 60px;
     margin-bottom: 50px;
 }
 
-div#allcontent.row {
+div.allcontent.row {
     margin-top: 0;
 }
 
-div#all-page-title.row {
+div.all-page-title.row {
     margin-top: 0;
     margin-bottom: 0;
 }
 
-#footer {
+.footer {
     margin-top: 60px;
     margin-bottom: 50px;
 }
@@ -137,7 +137,7 @@ div#all-page-title.row {
 }
 
 /* menu stuff checked */
-#main-menu {
+.main-menu {
     font-size: 19px;
     font-family: "Source Sans Pro Regular";
 }
@@ -146,7 +146,7 @@ div#all-page-title.row {
     font-size: 14px;
 }
 
-#main-menu li a, #admin-menu li a {
+.main-menu li a, .admin-menu li a {
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 0;
@@ -154,11 +154,11 @@ div#all-page-title.row {
     line-height: 22px;
 }
 
-#main-menu.separator {
+.main-menu.separator {
     height: 12px;
 }
 
-#admin-menu {
+.admin-menu {
     font-family: "Source Sans Pro Light";
     font-size: 14px;
 }
@@ -201,11 +201,11 @@ a.inline {
 }
 
 /* next jobs widget menu stuff checked */
-#jobs-widget .next-jobs {
+.jobs-widget .next-jobs {
     margin-top: 5px;
 }
 
-#jobs-widget .next-jobs .time {
+.jobs-widget .next-jobs .time {
     margin-bottom: 10px;
     font-size: 14px;
 }

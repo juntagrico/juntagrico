@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load config %}
 {% vocabulary "subscription" as v_subscription %}
-<ul id="main-menu" class="nav flex-column">
+<ul class="main-menu nav flex-column">
     <li>
         <h5>
             {% blocktrans with fn=user.member.first_name %}Dein Menu {{ fn }}{% endblocktrans %}

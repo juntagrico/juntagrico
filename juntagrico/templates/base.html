@@ -20,7 +20,7 @@
         <link href="{% config "style_sheet" %}" rel="stylesheet"/>
     </head>
     <body id="{{ view_name }}" class="{% block body_extra_classes %}{% endblock %}">
-        <div id="page-container" class="container">
+        <div class="page-container container">
             <div class="bordertop">
             </div>
             <div class="borderleft">
@@ -29,16 +29,16 @@
             </div>
             <div class="borderbottom">
             </div>
-            <div id="logo-row" class="row">
-                <div id="logo-col" class="col-md-12">
+            <div class="logo-row row">
+                <div class="logo-col col-md-12">
                     <a href="/my/home">
-                        <span id="juntagrico-logo">
+                        <span class="juntagrico-logo">
                         </span>
                     </a>
                 </div>
             </div>
             {% if user.is_impersonate %}
-                <div id="impersonate-row" class="row">
+                <div class="impersonate-row row">
                     <div class="col-md-12">
                         <div class="alert alert-warning">
                             {% blocktrans trimmed with fn=user.member.first_name ln=user.member.last_name %}
@@ -52,17 +52,17 @@
                     </div>
                 </div>
             {% endif %}
-            <div id="all-page-title" class="row">
+            <div class="all-page-title row">
                 {% block all_page_title %}
-                    <div id="page-title" class="offset-md-3 col-md-9">
+                    <div class="page-title offset-md-3 col-md-9">
                         {% block page_title %}
                         {% endblock %}
                     </div>
                 {% endblock %}
             </div>
-            <div id="allcontent" class="row">
+            <div class="allcontent row">
                 {% block allcontent %}
-                    <div id="sidebar" class="col-md-3">
+                    <div class="sidebar col-md-3">
                         {% include "menu/user_menu.html" %}
                         {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
                             {% include "menu/admin_menu.html" %}
@@ -70,15 +70,15 @@
                         {% include "widgets/assignements.html" %}
                         {% include "widgets/jobs.html" %}
                     </div>
-                    <div id="content-container" class="col-md-9">
-                        <div id="messages" class="row">
+                    <div class="content-container col-md-9">
+                        <div class="messages row">
                             <div class="col-md-12">
                                 {% for message in messages %}
                                     {{ message }}
                                 {% endfor %}
                             </div>
                         </div>
-                        <div id="content" class="row">
+                        <div class="content row">
                             <div class="col-md-12">
                                 {% block content %}
                                 {% endblock %}
@@ -87,7 +87,7 @@
                     </div>
                 {% endblock %}
             </div>
-            <div id="footer" class="row">
+            <div class="footer row">
             </div>
         </div>
         <script type="text/javascript" src="/static/external/jquery-3.3.1/jquery-3.3.1.min.js">
