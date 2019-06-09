@@ -504,9 +504,8 @@ def new_password(request):
     sent = False
     if request.method == 'POST':
         sent = True
-        members = MemberDao.members_by_email(request.POST.get('username'))
-        if len(members) > 0:
-            member = members[0]
+        member = MemberDao.member_by_email(request.POST.get('username'))
+        if member is not None:
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()

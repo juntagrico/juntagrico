@@ -14,10 +14,6 @@ class MemberDao:
         return Member.objects.all()
 
     @staticmethod
-    def members_by_email(email):
-        return Member.objects.filter(email__iexact=email)
-
-    @staticmethod
     def member_by_email(email):
         return next(iter(Member.objects.filter(email__iexact=email) or []), None)
 
