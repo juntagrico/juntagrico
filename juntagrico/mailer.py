@@ -28,7 +28,9 @@ def filter_whitelist_emails(to_emails):
 def send_mail(subject, message, from_email, to_emails, reply_to_email=None, html_message=None, attachments=None):
     okmails = to_emails if settings.DEBUG is False else filter_whitelist_emails(to_emails)
     if len(okmails) > 0:
-        msg = EmailMultiAlternatives(subject, message, from_email, bcc=okmails, reply_to=[reply_to_email])
+        if reply_to_email is not None:
+            kwargs = {'reply_to': [reply_to_email]}
+        msg = EmailMultiAlternatives(subject, message, from_email, bcc=okmails, **kwargs)
         if html_message is not None:
             msg.attach_alternative(html_message, 'text/html')
         if attachments is None:
