@@ -123,10 +123,10 @@
             <tr>
                 <td style="width:180px;" class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
                 <td style="width:180px;" class="top-border left-border">{{ subscription.other_recipients_names }}</td>
-                {% for subscription_name in subscription_names %}
+                {% for subscription_id in subscription_ids %}
                     <td style="width:40px;" class="top-border left-border">
-                        {% if subscription|subscriptions_amount:subscription_name %}
-                            {{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
+                        {% if subscription|subscriptions_amount:subscription_id %}
+                            {{ subscription|subscriptions_amount:subscription_id }}{% endif %}</td>
                 {% endfor %}
                 {% for type in es_types %}
                     <td style="width:40px;" class="top-border left-border">

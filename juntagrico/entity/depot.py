@@ -4,6 +4,7 @@ from django.core import validators
 from django.db import models
 from django.utils.translation import gettext as _
 
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.util.temporal import weekday_choices, weekdays
 
 from juntagrico.config import Config
@@ -61,10 +62,10 @@ class Depot(models.Model):
         return day
 
     @staticmethod
-    def subscription_amounts(subscriptions, name):
+    def subscription_amounts(subscriptions, id):
         amount = 0
         for subscription in subscriptions.all():
-            amount += subscription.subscription_amount(name)
+            amount += subscription.subscription_amount(id)
         return amount
 
     @staticmethod
@@ -79,11 +80,12 @@ class Depot(models.Model):
     def fill_overview_cache(self):
         self.fill_active_subscription_cache()
         self.overview_cache = []
-        for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
-            cache = self.subscription_cache
-            size_name = subscription_size.name
-            amounts = self.subscription_amounts(cache, size_name)
-            self.overview_cache.append(amounts)
+        for product in SubscriptionProductDao.get_all():
+            for subscription_size in SubscriptionSizeDao.sizes_for_depot_list_by_product(product):
+                cache = self.subscription_cache
+                size_id = subscription_size.id
+                amounts = self.subscription_amounts(cache, size_id)
+                self.overview_cache.append(amounts)
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             types = ExtraSubscriptionTypeDao.extra_types_by_category_ordered(
                 category)

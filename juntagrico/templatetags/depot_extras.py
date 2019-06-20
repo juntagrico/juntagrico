@@ -4,8 +4,8 @@ register = template.Library()
 
 
 @register.filter
-def subscriptions_amount(subscription, name):
-    return subscription.subscription_amount(name)
+def subscriptions_amount(subscription, id):
+    return subscription.subscription_amount(id)
 
 
 @register.filter
