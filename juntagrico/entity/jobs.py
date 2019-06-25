@@ -238,6 +238,7 @@ class Job(PolymorphicModel):
     class Meta:
         verbose_name = _('AbstractJob')
         verbose_name_plural = _('AbstractJobs')
+        permissions = (('can_edit_past_jobs', _('kann vergangene Jobs editieren')),)
 
 
 class RecuringJob(Job):

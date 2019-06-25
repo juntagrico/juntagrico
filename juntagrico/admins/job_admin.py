@@ -1,14 +1,14 @@
+from django.conf.urls import url
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
-from django.conf.urls import url
 from django.utils.translation import gettext as _
 
-from juntagrico.entity.jobs import RecuringJob
-from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
-from juntagrico.util.addons import get_job_inlines
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
+from juntagrico.dao.jobtypedao import JobTypeDao
+from juntagrico.entity.jobs import RecuringJob
+from juntagrico.util.addons import get_job_inlines
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
 
 
 class JobAdmin(admin.ModelAdmin):
@@ -76,3 +76,7 @@ class JobAdmin(admin.ModelAdmin):
                                            'juntagrico.is_area_admin',
                                            JobTypeDao.types_by_coordinator)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def change_view(self, request, object_id, extra_context=None):
+        extra_context = extra_context_for_past_jobs(request,RecuringJob,object_id,extra_context)
+        return super(JobAdmin, self).change_view(request, object_id, extra_context=extra_context)
