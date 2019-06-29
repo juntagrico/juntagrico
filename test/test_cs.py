@@ -22,11 +22,6 @@ class CreateSubscriptionTests(TestCase):
         response = self.client.post('/my/create/subscription')
         self.assertEqual(response.status_code, 302)
 
-        response = self.client.get('/my/create/subscription/multi')
-        self.assertEqual(response.status_code, 302)
-        response = self.client.post('/my/create/subscription/multi')
-        self.assertEqual(response.status_code, 302)
-
         response = self.client.get('/my/create/subscription/selectdepot')
         self.assertEqual(response.status_code, 302)
         response = self.client.post('/my/create/subscription/selectdepot')
