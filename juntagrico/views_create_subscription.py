@@ -14,7 +14,7 @@ from juntagrico.util.management import *
 
 
 @requires_main_member
-def cs_select_subscription(request, _, multi=False):
+def cs_select_subscription(request, _):
     if request.method == 'POST':
         # create dict with subscription type -> selected amount
         selected = selected_subscription_types(request.POST)
@@ -25,7 +25,6 @@ def cs_select_subscription(request, _, multi=False):
     renderdict = {
         'hours_used': Config.assignment_unit() == 'HOURS',
         'products': SubscriptionProductDao.get_all(),
-        'multi_edit': multi and Config.allow_multiple_subscriptions(),
     }
     return render(request, 'createsubscription/select_subscription.html', renderdict)
 

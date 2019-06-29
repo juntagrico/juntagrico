@@ -20,19 +20,9 @@
         {% for type in subscription_size.types.all %}
             {% if type.visible %}
                 <div class="form-group row">
-                    {% if multi_edit %}
-                        <div class="col-md-3">
-                            <input type="number" name="amount[{{ type.id }}]" class="form-control" value="{{ subscription|future_amount_by_type:type.id|default:'0' }}" min="0"/>
-                        </div>
-                    {% else %}
-                        <div class="offset-md-2 col-md-1">
-                            <span class="switch switch-sm">
-                                <input type="radio" class="switch" name="subscription" value="{{ type.id }}" id="type{{ type.id }}" {% if selected_subscription == type.id %}checked="checked"{% endif %}/>
-                                <label for="type{{ type.id }}">
-                                </label>
-                            </span>
-                        </div>
-                    {% endif %}
+                    <div class="col-md-3">
+                        <input type="number" name="amount[{{ type.id }}]" class="form-control" value="{{ subscription|future_amount_by_type:type.id|default:'0' }}" min="0"/>
+                    </div>
                     <label for="type{{ type.id }}" class="col-md-9">
                         {% if type.long_name.strip %}
                             <b>{{ type.long_name }}</b>
@@ -58,4 +48,3 @@
         {% endfor %}
     {% endfor %}
 {% endfor %}
-<input type="hidden" name="multi" value="{% if multi_edit %}1{% else %}0{% endif %}"/>

@@ -9,7 +9,6 @@
 {% endblock %}
 {% block content %}
     {% config "enable_shares" as c_enable_shares %}
-    {% config "allow_multiple_subscriptions" as c_multi_edit %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -39,13 +38,6 @@
                         {% blocktrans %}{{ v_subscription }}-Grösse ändern{% endblocktrans %}
                     </button>
                 </div>
-                {% if not multi_edit and c_multi_edit %}
-                    <div class="col-md-3">
-                        <a href="/my/subscription/change/size/{{ subscription.id }}/multi" class="btn btn-success">
-                            {% blocktrans %}Mehrere {{ v_subscription_pl }} bestellen{% endblocktrans %}
-                        </a>
-                    </div>
-                {% endif %}
             </div>
         </form>
         {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}

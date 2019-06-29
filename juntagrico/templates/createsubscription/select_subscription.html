@@ -12,7 +12,6 @@
 {% block allcontent %}
     {% config "organisation_name" as c_organisation_name %}
     {% config "currency" as c_currency %}
-    {% config "allow_multiple_subscriptions" as c_multi_edit %}
     {% vocabulary "member_type" as v_member_type %}
     {% vocabulary "member_type_pl" as v_member_type_pl %}
     {% vocabulary "subscription" as v_subscription %}
@@ -30,7 +29,7 @@
             <div class="form-group row">
                 <div class="offset-md-2 col-md-1">
                     <span class="switch switch-sm">
-                        <input type="{% if multi_edit %}checkbox{% else %}radio{% endif %}" class="switch" name="subscription" value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
+                        <input type="checkbox" class="switch" name="subscription" value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
                         <label for="none">
                         </label>
                     </span>
@@ -53,12 +52,6 @@
             </div>
             <div class="form-group row">
                 <div class="col-md-12">
-                    {% if not multi_edit and c_multi_edit %}
-                        <a href="/my/create/subscription/multi" class="btn btn-success">
-                            {% blocktrans %}Mehrere {{ v_subscription_pl }} bestellen{% endblocktrans %}
-                        </a>
-                    {% endif %}
-
                     <button type="submit" class="btn btn-success">
                         {% trans "Weiter" %}
                     </button>

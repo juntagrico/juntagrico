@@ -320,7 +320,7 @@ ENABLE_SHARES
 
 ENABLE_REGISTRATION
 -----------
-  Decides if new member can registrate
+  Decides if new member can register
 
   Type: Boolean
 
@@ -329,18 +329,6 @@ ENABLE_REGISTRATION
   .. code-block:: python
 
     True
-
-ALLOW_MULTIPLE_SUBSCRIPTIONS
------------
-  Decides if members can accumulate subscriptions of same or different type
-
-  Type: Boolean
-
-  default value
-
-  .. code-block:: python
-
-    False
 
 BASE_FEE
 --------
