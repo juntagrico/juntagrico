@@ -3,11 +3,11 @@ from django.utils.translation import gettext as _
 
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
-from juntagrico.entity.jobs import JobType, RecuringJob
+from juntagrico.entity.jobs import JobType, RecuringJob, OneTimeJob
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.util.addons import get_otjob_inlines
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
 from juntagrico.util.models import attribute_copy
 
 
@@ -53,3 +53,7 @@ class OneTimeJobAdmin(admin.ModelAdmin):
                                            'juntagrico.is_area_admin',
                                            ActivityAreaDao.areas_by_coordinator)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def change_view(self, request, object_id, extra_context=None):
+        extra_context = extra_context_for_past_jobs(request,OneTimeJob,object_id,extra_context)
+        return super(admin.ModelAdmin, self).change_view(request, object_id, extra_context=extra_context)
