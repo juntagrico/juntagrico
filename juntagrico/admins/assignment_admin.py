@@ -1,20 +1,14 @@
 from django.contrib import admin
 
+from juntagrico.admins import BaseAdmin
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.util.addons import get_assignment_inlines
 from juntagrico.util.admin import formfield_for_coordinator
 
 
-class AssignmentAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'member',
-                    'job']
+class AssignmentAdmin(BaseAdmin):
+    list_display = ['__str__', 'member', 'job']
     search_fields = ['member__first_name', 'member__last_name']
     raw_id_fields = ['member', 'job']
-    inlines = []
-
-    def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_assignment_inlines())
-        super(AssignmentAdmin, self).__init__(*args, **kwargs)
 
     def get_queryset(self, request):
         qs = super(admin.ModelAdmin, self).get_queryset(request)

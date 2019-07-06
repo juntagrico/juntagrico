@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'impersonate',
     'juntagrico',
+    #enable only to test addon stuff
+    #'juntagrico_test_addon',
 ]
 
 DATABASES = {

@@ -1,24 +1,20 @@
 from django.contrib import admin
 from django.utils.translation import gettext as _
 
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
-from juntagrico.entity.jobs import OneTimeJob
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.util.addons import get_jobtype_inlines
+from juntagrico.entity.jobs import OneTimeJob
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
-class JobTypeAdmin(admin.ModelAdmin):
+class JobTypeAdmin(BaseAdmin):
     list_display = ['__str__']
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
-
-    def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_jobtype_inlines())
-        super(JobTypeAdmin, self).__init__(*args, **kwargs)
 
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():

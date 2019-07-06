@@ -3,25 +3,21 @@ from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob
-from juntagrico.util.addons import get_job_inlines
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
 
 
-class JobAdmin(admin.ModelAdmin):
+class JobAdmin(BaseAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']
-
-    def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_job_inlines())
-        super(JobAdmin, self).__init__(*args, **kwargs)
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
