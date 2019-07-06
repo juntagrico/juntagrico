@@ -42,4 +42,4 @@ class JobTypeAdmin(BaseAdmin):
                                            'activityarea',
                                            'juntagrico.is_area_admin',
                                            ActivityAreaDao.areas_by_coordinator)
-        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

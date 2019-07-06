@@ -11,7 +11,7 @@ class AssignmentAdmin(BaseAdmin):
     raw_id_fields = ['member', 'job']
 
     def get_queryset(self, request):
-        qs = super(admin.ModelAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         if request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
             return qs.filter(job__id__in=JobDao.ids_for_area_by_contact(request.user.member))
@@ -22,4 +22,4 @@ class AssignmentAdmin(BaseAdmin):
                                            'job',
                                            'juntagrico.is_area_admin',
                                            JobDao.ids_for_area_by_contact)
-        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)

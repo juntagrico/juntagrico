@@ -41,10 +41,10 @@ class JobAdmin(BaseAdmin):
     def get_form(self, request, obj=None, **kwds):
         if 'copy_job' in request.path:
             return JobCopyForm
-        return super(JobAdmin, self).get_form(request, obj, **kwds)
+        return super().get_form(request, obj, **kwds)
 
     def get_urls(self):
-        urls = super(JobAdmin, self).get_urls()
+        urls = super().get_urls()
         my_urls = [
             url(r'^copy_job/(?P<jobid>.*?)/$',
                 self.admin_site.admin_view(self.copy_job_view))
@@ -71,8 +71,8 @@ class JobAdmin(BaseAdmin):
                                            'type',
                                            'juntagrico.is_area_admin',
                                            JobTypeDao.types_by_coordinator)
-        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def change_view(self, request, object_id, extra_context=None):
         extra_context = extra_context_for_past_jobs(request,RecuringJob,object_id,extra_context)
-        return super(JobAdmin, self).change_view(request, object_id, extra_context=extra_context)
+        return super().change_view(request, object_id, extra_context=extra_context)
