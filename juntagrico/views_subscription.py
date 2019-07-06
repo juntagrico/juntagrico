@@ -14,7 +14,7 @@ from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategor
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.decorators import primary_member_of_subscription
+from juntagrico.decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
@@ -180,42 +180,48 @@ def extra_change(request, subscription_id):
     return render(request, 'extra_change.html', renderdict)
 
 
-def signup(request):
-    '''
+@create_subscription_session
+def signup(request, subscription_session):
+    """
     Become a member of juntagrico
-    '''
+    """
     if Config.enable_registration() is False:
         raise Http404
-    logout(request)
+    # logout if existing user is logged in
+    if request.user.is_authenticated:
+        logout(request)
+        subscription_session.clear()  # empty session object
     success = False
-    agberror = False
-    agbchecked = False
-    userexists = False
+    agb_error = False
+    agb_checked = False
+    user_exists = False
     if request.method == 'POST':
-        agbchecked = request.POST.get('agb') == 'on'
-        memberform = RegisterMemberForm(request.POST)
-        if not agbchecked:
-            agberror = True
+        agb_checked = request.POST.get('agb') == 'on'
+        member_form = RegisterMemberForm(request.POST)
+        if not agb_checked:
+            agb_error = True
         else:
-            if memberform.is_valid():
+            if member_form.is_valid():
                 # check if user already exists
-                email = memberform.cleaned_data['email']
+                email = member_form.cleaned_data['email']
                 if User.objects.filter(email__iexact=email).__len__() > 0:
-                    userexists = True
+                    user_exists = True
                 else:
-                    member = Member(**memberform.cleaned_data)
-                    request.session['main_member'] = member
-                    return redirect('/my/create/subscription')
+                    subscription_session.main_member = Member(**member_form.cleaned_data)
+                    if subscription_session.edit:  # edit mode: jump to summary
+                        return redirect('cs-summary')
+                    return redirect('cs-subscription')
     else:
-        memberform = RegisterMemberForm()
+        member_form = RegisterMemberForm(instance=subscription_session.main_member)
 
     renderdict = {
-        'memberform': memberform,
+        'memberform': member_form,
         'success': success,
-        'agberror': agberror,
-        'agbchecked': agbchecked,
-        'userexists': userexists,
+        'agberror': agb_error,
+        'agbchecked': agb_checked,
+        'userexists': user_exists,
         'menu': {'join': 'active'},
+        'editmode': subscription_session.edit
     }
     return render(request, 'signup.html', renderdict)
 

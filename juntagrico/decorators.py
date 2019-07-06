@@ -1,8 +1,10 @@
 from functools import wraps
+
 from django.shortcuts import get_object_or_404, redirect
-from juntagrico.models import Subscription
-from juntagrico.config import Config
 from django.http import HttpResponseRedirect
+
+from juntagrico.models import Subscription
+from juntagrico.util.sessions import SessionObjectManager, CreateSubscriptionSessionObject
 
 
 def primary_member_of_subscription(view):
@@ -22,15 +24,17 @@ def primary_member_of_subscription(view):
     return wrapper
 
 
-def requires_main_member(view):
+def create_subscription_session(view):
     @wraps(view)
     def wrapper(request, *args, **kwargs):
+        som = SessionObjectManager(request, 'create_subscription', CreateSubscriptionSessionObject)
+        session_object = som.data
         if request.user.is_authenticated:
-            main_member = request.user.member
-        else:
-            main_member = request.session.get('main_member')
-        if main_member is None:
-            return redirect('http://' + Config.server_url())
-        return view(request, main_member, *args, **kwargs)
+            session_object.main_member = request.user.member
+        if session_object.main_member is None and request.resolver_match.url_name is not 'signup':
+            return redirect('signup')
+        response = view(request, som.data, *args, **kwargs)
+        som.store()
+        return response
 
     return wrapper

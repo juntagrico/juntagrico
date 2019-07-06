@@ -1,3 +1,4 @@
+{% load common %}
 {% load subscription_extras %}
 {% load i18n %}
 {% load config %}
@@ -21,7 +22,14 @@
             {% if type.visible %}
                 <div class="form-group row">
                     <div class="col-md-3">
-                        <input type="number" name="amount[{{ type.id }}]" class="form-control" value="{{ subscription|future_amount_by_type:type.id|default:'0' }}" min="0"/>
+                        <input type="number" name="amount[{{ type.id }}]" class="form-control"
+                               value="{% spaceless %}
+                               {% if subscription %}
+                                    {{ subscription|future_amount_by_type:type.id|default:'0' }}
+                               {% else %}
+                                    {{ selected_subscriptions|get_item:type|default:0 }}
+                               {% endif %}{% endspaceless %}"
+                               min="0"/>
                     </div>
                     <label for="type{{ type.id }}" class="col-md-9">
                         {% if type.long_name.strip %}

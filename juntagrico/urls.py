@@ -36,7 +36,7 @@ urlpatterns = [
     url('^my/area/(?P<area_id>.*?)/leave$', juntagrico.area_leave),  #
 
     # subscription related juntagrico stuff
-    url('^my/subscription/detail/$', juntagrico_subscription.subscription),
+    path('my/subscription/detail/', juntagrico_subscription.subscription, name='sub-detail'),
     url('^my/subscription/detail/(?P<subscription_id>.*?)/',
         juntagrico_subscription.subscription),
     url('^my/subscription/change/overview/(?P<subscription_id>.*?)/',
@@ -47,7 +47,7 @@ urlpatterns = [
          juntagrico_subscription.size_change),
     url('^my/subscription/change/extra/(?P<subscription_id>.*?)/',
         juntagrico_subscription.extra_change),
-    url('^my/signup$', juntagrico_subscription.signup),
+    path('my/signup/', juntagrico_subscription.signup, name="signup"),
     url('^my/cosubmember/(?P<subscription_id>.*?)/',
         juntagrico_subscription.add_member),
     url('^my/confirm/(?P<hash>.*?)/', juntagrico_subscription.confirm),
@@ -69,13 +69,14 @@ urlpatterns = [
     url('^my/order/share/$', juntagrico_subscription.order_shares),
     url('^my/order/share/success$', juntagrico_subscription.order_shares_success),
     url('^my/payout/share/(?P<share_id>.*?)/', juntagrico_subscription.payout_share),
-    path('my/create/subscription', juntagrico_cs.cs_select_subscription),
-    url('^my/create/subscription/selectdepot$', juntagrico_cs.cs_select_depot),
-    url('^my/create/subscription/start$', juntagrico_cs.cs_select_start_date),
-    url('^my/create/subscription/addmembers$', juntagrico_cs.cs_add_member),
-    path('my/create/subscription/shares', juntagrico_cs.CSSelectSharesView.as_view()),
-    path('my/create/subscription/cancel', juntagrico_cs.cs_finish, {'cancelled': True}),
-    path('my/welcome', juntagrico_cs.cs_welcome),
+    path('my/create/subscription/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
+    path('my/create/subscription/selectdepot', juntagrico_cs.cs_select_depot, name='cs-depot'),
+    path('my/create/subscription/start', juntagrico_cs.cs_select_start_date, name='cs-start'),
+    path('my/create/subscription/addmembers', juntagrico_cs.cs_add_member, name='cs-co-members'),
+    path('my/create/subscription/shares', juntagrico_cs.CSSelectSharesView.as_view(), name='cs-shares'),
+    path('my/create/subscription/summary', juntagrico_cs.CSSummaryView.as_view(), name='cs-summary'),
+    path('my/create/subscription/cancel', juntagrico_cs.cs_finish, {'cancelled': True}, name='cs-cancel'),
+    path('my/welcome', juntagrico_cs.cs_welcome, name='welcome'),
 
     # admin related juntagrico stuff
     url('^my/mails/send/depot$', juntagrico_admin.send_email_depot),

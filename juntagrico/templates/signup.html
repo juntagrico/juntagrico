@@ -237,7 +237,11 @@
                 <div class="form-actions row">
                     <div class="offset-md-3 col-md-9">
                         <button type="submit" class="btn btn-success">
-                            Anmelden
+                            {% if not editmode %}
+                                {% trans 'Anmelden' %}
+                            {% else %}
+                                {% trans 'Ändern' %}
+                            {% endif %}
                         </button>
                     </div>
                 </div>

@@ -50,7 +50,7 @@
                     {% endblocktrans %}
                     <br/>
                 {% endif %}
-                {% if has_co_members %}
+                {% if co_members|length > 0 %}
                     {% blocktrans trimmed %}
                     Teile die restlichen benötigten {{ required_shares }} {{ v_share_pl }} unter dir und
                     deinen {{ v_co_member_pl }} auf.
@@ -65,7 +65,7 @@
                     {% blocktrans %}Deine {{ v_share_pl }}{% endblocktrans %}
                 </label>
                 <div class="col-md-3">
-                    <input type="number" name="shares_mainmember" class="form-control" value="{{ total_shares }}"min="{% if mm_requires_one %}1{% else %}0{% endif %}"/>
+                    <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:total_shares }}" min="{% if mm_requires_one %}1{% else %}0{% endif %}"/>
                 </div>
                 <label class="col-md-6">
                     {% if mm_requires_one %}
@@ -85,7 +85,7 @@
                         {{ co_member.first_name }} {{ co_member.last_name }}
                     </label>
                     <div class="col-md-3">
-                        <input type="number" name="{{ co_member.email }}" class="form-control" value="0" min="0"/>
+                        <input type="number" name="{{ co_member.email }}" class="form-control" value="{{ co_member.new_shares|default:0 }}" min="0"/>
                     </div>
                     <label class="col-md-6">
                         {% blocktrans trimmed with cac=co_member.active_shares.count %}
@@ -97,7 +97,7 @@
             <div class="form-actions row">
                 <div class="offset-md-3 col-md-9">
                     <button type="submit" class="btn btn-success">
-                        {% trans "Bestellen" %}
+                        {% trans "Weiter" %}
                     </button>
                     <a href="/my/create/subscription/cancel" class="btn">
                         {% trans "Abbrechen" %}
@@ -110,6 +110,6 @@
 {% block scripts %}
     <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initChangeExtra.js">
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js">
     </script>
 {% endblock %}
