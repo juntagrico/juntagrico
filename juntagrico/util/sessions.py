@@ -106,12 +106,14 @@ class CSSessionObject(SessionObject):
     def next_page(self):
         has_subs = self.subscription_size() > 0
 
+        def if_subs_and_not(value): return lambda: has_subs and not value
+
         # evaluate next page that should be shown
         forward_to = (
             ('cs-subscription', lambda: not self.subscriptions),
-            ('cs-depot', lambda: has_subs and not self.depot),
-            ('cs-start', lambda: has_subs and not self.start_date),
-            ('cs-co-members', lambda: has_subs and not self.co_members_done),
+            ('cs-depot', if_subs_and_not(self.depot)),
+            ('cs-start', if_subs_and_not(self.start_date)),
+            ('cs-co-members', if_subs_and_not(self.co_members_done)),
             ('cs-shares', lambda: not self.evaluate_ordered_shares()),
             ('cs-summary', lambda: True)
         )
