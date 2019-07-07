@@ -43,4 +43,4 @@ config = DefaultAddonsConfig()
 
 
 def load_addons():
-    autodiscover_modules('juntagricoapp', register_to=addons.config)
+    autodiscover_modules('juntagricoapp', register_to=config)
