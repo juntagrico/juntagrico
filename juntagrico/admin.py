@@ -30,7 +30,8 @@ from juntagrico.entity.subs import Subscription, ExtraSubBillingPeriod
 from juntagrico.entity.subtypes import SubscriptionSize, SubscriptionType, SubscriptionProduct
 from juntagrico.util import addons
 
-autodiscover_modules('juntagricoapp', register_to=addons.config)
+# loading addons here so that we have the information about admin extensions stuff like inlines etc
+addons.load_addons()
 
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraSubscription, ExtraSubscriptionAdmin)

@@ -1,7 +1,5 @@
-import importlib
-from importlib import util
-
 from django.utils.functional import LazyObject
+from django.utils.module_loading import autodiscover_modules
 
 
 class AddonNotConfigured(Exception):
@@ -42,3 +40,7 @@ class DefaultAddonsConfig(LazyObject):
 
 
 config = DefaultAddonsConfig()
+
+
+def load_addons():
+    autodiscover_modules('juntagricoapp', register_to=addons.config)
