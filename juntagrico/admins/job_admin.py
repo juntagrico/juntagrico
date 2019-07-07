@@ -77,6 +77,6 @@ class JobAdmin(admin.ModelAdmin):
                                            JobTypeDao.types_by_coordinator)
         return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def change_view(self, request, object_id, extra_context=None):
-        extra_context = extra_context_for_past_jobs(request,RecuringJob,object_id,extra_context)
-        return super(JobAdmin, self).change_view(request, object_id, extra_context=extra_context)
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context_for_past_jobs(request, RecuringJob, object_id, extra_context)
+        return super().change_view(request, object_id, extra_context=extra_context)
