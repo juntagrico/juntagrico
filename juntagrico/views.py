@@ -17,7 +17,7 @@ from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
 from juntagrico.util.management import *
-from juntagrico.util.addons import *
+from juntagrico.util import addons
 
 
 def get_menu_dict(request):
@@ -69,8 +69,8 @@ def get_menu_dict(request):
         'show_core': ActivityAreaDao.all_core_areas().count() > 0,
         'show_extras': JobExtraDao.all_job_extras().count() > 0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription)) > 0,
-        'admin_menus': get_admin_menus(),
-        'user_menus': get_user_menus(),
+        'admin_menus': addons.config.get_admin_menus(),
+        'user_menus': addons.config.get_user_menus(),
         'messages': [],
     }
     return menu_dict

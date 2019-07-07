@@ -3,25 +3,21 @@ from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob
-from juntagrico.util.addons import get_job_inlines
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
 
 
-class JobAdmin(admin.ModelAdmin):
+class JobAdmin(BaseAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']
-
-    def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_job_inlines())
-        super(JobAdmin, self).__init__(*args, **kwargs)
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
@@ -45,10 +41,10 @@ class JobAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwds):
         if 'copy_job' in request.path:
             return JobCopyForm
-        return super(JobAdmin, self).get_form(request, obj, **kwds)
+        return super().get_form(request, obj, **kwds)
 
     def get_urls(self):
-        urls = super(JobAdmin, self).get_urls()
+        urls = super().get_urls()
         my_urls = [
             url(r'^copy_job/(?P<jobid>.*?)/$',
                 self.admin_site.admin_view(self.copy_job_view))
@@ -75,8 +71,8 @@ class JobAdmin(admin.ModelAdmin):
                                            'type',
                                            'juntagrico.is_area_admin',
                                            JobTypeDao.types_by_coordinator)
-        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        extra_context = extra_context_for_past_jobs(request, RecuringJob, object_id, extra_context)
+    def change_view(self, request, object_id, extra_context=None):
+        extra_context = extra_context_for_past_jobs(request,RecuringJob,object_id,extra_context)
         return super().change_view(request, object_id, extra_context=extra_context)

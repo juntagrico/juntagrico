@@ -1,6 +1,6 @@
-from django.contrib import admin
+from juntagrico.admins import BaseAdmin
 
 
-class ListMessageAdmin(admin.ModelAdmin):
+class ListMessageAdmin(BaseAdmin):
     list_display = ['message', 'active']
     search_fields = ['message']
