@@ -59,8 +59,8 @@
             <h4>{{ v_co_member_pl }}</h4>
             {% for co_member in co_members %}
                 <p>{{ co_member.first_name }} {{ co_member.last_name }}
-                    <a href="{% url 'cs-co-members' %}?edit={{forloop.counter}}&source=cs-summary" class="edit"><i class="fas fa-pen"></i></a>
-                    <a href="{% url 'cs-co-members' %}?remove={{forloop.counter}}&source=cs-summary" class="delete"><i class="fas fa-trash"></i></a>
+                    <a href="{% url 'cs-co-members' %}?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>
+                    <a href="{% url 'cs-co-members' %}?remove={{forloop.counter}}" class="delete"><i class="fas fa-trash"></i></a>
                     <br>{{ co_member.addr_street }}
                     <br>{{ co_member.addr_zipcode }} {{ co_member.addr_location }}
                     <br>{% trans 'E-Mail' %}: <b>{{ co_member.email }}</b>

@@ -7,6 +7,9 @@ from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.generic import FormView
+from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -180,50 +183,56 @@ def extra_change(request, subscription_id):
     return render(request, 'extra_change.html', renderdict)
 
 
-@create_subscription_session
-def signup(request, subscription_session):
-    """
-    Become a member of juntagrico
-    """
-    if Config.enable_registration() is False:
-        raise Http404
-    # logout if existing user is logged in
-    if request.user.is_authenticated:
-        logout(request)
-        subscription_session.clear()  # empty session object
-    success = False
-    agb_error = False
-    agb_checked = False
-    user_exists = False
-    if request.method == 'POST':
-        agb_checked = request.POST.get('agb') == 'on'
-        member_form = RegisterMemberForm(request.POST)
-        if not agb_checked:
-            agb_error = True
-        else:
-            if member_form.is_valid():
-                # check if user already exists
-                email = member_form.cleaned_data['email']
-                if User.objects.filter(email__iexact=email).__len__() > 0:
-                    user_exists = True
-                else:
-                    subscription_session.main_member = Member(**member_form.cleaned_data)
-                    if subscription_session.edit:  # edit mode: jump to summary
-                        return redirect('cs-summary')
-                    return redirect('cs-subscription')
-    else:
-        member_form = RegisterMemberForm(instance=subscription_session.main_member)
+class SignupView(FormView, ModelFormMixin):
+    template_name = 'signup.html'
+    form_class = RegisterMemberForm
 
-    renderdict = {
-        'memberform': member_form,
-        'success': success,
-        'agberror': agb_error,
-        'agbchecked': agb_checked,
-        'userexists': user_exists,
-        'menu': {'join': 'active'},
-        'editmode': subscription_session.edit
-    }
-    return render(request, 'signup.html', renderdict)
+    def __init__(self):
+        super().__init__()
+        self.cs_session = None
+        self.object = None
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(
+            menu={'join': 'active'},
+            edit_mode=self.cs_session.edit,
+            **kwargs
+        )
+
+    @method_decorator(create_subscription_session)
+    def dispatch(self, request, cs_session, *args, **kwargs):
+        if Config.enable_registration() is False:
+            raise Http404
+        # logout if existing user is logged in
+        if request.user.is_authenticated:
+            logout(request)
+            cs_session.clear()  # empty session object
+
+        self.cs_session = cs_session
+        self.object = self.cs_session.main_member
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        agb_checked = request.POST.get('agb') == 'on'
+        if not agb_checked:
+            return self.render(agb_checked=agb_checked, agb_error=True, **kwargs)
+        else:
+            return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # check if user already exists
+        email = form.cleaned_data['email']
+        if User.objects.filter(email__iexact=email).__len__() > 0:
+            return self.render(user_exists=True)
+        else:
+            self.cs_session.main_member = Member(**form.cleaned_data)
+            return redirect(self.cs_session.next_page())
+
+    def get(self, request, *args, **kwargs):
+        return self.render(agb_checked=self.cs_session.edit, **kwargs)
+
+    def render(self, **kwargs):
+        return self.render_to_response(self.get_context_data(**kwargs))
 
 
 def confirm(request, hash):

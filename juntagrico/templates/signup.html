@@ -75,117 +75,117 @@
         <div class="offset-md-2 col-md-8">
             <form action="" method="post">
                 {% csrf_token %}
-                <div class="form-group row{% if memberform.last_name.errors %}invalid{% endif %}">
+                <div class="form-group row{% if form.last_name.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_last_name">
                         Name *
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.last_name }}
-                        {% if memberform.last_name.errors %}
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
                             <div class="form-text">
                                 Name ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.first_name.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.first_name.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_first_name">
                         Vorname *
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.first_name }}
-                        {% if memberform.first_name.errors %}
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
                             <div class="form-text">
                                 Vorname ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.addr_street.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.addr_street.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_addr_street">
                         Strasse/Nr. *
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.addr_street }}
-                        {% if memberform.addr_street.errors %}
+                        {{ form.addr_street }}
+                        {% if form.addr_street.errors %}
                             <div class="form-text">
                                 Strasse ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.addr_zipcode.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.addr_zipcode.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_addr_zipcode">
                         PLZ *
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.addr_zipcode }}
-                        {% if memberform.addr_zipcode.errors %}
+                        {{ form.addr_zipcode }}
+                        {% if form.addr_zipcode.errors %}
                             <div class="form-text">
                                 PLZ ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.addr_location.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.addr_location.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_addr_location">
                         Ort *
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.addr_location }}
-                        {% if memberform.addr_location.errors %}
+                        {{ form.addr_location }}
+                        {% if form.addr_location.errors %}
                             <div class="form-text">
                                 Ort ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.phone.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.phone.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_phone">
                         Telefon *
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.phone }}
-                        {% if memberform.phone.errors %}
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
                             <div class="form-text">
                                 Telefon ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.mobile_phone.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.mobile_phone.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_mobile_phone">
                         Mobile &nbsp;
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.mobile_phone }}
-                        {% if memberform.mobile_phone.errors %}
+                        {{ form.mobile_phone }}
+                        {% if form.mobile_phone.errors %}
                             <div class="form-text">
                                 Mobile ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.email.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.email.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_email">
                         E-Mail Adresse *
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.email }}
-                        {% if memberform.email.errors %}
+                        {{ form.email }}
+                        {% if form.email.errors %}
                             <div class="form-text">
                                 E-Mail ungültig
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                <div class="form-group row {% if memberform.birthday.errors %}invalid{% endif %}">
+                <div class="form-group row {% if form.birthday.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_birthday">
                         Geburtstag &nbsp;
                     </label>
                     <div class="col-md-9">
-                        {{ memberform.birthday }}
-                        {% if memberform.birthday.errors %}
+                        {{ form.birthday }}
+                        {% if form.birthday.errors %}
                             <div class="form-text">
                                 Geburtstag ungültig
                             </div>
@@ -196,8 +196,8 @@
                     <div class="offset-md-3 col-md-9">
                         <div class="checkbox">
                             <label>
-                                {{ memberform.agb }}
-                                <input type="checkbox" name="agb" id="agb"{% if agbchecked %}checked="checked"{% endif %}/>
+                                {{ form.agb }}
+                                <input type="checkbox" name="agb" id="agb"{% if agb_checked %}checked="checked"{% endif %}/>
                                 Ich habe
                                 <a target="_blank" href="{% config "bylaws"|safe %}">
                                     die Statuten
@@ -216,7 +216,7 @@
                                 {% endif %}
                                 gelesen und erkläre meinen Willen, "{% config "organisation_long_name" %}" beizutreten.
                                 Hiermit beantrage ich meine Aufnahme.
-                                {% if agberror %}
+                                {% if agb_error %}
                                     <div class="alert alert-danger">
                                         Statuten müssen angenommen werden
                                     </div>
@@ -225,7 +225,7 @@
                         </div>
                     </div>
                 </div>
-                {% if userexists %}
+                {% if user_exists %}
                     <div class="alert alert-danger">
                         Diese Email-Adresse existiert bereits im System.
                         <br/>
@@ -237,7 +237,7 @@
                 <div class="form-actions row">
                     <div class="offset-md-3 col-md-9">
                         <button type="submit" class="btn btn-success">
-                            {% if not editmode %}
+                            {% if not edit_mode %}
                                 {% trans 'Anmelden' %}
                             {% else %}
                                 {% trans 'Ändern' %}

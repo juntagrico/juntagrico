@@ -1,3 +1,6 @@
+from juntagrico.config import Config
+
+
 class SessionObjectManager:
     def __init__(self, request, key, data_type):
         self._request = request
@@ -23,11 +26,12 @@ class SessionObject:
         self.__init__()
 
 
-class CreateSubscriptionSessionObject(SessionObject):
+class CSSessionObject(SessionObject):
     def __init__(self):
         super().__init__()
         self._main_member = None
         self._co_members = []
+        self.co_members_done = False
         self.subscriptions = {}
         self.depot = None
         self.start_date = None
@@ -64,7 +68,53 @@ class CreateSubscriptionSessionObject(SessionObject):
     def has_co_members(self):
         return len(self._co_members) > 0
 
+    def get_co_member_shares(self):
+        return sum([getattr(co_member, 'new_shares', 0) or 0 for co_member in self.co_members])
+
+    def subscription_size(self):
+        return sum([sub_type.size.units * amount for sub_type, amount in self.subscriptions.items()])
+
+    def required_shares(self):
+        return sum([sub_type.shares * amount for sub_type, amount in self.subscriptions.items()])
+
     def to_dict(self):
         build_dict = {k: getattr(self, k) for k in ['main_member', 'co_members', 'depot', 'start_date']}
         build_dict['subscriptions'] = {k: v for k, v in self.subscriptions.items() if v > 0}
         return build_dict
+
+    def count_shares(self):
+        shares = {
+            'existing_main_member': len(self.main_member.active_shares),
+            'existing_co_member': sum([len(co_member.active_shares) for co_member in self.co_members]),
+            'total_required': max(self.required_shares(), 1)
+        }
+        shares['remaining_required'] = max(0, shares['total_required'] -
+                                           max(0, shares['existing_main_member'] + shares['existing_co_member']))
+        return shares
+
+    def evaluate_ordered_shares(self, shares=None):
+        if not Config.enable_shares():  # skip if no shares are needed
+            return True
+        shares = shares or self.count_shares()
+        # count new shares
+        new_main_member = getattr(self.main_member, 'new_shares', 0) or 0
+        new_co_members = self.get_co_member_shares()
+        # evaluate
+        return shares['existing_main_member'] + new_main_member > 0\
+            and new_main_member + new_co_members >= shares['remaining_required']
+
+    def next_page(self):
+        has_subs = self.subscription_size() > 0
+
+        # evaluate next page that should be shown
+        forward_to = (
+            ('cs-subscription', lambda: not self.subscriptions),
+            ('cs-depot', lambda: has_subs and not self.depot),
+            ('cs-start', lambda: has_subs and not self.start_date),
+            ('cs-co-members', lambda: has_subs and not self.co_members_done),
+            ('cs-shares', lambda: not self.evaluate_ordered_shares()),
+            ('cs-summary', lambda: True)
+        )
+        for candidate, condition in forward_to:
+            if condition():
+                return candidate

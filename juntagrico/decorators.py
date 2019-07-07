@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 
 from juntagrico.models import Subscription
-from juntagrico.util.sessions import SessionObjectManager, CreateSubscriptionSessionObject
+from juntagrico.util.sessions import SessionObjectManager, CSSessionObject
 
 
 def primary_member_of_subscription(view):
@@ -27,7 +27,7 @@ def primary_member_of_subscription(view):
 def create_subscription_session(view):
     @wraps(view)
     def wrapper(request, *args, **kwargs):
-        som = SessionObjectManager(request, 'create_subscription', CreateSubscriptionSessionObject)
+        som = SessionObjectManager(request, 'create_subscription', CSSessionObject)
         session_object = som.data
         if request.user.is_authenticated:
             session_object.main_member = request.user.member
