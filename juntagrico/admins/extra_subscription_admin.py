@@ -1,12 +1,5 @@
-from django.contrib import admin
-
-from juntagrico.util.addons import get_extrasub_inlines
+from juntagrico.admins import BaseAdmin
 
 
-class ExtraSubscriptionAdmin(admin.ModelAdmin):
+class ExtraSubscriptionAdmin(BaseAdmin):
     raw_id_fields = ['main_subscription']
-    inlines = []
-
-    def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_extrasub_inlines())
-        super(ExtraSubscriptionAdmin, self).__init__(*args, **kwargs)

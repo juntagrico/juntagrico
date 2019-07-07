@@ -1,17 +1,17 @@
 from django.contrib import admin
 from django.utils.translation import gettext as _
 
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
-from juntagrico.entity.jobs import JobType, RecuringJob, OneTimeJob
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.util.addons import get_otjob_inlines
+from juntagrico.dao.assignmentdao import AssignmentDao
+from juntagrico.entity.jobs import JobType, RecuringJob, OneTimeJob
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
 from juntagrico.util.models import attribute_copy
 
 
-class OneTimeJobAdmin(admin.ModelAdmin):
+class OneTimeJobAdmin(BaseAdmin):
     list_display = ['__str__', 'time', 'slots', 'free_slots']
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
@@ -19,10 +19,6 @@ class OneTimeJobAdmin(admin.ModelAdmin):
 
     inlines = [AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
-
-    def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_otjob_inlines())
-        super(OneTimeJobAdmin, self).__init__(*args, **kwargs)
 
     def transform_job(self, request, queryset):
         for inst in queryset.all():
@@ -52,8 +48,8 @@ class OneTimeJobAdmin(admin.ModelAdmin):
                                            'activityarea',
                                            'juntagrico.is_area_admin',
                                            ActivityAreaDao.areas_by_coordinator)
-        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def change_view(self, request, object_id, extra_context=None):
         extra_context = extra_context_for_past_jobs(request,OneTimeJob,object_id,extra_context)
-        return super(admin.ModelAdmin, self).change_view(request, object_id, extra_context=extra_context)
+        return super().change_view(request, object_id, extra_context=extra_context)
