@@ -10,13 +10,6 @@
     <div id="jobs">
         {% include "snippets/snippet_jobs.html" %}
     </div>
-    <br/>
-    <br/>
-    {% if show_all %}
-        <a href="/my/assignments/all">
-            {% trans "Auch vergangene Jobs anzeigen" %}
-        </a>
-    {% endif %}
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript" src="/static/external/datatables.min.js">

@@ -14,13 +14,12 @@ urlpatterns = [
     url('^my/jobs/(?P<job_id>.*?)/', juntagrico.job),  #
     url('^my/profile$', juntagrico.profile),
     url('^my/cancel/membership$', juntagrico.cancel_membership),
-    url('^my/participation$', juntagrico.participation),  #
     url('^my/contact$', juntagrico.contact),
     url('^my/contact/member/(?P<member_id>.*?)/(?P<job_id>.*?)/',
         juntagrico.contact_member),
-    url('^my/assignments$', juntagrico.assignments),  #
-    url('^my/assignments/all$', juntagrico.assignments_all),  #
-    url('^my/pastjobs$', juntagrico.pastjobs),
+    url('^my/jobs$', juntagrico.jobs),  #
+    url('^my/jobs/all$', juntagrico.all_jobs),  #
+    url('^my/memberjobs$', juntagrico.memberjobs),
     url('^my/depot/(?P<depot_id>.*?)/', juntagrico.depot),
     url('^my/deliveries$', juntagrico.deliveries),
     url('^my/newpassword$', juntagrico.new_password),
@@ -30,6 +29,7 @@ urlpatterns = [
     url(r'^accounts/login/$', LoginView.as_view()),
 
     # area stuff
+    url('^my/areas$', juntagrico.areas),  #
     url('^my/area/(?P<area_id>.*?)/$', juntagrico.show_area),  #
     url('^my/area/(?P<area_id>.*?)/join$', juntagrico.area_join),  #
     url('^my/area/(?P<area_id>.*?)/leave$', juntagrico.area_leave),  #
