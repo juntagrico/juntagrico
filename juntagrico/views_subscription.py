@@ -343,18 +343,18 @@ def cancel_subscription(request, subscription_id):
     else:
         end_date = end_of_next_business_year()
     if request.method == 'POST':
+        for extra in subscription.extra_subscription_set.all():
+            if extra.active is True:
+                extra.canceled = True
+                extra.save()
+            elif extra.active is False and extra.deactivation_date is None:
+                extra.delete()
         if subscription.active is True and subscription.canceled is False:
             subscription.canceled = True
             subscription.end_date = request.POST.get('end_date')
             subscription.save()
             message = request.POST.get('message')
             send_subscription_canceled(subscription, message)
-            for extra in subscription.extra_subscription_set.all():
-                if extra.active is True:
-                    extra.canceled = True
-                    extra.save()
-                elif extra.active is False and extra.deactivation_date is None:
-                    extra.delete()
         elif subscription.active is False and subscription.deactivation_date is None:
             subscription.delete()
         return redirect('/my/subscription/detail')
