@@ -116,4 +116,3 @@ class CSSessionObject(SessionObject):
         elif not self.evaluate_ordered_shares():
             return 'cs-shares'
         return 'cs-summary'
-
