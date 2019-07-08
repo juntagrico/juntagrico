@@ -74,14 +74,14 @@ def replace_subscription_types(subscription, selected_types):
     :return: None
     """
     # always replace future sub types
-    on_obj = [TFSST]
+    through_classes = [TFSST]
     # replace the current sub types as well, if the subscription is not active yet
     if subscription.state == 'waiting':
-        on_obj.append(TSST)
+        through_classes.append(TSST)
 
-    for obj in on_obj:
-        obj.objects.filter(subscription=subscription).delete()
-        obj.objects.bulk_create(
-            itertools.chain(*[[obj(subscription=subscription, type=sub_type)] * amount
+    for through_class in through_classes:
+        through_class.objects.filter(subscription=subscription).delete()
+        through_class.objects.bulk_create(
+            itertools.chain(*[[through_class(subscription=subscription, type=sub_type)] * amount
                               for sub_type, amount in selected_types.items()])
         )

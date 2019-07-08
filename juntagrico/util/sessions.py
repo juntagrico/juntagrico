@@ -44,15 +44,15 @@ class CSSessionObject(SessionObject):
     @main_member.setter
     def main_member(self, new_main_member):
         # transfer previously selected shares
-        new_main_member.new_shares = getattr(self._main_member, 'new_shares', None)
+        new_main_member.new_shares = getattr(self._main_member, 'new_shares', 0)
         self._main_member = new_main_member
 
     @property
     def co_members(self):
-        return [self.get_co_member(i) for i in range(len(self._co_members))]
+        return self._co_members.copy()
 
     def replace_co_member(self, index, new_co_member):
-        new_co_member.new_shares = getattr(self._co_members[index], 'new_shares', None)
+        new_co_member.new_shares = getattr(self._co_members[index], 'new_shares', 0)
         self._co_members[index] = new_co_member
 
     def get_co_member(self, index):
@@ -69,7 +69,7 @@ class CSSessionObject(SessionObject):
         return len(self._co_members) > 0
 
     def get_co_member_shares(self):
-        return sum([getattr(co_member, 'new_shares', 0) or 0 for co_member in self.co_members])
+        return sum([getattr(co_member, 'new_shares', 0) for co_member in self.co_members])
 
     def subscription_size(self):
         return sum([sub_type.size.units * amount for sub_type, amount in self.subscriptions.items()])
@@ -97,7 +97,7 @@ class CSSessionObject(SessionObject):
             return True
         shares = shares or self.count_shares()
         # count new shares
-        new_main_member = getattr(self.main_member, 'new_shares', 0) or 0
+        new_main_member = getattr(self.main_member, 'new_shares', 0)
         new_co_members = self.get_co_member_shares()
         # evaluate
         return shares['existing_main_member'] + new_main_member > 0\
@@ -105,18 +105,15 @@ class CSSessionObject(SessionObject):
 
     def next_page(self):
         has_subs = self.subscription_size() > 0
+        if not self.subscriptions:
+            return 'cs-subscription'
+        elif has_subs and not self.depot:
+            return 'cs-depot'
+        elif has_subs and not self.start_date:
+            return 'cs-start'
+        elif has_subs and not self.co_members_done:
+            return 'cs-co-members'
+        elif not self.evaluate_ordered_shares():
+            return 'cs-shares'
+        return 'cs-summary'
 
-        def if_subs_and_not(value): return lambda: has_subs and not value
-
-        # evaluate next page that should be shown
-        forward_to = (
-            ('cs-subscription', lambda: not self.subscriptions),
-            ('cs-depot', if_subs_and_not(self.depot)),
-            ('cs-start', if_subs_and_not(self.start_date)),
-            ('cs-co-members', if_subs_and_not(self.co_members_done)),
-            ('cs-shares', lambda: not self.evaluate_ordered_shares()),
-            ('cs-summary', lambda: True)
-        )
-        for candidate, condition in forward_to:
-            if condition():
-                return candidate
