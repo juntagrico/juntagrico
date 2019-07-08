@@ -1,13 +1,11 @@
-from django.contrib import admin
-
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
 from juntagrico.admins.inlines.extra_subscription_inline import ExtraSubscriptionInline
 from juntagrico.admins.inlines.subscription_type_inlines import FutureSubscriptionTypeInline
 from juntagrico.admins.inlines.subscription_type_inlines import SubscriptionTypeInline
-from juntagrico.util.addons import get_subscription_inlines
 
 
-class SubscriptionAdmin(admin.ModelAdmin):
+class SubscriptionAdmin(BaseAdmin):
     form = SubscriptionAdminForm
     list_display = ['__str__', 'recipients_names',
                     'primary_member_nullsave', 'depot', 'active']
@@ -15,7 +13,3 @@ class SubscriptionAdmin(admin.ModelAdmin):
                      'members__first_name', 'members__last_name', 'depot__name']
     inlines = [SubscriptionTypeInline,
                FutureSubscriptionTypeInline, ExtraSubscriptionInline]
-
-    def __init__(self, *args, **kwargs):
-        self.inlines.extend(get_subscription_inlines())
-        super(SubscriptionAdmin, self).__init__(*args, **kwargs)

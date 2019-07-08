@@ -1,118 +1,46 @@
-import importlib
-from importlib import util
-
-from django.core.cache import cache
-from django.conf import settings
+from django.utils.functional import LazyObject
+from django.utils.module_loading import autodiscover_modules
 
 
-def load_config(value, dest, modules):
-    for app in modules:
-        module = modules[app]
-        if hasattr(module, value):
-            dest.extend(getattr(module, value)())
-    return dest
+class AddonNotConfigured(Exception):
+    pass
 
 
-def load_modules():
-    modules = {}
-    for app in settings.INSTALLED_APPS:
-        j_app = app.startswith('juntagrico') and app != 'juntagrico'
-        if j_app and util.find_spec(app + '.juntagricoapp') is not None:
-            modules[app] = importlib.import_module(app + '.juntagricoapp')
-    return modules
+class AddonsConfig:
+
+    def __init__(self):
+        self._admin_menus = []
+        self._user_menus = []
+        self._registry = {}
+
+    def register_admin_menu(self, template):
+        self._admin_menus.append(template)
+
+    def get_admin_menus(self):
+        return self._admin_menus
+
+    def register_user_menu(self, template):
+        self._user_menus.append(template)
+
+    def get_user_menus(self):
+        return self._user_menus
+
+    def register_model_inline(self, model, inline):
+        inline_list = self._registry.get(model, [])
+        inline_list.append(inline)
+        self._registry[model] = inline_list
+
+    def get_model_inlines(self, model):
+        return self._registry.get(model, [])
 
 
-def set_cache(key, value):
-    cache.set(key, value)
+class DefaultAddonsConfig(LazyObject):
+    def _setup(self):
+        self._wrapped = AddonsConfig()
 
 
-def get_cache(key):
-    return cache.get(key, [])
+config = DefaultAddonsConfig()
 
 
-def set_admin_menus(admin_menus):
-    set_cache('admin_menus', admin_menus)
-
-
-def set_user_menus(user_menus):
-    set_cache('user_menus', user_menus)
-
-
-def get_admin_menus():
-    return get_cache('admin_menus')
-
-
-def get_user_menus():
-    return get_cache('user_menus')
-
-
-def get_member_inlines():
-    return load_config('member_inlines', [], load_modules())
-
-
-def get_job_inlines():
-    return load_config('job_inlines', [], load_modules())
-
-
-def get_jobextra_inlines():
-    return load_config('jobextra_inlines', [], load_modules())
-
-
-def get_jobextratype_inlines():
-    return load_config('jobextratype_inlines', [], load_modules())
-
-
-def get_subproduct_inlines():
-    return load_config('subproduct_inlines', [], load_modules())
-
-
-def get_subsize_inlines():
-    return load_config('subsize_inlines', [], load_modules())
-
-
-def get_subtype_inlines():
-    return load_config('subtype_inlines', [], load_modules())
-
-
-def get_area_inlines():
-    return load_config('area_inlines', [], load_modules())
-
-
-def get_assignment_inlines():
-    return load_config('assignment_inlines', [], load_modules())
-
-
-def get_share_inlines():
-    return load_config('share_inlines', [], load_modules())
-
-
-def get_depot_inlines():
-    return load_config('depot_inlines', [], load_modules())
-
-
-def get_extrasub_inlines():
-    return load_config('extrasub_inlines', [], load_modules())
-
-
-def get_extrasubcat_inlines():
-    return load_config('extrasubcat_inlines', [], load_modules())
-
-
-def get_extrasubtype_inlines():
-    return load_config('extrasubtype_inlines', [], load_modules())
-
-
-def get_delivery_inlines():
-    return load_config('delivery_inlines', [], load_modules())
-
-
-def get_jobtype_inlines():
-    return load_config('jobtype_inlines', [], load_modules())
-
-
-def get_otjob_inlines():
-    return load_config('otjob_inlines', [], load_modules())
-
-
-def get_subscription_inlines():
-    return load_config('subscription_inlines', [], load_modules())
+def load_addons():
+    autodiscover_modules('juntagricoapp', register_to=config)

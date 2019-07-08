@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'impersonate',
     'juntagrico',
     'crispy_forms',
+    # enable only to test addon stuff
+    # 'juntagrico_test_addon',
 ]
 
 DATABASES = {

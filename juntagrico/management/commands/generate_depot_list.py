@@ -51,9 +51,10 @@ class Command(BaseCommand):
 
         depots = DepotDao.all_depots_order_by_code()
 
-        subscription_names = []
-        for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
-            subscription_names.append(subscription_size.name)
+        subscription_ids = []
+        for product in SubscriptionProductDao.get_all():
+            for subscription_size in SubscriptionSizeDao.sizes_for_depot_list_by_product(product):
+                subscription_ids.append(subscription_size.id)
 
         categories = []
         types = []
@@ -123,15 +124,14 @@ class Command(BaseCommand):
             overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.units * overview['all'][
                 index]
             index += 1
-
         renderdict = {
             'overview': overview,
             'depots': depots,
-            'subscription_names': subscription_names,
-            'subscriptioncount': len(subscription_names)+1,
+            'subscription_ids': subscription_ids,
+            'subscriptioncount': len(subscription_ids)+1,
             'categories': categories,
             'types': types,
-            'es_types': types[len(subscription_names):],
+            'es_types': types[len(subscription_ids):],
             'datum': timezone.now(),
             'weekdays': used_weekdays,
             'messages': ListMessageDao.all_active()
