@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
-from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob
 
 
 def create_test_data(cls):
@@ -28,6 +28,24 @@ def create_test_data(cls):
     cls.member.user.save()
 
     """
+    admin member
+    """
+    admin_data = {'first_name': 'admin',
+                  'last_name': 'last_name',
+                  'email': 'admin@email.org',
+                  'addr_street': 'addr_street',
+                  'addr_zipcode': 'addr_zipcode',
+                  'addr_location': 'addr_location',
+                  'phone': 'phone',
+                  'confirmed': True,
+                  }
+    cls.admin = Member.objects.create(**admin_data)
+    cls.admin.user.set_password("123456")
+    cls.admin.user.is_staff = True
+    cls.admin.user.is_superuser = True
+    cls.admin.user.save()
+
+    """
     area
     """
     area_data = {'name': 'name',
@@ -49,6 +67,18 @@ def create_test_data(cls):
                 'type': cls.job_type}
     cls.job1 = RecuringJob.objects.create(**job_data)
     cls.job2 = RecuringJob.objects.create(**job_data)
+    """
+    one time jobs
+    """
+    time = timezone.now()+timezone.timedelta(hours=2)
+    one_time_job_data = {'name': 'name',
+                         'activityarea': cls.area,
+                         'duration': 2,
+                         'slots': 1,
+                         'time': time}
+    cls.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
+    one_time_job_data['name'] = 'name2'
+    cls.one_time_job2 = OneTimeJob.objects.create(**one_time_job_data)
     """
     assignment
     """
