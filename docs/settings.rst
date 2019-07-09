@@ -320,9 +320,9 @@ ENABLE_SHARES
 
 ENABLE_REGISTRATION
 -----------
-  Decides if new member can registrate
+  Decides if new member can register
 
-  Type: String
+  Type: Boolean
 
   default value
 

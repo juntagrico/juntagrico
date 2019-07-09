@@ -69,12 +69,20 @@ a.canceled:hover, a.canceled:focus {
     font-size: 30pt;
 }
 
-.edit i {
+.edit i, .delete i {
     font-size: 0.7em;
 }
 
-.edit {
+.edit, .delete {
     vertical-align: top;
+}
+
+a.delete {
+    color: #999;
+}
+
+a:hover.delete {
+    color: red;
 }
 
 /* container stuff checked */

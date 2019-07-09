@@ -10,6 +10,7 @@
 {% block content %}
     {% config "enable_shares" as c_enable_shares %}
     {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% if saved %}
         <div class="alert alert-success">
@@ -31,17 +32,28 @@
         <form method="post">
             {% csrf_token %}
             {% include "snippets/snippet_subscription_selection.html" %}
-            <div class="form-group row">
-            </div>
-            <div class="form-group row">
-                <label class="col-md-3">
-                </label>
-                <div class="col-md-9">
+            <div class="form-group form-row">
+                <div class="col-md-3">
                     <button type="submit" class="btn btn-success">
                         {% blocktrans %}{{ v_subscription }}-Grösse ändern{% endblocktrans %}
                     </button>
                 </div>
             </div>
         </form>
+        {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <a href="/my/subscription/cancel/{{ subscription.id }}/"class="btn btn-danger">
+                        {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js">
+    </script>
 {% endblock %}

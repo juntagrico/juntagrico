@@ -13,34 +13,35 @@ class CreateSubscriptionTests(TestCase):
         self.client.force_login(self.member.user)
         user = auth.get_user(self.client)
         assert user.is_authenticated
-        self.client.get('/my/signup')
+        self.client.get('/my/signup/')
         self.assertEqual(str(auth.get_user(self.client)), 'AnonymousUser')
 
     def testRedirect(self):
-        response = self.client.get('/my/create/subscrition')
+        response = self.client.get('/my/create/subscription/')
         self.assertEqual(response.status_code, 302)
-        response = self.client.post('/my/create/subscrition')
-        self.assertEqual(response.status_code, 302)
-
-        response = self.client.get('/my/create/subscription/selectdepot')
-        self.assertEqual(response.status_code, 302)
-        response = self.client.post('/my/create/subscription/selectdepot')
+        response = self.client.post('/my/create/subscription/')
         self.assertEqual(response.status_code, 302)
 
-        response = self.client.get('/my/create/subscription/start')
+        response = self.client.get('/my/create/subscription/selectdepot/')
         self.assertEqual(response.status_code, 302)
-        response = self.client.post('/my/create/subscription/start')
-        self.assertEqual(response.status_code, 302)
-
-        response = self.client.get('/my/create/subscription/addmembers')
-        self.assertEqual(response.status_code, 302)
-        response = self.client.post('/my/create/subscription/addmembers')
+        response = self.client.post('/my/create/subscription/selectdepot/')
         self.assertEqual(response.status_code, 302)
 
-        response = self.client.get('/my/create/subscription/shares')
+        response = self.client.get('/my/create/subscription/start/')
         self.assertEqual(response.status_code, 302)
-        response = self.client.put('/my/create/subscription/shares')
+        response = self.client.post('/my/create/subscription/start/')
         self.assertEqual(response.status_code, 302)
 
-        response = self.client.get('/my/welcome')
+        response = self.client.get('/my/create/subscription/addmembers/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.post('/my/create/subscription/addmembers/')
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.get('/my/create/subscription/shares/')
+        self.assertEqual(response.status_code, 302)
+        response = self.client.put('/my/create/subscription/shares/')
+        self.assertEqual(response.status_code, 302)
+
+    def testWelcome(self):
+        response = self.client.get('/my/welcome/')
         self.assertEqual(response.status_code, 302)

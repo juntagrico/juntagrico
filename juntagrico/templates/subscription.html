@@ -27,7 +27,7 @@
             <br/>
             {% blocktrans %}{{ v_subscription }} (wieder) neu beziehen?{% endblocktrans %}
             {% trans "Melde dich hier an" %}:
-            <a href="/my/create/subscrition">
+            <a href="/my/create/subscription">
                 {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}
             </a>
         </div>
@@ -56,7 +56,7 @@
                 {% blocktrans %}{{ v_subscription }}grösse{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.size_name }}
+                {{ subscription.size_name|safe }}
             </div>
         </div>
         <div class="row mb-3">
@@ -225,18 +225,6 @@
                     </a>
                     {% if not primary %}
                         {% trans "Nur der Hauptbezieher kann Änderungen durchführen." %}
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
-        {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
-            <div class="row mb-3">
-                <div class="offset-3 col-md-9">
-                    <a href="{% if primary %}/my/subscription/cancel/{{ subscription.id }}/{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
-                        {% blocktrans %}{{ v_subscription }} künden{% endblocktrans %}
-                    </a>
-                    {% if not primary %}
-                        {% trans "Nur der Hauptabezieher kann künden." %}
                     {% endif %}
                 </div>
             </div>
