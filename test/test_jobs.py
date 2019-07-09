@@ -11,12 +11,12 @@ class JobTests(TestCase):
 
     def testAssignments(self):
         self.client.force_login(self.member.user)
-        response = self.client.get('/my/assignments')
+        response = self.client.get('/my/jobs')
         self.assertEqual(response.status_code, 200)
 
     def testAssignmentsAll(self):
         self.client.force_login(self.member.user)
-        response = self.client.get('/my/assignments/all')
+        response = self.client.get('/my/jobs/all')
         self.assertEqual(response.status_code, 200)
 
     def testJob(self):
@@ -24,12 +24,12 @@ class JobTests(TestCase):
 
     def testPastJob(self):
         self.client.force_login(self.member.user)
-        response = self.client.get('/my/pastjobs')
+        response = self.client.get('/my/memberjobs')
         self.assertEqual(response.status_code, 200)
 
     def testParticipation(self):
         self.client.force_login(self.member.user)
-        response = self.client.get('/my/participation')
+        response = self.client.get('/my/areas')
         self.assertEqual(response.status_code, 200)
 
     def testTeam(self):

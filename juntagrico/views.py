@@ -189,7 +189,7 @@ def depot(request, depot_id):
 
 
 @login_required
-def participation(request):
+def areas(request):
     '''
     Details for all areas a member can participate
     '''
@@ -210,31 +210,24 @@ def participation(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'areas': my_areas,
-        'menu': {'participation': 'active'},
+        'menu': {'area': 'active'},
     })
-    return render(request, 'participation.html', renderdict)
+    return render(request, 'areas.html', renderdict)
 
 
 @login_required
-def pastjobs(request):
+def memberjobs(request):
     '''
-    All past jobs of current user
+    All jobs of current user
     '''
     member = request.user.member
-
     allassignments = AssignmentDao.assignments_for_member(member)
-    past_assignments = []
-
-    for assignment in allassignments:
-        if assignment.job.time < timezone.now():
-            past_assignments.append(assignment)
-
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'assignments': past_assignments,
-        'menu': {'participation': 'active'},
+        'assignments': allassignments,
+        'menu': {'jobs': 'active'},
     })
-    return render(request, 'pastjobs.html', renderdict)
+    return render(request, 'memberjobs.html', renderdict)
 
 
 @login_required
@@ -281,7 +274,7 @@ def area_leave(request, area_id):
 
 
 @login_required
-def assignments(request):
+def jobs(request):
     '''
     All jobs to be sorted etc.
     '''
@@ -298,7 +291,7 @@ def assignments(request):
 
 
 @login_required
-def assignments_all(request):
+def all_jobs(request):
     '''
     All jobs to be sorted etc.
     '''

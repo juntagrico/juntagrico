@@ -153,6 +153,12 @@ ul.subadmin-menu {
     padding-left: 7px;
 }
 
+ul.sub-menu {
+    font-family: "Source Sans Pro Light";
+    font-size: 14px;
+    padding-left: 7px;
+}
+
 li.inline {
     display: inline-block;
 }
