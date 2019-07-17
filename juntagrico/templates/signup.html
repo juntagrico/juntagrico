@@ -14,6 +14,7 @@
     {% config "business_regulations" as c_business_regulations %}
     {% config "gdpr_info" as c_gdpr_info %}
     {% config "share_price" as c_share_price %}
+    {% config "organisation_long_name" as c_organisation_long_name %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     {% vocabulary "share" as v_share %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -83,111 +84,111 @@
                         {{ form.last_name }}
                         {% if form.last_name.errors %}
                             <div class="form-text">
-                                Name ungültig
+                                {% trans "Name ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.first_name.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_first_name">
-                        Vorname *
+                        {% trans "Vorname" %} *
                     </label>
                     <div class="col-md-9">
                         {{ form.first_name }}
                         {% if form.first_name.errors %}
                             <div class="form-text">
-                                Vorname ungültig
+                                {% trans "Vorname ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.addr_street.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_addr_street">
-                        Strasse/Nr. *
+                        {% trans "Strasse/Nr." %} *
                     </label>
                     <div class="col-md-9">
                         {{ form.addr_street }}
                         {% if form.addr_street.errors %}
                             <div class="form-text">
-                                Strasse ungültig
+                                {% trans "Strasse ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.addr_zipcode.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_addr_zipcode">
-                        PLZ *
+                        {% trans "PLZ" %} *
                     </label>
                     <div class="col-md-9">
                         {{ form.addr_zipcode }}
                         {% if form.addr_zipcode.errors %}
                             <div class="form-text">
-                                PLZ ungültig
+                                {% trans "PLZ ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.addr_location.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_addr_location">
-                        Ort *
+                        {% trans "Ort" %} *
                     </label>
                     <div class="col-md-9">
                         {{ form.addr_location }}
                         {% if form.addr_location.errors %}
                             <div class="form-text">
-                                Ort ungültig
+                                {% trans "Ort ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.phone.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_phone">
-                        Telefon *
+                        {% trans "Telefon" %} *
                     </label>
                     <div class="col-md-9">
                         {{ form.phone }}
                         {% if form.phone.errors %}
                             <div class="form-text">
-                                Telefon ungültig
+                                {% trans "Telefon ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.mobile_phone.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_mobile_phone">
-                        Mobile &nbsp;
+                        {% trans "Mobile" %}
                     </label>
                     <div class="col-md-9">
                         {{ form.mobile_phone }}
                         {% if form.mobile_phone.errors %}
                             <div class="form-text">
-                                Mobile ungültig
+                                {% trans "Mobile ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.email.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_email">
-                        E-Mail Adresse *
+                        {% trans "E-Mail Adresse" %} *
                     </label>
                     <div class="col-md-9">
                         {{ form.email }}
                         {% if form.email.errors %}
                             <div class="form-text">
-                                E-Mail ungültig
+                                {% trans "E-Mail ungültig" %}
                             </div>
                         {% endif %}
                     </div>
                 </div>
                 <div class="form-group row {% if form.birthday.errors %}invalid{% endif %}">
                     <label class="col-md-3" for="id_birthday">
-                        Geburtstag &nbsp;
+                        {% trans "Geburtstag" %}
                     </label>
                     <div class="col-md-9">
                         {{ form.birthday }}
                         {% if form.birthday.errors %}
                             <div class="form-text">
-                                Geburtstag ungültig
+                                {% trans "Geburtstag ungültig" %}
                             </div>
                         {% endif %}
                     </div>
@@ -198,27 +199,31 @@
                             <label>
                                 {{ form.agb }}
                                 <input type="checkbox" name="agb" id="agb"{% if agb_checked %}checked="checked"{% endif %}/>
-                                Ich habe
+                                {% trans "Ich habe" %}
                                 <a target="_blank" href="{% config "bylaws"|safe %}">
-                                    die Statuten
+                                    {% trans "die Statuten" %}
                                 </a>
                                 {% if c_business_regulations.strip %}
-                                    und
+                                    {% trans "und" %}
                                     <a target="_blank" href="{{ c_business_regulations|safe }}">
-                                        das Betriebsreglement
+                                        {% trans "das Betriebsreglement" %}
                                     </a>
                                 {% endif %}
                                 {% if c_gdpr_info.strip %}
-                                    und
+                                   {% trans "und" %}
                                     <a target="_blank" href="{{ c_gdpr_info|safe }}">
-                                        die DSGVO Infos
+                                        {% trans "die DSGVO Infos" %}
                                     </a>
                                 {% endif %}
-                                gelesen und erkläre meinen Willen, "{% config "organisation_long_name" %}" beizutreten.
+                                {% blocktrans trimmed %}
+                                gelesen und erkläre meinen Willen,
+                                '{{ c_organisation_long_name }}'
+                                beizutreten.
                                 Hiermit beantrage ich meine Aufnahme.
+                                {% endblocktrans %}
                                 {% if agb_error %}
                                     <div class="alert alert-danger">
-                                        Statuten müssen angenommen werden
+                                        {% trans "Statuten müssen angenommen werden" %}
                                     </div>
                                 {% endif %}
                             </label>
@@ -227,10 +232,10 @@
                 </div>
                 {% if user_exists %}
                     <div class="alert alert-danger">
-                        Diese Email-Adresse existiert bereits im System.
+                        {% trans "Diese Email-Adresse existiert bereits im System." %}
                         <br/>
                         <a href="/my/home">
-                            Hier gehts zum Login
+                            {% trans "Hier gehts zum Login" %}
                         </a>
                     </div>
                 {% endif %}
