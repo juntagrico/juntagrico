@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-17 08:01+0200\n"
+"POT-Creation-Date: 2019-07-17 22:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -536,8 +536,8 @@ msgid "abgesagt"
 msgstr ""
 
 #: .\juntagrico\entity\jobs.py:148
-#, python-format
-msgid "Job #%s"
+#, python-brace-format
+msgid "Job {0}"
 msgstr ""
 
 #: .\juntagrico\entity\jobs.py:210
@@ -693,8 +693,8 @@ msgid "Notizen"
 msgstr ""
 
 #: .\juntagrico\entity\share.py:31
-#, python-format
-msgid "Anteilschein #%s"
+#, python-brace-format
+msgid "Anteilschein {0}"
 msgstr ""
 
 #: .\juntagrico\entity\subs.py:37
@@ -712,13 +712,13 @@ msgid "Gewünschtes Enddatum"
 msgstr ""
 
 #: .\juntagrico\entity\subs.py:47 .\juntagrico\entity\subs.py:54
-#, python-format
-msgid " Einheiten %(amount)s"
+#, python-brace-format
+msgid " Einheiten {0}"
 msgstr ""
 
 #: .\juntagrico\entity\subs.py:50
-#, python-format
-msgid "Abo (%(namelist)s) %(id)s"
+#, python-brace-format
+msgid "Abo ({0}) {0}"
 msgstr ""
 
 #: .\juntagrico\entity\subs.py:176
@@ -728,7 +728,7 @@ msgstr ""
 
 #: .\juntagrico\entity\subs.py:222
 #, python-brace-format
-msgid "Deaktivierte {0}  koennen nicht wieder aktiviert werden"
+msgid "Deaktivierte {0} koennen nicht wieder aktiviert werden"
 msgstr ""
 
 #: .\juntagrico\entity\subs.py:231
@@ -1325,7 +1325,7 @@ msgstr ""
 #: .\juntagrico\templates\createsubscription\select_shares.html:34
 #, python-format
 msgid ""
-"Um %(v_member_type)s bei  %(v_d_enriched_organisation)s zu werden, musst du "
+"Um %(v_member_type)s bei %(v_d_enriched_organisation)s zu werden, musst du "
 "mindestens 1 %(v_share)s (%(c_currency)s %(c_share_price)s) erwerben. Beim "
 "Austritt aus %(v_d_enriched_organisation)s bekommst du deine %(v_share_pl)s "
 "zurück erstattet."
@@ -2877,7 +2877,7 @@ msgstr ""
 
 #: .\juntagrico\templates\subscription.html:224
 #, python-format
-msgid "%(v_subscription)s  ändern"
+msgid "%(v_subscription)s ändern"
 msgstr ""
 
 #: .\juntagrico\templates\subscription.html:227
@@ -2990,12 +2990,12 @@ msgstr ""
 
 #: .\juntagrico\templates\welcome.html:15
 #, python-format
-msgid " Du bist jetzt %(v_member_type)s bei %(v_d_enriched_organisation)s."
+msgid "Du bist jetzt %(v_member_type)s bei %(v_d_enriched_organisation)s."
 msgstr ""
 
 #: .\juntagrico\templates\welcome.html:17
 #, python-format
-msgid " Du wurdest als %(v_subscription)s-Bezieher zur Warteliste hinzugefügt."
+msgid "Du wurdest als %(v_subscription)s-Bezieher zur Warteliste hinzugefügt."
 msgstr ""
 
 #: .\juntagrico\templates\welcome.html:19
@@ -3033,7 +3033,7 @@ msgid "Einsatz"
 msgstr ""
 
 #: .\juntagrico\util\jobs.py:15
-msgid "Dreivierte"
+msgid "Dreiviertel"
 msgstr ""
 
 #: .\juntagrico\util\jobs.py:16

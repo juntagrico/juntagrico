@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-17 08:01+0200\n"
+"POT-Creation-Date: 2019-07-17 22:42+0200\n"
 "PO-Revision-Date: 2019-07-17 20:41+0000\n"
 "Last-Translator: Weblate Admin <admin@admin.admin>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -537,9 +537,9 @@ msgid "abgesagt"
 msgstr "canceled"
 
 #: .\juntagrico\entity\jobs.py:148
-#, python-format
-msgid "Job #%s"
-msgstr "Job #% s"
+#, python-brace-format
+msgid "Job {0}"
+msgstr ""
 
 #: .\juntagrico\entity\jobs.py:210
 msgid "Abgesagte jobs koennen nicht wieder aktiviert werden"
@@ -694,9 +694,10 @@ msgid "Notizen"
 msgstr "Notes"
 
 #: .\juntagrico\entity\share.py:31
-#, python-format
-msgid "Anteilschein #%s"
-msgstr "Unit certificate #% s"
+#, fuzzy, python-brace-format
+#| msgid "Anteilschein"
+msgid "Anteilschein {0}"
+msgstr "Share"
 
 #: .\juntagrico\entity\subs.py:37
 msgid "Erstellungsdatum"
@@ -713,14 +714,15 @@ msgid "Gewünschtes Enddatum"
 msgstr "Desired end date"
 
 #: .\juntagrico\entity\subs.py:47 .\juntagrico\entity\subs.py:54
-#, python-format
-msgid " Einheiten %(amount)s"
-msgstr " Units %(amount)s"
+#, fuzzy, python-brace-format
+#| msgid "Einheiten"
+msgid " Einheiten {0}"
+msgstr "Units"
 
 #: .\juntagrico\entity\subs.py:50
-#, python-format
-msgid "Abo (%(namelist)s) %(id)s"
-msgstr "Subscription (% (namelist) s)% (id) s"
+#, python-brace-format
+msgid "Abo ({0}) {0}"
+msgstr ""
 
 #: .\juntagrico\entity\subs.py:176
 #, python-brace-format
@@ -728,8 +730,9 @@ msgid "kein/e/n {0}"
 msgstr "no {0}"
 
 #: .\juntagrico\entity\subs.py:222
-#, python-brace-format
-msgid "Deaktivierte {0}  koennen nicht wieder aktiviert werden"
+#, fuzzy, python-brace-format
+#| msgid "Deaktivierte {0}  koennen nicht wieder aktiviert werden"
+msgid "Deaktivierte {0} koennen nicht wieder aktiviert werden"
 msgstr "Deactivated {0} can not be reactivated"
 
 #: .\juntagrico\entity\subs.py:231
@@ -1349,9 +1352,14 @@ msgid "Infos"
 msgstr "Information"
 
 #: .\juntagrico\templates\createsubscription\select_shares.html:34
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Um %(v_member_type)s bei  %(v_d_enriched_organisation)s zu werden, musst "
+#| "du mindestens 1 %(v_share)s (%(c_currency)s %(c_share_price)s) erwerben. "
+#| "Beim Austritt aus %(v_d_enriched_organisation)s bekommst du deine "
+#| "%(v_share_pl)s zurück erstattet."
 msgid ""
-"Um %(v_member_type)s bei  %(v_d_enriched_organisation)s zu werden, musst du "
+"Um %(v_member_type)s bei %(v_d_enriched_organisation)s zu werden, musst du "
 "mindestens 1 %(v_share)s (%(c_currency)s %(c_share_price)s) erwerben. Beim "
 "Austritt aus %(v_d_enriched_organisation)s bekommst du deine %(v_share_pl)s "
 "zurück erstattet."
@@ -1579,7 +1587,8 @@ msgstr "New %(v_depot)s"
 #: .\juntagrico\templates\depot_change.html:54
 #, python-format
 msgid "Wähle 1 %(v_depot)s aus als zukünftiger %(v_subscription)s-Abholort. "
-msgstr "Select 1 %(v_depot)s as the future %(v_subscription)s pickup location. "
+msgstr ""
+"Select 1 %(v_depot)s as the future %(v_subscription)s pickup location. "
 
 #: .\juntagrico\templates\depot_change.html:63
 #, python-format
@@ -2014,8 +2023,8 @@ msgid ""
 "das System genau abrechnen kann."
 msgstr ""
 "As long as your %(v_share)s have not been paid you are no %(v_member_type)s "
-"of %(v_d_enriched_organisation)s. The amount can be paid in partial payments."
-"\n"
+"of %(v_d_enriched_organisation)s. The amount can be paid in partial "
+"payments.\n"
 "For partial payments please always note the reference number, so that the "
 "system can charge exactly."
 
@@ -2099,8 +2108,8 @@ msgid ""
 "Du hast dich für den %(c_organisation_name)s-Arbeitseinsatz \"%(jtg)s\" um "
 "%(jt)s-%(jet)s eingeschrieben."
 msgstr ""
-"You have enrolled for the %(c_organisation_name)s job \"%(jtg)s\" at %(jt)s -"
-" %(jet)s."
+"You have enrolled for the %(c_organisation_name)s job \"%(jtg)s\" at %(jt)s "
+"- %(jet)s."
 
 #: .\juntagrico\templates\mails\job_time_changed_mail.txt:8
 #, python-format
@@ -2198,8 +2207,8 @@ msgid ""
 "(dies ist vor allem wichtig wenn du diese/n/s %(v_share)s für jemand anderen "
 "bezahlst)"
 msgstr ""
-"To facilitate the work of accounting please pay only 1 %(v_share)s at a time."
-"\n"
+"To facilitate the work of accounting please pay only 1 %(v_share)s at a "
+"time.\n"
 "In addition, enter the system number in the subject and the email address of "
 "the holder of the %(v_share)s\n"
 "(This is especially important if you are paying these %(v_share)s for "
@@ -2993,8 +3002,9 @@ msgid "Die Änderung tritt voraussichtlich am %(nes)s in Kraft"
 msgstr "The change is expected to come into effect on %(nes)s"
 
 #: .\juntagrico\templates\subscription.html:224
-#, python-format
-msgid "%(v_subscription)s  ändern"
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s  ändern"
+msgid "%(v_subscription)s ändern"
 msgstr "Change %(v_subscription)s"
 
 #: .\juntagrico\templates\subscription.html:227
@@ -3113,13 +3123,16 @@ msgid "Herzlich willkommen bei %(v_d_enriched_organisation)s!"
 msgstr "Welcome to %(v_d_enriched_organisation)s!"
 
 #: .\juntagrico\templates\welcome.html:15
-#, python-format
-msgid " Du bist jetzt %(v_member_type)s bei %(v_d_enriched_organisation)s."
+#, fuzzy, python-format
+#| msgid " Du bist jetzt %(v_member_type)s bei %(v_d_enriched_organisation)s."
+msgid "Du bist jetzt %(v_member_type)s bei %(v_d_enriched_organisation)s."
 msgstr " You are now %(v_member_type)s at %(v_d_enriched_organisation)s."
 
 #: .\juntagrico\templates\welcome.html:17
-#, python-format
-msgid " Du wurdest als %(v_subscription)s-Bezieher zur Warteliste hinzugefügt."
+#, fuzzy, python-format
+#| msgid ""
+#| " Du wurdest als %(v_subscription)s-Bezieher zur Warteliste hinzugefügt."
+msgid "Du wurdest als %(v_subscription)s-Bezieher zur Warteliste hinzugefügt."
 msgstr " You have been added to the waiting list as a subscriber."
 
 #: .\juntagrico\templates\welcome.html:19
@@ -3159,7 +3172,9 @@ msgid "Einsatz"
 msgstr "Job"
 
 #: .\juntagrico\util\jobs.py:15
-msgid "Dreivierte"
+#, fuzzy
+#| msgid "Dreivierte"
+msgid "Dreiviertel"
 msgstr "three quarters"
 
 #: .\juntagrico\util\jobs.py:16
@@ -3286,6 +3301,18 @@ msgstr "- No activity area -"
 #: .\juntagrico\views_admin.py:291
 msgid "Kein Depot definiert"
 msgstr "No depot defined"
+
+#~ msgid "Job #%s"
+#~ msgstr "Job #% s"
+
+#~ msgid "Anteilschein #%s"
+#~ msgstr "Unit certificate #% s"
+
+#~ msgid " Einheiten %(amount)s"
+#~ msgstr " Units %(amount)s"
+
+#~ msgid "Abo (%(namelist)s) %(id)s"
+#~ msgstr "Subscription (% (namelist) s)% (id) s"
 
 #~ msgid "1 Einheit"
 #~ msgstr "1 unit"
