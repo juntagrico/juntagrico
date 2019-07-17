@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 22:42+0200\n"
-"PO-Revision-Date: 2019-07-17 20:41+0000\n"
+"PO-Revision-Date: 2019-07-17 20:48+0000\n"
 "Last-Translator: Weblate Admin <admin@admin.admin>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
 "juntagrico/juntagrico/en/>\n"
@@ -539,7 +539,7 @@ msgstr "canceled"
 #: .\juntagrico\entity\jobs.py:148
 #, python-brace-format
 msgid "Job {0}"
-msgstr ""
+msgstr "Job {0}"
 
 #: .\juntagrico\entity\jobs.py:210
 msgid "Abgesagte jobs koennen nicht wieder aktiviert werden"
@@ -694,10 +694,9 @@ msgid "Notizen"
 msgstr "Notes"
 
 #: .\juntagrico\entity\share.py:31
-#, fuzzy, python-brace-format
-#| msgid "Anteilschein"
+#, python-brace-format
 msgid "Anteilschein {0}"
-msgstr "Share"
+msgstr "Share {0}"
 
 #: .\juntagrico\entity\subs.py:37
 msgid "Erstellungsdatum"
@@ -714,15 +713,14 @@ msgid "Gewünschtes Enddatum"
 msgstr "Desired end date"
 
 #: .\juntagrico\entity\subs.py:47 .\juntagrico\entity\subs.py:54
-#, fuzzy, python-brace-format
-#| msgid "Einheiten"
+#, python-brace-format
 msgid " Einheiten {0}"
-msgstr "Units"
+msgstr " Units {0}"
 
 #: .\juntagrico\entity\subs.py:50
 #, python-brace-format
 msgid "Abo ({0}) {0}"
-msgstr ""
+msgstr "Subscription ({0}) {0}"
 
 #: .\juntagrico\entity\subs.py:176
 #, python-brace-format
@@ -730,8 +728,7 @@ msgid "kein/e/n {0}"
 msgstr "no {0}"
 
 #: .\juntagrico\entity\subs.py:222
-#, fuzzy, python-brace-format
-#| msgid "Deaktivierte {0}  koennen nicht wieder aktiviert werden"
+#, python-brace-format
 msgid "Deaktivierte {0} koennen nicht wieder aktiviert werden"
 msgstr "Deactivated {0} can not be reactivated"
 
@@ -1352,12 +1349,7 @@ msgid "Infos"
 msgstr "Information"
 
 #: .\juntagrico\templates\createsubscription\select_shares.html:34
-#, fuzzy, python-format
-#| msgid ""
-#| "Um %(v_member_type)s bei  %(v_d_enriched_organisation)s zu werden, musst "
-#| "du mindestens 1 %(v_share)s (%(c_currency)s %(c_share_price)s) erwerben. "
-#| "Beim Austritt aus %(v_d_enriched_organisation)s bekommst du deine "
-#| "%(v_share_pl)s zurück erstattet."
+#, python-format
 msgid ""
 "Um %(v_member_type)s bei %(v_d_enriched_organisation)s zu werden, musst du "
 "mindestens 1 %(v_share)s (%(c_currency)s %(c_share_price)s) erwerben. Beim "
@@ -1366,8 +1358,7 @@ msgid ""
 msgstr ""
 "To become %(v_member_type)s at %(v_d_enriched_organisation)s, you must "
 "purchase at least 1 %(v_share)s (%(c_currency)s %(c_share_price)s). When "
-"leaving %(v_d_enriched_organisation)s you will get back your %(v_share_pl)s "
-"money."
+"leaving %(v_d_enriched_organisation)s the %(v_share_pl)s will be refunded."
 
 #: .\juntagrico\templates\createsubscription\select_shares.html:41
 #, python-format
@@ -2401,7 +2392,7 @@ msgstr "Email to this"
 #: .\juntagrico\templates\menu\admin_menu.html:87
 #, python-format
 msgid "%(v_share_pl)s Kündigungsliste"
-msgstr "Extra subscription cancelation list"
+msgstr "%(v_share_pl)s cancelation list"
 
 #: .\juntagrico\templates\management_lists\share_canceledlist.html:14
 msgid "Zahlungsdatei"
@@ -3002,8 +2993,7 @@ msgid "Die Änderung tritt voraussichtlich am %(nes)s in Kraft"
 msgstr "The change is expected to come into effect on %(nes)s"
 
 #: .\juntagrico\templates\subscription.html:224
-#, fuzzy, python-format
-#| msgid "%(v_subscription)s  ändern"
+#, python-format
 msgid "%(v_subscription)s ändern"
 msgstr "Change %(v_subscription)s"
 
@@ -3123,17 +3113,14 @@ msgid "Herzlich willkommen bei %(v_d_enriched_organisation)s!"
 msgstr "Welcome to %(v_d_enriched_organisation)s!"
 
 #: .\juntagrico\templates\welcome.html:15
-#, fuzzy, python-format
-#| msgid " Du bist jetzt %(v_member_type)s bei %(v_d_enriched_organisation)s."
+#, python-format
 msgid "Du bist jetzt %(v_member_type)s bei %(v_d_enriched_organisation)s."
-msgstr " You are now %(v_member_type)s at %(v_d_enriched_organisation)s."
+msgstr "You are now %(v_member_type)s at %(v_d_enriched_organisation)s."
 
 #: .\juntagrico\templates\welcome.html:17
-#, fuzzy, python-format
-#| msgid ""
-#| " Du wurdest als %(v_subscription)s-Bezieher zur Warteliste hinzugefügt."
+#, python-format
 msgid "Du wurdest als %(v_subscription)s-Bezieher zur Warteliste hinzugefügt."
-msgstr " You have been added to the waiting list as a subscriber."
+msgstr "You have been added to the waiting list as a subscriber."
 
 #: .\juntagrico\templates\welcome.html:19
 msgid ""
@@ -3172,8 +3159,6 @@ msgid "Einsatz"
 msgstr "Job"
 
 #: .\juntagrico\util\jobs.py:15
-#, fuzzy
-#| msgid "Dreivierte"
 msgid "Dreiviertel"
 msgstr "three quarters"
 
