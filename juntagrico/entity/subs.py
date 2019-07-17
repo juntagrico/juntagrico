@@ -44,14 +44,14 @@ class Subscription(Billable):
     _old_canceled = None
 
     def __str__(self):
-        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
+        namelist = [_(' Einheiten {0}').format(self.size)]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
-        return _('Abo (%(namelist)s) %(id)s') % {'namelist': ' + '.join(namelist), 'id': self.id}
+        return _('Abo ({0}) {0}').format(' + '.join(namelist), self.id)
 
     @property
     def overview(self):
-        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
+        namelist = [_(' Einheiten {0}').format(self.size)]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
@@ -219,7 +219,7 @@ class Subscription(Billable):
 
     def clean(self):
         if self._old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(_('Deaktivierte {0}  koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
+            raise ValidationError(_('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
                                   code='invalid')
 
     @classmethod

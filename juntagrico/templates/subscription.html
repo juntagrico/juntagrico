@@ -221,7 +221,7 @@
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
                     <a href="{% if primary %}/my/subscription/change/overview/{{ subscription.id }}/{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
-                        {% blocktrans %}{{ v_subscription }}  ändern{% endblocktrans %}
+                        {% blocktrans %}{{ v_subscription }} ändern{% endblocktrans %}
                     </a>
                     {% if not primary %}
                         {% trans "Nur der Hauptbezieher kann Änderungen durchführen." %}

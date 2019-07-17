@@ -28,7 +28,7 @@ class Share(Billable):
             bill_share(instance)
 
     def __str__(self):
-        return _('Anteilschein #%s') % self.id
+        return _('Anteilschein {0}').format(self.id)
 
     class Meta:
         verbose_name = Config.vocabulary('share')

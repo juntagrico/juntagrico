@@ -12,7 +12,7 @@ def get_status_image(percent=0):
 def get_status_image_text(percent=0):
     texts = {
         100: _('Fertig'),
-        75: _('Dreivierte'),
+        75: _('Dreiviertel'),
         50: _('Halb'),
         25: _('Angefangen'),
         0: _('Nix')
