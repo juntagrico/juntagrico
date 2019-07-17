@@ -67,18 +67,11 @@ def add_subscription_to_member(member, subscription):
 
 
 def replace_subscription_types(subscription, selected_types):
-    """
-    Deletes all types of a subscription and replace them with the types and amounts given by selected_types
-    :param subscription: The Subscription object whose types should be replaced
-    :param selected_types: dictionary of subscription types as key and amount as value
-    :return: None
-    """
     # always replace future sub types
     through_classes = [TFSST]
     # replace the current sub types as well, if the subscription is not active yet
     if subscription.state == 'waiting':
         through_classes.append(TSST)
-
     for through_class in through_classes:
         through_class.objects.filter(subscription=subscription).delete()
         through_class.objects.bulk_create(
