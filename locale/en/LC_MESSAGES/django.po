@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 08:01+0200\n"
-"PO-Revision-Date: 2019-02-28 14:49+0000\n"
+"PO-Revision-Date: 2019-07-17 08:23+0000\n"
 "Last-Translator: Weblate Admin <admin@admin.admin>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
 "juntagrico/juntagrico/en/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: .\juntagrico\admins\forms\job_copy_form.py:18
 msgid "Wochentage"
-msgstr "weekdays"
+msgstr "Weekdays"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:21
 #: .\juntagrico\templates\mails\job_canceled_mail.txt:14
@@ -33,11 +33,11 @@ msgstr "Time"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:24
 msgid "Anfangsdatum"
-msgstr "start date"
+msgstr "Start date"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:26
 msgid "Enddatum"
-msgstr "end date"
+msgstr "End date"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:29
 msgid "jede Woche"
@@ -64,7 +64,7 @@ msgstr "Future {0}"
 #: .\juntagrico\admins\inlines\subscription_type_inlines.py:18
 #, python-brace-format
 msgid "Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}"
-msgstr ""
+msgstr "Not enough {0} available. Avaulable {1}. Required {2}"
 
 #: .\juntagrico\admins\inlines\subscription_type_inlines.py:27
 #: .\juntagrico\entity\subtypes.py:77
@@ -102,43 +102,43 @@ msgstr "Copy jobs"
 
 #: .\juntagrico\admins\job_type_admin.py:35
 msgid "Jobart in EinzelJobs konvertieren"
-msgstr "Convert job type into single jobs"
+msgstr "Convert job type into one time jobs"
 
 #: .\juntagrico\admins\one_time_job_admin.py:41
 msgid "EinzelJobs in Jobart konvertieren"
-msgstr "Convert individual jobs into job type"
+msgstr "Convert one time jobs into job type"
 
 #: .\juntagrico\config.py:15 .\juntagrico\config.py:26
 msgid "Mitglied"
-msgstr "member"
+msgstr "Member"
 
 #: .\juntagrico\config.py:16 .\juntagrico\config.py:27
 msgid "Mitglieder"
-msgstr "members"
+msgstr "Members"
 
 #: .\juntagrico\config.py:17
 msgid "Arbeitseinsatz"
-msgstr "labor input"
+msgstr "Assignment"
 
 #: .\juntagrico\config.py:18
 #: .\juntagrico\templates\snippets\snippet_subscription_selection.html:49
 msgid "Arbeitseinsätze"
-msgstr "work assignments"
+msgstr "Assignments"
 
 #: .\juntagrico\config.py:19
 msgid "Anteilschein"
-msgstr "share certificate"
+msgstr "Share"
 
 #: .\juntagrico\config.py:20
 #: .\juntagrico\templates\createsubscription\summary.html:82
 msgid "Anteilscheine"
-msgstr "shares"
+msgstr "Shares"
 
 #: .\juntagrico\config.py:21 .\juntagrico\templates\extra_change.html:19
 #: .\juntagrico\templates\members.html:57
 #: .\juntagrico\templates\members.html:90
 msgid "Abo"
-msgstr "SUBSCRIPTION"
+msgstr "Subscription"
 
 #: .\juntagrico\config.py:22
 msgid "Abos"
@@ -146,25 +146,25 @@ msgstr "Subscriptions"
 
 #: .\juntagrico\config.py:23
 msgid "Mitabonnent"
-msgstr "Mitabonnent"
+msgstr "Subscription comember"
 
 #: .\juntagrico\config.py:24
 msgid "Mitabonnenten"
-msgstr "Mitabonnenten"
+msgstr "Subscription comembers"
 
 #: .\juntagrico\config.py:25
 msgid "Betriebsbeitrag"
-msgstr "operating contribution"
+msgstr "Operation contribution"
 
 #: .\juntagrico\config.py:28
 #: .\juntagrico\templates\createsubscription\summary.html:49
 #: .\juntagrico\views_admin.py:277
 msgid "Depot"
-msgstr "depot"
+msgstr "Depot"
 
 #: .\juntagrico\config.py:29
 msgid "Depots"
-msgstr "depots"
+msgstr "Depots"
 
 #: .\juntagrico\entity\billing.py:16
 msgid "Verrechenbare Einheit"
@@ -181,45 +181,45 @@ msgstr "paid"
 #: .\juntagrico\entity\billing.py:29 .\juntagrico\entity\extrasubs.py:62
 #: .\juntagrico\entity\subs.py:31
 msgid "Aktivierungssdatum"
-msgstr "Aktivierungssdatum"
+msgstr "Activation date"
 
 #: .\juntagrico\entity\billing.py:31
 #: .\juntagrico\templates\mails\bill_extrasub.txt:15
 #: .\juntagrico\templates\mails\bill_share.txt:15
 #: .\juntagrico\templates\mails\bill_sub.txt:15
 msgid "Referenznummer"
-msgstr "reference"
+msgstr "Reference number"
 
 #: .\juntagrico\entity\billing.py:32 .\juntagrico\entity\billing.py:50
 #: .\juntagrico\templates\mails\bill_extrasub.txt:14
 #: .\juntagrico\templates\mails\bill_share.txt:14
 #: .\juntagrico\templates\mails\bill_sub.txt:14
 msgid "Betrag"
-msgstr "amount"
+msgstr "Amount"
 
 #: .\juntagrico\entity\billing.py:38
 msgid "Rechnung"
-msgstr "invoice"
+msgstr "Invoice"
 
 #: .\juntagrico\entity\billing.py:39
 msgid "Rechnungen"
-msgstr "bills"
+msgstr "Bills"
 
 #: .\juntagrico\entity\billing.py:49
 msgid "Bezahldatum"
-msgstr "payment date"
+msgstr "Payment date"
 
 #: .\juntagrico\entity\billing.py:56
 msgid "Zahlung"
-msgstr "payment"
+msgstr "Payment"
 
 #: .\juntagrico\entity\billing.py:57
 msgid "Zahlungen"
-msgstr "payments"
+msgstr "Payments"
 
 #: .\juntagrico\entity\billing.py:67 .\juntagrico\entity\subtypes.py:62
 msgid "Preis"
-msgstr "price"
+msgstr "Price"
 
 #: .\juntagrico\entity\billing.py:68
 msgid "Start Tag"
@@ -251,15 +251,15 @@ msgstr "Code for partial billing"
 
 #: .\juntagrico\entity\billing.py:125
 msgid "Verechnungsperdiode Zusatzabos"
-msgstr "Compensation period additional subscription"
+msgstr "Billing period extra subscription"
 
 #: .\juntagrico\entity\billing.py:126
 msgid "Verechnungsperdioden Zusatzabos"
-msgstr "Compensation Periods Additional Subscriptions"
+msgstr "Billing periods extra subscriptions"
 
 #: .\juntagrico\entity\delivery.py:13
 msgid "Lieferdatum"
-msgstr "delivery date"
+msgstr "Delivery date"
 
 #: .\juntagrico\entity\delivery.py:15 .\juntagrico\entity\subtypes.py:42
 #, python-brace-format
@@ -268,12 +268,12 @@ msgstr "{0} -Size"
 
 #: .\juntagrico\entity\delivery.py:30 .\juntagrico\entity\delivery.py:36
 msgid "Lieferung"
-msgstr "delivery"
+msgstr "Delivery"
 
 #: .\juntagrico\entity\delivery.py:31
 #: .\juntagrico\templates\menu\user_menu.html:37
 msgid "Lieferungen"
-msgstr "deliveries"
+msgstr "Deliveries"
 
 #: .\juntagrico\entity\delivery.py:39 .\juntagrico\entity\extrasubs.py:15
 #: .\juntagrico\entity\extrasubs.py:37 .\juntagrico\entity\jobs.py:17
@@ -289,25 +289,25 @@ msgstr "deliveries"
 #: .\juntagrico\templates\members.html:31
 #: .\juntagrico\templates\members.html:64 .\juntagrico\views_admin.py:272
 msgid "Name"
-msgstr "Surname"
+msgstr "Name"
 
 #: .\juntagrico\entity\delivery.py:40
 #: .\juntagrico\templates\snippets\snippet_delivery.html:25
 msgid "Menge"
-msgstr "amount"
+msgstr "Amount"
 
 #: .\juntagrico\entity\delivery.py:41
 #: .\juntagrico\templates\snippets\snippet_delivery.html:28
 msgid "Kommentar"
-msgstr "comment"
+msgstr "Comment"
 
 #: .\juntagrico\entity\delivery.py:45
 msgid "Lieferobjekt"
-msgstr "deliverable"
+msgstr "Deliverable"
 
 #: .\juntagrico\entity\delivery.py:46
 msgid "Lieferobjekte"
-msgstr "deliverables"
+msgstr "Deliverables"
 
 #: .\juntagrico\entity\depot.py:21
 msgid "Sortier-Code"
@@ -321,11 +321,11 @@ msgstr "{0} name"
 #: .\juntagrico\entity\depot.py:25 .\juntagrico\templates\depot.html:22
 #: .\juntagrico\templates\mails\depot_changed_mail.txt:15
 msgid "Wochentag"
-msgstr "weekday"
+msgstr "Weekday"
 
 #: .\juntagrico\entity\depot.py:26
 msgid "Kapazität"
-msgstr "capacity"
+msgstr "Capacity"
 
 #: .\juntagrico\entity\depot.py:27
 msgid "Latitude"
@@ -352,7 +352,7 @@ msgstr "Postcode"
 #: .\juntagrico\templates\mails\job_time_changed_mail.txt:17
 #: .\juntagrico\templates\signup.html:133
 msgid "Ort"
-msgstr "place"
+msgstr "Place"
 
 #: .\juntagrico\entity\depot.py:37 .\juntagrico\entity\extrasubs.py:18
 #: .\juntagrico\entity\extrasubs.py:39 .\juntagrico\entity\jobs.py:19
@@ -362,7 +362,7 @@ msgstr "place"
 #: .\juntagrico\templates\job.html:95
 #: .\juntagrico\templates\mails\depot_changed_mail.txt:17
 msgid "Beschreibung"
-msgstr "description"
+msgstr "Description"
 
 #: .\juntagrico\entity\depot.py:59
 msgid "Unbekannt"
@@ -387,11 +387,11 @@ msgstr "Visible"
 
 #: .\juntagrico\entity\extrasubs.py:29
 msgid "Zusatz-Abo-Typ"
-msgstr "Additional subscription type"
+msgstr "Extra subscription type"
 
 #: .\juntagrico\entity\extrasubs.py:30
 msgid "Zusatz-Abo-Typen"
-msgstr "Additional subscription types"
+msgstr "Extra subscription types"
 
 #: .\juntagrico\entity\extrasubs.py:40 .\juntagrico\entity\listmessage.py:14
 msgid "Nummer zum Sortieren"
@@ -399,11 +399,11 @@ msgstr "Number to sort"
 
 #: .\juntagrico\entity\extrasubs.py:47
 msgid "Zusatz-Abo-Kategorie"
-msgstr "Additional subscription Category"
+msgstr "Extra subscription Category"
 
 #: .\juntagrico\entity\extrasubs.py:48
 msgid "Zusatz-Abo-Kategorien"
-msgstr "Additional subscription categories"
+msgstr "Extra subscription categories"
 
 #: .\juntagrico\entity\extrasubs.py:60 .\juntagrico\entity\member.py:46
 #: .\juntagrico\entity\subs.py:29 .\juntagrico\templates\subscription.html:70
@@ -412,7 +412,7 @@ msgstr "terminated"
 
 #: .\juntagrico\entity\extrasubs.py:64 .\juntagrico\entity\subs.py:33
 msgid "Deaktivierungssdatum"
-msgstr "Deaktivierungssdatum"
+msgstr "Deactivation date"
 
 #: .\juntagrico\entity\extrasubs.py:80
 msgid "wartend"
@@ -433,19 +433,19 @@ msgstr "inactive-canceled"
 
 #: .\juntagrico\entity\extrasubs.py:109
 msgid "Zusatz-Abo"
-msgstr "Additional SUBSCRIPTION"
+msgstr "Extra subscription"
 
 #: .\juntagrico\entity\extrasubs.py:110
 #: .\juntagrico\templates\subscription_change.html:69
 msgid "Zusatz-Abos"
-msgstr "Additional subscriptions"
+msgstr "Extra subscriptions"
 
 #: .\juntagrico\entity\jobs.py:21 .\juntagrico\entity\jobs.py:291
 #: .\juntagrico\templates\snippets\snippet_jobs.html:37
 #: .\juntagrico\templates\widgets\assignements.html:12
 #: .\juntagrico\views_admin.py:275
 msgid "Kernbereich"
-msgstr "core area"
+msgstr "Core area"
 
 #: .\juntagrico\entity\jobs.py:22
 msgid "versteckt"
@@ -453,15 +453,15 @@ msgstr "hidden"
 
 #: .\juntagrico\entity\jobs.py:27
 msgid "Koordinator Tel Nr Veröffentlichen"
-msgstr "Coordinator Tel No Publish"
+msgstr "Publish Coordinator Tel No"
 
 #: .\juntagrico\entity\jobs.py:41
 msgid "Tätigkeitsbereich"
-msgstr "Field of activity"
+msgstr "Activity area"
 
 #: .\juntagrico\entity\jobs.py:42 .\juntagrico\templates\menu\user_menu.html:43
 msgid "Tätigkeitsbereiche"
-msgstr "Practice areas"
+msgstr "Activity areas"
 
 #: .\juntagrico\entity\jobs.py:44
 msgid "Benutzer ist TätigkeitsbereichskoordinatorIn"
@@ -477,11 +477,11 @@ msgstr "Icon for extra"
 
 #: .\juntagrico\entity\jobs.py:58
 msgid "JobExtraTyp"
-msgstr "Job type Extra"
+msgstr "Job type extra"
 
 #: .\juntagrico\entity\jobs.py:59
 msgid "JobExtraTypen"
-msgstr "Job types Extra"
+msgstr "Job type extras"
 
 #: .\juntagrico\entity\jobs.py:76
 msgid "jeder kann Extra auswählen"
@@ -489,15 +489,15 @@ msgstr "everyone can choose extra"
 
 #: .\juntagrico\entity\jobs.py:89
 msgid "JobExtra"
-msgstr "extra job"
+msgstr "Job extra"
 
 #: .\juntagrico\entity\jobs.py:90
 msgid "JobExtras"
-msgstr "job Tools"
+msgstr "Job extras"
 
 #: .\juntagrico\entity\jobs.py:99
 msgid "Angezeigter Name"
-msgstr "Shown name"
+msgstr "Display name"
 
 #: .\juntagrico\entity\jobs.py:103
 msgid "Dauer in Stunden"
@@ -505,11 +505,11 @@ msgstr "Duration in hours"
 
 #: .\juntagrico\entity\jobs.py:116
 msgid "AbstractJobart"
-msgstr "AbstractJobart"
+msgstr "AbstractJobType"
 
 #: .\juntagrico\entity\jobs.py:117
 msgid "AbstractJobarten"
-msgstr "Abstract Job Types"
+msgstr "AbstractJobTypes"
 
 #: .\juntagrico\entity\jobs.py:127
 msgid "Jobart"
@@ -517,16 +517,16 @@ msgstr "Jobart"
 
 #: .\juntagrico\entity\jobs.py:128
 msgid "Jobarten"
-msgstr "job types"
+msgstr "Jobtypes"
 
 #: .\juntagrico\entity\jobs.py:132
 msgid "Plaetze"
-msgstr "athletic fields"
+msgstr "Slots"
 
 #: .\juntagrico\entity\jobs.py:135
 #, python-brace-format
 msgid "{0}) vielfaches"
-msgstr "{0}) many times"
+msgstr "{0}) multiplication"
 
 #: .\juntagrico\entity\jobs.py:138
 msgid "Reminder verschickt"
@@ -534,7 +534,7 @@ msgstr "Reminder sent"
 
 #: .\juntagrico\entity\jobs.py:139
 msgid "abgesagt"
-msgstr "called off"
+msgstr "canceled"
 
 #: .\juntagrico\entity\jobs.py:148
 #, python-format
@@ -551,13 +551,11 @@ msgstr "Abstract job"
 
 #: .\juntagrico\entity\jobs.py:240
 msgid "AbstractJobs"
-msgstr "Abstract Jobs"
+msgstr "Abstract jobs"
 
 #: .\juntagrico\entity\jobs.py:241
-#, fuzzy
-#| msgid "Auch vergangene Jobs anzeigen"
 msgid "kann vergangene Jobs editieren"
-msgstr "Also show past jobs"
+msgstr "can edit past jobs"
 
 #: .\juntagrico\entity\jobs.py:256
 #: .\juntagrico\templates\mails\job_canceled_mail.txt:13
@@ -566,7 +564,7 @@ msgstr "Also show past jobs"
 #: .\juntagrico\templates\mails\job_time_changed_mail.txt:14
 #: .\juntagrico\templates\snippets\snippet_jobs.html:17
 msgid "Job"
-msgstr "job"
+msgstr "Job"
 
 #: .\juntagrico\entity\jobs.py:257
 msgid "Jobs"
@@ -574,35 +572,35 @@ msgstr "Jobs"
 
 #: .\juntagrico\entity\jobs.py:281
 msgid "EinzelJob"
-msgstr "individual job"
+msgstr "One time job"
 
 #: .\juntagrico\entity\jobs.py:282
 msgid "EinzelJobs"
-msgstr "Single Jobs"
+msgstr "One time Jobs"
 
 #: .\juntagrico\entity\jobs.py:294
 msgid "Wert"
-msgstr "value"
+msgstr "Value"
 
 #: .\juntagrico\entity\listmessage.py:12
 msgid "Nachricht"
-msgstr "message"
+msgstr "Message"
 
 #: .\juntagrico\entity\listmessage.py:20
 msgid "Depot Listen Nachricht"
-msgstr "Depot lists message"
+msgstr "Depot list message"
 
 #: .\juntagrico\entity\listmessage.py:21
 msgid "Depot Listen Nachrichten"
-msgstr "Depot lists messages"
+msgstr "Depot list messages"
 
 #: .\juntagrico\entity\mailing.py:13
 msgid "Template"
-msgstr "template"
+msgstr "Template"
 
 #: .\juntagrico\entity\mailing.py:14
 msgid "Code"
-msgstr "code"
+msgstr "Code"
 
 #: .\juntagrico\entity\mailing.py:20
 msgid "MailTemplate"
@@ -610,7 +608,7 @@ msgstr "MailTemplate"
 
 #: .\juntagrico\entity\mailing.py:21
 msgid "MailTemplates"
-msgstr "mail templates"
+msgstr "MailTemplates"
 
 #: .\juntagrico\entity\mailing.py:23
 msgid "Benutzer kann Templates laden"
@@ -620,7 +618,7 @@ msgstr "User can load templates"
 #: .\juntagrico\templates\createsubscription\add_member_cs.html:56
 #: .\juntagrico\templates\profile.html:26 .\juntagrico\templates\signup.html:94
 msgid "Vorname"
-msgstr "first given name"
+msgstr "First name"
 
 #: .\juntagrico\entity\member.py:22 .\juntagrico\templates\profile.html:39
 msgid "Nachname"
@@ -638,7 +636,7 @@ msgstr "Phone number"
 #: .\juntagrico\templates\members.html:87
 #: .\juntagrico\templates\signup.html:159 .\juntagrico\views_admin.py:280
 msgid "Mobile"
-msgstr "mobile"
+msgstr "Mobile"
 
 #: .\juntagrico\entity\member.py:42
 msgid "bestätigt"
@@ -650,7 +648,7 @@ msgstr "Contactable from the job page"
 
 #: .\juntagrico\entity\member.py:48 .\juntagrico\entity\subs.py:35
 msgid "Kündigüngssdatum"
-msgstr "Kündigüngssdatum"
+msgstr "Termination date"
 
 #: .\juntagrico\entity\member.py:49
 msgid "inaktiv"
@@ -679,7 +677,7 @@ msgstr "Canceled on"
 
 #: .\juntagrico\entity\share.py:17
 msgid "Gekündigt auf"
-msgstr "Canceled"
+msgstr "Canceled to"
 
 #: .\juntagrico\entity\share.py:19
 msgid "Zurückbezahlt am"
@@ -687,13 +685,13 @@ msgstr "Repaid on"
 
 #: .\juntagrico\entity\share.py:21
 msgid "Anteilschein Nummer"
-msgstr "Share certificate number"
+msgstr "Share number"
 
 #: .\juntagrico\entity\share.py:23 .\juntagrico\entity\subs.py:42
 #: .\juntagrico\templates\management_lists\canceledlist.html:28
 #: .\juntagrico\templates\management_lists\waitinglist.html:39
 msgid "Notizen"
-msgstr "notes"
+msgstr "Notes"
 
 #: .\juntagrico\entity\share.py:31
 #, python-format
@@ -702,7 +700,7 @@ msgstr "Unit certificate #% s"
 
 #: .\juntagrico\entity\subs.py:37
 msgid "Erstellungsdatum"
-msgstr "Creation Date"
+msgstr "Creation date"
 
 #: .\juntagrico\entity\subs.py:39
 #: .\juntagrico\templates\createsubscription\select_start_date.html:30
@@ -715,10 +713,9 @@ msgid "Gewünschtes Enddatum"
 msgstr "Desired end date"
 
 #: .\juntagrico\entity\subs.py:47 .\juntagrico\entity\subs.py:54
-#, fuzzy, python-format
-#| msgid "Einheiten"
+#, python-format
 msgid " Einheiten %(amount)s"
-msgstr "units"
+msgstr " Units %(amount)s"
 
 #: .\juntagrico\entity\subs.py:50
 #, python-format
@@ -726,10 +723,9 @@ msgid "Abo (%(namelist)s) %(id)s"
 msgstr "Subscription (% (namelist) s)% (id) s"
 
 #: .\juntagrico\entity\subs.py:176
-#, fuzzy, python-brace-format
-#| msgid "Kein/e/n {0}"
+#, python-brace-format
 msgid "kein/e/n {0}"
-msgstr "No {0}"
+msgstr "no {0}"
 
 #: .\juntagrico\entity\subs.py:222
 #, python-brace-format
@@ -744,7 +740,7 @@ msgstr "A recipient still has an active {0}"
 #: .\juntagrico\entity\subtypes.py:19 .\juntagrico\entity\subtypes.py:20
 #, python-brace-format
 msgid "{0}-Produkt"
-msgstr ""
+msgstr "{0} product"
 
 #: .\juntagrico\entity\subtypes.py:28 .\juntagrico\entity\subtypes.py:53
 msgid "Langer Name"
@@ -753,7 +749,7 @@ msgstr "Long name"
 #: .\juntagrico\entity\subtypes.py:29
 #: .\juntagrico\templates\exports\amount_overview.html:91
 msgid "Einheiten"
-msgstr "units"
+msgstr "Units"
 
 #: .\juntagrico\entity\subtypes.py:31
 msgid "Sichtbar auf Depotliste"
@@ -766,23 +762,23 @@ msgstr "{0} sizes"
 
 #: .\juntagrico\entity\subtypes.py:57
 msgid "Anz benötigter Anteilsscheine"
-msgstr "Number of shares required"
+msgstr "Number of required shares"
 
 #: .\juntagrico\entity\subtypes.py:59
 msgid "Anz benötigter Arbeitseinsätze"
-msgstr "Number of required work assignments"
+msgstr "Number of required assignments"
 
 #: .\juntagrico\entity\subtypes.py:61
 msgid "Anz benötigter Kern Arbeitseinsätze"
-msgstr "Necessary core work assignments"
+msgstr "Number of required core assignments"
 
 #: .\juntagrico\entity\subtypes.py:64
 msgid "ProbeAbo"
-msgstr "TRIAL"
+msgstr "Trial subscription"
 
 #: .\juntagrico\entity\subtypes.py:65
 msgid "ProbeAbo Dauer in Tagen"
-msgstr "ProbeAbo duration in days"
+msgstr "Trial subscription duration in days"
 
 #: .\juntagrico\entity\subtypes.py:70
 #: .\juntagrico\templates\subscription_change.html:34
@@ -791,7 +787,7 @@ msgstr "Size"
 
 #: .\juntagrico\entity\subtypes.py:71
 msgid "Produkt"
-msgstr ""
+msgstr "Product"
 
 #: .\juntagrico\forms.py:11
 #: .\juntagrico\templates\mails\welcome_added_mail.txt:27
@@ -799,11 +795,11 @@ msgstr ""
 #: .\juntagrico\templates\password.html:19
 #: .\juntagrico\templates\registration\login.html:23
 msgid "Passwort"
-msgstr "password"
+msgstr "Password"
 
 #: .\juntagrico\forms.py:14
 msgid "Passwort (wiederholen)"
-msgstr "Repeat password)"
+msgstr "Repeat password"
 
 #: .\juntagrico\forms.py:18
 msgid "Passwörter stimmen nicht überein"
@@ -826,12 +822,12 @@ msgstr "Message via {0}:"
 #: .\juntagrico\mailer.py:105
 #, python-brace-format
 msgid "Neues Mitglied im Taetigkeitsbereich {0}"
-msgstr "New member of the business activity {0}"
+msgstr "New member in activity area {0}"
 
 #: .\juntagrico\mailer.py:106
 #, python-brace-format
 msgid "Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen"
-msgstr "{0} {1} has just entered the business activity {2}"
+msgstr "{0} {1} has just entered the activity area {2}"
 
 #: .\juntagrico\mailer.py:114
 #, python-brace-format
@@ -844,7 +840,7 @@ msgid ""
 "Soeben hat sich {0} {1} aus dem Taetigkeitsbereich {2} ausgetragen. Bitte "
 "lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern"
 msgstr ""
-"{0} {1} has just left the activity {2}. Please delete his contact "
+"{0} {1} has just left the activity area {2}. Please delete his contact "
 "information from all your private address books"
 
 #: .\juntagrico\mailer.py:131 .\juntagrico\mailer.py:176
@@ -854,11 +850,11 @@ msgstr "Welcome to {0}"
 
 #: .\juntagrico\mailer.py:141
 msgid "Dein neuer Anteilschein"
-msgstr "Your new share certificate"
+msgstr "Your new share"
 
 #: .\juntagrico\mailer.py:159
 msgid "Neuer Anteilschein erstellt"
-msgstr "New share certificate created"
+msgstr "New share created"
 
 #: .\juntagrico\mailer.py:182
 #, python-brace-format
@@ -868,12 +864,12 @@ msgstr "Your new {0} password"
 #: .\juntagrico\mailer.py:204
 #, python-brace-format
 msgid "{0} - Einsatz-Erinnerung"
-msgstr "{0} - Mission Reminder"
+msgstr "{0} - Job Reminder"
 
 #: .\juntagrico\mailer.py:215
 #, python-brace-format
 msgid "{0} - Einsatz abgesagt"
-msgstr "{0} - Mission canceled"
+msgstr "{0} - Job canceled"
 
 #: .\juntagrico\mailer.py:227
 #, python-brace-format
@@ -883,12 +879,12 @@ msgstr "{0} - change email address"
 #: .\juntagrico\mailer.py:239
 #, python-brace-format
 msgid "{0} - Einsatz-Zeit geändert"
-msgstr "{0} - Mission time changed"
+msgstr "{0} - Job time changed"
 
 #: .\juntagrico\mailer.py:252
 #, python-brace-format
 msgid "{0} - für Einsatz angemeldet"
-msgstr "{0} - registered for use"
+msgstr "{0} - Registered for job"
 
 #: .\juntagrico\mailer.py:265
 #, python-brace-format
@@ -908,11 +904,11 @@ msgstr "{0} - Invoice {1}"
 #: .\juntagrico\mailer.py:333
 #, python-brace-format
 msgid "{0} - Rechnung Extra-Abo"
-msgstr "{0} - bill extra subscription"
+msgstr "{0} - Invoice extra subscription"
 
 #: .\juntagrico\models.py:23
 msgid "Benutzer ist in der BG"
-msgstr "User is in the BG"
+msgstr "User is in the operation group"
 
 #: .\juntagrico\models.py:24
 msgid "Benutzer ist Buchhalter"
@@ -924,7 +920,7 @@ msgstr "Inform users about subscription orders"
 
 #: .\juntagrico\models.py:26
 msgid "Benutzer kann im System Emails versenden"
-msgstr "User can send emails in the system"
+msgstr "User can send emails trough the system"
 
 #: .\juntagrico\models.py:27
 msgid "Benutzer kann General Email Adresse verwenden"
@@ -933,7 +929,7 @@ msgstr "User can use General Email Address"
 #: .\juntagrico\templates\activation_error.html:11
 #, python-format
 msgid "Einer der Bezüger hat noch 1 aktive/s/n %(v_subscription)s!"
-msgstr "One of the recipients still has 1 active / s / n% (v_subscription) s!"
+msgstr "One of the recipients still has 1 active %(v_subscription)s!"
 
 #: .\juntagrico\templates\add_member.html:9
 #: .\juntagrico\templates\add_member.html:180
@@ -941,7 +937,7 @@ msgstr "One of the recipients still has 1 active / s / n% (v_subscription) s!"
 #: .\juntagrico\templates\createsubscription\add_member_cs.html:175
 #, python-format
 msgid "%(v_co_member)s hinzufügen"
-msgstr "Add% (v_co_member) s"
+msgstr "Add %(v_co_member)s"
 
 #: .\juntagrico\templates\add_member.html:22
 #: .\juntagrico\templates\createsubscription\add_member_cs.html:28
@@ -950,7 +946,7 @@ msgid ""
 "Bei bestehenden %(v_member_pl)s reicht es, die Emailadresse einzutragen. "
 "Alle anderen Felder werden in diesem Falle ignoriert."
 msgstr ""
-"For existing% (v_member_pl) s it is sufficient to enter the email address. "
+"For existing %(v_member_pl)s it is sufficient to enter the email address. "
 "All other fields are ignored in this case."
 
 #: .\juntagrico\templates\add_member.html:36
