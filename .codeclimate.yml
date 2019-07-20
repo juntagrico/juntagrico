@@ -36,7 +36,7 @@ plugins:
   radon:
     enabled: true
     config: 
-      threshold: "C"
+      threshold: "D"
   sonar-python:
     enabled: true
 exclude_patterns:
