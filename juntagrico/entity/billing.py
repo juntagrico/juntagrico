@@ -1,13 +1,13 @@
 from django.db import models
-from polymorphic.models import PolymorphicModel
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from juntagrico.util.temporal import month_choices, calculate_last
+from juntagrico.entity import JuntagricoBasePoly, JuntagricoBaseModel
 from juntagrico.util.temporal import calculate_next, calculate_next_offset
+from juntagrico.util.temporal import month_choices, calculate_last
 
 
-class Billable(PolymorphicModel):
+class Billable(JuntagricoBasePoly):
     '''
     Parent type for billables.
     '''
@@ -17,7 +17,7 @@ class Billable(PolymorphicModel):
         verbose_name_plural = _('Verrechenbare Einheiten')
 
 
-class Bill(models.Model):
+class Bill(JuntagricoBaseModel):
     '''
     Actuall Bill for billables
     '''
@@ -39,7 +39,7 @@ class Bill(models.Model):
         verbose_name_plural = _('Rechnungen')
 
 
-class Payment(models.Model):
+class Payment(JuntagricoBaseModel):
     '''
     Payment for bill
     '''
@@ -57,7 +57,7 @@ class Payment(models.Model):
         verbose_name_plural = _('Zahlungen')
 
 
-class ExtraSubBillingPeriod(models.Model):
+class ExtraSubBillingPeriod(JuntagricoBaseModel):
     '''
     Billing Period for Extra subscriptions for which a bill has to be issued
     '''

@@ -2,9 +2,9 @@
 
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.entity.billing import *
 from juntagrico.util.bills import *
-from juntagrico.config import Config
 
 
 class Share(Billable):
@@ -21,11 +21,6 @@ class Share(Billable):
         _('Anteilschein Nummer'), null=True, blank=True)
     notes = models.TextField(
         _('Notizen'), max_length=1000, default='', blank=True)
-
-    @classmethod
-    def create(cls, sender, instance, created, **kwds):
-        if created and Config.billing():
-            bill_share(instance)
 
     def __str__(self):
         return _('Anteilschein {0}').format(self.id)

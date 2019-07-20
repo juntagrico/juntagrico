@@ -1,11 +1,11 @@
 # encoding: utf-8
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.utils.translation import gettext as _
 
-from juntagrico.util.users import *
 from juntagrico.config import Config
+from juntagrico.util.users import *
 
 
 class Member(models.Model):

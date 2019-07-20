@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.utils.module_loading import autodiscover_modules
 
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.area_admin import AreaAdmin
@@ -17,7 +16,7 @@ from juntagrico.admins.share_admin import ShareAdmin
 from juntagrico.admins.subscription_admin import SubscriptionAdmin
 from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin
 from juntagrico.config import Config
-from juntagrico.entity.billing import Bill, Payment
+from juntagrico.entity.billing import Bill, Payment, ExtraSubBillingPeriod
 from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription, ExtraSubscriptionType, ExtraSubscriptionCategory
@@ -26,7 +25,7 @@ from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, ExtraSubBillingPeriod
+from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionSize, SubscriptionType, SubscriptionProduct
 from juntagrico.util import addons
 
