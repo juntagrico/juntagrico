@@ -208,7 +208,6 @@ class Job(JuntagricoBasePoly):
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT)
 
-
     class Meta:
         verbose_name = _('Job')
         verbose_name_plural = _('Jobs')
@@ -229,7 +228,6 @@ class OneTimeJob(Job, AbstractJobType):
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
         Job.pre_save(sender, instance)
-
 
     class Meta:
         verbose_name = _('EinzelJob')

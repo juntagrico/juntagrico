@@ -221,30 +221,6 @@ class Subscription(Billable):
             raise ValidationError(_('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
                                   code='invalid')
 
-    @classmethod
-    def pre_save(cls, sender, instance, **kwds):
-        if instance._old['active'] != instance.active and instance._old['active'] is False and instance.deactivation_date is None:
-            instance.activation_date = instance.activation_date if instance.activation_date is not None else timezone.now().date()
-            for member in instance.recipients_all_for_state('waiting'):
-                if member.subscription is not None:
-                    raise ValidationError(_('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription_')),
-                                          code='invalid')
-            for member in instance.recipients_all_for_state('waiting'):
-                member.subscription = instance
-                member.future_subscription = None
-                member.save()
-            if Config.billing():
-                bill_subscription(instance)
-        elif instance._old['active'] != instance.active and instance._old['active'] is True and instance.deactivation_date is None:
-            instance.deactivation_date = instance.deactivation_date if instance.deactivation_date is not None else timezone.now().date()
-            for member in instance.recipients_all_for_state('active'):
-                member.old_subscriptions.add(instance)
-                member.subscription = None
-                member.save()
-        if instance._old['canceled'] != instance.canceled:
-            instance.cancelation_date = timezone.now().date()
-
-
     class Meta:
         verbose_name = Config.vocabulary('subscription')
         verbose_name_plural = Config.vocabulary('subscription_pl')
