@@ -5,13 +5,11 @@ from django.utils import timezone
 from juntagrico.config import Config
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled
 from juntagrico.util.bills import bill_subscription
+from juntagrico.util.lifecycle import handle_activated_deactivated
 
 
 def sub_pre_save(sender, instance, **kwargs):
-    if instance._old['active'] != instance.active and instance._old['active'] is False and instance.deactivation_date is None:
-        sub_activated.send(sender=sender, instance=instance)
-    elif instance._old['active'] != instance.active and instance._old['active'] is True and instance.deactivation_date is None:
-        sub_deactivated.send(sender=sender, instance=instance)
+    handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
     if instance._old['canceled'] != instance.canceled:
         sub_canceled.send(sender=sender, instance=instance)
 
