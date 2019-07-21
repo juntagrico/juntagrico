@@ -33,10 +33,6 @@ plugins:
     enabled: false
   pep8:
     enabled: true
-  radon:
-    enabled: true
-    config: 
-      threshold: "D"
   sonar-python:
     enabled: true
 exclude_patterns:
