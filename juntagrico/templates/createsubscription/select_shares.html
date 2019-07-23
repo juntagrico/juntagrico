@@ -19,7 +19,7 @@
     {% vocabulary "share" as v_share %}
     {% vocabulary "co_member_pl" as v_co_member_pl %}
     <div class="offset-md-2 col-md-8">
-        {% if share_error %}
+        {% if shares.error %}
             <div class="alert alert-danger">
                 {% blocktrans trimmed %}
                 Du brauchst entweder mehr {{ v_share_pl }} für die von dir gewählte {{ v_subscription }}-Grösse
@@ -32,14 +32,14 @@
             <div class="col-md-12">
                 {% trans "Infos" %}:
                 {% blocktrans trimmed %}
-                Um {{ v_member_type }} bei  {{ v_d_enriched_organisation }} zu werden, musst du mindestens
+                Um {{ v_member_type }} bei {{ v_d_enriched_organisation }} zu werden, musst du mindestens
                 1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
                 Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }} zurück
                 erstattet.
                 {% endblocktrans %}
-                {% if selected_subscription > -1 %}
-                    {% blocktrans trimmed %}
-                    Für die von dir ausgewählte {{ v_subscription }}-Grösse brauchst du insgesamt {{ total_shares }}
+                {% if shares.total_required > 0 %}
+                    {% blocktrans trimmed with shares.total_required as st %}
+                    Für die von dir ausgewählte {{ v_subscription }}-Grösse(n) brauchst du insgesamt {{ st }}
                     {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                     {% endblocktrans %}
                     <br/>
@@ -50,9 +50,9 @@
                     {% endblocktrans %}
                     <br/>
                 {% endif %}
-                {% if has_co_members %}
+                {% if co_members|length > 0 %}
                     {% blocktrans trimmed %}
-                    Teile die restlichen benötigten {{ required_shares }} {{ v_share_pl }} unter dir und
+                    Teile die restlichen benötigten {{ shares.remaining_required }} {{ v_share_pl }} unter dir und
                     deinen {{ v_co_member_pl }} auf.
                     {% endblocktrans %}
                 {% endif %}
@@ -65,10 +65,10 @@
                     {% blocktrans %}Deine {{ v_share_pl }}{% endblocktrans %}
                 </label>
                 <div class="col-md-3">
-                    <input type="number" name="shares_mainmember" class="form-control" value="{{ total_shares }}"min="{% if mm_requires_one %}1{% else %}0{% endif %}"/>
+                    <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:shares.total_required }}" min="{% if shares.existing_main_member == 0 %}1{% else %}0{% endif %}"/>
                 </div>
                 <label class="col-md-6 col-form-label">
-                    {% if mm_requires_one %}
+                    {% if shares.existing_main_member == 0 %}
                         {% blocktrans trimmed %}
                         Du brauchst als Haupt-Bezieher mindestens 1 {{ v_share }}.
                         {% endblocktrans %}
@@ -85,7 +85,7 @@
                         {{ co_member.first_name }} {{ co_member.last_name }}
                     </label>
                     <div class="col-md-3">
-                        <input type="number" name="{{ co_member.email }}" class="form-control" value="0" min="0"/>
+                        <input type="number" name="{{ co_member.email }}" class="form-control" value="{{ co_member.new_shares|default:0 }}" min="0"/>
                     </div>
                     <label class="col-md-6 col-form-label">
                         {% blocktrans trimmed with cac=co_member.active_shares.count %}
@@ -97,7 +97,7 @@
             <div class="form-group row">
                 <div class="offset-md-3 col-md-9">
                     <button type="submit" class="btn btn-success">
-                        {% trans "Bestellen" %}
+                        {% trans "Weiter" %}
                     </button>
                     <a href="/my/create/subscription/cancel" class="btn">
                         {% trans "Abbrechen" %}
@@ -110,6 +110,6 @@
 {% block scripts %}
     <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initChangeExtra.js">
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js">
     </script>
 {% endblock %}

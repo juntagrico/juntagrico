@@ -13,14 +13,23 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.participation }}" href="/my/participation">
-            {% trans "Mitarbeit" %}
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ menu.jobs }}" href="/my/assignments">
+        <a class="nav-link {{ menu.jobs }}" href="/my/jobs">
             {% trans "Einsätze" %}
         </a>
+        {% if menu.jobs == 'active' %}
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="/my/memberjobs">
+                        {% trans "Meine Einsätze" %}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/my/jobs/all">
+                        {% trans "Aktuelle und vergangene Einsätze" %}
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
     </li>
     {% if show_deliveries %}
         <li class="nav-item">
@@ -29,6 +38,11 @@
             </a>
         </li>
     {% endif %}
+    <li class="nav-item">
+        <a class="nav-link {{ menu.area }}" href="/my/areas">
+            {% trans "Tätigkeitsbereiche" %}
+        </a>
+    </li>
     <li class="nav-item">
         <a class="nav-link {{ menu.personalInfo }}" href="/my/profile">
             {% trans "Personalien" %}

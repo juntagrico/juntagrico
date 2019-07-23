@@ -72,12 +72,20 @@ body#juntagrico-views-profile .asteriskField {
     font-size: 30pt;
 }
 
-.edit i {
+.edit i, .delete i {
     font-size: 0.7em;
 }
 
-.edit {
+.edit, .delete {
     vertical-align: top;
+}
+
+a.delete {
+    color: #999;
+}
+
+a:hover.delete {
+    color: red;
 }
 
 /* container stuff checked */
@@ -164,6 +172,12 @@ div.all-page-title.row {
 }
 
 ul.subadmin-menu {
+    padding-left: 7px;
+}
+
+ul.sub-menu {
+    font-family: "Source Sans Pro Light";
+    font-size: 14px;
     padding-left: 7px;
 }
 

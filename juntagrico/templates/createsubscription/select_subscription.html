@@ -15,46 +15,43 @@
     {% vocabulary "member_type" as v_member_type %}
     {% vocabulary "member_type_pl" as v_member_type_pl %}
     {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
     {% config "enable_shares" as c_enable_shares %}
     <div class="offset-md-2 col-md-8">
         <form action="" method="post">
             {% csrf_token %}
             {% include "snippets/snippet_subscription_selection.html" %}
             <div class="form-group row">
-                <div class="offset-md-3 col-md-9">
-                    Kein {% vocabulary "subscription" %}
+                <div class="col-md-12">
+                    <b>Kein {% vocabulary "subscription" %}</b>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="offset-md-4 col-md-8">
-                    <div class="row align-items-center h-100 no-gutters">
-                        <div class="col-md-2">
-                            <span class="switch switch-sm">
-                                <input type="radio" class="switch" name="subscription" value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
-                                <label for="none">
-                                </label>
-                            </span>
-                        </div>
-                        <label class="col-md-10">
-                            {% blocktrans trimmed %}
-                            Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-
-                            {{ v_member_type }} sein. Bleibe
-                            auf dem Laufenden und mach mit, wenn du Lust hast.
-                            {% endblocktrans %}
-                            <br/>
-                            {% config "base_fee" as base_fee %}
-                            {% if base_fee.strip %}
-                                {% blocktrans trimmed%}
-                                {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
-                                einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
-                                {% endblocktrans %}
-                            {% endif %}
+            <div class="form-group row">
+                <div class="offset-md-2 col-md-1">
+                    <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" name="subscription" value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
+                        <label for="none">
                         </label>
-                    </div>
+                    </span>
                 </div>
+                <label class="col-md-9">
+                    {% blocktrans trimmed %}
+                    Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-
+                    {{ v_member_type }} sein. Bleibe
+                    auf dem Laufenden und mach mit, wenn du Lust hast.
+                    {% endblocktrans %}
+                    <br/>
+                    {% config "base_fee" as base_fee %}
+                    {% if base_fee.strip %}
+                        {% blocktrans trimmed%}
+                        {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
+                        einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
+                        {% endblocktrans %}
+                    {% endif %}
+                </label>
             </div>
-            <div class="form-actions row">
-                <div class="offset-md-3 col-md-9">
+            <div class="form-group row">
+                <div class="col-md-12">
                     <button type="submit" class="btn btn-success">
                         {% trans "Weiter" %}
                     </button>
@@ -65,4 +62,10 @@
             </div>
         </form>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initCreateSubscription.js">
+    </script>
 {% endblock %}

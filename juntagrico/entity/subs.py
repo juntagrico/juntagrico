@@ -44,14 +44,14 @@ class Subscription(Billable):
     _old_canceled = None
 
     def __str__(self):
-        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
+        namelist = [_(' Einheiten {0}').format(self.size)]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
-        return _('Abo (%(namelist)s) %(id)s') % {'namelist': ' + '.join(namelist), 'id': self.id}
+        return _('Abo ({0}) {0}').format(' + '.join(namelist), self.id)
 
     @property
     def overview(self):
-        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
+        namelist = [_(' Einheiten {0}').format(self.size)]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
@@ -134,18 +134,21 @@ class Subscription(Billable):
         return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
     def subscription_amount(self, size_id):
-        return self.calc_subscritpion_amount(self.types, size_id)
+        return self.calc_subscription_amount(self.types, size_id)
 
     def subscription_amount_future(self, size_id):
-        return self.calc_subscritpion_amount(self.future_types, size_id)
+        return self.calc_subscription_amount(self.future_types, size_id)
 
     @staticmethod
-    def calc_subscritpion_amount(types, size_id):
+    def calc_subscription_amount(types, size_id):
         result = 0
         for type in types.all():
             if type.size.id == size_id:
                 result += 1
         return result
+
+    def future_amount_by_type(self, type):
+        return len(self.future_types.filter(id=type))
 
     @staticmethod
     def next_extra_change_date():
@@ -216,7 +219,7 @@ class Subscription(Billable):
 
     def clean(self):
         if self._old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(_('Deaktivierte {0}  koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
+            raise ValidationError(_('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
                                   code='invalid')
 
     @classmethod

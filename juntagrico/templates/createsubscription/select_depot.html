@@ -22,7 +22,7 @@
                 <div class="col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.code }}">
+                            <option value="{{ depot.id }}" id="depot{{ depot.code }}"{% if depot == selected %}selected{% endif %}>
                                 {{ depot.name }}
                             </option>
                         {% endfor %}

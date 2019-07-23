@@ -1,22 +1,19 @@
+{% load common %}
+{% load subscription_extras %}
 {% load i18n %}
 {% load config %}
 {% for p in products %}
     <div class="form-group row">
-        <label class="col-md-3">
-            {% if forloop.first %}
-                {% blocktrans %}{{ v_subscription }}-Grösse{% endblocktrans %}
-            {% endif %}
-        </label>
-        <div class="col-md-9">
-            {{ p.name }}
+        <div class="col-md-12">
+            <b>{{ p.name }}</b>
             <br/>
             {{ p.description|linebreaksbr }}
         </div>
     </div>
     {% for subscription_size in p.sizes.all %}
         <div class="form-group row">
-            <div class="offset-md-3 col-md-9">
-                {{ subscription_size.long_name }}
+            <div class="col-md-12">
+                <b>{{ subscription_size.long_name }}</b>
                 <br/>
                 {{ subscription_size.description|linebreaksbr }}
             </div>
@@ -24,37 +21,36 @@
         {% for type in subscription_size.types.all %}
             {% if type.visible %}
                 <div class="form-group row">
-                    <div class="offset-md-4 col-md-8">
-                        <div class="row align-items-center h-100 no-gutters">
-                            <div class="col-md-2">
-                                <span class="switch switch-sm">
-                                    <input type="radio" class="switch" name="subscription" value="{{ type.id }}" id="type{{ type.id }}" {% if selected_subscription == type.id %}checked="checked"{% endif %}/>
-                                    <label for="type{{ type.id }}">
-                                    </label>
-                                </span>
-                            </div>
-                            <label for="type{{ type.id }}" class="col-md-10">
-                                {% if type.long_name.strip %}
-                                    {{ type.long_name }}
-                                    <br/>
-                                {% endif %}
-                                {% if type.description.strip %}
-                                    {{ type.description|linebreaksbr }}
-                                    <br/>
-                                {% endif %}
-                                {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
-                                {% if c_enable_shares %}
-                                    <br/>
-                                    {% vocabulary "share_pl" %}: {{ type.shares }}
-                                {% endif %}
-                                <br/>
-                                {% trans "Arbeitseinsätze" %}: {{ type.required_assignments }}
-                                {% if hours_used %}
-                                    {% trans "Stunden" %}
-                                {% endif %}
-                            </label>
-                        </div>
+                    <div class="col-md-3">
+                        <input type="number" name="amount[{{ type.id }}]" class="form-control"
+                               value="{% spaceless %}
+                               {% if subscription %}
+                                    {{ subscription|future_amount_by_type:type.id|default:'0' }}
+                               {% else %}
+                                    {{ selected_subscriptions|get_item:type|default:0 }}
+                               {% endif %}{% endspaceless %}"
+                               min="0"/>
                     </div>
+                    <label for="type{{ type.id }}" class="col-md-9">
+                        {% if type.long_name.strip %}
+                            <b>{{ type.long_name }}</b>
+                            <br/>
+                        {% endif %}
+                        {% if type.description.strip %}
+                            {{ type.description|linebreaksbr }}
+                            <br/>
+                        {% endif %}
+                        {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+                        {% if c_enable_shares %}
+                            <br/>
+                            {% vocabulary "share_pl" %}: {{ type.shares }}
+                        {% endif %}
+                        <br/>
+                        {% trans "Arbeitseinsätze" %}: {{ type.required_assignments }}
+                        {% if hours_used %}
+                            {% trans "Stunden" %}
+                        {% endif %}
+                    </label>
                 </div>
             {% endif %}
         {% endfor %}
