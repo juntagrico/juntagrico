@@ -2,11 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from juntagrico.config import Config
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.entity.billing import Billable
-from juntagrico.util.bills import bill_extra_subscription
 
 
 class ExtraSubscriptionType(JuntagricoBaseModel):

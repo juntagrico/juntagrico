@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
@@ -6,7 +5,6 @@ from django.utils.translation import gettext as _
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.mailer import *
 from juntagrico.util.jobs import get_status_image
 from juntagrico.util.temporal import *
 

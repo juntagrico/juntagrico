@@ -1,6 +1,5 @@
 import time
 
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.sharedao import ShareDao
@@ -8,7 +7,6 @@ from juntagrico.entity.billing import Billable
 from juntagrico.entity.subtypes import *
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.mailer import *
-from juntagrico.util.bills import *
 from juntagrico.util.temporal import *
 
 

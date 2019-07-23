@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity.share import Share
 from juntagrico.signals import share_created
 from juntagrico.util.bills import bill_share
 
@@ -17,7 +16,7 @@ def handle_share_created(sender, instance, created, **kwargs):
         bill_share(instance)
 
 
-def check_share_consistency(instance: Share):
+def check_share_consistency(instance):
     is_paid = instance.paid_date is not None
     is_canceled = instance.cancelled_date is not None
     is_terminated = instance.termination_date is not None
