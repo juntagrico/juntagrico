@@ -25,7 +25,7 @@ def check_share_consistency(instance):
     paid_date = instance.paid_date or timezone.now()
     cancelled_date = instance.cancelled_date or paid_date
     termination_date = instance.termination_date or cancelled_date
-    payback_date = instance.payback_date  or termination_date
+    payback_date = instance.payback_date or termination_date
     if (is_canceled or is_terminated or is_payed_back) and not is_paid:
         raise ValidationError(_('Bitte "Bezahlt am" ausfüllen'), code='invalid')
     if (is_terminated or is_payed_back) and not is_canceled:
