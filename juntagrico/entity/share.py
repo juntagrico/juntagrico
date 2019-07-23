@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity.billing import *
+from juntagrico.lifecycle.share import check_share_consistency
 from juntagrico.util.bills import *
 
 
@@ -21,6 +22,9 @@ class Share(Billable):
         _('Anteilschein Nummer'), null=True, blank=True)
     notes = models.TextField(
         _('Notizen'), max_length=1000, default='', blank=True)
+
+    def clean(self):
+        check_share_consistency(self)
 
     def __str__(self):
         return _('Anteilschein {0}').format(self.id)

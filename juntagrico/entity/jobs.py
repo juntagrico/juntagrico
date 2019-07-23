@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.mailer import *
 from juntagrico.util.jobs import get_status_image
 from juntagrico.util.temporal import *
@@ -196,8 +197,7 @@ class Job(JuntagricoBasePoly):
         return self.type.job_extras_set.filter(per_member=True)
 
     def clean(self):
-        if self._old['canceled'] != self.canceled and self._old['canceled'] is True:
-            raise ValidationError(_('Abgesagte jobs koennen nicht wieder aktiviert werden'), code='invalid')
+        check_job_consistency(self)
 
     class Meta:
         verbose_name = _('AbstractJob')

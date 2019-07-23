@@ -12,6 +12,7 @@ def sub_pre_save(sender, instance, **kwargs):
     handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
     if instance._old['canceled'] != instance.canceled:
         sub_canceled.send(sender=sender, instance=instance)
+    check_sub_consistency(instance)
 
 
 def handle_sub_activated(sender, instance, **kwargs):
@@ -39,3 +40,10 @@ def handle_sub_deactivated(sender, instance, **kwargs):
 
 def handle_sub_canceled(sender, instance, **kwargs):
     instance.cancelation_date = timezone.now().date()
+
+
+def check_sub_consistency(instance):
+    if instance._old['active'] != instance.active and instance.deactivation_date is not None:
+        raise ValidationError(
+            _('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
+            code='invalid')

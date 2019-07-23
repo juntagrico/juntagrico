@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.subtypes import *
+from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.mailer import *
 from juntagrico.util.bills import *
 from juntagrico.util.temporal import *
@@ -217,9 +218,7 @@ class Subscription(Billable):
         return len(self.extra_subscriptions.all().filter(type__name=code))
 
     def clean(self):
-        if self._old['active'] != self.active and self.deactivation_date is not None:
-            raise ValidationError(_('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
-                                  code='invalid')
+        check_sub_consistency(self)
 
     class Meta:
         verbose_name = Config.vocabulary('subscription')
