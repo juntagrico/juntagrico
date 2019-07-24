@@ -8,18 +8,20 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-17 22:42+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2019-07-25 11:47+0000\n"
+"Last-Translator: Weblate Admin <admin@admin.admin>\n"
+"Language-Team: em <http://weblate.juntagrico.science/projects/juntagrico/"
+"juntagrico/Emoji/>\n"
 "Language: Emoji\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.7.1\n"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:18
 msgid "Wochentage"
-msgstr ""
+msgstr "📆"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:21
 #: .\juntagrico\templates\mails\job_canceled_mail.txt:14
@@ -27,7 +29,7 @@ msgstr ""
 #: .\juntagrico\templates\mails\job_signup_mail.txt:15
 #: .\juntagrico\templates\mails\job_time_changed_mail.txt:15
 msgid "Zeit"
-msgstr ""
+msgstr "⌚"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:24
 msgid "Anfangsdatum"
