@@ -1,23 +1,23 @@
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.translation import gettext as _
 
-from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
+from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.jobdao import JobDao
+from juntagrico.dao.jobextradao import JobExtraDao
+from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.forms import *
 from juntagrico.models import *
+from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.messages import *
 from juntagrico.util.mailer import *
 from juntagrico.util.management import *
-from juntagrico.util import addons
+from juntagrico.util.messages import *
 
 
 def get_menu_dict(request):
@@ -123,7 +123,7 @@ def job(request, job_id):
         send_job_signup([member.email], job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
-        return HttpResponseRedirect('my/jobs')
+        return redirect('jobs')
 
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
@@ -435,7 +435,7 @@ def cancel_membership(request):
             share.cancelled_date = now
             share.termination_date = end_date
             share.save()
-        return redirect('/my/profile')
+        return redirect('profile')
 
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
@@ -512,5 +512,4 @@ def new_password(request):
 
 def logout_view(request):
     auth.logout(request)
-    # Redirect to a success page.
-    return HttpResponseRedirect('/my/home')
+    return redirect('home')
