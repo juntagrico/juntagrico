@@ -36,7 +36,7 @@
                             </td>
                             <td>
                                 {% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
-                                    <a href="/my/extra/cancel/{{ extra.id }}/{{ sub_id }}/"class="btn btn-success">
+                                    <a href="{% url 'extra-cancel' extra.id sub_id %}"class="btn btn-success">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}

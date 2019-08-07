@@ -2,7 +2,7 @@
 {% load config %}
 <div class="alert alert-warning">
     {% trans "Der Einsatz ist schon vorbei!" %}
-    <a href="/my/assignments" style="text-decoration: underline">
+    <a href="{% url 'jobs' %}" style="text-decoration: underline">
         {% trans "Aber es gibt immer viel zu tun" %}
     </a>...
 </div>

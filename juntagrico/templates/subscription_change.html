@@ -24,7 +24,7 @@
             {{ subscription.depot.name }}
         </div>
         <div class="col-md-2">
-            <a href="/my/subscription/change/depot/{{ subscription.id }}/" class="btn btn-success">
+            <a href="{% url 'depot-change' subscription.id %}" class="btn btn-success">
                 {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}
             </a>
         </div>
@@ -52,7 +52,7 @@
             <br/>
         </div>
         <div class="col-md-2">
-            <a {% if change_size %}href="/my/subscription/change/size/{{ subscription.id }}/"{% endif %}class="btn btn-success"{% if not change_size %}disabled="disabled"{% endif %}>
+            <a {% if change_size %}href="{% url 'size-change' subscription.id %}"{% endif %}class="btn btn-success"{% if not change_size %}disabled="disabled"{% endif %}>
                 {% trans "Grösse ändern" %}
             </a>
             <br/>
@@ -108,7 +108,7 @@
             {% endif %}
         </div>
         <div class="col-md-2">
-            <a href="/my/subscription/change/extra/{{ subscription.id }}/"class="btn btn-success">
+            <a href="{% url 'extra-change' subscription.id %}"class="btn btn-success">
                 {% trans "Zusatz-Abos ändern" %}
             </a>
         </div>
@@ -118,7 +118,7 @@
 {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
     <div class="row mt-5">
         <div class="col-md-12">
-            <a href="/my/subscription/cancel/{{ subscription.id }}/"class="btn btn-danger">
+            <a href="{% url 'sub-cancel' subscription.id %}"class="btn btn-danger">
                 {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
             </a>
         </div>

@@ -234,7 +234,7 @@
                     <div class="alert alert-danger">
                         {% trans "Diese Email-Adresse existiert bereits im System." %}
                         <br/>
-                        <a href="/my/home">
+                        <a href="{% url 'login' %}">
                             {% trans "Hier gehts zum Login" %}
                         </a>
                     </div>

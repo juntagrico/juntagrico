@@ -123,7 +123,7 @@ def job(request, job_id):
         send_job_signup([member.email], job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
-        return redirect('jobs')
+        return redirect('job', args=[job_id])
 
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)

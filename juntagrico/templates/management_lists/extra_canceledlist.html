@@ -43,7 +43,7 @@
                         </form>
                     </td>
                     <td>
-                        <a href="/my/extra/deactivate/{{ extrasubscription.id }}/"class="btn btn-success">
+                        <a href="{% url 'extra-deactivate' extrasubscription.id %}"class="btn btn-success">
                             {% trans "deaktivieren" %}
                         </a>
                     </td>

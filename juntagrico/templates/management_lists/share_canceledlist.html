@@ -69,7 +69,7 @@
                         </form>
                     </td>
                     <td>
-                        <a href="/my/payout/share/{{ share.id }}/"class="btn btn-success">
+                        <a href="{% url 'share-payout' share.id %}/"class="btn btn-success">
                             {% trans "ausbuchen" %}
                         </a>
                     </td>

@@ -12,7 +12,7 @@
     </style>
     {% if not change_date_disabled %}
         {% if can_change_date %}
-            <form action="/my/changedate" method="POST">
+            <form action="{% url 'changedate-set' %}" method="POST">
                 {% csrf_token %}
                 <div class="row mb-3">
                     <div class="col-md-3">
@@ -31,7 +31,7 @@
         {% else %}
             <div class="alert alert-warning">
                 {% blocktrans %}Das Änderungsdatum ist auf {{ change_date }} gesetzt.{% endblocktrans %}
-                <a href="/my/changedate/stop">
+                <a href="{% url 'changedate-unset' %}">
                     {% trans "Beende dies hier" %}
                 </a>
                 .

@@ -33,7 +33,7 @@
             {% for subscription in management_list %}
                 <tr>
                     <td>
-                        <a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                             {{ subscription.overview }}
                         </a>
                     </td>
@@ -57,7 +57,7 @@
                         {{ subscription.future_size_name }}
                     </td>
                     <td>
-                        <a href="/my/type/change/{{ subscription.id }}/" class="btn btn-success">
+                        <a href="{% url 'activate-future-types' subscription.id %}" class="btn btn-success">
                             {% trans "ändern" %}
                         </a>
                     </td>

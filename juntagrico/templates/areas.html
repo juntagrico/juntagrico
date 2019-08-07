@@ -53,7 +53,7 @@
                                 </span>
                             </div>
                             <div class="col-md-3">
-                                <a href="/my/area/{{ area.id }}">{{ area.name }}</a>
+                                <a href="{% url 'area' area.id %}">{{ area.name }}</a>
                             </div>
                             <div class="col-md-7">
                                 {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
@@ -94,7 +94,7 @@
                             </span>
                         </div>
                         <div class="col-md-3">
-                            <a href="/my/area/{{ area.id }}">{{ area.name }}</a>
+                            <a href="{% url 'area' area.id %}">{{ area.name }}</a>
                         </div>
                         <div class="col-md-7">
                             {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}

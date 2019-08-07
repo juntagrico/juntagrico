@@ -42,7 +42,7 @@
                     {{ job.weekday_name }}&nbsp;{{ job.time |date:"d." }}{{ job.time |date:"m." }}{{ job.time |date:"Y" }}
                 </td>
                 <td>
-                    <a href="/my/jobs/{{ job.id }}"{% if job.canceled %}class="canceled"{% endif %}>
+                    <a href="{% url 'job' job.id %}"{% if job.canceled %}class="canceled"{% endif %}>
                         {{ job.type.get_name }}
                     </a>
                 </td>

@@ -10,7 +10,7 @@
     {% if is_sent %}
         <div class="alert alert-success">
             {% trans "Nachricht gesandt" %}
-            <a href="/my/jobs/{{ job_id }}/" style="text-decoration: underline">
+            <a href="{% url 'job' job_id %}/" style="text-decoration: underline">
                 {% trans "zurück zum Einsatz" %}
             </a>
         </div>
