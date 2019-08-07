@@ -75,7 +75,7 @@ def send_email_intern(request):
                            request.POST.get('textMessage'),
                            emails, attachements, sender=sender)
         sent = len(emails)
-    return redirect('mail-result', args=[sent])
+    return redirect('mail-result', numsent=sent)
 
 
 @permission_required('juntagrico.can_send_mails')

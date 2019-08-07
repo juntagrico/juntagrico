@@ -174,7 +174,7 @@ def extra_change(request, subscription_id):
                 for x in range(value):
                     ExtraSubscription.objects.create(
                         main_subscription=subscription, type=type)
-        return redirect('extra-change', args=[subscription.id])
+        return redirect('extra-change', subscription_id=subscription.id)
     renderdict = get_menu_dict(request)
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_extra_types(),
@@ -275,7 +275,7 @@ def add_member(request, subscription_id):
             member = Member(**memberform.cleaned_data)
         if member is not None:
             create_or_update_member(member, subscription, shares, main_member)
-            return redirect('sub-detail-id', args= [subscription_id])
+            return redirect('sub-detail-id', subscription_id=subscription_id)
     else:
         initial = {'addr_street': main_member.addr_street,
                    'addr_zipcode': main_member.addr_zipcode,
