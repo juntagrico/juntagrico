@@ -13,7 +13,7 @@
         body > .container
         {width: 95%;}
     </style>
-    <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
+    <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden"name="recipients_count"id="recipients_count"/>
