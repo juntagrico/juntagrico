@@ -59,7 +59,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        <form id="share{{ share.id }}" method="post" action="/my/mails">
+                        <form id="share{{ share.id }}" method="post" action="{% url 'mail' %}">
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ share.member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>

@@ -44,7 +44,7 @@
                         {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
                     </td>
                     <td>
-                        <form id="subscription{{ subscription.id }}" method="post" action="/my/mails">
+                        <form id="subscription{{ subscription.id }}" method="post" action="{% url 'mail' %}">
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ subscription.primary_member.email }}"/>
                             <input type="hidden"name="recipients_count"value="1"/>
