@@ -11,6 +11,8 @@ class AddonsConfig:
     def __init__(self):
         self._admin_menus = []
         self._user_menus = []
+        self._sub_overview = []
+        self._sub_change = []
         self._registry = {}
 
     def register_admin_menu(self, template):
@@ -32,6 +34,18 @@ class AddonsConfig:
 
     def get_model_inlines(self, model):
         return self._registry.get(model, [])
+
+    def register_sub_overview(self, template):
+        self._sub_overview.append(template)
+
+    def get_sub_overviews(self):
+        return self._sub_overview
+
+    def register_sub_change(self, template):
+        self._sub_change.append(template)
+
+    def get_sub_changes(self):
+        return self._sub_change
 
 
 class DefaultAddonsConfig(LazyObject):

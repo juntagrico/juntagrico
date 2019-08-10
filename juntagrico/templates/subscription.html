@@ -217,6 +217,9 @@
                 </div>
             </div>
         {% endif %}
+        {% for sub_overview_addon in sub_overview_addons %}
+            {% include sub_overview_addon %}
+        {% endfor %}
         {% if subscription.state != 'inactive' %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
