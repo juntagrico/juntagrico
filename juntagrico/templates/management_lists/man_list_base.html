@@ -27,7 +27,7 @@
             </form>
         {% else %}
             <div class="alert alert-warning">
-                {% trans "Das Änderungsdatum ist auf {{ change_date }} gesetzt." %}
+                {% blocktrans %}Das Änderungsdatum ist auf {{ change_date }} gesetzt.{% endblocktrans %}
                 <a href="/my/changedate/stop">
                     {% trans "Beende dies hier" %}
                 </a>
