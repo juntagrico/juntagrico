@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, TextInput, CheckboxInput, DateInput, IntegerField, BooleanField
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput
 from django.utils.html import escape
 from django.utils.translation import gettext as _
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from schwifty import IBAN
 
@@ -11,13 +12,13 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.models import Member, Subscription
 from juntagrico.config import Config
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, HTML
+from crispy_forms.layout import Layout, Field, Submit, HTML, Hidden
 from crispy_forms.bootstrap import FormActions
 
 
 class Slider(Field):
     def __init__(self, *args, **kwargs):
-        super(Slider, self).__init__(template='forms/slider.html', css_class='slider', *args, **kwargs)
+        super().__init__(template='forms/slider.html', css_class='slider', *args, **kwargs)
 
 
 class PasswordForm(Form):
@@ -49,7 +50,7 @@ class MemberProfileForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(MemberProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['first_name'].disabled = True
         self.fields['last_name'].disabled = True
         self.fields['email'].disabled = True
@@ -97,7 +98,7 @@ class SubscriptionForm(ModelForm):
         }
 
 
-class RegisterMemberBaseForm(ModelForm):
+class MemberBaseForm(ModelForm):
     class Meta:
         model = Member
         fields = ('first_name', 'last_name', 'email',
@@ -111,7 +112,7 @@ class RegisterMemberBaseForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(RegisterMemberBaseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
@@ -121,11 +122,11 @@ class RegisterMemberBaseForm(ModelForm):
                             'phone', 'mobile_phone', 'email', 'birthday')
 
 
-class RegisterMemberForm(RegisterMemberBaseForm):
+class RegisterMemberForm(MemberBaseForm):
     agb = BooleanField(required=True)
 
     def __init__(self, *args, **kwargs):
-        super(RegisterMemberForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['agb'].label = self.agb_label()
         self.helper.layout = Layout(
             *self.base_layout,
@@ -154,25 +155,22 @@ class RegisterMemberForm(RegisterMemberBaseForm):
         )
 
 
-class RegisterCoMemberForm(RegisterMemberBaseForm):
-    shares = IntegerField(label=Config.vocabulary('share_pl'), required=False, min_value=0, initial=0)
-
+class EditMemberForm(RegisterMemberForm):
     def __init__(self, *args, **kwargs):
-        super(RegisterCoMemberForm, self).__init__(*args, **kwargs)
-        fields = list(self.base_layout)  # keep first 9 fields
-        if Config.enable_shares():
-            fields.append(Field('shares', css_class='col-md-2'))
+        super().__init__(*args, **kwargs)
+        self.initial['agb'] = True
         self.helper.layout = Layout(
-            *fields,
+            *self.helper.layout[:-1],
             FormActions(
-                Submit('submit', _('{} hinzufügen').format(Config.vocabulary('co_member')), css_class='btn-success'),
-                HTML('<a href="/my/subscription/detail" class="btn">' + _('Abbrechen') + '</a>'),
+                Submit('submit', _('Ändern'), css_class='btn-success'),
             )
         )
 
+
+class CoMemberBaseForm(MemberBaseForm):
     def clean_email(self):
         email = self.cleaned_data['email']
-        existing_member = next(iter(MemberDao.members_by_email(email) or []), None)
+        existing_member = MemberDao.member_by_email(email)
         if existing_member and existing_member.blocked:
             raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktive\
              {}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
@@ -183,19 +181,59 @@ class RegisterCoMemberForm(RegisterMemberBaseForm):
             )))
         return email
 
+    @staticmethod
+    def get_submit_button():
+        return Submit('submit', _('{} hinzufügen').format(Config.vocabulary('co_member')), css_class='btn-success')
 
-class RegisterMultiCoMemberForm(RegisterCoMemberForm):
+
+class AddCoMemberForm(CoMemberBaseForm):
+    shares = IntegerField(label=Config.vocabulary('share_pl'), required=False, min_value=0, initial=0)
+
     def __init__(self, *args, **kwargs):
-        super(RegisterMultiCoMemberForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        fields = list(self.base_layout)  # keep first 9 fields
+        if Config.enable_shares():
+            fields.append(Field('shares', css_class='col-md-2'))
+        self.helper.layout = Layout(
+            *fields,
+            FormActions(
+                self.get_submit_button(),
+                HTML('<a href="/my/subscription/detail" class="btn">' + _('Abbrechen') + '</a>'),
+            )
+        )
+
+
+class RegisterMultiCoMemberForm(CoMemberBaseForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
             *self.base_layout,  # keep first 9 fields
             FormActions(
-                Submit('submit', _('{} hinzufügen').format(Config.vocabulary('co_member')),
-                       css_class='btn-success mb-2'),
-                HTML('<a href="/my/create/subscription/shares" class="btn btn-success mb-2">' +
-                     _('Ich möchte keine {} hinzufügen').format(Config.vocabulary('co_member_pl')) + '</a>'),
-                HTML('<br><a href="/my/create/subscription/shares" class="btn btn-success mb-2">' + _(
-                    'Weiter') + '</a>'),
-                HTML('<a href="/my/subscription/detail" class="btn">' + _('Abbrechen') + '</a>'),
+                self.get_submit_button(),
+                HTML('<a href="?next" class="btn btn-success">' + self.button_next_text() + '</a>'),
+                HTML(f'<a href="{reverse("cs-cancel")}" class="btn">' + _('Abbrechen') + '</a>')
+            )
+        )
+
+    def button_next_text(self):
+        return _('Keine weiteren {} hinzufügen').format(Config.vocabulary('co_member_pl'))
+
+
+class RegisterFirstMultiCoMemberForm(RegisterMultiCoMemberForm):
+    def button_next_text(self):
+        return _('Überspringen')
+
+
+class EditCoMemberForm(CoMemberBaseForm):
+    edit = IntegerField(widget=HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            *self.base_layout,  # keep first 9 fields
+            'edit',
+            FormActions(
+                Submit('submit', _('Ändern'), css_class='btn-success'),
+                HTML('<a href="?" class="btn">' + _('Abbrechen') + '</a>')
             )
         )

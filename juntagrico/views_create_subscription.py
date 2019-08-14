@@ -4,7 +4,6 @@ from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.forms import *
 from juntagrico.models import *
 from juntagrico.util import temporal
@@ -64,7 +63,6 @@ def cs_select_start_date(request, cs_session):
 
 class CSAddMemberView(FormView, ModelFormMixin):
     template_name = 'createsubscription/add_member_cs.html'
-    form_class = RegisterMemberForm
 
     def __init__(self):
         super().__init__()
@@ -72,10 +70,13 @@ class CSAddMemberView(FormView, ModelFormMixin):
         self.object = None
         self.edit = False
 
+    def get_form_class(self):
+        return EditCoMemberForm if self.edit else \
+            RegisterMultiCoMemberForm if self.cs_session.co_members else RegisterFirstMultiCoMemberForm
+
     def get_context_data(self, **kwargs):
         return super().get_context_data(
-            co_members=self.cs_session.co_members,
-            edit_member=self.edit,
+            co_members=self.cs_session.co_members if not self.edit else [],
             **kwargs
         )
 
@@ -86,6 +87,7 @@ class CSAddMemberView(FormView, ModelFormMixin):
             'addr_street': mm.addr_street,
             'addr_zipcode': mm.addr_zipcode,
             'addr_location': mm.addr_location,
+            'edit': self.edit
         }
 
     @method_decorator(create_subscription_session)
@@ -97,19 +99,9 @@ class CSAddMemberView(FormView, ModelFormMixin):
             self.object = self.cs_session.get_co_member(self.edit - 1)
         return super().dispatch(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        member = MemberDao.member_by_email(request.POST.get('email'))
-        # use existing member if not blocked
-        if member is not None:
-            if member.blocked:
-                return self.render_to_response(self.get_context_data(member_blocked=True, **kwargs))
-            return self._add_or_replace_co_member(member)
-        # else: validate form
-        return super().post(request, *args, **kwargs)
-
     def form_valid(self, form):
         # create new member from form data
-        return self._add_or_replace_co_member(Member(**form.cleaned_data))
+        return self._add_or_replace_co_member(Member(**{field: form.cleaned_data[field] for field in form.Meta.fields}))
 
     def _add_or_replace_co_member(self, member):
         if self.edit:

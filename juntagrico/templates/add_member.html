@@ -13,16 +13,8 @@
 {% block allcontent %}
     {% vocabulary "member_pl" as v_member_pl %}
     <div class="offset-md-2 col-md-8">
-        <div class="row mb-4">
-            <div class="col-md-12">
-                {% blocktrans trimmed%}
-                Bei bestehenden {{ v_member_pl }} reicht es, die E-Mail-Adresse einzutragen. Alle anderen Felder
-                werden in diesem Falle ignoriert.
-                {% endblocktrans %}
-            </div>
-        </div>
         <form action="" method="post" id="new_member">
-            {% crispy memberform %}
+            {% crispy form %}
         </form>
     </div>
 {% endblock %}
