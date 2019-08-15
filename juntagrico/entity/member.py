@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.util.users import *
 
 
@@ -65,6 +66,9 @@ class Member(JuntagricoBaseModel):
         future = self.future_subscription is not None
         current = self.subscription is None or not self.subscription.canceled
         return future or not current
+
+    def clean(self):
+        check_member_consistency(self)
 
     def __str__(self):
         return self.get_name()
