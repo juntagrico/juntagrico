@@ -413,7 +413,7 @@ def order_shares(request):
             member = request.user.member
             for num in range(0, shares):
                 Share.objects.create(member=member, paid_date=None)
-            return redirect('{}?referer={}'.format(reverse('share-order-succ'), referer))
+            return redirect('{}?referer={}'.format(reverse('share-order-success'), referer))
     else:
         shareerror = False
         if request.META.get('HTTP_REFERER')is not None:

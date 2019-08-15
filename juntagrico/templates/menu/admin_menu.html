@@ -27,35 +27,35 @@
                 <ul class="nav flex-column admin-menu subadmin-menu">
                     {% if operation_group %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-waitinglist' %}">
+                            <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
                                 {% trans "Warteliste" %}
                             </a>
                         </li>
                     {% endif %}
                     {% if operation_group %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-type-changelist' %}">
+                            <a class="nav-link" href="{% url 'sub-mgmt-changelist' %}">
                                 {% trans "Grössen Änderungen" %}
                             </a>
                         </li>
                     {% endif %}
                     {% if operation_group %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-canceledlist' %}">
+                            <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
                                 {% trans "Kündigungsliste" %}
                             </a>
                         </li>
                     {% endif %}
                     {% if operation_group and has_extra_subscriptions %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'extra-waitinglist' %}">
+                            <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
                                 {% trans "Zusatzabos Warteliste" %}
                             </a>
                         </li>
                     {% endif %}
                     {% if operation_group and has_extra_subscriptions %}
                         <li class="nav-item">
-                            <a class="nav-link"href="{% url 'extra-canceledlist' %}">
+                            <a class="nav-link"href="{% url 'sub-mgmt-extra-canceledlist' %}">
                                 {% trans "Zusatzabos Kündigungsliste" %}
                             </a>
                         </li>
@@ -83,7 +83,7 @@
 
                     {% if operation_group%}
                         <li class="nav-item">
-                            <a class="nav-link"href="{% url 'share-canceledlist' %}">
+                            <a class="nav-link"href="{% url 'share-mgmt-canceledlist' %}">
                                  {% blocktrans %}{{ v_share_pl }} Kündigungsliste{% endblocktrans %}
                             </a>
                         </li>
@@ -110,7 +110,7 @@
                                 |
                             {% endif %}
                             {% if can_filter_subscriptions %}
-                                <a class="nav-link inline"href="{% url 'subs' %}">
+                                <a class="nav-link inline"href="{% url 'filter-subs' %}">
                                     {% vocabulary "subscription_pl" %}
                                 </a>
                             {% endif %}
@@ -122,7 +122,7 @@
                                 {% vocabulary "member_pl" %}
                             </a>
                             |
-                            <a class="nav-link inline" href="{% url 'subs-depot' depot.id %}">
+                            <a class="nav-link inline" href="{% url 'filter-subs-depot' depot.id %}">
                                 {% blocktrans with dn=depot.name %}{{ v_subscription_pl }} im {{ dn }}{% endblocktrans %}
                             </a>
                         </li>
@@ -156,21 +156,21 @@
                 <ul class="nav flex-column admin-menu subadmin-menu">
                     {% if operation_group %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'depot-amountoverview' %}">
+                            <a class="nav-link" href="{% url 'lists-depot-amountoverview' %}">
                                 {% trans "Mengen Übersicht" %}
                             </a>
                         </li>
                     {% endif %}
                     {% if operation_group %}
                         <li class="nav-item">
-                            <a class="nav-link"href="{% url 'depotlist' %}">
+                            <a class="nav-link"href="{% url 'lists-depotlist' %}">
                                 {% vocabulary "depot" %}-{% trans "Listen" %}
                             </a>
                         </li>
                     {% endif %}
                     {% if operation_group %}
                         <li class="nav-item">
-                            <a class="nav-link"href="{% url 'depot-overview' %}">
+                            <a class="nav-link"href="{% url 'lists-depot-overview' %}">
                                 {% vocabulary "depot" %} {% trans "Übersicht" %}
                             </a>
                         </li>

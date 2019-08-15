@@ -12,9 +12,9 @@ class FilterTests(TestCase):
 
     def testSubscrition(self):
         self.client.force_login(self.member.user)
-        response = self.client.get(reverse('subs'))
+        response = self.client.get(reverse('filter-subs'))
         self.assertEqual(response.status_code, 200)
 
     def testSubscritionDepot(self):
-        url = reverse('subs-depot', args=[self.depot.pk])
+        url = reverse('filter-subs-depot', args=[self.depot.pk])
         test_simple_get(self, url)
