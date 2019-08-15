@@ -20,7 +20,7 @@ def handle_sub_activated(sender, instance, **kwargs):
     for member in instance.recipients_all_for_state('waiting'):
         if member.subscription is not None:
             raise ValidationError(
-                _('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription_')),
+                _('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription')),
                 code='invalid')
     for member in instance.recipients_all_for_state('waiting'):
         member.subscription = instance

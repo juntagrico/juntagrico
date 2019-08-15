@@ -1,14 +1,13 @@
-# encoding: utf-8
-
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.util.users import *
 
 
-class Member(models.Model):
+class Member(JuntagricoBaseModel):
     '''
     Additional fields for Django's default user class.
     '''
@@ -55,8 +54,7 @@ class Member(models.Model):
 
     @property
     def active_shares(self):
-        return self.share_set.filter(
-            cancelled_date__isnull=True)
+        return self.share_set.filter(cancelled_date__isnull=True)
 
     @property
     def active_shares_count(self):
@@ -88,11 +86,6 @@ class Member(models.Model):
     @classmethod
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
-
-    @classmethod
-    def pre_save(cls, sender, instance, **kwds):
-        if instance.inactive is True:
-            instance.areas.clear()
 
     class Meta:
         verbose_name = Config.vocabulary('member')
