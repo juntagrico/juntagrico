@@ -73,7 +73,7 @@
         }
 
         .name {
-            width: 270px;
+            width: 300px;
         }
 
 
@@ -93,7 +93,7 @@
     {{ depot.contact.last_name }}
     <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
         <tr>
-            <td style="width:270px;" class="name"></td>
+            <td style="width:300px;" class="name"></td>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ category.name }}<br/><span
                         style="font-size:11px">{{ category.description }}</span></th>
@@ -117,7 +117,7 @@
             <td></td>
         </tr>
         <tr>
-            <th style="width:270px;">{% trans "Name" %}</th>
+            <th style="width:300px;">{% trans "Name" %}</th>
             {% for type in types %}
                 <th></th>
             {% endfor %}
@@ -126,7 +126,7 @@
         </tr>
         {% for subscription in depot.subscription_cache.all %}
             <tr>
-                <td style="width:270px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
+                <td style="width:300px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
                 {% for subscription_id in subscription_ids %}
                     <td  class="top-border left-border">
                         {% if subscription|subscriptions_amount:subscription_id %}
@@ -137,8 +137,8 @@
                         {% if subscription|extra_subscription:type.name %}
                             {{ subscription|extra_subscription_amount:type.name }}{% endif %}</td>
                 {% endfor %}
-                <td style="width:60px;" class="top-border left-border"></td>
-                <td style="width:60px;" class="top-border left-border right-border"></td>
+                <td style="width:80px;" class="top-border left-border"></td>
+                <td style="width:80px;" class="top-border left-border right-border"></td>
             </tr>
             {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 and not forloop.last %}
                 </table>
@@ -146,7 +146,7 @@
                 <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} {% trans "Fortsetzung" %}</h2>
                 <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
                 <tr>
-                    <td style="width:270px;" class="name"></td>
+                    <td style="width:300px;" class="name"></td>
                     {% for category in categories %}
                         <th colspan="{{ category.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ category.name }}<br/><span
                                 style="font-size:11px">{{ category.description }}</span></th>
@@ -170,7 +170,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <th style="width:270px;">{% trans "Name" %}</th>
+                    <th style="width:300px;">{% trans "Name" %}</th>
                     {% for type in types %}
                         <th></th>
                     {% endfor %}
