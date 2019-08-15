@@ -252,7 +252,7 @@ class Assignment(JuntagricoBaseModel):
         return self.job.type.activityarea.core
 
     @classmethod
-    def pre_save(self, sender, instance, **kwargs):
+    def pre_save(cls, sender, instance, **kwargs):
         instance.core_cache = instance.is_core()
 
     class Meta:
