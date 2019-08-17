@@ -215,7 +215,7 @@ class SignupView(FormView, ModelFormMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        self.cs_session.main_member = Member(**{field: form.cleaned_data[field] for field in form.Meta.fields})
+        self.cs_session.main_member = form.instance
         return redirect(self.cs_session.next_page())
 
     def render(self, **kwargs):
@@ -260,8 +260,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def form_valid(self, form):
         # create new member from form data
-        member = Member(**{field: form.cleaned_data[field] for field in form.Meta.fields})
-        create_or_update_member(member, self.subscription, form.cleaned_data['shares'], self.request.user.member)
+        create_or_update_member(form.instance, self.subscription, form.cleaned_data['shares'], self.request.user.member)
         return self._done()
 
     def _done(self):

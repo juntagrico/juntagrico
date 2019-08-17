@@ -51,15 +51,12 @@ class CSSessionObject(SessionObject):
     def co_members(self):
         return self._co_members.copy()
 
-    def replace_co_member(self, index, new_co_member):
-        new_co_member.new_shares = getattr(self._co_members[index], 'new_shares', 0)
-        self._co_members[index] = new_co_member
-
     def get_co_member(self, index):
         co_member = self._co_members[index]
         return co_member
 
     def add_co_member(self, new_co_member):
+        new_co_member.new_shares = 0
         self._co_members.append(new_co_member)
 
     def remove_co_member(self, index):

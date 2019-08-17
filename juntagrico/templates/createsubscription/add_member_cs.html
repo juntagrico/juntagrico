@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <form action="" method="post" id="new_member">
+        <form action="" method="post" id="new_member" novalidate>
             {% crispy form %}
         </form>
 
@@ -40,7 +40,7 @@
             <h4>{{ v_co_member_pl }}</h4>
             {% for co_member in co_members %}
                 <p>{{ co_member.first_name }} {{ co_member.last_name }}
-                    <a href="?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>
+                    {% if not co_member.pk %}<a href="?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
                     <a href="?remove={{forloop.counter}}" class="delete"><i class="fas fa-trash"></i></a>
                 </p>
             {% endfor %}

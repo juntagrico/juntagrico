@@ -69,10 +69,16 @@ class CSAddMemberView(FormView, ModelFormMixin):
         self.cs_session = None
         self.object = None
         self.edit = False
+        self.existing_emails = []
 
     def get_form_class(self):
         return EditCoMemberForm if self.edit else \
             RegisterMultiCoMemberForm if self.cs_session.co_members else RegisterFirstMultiCoMemberForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs['existing_emails'] = self.existing_emails
+        return form_kwargs
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
@@ -97,15 +103,26 @@ class CSAddMemberView(FormView, ModelFormMixin):
         # function: edit co-member from list
         if self.edit:
             self.object = self.cs_session.get_co_member(self.edit - 1)
+
+        # collect used email addresses to block reusage
+        self.existing_emails.append(cs_session.main_member.email)
+        for co_member in self.cs_session.co_members:
+            if co_member is not self.object:
+                self.existing_emails.append(co_member.email)
+
         return super().dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+        if form.existing_member:  # use existing member if found
+            return self._add_or_replace_co_member(form.existing_member)
+        return super().form_invalid(form)
 
     def form_valid(self, form):
         # create new member from form data
-        return self._add_or_replace_co_member(Member(**{field: form.cleaned_data[field] for field in form.Meta.fields}))
+        return self._add_or_replace_co_member(form.instance)
 
     def _add_or_replace_co_member(self, member):
         if self.edit:
-            self.cs_session.replace_co_member(self.edit - 1, member)
             return redirect(self.cs_session.next_page())
         else:
             self.cs_session.add_co_member(member)

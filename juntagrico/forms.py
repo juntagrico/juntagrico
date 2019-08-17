@@ -113,6 +113,7 @@ class MemberBaseForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.existing_member = None
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
@@ -168,17 +169,28 @@ class EditMemberForm(RegisterMemberForm):
 
 
 class CoMemberBaseForm(MemberBaseForm):
+    def __init__(self, *args, existing_emails=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.existing_emails = existing_emails or []  # list of emails that can not be used
+
     def clean_email(self):
         email = self.cleaned_data['email']
+        if email in self.existing_emails:
+            raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
+                                            .format(Config.vocabulary('co_member_pl'))))
         existing_member = MemberDao.member_by_email(email)
-        if existing_member and existing_member.blocked:
-            raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktive\
-             {}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
-                Config.vocabulary('subscription'),
-                '<a href="mailto:{0}">{0}</a>'.format(Config.info_email()),
-                Config.vocabulary('member_type_pl'),
-                Config.vocabulary('co_member_pl')
-            )))
+        if existing_member:
+            if existing_member.blocked:
+                raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktiv\
+                 {}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
+                    Config.vocabulary('subscription'),
+                    '<a href="mailto:{0}">{0}</a>'.format(Config.info_email()),
+                    Config.vocabulary('member_type_pl'),
+                    Config.vocabulary('co_member_pl')
+                )))
+            else:
+                # store existing member for reevaluation
+                self.existing_member = existing_member
         return email
 
     @staticmethod
@@ -229,6 +241,12 @@ class EditCoMemberForm(CoMemberBaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # do not edit existing co-members
+        if self.instance.pk:
+            for field in self.fields.values():
+                field.disabled = True
+
         self.helper.layout = Layout(
             *self.base_layout,  # keep first 9 fields
             'edit',
