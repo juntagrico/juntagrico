@@ -59,7 +59,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        <form id="share{{ share.id }}" method="post" action="/my/mails">
+                        <form id="share{{ share.id }}" method="post" action="{% url 'mail' %}">
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ share.member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
@@ -69,7 +69,7 @@
                         </form>
                     </td>
                     <td>
-                        <a href="/my/payout/share/{{ share.id }}/"class="btn btn-success">
+                        <a href="{% url 'share-payout' share.id %}/"class="btn btn-success">
                             {% trans "ausbuchen" %}
                         </a>
                     </td>

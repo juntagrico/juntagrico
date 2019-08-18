@@ -15,7 +15,7 @@
             {{ v_member_pl }}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/members/">
+            <a href="{% url 'export-members' %}">
                 {% trans "exportieren" %}
             </a>
         </div>
@@ -25,7 +25,7 @@
             {% blocktrans %}{{ v_member_pl }} mit {{ v_assignment_pl }} und Tätigketsbereichen{% endblocktrans %}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/membersfilter">
+            <a href="{% url 'export-membersfilter' %}">
                 {% trans "exportieren" %}
             </a>
         </div>
@@ -35,7 +35,7 @@
             {{ v_share_pl }}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/shares">
+            <a href="{% url '' %}">
                 {% trans "exportieren" %}
             </a>
         </div>

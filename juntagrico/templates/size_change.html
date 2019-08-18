@@ -16,7 +16,7 @@
         <div class="alert alert-success">
             {% blocktrans %}Die {{ v_subscription }}-Grösse wurde erfolgreich geändert.{% endblocktrans %}
             <br/>
-            <a href="/my/subscription/detail/{{ subscription.id }}/" class="alert-link">
+            <a href="{% url 'sub-detail' %}" class="alert-link">
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
             </a>
         </div>
@@ -24,7 +24,7 @@
         <div class="alert alert-danger">
             {% blocktrans %}Es sind zu wenig {{ v_share_pl }} vorhanden für diese Grösse!{% endblocktrans %}
             <br/>
-            <a href="/my/order/share" class="alert-link">
+            <a href="{% url 'share-order' %}" class="alert-link">
                 {% blocktrans %}Bestelle hier mehr {{ v_share_pl }}.{% endblocktrans %}
             </a>
         </div>
@@ -43,7 +43,7 @@
         {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
             <div class="row mb-3">
                 <div class="col-md-12">
-                    <a href="/my/subscription/cancel/{{ subscription.id }}/"class="btn btn-danger">
+                    <a href="{% url 'sub-cancel' subscription.id %}"class="btn btn-danger">
                         {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
                     </a>
                 </div>

@@ -23,7 +23,7 @@
                 {% endblocktrans %}
             {% endif %}
             <br/>
-            <a href="/my/subscription/detail/{{ subscription.id }}/">
+            <a href="{% url 'sub-detail-id' subscription.id %}/">
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
             </a>
         </div>

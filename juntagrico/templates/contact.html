@@ -14,7 +14,7 @@
         </div>
     {% else %}
         <br/>
-        <form action="/my/contact" method="POST">
+        <form action="{% url 'contact' %}" method="POST">
             {% csrf_token %}
             <div class="form-group row">
                 <label class="col-md-3">

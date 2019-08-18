@@ -44,7 +44,7 @@
             {% for subscription in management_list %}
                 <tr>
                     <td>
-                        <a href="/admin/juntagrico/subscription/{{ subscription.id }}/change/">
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                             {{ subscription.overview }}
                         </a>
                     </td>
@@ -55,7 +55,7 @@
                         {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
                     </td>
                     <td>
-                        <form id="subscription{{ subscription.id }}" method="post" action="/my/mails">
+                        <form id="subscription{{ subscription.id }}" method="post" action="{% url 'mail' %}">
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ subscription.primary_member.email }}"/>
                             <input type="hidden"name="recipients_count"value="1"/>
@@ -81,7 +81,7 @@
                         {{ subscription.creation_date|date:"Y-m-d" }}
                     </td>
                     <td>
-                        <a href="/my/subscription/activate/{{ subscription.id }}/"class="btn btn-success">
+                        <a href="{% url 'sub-activate' subscription.id %}"class="btn btn-success">
                             {% trans "aktivieren" %}
                         </a>
                     </td>

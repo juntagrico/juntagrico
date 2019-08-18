@@ -75,7 +75,7 @@ def send_email_intern(request):
                            request.POST.get('textMessage'),
                            emails, attachements, sender=sender)
         sent = len(emails)
-    return redirect('/my/mails/send/result/' + str(sent) + '/')
+    return redirect('mail-result', numsent=sent)
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -88,8 +88,8 @@ def send_email_result(request, numsent):
 
 
 @permission_required('juntagrico.can_send_mails')
-def mails(request, enhanced=None):
-    return my_mails_intern(request, enhanced)
+def mails(request, mail_url='mail'):
+    return my_mails_intern(request, mail_url)
 
 
 @permission_required('juntagrico.is_depot_admin')
@@ -102,7 +102,7 @@ def mails_area(request):
     return my_mails_intern(request, 'area')
 
 
-def my_mails_intern(request, enhanced, error_message=None):
+def my_mails_intern(request, mail_url, error_message=None):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'recipient_type': request.POST.get('recipient_type'),
@@ -112,7 +112,7 @@ def my_mails_intern(request, enhanced, error_message=None):
         'filter_value': request.POST.get('filter_value'),
         'mail_subject': request.POST.get('subject'),
         'mail_message': request.POST.get('message'),
-        'enhanced': enhanced,
+        'mail_url': mail_url,
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
@@ -140,7 +140,7 @@ def filters_depot(request, depot_id):
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'enhanced': 'depot'
+        'mail_url': 'mail-depot'
     })
     return render(request, 'members.html', renderdict)
 
@@ -153,7 +153,7 @@ def filters_area(request, area_id):
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'enhanced': 'area'
+        'mail-url': 'mail-area'
     })
     return render(request, 'members.html', renderdict)
 

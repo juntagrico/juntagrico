@@ -1,7 +1,6 @@
 from functools import wraps
 
 from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponseRedirect
 
 from juntagrico.models import Subscription
 from juntagrico.util.sessions import SessionObjectManager, CSSessionObject
@@ -17,9 +16,9 @@ def primary_member_of_subscription(view):
             if subscription.primary_member.id == member.id:
                 return view(request, *args, **kwargs)
             else:
-                return HttpResponseRedirect('/my/subscription/detail/')
+                return redirect('sub-detail')
         else:
-            return HttpResponseRedirect('/accounts/login/?next=' + str(request.get_full_path()))
+            return redirect('login')
 
     return wrapper
 
