@@ -57,7 +57,7 @@ body#juntagrico-views-profile .asteriskField {
 }
 
 /* logo stuff checked */
-.juntagrico-logo {
+.juntagrico_logo {
     background: url(/static/img/juntagrico.png) 0 0;
     display: inline-block;
     width: 580px;
