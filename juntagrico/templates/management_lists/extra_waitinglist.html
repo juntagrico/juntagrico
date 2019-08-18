@@ -33,7 +33,7 @@
                         {{ extrasubscription.main_subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}
                     </td>
                     <td>
-                        <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="/my/mails">
+                        <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="{% url 'mail' %}">
                             {% csrf_token %}
                             <input type="hidden" name="recipients"value="{{ extrasubscription.main_subscription.primary_member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
@@ -43,7 +43,7 @@
                         </form>
                     </td>
                     <td>
-                        <a href="/my/extra/activate/{{ extrasubscription.id }}/"class="btn btn-success">
+                        <a href="{% url 'extra-activate' extrasubscription.id %}/"class="btn btn-success">
                             {% trans "aktivieren" %}
                         </a>
                     </td>

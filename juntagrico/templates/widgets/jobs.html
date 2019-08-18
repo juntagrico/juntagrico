@@ -10,7 +10,7 @@
             <ul class="unstyled next-jobs">
                 {% for job in next_jobs %}
                     <li>
-                        <a href="/my/jobs/{{ job.id }}" {% if job.canceled %}class="canceled"{% endif %}>
+                        <a href="{% url 'job' job.id %}" {% if job.canceled %}class="canceled"{% endif %}>
                             {{ job.type.name }}
                         </a>
                         <br/>

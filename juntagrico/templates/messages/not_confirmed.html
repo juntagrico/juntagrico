@@ -2,7 +2,7 @@
 {% load config %}
 <div class="alert alert-danger" role="alert">
     {% trans "Deine Email Adresse ist nich verifiziert." %}
-    <a href="/my/sendconfirm" class="alert-link">
+    <a href="{% url 'send-confirm' %}" class="alert-link">
         {% trans "Fordere hier einen neuen Link an." %}
     </a>
 </div>

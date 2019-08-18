@@ -8,23 +8,23 @@
         </h5>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.subscription }}" href="/my/subscription/detail/">
+        <a class="nav-link {{ menu.subscription }}" href="{% url 'sub-detail' %}">
             {{ v_subscription }}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.jobs }}" href="/my/jobs">
+        <a class="nav-link {{ menu.jobs }}" href="{% url 'jobs' %}">
             {% trans "Einsätze" %}
         </a>
         {% if menu.jobs == 'active' %}
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
-                    <a class="nav-link" href="/my/memberjobs">
+                    <a class="nav-link" href="{% url 'memberjobs' %}">
                         {% trans "Meine Einsätze" %}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/my/jobs/all">
+                    <a class="nav-link" href="{% url 'jobs-all' %}">
                         {% trans "Aktuelle und vergangene Einsätze" %}
                     </a>
                 </li>
@@ -33,23 +33,23 @@
     </li>
     {% if show_deliveries %}
         <li class="nav-item">
-            <a class="nav-link {{ menu.deliveries }}" href="/my/deliveries">
+            <a class="nav-link {{ menu.deliveries }}" href="{% url 'deliveries' %}">
                 {% trans "Lieferungen" %}
             </a>
         </li>
     {% endif %}
     <li class="nav-item">
-        <a class="nav-link {{ menu.area }}" href="/my/areas">
+        <a class="nav-link {{ menu.area }}" href="{% url 'areas' %}">
             {% trans "Tätigkeitsbereiche" %}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.personalInfo }}" href="/my/profile">
+        <a class="nav-link {{ menu.personalInfo }}" href="{% url 'profile' %}">
             {% trans "Personalien" %}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.contact }}" href="/my/contact">
+        <a class="nav-link {{ menu.contact }}" href="{% url 'contact' %}">
             {% trans "Kontakt" %}
         </a>
     </li>
@@ -64,7 +64,7 @@
         </a>
     </li>
     <li class=" nav-item main-menu-small">
-        <a class="nav-link yellow" href="/logout">
+        <a class="nav-link yellow" href="{% url 'logout' %}">
             {% trans "Abmelden" %}
         </a>
     </li>

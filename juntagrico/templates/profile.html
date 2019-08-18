@@ -24,7 +24,7 @@
     </form>
     <div class="row mb-2">
         <div class="offset-md-3 col-md-9">
-            <a href="/my/password" class="btn btn-success">
+            <a href="{% url 'password' %}" class="btn btn-success">
                 {% trans "Passwort ändern" %}
             </a>
         </div>
@@ -32,7 +32,7 @@
     {% if not member.canceled %}
         <div class="row mb-2">
             <div class="offset-md-3 col-md-9">
-                <a href="/my/cancel/membership" class="btn btn-danger">
+                <a href="{% url 'cancel-membership' %}" class="btn btn-danger">
                     {% trans "Mitgliedschaft künden" %}
                 </a>
             </div>

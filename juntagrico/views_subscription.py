@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
@@ -173,7 +174,7 @@ def extra_change(request, subscription_id):
                 for x in range(value):
                     ExtraSubscription.objects.create(
                         main_subscription=subscription, type=type)
-        return redirect('/my/subscription/change/extra/'+str(subscription.id)+'/')
+        return redirect('extra-change', subscription_id=subscription.id)
     renderdict = get_menu_dict(request)
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_extra_types(),
@@ -232,7 +233,7 @@ def confirm(request, hash):
             member.confirmed = True
             member.save()
 
-    return redirect('/my/home')
+    return redirect('home')
 
 
 class AddCoMemberView(FormView, ModelFormMixin):
@@ -264,7 +265,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return self._done()
 
     def _done(self):
-        return redirect('/my/subscription/detail/' + str(self.subscription.id) + '/')
+        return redirect('sub-detail-id', subscription_id=self.subscription.id)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -331,7 +332,7 @@ def cancel_subscription(request, subscription_id):
             send_subscription_canceled(subscription, message)
         elif subscription.active is False and subscription.deactivation_date is None:
             subscription.delete()
-        return redirect('/my/subscription/detail')
+        return redirect('sub-detail')
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -386,7 +387,7 @@ def order_shares(request):
             member = request.user.member
             for num in range(0, shares):
                 Share.objects.create(member=member, paid_date=None)
-            return redirect('/my/order/share/success?referer='+referer)
+            return redirect('{}?referer={}'.format(reverse('share-order-success'), referer))
     else:
         shareerror = False
         if request.META.get('HTTP_REFERER')is not None:

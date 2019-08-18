@@ -11,7 +11,7 @@
     {% vocabulary "co_member_pl" as v_co_member_pl %}
     {% vocabulary "share" as v_share %}
     {% config "enable_shares" as enable_shares %}
-    <form action="/my/mails/send{% if enhanced != None %}/{{ enhanced }}{% endif %}" method="POST"class="form-horizontal" enctype="multipart/form-data">
+    <form action="{% url mail_url %}" method="POST"class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group row">
             <label for="sender-email" class="col-md-2">

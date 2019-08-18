@@ -12,7 +12,7 @@
     </div>
     <div class="row mb-5">
         <div class="col-md-12">
-            <a href="/my/assignments">
+            <a href="{% url 'jobs' %}">
                 {% trans "Hier alle Arbeitseinsätze anzeigen" %}
             </a>
         </div>
@@ -27,7 +27,7 @@
     {% for area in areas %}
         <div class="row mb-1">
             <div class="col-md-12">
-                <a href="/my/area/{{ area.id }}" class="{% if area.core %}core{% endif %}">
+                <a href="{% url 'area' area.id %}" class="{% if area.core %}core{% endif %}">
                     {{ area.name }}
                 </a>
             </div>

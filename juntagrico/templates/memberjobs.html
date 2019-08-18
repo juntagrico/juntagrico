@@ -10,7 +10,7 @@
     {% for assignment in assignments %}
         <div class="row align-items-center mt-2">
             <div class="col-md-3">
-                <a href="/my/jobs/{{ assignment.job.id }}">
+                <a href="{% url 'job' assignment.job.id %}">
                     {{ assignment.job.type }}
                 </a>
             </div>

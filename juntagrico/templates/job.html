@@ -105,7 +105,7 @@
                 {% trans "Kontaktieren" %}:
             </div>
             <div class="col-md-5">
-                <form id="email-sender" action="/my/mails" method="POST">
+                <form id="email-sender" action="{% url 'mail' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="recipients" id="recipients" value="{{ emails }}"/>
                     <input type="hidden" name="recipients_count" id="recipients_count"value="{{ number_of_participants }}"/>
