@@ -2,9 +2,10 @@
 {% load i18n %}
 {% load config %}
 {% block all_page_title %}
-    <div class="offset-md-3 col-md-9 juntagrico">
+    {% vocabulary "depot" as v_depot %}
+    <div class="page-title offset-md-2 col-md-8">
         <h3>
-            {% vocabulary "depot" %}
+            {% blocktrans %}{{ v_depot }} auswählen{% endblocktrans %}
         </h3>
     </div>
 {% endblock %}
@@ -46,7 +47,7 @@
                     <button type="submit" class="btn btn-success">
                         {% trans "Weiter" %}
                     </button>
-                    <a href="{% url cs-cancel %}" class="btn">
+                    <a href="{% url 'cs-cancel' %}" class="btn">
                         {% trans "Abbrechen" %}
                     </a>
                 </div>

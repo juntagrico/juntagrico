@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load config %}
 {% block all_page_title %}
-    <div class="offset-md-3 col-md-9 juntagrico">
+    <div class="page-title offset-md-2 col-md-8">
         <h3>
             {% trans "Wähle dein Startdatum" %}
         </h3>
@@ -12,11 +12,11 @@
     {% vocabulary "subscription" as v_subscription %}
     <div class="offset-md-2 col-md-8">
         <div class="row mb-4">
-            <div class="row co-md-12">
+            <div class="col-md-12">
                 {% trans "Info" %}:
                 {% blocktrans trimmed with sd=start_date|date:"d.m.Y" %}
                 Normalerweise ist der {{ v_subscription }}-Start der Start eines Geschäftsjahres. Das nächste
-                Startdatum wäre der {{ sd }}.
+                Startdatum wäre der <b>{{ sd }}</b>.
                 Es kann jedoch vorkommen, dass unter dem Jahr 1 {{ v_subscription }} frei wird. Würdest du
                 gerne schon früher einsteigen falls 1 {{ v_subscription }} frei wird, dann kannst du das
                 Startdatum unten anpassen.
@@ -49,7 +49,7 @@
                     <button type="submit" class="btn btn-success">
                         {% trans "Weiter" %}
                     </button>
-                    <a href="{% url cs-cancel %}" class="btn">
+                    <a href="{% url 'cs-cancel' %}" class="btn">
                         {% trans "Abbrechen" %}
                     </a>
                 </div>

@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load crispy_forms_tags %}
 {% block all_page_title %}
     {% vocabulary "co_member" as v_co_member %}
-    <div class="offset-md-3 col-md-9 juntagrico">
+    <div class="page-title offset-md-2 col-md-8">
         <h3>
             {% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}
         </h3>
     </div>
 {% endblock %}
 {% block allcontent %}
-    {% config "info_email" as c_info_email %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "member_pl" as v_member_pl %}
     {% vocabulary "member_type_pl" as v_member_type_pl %}
@@ -26,188 +26,27 @@
                 {% endblocktrans %}
                 <br/>
                 {% blocktrans trimmed %}
-                Bei bestehenden {{ v_member_pl }} reicht es, die Emailadresse einzutragen. Alle anderen Felder
-                werden in diesem Falle ignoriert.
-                {% endblocktrans %}
-                <br/>
-                {% blocktrans trimmed %}
                 Falls du keine {{ v_co_member_pl }} hinzufügen möchtest, klicke auf "Überspringen".<br>
                 Wenn du alle {{ v_co_member_pl }} hinzugefügt hast, klicke auf "Keine weiteren {{ v_co_member_pl }} hinzufügen".
                 {% endblocktrans %}
             </div>
         </div>
-        <form action="" method="post" id="new_member">
-            {% csrf_token %}
-            <div class="form-group row {% if form.last_name.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_last_name">
-                    {% trans "Name" %} *
-                </label>
-                <div class="col-md-9">
-                    {{ form.last_name }}
-                    {% if form.last_name.errors %}
-                        <span class="help-inline">
-                            {% trans "Name ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.first_name.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_first_name">
-                    {% trans "Vorname" %} *
-                </label>
-                <div class="col-md-9">
-                    {{ form.first_name }}
-                    {% if form.first_name.errors %}
-                        <span class="help-inline">
-                            {% trans "Vorname ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.addr_street.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_addr_street">
-                    {{ form.addr_street.label }} *
-                </label>
-                <div class="col-md-9">
-                    {{ form.addr_street }}
-                    {% if form.addr_street.errors %}
-                        <span class="help-inline">
-                            {% trans "Strasse ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.addr_zipcode.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_addr_zipcode">
-                    {{ form.addr_zipcode.label }} *
-                </label>
-                <div class="col-md-9">
-                    {{ form.addr_zipcode }}
-                    {% if form.addr_zipcode.errors %}
-                        <span class="help-inline">
-                            {% trans "PLZ ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.addr_location.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_addr_location">
-                    {{ form.addr_location.label }} *
-                </label>
-                <div class="col-md-9">
-                    {{ form.addr_location }}
-                    {% if form.addr_location.errors %}
-                        <span class="help-inline">
-                            {% trans "Ort ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.phone.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_phone">
-                    {{ form.phone.label }} *
-                </label>
-                <div class="col-md-9">
-                    {{ form.phone }}
-                    {% if form.phone.errors %}
-                        <span class="help-inline">
-                            {% trans "Telefon ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.mobile_phone.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_mobile_phone">
-                    {{ form.mobile_phone.label }} &nbsp;
-                </label>
-                <div class="col-md-9">
-                    {{ form.mobile_phone }}
-                    {% if form.mobile_phone.errors %}
-                        <span class="help-inline">
-                            {% trans "Mobile ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.email.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="id_email">
-                    {% trans "E-Mail Adresse" %} *
-                </label>
-                <div class="col-md-9">
-                    {{ form.email }}
-                    {% if form.email.errors %}
-                        <span class="help-inline">
-                            {% trans "E-Mail ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="form-group row {% if form.birthday.errors %}invalid{% endif %}">
-                <label class="col-md-3" for="birthday">
-                    {% trans "Geburtstag" %}
-                </label>
-                <div class="col-md-9">
-                    {{ form.birthday }}
-                    {% if form.birthday.errors %}
-                        <span class="help-inline">
-                            {% trans "Geburtstag ungültig" %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            {% if member_blocked %}
-                <div class="alert alert-danger">
-                    {% blocktrans trimmed %}
-                    Die Person mit dieser Email-Adresse ist bereits aktive {{ v_subscription }}-BezierIn.
-                    Bitte meldet euch bei
-                    <a href="mailto:{{ c_info_email }}">
-                        {{ c_info_email }}
-                    </a>
-                    , wenn ihr
-                    bestehende {{ v_member_type_pl }} als {{ v_co_member_pl }} hinzufügen möchtet.
-                    {% endblocktrans %}
-                </div>
-            {% endif %}
-            <div class="form-actions row">
-                <div class="offset-md-3 col-md-9">
-                    {% if edit_member == 0 %}
-                        <button type="submit" class="btn btn-success" formnovalidate>
-                            {% blocktrans %}{{ v_co_member }} hinzufügen{% endblocktrans %}
-                        </button>
-                        <a href="?next" class="btn btn-success">
-                            {% if co_members|length == 0 %}
-                                {% trans "Überspringen" %}
-                            {% else %}
-                                {% blocktrans %}Keine weiteren {{ v_co_member_pl }} hinzufügen{% endblocktrans %}
-                            {% endif %}
-                        </a>
-                        <a href="{% url 'cs-cancel' %}" class="btn">
-                            {% trans "Abbrechen" %}
-                        </a>
-                    {% else %}
-                        <button type="submit" class="btn btn-success" formnovalidate>
-                            {% trans "Ändern" %}
-                        </button>
-                        <a href="?" class="btn">
-                            {% trans "Abbrechen" %}
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-            {% if edit_member > 0 %}
-                <input type="hidden" name="edit" value="{{edit_member}}">
-            {% elif co_members|length > 0 %}
-                <h4>{{ v_co_member_pl }}</h4>
-                {% for co_member in co_members %}
-                    <p>{{ co_member.first_name }} {{ co_member.last_name }}
-                        <a href="?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>
-                        <a href="?remove={{forloop.counter}}" class="delete"><i class="fas fa-trash"></i></a>
-                    </p>
-                {% endfor %}
-                <a href="?next" class="btn btn-success">
-                    {% trans "Fertig" %}
-                </a>
-            {% endif %}
+
+        <form action="" method="post" id="new_member" novalidate>
+            {% crispy form %}
         </form>
+
+        {% if co_members|length > 0 %}
+            <h4>{{ v_co_member_pl }}</h4>
+            {% for co_member in co_members %}
+                <p>{{ co_member.first_name }} {{ co_member.last_name }}
+                    {% if not co_member.pk %}<a href="?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
+                    <a href="?remove={{forloop.counter}}" class="delete"><i class="fas fa-trash"></i></a>
+                </p>
+            {% endfor %}
+            <a href="?next" class="btn btn-success">
+                {% trans "Fertig" %}
+            </a>
+        {% endif %}
     </div>
 {% endblock %}

@@ -3,11 +3,9 @@
 {% load config %}
 {% block all_page_title %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
-    <div class="offset-md-3 col-md-9 juntagrico">
-        <h3>
-            {% blocktrans %}Herzlich willkommen bei {{ v_d_enriched_organisation }}!{% endblocktrans %}
-        </h3>
-    </div>
+    <h3 class="page-title">
+        {% blocktrans %}Herzlich willkommen bei {{ v_d_enriched_organisation }}!{% endblocktrans %}
+    </h3>
 {% endblock %}
 {% block allcontent %}
     <div class="alert alert-success">
@@ -18,6 +16,4 @@
         {% endif %}
         {% trans "Du erhälst eine Email mit allen weiteren infos an die von dir angegebene Emailadresse ( unsere Mails verirren sich manchmal in den SPAM Ordner )." %}
     </div>
-    <br/>
-    <br/>
 {% endblock %}

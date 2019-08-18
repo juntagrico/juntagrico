@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "member_pl" as v_member_pl %}
     <h3>
@@ -9,10 +10,6 @@
 {% endblock %}
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
-    <style>
-        body > .container
-        {width: 95%;}
-    </style>
     <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="recipients" id="recipients"/>

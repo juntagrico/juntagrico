@@ -7,6 +7,7 @@
             {% config "adminportal_name" %}
         </title>
         <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="shortcut icon" href="{% config "favicon" %}"/>
         <link href="{% config "bootstrap" %}" rel="stylesheet"/>
         <link href="/static/external/mid/css/materialdesignicons.min.css" rel="stylesheet"/>
@@ -18,8 +19,8 @@
         <link href="/static/css/slider.css" rel="stylesheet"/>
         <link href="{% config "style_sheet" %}" rel="stylesheet"/>
     </head>
-    <body>
-        <div class="container">
+    <body id="{{ view_name }}" class="{% block body_extra_classes %}{% endblock %}">
+        <div class="page-container container">
             <div class="bordertop">
             </div>
             <div class="borderleft">
@@ -28,16 +29,16 @@
             </div>
             <div class="borderbottom">
             </div>
-            <div class="row myjuntagrico">
-                <div class="col-md-12">
-                    <a href="{% url 'home' %}>
-                        <span class="juntagrico_logo">
+            <div class="logo-row row">
+                <div class="logo-col col-md-12">
+                    <a href="{% url 'home' %}">
+                        <span class="juntagrico-logo">
                         </span>
                     </a>
                 </div>
             </div>
             {% if user.is_impersonate %}
-                <div class="row myjuntagrico">
+                <div class="impersonate-row row">
                     <div class="col-md-12">
                         <div class="alert alert-warning">
                             {% blocktrans trimmed with fn=user.member.first_name ln=user.member.last_name %}
@@ -51,20 +52,17 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="row myjuntagrico">
+            <div class="all-page-title row">
                 {% block all_page_title %}
-                    <div class="col-md-3">
-                        &nbsp;
-                    </div>
-                    <div class="col-md-9 juntagrico">
+                    <div class="page-title offset-md-3 col-md-9">
                         {% block page_title %}
                         {% endblock %}
                     </div>
                 {% endblock %}
             </div>
-            <div class="row juntagrico">
+            <div class="allcontent row">
                 {% block allcontent %}
-                    <div class="col-md-3">
+                    <div class="sidebar col-md-3">
                         {% include "menu/user_menu.html" %}
                         {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
                             {% include "menu/admin_menu.html" %}
@@ -72,15 +70,15 @@
                         {% include "widgets/assignements.html" %}
                         {% include "widgets/jobs.html" %}
                     </div>
-                    <div class="col-md-9">
-                        <div class="row">
-                            <div class="messages col-md-12">
+                    <div class="content-container col-md-9">
+                        <div class="messages row">
+                            <div class="col-md-12">
                                 {% for message in messages %}
                                     {{ message }}
                                 {% endfor %}
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="content row">
                             <div class="col-md-12">
                                 {% block content %}
                                 {% endblock %}
@@ -89,7 +87,7 @@
                     </div>
                 {% endblock %}
             </div>
-            <div class="row footer">
+            <div class="footer row">
             </div>
         </div>
         <script type="text/javascript" src="/static/external/jquery-3.3.1/jquery-3.3.1.min.js">

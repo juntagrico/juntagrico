@@ -25,14 +25,14 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
-from juntagrico.forms import RegisterMemberForm
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
 from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_or_update_member, replace_subscription_types
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
-from juntagrico.views import get_menu_dict
+from juntagrico.views import get_menu_dict, get_page_dict
 
 
 @login_required
@@ -186,17 +186,19 @@ def extra_change(request, subscription_id):
 
 class SignupView(FormView, ModelFormMixin):
     template_name = 'signup.html'
-    form_class = RegisterMemberForm
 
     def __init__(self):
         super().__init__()
         self.cs_session = None
         self.object = None
 
+    def get_form_class(self):
+        return EditMemberForm if self.cs_session.edit else RegisterMemberForm
+
     def get_context_data(self, **kwargs):
         return super().get_context_data(
+            **get_page_dict(self.request),
             menu={'join': 'active'},
-            edit_mode=self.cs_session.edit,
             **kwargs
         )
 
@@ -213,24 +215,9 @@ class SignupView(FormView, ModelFormMixin):
         self.object = self.cs_session.main_member
         return super().dispatch(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        agb_checked = request.POST.get('agb') == 'on'
-        if not agb_checked:
-            return self.render(agb_checked=agb_checked, agb_error=True, **kwargs)
-        else:
-            return super().post(request, *args, **kwargs)
-
     def form_valid(self, form):
-        # check if user already exists
-        email = form.cleaned_data['email']
-        if User.objects.filter(email__iexact=email).__len__() > 0:
-            return self.render(user_exists=True)
-        else:
-            self.cs_session.main_member = Member(**form.cleaned_data)
-            return redirect(self.cs_session.next_page())
-
-    def get(self, request, *args, **kwargs):
-        return self.render(agb_checked=self.cs_session.edit, **kwargs)
+        self.cs_session.main_member = form.instance
+        return redirect(self.cs_session.next_page())
 
     def render(self, **kwargs):
         return self.render_to_response(self.get_context_data(**kwargs))
@@ -249,49 +236,36 @@ def confirm(request, hash):
     return redirect('home')
 
 
-@primary_member_of_subscription
-def add_member(request, subscription_id):
-    share_error = False
-    shares = 0
-    member_exists = False
-    member_blocked = False
-    main_member = request.user.member
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    if request.method == 'POST':
-        # validate shares
-        try:
-            if Config.enable_shares():
-                shares = int(request.POST.get('shares'))
-                share_error = shares < 0
-        except ValueError:
-            share_error = True
+class AddCoMemberView(FormView, ModelFormMixin):
+    template_name = 'add_member.html'
+    form_class = AddCoMemberForm
 
-        memberform = RegisterMemberForm(request.POST)
-        member = MemberDao.member_by_email(request.POST.get('email'))
-        if member is not None:  # use existing member
-            member_exists = True
-            member_blocked = member.blocked
-        elif memberform.is_valid():  # or create new member
-            member = Member(**memberform.cleaned_data)
-        if member is not None:
-            create_or_update_member(member, subscription, shares, main_member)
-            return redirect('sub-detail-id', subscription_id=subscription_id)
-    else:
-        initial = {'addr_street': main_member.addr_street,
-                   'addr_zipcode': main_member.addr_zipcode,
-                   'addr_location': main_member.addr_location,
-                   'phone': main_member.phone,
-                   }
-        memberform = RegisterMemberForm(initial=initial)
-    renderdict = {
-        'shares': shares,
-        'memberexists': member_exists,
-        'memberblocked': member_blocked,
-        'shareerror': share_error,
-        'memberform': memberform,
-        'subscription_id': subscription_id
-    }
-    return render(request, 'add_member.html', renderdict)
+    def __init__(self):
+        super().__init__()
+        self.object = None
+        self.subscription = None
+
+    def get_initial(self):
+        # use address from main member as default
+        mm = self.request.user.member
+        return {
+            'addr_street': mm.addr_street,
+            'addr_zipcode': mm.addr_zipcode,
+            'addr_location': mm.addr_location
+        }
+
+    @method_decorator(primary_member_of_subscription)
+    def dispatch(self, request, subscription_id, *args, **kwargs):
+        self.subscription = get_object_or_404(Subscription, id=subscription_id)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # create new member from form data
+        create_or_update_member(form.instance, self.subscription, form.cleaned_data['shares'], self.request.user.member)
+        return self._done()
+
+    def _done(self):
+        return redirect('sub-detail-id', subscription_id=self.subscription.id)
 
 
 @permission_required('juntagrico.is_operations_group')

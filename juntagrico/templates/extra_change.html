@@ -52,7 +52,7 @@
     </div>
     <form method="post">
         {% csrf_token %}
-        <div class="form-group row align-items-center h-100">
+        <div class="form-group row">
             {% for type in types %}
                 <div class="col-md-3">
                     <input type="number" name="extra{{ type.id }}" class="form-control" value="0" min="0"/>
