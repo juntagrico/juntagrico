@@ -138,7 +138,7 @@ class RegisterMemberForm(MemberBaseForm):
         )
         self.fields['email'].error_messages['unique'] = mark_safe(
             escape(_('Diese E-Mail-Adresse existiert bereits im System.')) +
-            f' <a href="{reverse("home")}">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+            ' <a href="' + reverse("home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
         )
 
     @staticmethod
@@ -210,7 +210,7 @@ class AddCoMemberForm(CoMemberBaseForm):
             *fields,
             FormActions(
                 self.get_submit_button(),
-                HTML(f'<a href="{reverse("sub-detail")}" class="btn">{_("Abbrechen")}</a>'),
+                HTML('<a href="' + reverse("sub-detail") + '" class="btn">' + _("Abbrechen") + '</a>'),
             )
         )
 
@@ -223,7 +223,7 @@ class RegisterMultiCoMemberForm(CoMemberBaseForm):
             FormActions(
                 self.get_submit_button(),
                 HTML('<a href="?next" class="btn btn-success">' + self.button_next_text() + '</a>'),
-                HTML(f'<a href="{reverse("cs-cancel")}" class="btn">' + _('Abbrechen') + '</a>')
+                HTML('<a href="' + reverse("cs-cancel") + '" class="btn">' + _('Abbrechen') + '</a>')
             )
         )
 
