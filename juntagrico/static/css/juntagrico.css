@@ -71,6 +71,12 @@ body#juntagrico-views-profile .asteriskField {
     color: #66cc66;
     font-size: 30pt;
 }
+.allcontent h3 {
+    margin-top: 0;
+    margin-bottom: 40px;
+    color: #66cc66;
+    font-size: 30pt;
+}
 
 .edit i, .delete i {
     font-size: 0.7em;
