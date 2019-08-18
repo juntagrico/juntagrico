@@ -1,6 +1,7 @@
 from django.db.models import signals
 from django.utils.translation import gettext as _
 
+import juntagrico
 from juntagrico.entity.billing import *
 from juntagrico.entity.extrasubs import *
 from juntagrico.entity.subs import *
@@ -11,6 +12,12 @@ from juntagrico.entity.jobs import *
 from juntagrico.entity.mailing import *
 from juntagrico.entity.delivery import *
 from juntagrico.entity.listmessage import *
+from juntagrico.lifecycle.extrasub import extra_sub_pre_save, handle_extra_sub_deactivated, handle_extra_sub_activated
+from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
+from juntagrico.lifecycle.member import member_pre_save, handle_member_deactivated
+from juntagrico.lifecycle.share import share_post_save, handle_share_created
+from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_sub_deactivated, handle_sub_activated
+from juntagrico.util.signals import register_entities_for_post_init
 
 
 class SpecialRoles(models.Model):
@@ -27,19 +34,33 @@ class SpecialRoles(models.Model):
                        ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),)
 
 
+''' non lifecycle related signals '''
 signals.post_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)
-signals.pre_save.connect(Member.pre_save, sender=Member)
-signals.pre_save.connect(Job.pre_save, sender=Job)
-signals.post_init.connect(Job.post_init, sender=Job)
-signals.pre_save.connect(RecuringJob.pre_save, sender=RecuringJob)
-signals.post_init.connect(RecuringJob.post_init, sender=RecuringJob)
-signals.pre_save.connect(OneTimeJob.pre_save, sender=OneTimeJob)
-signals.post_init.connect(OneTimeJob.post_init, sender=OneTimeJob)
-signals.pre_save.connect(Subscription.pre_save, sender=Subscription)
-signals.post_init.connect(Subscription.post_init, sender=Subscription)
-signals.post_init.connect(ExtraSubscription.post_init,
-                          sender=ExtraSubscription)
-signals.pre_save.connect(ExtraSubscription.pre_save, sender=ExtraSubscription)
 signals.pre_save.connect(Assignment.pre_save, sender=Assignment)
-signals.post_save.connect(Share.create, sender=Share)
+''' lifecycle signal handling'''
+''' job signal handling '''
+signals.pre_save.connect(job_pre_save, sender=OneTimeJob)
+signals.pre_save.connect(job_pre_save, sender=RecuringJob)
+signals.pre_save.connect(job_pre_save, sender=Job)
+juntagrico.signals.job_canceled.connect(handle_job_canceled, sender=OneTimeJob)
+juntagrico.signals.job_canceled.connect(handle_job_canceled, sender=RecuringJob)
+juntagrico.signals.job_canceled.connect(handle_job_time_changed, sender=OneTimeJob)
+juntagrico.signals.job_canceled.connect(handle_job_time_changed, sender=RecuringJob)
+''' subscription signal handling '''
+signals.pre_save.connect(sub_pre_save, sender=Subscription)
+juntagrico.signals.sub_activated.connect(handle_sub_activated, sender=Subscription)
+juntagrico.signals.sub_deactivated.connect(handle_sub_deactivated, sender=Subscription)
+juntagrico.signals.sub_canceled.connect(handle_sub_canceled, sender=Subscription)
+''' extra subscription handling'''
+signals.pre_save.connect(extra_sub_pre_save, sender=ExtraSubscription)
+juntagrico.signals.extra_sub_activated.connect(handle_extra_sub_activated, sender=ExtraSubscription)
+juntagrico.signals.extra_sub_deactivated.connect(handle_extra_sub_deactivated, sender=ExtraSubscription)
+''' share handling '''
+signals.post_save.connect(share_post_save, sender=Share)
+juntagrico.signals.share_created.connect(handle_share_created, sender=Share)
+''' member handling '''
+signals.post_save.connect(member_pre_save, sender=Member)
+juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
+''' lifecycle all post init'''
+register_entities_for_post_init()

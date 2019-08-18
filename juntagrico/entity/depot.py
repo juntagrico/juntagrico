@@ -1,20 +1,18 @@
-# encoding: utf-8
-
 from django.core import validators
 from django.db import models
 from django.utils.translation import gettext as _
 
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.util.temporal import weekday_choices, weekdays
-
 from juntagrico.config import Config
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.extrasubscriptioncategorydao \
     import ExtraSubscriptionCategoryDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
+from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.util.temporal import weekday_choices, weekdays
 
 
-class Depot(models.Model):
+class Depot(JuntagricoBaseModel):
     '''
     Location where stuff is picked up.
     '''

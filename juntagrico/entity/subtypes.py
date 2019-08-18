@@ -2,9 +2,10 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.entity import JuntagricoBaseModel
 
 
-class SubscriptionProduct(models.Model):
+class SubscriptionProduct(JuntagricoBaseModel):
     '''
     Product of subscription
     '''
@@ -20,7 +21,7 @@ class SubscriptionProduct(models.Model):
         verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
 
 
-class SubscriptionSize(models.Model):
+class SubscriptionSize(JuntagricoBaseModel):
     '''
     Subscription sizes
     '''
@@ -45,7 +46,7 @@ class SubscriptionSize(models.Model):
         unique_together = ('units', 'product',)
 
 
-class SubscriptionType(models.Model):
+class SubscriptionType(JuntagricoBaseModel):
     '''
     Subscription types
     '''
@@ -83,7 +84,7 @@ through classes
 '''
 
 
-class TSST(models.Model):
+class TSST(JuntagricoBaseModel):
     '''
     through class for subscription and subscription types
     '''
@@ -93,7 +94,7 @@ class TSST(models.Model):
         'SubscriptionType', related_name='TTSST', on_delete=models.PROTECT)
 
 
-class TFSST(models.Model):
+class TFSST(JuntagricoBaseModel):
     '''
     through class for future subscription and subscription types
     '''

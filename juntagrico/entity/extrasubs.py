@@ -1,14 +1,13 @@
-from django.utils import timezone
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from juntagrico.entity.billing import Billable
-from juntagrico.util.bills import bill_extra_subscription
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
-from juntagrico.config import Config
+from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.entity.billing import Billable
 
 
-class ExtraSubscriptionType(models.Model):
+class ExtraSubscriptionType(JuntagricoBaseModel):
     '''
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     '''
@@ -30,7 +29,7 @@ class ExtraSubscriptionType(models.Model):
         verbose_name_plural = _('Zusatz-Abo-Typen')
 
 
-class ExtraSubscriptionCategory(models.Model):
+class ExtraSubscriptionCategory(JuntagricoBaseModel):
     '''
     Types of extra subscriptions, e.g. eggs, cheese, fruit
     '''
@@ -52,20 +51,14 @@ class ExtraSubscription(Billable):
     '''
     The actiual extra subscription
     '''
-    main_subscription = models.ForeignKey('Subscription',
-                                          related_name='extra_subscription_set',
+    main_subscription = models.ForeignKey('Subscription', related_name='extra_subscription_set',
                                           on_delete=models.PROTECT)
     active = models.BooleanField(default=False)
-
     canceled = models.BooleanField(_('gekündigt'), default=False)
-    activation_date = models.DateField(
-        _('Aktivierungssdatum'), null=True, blank=True)
-    deactivation_date = models.DateField(
-        _('Deaktivierungssdatum'), null=True, blank=True)
+    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
     type = models.ForeignKey(ExtraSubscriptionType, related_name='extra_subscriptions', null=False, blank=False,
                              on_delete=models.PROTECT)
-
-    old_active = None
 
     @property
     def can_cancel(self):
@@ -84,23 +77,6 @@ class ExtraSubscription(Billable):
             return _('aktiv - gekündigt')
         elif self.active is False and self.deactivation_date is not None:
             return _('inaktiv-gekündigt')
-
-    @classmethod
-    def pre_save(cls, sender, instance, **kwds):
-        if(instance.old_active != instance.active and
-           instance.old_active is False and
-           instance.deactivation_date is None):
-            instance.activation_date = instance.activation_date if instance.activation_date is not None else timezone.now().date()
-            if Config.billing():
-                bill_extra_subscription(instance)
-        elif(instance.old_active != instance.active and
-             instance.old_active is True and
-             instance.deactivation_date is None):
-            instance.deactivation_date = instance.deactivation_date if instance.deactivation_date is not None else timezone.now().date()
-
-    @classmethod
-    def post_init(cls, sender, instance, **kwds):
-        instance.old_active = instance.active
 
     def __str__(self):
         return '%s %s' % (self.id, self.type.name)
