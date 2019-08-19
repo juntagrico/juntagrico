@@ -88,18 +88,18 @@ def send_email_result(request, numsent):
 
 
 @permission_required('juntagrico.can_send_mails')
-def mails(request, mail_url='mail'):
+def mails(request, mail_url='mail-send'):
     return my_mails_intern(request, mail_url)
 
 
 @permission_required('juntagrico.is_depot_admin')
 def mails_depot(request):
-    return my_mails_intern(request, 'mail-depot')
+    return my_mails_intern(request, 'mail-depot-send')
 
 
 @permission_required('juntagrico.is_area_admin')
 def mails_area(request):
-    return my_mails_intern(request, 'mail-area')
+    return my_mails_intern(request, 'mail-area-send')
 
 
 def my_mails_intern(request, mail_url, error_message=None):
