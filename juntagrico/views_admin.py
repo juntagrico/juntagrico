@@ -94,12 +94,12 @@ def mails(request, mail_url='mail'):
 
 @permission_required('juntagrico.is_depot_admin')
 def mails_depot(request):
-    return my_mails_intern(request, 'depot')
+    return my_mails_intern(request, 'mail-depot')
 
 
 @permission_required('juntagrico.is_area_admin')
 def mails_area(request):
-    return my_mails_intern(request, 'area')
+    return my_mails_intern(request, 'mail-area')
 
 
 def my_mails_intern(request, mail_url, error_message=None):
@@ -153,7 +153,7 @@ def filters_area(request, area_id):
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'mail-url': 'mail-area'
+        'mail_url': 'mail-area'
     })
     return render(request, 'members.html', renderdict)
 
