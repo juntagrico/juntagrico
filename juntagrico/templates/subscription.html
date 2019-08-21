@@ -220,7 +220,7 @@
         {% if subscription.state != 'inactive' %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
-                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}/{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
+                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
                         {% blocktrans %}{{ v_subscription }} ändern{% endblocktrans %}
                     </a>
                     {% if not primary %}
