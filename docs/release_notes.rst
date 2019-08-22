@@ -72,3 +72,7 @@ Dev
  Has no migrations
 
 * personal template loader removed adapt your settings acoordingly
+* Added crispy-forms
+   * Add CRISPY_TEMPLATE_PACK = 'bootstrap4' to settings
+   * Add 'crispy_forms' to INSTALLED_APPS
+* CSS class 'juntagrico_logo' is deprecated. Use 'juntagrico-logo' instead
