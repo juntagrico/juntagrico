@@ -57,7 +57,7 @@ body#juntagrico-views-profile .asteriskField {
 }
 
 /* logo stuff checked */
-.juntagrico_logo {
+.juntagrico-logo {
     background: url(/static/img/juntagrico.png) 0 0;
     display: inline-block;
     width: 580px;
@@ -65,13 +65,7 @@ body#juntagrico-views-profile .asteriskField {
 }
 
 /* title stuff checked */
-.page-title h3 {
-    margin-top: 0;
-    margin-bottom: 40px;
-    color: #66cc66;
-    font-size: 30pt;
-}
-.allcontent h3 {
+.page-title h3, .allcontent h3 {
     margin-top: 0;
     margin-bottom: 40px;
     color: #66cc66;
