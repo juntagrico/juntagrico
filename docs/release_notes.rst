@@ -77,25 +77,24 @@ Release Notes
    * Add 'crispy_forms' to INSTALLED_APPS
 * CSS class 'juntagrico_logo' is deprecated. Use 'juntagrico-logo' instead
 * make sure users are logged out at sign up
-* fix false message in job cancelation message
+* fix false message in job cancellation message
 * added time to job search field in admin area
 * fix broken deliveries
-* fix text in subscription cancelation email
+* fix text in subscription cancellation email
 * fix for member add in admin area
 * improvement of area overview
 * descriptions allow now newlines and urls
 * direct link from job overview to job entity in admin area
 * job not directly deleted if members assigned
-* fix for testdata generation
+* fix for test data generation
 * fix false date comparison in size change
-* users can now have mutliple subscriptions
+* users can now have multiple subscriptions
 * fix reply to error in mailing
 * new right to edit past jobs
-* reworked addons hooks, so that chaching is obsolete (Settings can be removed)
+* reworked addons hooks, so that caching is obsolete (settings can be removed)
 * fix cancelling inactive subscription fails if it has extra subs
 * user menu rewrite
-* lifecycle and conistency check code rewritten
-* share management page
+* lifecycle and consistency check code rewritten
 * rewrote urls to use path and names
 * depot list support now emojis
 
