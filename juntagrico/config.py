@@ -161,7 +161,7 @@ class Config:
     def bootstrap():
         if hasattr(settings, 'BOOTSTRAP'):
             return settings.BOOTSTRAP
-        return '/static/external/bootstrap-4.1.3/css/bootstrap.min.css'
+        return '/static/external/bootstrap-4.3.1/css/bootstrap.min.css'
 
     @staticmethod
     def faq_doc():
