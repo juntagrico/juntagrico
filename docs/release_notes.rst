@@ -97,6 +97,7 @@ Release Notes
 * lifecycle and consistency check code rewritten
 * rewrote urls to use path and names
 * depot list support now emojis
+* major template rewrites. Check custom css besides custom logos
 
 
 Dev
