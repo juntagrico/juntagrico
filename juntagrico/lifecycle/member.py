@@ -6,9 +6,9 @@ from juntagrico.signals import member_deactivated
 
 
 def member_pre_save(sender, instance, **kwargs):
+    check_member_consistency(instance)
     if instance._old['inactive'] != instance.inactive and instance.inactive is True:
         member_deactivated.send(sender=sender, instance=instance)
-    check_member_consistency(instance)
 
 
 def handle_member_deactivated(sender, instance, **kwargs):

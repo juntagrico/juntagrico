@@ -7,11 +7,11 @@ from juntagrico.signals import job_canceled, job_time_changed
 
 
 def job_pre_save(sender, instance, **kwargs):
+    check_job_consistency(instance)
     if instance._old['canceled'] != instance.canceled and instance._old['canceled'] is False:
         job_canceled.send(sender=sender, instance=instance)
     if instance._old['time'] != instance.time:
         job_time_changed.send(sender=sender, instance=instance)
-    check_job_consistency(instance)
 
 
 def handle_job_canceled(sender, instance, **kwargs):

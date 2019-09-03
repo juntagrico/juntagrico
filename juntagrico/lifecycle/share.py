@@ -8,8 +8,8 @@ from juntagrico.util.bills import bill_share
 
 
 def share_post_save(sender, instance, created, **kwargs):
-    share_created.send(sender=sender, instance=instance, created=created)
     check_share_consistency(instance)
+    share_created.send(sender=sender, instance=instance, created=created)
 
 
 def handle_share_created(sender, instance, created, **kwargs):
