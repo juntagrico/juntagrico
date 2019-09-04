@@ -29,7 +29,23 @@
             </div>
             <div class="borderbottom">
             </div>
-            <div class="logo-row row">
+            <div class="row d-md-none">
+                <nav class="navbar navbar-expand-md col-sm-12">
+                      <a class="navbar-brand" href="#">{% config "adminportal_name" %}</a>
+                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="mdi mdi-menu">
+                        </i>
+                      </button>
+
+                      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            {% include "menu/user_menu.html" %}
+                            {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
+                                {% include "menu/admin_menu.html" %}
+                            {% endif %}
+                      </div>
+                    </nav>
+            </div>
+            <div class="logo-row row d-none d-md-block">
                 <div class="logo-col col-md-12">
                     <a href="{% url 'home' %}">
                         <span class="juntagrico-logo juntagrico_logo">
@@ -52,7 +68,7 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="headerspace row">
+            <div class="headerspace row d-none d-md-block">
             </div>
             <div class="all-page-title row">
                 {% block all_page_title %}
@@ -64,7 +80,7 @@
             </div>
             <div class="allcontent row">
                 {% block allcontent %}
-                    <div class="sidebar col-md-3">
+                    <div class="sidebar col-md-3 d-none d-md-block">
                         {% include "menu/user_menu.html" %}
                         {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
                             {% include "menu/admin_menu.html" %}
@@ -72,7 +88,7 @@
                         {% include "widgets/assignements.html" %}
                         {% include "widgets/jobs.html" %}
                     </div>
-                    <div class="content-container col-md-9">
+                    <div class="content-container col-md-9 col-sm-12">
                         <div class="messages row">
                             <div class="col-md-12">
                                 {% for message in messages %}
@@ -90,6 +106,10 @@
                 {% endblock %}
             </div>
             <div class="footer row">
+                 <div class="sidebar col-sm-12 d-md-none">
+                        {% include "widgets/assignements.html" %}
+                        {% include "widgets/jobs.html" %}
+                    </div>
             </div>
         </div>
         <script type="text/javascript" src="/static/external/jquery-3.3.1/jquery-3.3.1.min.js">
