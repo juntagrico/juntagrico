@@ -1,12 +1,13 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
-from juntagrico.util.temporal import weekday_short
-from juntagrico.entity.subs import SubscriptionSize
 from juntagrico.config import Config
+from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.entity.subs import SubscriptionSize
+from juntagrico.util.temporal import weekday_short
 
 
-class Delivery(models.Model):
+class Delivery(JuntagricoBaseModel):
     """
     Delivery with a specific date (usually Tuesday or Thursday)
     """
@@ -32,7 +33,7 @@ class Delivery(models.Model):
         unique_together = ("delivery_date", "subscription_size")
 
 
-class DeliveryItem(models.Model):
+class DeliveryItem(JuntagricoBaseModel):
     delivery = models.ForeignKey(Delivery, verbose_name=_('Lieferung'),
                                  related_name='items',
                                  on_delete=models.CASCADE)

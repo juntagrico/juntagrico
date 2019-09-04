@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load config %}
 <hr/>
-<div class="jobs">
+<div class="jobs-widget">
     {% block next_jobs %}
         <h5>
             {% trans "Nächste Einsätze" %}
@@ -10,7 +10,7 @@
             <ul class="unstyled next-jobs">
                 {% for job in next_jobs %}
                     <li>
-                        <a href="/my/jobs/{{ job.id }}" {% if job.canceled %}class="canceled"{% endif %}>
+                        <a href="{% url 'job' job.id %}" {% if job.canceled %}class="canceled"{% endif %}>
                             {{ job.type.name }}
                         </a>
                         <br/>

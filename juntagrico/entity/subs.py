@@ -1,13 +1,12 @@
 import time
 
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity.billing import *
+from juntagrico.entity.billing import Billable
 from juntagrico.entity.subtypes import *
+from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.mailer import *
-from juntagrico.util.bills import *
 from juntagrico.util.temporal import *
 
 
@@ -40,18 +39,17 @@ class Subscription(Billable):
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
-    _old_active = None
-    _old_canceled = None
+    _future_members = None
 
     def __str__(self):
-        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
+        namelist = [_(' Einheiten {0}').format(self.size)]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
-        return _('Abo (%(namelist)s) %(id)s') % {'namelist': ' + '.join(namelist), 'id': self.id}
+        return _('Abo ({0}) {0}').format(' + '.join(namelist), self.id)
 
     @property
     def overview(self):
-        namelist = [_(' Einheiten %(amount)s') % {'amount': self.size}]
+        namelist = [_(' Einheiten {0}').format(self.size)]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
@@ -133,19 +131,22 @@ class Subscription(Billable):
         future_extrasubscriptions = self.future_extra_subscriptions.all()
         return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
-    def subscription_amount(self, size_name):
-        return self.calc_subscritpion_amount(self.types, size_name)
+    def subscription_amount(self, size_id):
+        return self.calc_subscription_amount(self.types, size_id)
 
-    def subscription_amount_future(self, size_name):
-        return self.calc_subscritpion_amount(self.future_types, size_name)
+    def subscription_amount_future(self, size_id):
+        return self.calc_subscription_amount(self.future_types, size_id)
 
     @staticmethod
-    def calc_subscritpion_amount(types, size_name):
+    def calc_subscription_amount(types, size_id):
         result = 0
         for type in types.all():
-            if type.size.name == size_name:
+            if type.size.id == size_id:
                 result += 1
         return result
+
+    def future_amount_by_type(self, type):
+        return len(self.future_types.filter(id=type))
 
     @staticmethod
     def next_extra_change_date():
@@ -215,38 +216,7 @@ class Subscription(Billable):
         return len(self.extra_subscriptions.all().filter(type__name=code))
 
     def clean(self):
-        if self._old_active != self.active and self.deactivation_date is not None:
-            raise ValidationError(_('Deaktivierte {0}  koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
-                                  code='invalid')
-
-    @classmethod
-    def pre_save(cls, sender, instance, **kwds):
-        if instance._old_active != instance.active and instance._old_active is False and instance.deactivation_date is None:
-            instance.activation_date = instance.activation_date if instance.activation_date is not None else timezone.now().date()
-            for member in instance.recipients_all_for_state('waiting'):
-                if member.subscription is not None:
-                    raise ValidationError(_('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription_')),
-                                          code='invalid')
-            for member in instance.recipients_all_for_state('waiting'):
-                member.subscription = instance
-                member.future_subscription = None
-                member.save()
-            if Config.billing():
-                bill_subscription(instance)
-        elif instance._old_active != instance.active and instance._old_active is True and instance.deactivation_date is None:
-            instance.deactivation_date = instance.deactivation_date if instance.deactivation_date is not None else timezone.now().date()
-            for member in instance.recipients_all_for_state('active'):
-                member.old_subscriptions.add(instance)
-                member.subscription = None
-                member.save()
-        if instance._old_canceled != instance.canceled:
-            instance.cancelation_date = timezone.now().date()
-
-    @classmethod
-    def post_init(cls, sender, instance, **kwds):
-        instance._old_active = instance.active
-        instance._old_canceled = instance.canceled
-        instance._future_members = None
+        check_sub_consistency(self)
 
     class Meta:
         verbose_name = Config.vocabulary('subscription')

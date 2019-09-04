@@ -1,11 +1,13 @@
+from django.urls import reverse
+
 from test.util.test import JuntagricoTestCase
 
 
 class FilterTests(JuntagricoTestCase):
 
     def testSubscrition(self):
-        self.assertSimpleGet('/my/subscriptions')
+        self.assertSimpleGet(reverse('filter-subs'))
 
     def testSubscritionDepot(self):
-        url = '/my/subscriptions/depot/'+str(self.depot.pk)+'/'
+        url = reverse('filter-subs-depot', args=[self.depot.pk])
         self.assertSimpleGet(url)

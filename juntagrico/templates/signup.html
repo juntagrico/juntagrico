@@ -1,248 +1,84 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load crispy_forms_tags %}
 {% block all_page_title %}
     {% vocabulary "member_type" as v_member_type %}
-    <div class="offset-md-3 col-md-9 juntagrico">
+    <div class="page-title col-md-12">
         <h3>
             {% blocktrans %}{{ v_member_type }} werden{% endblocktrans %}
         </h3>
     </div>
 {% endblock %}
 {% block allcontent %}
-    {% config "enable_shares" as c_enable_shares %}
-    {% config "business_regulations" as c_business_regulations %}
-    {% config "gdpr_info" as c_gdpr_info %}
-    {% config "share_price" as c_share_price %}
-    {% enriched_organisation "D" as v_d_enriched_organisation %}
-    {% vocabulary "share" as v_share %}
-    {% vocabulary "share_pl" as v_share_pl %}
-    {% vocabulary "subscription" as v_subscription %}
-    {% vocabulary "member_type" as v_member_type %}
-    {% vocabulary "member_type_pl" as v_member_type_pl %}
-    <div class="row mb-3">
-        <div class="col-md-12">
-            Interessiert an {% enriched_organisation "D" %}?
+    <div class="col-md-12">
+        {% config "enable_shares" as c_enable_shares %}
+        {% config "business_regulations" as c_business_regulations %}
+        {% config "gdpr_info" as c_gdpr_info %}
+        {% config "share_price" as c_share_price %}
+        {% enriched_organisation "D" as v_d_enriched_organisation %}
+        {% vocabulary "share" as v_share %}
+        {% vocabulary "share_pl" as v_share_pl %}
+        {% vocabulary "subscription" as v_subscription %}
+        {% vocabulary "member_type" as v_member_type %}
+        {% vocabulary "member_type_pl" as v_member_type_pl %}
+        <div class="row mb-3">
+            <div class="col-md-12">
+                Interessiert an {% enriched_organisation "D" %}?
+            </div>
         </div>
-    </div>
-    {% if c_enable_shares %}
+        {% if c_enable_shares %}
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    {% blocktrans trimmed %}
+                    Die Mitgliedschaft bei {{ v_d_enriched_organisation }} ist geknüpft an den Erwerb von
+                    {{ v_share_pl }} in der Höhe
+                    von CHF {{ c_share_price }} pro {{ v_share }}. Die Anzahl {{ v_share_pl }}
+                    ist abhängig von der {{ v_subscription }}-Grösse. Die {{ v_share_pl }} sind das
+                    Kapital, das vor allem zur Finanzierung von Investitionen – zum Beispiel Infrastruktur – verwendet
+                    wird.
+                    Beim Austritt werden die {{ v_share_pl }} rückerstattet.
+                    {% endblocktrans %}
+                </div>
+            </div>
+        {% endif %}
         <div class="row mb-3">
             <div class="col-md-12">
                 {% blocktrans trimmed %}
-                Die Mitgliedschaft bei {{ v_d_enriched_organisation }} ist geknüpft an den Erwerb von
-                {{ v_share_pl }} in der Höhe
-                von CHF {{ c_share_price }} pro {{ v_share }}. Die Anzahl {{ v_share_pl }}
-                ist abhängig von der {{ v_subscription }}-Grösse. Die {{ v_share_pl }} sind das
-                Kapital, das vor allem zur Finanzierung von Investitionen – zum Beispiel Infrastruktur – verwendet
-                wird.
-                Beim Austritt werden die {{ v_share_pl }} rückerstattet.
+                Die {{ v_member_type_pl }} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten
+                gemeinsam zum Gelingen des Betriebes bei.
+                Wer bei {{ v_d_enriched_organisation }} {{ v_member_type }} ist, verpflichtet sich zur
+                Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
                 {% endblocktrans %}
             </div>
         </div>
-    {% endif %}
-    <div class="row mb-3">
-        <div class="col-md-12">
-            {% blocktrans trimmed %}
-            Die {{ v_member_type_pl }} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten
-            gemeinsam zum Gelingen des Betriebes bei.
-            Wer bei {{ v_d_enriched_organisation }} {{ v_member_type }} ist, verpflichtet sich zur
-            Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
-            {% endblocktrans %}
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-12">
-            {% blocktrans trimmed %}
-            Bevor du dich als {{ v_member_type }} anmeldest, lies bitte folgendes durch
-            {% endblocktrans %} :
-            <ul>
-                <li>
-                    <a target="_blank" href="{% config "bylaws"|safe %}">
-                        {% trans "Statuten" %}
-                    </a>
-                </li>
-                {% if c_business_regulations.strip %}
+        <div class="row mb-4">
+            <div class="col-md-12">
+                {% blocktrans trimmed %}
+                Bevor du dich als {{ v_member_type }} anmeldest, lies bitte folgendes durch
+                {% endblocktrans %} :
+                <ul>
                     <li>
-                        <a target="_blank" href="{{ c_business_regulations|safe }}">
-                            {% trans "Betriebsreglement" %}
+                        <a target="_blank" href="{% config "bylaws"|safe %}">
+                            {% trans "Statuten" %}
                         </a>
                     </li>
-                {% endif %}
-            </ul>
+                    {% if c_business_regulations.strip %}
+                        <li>
+                            <a target="_blank" href="{{ c_business_regulations|safe }}">
+                                {% trans "Betriebsreglement" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="offset-md-2 col-md-8">
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="form-group row{% if memberform.last_name.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_last_name">
-                        Name *
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.last_name }}
-                        {% if memberform.last_name.errors %}
-                            <div class="form-text">
-                                Name ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.first_name.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_first_name">
-                        Vorname *
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.first_name }}
-                        {% if memberform.first_name.errors %}
-                            <div class="form-text">
-                                Vorname ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.addr_street.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_addr_street">
-                        Strasse/Nr. *
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.addr_street }}
-                        {% if memberform.addr_street.errors %}
-                            <div class="form-text">
-                                Strasse ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.addr_zipcode.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_addr_zipcode">
-                        PLZ *
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.addr_zipcode }}
-                        {% if memberform.addr_zipcode.errors %}
-                            <div class="form-text">
-                                PLZ ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.addr_location.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_addr_location">
-                        Ort *
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.addr_location }}
-                        {% if memberform.addr_location.errors %}
-                            <div class="form-text">
-                                Ort ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.phone.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_phone">
-                        Telefon *
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.phone }}
-                        {% if memberform.phone.errors %}
-                            <div class="form-text">
-                                Telefon ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.mobile_phone.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_mobile_phone">
-                        Mobile &nbsp;
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.mobile_phone }}
-                        {% if memberform.mobile_phone.errors %}
-                            <div class="form-text">
-                                Mobile ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.email.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_email">
-                        E-Mail Adresse *
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.email }}
-                        {% if memberform.email.errors %}
-                            <div class="form-text">
-                                E-Mail ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row {% if memberform.birthday.errors %}invalid{% endif %}">
-                    <label class="col-md-3" for="id_birthday">
-                        Geburtstag &nbsp;
-                    </label>
-                    <div class="col-md-9">
-                        {{ memberform.birthday }}
-                        {% if memberform.birthday.errors %}
-                            <div class="form-text">
-                                Geburtstag ungültig
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="offset-md-3 col-md-9">
-                        <div class="checkbox">
-                            <label>
-                                {{ memberform.agb }}
-                                <input type="checkbox" name="agb" id="agb"{% if agbchecked %}checked="checked"{% endif %}/>
-                                Ich habe
-                                <a target="_blank" href="{% config "bylaws"|safe %}">
-                                    die Statuten
-                                </a>
-                                {% if c_business_regulations.strip %}
-                                    und
-                                    <a target="_blank" href="{{ c_business_regulations|safe }}">
-                                        das Betriebsreglement
-                                    </a>
-                                {% endif %}
-                                {% if c_gdpr_info.strip %}
-                                    und
-                                    <a target="_blank" href="{{ c_gdpr_info|safe }}">
-                                        die DSGVO Infos
-                                    </a>
-                                {% endif %}
-                                gelesen und erkläre meinen Willen, "{% config "organisation_long_name" %}" beizutreten.
-                                Hiermit beantrage ich meine Aufnahme.
-                                {% if agberror %}
-                                    <div class="alert alert-danger">
-                                        Statuten müssen angenommen werden
-                                    </div>
-                                {% endif %}
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                {% if userexists %}
-                    <div class="alert alert-danger">
-                        Diese Email-Adresse existiert bereits im System.
-                        <br/>
-                        <a href="/my/home">
-                            Hier gehts zum Login
-                        </a>
-                    </div>
-                {% endif %}
-                <div class="form-actions row">
-                    <div class="offset-md-3 col-md-9">
-                        <button type="submit" class="btn btn-success">
-                            Anmelden
-                        </button>
-                    </div>
-                </div>
-                <input type="hidden" name="next" value="{{ next|escape }}"/>
-            </form>
+        <div class="row">
+            <div class="offset-md-2 col-md-8">
+                <form action="" method="post">
+                    {% crispy form %}
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}

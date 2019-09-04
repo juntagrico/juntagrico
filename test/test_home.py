@@ -1,7 +1,9 @@
+from django.urls import reverse
+
 from test.util.test import JuntagricoTestCase
 
 
 class HomeTests(JuntagricoTestCase):
 
     def testHome(self):
-        self.assertSimpleGet('/my/home')
+        self.assertSimpleGet(reverse('home'))

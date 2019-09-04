@@ -7,6 +7,10 @@
     <title>{% blocktrans %}{{ v_depot }}-Listen{% endblocktrans %}</title>
     <meta charset="utf-8">
     <style>
+        @font-face {
+            font-family: Symbola, "Symbola";
+            src: url(/code/static/fonts/Symbola.ttf);
+        }
         @page {
             size: A4;
             @frame content_frame {
@@ -24,6 +28,10 @@
         text-align:center;
         }
 
+        }
+
+        body {
+            font-family: Symbola;
         }
 
         .page-break {
@@ -52,6 +60,7 @@
 
         th {
             text-align: left;
+            font-size: 14px;
         }
 
         td {
@@ -64,7 +73,7 @@
         }
 
         .name {
-            width: 180px;
+            width: 360px;
         }
 
 
@@ -84,8 +93,7 @@
     {{ depot.contact.last_name }}
     <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
         <tr>
-            <td style="width:180px;" class="name"></td>
-            <td style="width:180px;" class="name"></td>
+            <td style="width:360px;" class="name"></td>
             {% for category in categories %}
                 <th colspan="{{ category.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ category.name }}<br/><span
                         style="font-size:11px">{{ category.description }}</span></th>
@@ -94,7 +102,6 @@
         </tr>
         <tr>
             <td></td>
-            <td></td>
             {% for type in types %}
                 <td class="small bottom-border {% if forloop.first %}left-border{% endif %} {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}
@@ -102,7 +109,6 @@
             <td class="small bottom-border right-border"></td>
         </tr>
         <tr>
-            <td></td>
             <td>{% trans "TOTAL" %}</td>
             {% for value in depot.overview_cache %}
                 <td>{{ value }}</td>
@@ -111,39 +117,36 @@
             <td></td>
         </tr>
         <tr>
-            <th style="width:180px;">{% trans "Name" %}</th>
-            <th style="width:180px;">{% vocabulary "co_member_pl" %}</th>
+            <th style="width:360px;">{% trans "Name" %}</th>
             {% for type in types %}
                 <th></th>
             {% endfor %}
-            <th>{% trans "abgeholt" %}</th>
-            <th>{% trans "Tasche retour" %}</th>
+            <th style="font-size:11px">{% trans "abgeholt" %}</th>
+            <th style="font-size:11px">{% trans "Tasche retour" %}</th>
         </tr>
         {% for subscription in depot.subscription_cache.all %}
             <tr>
-                <td style="width:180px;" class="top-border left-border">{{ subscription.primary_member.get_name }}</td>
-                <td style="width:180px;" class="top-border left-border">{{ subscription.other_recipients_names }}</td>
-                {% for subscription_name in subscription_names %}
-                    <td style="width:40px;" class="top-border left-border">
-                        {% if subscription|subscriptions_amount:subscription_name %}
-                            {{ subscription|subscriptions_amount:subscription_name }}{% endif %}</td>
+                <td style="width:360px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
+                {% for subscription_id in subscription_ids %}
+                    <td  class="top-border left-border">
+                        {% if subscription|subscriptions_amount:subscription_id %}
+                            {{ subscription|subscriptions_amount:subscription_id }}{% endif %}</td>
                 {% endfor %}
                 {% for type in es_types %}
-                    <td style="width:40px;" class="top-border left-border">
+                    <td  class="top-border left-border">
                         {% if subscription|extra_subscription:type.name %}
                             {{ subscription|extra_subscription_amount:type.name }}{% endif %}</td>
                 {% endfor %}
-                <td style="width:60px;" class="top-border left-border"></td>
-                <td style="width:60px;" class="top-border left-border right-border"></td>
+                <td style="width:80px;" class="top-border left-border"></td>
+                <td style="width:80px;" class="top-border left-border right-border"></td>
             </tr>
-            {% if forloop.counter0|divisibleby:15 and forloop.counter0 > 0 and not forloop.last %}
+            {% if forloop.counter0|divisibleby:14 and forloop.counter0 > 0 and not forloop.last %}
                 </table>
                 <div class="page-break"></div>
                 <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} {% trans "Fortsetzung" %}</h2>
                 <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
                 <tr>
-                    <td style="width:180px;" class="name"></td>
-                    <td style="width:180px;" class="name"></td>
+                    <td style="width:360px;" class="name"></td>
                     {% for category in categories %}
                         <th colspan="{{ category.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ category.name }}<br/><span
                                 style="font-size:11px">{{ category.description }}</span></th>
@@ -152,7 +155,6 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td></td>
                     {% for type in types %}
                         <td class="small bottom-border {% if forloop.first %}left-border{% endif %} {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
                     {% endfor %}
@@ -160,7 +162,6 @@
                     <td class="small bottom-border right-border"></td>
                 </tr>
                 <tr>
-                    <td></td>
                     <td>{% trans "TOTAL" %}</td>
                     {% for value in depot.overview_cache %}
                         <td>{{ value }}</td>
@@ -169,13 +170,12 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <th style="width:180px;">{% trans "Name" %}</th>
-                    <th style="width:180px;">{% vocabulary "co_member_pl" %}</th>
+                    <th style="width:360px;">{% trans "Name" %}</th>
                     {% for type in types %}
                         <th></th>
                     {% endfor %}
-                    <th>{% trans "abgeholt" %}</th>
-                    <th>{% trans "Tasche retour" %}</th>
+                    <th style="font-size:11px">{% trans "abgeholt" %}</th>
+                    <th style="font-size:11px">{% trans "Tasche retour" %}</th>
                 </tr>
             {% endif %}
         {% endfor %}

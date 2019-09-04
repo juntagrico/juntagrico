@@ -38,7 +38,7 @@ class SubscriptionAdminForm(forms.ModelForm):
     def clean(self):
         # enforce integrity constraint on primary_member
         members = self.cleaned_data['subscription_members']
-        primary = self.cleaned_data['primary_member']
+        primary = self.cleaned_data.get('primary_member')
         if primary not in members:
             self.cleaned_data['primary_member'] = members[0] if members else None
         new_members = set(self.cleaned_data['subscription_members'])
@@ -52,7 +52,12 @@ class SubscriptionAdminForm(forms.ModelForm):
 
     def save_m2m(self):
         # update Subscription-Member many-to-one through foreign keys on Members
-        old_members = set(self.instance.members.all())
+        if self.instance.state == 'waiting':
+            old_members = set(self.instance.members_future.all())
+        elif self.instance.state == 'inactive':
+            old_members = set(self.instance.members_old.all())
+        else:
+            old_members = set(self.instance.members.all())
         new_members = set(self.cleaned_data['subscription_members'])
         for obj in old_members - new_members:
             if self.instance.state == 'waiting':

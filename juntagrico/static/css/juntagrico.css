@@ -6,7 +6,6 @@ ul {
 /* general stuff  checked */
 html, body {
     font-family: "Source Sans Pro Light";
-    font-size: 18px;
     background-color: #fefffa;
     height: 100%;
 }
@@ -15,10 +14,6 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "Source Sans Pro Regular";
     margin-bottom: 10px;
     margin-top: 10px;
-}
-
-select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
-    height: 30px;
 }
 
 @font-face {
@@ -37,7 +32,6 @@ select, input[type="text"], input[type="password"], input[type="datetime"], inpu
 
 a {
     color: #66cc66;
-    vertical-align: middle;
 }
 
 a:hover, a:focus {
@@ -53,8 +47,17 @@ a.canceled:hover, a.canceled:focus {
     color: #ff3399;
 }
 
+/* crispy-form */
+.asteriskField {
+    padding-left: 0.2em;
+}
+
+body#juntagrico-views-profile .asteriskField {
+    display: none;
+}
+
 /* logo stuff checked */
-.juntagrico_logo {
+.juntagrico-logo {
     background: url(/static/img/juntagrico.png) 0 0;
     display: inline-block;
     width: 580px;
@@ -62,54 +65,73 @@ a.canceled:hover, a.canceled:focus {
 }
 
 /* title stuff checked */
-.juntagrico h3 {
+.page-title h3, .allcontent h3 {
     margin-top: 0;
     margin-bottom: 40px;
     color: #66cc66;
     font-size: 30pt;
 }
 
-.edit i {
+.edit i, .delete i {
     font-size: 0.7em;
 }
 
-.edit {
+.edit, .delete {
     vertical-align: top;
 }
 
+a.delete {
+    color: #999;
+}
+
+a:hover.delete {
+    color: red;
+}
+
 /* container stuff checked */
-.container {
+.page-container {
     min-height: 100%;
     position: relative;
     padding: 0 40px 0 40px;
 }
 
 @media (min-width: 768px) {
-    .container {
+    .page-container {
         width: 750px
     }
 }
 
 @media (min-width: 992px) {
-    .container {
+    .page-container {
         width: 970px
     }
 }
 
 @media (min-width: 1200px) {
-    .container {
+    .page-container {
         width: 1170px
     }
 }
 
+/* layouts */
+body.wide-layout > .page-container {
+    width: 95%;
+    max-width: 95%;
+}
+
 /* row size stuff checked */
-.juntagrico {
+.page-container > div.row {
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+div.allcontent.row {
     margin-top: 0;
 }
 
-.myjuntagrico {
-    margin-top: 60px;
-    margin-bottom: 50px;
+div.all-page-title.row {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .footer {
@@ -153,6 +175,12 @@ ul.subadmin-menu {
     padding-left: 7px;
 }
 
+ul.sub-menu {
+    font-family: "Source Sans Pro Light";
+    font-size: 14px;
+    padding-left: 7px;
+}
+
 li.inline {
     display: inline-block;
 }
@@ -187,11 +215,11 @@ a.inline {
 }
 
 /* next jobs widget menu stuff checked */
-.next-jobs {
+.jobs-widget .next-jobs {
     margin-top: 5px;
 }
 
-.next-jobs .time {
+.jobs-widget .next-jobs .time {
     margin-bottom: 10px;
     font-size: 14px;
 }
@@ -269,7 +297,6 @@ textarea#recipients[disabled=disabled] {
 
 /* increment buttons stuff*/
 .btn-increment, .btn-decrement {
-    height: 30px;
     line-height: 1;
 }
 

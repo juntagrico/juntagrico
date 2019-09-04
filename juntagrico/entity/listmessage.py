@@ -1,11 +1,10 @@
-# encoding: utf-8
-
+from django.db import models
 from django.utils.translation import gettext as _
 
-from django.db import models
+from juntagrico.entity import JuntagricoBaseModel
 
 
-class ListMessage(models.Model):
+class ListMessage(JuntagricoBaseModel):
     '''
     Message to display at the bottom of the depot list
     '''

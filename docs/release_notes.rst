@@ -67,8 +67,39 @@ Release Notes
 * added menu hooks for apps
 
 
-Dev
+1.1.8
 -----
  Has no migrations
 
-* personal template loader removed adapt your settings acoordingly
+* personal template loader removed adapt your settings accordingly
+* Added crispy-forms
+   * Add CRISPY_TEMPLATE_PACK = 'bootstrap4' to settings
+   * Add 'crispy_forms' to INSTALLED_APPS
+* CSS class 'juntagrico_logo' is deprecated. Use 'juntagrico-logo' instead
+* make sure users are logged out at sign up
+* fix false message in job cancellation message
+* added time to job search field in admin area
+* fix broken deliveries
+* fix text in subscription cancellation email
+* fix for member add in admin area
+* improvement of area overview
+* descriptions allow now newlines and urls
+* direct link from job overview to job entity in admin area
+* job not directly deleted if members assigned
+* fix for test data generation
+* fix false date comparison in size change
+* users can now have multiple subscriptions
+* fix reply to error in mailing
+* new right to edit past jobs
+* reworked addons hooks, so that caching is obsolete (settings can be removed)
+* fix cancelling inactive subscription fails if it has extra subs
+* user menu rewrite
+* lifecycle and consistency check code rewritten
+* rewrote urls to use path and names
+* depot list support now emojis
+* major template rewrites. Check custom css besides custom logos
+
+
+Dev
+----
+ Has no migrations

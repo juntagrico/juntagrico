@@ -10,13 +10,13 @@
     {% if is_sent %}
         <div class="alert alert-success">
             {% trans "Nachricht gesandt" %}
-            <a href="/my/jobs/{{ job_id }}/" style="text-decoration: underline">
+            <a href="{% url 'job' job_id %}/" style="text-decoration: underline">
                 {% trans "zurück zum Einsatz" %}
             </a>
         </div>
     {% else %}
         <br/>
-        <form action="/my/contact/member/{{ member_id }}/{{ job_id }}/" method="POST" enctype="multipart/form-data">
+        <form action="{% url 'contact-member' member_id job_id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group row">
                 <label class="col-md-3">

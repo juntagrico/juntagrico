@@ -1,18 +1,15 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% block body_extra_classes %}wide-layout{% endblock %}
 {% block styles %}
     <link href="/static/external/datepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 {% block content %}
     {% config "enable_shares" as enable_shares %}
-    <style>
-        body > .container
-        {width: 95%;}
-    </style>
     {% if not change_date_disabled %}
         {% if can_change_date %}
-            <form action="/my/changedate" method="POST">
+            <form action="{% url 'changedate-set' %}" method="POST">
                 {% csrf_token %}
                 <div class="row mb-3">
                     <div class="col-md-3">
@@ -30,8 +27,8 @@
             </form>
         {% else %}
             <div class="alert alert-warning">
-                {% trans "Das Änderungsdatum ist auf {{ change_date }} gesetzt." %}
-                <a href="/my/changedate/stop">
+                {% blocktrans %}Das Änderungsdatum ist auf {{ change_date }} gesetzt.{% endblocktrans %}
+                <a href="{% url 'changedate-unset' %}">
                     {% trans "Beende dies hier" %}
                 </a>
                 .
@@ -40,7 +37,7 @@
     {% endif %}
     <div class="row">
         <div class="col-md-12">
-            <form id="email-sender" action="/my/mails{% if enhanced %}/{{ enhanced }}{% endif %}" method="POST">
+            <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="recipients" id="recipients"/>
                 

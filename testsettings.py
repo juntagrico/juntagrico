@@ -21,6 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'impersonate',
     'juntagrico',
+    'crispy_forms',
+    # enable only to test addon stuff
+    # 'juntagrico_test_addon',
 ]
 
 DATABASES = {
@@ -120,3 +123,6 @@ GOOGLE_API_KEY = 'AIzaSyCcii4Z71qyky54kEQtRhFbB_z-2zbSU28'
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_FAIL_SILENTLY = not DEBUG

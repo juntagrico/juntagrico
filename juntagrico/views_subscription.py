@@ -6,7 +6,11 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.generic import FormView
+from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -14,21 +18,21 @@ from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategor
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
-from juntagrico.decorators import primary_member_of_subscription
+from juntagrico.decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
-from juntagrico.forms import RegisterMemberForm
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
 from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
-from juntagrico.util.management import create_member, update_member, create_share
+from juntagrico.util.form_evaluation import selected_subscription_types
+from juntagrico.util.management import create_or_update_member, replace_subscription_types
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
-from juntagrico.views import get_menu_dict
+from juntagrico.views import get_menu_dict, get_page_dict
 
 
 @login_required
@@ -128,36 +132,31 @@ def depot_change(request, subscription_id):
 
 @primary_member_of_subscription
 def size_change(request, subscription_id):
-    '''
-    change the size of an subscription
-    '''
+    """
+    change the size of a subscription
+    """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
-    shareerror = False
-    if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month() and int(request.POST.get('subscription')) > 0:
-        type = SubscriptionTypeDao.get_by_id(
-            int(request.POST.get('subscription')))[0]
-        shares = subscription.all_shares
-        if shares < type.shares:
-            shareerror = True
-        else:
-            if subscription.state == 'waiting':
-                for t in TSST.objects.filter(subscription=subscription):
-                    t.delete()
-                TSST.objects.create(subscription=subscription, type=type)
-            for t in TFSST.objects.filter(subscription=subscription):
-                t.delete()
-            TFSST.objects.create(subscription=subscription, type=type)
+    share_error = False
+    if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month():
+        # create dict with subscription type -> selected amount
+        selected = selected_subscription_types(request.POST)
+        # check if members of sub have enough shares
+        if subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
+            share_error = True
+        elif sum(selected.values()) > 0:  # check that at least one subscription was selected
+            replace_subscription_types(subscription, selected)
             saved = True
+    products = SubscriptionProductDao.get_all()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'saved': saved,
         'subscription': subscription,
-        'shareerror': shareerror,
+        'shareerror': share_error,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': subscription.future_types.all()[0].id,
-        'products': SubscriptionProductDao.get_all()
+        'products': products,
     })
     return render(request, 'size_change.html', renderdict)
 
@@ -175,7 +174,7 @@ def extra_change(request, subscription_id):
                 for x in range(value):
                     ExtraSubscription.objects.create(
                         main_subscription=subscription, type=type)
-        return redirect('/my/subscription/change/extra/'+str(subscription.id)+'/')
+        return redirect('extra-change', subscription_id=subscription.id)
     renderdict = get_menu_dict(request)
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_extra_types(),
@@ -185,44 +184,43 @@ def extra_change(request, subscription_id):
     return render(request, 'extra_change.html', renderdict)
 
 
-def signup(request):
-    '''
-    Become a member of juntagrico
-    '''
-    if Config.enable_registration() is False:
-        raise Http404
-    logout(request)
-    success = False
-    agberror = False
-    agbchecked = False
-    userexists = False
-    if request.method == 'POST':
-        agbchecked = request.POST.get('agb') == 'on'
-        memberform = RegisterMemberForm(request.POST)
-        if not agbchecked:
-            agberror = True
-        else:
-            if memberform.is_valid():
-                # check if user already exists
-                email = memberform.cleaned_data['email']
-                if User.objects.filter(email__iexact=email).__len__() > 0:
-                    userexists = True
-                else:
-                    member = Member(**memberform.cleaned_data)
-                    request.session['main_member'] = member
-                    return redirect('/my/create/subscrition')
-    else:
-        memberform = RegisterMemberForm()
+class SignupView(FormView, ModelFormMixin):
+    template_name = 'signup.html'
 
-    renderdict = {
-        'memberform': memberform,
-        'success': success,
-        'agberror': agberror,
-        'agbchecked': agbchecked,
-        'userexists': userexists,
-        'menu': {'join': 'active'},
-    }
-    return render(request, 'signup.html', renderdict)
+    def __init__(self):
+        super().__init__()
+        self.cs_session = None
+        self.object = None
+
+    def get_form_class(self):
+        return EditMemberForm if self.cs_session.edit else RegisterMemberForm
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(
+            **get_page_dict(self.request),
+            menu={'join': 'active'},
+            **kwargs
+        )
+
+    @method_decorator(create_subscription_session)
+    def dispatch(self, request, cs_session, *args, **kwargs):
+        if Config.enable_registration() is False:
+            raise Http404
+        # logout if existing user is logged in
+        if request.user.is_authenticated:
+            logout(request)
+            cs_session.clear()  # empty session object
+
+        self.cs_session = cs_session
+        self.object = self.cs_session.main_member
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.cs_session.main_member = form.instance
+        return redirect(self.cs_session.next_page())
+
+    def render(self, **kwargs):
+        return self.render_to_response(self.get_context_data(**kwargs))
 
 
 def confirm(request, hash):
@@ -235,55 +233,39 @@ def confirm(request, hash):
             member.confirmed = True
             member.save()
 
-    return redirect('/my/home')
+    return redirect('home')
 
 
-@primary_member_of_subscription
-def add_member(request, subscription_id):
-    shareerror = False
-    shares = 0
-    memberexists = False
-    memberblocked = False
-    main_member = request.user.member
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    if request.method == 'POST':
-        memberform = RegisterMemberForm(request.POST)
-        try:
-            if Config.enable_shares():
-                shares = int(request.POST.get('shares'))
-                shareerror = shares < 0
-        except ValueError:
-            shareerror = True
-        member = next(iter(MemberDao.members_by_email(
-            request.POST.get('email')) or []), None)
-        if member is not None:
-            memberexists = True
-            memberblocked = member.blocked
-        if memberform.is_valid()or (memberexists is True and memberblocked is False):
-            if memberexists is False:
-                member = Member(**memberform.cleaned_data)
-                create_member(member, subscription, main_member, shares)
-            else:
-                update_member(member, subscription, main_member, shares)
-            for i in range(shares):
-                create_share(member)
-            return redirect('/my/subscription/detail/'+str(subscription_id)+'/')
-    else:
-        initial = {'addr_street': main_member.addr_street,
-                   'addr_zipcode': main_member.addr_zipcode,
-                   'addr_location': main_member.addr_location,
-                   'phone': main_member.phone,
-                   }
-        memberform = RegisterMemberForm(initial=initial)
-    renderdict = {
-        'shares': shares,
-        'memberexists': memberexists,
-        'memberblocked': memberblocked,
-        'shareerror': shareerror,
-        'memberform': memberform,
-        'subscription_id': subscription_id
-    }
-    return render(request, 'add_member.html', renderdict)
+class AddCoMemberView(FormView, ModelFormMixin):
+    template_name = 'add_member.html'
+    form_class = AddCoMemberForm
+
+    def __init__(self):
+        super().__init__()
+        self.object = None
+        self.subscription = None
+
+    def get_initial(self):
+        # use address from main member as default
+        mm = self.request.user.member
+        return {
+            'addr_street': mm.addr_street,
+            'addr_zipcode': mm.addr_zipcode,
+            'addr_location': mm.addr_location
+        }
+
+    @method_decorator(primary_member_of_subscription)
+    def dispatch(self, request, subscription_id, *args, **kwargs):
+        self.subscription = get_object_or_404(Subscription, id=subscription_id)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # create new member from form data
+        create_or_update_member(form.instance, self.subscription, form.cleaned_data['shares'], self.request.user.member)
+        return self._done()
+
+    def _done(self):
+        return redirect('sub-detail-id', subscription_id=self.subscription.id)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -336,21 +318,21 @@ def cancel_subscription(request, subscription_id):
     else:
         end_date = end_of_next_business_year()
     if request.method == 'POST':
+        for extra in subscription.extra_subscription_set.all():
+            if extra.active is True:
+                extra.canceled = True
+                extra.save()
+            elif extra.active is False and extra.deactivation_date is None:
+                extra.delete()
         if subscription.active is True and subscription.canceled is False:
             subscription.canceled = True
             subscription.end_date = request.POST.get('end_date')
             subscription.save()
             message = request.POST.get('message')
             send_subscription_canceled(subscription, message)
-            for extra in subscription.extra_subscription_set.all():
-                if extra.active is True:
-                    extra.canceled = True
-                    extra.save()
-                elif extra.active is False and extra.deactivation_date is None:
-                    extra.delete()
         elif subscription.active is False and subscription.deactivation_date is None:
             subscription.delete()
-        return redirect('/my/subscription/detail')
+        return redirect('sub-detail')
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -405,7 +387,7 @@ def order_shares(request):
             member = request.user.member
             for num in range(0, shares):
                 Share.objects.create(member=member, paid_date=None)
-            return redirect('/my/order/share/success?referer='+referer)
+            return redirect('{}?referer={}'.format(reverse('share-order-success'), referer))
     else:
         shareerror = False
         if request.META.get('HTTP_REFERER')is not None:
