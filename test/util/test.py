@@ -11,7 +11,7 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 
 
 class JuntagricoTestCase(TestCase):
-    
+
     def setUp(self):
         """
             member
@@ -138,7 +138,7 @@ class JuntagricoTestCase(TestCase):
                     'creation_date': '2017-03-27',
                     'start_date': '2018-01-01',
                     'primary_member': self.member
-        }
+                    }
         self.sub = Subscription.objects.create(**sub_data)
         self.member.subscription = self.sub
         self.member.save()
