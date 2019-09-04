@@ -6,31 +6,30 @@ from test.util.test import JuntagricoTestCase
 class JobTests(JuntagricoTestCase):
 
     def testAssignments(self):
-        self.assertSimpleGet(reverse('jobs'))
+        self.assertGet(reverse('jobs'))
 
     def testAssignmentsAll(self):
-        self.assertSimpleGet(reverse('jobs-all'))
+        self.assertGet(reverse('jobs-all'))
 
     def testJob(self):
-        self.assertSimpleGet(reverse('job', args=[self.job1.pk]))
+        self.assertGet(reverse('job', args=[self.job1.pk]))
 
     def testPastJob(self):
-        self.assertSimpleGet(reverse('memberjobs'))
+        self.assertGet(reverse('memberjobs'))
 
     def testParticipation(self):
-        self.assertSimpleGet(reverse('areas'))
+        self.assertGet(reverse('areas'))
 
     def testTeam(self):
-        self.assertSimpleGet(reverse('area', args=[self.area.pk]))
+        self.assertGet(reverse('area', args=[self.area.pk]))
 
     def testAreaJoinAndLeave(self):
-        self.assertSimpleGet(reverse('area-join', args=[self.area.pk]))
+        self.assertGet(reverse('area-join', args=[self.area.pk]))
         self.assertEqual(self.area.members.count(), 1)
-        self.assertSimpleGet(reverse('area-leave', args=[self.area.pk]))
+        self.assertGet(reverse('area-leave', args=[self.area.pk]))
         self.assertEqual(self.area.members.count(), 0)
 
     def testJobPost(self):
         self.client.force_login(self.member.user)
-        response = self.client.post(reverse('job', args=[self.job1.pk]), {'jobs': 1})
-        self.assertEqual(response.status_code, 302)
+        self.assertPost(reverse('job', args=[self.job1.pk]), {'jobs': 1}, 302)
         self.assertEqual(self.job1.free_slots(), 0)

@@ -6,4 +6,4 @@ from test.util.test import JuntagricoTestCase
 class HomeTests(JuntagricoTestCase):
 
     def testHome(self):
-        self.assertSimpleGet(reverse('home'))
+        self.assertGet(reverse('home'))
