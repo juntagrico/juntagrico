@@ -10,3 +10,6 @@ class AdminTests(JuntagricoTestCase):
 
     def testJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.job1.pk,)), member=self.admin)
+
+    def testSubAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)
