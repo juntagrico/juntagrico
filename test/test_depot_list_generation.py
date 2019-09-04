@@ -1,15 +1,11 @@
 from io import StringIO
 
-from django.test import TestCase
 from django.core.management import call_command
 
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class DepotlistTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class DepotlistTests(JuntagricoTestCase):
 
     def test_depot_list(self):
         out = StringIO()

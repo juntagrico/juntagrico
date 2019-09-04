@@ -1,17 +1,13 @@
 from io import StringIO
 
-from django.test import TestCase
 from django.core.management import call_command
 
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class TestdataTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class TestdataTests(JuntagricoTestCase):
 
     def test_depot_list(self):
         out = StringIO()
-        call_command('generate_testdata', '--force', stdout=out)
+        call_command('generate_testdata', stdout=out)
         self.assertEqual(out.getvalue(), '')
