@@ -10,6 +10,12 @@ class JobTests(JuntagricoTestCase):
         self.assertSimpleGet(reverse('sub-detail'))
         self.assertSimpleGet(reverse('sub-detail-id', args=[self.sub.pk]))
 
+    def testSubActivation(self):
+        self.assertGet(reverse('sub-activate', args=[self.sub.pk]), 302)
+        self.member.refresh_from_db()
+        self.assertIsNone(self.member.future_subscription)
+        self.assertEqual(self.member.subscription, self.sub)
+
     def testSubChange(self):
         self.assertSimpleGet(reverse('sub-change', args=[self.sub.pk]))
 
@@ -31,3 +37,13 @@ class JobTests(JuntagricoTestCase):
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_types.all()[0], self.sub_type2)
             self.assertEqual(self.sub.future_types.count(), 1)
+
+    def testSubDeActivation(self):
+        self.assertGet(reverse('sub-activate', args=[self.sub.pk]), 302)
+        self.assertEqual(self.member.old_subscriptions.count(),0)
+        self.assertGet(reverse('sub-deactivate', args=[self.sub.pk]), 302)
+        self.member.refresh_from_db()
+        self.assertIsNone(self.member.subscription)
+        self.assertEqual(self.member.old_subscriptions.count(),1)
+        self.assertGet(reverse('sub-activate', args=[self.sub.pk]), 302)
+        self.assertFalse(self.sub.active)

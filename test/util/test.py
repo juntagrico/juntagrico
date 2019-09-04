@@ -31,6 +31,8 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_filter_subscriptions'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='is_operations_group'))
         self.member.user.save()
         """
         shares
@@ -132,23 +134,26 @@ class JuntagricoTestCase(TestCase):
         """
         sub_data = {'depot': self.depot,
                     'future_depot': None,
-                    'active': True,
-                    'activation_date': '2017-03-27',
+                    'active': False,
+                    'activation_date': None,
                     'deactivation_date': None,
                     'creation_date': '2017-03-27',
                     'start_date': '2018-01-01',
                     'primary_member': self.member
                     }
         self.sub = Subscription.objects.create(**sub_data)
-        self.member.subscription = self.sub
+        self.member.future_subscription = self.sub
         self.member.save()
         TSST.objects.create(subscription=self.sub, type=self.sub_type)
         TFSST.objects.create(subscription=self.sub, type=self.sub_type)
 
     def assertSimpleGet(self, url):
+        self.assertGet(url, 200)
+
+    def assertGet(self, url, code):
         self.client.force_login(self.member.user)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, code)
 
     def assertSimplePost(self, url, data):
         self.client.force_login(self.member.user)
