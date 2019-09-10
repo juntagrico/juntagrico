@@ -13,6 +13,7 @@
         <link href="/static/external/mid/css/materialdesignicons.min.css" rel="stylesheet"/>
         <link href="/static/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet"/>
         <link href="/static/external/font-awesome-5.3.1/css/all.min.css" rel="stylesheet"/>
+        <link href="/static/external/cc/cookieconsent.min.css" rel="stylesheet"/>
         {% block styles %}
         {% endblock %}
         <link href="/static/css/juntagrico.css" rel="stylesheet"/>
@@ -117,6 +118,22 @@
         <script type="text/javascript" src="/static/external/bootstrap-4.3.1/js/bootstrap.min.js">
         </script>
         <script type="text/javascript" src="/static/js/juntagrico.js">
+        </script>
+        <script src="/static/external/cc/cookieconsent.min.js" data-cfasync="false"></script>
+        <script>
+        window.cookieconsent.initialise({
+            "content": {
+                "message": "{% trans "juntagrico verwendet folgende Cookies: session, csfr, cookieconsent." %}",
+                "dismiss": "{% trans "ausblenden" %}",
+                "link": "{% trans "Hier findest du mehr zum Thema" %}",
+                "href": "https://juntagrico.org/?page_id=80"
+            },
+            elements: {
+                dismiss: '<a aria-label="dismiss cookie message" tabindex="0" class="cc-dismiss cc-btn btn btn-success">{% templatetag openvariable %}dismiss{% templatetag closevariable %}</a>',
+                messagelink: '<span id="cookieconsent:desc" class="cc-message">{% templatetag openvariable %}message{% templatetag closevariable %} <a aria-label="learn more about cookies" tabindex="0" href="{% templatetag openvariable %}href{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}link{% templatetag closevariable %}</a></span>',
+
+}
+        });
         </script>
         {% block scripts %}
             {# no scripts by default #}
