@@ -1,49 +1,35 @@
-from django.test import TestCase
 from django.urls import reverse
 
-from test.util.test import test_simple_get
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class JobTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class JobTests(JuntagricoTestCase):
 
     def testAssignments(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get(reverse('jobs'))
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('jobs'))
 
     def testAssignmentsAll(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get(reverse('jobs-all'))
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('jobs-all'))
 
     def testJob(self):
-        test_simple_get(self, reverse('job', args=[self.job1.pk]))
+        self.assertGet(reverse('job', args=[self.job1.pk]))
 
     def testPastJob(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get(reverse('memberjobs'))
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('memberjobs'))
 
     def testParticipation(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get(reverse('areas'))
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('areas'))
 
     def testTeam(self):
-        test_simple_get(self, reverse('area', args=[self.area.pk]))
+        self.assertGet(reverse('area', args=[self.area.pk]))
 
     def testAreaJoinAndLeave(self):
-        test_simple_get(self, reverse('area-join', args=[self.area.pk]))
+        self.assertGet(reverse('area-join', args=[self.area.pk]))
         self.assertEqual(self.area.members.count(), 1)
-        test_simple_get(self, reverse('area-leave', args=[self.area.pk]))
+        self.assertGet(reverse('area-leave', args=[self.area.pk]))
         self.assertEqual(self.area.members.count(), 0)
 
     def testJobPost(self):
         self.client.force_login(self.member.user)
-        response = self.client.post(reverse('job', args=[self.job1.pk]), {'jobs': 1})
-        self.assertEqual(response.status_code, 302)
+        self.assertPost(reverse('job', args=[self.job1.pk]), {'jobs': 1}, 302)
         self.assertEqual(self.job1.free_slots(), 0)
