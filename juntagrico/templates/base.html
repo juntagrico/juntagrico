@@ -123,10 +123,10 @@
         <script>
         window.cookieconsent.initialise({
             "content": {
-                "message": "{% trans "juntagrico verwendet folgende Cookies: session, csfr, cookieconsent." %}",
+                "message": "{% config "cookie_text" %}",
                 "dismiss": "{% trans "ausblenden" %}",
                 "link": "{% trans "Hier findest du mehr zum Thema" %}",
-                "href": "https://juntagrico.org/?page_id=80"
+                "href": "{% config "cookie_url" %}"
             },
             elements: {
                 dismiss: '<a aria-label="dismiss cookie message" tabindex="0" class="cc-dismiss cc-btn btn btn-success">{% templatetag openvariable %}dismiss{% templatetag closevariable %}</a>',
