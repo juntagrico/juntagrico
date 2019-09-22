@@ -63,6 +63,9 @@
             {% endif %}
         </div>
     </div>
+    {% for sub_change_addon in sub_change_addons %}
+        {% include sub_change_addon %}
+    {% endfor %}
 {% if has_extra_subscriptions %}
     <div class="row mt-3">
         <div class="col-md-2">

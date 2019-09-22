@@ -33,6 +33,7 @@ from juntagrico.util.management import create_or_update_member, replace_subscrip
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict, get_page_dict
+from juntagrico.util import addons
 
 
 @login_required
@@ -65,6 +66,7 @@ def subscription(request, subscription_id=None):
             'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
             'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
+            'sub_overview_addons': addons.config.get_sub_overviews(),
         })
     renderdict.update({
         'no_subscription': subscription is None,
@@ -94,7 +96,8 @@ def subscription_change(request, subscription_id):
         'change_size': can_change,
         'next_cancel_date': temporal.next_cancelation_date(),
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
-        'next_business_year': temporal.start_of_next_business_year()
+        'next_business_year': temporal.start_of_next_business_year(),
+        'sub_change_addons': addons.config.get_sub_changes(),
     })
     return render(request, 'subscription_change.html', renderdict)
 
