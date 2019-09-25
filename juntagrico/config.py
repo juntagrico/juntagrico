@@ -279,9 +279,8 @@ class Config:
 
     @staticmethod
     def cookie_consent(key):
-        if hasattr(settings, 'COOKIE_CONSENT'):
-            if key in settings.COOKIE_CONSENT:
-                return settings.COOKIE_CONSENT[key]
+        if hasattr(settings, 'COOKIE_CONSENT') and key in settings.COOKIE_CONSENT:
+            return settings.COOKIE_CONSENT[key]
         return {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
                 'confirm_text': _('einverstanden'),
                 'link_text': _('Hier findest du mehr zum Thema'),
