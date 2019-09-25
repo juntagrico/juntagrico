@@ -338,3 +338,12 @@ th {
     font-size: 14px;
     margin-bottom: 0;
 }
+
+/* cookie consent stuff checked */
+.cc-window{
+    font-family: "Source Sans Pro Light";
+    background-color: #fefffa;
+}
+.cc-btn{
+    font-size: 0.875rem;
+}
