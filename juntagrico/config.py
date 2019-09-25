@@ -278,16 +278,14 @@ class Config:
         return 'juntagrico.util.defaultmailer.Mailer'
 
     @staticmethod
-    def cookie_text():
-        if hasattr(settings, 'COOKIE_TEXT'):
-            return settings.COOKIE_TEXT
-        return _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name())
-
-    @staticmethod
-    def cookie_url():
-        if hasattr(settings, 'COOKIE_URL'):
-            return settings.COOKIE_URL
-        return '/my/cookies'
+    def cookie_consent(key):
+        if hasattr(settings, 'COOKIE_CONSENT') and key in settings.COOKIE_CONSENT:
+            return settings.COOKIE_CONSENT[key]
+        return {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+                'confirm_text': _('einverstanden'),
+                'link_text': _('Hier findest du mehr zum Thema'),
+                'url': '/my/cookies'
+                }[key]
 
     @staticmethod
     def images(key):

@@ -123,10 +123,10 @@
         <script>
         window.cookieconsent.initialise({
             "content": {
-                "message": "{% config "cookie_text" %}",
-                "dismiss": "{% trans "ausblenden" %}",
-                "link": "{% trans "Hier findest du mehr zum Thema" %}",
-                "href": "{% config "cookie_url" %}"
+                "message": "{% cookie_consent "text" %}",
+                "dismiss": "{% cookie_consent "confirm_text" %}",
+                "link": "{% cookie_consent "link_text" %}",
+                "href": "{% cookie_consent "url" %}"
             },
             elements: {
                 dismiss: '<a aria-label="dismiss cookie message" tabindex="0" class="cc-dismiss cc-btn btn btn-success">{% templatetag openvariable %}dismiss{% templatetag closevariable %}</a>',

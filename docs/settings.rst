@@ -484,25 +484,19 @@ DEFAULT_MAILER
 
     'juntagrico.util.defaultmailer.Mailer'
 
-COOKIE_TEXT
+COOKIE_CONSENT
 -----------
-  The text of the cookie consent banner
+  The text, confirm text, link text and url of the cookie consent
 
   default value
 
   .. code-block:: python
 
-    _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name())
-
-COOKIE_URL
---------
-  The url of the detailed cookie description
-
-  default value
-
-  .. code-block:: python
-
-    '/my/cookies'
+    {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+     'confirm_text': _('einverstanden'),
+     'link_text': _('Hier findest du mehr zum Thema'),
+     'url': '/my/cookies'
+    }
 
 IMAGES
 ------

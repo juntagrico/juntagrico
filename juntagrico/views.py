@@ -511,6 +511,7 @@ def logout_view(request):
     auth.logout(request)
     return redirect('home')
 
+
 @login_required
 def cookies(request):
     renderdict = get_menu_dict(request)
