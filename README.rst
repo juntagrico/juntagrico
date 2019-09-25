@@ -51,3 +51,8 @@ Detailed documentation how to install and configure juntagrico can be found here
 
 Demo can be found here https://juntagrico-demo.herokuapp.com/
 
+.. wall of fame:
+    1000 commits motu55 🎉🎉🎉🎉🎉🎉
+
+
+
