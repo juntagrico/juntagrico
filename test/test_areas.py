@@ -16,4 +16,3 @@ class AreaTests(JuntagricoTestCase):
         self.assertEqual(self.area.members.count(), 1)
         self.assertGet(reverse('area-leave', args=[self.area.pk]))
         self.assertEqual(self.area.members.count(), 0)
-

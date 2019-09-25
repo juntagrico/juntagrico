@@ -15,7 +15,9 @@ class JuntagricoTestCase(TestCase):
     def setUp(self):
         self.set_up_member()
         self.set_up_shares()
+        self.set_up_area()
         self.set_up_job()
+        self.set_up_depots()
         self.set_up_sub()
 
     @staticmethod
@@ -84,10 +86,10 @@ class JuntagricoTestCase(TestCase):
                            }
         Share.objects.create(**self.share_data)
 
-    def set_up_job(self):
+    def set_up_area(self):
         """
-        area
-        """
+                area
+                """
         area_data = {'name': 'name',
                      'coordinator': self.member}
         area_data2 = {'name': 'name2',
@@ -95,6 +97,9 @@ class JuntagricoTestCase(TestCase):
                       'hidden': True}
         self.area = ActivityArea.objects.create(**area_data)
         self.area2 = ActivityArea.objects.create(**area_data2)
+
+    def set_up_job(self):
+
         """
         job_type
         """
@@ -145,10 +150,10 @@ class JuntagricoTestCase(TestCase):
                            'amount': 1}
         Assignment.objects.create(**assignment_data)
 
-    def set_up_sub(self):
+    def set_up_depots(self):
         """
-                depots
-                """
+        depots
+        """
         depot_data = {
             'code': 'c1',
             'name': 'depot',
@@ -161,6 +166,8 @@ class JuntagricoTestCase(TestCase):
             'contact': self.member,
             'weekday': 1}
         self.depot2 = Depot.objects.create(**depot_data)
+
+    def set_up_sub(self):
         """
         subscription product, size and types
         """
