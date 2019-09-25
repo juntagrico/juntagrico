@@ -204,8 +204,6 @@ def areas(request):
     member = request.user.member
     my_areas = []
     for area in ActivityAreaDao.all_visible_areas():
-        if area.hidden:
-            continue
         my_areas.append({
             'name': area.name,
             'checked': member in area.members.all(),

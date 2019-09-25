@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
@@ -15,35 +15,34 @@ class JuntagricoTestCase(TestCase):
     def setUp(self):
         self.set_up_member()
         self.set_up_shares()
+        self.set_up_area()
         self.set_up_job()
+        self.set_up_depots()
         self.set_up_sub()
 
-    def set_up_member(self):
-        """
-               member
-               """
+    @staticmethod
+    def create_member(email):
         member_data = {'first_name': 'first_name',
                        'last_name': 'last_name',
-                       'email': 'test@email.org',
+                       'email': email,
                        'addr_street': 'addr_street',
                        'addr_zipcode': 'addr_zipcode',
                        'addr_location': 'addr_location',
                        'phone': 'phone',
                        'confirmed': True,
                        }
-        member_data2 = {'first_name': 'first_name2',
-                        'last_name': 'last_name2',
-                        'email': 'test2@email.org',
-                        'addr_street': 'addr_street',
-                        'addr_zipcode': 'addr_zipcode',
-                        'addr_location': 'addr_location',
-                        'phone': 'phone',
-                        'confirmed': True,
-                        }
-        self.member = Member.objects.create(**member_data)
-        self.member2 = Member.objects.create(**member_data2)
-        self.member.user.set_password('12345')
-        self.member2.user.set_password('12345')
+        member = Member.objects.create(**member_data)
+        member.user.set_password('12345')
+        member.user.save()
+        return member
+
+    def set_up_member(self):
+        """
+            member
+        """
+        self.member = self.create_member('email1@email.org')
+        self.member2 = self.create_member('email2@email.org')
+        self.member3 = self.create_member('email3@email.org')
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
@@ -53,7 +52,6 @@ class JuntagricoTestCase(TestCase):
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_send_mails'))
         self.member.user.save()
-        self.member2.user.save()
         """
         admin member
         """
@@ -88,13 +86,20 @@ class JuntagricoTestCase(TestCase):
                            }
         Share.objects.create(**self.share_data)
 
-    def set_up_job(self):
+    def set_up_area(self):
         """
                 area
                 """
         area_data = {'name': 'name',
                      'coordinator': self.member}
+        area_data2 = {'name': 'name2',
+                      'coordinator': self.member,
+                      'hidden': True}
         self.area = ActivityArea.objects.create(**area_data)
+        self.area2 = ActivityArea.objects.create(**area_data2)
+
+    def set_up_job(self):
+
         """
         job_type
         """
@@ -103,14 +108,30 @@ class JuntagricoTestCase(TestCase):
                          'duration': 2}
         self.job_type = JobType.objects.create(**job_type_data)
         """
+        job_extra
+        """
+        job_extra_type_data = {'name': 'jet',
+                               'display_empty': 'empty',
+                               'display_full': 'full'}
+        self.job_extra_type = JobExtraType.objects.create(**job_extra_type_data)
+        job_extra_data = {'recuring_type': self.job_type,
+                          'extra_type': self.job_extra_type}
+        self.job_extra = JobExtra.objects.create(**job_extra_data)
+        """
         jobs
         """
         time = timezone.now() + timezone.timedelta(hours=2)
         job_data = {'slots': 1,
                     'time': time,
                     'type': self.job_type}
+        job_data2 = {'slots': 6,
+                     'time': time,
+                     'type': self.job_type}
         self.job1 = RecuringJob.objects.create(**job_data)
         self.job2 = RecuringJob.objects.create(**job_data)
+        self.job3 = RecuringJob.objects.create(**job_data)
+        self.job4 = RecuringJob.objects.create(**job_data2)
+        self.job5 = RecuringJob.objects.create(**job_data)
         """
         one time jobs
         """
@@ -129,10 +150,10 @@ class JuntagricoTestCase(TestCase):
                            'amount': 1}
         Assignment.objects.create(**assignment_data)
 
-    def set_up_sub(self):
+    def set_up_depots(self):
         """
-                depots
-                """
+        depots
+        """
         depot_data = {
             'code': 'c1',
             'name': 'depot',
@@ -145,6 +166,8 @@ class JuntagricoTestCase(TestCase):
             'contact': self.member,
             'weekday': 1}
         self.depot2 = Depot.objects.create(**depot_data)
+
+    def set_up_sub(self):
         """
         subscription product, size and types
         """
@@ -207,6 +230,8 @@ class JuntagricoTestCase(TestCase):
         self.sub2 = Subscription.objects.create(**sub_data2)
         self.member.subscription = self.sub
         self.member.save()
+        self.member3.subscription = self.sub
+        self.member3.save()
         self.member2.future_subscription = self.sub2
         self.member2.save()
         TSST.objects.create(subscription=self.sub, type=self.sub_type)
