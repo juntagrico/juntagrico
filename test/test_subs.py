@@ -31,6 +31,9 @@ class JobTests(JuntagricoTestCase):
         self.assertEqual(self.sub2.depot, self.depot2)
         self.assertIsNone(self.sub2.future_depot)
 
+    def testDepot(self):
+        self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
+
     def testSizeChange(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
             self.assertGet(reverse('size-change', args=[self.sub.pk]))
