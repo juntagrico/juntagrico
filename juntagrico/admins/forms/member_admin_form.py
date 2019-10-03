@@ -21,7 +21,7 @@ class MemberAdminForm(forms.ModelForm):
             link = self.get_subscription_link(member, member.future_subscription)
             self.fields['future_subscription_link'].initial = link
             old_links = []
-            for old_sub in member.old_subscriptions:
+            for old_sub in member.old_subscriptions.all():
                 old_links.append(self.get_subscription_link(member, old_sub))
                 self.fields['old_subscription_link'].initial = '<br>'.join(old_links)
 
