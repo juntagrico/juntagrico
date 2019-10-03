@@ -22,3 +22,6 @@ class ManListTests(JuntagricoTestCase):
 
     def testShareCanceledList(self):
         self.assertGet(reverse('share-mgmt-canceledlist'))
+
+    def testMemberCanceledList(self):
+        self.assertGet(reverse('member-mgmt-canceledlist'))

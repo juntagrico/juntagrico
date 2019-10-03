@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -420,6 +422,7 @@ def cancel_membership(request):
         message = request.POST.get('message')
         member = request.user.member
         member.canceled = True
+        member.end_date = dt.strptime(end_date, '%Y-%m-%d')
         member.cancelation_date = now
         if member.is_cooperation_member:
             send_membership_canceled(member, end_date, message)

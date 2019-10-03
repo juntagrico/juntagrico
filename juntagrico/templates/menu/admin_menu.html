@@ -4,6 +4,7 @@
 {% vocabulary "subscription" as v_subscription %}
 {% vocabulary "subscription_pl" as v_subscription_pl %}
 {% vocabulary "share_pl" as v_share_pl %}
+{% vocabulary "member_pl" as v_member_pl %}
 <hr/>
 <h5>
     {% trans "Administration" %}
@@ -71,7 +72,27 @@
             </div>
         </li>
     {% endif %}
-{% if operation_group and c_enable_shares %}
+    {% if operation_group%}
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#memberman">
+                {% blocktrans %}{{ v_member_pl }} Management{% endblocktrans %}
+                <i class="fas fa-angle-right">
+                </i>
+            </a>
+            <div class="collapse" id="memberman">
+                <ul class="nav flex-column subadmin-menu">
+                    {% if operation_group%}
+                        <li class="nav-item">
+                            <a class="nav-link"href="{% url 'member-mgmt-canceledlist' %}">
+                                 {% blocktrans %}{{ v_member_pl }} Kündigungsliste{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
+    {% if operation_group and c_enable_shares %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#shareman">
                 {% blocktrans %}{{ v_share_pl }} Management{% endblocktrans %}

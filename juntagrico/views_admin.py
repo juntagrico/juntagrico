@@ -405,6 +405,21 @@ def share_canceledlist(request):
 
 
 @permission_required('juntagrico.is_operations_group')
+def member_canceledlist(request):
+    render_dict = get_menu_dict(request)
+    render_dict.update({'change_date_disabled': True})
+    return subscription_management_list(MemberDao.canceled_members(), render_dict,
+                                        'management_lists/member_canceledlist.html', request)
+
+@permission_required('juntagrico.is_operations_group')
+def deactivate_member(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+    member.inactive = True
+    member.save()
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.is_operations_group')
 def set_change_date(request):
     if request.method != 'POST':
         raise Http404
