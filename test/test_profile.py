@@ -15,4 +15,4 @@ class ProfileTests(JuntagricoTestCase):
         self.assertGet(reverse('cancel-membership'))
 
     def testCancelMembershipPost(self):
-        self.assertPost(reverse('cancel-membership'), code=302)
+        self.assertPost(reverse('cancel-membership'), data={'end_date':'2019-01-01'}, code=302)
