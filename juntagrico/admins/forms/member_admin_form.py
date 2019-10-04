@@ -42,4 +42,4 @@ class MemberAdminForm(forms.ModelForm):
     future_subscription_link = forms.URLField(widget=MyHTMLWidget(), required=False,
                                               label=_('Zukünftige/r/s {0}').format(Config.vocabulary('subscription')))
     old_subscription_link = forms.URLField(widget=MyHTMLWidget(), required=False,
-                                           label=_('Alte/r/s {0}').format(Config.vocabulary('subscription')))
+                                           label=_('Alte {0}').format(Config.vocabulary('subscription_pl')))
