@@ -418,11 +418,11 @@ def cancel_membership(request):
     member = request.user.member
     if request.method == 'POST':
         now = timezone.now().date()
-        end_date = request.POST.get('end_date')
+        end_date = dt.strptime(request.POST.get('end_date'), '%Y-%m-%d')
         message = request.POST.get('message')
         member = request.user.member
         member.canceled = True
-        member.end_date = dt.strptime(end_date, '%Y-%m-%d')
+        member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
             send_membership_canceled(member, end_date, message)
