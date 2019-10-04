@@ -80,10 +80,8 @@ def send_filtered_mail(subject, message, text_message, emails, attachments, send
         'content': text_message,
         'serverurl': get_server()
     }
-
     text_content = plaintext.render(textd)
     html_content = htmly.render(htmld)
-    print(message)
     send_mail(subject, text_content, sender, emails, html_message=html_content, attachments=attachments)
 
 
