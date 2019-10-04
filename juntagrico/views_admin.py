@@ -411,6 +411,7 @@ def member_canceledlist(request):
     return subscription_management_list(MemberDao.canceled_members(), render_dict,
                                         'management_lists/member_canceledlist.html', request)
 
+
 @permission_required('juntagrico.is_operations_group')
 def deactivate_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
