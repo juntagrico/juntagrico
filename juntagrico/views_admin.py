@@ -49,7 +49,6 @@ def send_email_intern(request):
     sent = 0
     if request.method != 'POST':
         raise Http404
-    print(request.POST.get('message'))
     emails = set()
     sender = request.POST.get('sender')
     if request.POST.get('allsubscription') == 'on':
