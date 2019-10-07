@@ -11,7 +11,7 @@
 
 {% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten{% endblocktrans %}:
 {% trans "Email" %}: {{ username }}
-{% trans "Passwort" %}: {{ password }}" %}
+{% trans "Passwort" %}: {{ password }}
 {% trans "Bitte setze dir hier gleich ein neues Passwort:" %}
 {{serverurl}}/my/password
 
