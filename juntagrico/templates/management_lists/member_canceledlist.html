@@ -39,7 +39,9 @@
             {% for member in management_list %}
                 <tr>
                     <td>
-                        {{ member.first_name }} {{ member.last_name }}
+                        <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                            {{ member.first_name }} {{ member.last_name }}
+                        </a>
                     </td>
                     <td>
                         {{ member.cancelation_date |date:"Y-m-d" }}
