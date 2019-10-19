@@ -17,6 +17,7 @@ class Share(Billable):
         _('Zurückbezahlt am'), null=True, blank=True)
     number = models.IntegerField(
         _('Anteilschein Nummer'), null=True, blank=True)
+    sent_back = models.BooleanField(_('Zurückgesandt'), default=False)
     notes = models.TextField(
         _('Notizen'), max_length=1000, default='', blank=True)
 
