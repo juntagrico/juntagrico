@@ -1,0 +1,96 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    <h3>
+        {% trans "Kündigungsliste" %}
+    </h3>
+{% endblock %}
+{% block list %}
+    {% vocabulary "subscription" as v_subscription %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "Name" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kündigungsdatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Enddatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Aktive Anteilscheine" %}
+                </th>
+                <th class="filter">
+                    {% blocktrans %}Aktive/r/s {{ v_subscription }}{% endblocktrans %}
+                </th>
+                <th class="filter">
+                    {% trans "Email" %}
+                </th>
+                <th>
+                </th>
+                <th>
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in management_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                            {{ member.first_name }} {{ member.last_name }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ member.cancelation_date |date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ member.end_date |date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ member.active_shares_count }}
+                        {% if member.active_shares_count > 0 %}
+                            {% trans "(J)" %}
+                        {% else %}
+                            {% trans "(N)" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if member.in_subscription %}
+                            {% trans "(J)" %}
+                        {% else %}
+                            {% trans "(N)" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form id="member{{ member.id }}" method="post" action="{% url 'mail' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients"value="{{ member.email }}"/>
+                            <input type="hidden"name="recipients_count"value="1"/>
+                            <a href="#"onclick="$('#member{{ member.id }}').submit();" class="email">
+                                {{ member.email }}
+                            </a>
+                        </form>
+                    </td>
+                    <td>
+                        {% if not member.in_subscription and not member.active_shares_count > 0 %}
+                            <a href="{% url 'member-deactivate' member.id %}"class="btn btn-success">
+                                {% trans "deaktivieren" %}
+                            </a>
+                        {% else %}
+                            <a href="{% url 'member-deactivate' member.id %}"class="btn btn-success disabled">
+                                {% trans "deaktivieren" %}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ member.notes }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

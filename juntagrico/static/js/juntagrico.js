@@ -89,7 +89,7 @@ function default_data_table() {
         },
         "drawCallback": function (settings) {
             // do not like this but it works so far till i get around to find the correct api call
-            updateSendEmailButton($("#filter-table tr").length - 2);
+            updateSendEmailButton($("#filter-table tbody tr").length);
         },
         "language": {
             "search": "Suchen: "
