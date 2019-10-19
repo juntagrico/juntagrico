@@ -62,7 +62,7 @@
                         {{ share.id }}
                     </td>
                     <td>
-                        {{ share.number }}
+                        {{ share.number|default:'-' }}
                     </td>
                     <td>
                         {{ share.member.first_name }} {{ share.member.last_name }}
