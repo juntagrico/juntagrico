@@ -63,7 +63,7 @@
                     </Id>
                 </CdtrAcct>
                 <RmtInf>
-                    <Ustrd>{% blocktrans with sn=share.number sid=share.id %}{{ v_share }} Rückzahlung | {{ sn }}(Intern: {{ sid }} ){% endblocktrans %}</Ustrd>
+                    <Ustrd>{% blocktrans with sn=share.number|default_if_none:"" sid=share.id %}{{ v_share }} Rückzahlung | {{ sn }}(Intern: {{ sid }} ){% endblocktrans %}</Ustrd>
                 </RmtInf>
             </CdtTrfTxInf>
             {% endfor %}
