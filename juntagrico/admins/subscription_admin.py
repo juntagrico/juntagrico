@@ -9,7 +9,9 @@ class SubscriptionAdmin(BaseAdmin):
     form = SubscriptionAdminForm
     list_display = ['__str__', 'recipients_names',
                     'primary_member_nullsave', 'depot', 'active']
-    search_fields = ['members__user__username',
-                     'members__first_name', 'members__last_name', 'depot__name']
+    search_fields = ['members__user__username', 'members__first_name', 'members__last_name',
+                     'members_future__user__username', 'members_future__first_name', 'members_future__last_name',
+                     'members_old__user__username', 'members_old__first_name', 'members_old__last_name',
+                     'depot__name']
     inlines = [SubscriptionTypeInline,
                FutureSubscriptionTypeInline, ExtraSubscriptionInline]
