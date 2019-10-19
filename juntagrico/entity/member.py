@@ -45,7 +45,7 @@ class Member(JuntagricoBaseModel):
 
     canceled = models.BooleanField(_('gekündigt'), default=False)
     cancelation_date = models.DateField(
-        _('Kündigüngs Datum'), null=True, blank=True)
+        _('Kündigüngsdatum'), null=True, blank=True)
     end_date = models.DateField(
         _('End Datum'), null=True, blank=True)
     inactive = models.BooleanField(_('inaktiv'), default=False)
