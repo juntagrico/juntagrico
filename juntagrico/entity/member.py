@@ -47,7 +47,7 @@ class Member(JuntagricoBaseModel):
     cancelation_date = models.DateField(
         _('Kündigüngsdatum'), null=True, blank=True)
     end_date = models.DateField(
-        _('End Datum'), null=True, blank=True)
+        _('Enddatum'), null=True, blank=True)
     inactive = models.BooleanField(_('inaktiv'), default=False)
     notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
 
