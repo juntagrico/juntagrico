@@ -1,12 +1,15 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
 {% load config %}
-{% block page_title %}
-    <h3>
-        {% trans "Cookies" %}
-    </h3>
+{% block all_page_title %}
+    {% vocabulary "member_type" as v_member_type %}
+    <div class="page-title col-md-12">
+        <h3>
+            {% trans "Cookies" %}
+        </h3>
+    </div>
 {% endblock %}
-{% block content %}
+{% block allcontent %}
     {% config "adminportal_name" as an%}
     {% blocktrans with an=an%}
     {{ an }} verwendet Cookies.
