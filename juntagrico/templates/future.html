@@ -1,35 +1,58 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Hier siehst du die Zukunft {% enriched_organisation "G" %}</h3>
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    <h3>
+        {% blocktrans %}Hier siehst du die Zukunft {{ v_d_enriched_organisation }}{% endblocktrans %}
+    </h3>
 {% endblock %}
-
 {% block content %}
+    {% enriched_organisation "N" as v_n_enriched_organisation %}
+    {% vocabulary "member_pl" as v_member_pl %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
     <div class="row mb-3">
         <div class="col-md-12">
-            Wenn jetzt alle gewünschten Änderungen der {% vocabulary "member_pl" %} in Kraft treten würden, dann
-            hätte {% enriched_organisation "N" %} die folgenden{% vocabulary "subscription_pl" %} und Zusatzabos.
+            {% blocktrans trimmed%}
+            Wenn jetzt alle gewünschten Änderungen der {{ v_member_pl }} in Kraft treten würden, dann
+            hätte {{ v_n_enriched_organisation }} die folgenden {{ v_subscription_pl }} und Zusatzabos.
+            {% endblocktrans %}
         </div>
     </div>
     <div class="row mb-1">
-        <label class="offset-md-4 col-md-4">Aktuell</label>
-        <label class="col-md-4">Zukunft</label>
+        <label class="offset-md-4 col-md-4">
+            {% trans "Aktuell" %}
+        </label>
+        <labelclass="col-md-4">
+            {% trans "Zukunft" %}
+        </label>
     </div>
     {% for line in subscription_lines %}
         <div class="row mb-1">
-            <label class="col-md-4">{{ line.name }}</label>
-            <label class="col-md-4">{{ line.now }}</label>
-            <label class="col-md-4">{{ line.future }}</label>
+            <label class="col-md-4">
+                {{ line.name }}
+            </label>
+            <label class="col-md-4">
+                {{ line.now }}
+            </label>
+            <labelclass="col-md-4">
+                {{ line.future }}
+            </label>
         </div>
     {% endfor %}
     {% for line in extra_lines %}
         <div class="row mb-1">
-            <label class="col-md-4">{{ line.name }}</label>
-            <label class="col-md-4">{{ line.now }}</label>
-            <label class="col-md-4">{{ line.future }}</label>
+            <label class="col-md-4">
+                {{ line.name }}
+            </label>
+            <label class="col-md-4">
+                {{ line.now }}
+            </label>
+            <labelclass="col-md-4">
+                {{ line.future }}
+            </label>
         </div>
     {% endfor %}
 {% endblock %}
-
 {% block scripts %}
 {% endblock %}

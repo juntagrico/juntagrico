@@ -1,19 +1,26 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
-Achtung:
+{% config "organisation_name" as c_organisation_name %}
+{% trans "Achtung" %}:
 
-Dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.get_name }}" findet neu um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} statt.
+{% blocktrans trimmed with jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
+Dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" findet neu um {{ jt }}-{{ jet }} statt.
+{% endblocktrans %}
 
-Details:
+{% trans "Details" %}:
 
-Job:             {{ job.type.description }}
-Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-Teilnehmer:        {{ participants }}
-Ort:             {{ job.type.location }}
+{% trans "Job" %}:             {{ job.type.description }}
+{% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+{% trans "Teilnehmer" %}:        {{ participants }}
+{% trans "Ort" %}:             {{ job.type.location }}
 
+{% blocktrans trimmed %}
 Wir freuen uns, dich zu sehen und zählen auf dich!
+{% endblocktrans %}
 
-Herzlich grüsst,
-dein {% config "organisation_name" %}-Team
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}

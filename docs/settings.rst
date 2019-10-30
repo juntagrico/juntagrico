@@ -197,6 +197,18 @@ BYLAWS
 
     ""
 
+GDPR_INFO
+------
+  URL to your gdpr document
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    ""
+
 MAIL_TEMPLATE
 -------------
   Path to your custom html email template if you want to overwrite the look and feel of the html emails
@@ -308,9 +320,9 @@ ENABLE_SHARES
 
 ENABLE_REGISTRATION
 -----------
-  Decides if new member can registrate
+  Decides if new member can register
 
-  Type: String
+  Type: Boolean
 
   default value
 
@@ -471,6 +483,20 @@ DEFAULT_MAILER
   .. code-block:: python
 
     'juntagrico.util.defaultmailer.Mailer'
+
+COOKIE_CONSENT
+-----------
+  The text, confirm text, link text and url of the cookie consent
+
+  default value
+
+  .. code-block:: python
+
+    {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+     'confirm_text': _('einverstanden'),
+     'link_text': _('Hier findest du mehr zum Thema'),
+     'url': '/my/cookies'
+    }
 
 IMAGES
 ------

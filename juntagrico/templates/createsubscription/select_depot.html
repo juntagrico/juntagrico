@@ -1,77 +1,82 @@
-{% extends "base.html" %}
+{% extends "no_menu_base.html" %}
+{% load i18n %}
 {% load config %}
 {% block all_page_title %}
-    <div class="col-md-3">
-        &nbsp;
-    </div>
-    <div class="col-md-9 juntagrico">
-        <h3>Wähle dein {% vocabulary "depot" %}</h3>
+    {% vocabulary "depot" as v_depot %}
+    <div class="page-title offset-md-2 col-md-8">
+        <h3>
+            {% blocktrans %}{{ v_depot }} auswählen{% endblocktrans %}
+        </h3>
     </div>
 {% endblock %}
-
 {% block allcontent %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "depot" as v_depot %}
     <div class="offset-md-2 col-md-8">
-
         <form action="" method="post">
             {% csrf_token %}
             <div id="depot_container" class="form-group row">
-                <label class="col-md-3" for="depot">{% vocabulary "depot" %}</label>
-
+                <label class="col-md-3" for="depot">
+                    {% vocabulary "depot" %}
+                </label>
                 <div class="col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.code }}">{{ depot.name }}</option>
+                            <option value="{{ depot.id }}" id="depot{{ depot.code }}"{% if depot == selected %}selected{% endif %}>
+                                {{ depot.name }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
             <div id="depot_container" class="form-group row">
                 <label for="depot" class="offset-md-3 col-md-9">
-                    Wähle ein {% vocabulary "depot" %} aus, in welchem du wöchentlich das feine Gemüse abholen kannst.
+                    {% blocktrans %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
                 </label>
             </div>
             <div id="depot_container" class="form-group row">
                 <div class="offset-md-3 col-md-9">
                     {% if requires_map %}
-                        <div id="map-canvas"></div>
+                        <div id="map-canvas">
+                        </div>
                     {% endif %}
                 </div>
             </div>
-
             <div class="form-actions row">
                 <div class="offset-md-3 col-md-9">
-                    <button type="submit" class="btn btn-success">Weiter</button>
-                    <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
+                    <button type="submit" class="btn btn-success">
+                        {% trans "Weiter" %}
+                    </button>
+                    <a href="{% url 'cs-cancel' %}" class="btn">
+                        {% trans "Abbrechen" %}
+                    </a>
                 </div>
             </div>
         </form>
     </div>
-
 {% endblock %}
-
 {% block scripts %}
     <script type="text/javascript">
         var member_addr = '{{ member.addr_street }}+{{ member.addr_zipcode }}+{{ member.addr_location }}';
-
         var destinations = [];
         var depots = [];
         {% for depot in depots %}
             {% if depot.has_geo %}
                 destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}");
-                depots.push({
-                    name: '{{ depot.name }}',
-                    addr_street: '{{ depot.addr_street }}',
-                    addr_zipcode: '{{ depot.addr_zipcode }}',
-                    addr_location: '{{ depot.addr_location }}',
-                    latitude: '{{ depot.latitude }}',
-                    longitude: '{{ depot.longitude }}',
-                    code: '{{ depot.code }}'
+                depots.push(
+                {name: '{{ depot.name }}',
+                addr_street: '{{ depot.addr_street }}',
+                addr_zipcode: '{{ depot.addr_zipcode }}',
+                addr_location: '{{ depot.addr_location }}',
+                latitude: '{{ depot.latitude }}',
+                longitude: '{{ depot.longitude }}',
+                code: '{{ depot.code }}'
                 });
             {% endif %}
         {% endfor %}
     </script>
-    <script type="text/javascript"
-            src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={% config "google_api_key" %}"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"
-            data-main="/static/js/initCreateSubscription.js"></script>
+    <script type="text/javascript"src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={% config "google_api_key" %}">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initCreateSubscription.js">
+    </script>
 {% endblock %}

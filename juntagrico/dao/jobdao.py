@@ -19,8 +19,7 @@ class JobDao:
         otjidlist = list(
             OneTimeJob.objects.filter(activityarea__coordinator=member).values_list('id', flat=True))
         rjidlist = list(
-            RecuringJob.objects.filter(type_activityarea__coordinator=member).values_list('id',
-                                                                                          flat=True))
+            RecuringJob.objects.filter(type__activityarea__coordinator=member).values_list('id', flat=True))
         return otjidlist + rjidlist
 
     @staticmethod
@@ -53,4 +52,5 @@ class JobDao:
 
     @staticmethod
     def get_promoted_jobs():
-        return RecuringJob.objects.filter(type__name__in=Config.promoted_job_types(), time__gte=timezone.now()).order_by('time')[:Config.promomted_jobs_amount()]
+        return RecuringJob.objects.filter(type__name__in=Config.promoted_job_types(),
+                                          time__gte=timezone.now()).order_by('time')[:Config.promomted_jobs_amount()]

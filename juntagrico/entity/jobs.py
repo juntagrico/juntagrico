@@ -1,19 +1,15 @@
-# encoding: utf-8
-
 from django.db import models
+from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
-from django.core.exceptions import ValidationError
-from polymorphic.models import PolymorphicModel
 
 from juntagrico.dao.assignmentdao import AssignmentDao
-
-from juntagrico.util.jobs import *
+from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.util.jobs import get_status_image
 from juntagrico.util.temporal import *
-from juntagrico.config import Config
-from juntagrico.mailer import *
 
 
-class ActivityArea(models.Model):
+class ActivityArea(JuntagricoBaseModel):
 
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
@@ -45,7 +41,7 @@ class ActivityArea(models.Model):
             ('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
 
 
-class JobExtraType(models.Model):
+class JobExtraType(JuntagricoBaseModel):
     '''
     Types of extras which a job type might need or can have
     '''
@@ -60,18 +56,15 @@ class JobExtraType(models.Model):
         verbose_name_plural = _('JobExtraTypen')
 
 
-class JobExtra(models.Model):
+class JobExtra(JuntagricoBaseModel):
     '''
     Actual Extras mapping
     '''
-    recuring_type = models.ForeignKey('JobType', related_name='job_extras_set', null=True,
-                                      blank=True,
+    recuring_type = models.ForeignKey('JobType', related_name='job_extras_set', null=True, blank=True,
                                       on_delete=models.PROTECT)
-    onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras_set', null=True,
-                                     blank=True,
+    onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras_set', null=True, blank=True,
                                      on_delete=models.PROTECT)
-    extra_type = models.ForeignKey('JobExtraType', related_name='job_types_set', null=False,
-                                   blank=False,
+    extra_type = models.ForeignKey('JobExtraType', related_name='job_types_set', null=False, blank=False,
                                    on_delete=models.PROTECT)
     per_member = models.BooleanField(
         _('jeder kann Extra auswählen'), default=False)
@@ -82,24 +75,22 @@ class JobExtra(models.Model):
 
     @property
     def type(self):
-        if recuring_type is not None:
-            return recuring_type
-        return onetime_type
+        if self.recuring_type is not None:
+            return self.recuring_type
+        return self.onetime_type
 
     class Meta:
         verbose_name = _('JobExtra')
         verbose_name_plural = _('JobExtras')
 
 
-class AbstractJobType(models.Model):
+class AbstractJobType(JuntagricoBaseModel):
     '''
     Abstract type of job.
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    displayed_name = models.CharField(
-        _('Angezeigter Name'), max_length=100, blank=True, null=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, default='')
+    displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
+    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
     duration = models.PositiveIntegerField(_('Dauer in Stunden'))
     location = models.CharField('Ort', max_length=100, default='')
@@ -129,24 +120,22 @@ class JobType(AbstractJobType):
         verbose_name_plural = _('Jobarten')
 
 
-class Job(PolymorphicModel):
+class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plaetze'))
     time = models.DateTimeField()
     multiplier = models.PositiveIntegerField(
-        Config.vocabulary('assignment')+' vielfaches', default=1)
+        _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
-    old_canceled = None
-    old_time = None
 
     @property
     def type(self):
         raise NotImplementedError
 
     def __str__(self):
-        return _('Job #%s') % self.id
+        return _('Job {0}').format(self.id)
 
     def weekday_name(self):
         day = self.time.isoweekday()
@@ -206,51 +195,16 @@ class Job(PolymorphicModel):
         return self.type.job_extras_set.filter(per_member=True)
 
     def clean(self):
-        if self.old_canceled != self.canceled and self.old_canceled is True:
-            raise ValidationError(
-                _('Abgesagte jobs koennen nicht wieder aktiviert werden'), code='invalid')
-
-    @classmethod
-    def pre_save(cls, sender, instance, **kwds):
-        if instance.old_canceled != instance.canceled and instance.old_canceled is False:
-            assignments = AssignmentDao.assignments_for_job(instance.id)
-            emails = set()
-            for assignment in assignments:
-                emails.add(assignment.member.email)
-            instance.slots = 0
-            if len(emails) > 0:
-                send_job_canceled(emails, instance)
-        if instance.old_time != instance.time:
-            assignments = AssignmentDao.assignments_for_job(instance.id)
-            emails = set()
-            for assignment in assignments:
-                emails.add(assignment.member.email)
-            if len(emails) > 0:
-                send_job_time_changed(emails, instance)
-
-    @classmethod
-    def post_init(cls, sender, instance, **kwds):
-        instance.old_time = instance.time
-        instance.old_canceled = instance.canceled
-        if instance.canceled:
-            assignments = AssignmentDao.assignments_for_job(instance.id)
-            assignments.delete()
+        check_job_consistency(self)
 
     class Meta:
         verbose_name = _('AbstractJob')
         verbose_name_plural = _('AbstractJobs')
+        permissions = (('can_edit_past_jobs', _('kann vergangene Jobs editieren')),)
 
 
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT)
-
-    @classmethod
-    def pre_save(cls, sender, instance, **kwds):
-        Job.pre_save(sender, instance)
-
-    @classmethod
-    def post_init(cls, sender, instance, **kwds):
-        Job.post_init(sender, instance)
 
     class Meta:
         verbose_name = _('Job')
@@ -273,24 +227,19 @@ class OneTimeJob(Job, AbstractJobType):
     def pre_save(cls, sender, instance, **kwds):
         Job.pre_save(sender, instance)
 
-    @classmethod
-    def post_init(cls, sender, instance, **kwds):
-        Job.post_init(sender, instance)
-
     class Meta:
         verbose_name = _('EinzelJob')
         verbose_name_plural = _('EinzelJobs')
 
 
-class Assignment(models.Model):
+class Assignment(JuntagricoBaseModel):
     '''
     Single assignment (work unit).
     '''
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.PROTECT)
     member = models.ForeignKey('Member', on_delete=models.PROTECT)
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
-    job_extras = models.ManyToManyField(
-        JobExtra, related_name='assignments', blank=True)
+    job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True)
     amount = models.FloatField(_('Wert'))
 
     def __str__(self):
@@ -303,7 +252,7 @@ class Assignment(models.Model):
         return self.job.type.activityarea.core
 
     @classmethod
-    def pre_save(cls, sender, instance, **kwds):
+    def pre_save(cls, sender, instance, **kwargs):
         instance.core_cache = instance.is_core()
 
     class Meta:

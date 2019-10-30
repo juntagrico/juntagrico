@@ -1,40 +1,38 @@
-# encoding: utf-8
-
 from django.core import validators
 from django.db import models
 from django.utils.translation import gettext as _
 
-from juntagrico.util.temporal import weekday_choices, weekdays
-
 from juntagrico.config import Config
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.extrasubscriptioncategorydao \
     import ExtraSubscriptionCategoryDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
+from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.util.temporal import weekday_choices, weekdays
 
 
-class Depot(models.Model):
+class Depot(JuntagricoBaseModel):
     '''
     Location where stuff is picked up.
     '''
-    code = models.CharField('Code', max_length=100,
+    code = models.CharField(_('Sortier-Code'), max_length=100,
                             validators=[validators.validate_slug], unique=True)
-    name = models.CharField(Config.vocabulary(
-        'depot')+' Name', max_length=100, unique=True)
+    name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField('Wochentag', choices=weekday_choices)
-    capacity = models.PositiveIntegerField('Kapazität', default=0)
-    latitude = models.CharField('Latitude', max_length=100, default='',
+    weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)
+    capacity = models.PositiveIntegerField(_('Kapazität'), default=0)
+    latitude = models.CharField(_('Latitude'), max_length=100, default='',
                                 null=True, blank=True)
-    longitude = models.CharField('Longitude', max_length=100, default='',
+    longitude = models.CharField(_('Longitude'), max_length=100, default='',
                                  null=True, blank=True)
-    addr_street = models.CharField('Strasse', max_length=100,
+    addr_street = models.CharField(_('Strasse'), max_length=100,
                                    null=True, blank=True)
-    addr_zipcode = models.CharField('PLZ', max_length=10,
+    addr_zipcode = models.CharField(_('PLZ'), max_length=10,
                                     null=True, blank=True)
-    addr_location = models.CharField('Ort', max_length=50,
+    addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
-    description = models.TextField('Beschreibung', max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
 
     overview_cache = None
     subscription_cache = None
@@ -62,10 +60,10 @@ class Depot(models.Model):
         return day
 
     @staticmethod
-    def subscription_amounts(subscriptions, name):
+    def subscription_amounts(subscriptions, id):
         amount = 0
         for subscription in subscriptions.all():
-            amount += subscription.subscription_amount(name)
+            amount += subscription.subscription_amount(id)
         return amount
 
     @staticmethod
@@ -80,11 +78,12 @@ class Depot(models.Model):
     def fill_overview_cache(self):
         self.fill_active_subscription_cache()
         self.overview_cache = []
-        for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
-            cache = self.subscription_cache
-            size_name = subscription_size.name
-            amounts = self.subscription_amounts(cache, size_name)
-            self.overview_cache.append(amounts)
+        for product in SubscriptionProductDao.get_all():
+            for subscription_size in SubscriptionSizeDao.sizes_for_depot_list_by_product(product):
+                cache = self.subscription_cache
+                size_id = subscription_size.id
+                amounts = self.subscription_amounts(cache, size_id)
+                self.overview_cache.append(amounts)
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             types = ExtraSubscriptionTypeDao.extra_types_by_category_ordered(
                 category)

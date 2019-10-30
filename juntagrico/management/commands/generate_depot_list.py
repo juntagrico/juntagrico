@@ -1,12 +1,9 @@
 from django.core.management.base import BaseCommand
 
-
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.models import *
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.temporal import weekdays
@@ -54,12 +51,26 @@ class Command(BaseCommand):
 
         depots = DepotDao.all_depots_order_by_code()
 
-        subscription_names = []
-        for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
-            subscription_names.append(subscription_size.name)
+        subscription_ids = []
+        for product in SubscriptionProductDao.get_all():
+            for subscription_size in SubscriptionSizeDao.sizes_for_depot_list_by_product(product):
+                subscription_ids.append(subscription_size.id)
 
         categories = []
         types = []
+
+        for product in SubscriptionProductDao.get_all():
+            cat = {'name': product.name, 'description': product.description}
+            count = 0
+            for subscription_size in SubscriptionSizeDao.sizes_for_depot_list_by_product(product):
+                count += 1
+                es_type = {'name': subscription_size.name,
+                           'size': subscription_size, 'last': False}
+                types.append(es_type)
+            es_type['last'] = True
+            cat['count'] = count
+            categories.append(cat)
+
         for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
             cat = {'name': category.name, 'description': category.description}
             count = 0
@@ -82,7 +93,7 @@ class Command(BaseCommand):
         for weekday in used_weekdays:
             overview[weekday] = None
 
-        count = len(types) + len(subscription_names)
+        count = len(types)
         for weekday in used_weekdays:
             overview[weekday] = [0] * count
         overview['all'] = [0] * count
@@ -100,12 +111,12 @@ class Command(BaseCommand):
                 all[count] += depot.overview_cache[count]
                 count += 1
 
-        insert_point = len(subscription_names)
+        insert_point = 0
         for weekday in used_weekdays:
             overview[weekday].insert(insert_point, 0)
         overview['all'].insert(insert_point, 0)
 
-        index = 0
+        index = 1
         for subscription_size in SubscriptionSizeDao.sizes_for_depot_list():
             for weekday in used_weekdays:
                 overview[weekday][insert_point] = overview[weekday][insert_point] + subscription_size.units * \
@@ -113,14 +124,14 @@ class Command(BaseCommand):
             overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.units * overview['all'][
                 index]
             index += 1
-
         renderdict = {
             'overview': overview,
             'depots': depots,
-            'subscription_names': subscription_names,
-            'subscriptioncount': len(subscription_names)+1,
+            'subscription_ids': subscription_ids,
+            'subscriptioncount': len(subscription_ids)+1,
             'categories': categories,
             'types': types,
+            'es_types': types[len(subscription_ids):],
             'datum': timezone.now(),
             'weekdays': used_weekdays,
             'messages': ListMessageDao.all_active()

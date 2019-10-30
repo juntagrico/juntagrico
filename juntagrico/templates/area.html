@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    <h3>
+        {{ area.name }}
+    </h3>
+{% endblock %}
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Beschreibung" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.description|linebreaksbr|urlize }}
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            {% trans "Verantwortlicher" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
+            <br/>
+            {% if area.email is not None %}
+                <a href="mailto:{{ area.email }}">
+                    {{ area.email }}
+                </a>
+            {% else %}
+                <a href="mailto:{{ area.coordinator.email }}">
+                    {{ area.coordinator.email }}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row mb-3 no-gutters">
+        <div class="offset-md-3 col-md-9">
+            <span class="switch switch-sm">
+                <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area_checked %}checked="checked"{% endif %}/>
+                <label for="area{{ area.id }}">
+                    {% trans "Mitmachen" %}
+                </label>
+            </span>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <h4>
+                {% trans "Kommende Termine" %}
+            </h4>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            {% include "snippets/snippet_jobs.html" %}
+            {% if jobs|length <= 0 %}
+                {% trans "Keine Einsätze ausgeschrieben" %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initArea.js">
+    </script>
+{% endblock %}

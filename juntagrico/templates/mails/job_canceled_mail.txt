@@ -1,17 +1,23 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
+{% config "organisation_name" as c_organisation_name %}
 
-Dein {% config "organisation_name" %}-Arbeitseinsatz "{{ job.type.get_name }}"  um {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} wurde leider Abgesagt.
+{% blocktrans trimmed with jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
+Dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}"  um {{ jt }}-{{ jet }} wurde leider Abgesagt.
+{% endblocktrans %}
 
-Details:
+{% trans "Details" %}:
 
-Job:             {{ job.type.description }}
-Zeit:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-Ort:             {{ job.type.location }}
-
+{% trans "Job" %}:             {{ job.type.description }}
+{% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+{% trans "Ort" %}:             {{ job.type.location }}
+{% blocktrans trimmed%}
 Es tut uns leid und hoffen dich bei einem anderen Einsatz wieder zu sehen!
+{% endblocktrans %}
 
-Herzlich grüsst,
-dein {% config "organisation_name" %}-Team
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}

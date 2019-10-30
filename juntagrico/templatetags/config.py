@@ -23,3 +23,8 @@ def vocabulary(key):
 @register.simple_tag
 def enriched_organisation(case):
     return eo(case)
+
+
+@register.simple_tag
+def cookie_consent(key):
+    return Config.cookie_consent(key)

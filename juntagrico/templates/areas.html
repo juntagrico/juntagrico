@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    <h3>
+        {% trans "Mitarbeit" %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    <div class="row">
+        <div class="col-md-12">
+            {% blocktrans trimmed%}
+            Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
+            Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
+            {% endblocktrans %}
+            <br/>
+            {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
+            <br/>
+            {% config "activity_area_info" as activity_area_info %}
+            {% if activity_area_info.strip %}
+                {% trans "Infos zu den Tätigkeitsbereichen erhältst du im" %}
+                <a target="_blank" href="{{ activity_area_info }}">
+                    {% trans "Infoblatt" %}
+                </a>
+                .
+            {% endif %}
+            <br/>
+            <br/>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if show_core %}
+                <div class="row">
+                    <div class="col-md-4">
+                        {% trans "Kernbereiche " %}:
+                        <img alt="core_area" title="core_area"src="{% images "core" %}"/>
+                    </div>
+                    <div class="col-md-4">
+                        {% trans "Koordiniert von" %}:
+                    </div>
+                </div>
+                <div class="row separator">
+                </div>
+                {% for area in areas %}
+                    {% if area.core %}
+                        <div class="row align-items-center">
+                            <div class="col-md-1">
+                                <span class="switch switch-sm">
+                                    <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area.checked %}checked="checked"{% endif %}/>
+                                    <label for="area{{ area.id }}">
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{% url 'area' area.id %}">{{ area.name }}</a>
+                            </div>
+                            <div class="col-md-7">
+                                {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
+                                <br/>
+                                {% if area.email is not None %}
+                                    <a href="mailto:{{ area.email }}">
+                                        {{ area.email }}
+                                    </a>
+                                {% else %}
+                                    <a href="mailto:{{ area.coordinator.email }}">
+                                        {{ area.coordinator.email }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <br/>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-4">
+                    {% trans "Weitere Bereiche" %}:
+                </div>
+                <div class="col-md-8">
+                    {% trans "Koordiniert von" %}:
+                </div>
+            </div>
+            <div class="row separator">
+            </div>
+            {% for area in areas %}
+                {% if not area.core %}
+                    <div class="row align-items-center">
+                        <div class="col-md-1">
+                            <span class="switch switch-sm">
+                                <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}"name="area{{ area.id }}" {% if area.checked %}checked="checked"{% endif %}/>
+                                <label for="area{{ area.id }}">
+                                </label>
+                            </span>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'area' area.id %}">{{ area.name }}</a>
+                        </div>
+                        <div class="col-md-7">
+                            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
+                            <br/>
+                            {% if area.email is not None %}
+                                <a href="mailto:{{ area.email }}">
+                                    {{ area.email }}
+                                </a>
+                            {% else %}
+                                <a href="mailto:{{ area.coordinator.email }}">
+                                    {{ area.coordinator.email }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initParticipation.js">
+    </script>
+{% endblock %}

@@ -48,6 +48,75 @@ Release Notes
 * possibility to hide subscription sizes in subscription creation
 
 
-Dev
+1.1.7
 -----
+ Has migrations
+
+* New setting GDPR_INFO to make it EU compliant
+* Introduced Products in order to have multiple sizes for different Products. on existing Instances a default product called Product will be added
+* Added gettext so that strings can be translated
+* Texts where adapted
+* Shares are controlled more thoroughly if enabled
+* Possibility to easily pay back canceled shares by generating iso20022 pain001 xml file
+* Only active subscriptions and members are shown in the filters
+* Better sorting in the filters, also added textmarkers to be able to use better regex filtering
+* Next jobs bug fixed so that all see there next jobs
+* Subscription list bug with the duplicate subscription was fixed
+* More information shown for Assignemnts on the admin overview page
+* upgraded requirements
+* added menu hooks for apps
+
+
+1.1.8
+-----
+ Has no migrations
+
+* personal template loader removed adapt your settings accordingly
+* Added crispy-forms
+   * Add CRISPY_TEMPLATE_PACK = 'bootstrap4' to settings
+   * Add 'crispy_forms' to INSTALLED_APPS
+* CSS class 'juntagrico_logo' is deprecated. Use 'juntagrico-logo' instead
+* make sure users are logged out at sign up
+* fix false message in job cancellation message
+* added time to job search field in admin area
+* fix broken deliveries
+* fix text in subscription cancellation email
+* fix for member add in admin area
+* improvement of area overview
+* descriptions allow now newlines and urls
+* direct link from job overview to job entity in admin area
+* job not directly deleted if members assigned
+* fix for test data generation
+* fix false date comparison in size change
+* users can now have multiple subscriptions
+* fix reply to error in mailing
+* new right to edit past jobs
+* reworked addons hooks, so that caching is obsolete (settings can be removed)
+* fix cancelling inactive subscription fails if it has extra subs
+* user menu rewrite
+* lifecycle and consistency check code rewritten
+* rewrote urls to use path and names
+* depot list support now emojis
+* major template rewrites. Check custom css besides custom logos
+
+
+1.1.9
+----
+ Has migrations
+
+* Added Cookie consent
+* Design a bit more responsive
+* Job display name used where possible
+* Updated share management
+* Added user management to deactivate canceled users
+* Fix in welcome mail
+* Fix in Subscription deactivation
+* Links in emails work now also for internal links
+* Old subscriptions are now visible in Member admin
+* Fixed small bug in the size change
+*
+
+
+Dev
+----
  Has no migrations

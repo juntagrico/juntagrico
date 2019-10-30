@@ -1,0 +1,126 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <h3>
+        {% blocktrans %}{{ v_share_pl }} Kündigungsliste{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block management_cmd %}
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <form id="payoutfile-creator" action="/my/iso20022/shares/pain001" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="share_ids" id="share_ids"/>
+                <button type="submit" class="btn btn-success" id="create-payoutfile">
+                    {% trans "Zahlungsdatei" %}
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block list %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "Nummer Intern" %}
+                </th>
+                <th class="filter">
+                    {% trans "Nummer Extern" %}
+                </th>
+                <th class="filter">
+                    {% trans "Name" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kündigungsdatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Enddatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Zurückgesandt" %}
+                </th>
+                <th class="filter">
+                    {% trans "IBAN" %}
+                </th>
+                <th class="filter">
+                    {% trans "Email" %}
+                </th>
+                <th>
+                </th>
+                <th>
+                    {% trans "Notizen" %})
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for share in management_list %}
+                <tr>
+                    <td class="share_id">
+                        {{ share.id }}
+                    </td>
+                    <td>
+                        {{ share.number|default:'-' }}
+                    </td>
+                    <td>
+                        {{ share.member.first_name }} {{ share.member.last_name }}
+                    </td>
+                    <td>
+                        {{ share.cancelled_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ share.termination_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% if share.sent_back %}
+                            {% trans "(J)" %}
+                        {% else %}
+                            {% trans "(N)" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if share.member.iban %}
+                        {{ share.member.iban }}
+                        {% else %}
+                        {% trans "keine IBAN angegeben" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form id="share{{ share.id }}" method="post" action="{% url 'mail' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients"value="{{ share.member.email }}"/>
+                            <input type="hidden" name="recipients_count" value="1"/>
+                            <a href="#"onclick="$('#share{{ share.id }}').submit();" class="email">
+                                {{ share.member.email }}
+                            </a>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="{% url 'share-payout' share.id %}/"class="btn btn-success">
+                            {% trans "ausbuchen" %}
+                        </a>
+                    </td>
+                    <td>
+                        {{ share.notes }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block extrascripts %}
+    <script>
+    $("form#payoutfile-creator").submit(function (event) {
+        var shares = [];
+        $("#filter-table").find("tr").each(function () {
+            var txt = $(".share_id", this).text().trim();
+            if (txt.length > 0)
+                shares.push(txt);
+        });
+        $("#share_ids").val(shares.join("_"));
+        return;
+    });
+    </script>
+{% endblock %}

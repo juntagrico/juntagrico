@@ -1,4 +1,6 @@
 {% load config %}
+{% spaceless %}
 {% block content %}{% endblock %}
+{% endspaceless %}
 ============
 weitere Infos: http://{% config "server_url" %}

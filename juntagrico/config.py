@@ -1,4 +1,4 @@
-# encoding: utf-8
+from django.utils.translation import gettext as _
 
 from django.conf import settings
 
@@ -12,21 +12,21 @@ class Config:
         if hasattr(settings, 'VOCABULARY') and key in settings.VOCABULARY:
             return settings.VOCABULARY[key]
         return {
-            'member': 'Mitglied',
-            'member_pl': 'Mitglieder',
-            'assignment': 'Arbeitseinsatz',
-            'assignment_pl': 'Arbeitseinsätze',
-            'share': 'Anteilschein',
-            'share_pl': 'Anteilscheine',
-            'subscription': 'Abo',
-            'subscription_pl': 'Abos',
-            'co_member': 'Mitabonnent',
-            'co_member_pl': 'Mitabonnenten',
-            'price': 'Betriebsbeitrag',
-            'member_type': 'Mitglied',
-            'member_type_pl': 'Mitglieder',
-            'depot': 'Depot',
-            'depot_pl': 'Depots'
+            'member': _('Mitglied'),
+            'member_pl': _('Mitglieder'),
+            'assignment': _('Arbeitseinsatz'),
+            'assignment_pl': _('Arbeitseinsätze'),
+            'share': _('Anteilschein'),
+            'share_pl': _('Anteilscheine'),
+            'subscription': _('Abo'),
+            'subscription_pl': _('Abos'),
+            'co_member': _('Mitabonnent'),
+            'co_member_pl': _('Mitabonnenten'),
+            'price': _('Betriebsbeitrag'),
+            'member_type': _('Mitglied'),
+            'member_type_pl': _('Mitglieder'),
+            'depot': _('Depot'),
+            'depot_pl': _('Depots')
         }[key]
 
     @staticmethod
@@ -69,7 +69,7 @@ class Config:
             return settings.ORGANISATION_BANK_CONNECTION
         return {'PC': '01-123-5',
                 'IBAN': 'CH 00 12345 67890 12345 67890 10',
-                'BIC': 'BIC12345XX',
+                'BIC': 'BIC1234500',
                 'NAME': 'Juntagrico Bank',
                 'ESR': '01-123-45'}
 
@@ -107,6 +107,12 @@ class Config:
     def bylaws():
         if hasattr(settings, 'BYLAWS'):
             return settings.BYLAWS
+        return ''
+
+    @staticmethod
+    def gdpr_info():
+        if hasattr(settings, 'GDPR_INFO'):
+            return settings.GDPR_INFO
         return ''
 
     @staticmethod
@@ -155,7 +161,7 @@ class Config:
     def bootstrap():
         if hasattr(settings, 'BOOTSTRAP'):
             return settings.BOOTSTRAP
-        return '/static/external/bootstrap-4.1.3/css/bootstrap.min.css'
+        return '/static/external/bootstrap-4.3.1/css/bootstrap.min.css'
 
     @staticmethod
     def faq_doc():
@@ -204,12 +210,6 @@ class Config:
         if hasattr(settings, 'CURRENCY'):
             return settings.CURRENCY
         return 'CHF'
-
-    @staticmethod
-    def max_units():
-        if hasattr(settings, 'MAX_UNIT'):
-            return settings.MAX_UNIT
-        return -1
 
     @staticmethod
     def assignment_unit():
@@ -276,6 +276,16 @@ class Config:
         if hasattr(settings, 'DEFAULT_MAILER'):
             return settings.DEFAULT_MAILER
         return 'juntagrico.util.defaultmailer.Mailer'
+
+    @staticmethod
+    def cookie_consent(key):
+        if hasattr(settings, 'COOKIE_CONSENT') and key in settings.COOKIE_CONSENT:
+            return settings.COOKIE_CONSENT[key]
+        return {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+                'confirm_text': _('einverstanden'),
+                'link_text': _('Hier findest du mehr zum Thema'),
+                'url': '/my/cookies'
+                }[key]
 
     @staticmethod
     def images(key):

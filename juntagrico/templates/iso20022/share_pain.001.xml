@@ -1,0 +1,72 @@
+{% load i18n %}
+{% load config %}
+{% vocabulary "share" as v_share %}
+<Document
+        xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd pain.001.001.03.ch.02.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd">
+    <CstmrCdtTrfInitn>
+        <GrpHdr>
+            <MsgId>MsgId-001</MsgId>
+            <CreDtTm>{{ now|date:"Y-m-d" }}T{{ now|date:"H:i:s" }}</CreDtTm>
+            <NbOfTxs>{{ nmbr_of_tx }}</NbOfTxs>
+            <CtrlSum>{{ total_amount }}</CtrlSum>
+            <InitgPty>
+                <Nm>{{ name }}</Nm>
+                <CtctDtls>
+                    <Nm>juntagrico</Nm>
+                    <Othr>Version {{ version }}</Othr>
+                </CtctDtls>
+            </InitgPty>
+        </GrpHdr>
+        <PmtInf>
+            <PmtInfId>PmtInfId-001-01</PmtInfId>
+            <PmtMtd>TRF</PmtMtd>
+            <BtchBookg>true</BtchBookg>
+            <ReqdExctnDt>{{ now|date:"Y-m-d" }}</ReqdExctnDt>
+            <Dbtr>
+                <Nm>{{ name }}</Nm>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <IBAN>{{ banking_info.IBAN|cut:" " }}</IBAN>
+                </Id>
+                <Tp>
+                    <Prtry>CND</Prtry>
+                </Tp>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BIC>{{ banking_info.BIC }}</BIC>
+                </FinInstnId>
+            </DbtrAgt>
+            {% for share in shares %}
+            <CdtTrfTxInf>
+                <PmtId>
+                    <InstrId>InstrId-001-01-{{ forloop.counter }}</InstrId>
+                    <EndToEndId>EndToEndId-001-01-{{ share.id }}</EndToEndId>
+                </PmtId>
+                <Amt>
+                    <InstdAmt Ccy="CHF">{{ amount }}</InstdAmt>
+                </Amt>
+                <Cdtr>
+                    <Nm>{{ share.member.first_name }} {{ share.member.last_name }}</Nm>
+                    <PstlAdr>
+                        <StrtNm>{{ share.member.addr_street }}</StrtNm>
+                        <PstCd>{{ share.member.addr_zipcode }}</PstCd>
+                        <TwnNm>{{ share.member.addr_location }}</TwnNm>
+                    </PstlAdr>
+                </Cdtr>
+                <CdtrAcct>
+                    <Id>
+                        <IBAN>{{ share.member.iban|cut:" " }}</IBAN>
+                    </Id>
+                </CdtrAcct>
+                <RmtInf>
+                    <Ustrd>{% blocktrans with sn=share.number|default_if_none:"" sid=share.id %}{{ v_share }} Rückzahlung | {{ sn }}(Intern: {{ sid }} ){% endblocktrans %}</Ustrd>
+                </RmtInf>
+            </CdtTrfTxInf>
+            {% endfor %}
+        </PmtInf>
+    </CstmrCdtTrfInitn>
+</Document>

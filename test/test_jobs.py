@@ -1,52 +1,44 @@
-from django.test import TestCase
+from django.urls import reverse
 
-from test.util.test_data import create_test_data
+from test.util.test import JuntagricoTestCase
 
 
-class HomeTests(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        create_test_data(cls)
+class JobTests(JuntagricoTestCase):
 
     def testAssignments(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/assignments')
-        print(response)
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('jobs'))
 
     def testAssignmentsAll(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/assignments/all')
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('jobs-all'))
 
     def testJob(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/jobs/' + str(self.job1.pk) + '/')
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('job', args=[self.job1.pk]))
 
     def testPastJob(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/pastjobs')
-        self.assertEqual(response.status_code, 200)
-
-    def testParticipation(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/participation')
-        self.assertEqual(response.status_code, 200)
-
-    def testTeam(self):
-        self.client.force_login(self.member.user)
-        response = self.client.get('/my/teams/'+str(self.area.pk)+'/')
-        self.assertEqual(response.status_code, 200)
-
-    def testParticipationPost(self):
-        self.client.force_login(self.member.user)
-        response = self.client.post('/my/participation', {'area'+str(self.area.pk): 1})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.area.members.count(), 1)
+        self.assertGet(reverse('memberjobs'))
 
     def testJobPost(self):
-        self.client.force_login(self.member.user)
-        response = self.client.post('/my/jobs/' + str(self.job1.pk) + '/', {'jobs': 1})
-        self.assertEqual(response.status_code, 302)
+        self.assertPost(reverse('job', args=[self.job1.pk]), {'jobs': 1}, 302)
         self.assertEqual(self.job1.free_slots(), 0)
+        self.assertEqual(self.job1.assignment_set.first().amount, 1)
+
+    def testJobExtras(self):
+        self.assertPost(reverse('job', args=[self.job3.pk]), {'jobs': 1, 'extra' + str(self.job_extra_type.id): str(self.job_extra_type.id)}, 302)
+        self.assertEqual(self.job3.assignment_set.first().job_extras.count(), 1)
+        self.assertGet(reverse('job', args=[self.job3.pk]))
+
+    def testMultipleEntries(self):
+        self.assertPost(reverse('job', args=[self.job4.pk]), {'jobs': 1}, 302)
+        self.assertEqual(self.job4.assignment_set.count(), 1)
+        self.assertGet(reverse('job', args=[self.job4.pk]))
+        self.assertPost(reverse('job', args=[self.job4.pk]), {'jobs': 1}, 302)
+        self.assertEqual(self.job4.assignment_set.count(), 2)
+        self.assertGet(reverse('job', args=[self.job4.pk]))
+        self.assertPost(reverse('job', args=[self.job4.pk]), {'jobs': 3}, 302)
+        self.assertEqual(self.job4.assignment_set.count(), 5)
+        self.assertGet(reverse('job', args=[self.job4.pk]))
+
+    def testHours(self):
+        with self.settings(ASSIGNMENT_UNIT='HOURS'):
+            self.assertPost(reverse('job', args=[self.job5.pk]), {'jobs': 1}, 302)
+            self.assertEqual(self.job5.assignment_set.first().amount, 2)

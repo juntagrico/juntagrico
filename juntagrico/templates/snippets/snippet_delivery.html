@@ -1,0 +1,50 @@
+{% load i18n %}
+{% load config %}
+{% for delivery in deliveries %}
+    <div class="row mb-2 {% if forloop.first %} shown {% endif %}">
+        <div class="col-md-3">
+            <a class="details-control" data-toggle="collapse" href="#dev{{ delivery.id }}"></a>
+            <a data-toggle="collapse" href="#dev{{ delivery.id }}">&nbsp;{{ delivery.weekday_shortname }},&nbsp;{{ delivery.delivery_date |date:"d." }}{{ delivery.delivery_date |date:"m." }}{{ delivery.delivery_date |date:"Y" }}
+            </a>
+        </div>
+        <div class="col-md-9">
+            <a data-toggle="collapse" href="#dev{{ delivery.id }}">
+                {{ delivery.subscription_size.long_name }}
+            </a>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-12 collapse {% if forloop.first %} show {% endif %}" id="dev{{ delivery.id }}">
+            <table class='table table-sm delivery-table'>
+                <thead>
+                    <tr>
+                        <th class="col-md-3">
+                            {% trans "Bezeichnung" %}
+                        </th>
+                        <th class="col-md-2">
+                            {% trans "Menge" %}
+                        </th>
+                        <th class="col-md-7">
+                            {% trans "Kommentar" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deliveryitem in delivery.items.all %}
+                        <tr>
+                            <td>
+                                {{ deliveryitem.name }}
+                            </td>
+                            <td>
+                                {{ deliveryitem.amount }}
+                            </td>
+                            <td>
+                                {{ deliveryitem.comment }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endfor %}

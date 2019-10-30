@@ -1,35 +1,43 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% load config %}
 {% block page_title %}
-    <h3>Exporte</h3>
+    <h3>
+        {% trans "Exporte" %}
+    </h3>
 {% endblock %}
-
 {% block content %}
+    {% vocabulary "member_pl" as v_member_pl %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
     <div class="row mb-4">
         <div class="col-md-3">
-            {% vocabulary "member_pl" %}
+            {{ v_member_pl }}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/members/">exportieren</a>
+            <a href="{% url 'export-members' %}">
+                {% trans "exportieren" %}
+            </a>
         </div>
     </div>
     <div class="row mb-4">
         <div class="col-md-3">
-            {% vocabulary "member_pl" %} mit {% vocabulary "assignment_pl" %} und Tätigketsbereichen
+            {% blocktrans %}{{ v_member_pl }} mit {{ v_assignment_pl }} und Tätigketsbereichen{% endblocktrans %}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/membersfilter">exportieren</a>
+            <a href="{% url 'export-membersfilter' %}">
+                {% trans "exportieren" %}
+            </a>
         </div>
     </div>
     <div class="row mb-4">
         <div class="col-md-3">
-            {% vocabulary "share_pl" %}
+            {{ v_share_pl }}
         </div>
         <div class="col-md-9">
-            <a href="/my/export/shares">exportieren</a>
+            <a href="{% url 'export-shares' %}">
+                {% trans "exportieren" %}
+            </a>
         </div>
     </div>
 {% endblock %}
-
-
-

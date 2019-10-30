@@ -14,8 +14,12 @@ class MemberDao:
         return Member.objects.all()
 
     @staticmethod
-    def members_by_email(email):
-        return Member.objects.filter(email__iexact=email)
+    def canceled_members():
+        return Member.objects.filter(canceled=True).exclude(inactive=True)
+
+    @staticmethod
+    def member_by_email(email):
+        return next(iter(Member.objects.filter(email__iexact=email) or []), None)
 
     @staticmethod
     def members_with_shares():
@@ -54,12 +58,16 @@ class MemberDao:
         return MemberDao.annotate_members_with_assignemnt_count(Member.objects.all())
 
     @staticmethod
+    def active_members_with_assignments_count():
+        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(inactive=False))
+
+    @staticmethod
     def members_with_assignments_count_for_depot(depot):
-        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(subscription__depot=depot))
+        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(subscription__depot=depot).filter(inactive=False))
 
     @staticmethod
     def members_with_assignments_count_in_area(area):
-        return MemberDao.annotate_members_with_assignemnt_count(area.members.all())
+        return MemberDao.annotate_members_with_assignemnt_count(area.members.all().filter(inactive=False))
 
     @staticmethod
     def members_with_assignments_count_in_subscription(subscription):

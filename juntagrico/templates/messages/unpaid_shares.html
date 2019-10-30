@@ -1,9 +1,16 @@
+{% load i18n %}
 {% load config %}
+{% vocabulary "share" as v_share %}
+{% vocabulary "share_pl" as v_share_pl %}
 <div class="alert alert-warning">
-  Du hast {{ amount }} 
-  {% if amount == 1%}
-    unbezahlter {% vocabulary "share" %}
-  {% else %}
-    unbezahlte {% vocabulary "share_pl" %}
-  {% endif%}. Finde <a href="/my/info/unpaidshares" class="alert-link">hier</a> mehr dazu.
+    {% blocktrans trimmed count a=amount %}
+    Unbezahlte/r/s {{ v_share }}.
+    {% plural %}
+    Unbezahlte {{ v_share_pl }}.
+    {% endblocktrans %}
+    Finde
+    <a href="{% url 'info-unpaid-shares' %}" class="alert-link">
+        hier
+    </a>
+    mehr dazu.
 </div>

@@ -1,16 +1,24 @@
 {% extends "mails/email.txt" %}
+{% load i18n %}
 {% load config %}
 {% block content %}
-{% config "enable_shares" as enable_shares %}
-Hallo
+{% config "enable_shares" as c_enable_shares %}
+{% config "info_email" as c_info_email %}
+{% config "organisation_name" as c_organisation_name %}
+{% vocabulary "co_member" as v_co_member %}
+{% vocabulary "share_pl" as v_share_pl %}
+{% trans "Hallo" %}
 
-{% if enable_shares %}
-Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt und für dich {{ shares }} Anteilsscheine(e) bestellt.
+{% if c_enable_shares %}
+{% blocktrans %}Soeben hat dich '{{name}}' als {{ v_co_member }} hinzugefügt und für dich {{ shares }} {{ v_share_pl }} bestellt.{% endblocktrans %}
 {% else %}
-Soeben hat dich '{{name}}' zu ihrem/seinem GemüseAbo hinzugefügt.
+{% blocktrans %}Soeben hat dich '{{name}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
 {% endif %}
-Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {% config "info_email" %}.
-Anderenfalls gehen wir davon aus, dass dies seine Richtigkeit hat.
 
-Bis bald und liebe Grüsse die {% config "organisation_name" %}-Betriebsgruppe
+{% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {{ c_info_email }}.
+Anderenfalls gehen wir davon aus, dass dies seine Richtigkeit hat.{% endblocktrans %}
+
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
 {% endblock %}

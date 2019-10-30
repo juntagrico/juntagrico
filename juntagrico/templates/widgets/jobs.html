@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load config %}
+<hr/>
+<div class="jobs-widget">
+    {% block next_jobs %}
+        <h5>
+            {% trans "Nächste Einsätze" %}
+        </h5>
+        {% if next_jobs|length > 0 %}
+            <ul class="unstyled next-jobs">
+                {% for job in next_jobs %}
+                    <li>
+                        <a href="{% url 'job' job.id %}" {% if job.canceled %}class="canceled"{% endif %}>
+                            {{ job.type.get_name }}
+                        </a>
+                        <br/>
+                        <div class="time">
+                            {{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            {% trans "Noch für keine Einsätzte angemeldet" %}
+        {% endif %}
+    {% endblock %}
+</div>

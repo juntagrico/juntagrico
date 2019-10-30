@@ -13,3 +13,4 @@ my_settings_local.py
 *.pdf
 **/dist
 **/*.egg-info
+.coverage

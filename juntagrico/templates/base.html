@@ -1,280 +1,147 @@
+{% load i18n %}
 {% load config %}
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <title>{% config "adminportal_name" %}</title>
-    <meta charset="utf-8">
-    <link rel="shortcut icon" href="{% config "favicon" %}"/>
-
-    <link href="{% config "bootstrap" %}" rel="stylesheet">
-    <link href="/static/external/mid/css/materialdesignicons.min.css" rel="stylesheet">
-    <link href="/static/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet">
-    <link href="/static/external/font-awesome-5.3.1/css/all.min.css" rel="stylesheet">
-    {% block styles %}
-    {% endblock %}
-    <link href="/static/css/juntagrico.css" rel="stylesheet">
-    <link href="/static/css/slider.css" rel="stylesheet">
-    <link href="{% config "style_sheet" %}" rel="stylesheet">
-
-</head>
-<body>
-<div class="container">
-    <div class="bordertop"></div>
-    <div class="borderleft"></div>
-    <div class="borderright"></div>
-    <div class="borderbottom"></div>
-    <div class="row myjuntagrico">
-        <div class="col-md-12">
-            <a href="/my/home"><span class="juntagrico_logo"></span></a>
-        </div>
-    </div>
-    {% if user.is_impersonate %}
-        <div class="row myjuntagrico">
-            <div class="col-md-12">
-                <div class="alert alert-warning">
-                    Du imitierst derzeit den Benutzer “{{ user.member.first_name }} {{ user.member.last_name }}”. <a
-                        href="/impersonate/stop">Beende dies hier</a>.
-                </div>
-            </div>
-        </div>
-    {% endif %}
-    <div class="row myjuntagrico">
-    {% block all_page_title %}
-        <div class="col-md-3"> 
-            &nbsp;
-        </div>
-        <div class="col-md-9 juntagrico">
-            {% block page_title %}
-            {% endblock %}
-        </div>
-    {% endblock %}
-    </div>
-    
-    <div class="row juntagrico">
-        {% block allcontent %}
-            <div class="col-md-3">
-                <ul class="nav flex-column main-menu">
-                    <li><h5>Dein Menu {{ user.member.first_name }}</h5>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.subscription }}" href="/my/subscription/detail/">Abo</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.participation }}" href="/my/participation">Mitarbeit</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.jobs }}" href="/my/assignments">Einsätze</a>
-                    </li>
-                    {% if show_deliveries %}
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.deliveries }}" href="/my/deliveries">Lieferungen</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.personalInfo }}" href="/my/profile">Personalien</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ menu.contact }}" href="/my/contact">Kontakt</a>
-                    </li>
-                    <li class="separator"></li>
-                    <li class="nav-item main-menu-small">
-                        <a class="nav-link yellow" href="http://{% config "server_url" %}">{% config "server_url" %}</a>
-                    </li>
-                    <li class=" nav-item main-menu-small">
-                        <a class="nav-link yellow" href="/logout">Abmelden</a>
-                    </li>
-                </ul>
-                {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group%}
-                <hr>
-                <h5>Administration</h5>
-                <ul class="nav flex-column admin-menu">
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin">Daten Administration</a>
-                        </li>
-                    {% endif %}                    
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" href="#subman">Abo Management <i class="fas fa-angle-right"></i></a>
-                            <div class="collapse" id="subman">
-                            <ul class="nav flex-column admin-menu subadmin-menu">
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/waitinglist">Warteliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/typechangedlist">Grössen Änderungen</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/canceledlist">Kündigungsliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group and has_extra_subscriptions %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/extra/waitinglist">Zusatzabos Warteliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group and has_extra_subscriptions %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/extra/canceledlist">Zusatzabos Kündigungsliste</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/future">Zukunftsblick</a>
-                                </li>
-                            {% endif %}
-                            </ul>
-                            </div>
-                        </li>
-                    {% endif %}
-                                        
-                    {% if can_filter_members or can_filter_subscriptions or  depot_admin|length > 0 or area_admin|length > 0 %}
-                        <li  class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" href="#filterman">Filter <i class="fas fa-angle-right"></i></a>
-                            <div class="collapse" id="filterman">
-                            <ul class="nav flex-column admin-menu subadmin-menu">
-                            {% if can_filter_members or can_filter_subscriptions %}
-                                <li class="nav-item inline">
-                                    {% if can_filter_members %}
-                                    <a class="nav-link inline" href="/my/filters">{% vocabulary "member_pl" %}</a> |
-                                    {% endif %}
-                                    {% if can_filter_subscriptions %}
-                                    <a class="nav-link inline" href="/my/subscriptions">{% vocabulary "subscription_pl" %}</a>
-                                    {% endif %}
-                                </li>
-                            {% endif %}
-                            {% for depot in depot_admin %}
-                                <li class="nav-item inline">
-                                    <a class="nav-link inline" href="/my/filters/depot/{{ depot.id }}">{% vocabulary "member_pl" %}</a> |
-                                    <a class="nav-link inline" href="/my/subscriptions/depot/{{ depot.id }}">Abos</a> im {{ depot.name }}
-                                </li>
-                            {% endfor %}
-                            {% for area in area_admin %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/filters/area/{{ area.id }}">{% vocabulary "member_pl" %} in {{ area.name }}</a>
-                                </li>
-                            {% endfor %}
-                            </ul>
-                            </div>
-                        </li>
-                    {% endif %}
-                    {% if can_send_mails %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/my/mails">Mails verschicken</a>
-                        </li>
-                    {% endif %}
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="collapse" href="#lists">Listen <i class="fas fa-angle-right"></i></a>
-                            <div class="collapse" id="lists">
-                            <ul class="nav flex-column admin-menu subadmin-menu">
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/pdf/amountoverview">Mengen Übersicht</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/pdf/depotlist">{% vocabulary "depot" %}-Listen</a>
-                                </li>
-                            {% endif %}
-                            {% if operation_group %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/my/pdf/depotoverview">{% vocabulary "depot" %} Übersicht</a>
-                                </li>
-                            {% endif %}
-                            </ul>
-                            </div>
-                        </li>
-                    {% endif %}
-                    
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/my/export">Exporte</a>
-                        </li>
-                    {% endif %}
-                    {% for menu in admin_menus %}
-                        {% include menu %}
-                    {% endfor%}
-                </ul>
-                {% endif %}
-
-                <hr>
-                <div class="bohnen">
-                    {% block bohnen %}
-                        <h5>Abo {% vocabulary "assignment_pl" %}-Konto</h5>
-                        {% spaceless %}
-                        {% for i in assignmentsrange %}
-                            {% if i < userassignemnts_core_bound %}
-                                <img alt="Kernbereich" title="Kernbereich"
-                                     src="{% images "single_core" %}"/>
-                            {% elif i < userassignments_bound %}
-                                <img alt="anderer Tätigkeitsbereich" title="anderer Tätigkeitsbereich"
-                                     src="{% images "single_full" %}"/>
-                            {% elif i < partner_assignments_core_bound %}
-                                <img alt="Kernbereich Partner" title="Kernbereich Partner"
-                                     src="{% images "single_core" %}" style="opacity:0.5;"/>
-                            {% elif i < partner_assignments_bound %}
-                                <img alt="anderer Tätigkeitsbereich Partner" title="anderer Tätigkeitsbereich Partner"
-                                     src="{% images "single_full" %}" style="opacity:0.5;"/>
-                            {% else %}
-                                <img alt="noch zu erledigen (ganzes {% vocabulary "subscription" %})" src="{% images "single_empty" %}"
-                                     title="noch zu erledigen (ganzes {% vocabulary "subscription" %})"/>
-                            {% endif %}
-                        {% endfor %}
-                        {% endspaceless %}
-                    {% endblock %}
-                </div>
-                <hr>
-                <div class="jobs">
-                    {% block next_jobs %}
-                        <h5>Nächste Einsätze</h5>
-                        {% if next_jobs|length > 0 %}
-                            <ul class="unstyled next-jobs">
-                                {% for job in next_jobs %}
-                                    <li><a href="/my/jobs/{{ job.id }}" {% if job.canceled %} class="canceled"{% endif %}>{{ job.type.name }}</a><br/>
-
-                                        <div class="time">{{ job.time|date:"d.m H:i" }}-{{ job.end_time|date:"H:i" }}</div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            Noch für keine Jobs angemeldet
-                        {% endif %}
-                    {% endblock %}
-                </div>
-            </div>
-            <div class="col-md-9">
-                <div class="row">
-                    <div class="messages col-md-12">
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                    {% block content %}
-                    {% endblock %}
-                    </div>
-                </div>
-            </div>
+    <head>
+        <title>
+            {% config "adminportal_name" %}
+        </title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="shortcut icon" href="{% config "favicon" %}"/>
+        <link href="{% config "bootstrap" %}" rel="stylesheet"/>
+        <link href="/static/external/mid/css/materialdesignicons.min.css" rel="stylesheet"/>
+        <link href="/static/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet"/>
+        <link href="/static/external/font-awesome-5.3.1/css/all.min.css" rel="stylesheet"/>
+        <link href="/static/external/cc/cookieconsent.min.css" rel="stylesheet"/>
+        {% block styles %}
         {% endblock %}
-    </div>
-    <div class="row footer">
-    </div>
-</div>
+        <link href="/static/css/juntagrico.css" rel="stylesheet"/>
+        <link href="/static/css/slider.css" rel="stylesheet"/>
+        <link href="{% config "style_sheet" %}" rel="stylesheet"/>
+    </head>
+    <body id="{{ view_name }}" class="{% block body_extra_classes %}{% endblock %}">
+        <div class="page-container container">
+            <div class="bordertop">
+            </div>
+            <div class="borderleft">
+            </div>
+            <div class="borderright">
+            </div>
+            <div class="borderbottom">
+            </div>
+            <div class="row d-md-none">
+                <nav class="navbar navbar-expand-md col-sm-12">
+                      <a class="navbar-brand" href="#">{% config "adminportal_name" %}</a>
 
-<script type="text/javascript" src="/static/external/jquery-3.3.1/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="/static/external/bootstrap-4.1.3/js/bootstrap.min.js"></script>
+                {% block small_menu_content %}
+                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="mdi mdi-menu">
+                        </i>
+                      </button>
 
+                      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            {% include "menu/user_menu.html" %}
+                            {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
+                                {% include "menu/admin_menu.html" %}
+                            {% endif %}
+                      </div>
+                {% endblock %}
+                    </nav>
+            </div>
+            <div class="logo-row row d-none d-md-block">
+                <div class="logo-col col-md-12">
+                    <a href="{% url 'home' %}">
+                        <span class="juntagrico-logo juntagrico_logo">
+                        </span>
+                    </a>
+                </div>
+            </div>
+            {% if user.is_impersonate %}
+                <div class="impersonate-row row">
+                    <div class="col-md-12">
+                        <div class="alert alert-warning">
+                            {% blocktrans trimmed with fn=user.member.first_name ln=user.member.last_name %}
+                            Du imitierst derzeit den Benutzer “{{ fn }} {{ ln }}”.
+                            {% endblocktrans %}
+                            <a href="/impersonate/stop">
+                                {% trans "Beende dies hier" %}
+                            </a>
+                            .
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="headerspace row d-none d-md-block">
+            </div>
+            <div class="all-page-title row">
+                {% block all_page_title %}
+                    <div class="page-title offset-md-3 col-md-9">
+                        {% block page_title %}
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </div>
+            <div class="allcontent row">
+                {% block allcontent %}
+                    <div class="sidebar col-md-3 d-none d-md-block">
+                        {% include "menu/user_menu.html" %}
+                        {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
+                            {% include "menu/admin_menu.html" %}
+                        {% endif %}
+                        {% include "widgets/assignements.html" %}
+                        {% include "widgets/jobs.html" %}
+                    </div>
+                    <div class="content-container col-md-9 col-sm-12">
+                        <div class="messages row">
+                            <div class="col-md-12">
+                                {% for message in messages %}
+                                    {{ message }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="content row">
+                            <div class="col-md-12">
+                                {% block content %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+            <div class="footer row">
+                {% block footer_content %}
+                 <div class="sidebar col-sm-12 d-md-none">
+                        {% include "widgets/assignements.html" %}
+                        {% include "widgets/jobs.html" %}
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+        <script type="text/javascript" src="/static/external/jquery-3.3.1/jquery-3.3.1.min.js">
+        </script>
+        <script type="text/javascript" src="/static/external/bootstrap-4.3.1/js/bootstrap.min.js">
+        </script>
+        <script type="text/javascript" src="/static/js/juntagrico.js">
+        </script>
+        <script src="/static/external/cc/cookieconsent.min.js" data-cfasync="false"></script>
+        <script>
+        window.cookieconsent.initialise({
+            "content": {
+                "message": "{% cookie_consent "text" %}",
+                "dismiss": "{% cookie_consent "confirm_text" %}",
+                "link": "{% cookie_consent "link_text" %}",
+                "href": "{% cookie_consent "url" %}"
+            },
+            elements: {
+                dismiss: '<a aria-label="dismiss cookie message" tabindex="0" class="cc-dismiss cc-btn btn btn-success">{% templatetag openvariable %}dismiss{% templatetag closevariable %}</a>',
+                messagelink: '<span id="cookieconsent:desc" class="cc-message">{% templatetag openvariable %}message{% templatetag closevariable %} <a aria-label="learn more about cookies" tabindex="0" href="{% templatetag openvariable %}href{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}link{% templatetag closevariable %}</a></span>',
 
-{% block scripts %}
-    {# no scripts by default #}
-{% endblock %}
-</body>
+}
+        });
+        </script>
+        {% block scripts %}
+            {# no scripts by default #}
+        {% endblock %}
+    </body>
+</html>

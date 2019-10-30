@@ -6,7 +6,6 @@ ul {
 /* general stuff  checked */
 html, body {
     font-family: "Source Sans Pro Light";
-    font-size: 18px;
     background-color: #fefffa;
     height: 100%;
 }
@@ -15,10 +14,6 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "Source Sans Pro Regular";
     margin-bottom: 10px;
     margin-top: 10px;
-}
-
-select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
-    height: 30px;
 }
 
 @font-face {
@@ -52,55 +47,91 @@ a.canceled:hover, a.canceled:focus {
     color: #ff3399;
 }
 
+/* crispy-form */
+.asteriskField {
+    padding-left: 0.2em;
+}
+
+body#juntagrico-views-profile .asteriskField {
+    display: none;
+}
+
 /* logo stuff checked */
-.juntagrico_logo {
-    background: url(/static/img/juntagrico.png) 0 0px;
+.juntagrico-logo {
+    background: url(/static/img/juntagrico.png) 0 0;
     display: inline-block;
     width: 580px;
     height: 161px;
 }
 
 /* title stuff checked */
-.juntagrico h3 {
+.page-title h3, .allcontent h3 {
     margin-top: 0;
     margin-bottom: 40px;
     color: #66cc66;
     font-size: 30pt;
 }
 
+.edit i, .delete i {
+    font-size: 0.7em;
+}
+
+.edit, .delete {
+    vertical-align: top;
+}
+
+a.delete {
+    color: #999;
+}
+
+a:hover.delete {
+    color: red;
+}
+
 /* container stuff checked */
-.container {
+.page-container {
     min-height: 100%;
     position: relative;
-    padding: 0px 40px 0 40px;
+    padding: 0 40px 0 40px;
 }
 
 @media (min-width: 768px) {
-    .container {
+    .page-container {
         width: 750px
     }
 }
 
 @media (min-width: 992px) {
-    .container {
+    .page-container {
         width: 970px
     }
 }
 
 @media (min-width: 1200px) {
-    .container {
+    .page-container {
         width: 1170px
     }
 }
 
+/* layouts */
+body.wide-layout > .page-container {
+    width: 95%;
+    max-width: 95%;
+}
+
 /* row size stuff checked */
-.juntagrico {
+.page-container > div.row {
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+div.allcontent.row {
     margin-top: 0;
 }
 
-.myjuntagrico {
-    margin-top: 60px;
-    margin-bottom: 50px;
+div.all-page-title.row {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .footer {
@@ -126,7 +157,7 @@ a.canceled:hover, a.canceled:focus {
 .main-menu li a, .admin-menu li a {
     padding-top: 6px;
     padding-bottom: 6px;
-    padding-left: 0px;
+    padding-left: 0;
     margin-top: 2px;
     line-height: 22px;
 }
@@ -144,13 +175,19 @@ ul.subadmin-menu {
     padding-left: 7px;
 }
 
+ul.sub-menu {
+    font-family: "Source Sans Pro Light";
+    font-size: 14px;
+    padding-left: 7px;
+}
+
 li.inline {
     display: inline-block;
 }
 
 a.inline {
     display: inline-block;
-    padding-right: 0px;
+    padding-right: 0;
 }
 
 .nav-link, .nav-link:focus {
@@ -178,11 +215,11 @@ a.inline {
 }
 
 /* next jobs widget menu stuff checked */
-.next-jobs {
+.jobs-widget .next-jobs {
     margin-top: 5px;
 }
 
-.next-jobs .time {
+.jobs-widget .next-jobs .time {
     margin-bottom: 10px;
     font-size: 14px;
 }
@@ -240,8 +277,8 @@ textarea#recipients[disabled=disabled] {
     height: 400px;
 }
 
-/* job snippet detail toogle stuff checked */
-td.details-control, tr.shown td.details-control {
+/* arrows for collapsible list elements */
+.details-control, .shown .details-control {
     font-family: 'Font Awesome 5 Free';
     font-style: normal;
     font-weight: 900;
@@ -250,17 +287,16 @@ td.details-control, tr.shown td.details-control {
     color: #66cc66;
 }
 
-td.details-control::before {
+.details-control::before {
     content: "\f105";
 }
 
-tr.shown td.details-control::before {
+.shown .details-control::before {
     content: "\f107";
 }
 
 /* increment buttons stuff*/
 .btn-increment, .btn-decrement {
-    height: 30px;
     line-height: 1;
 }
 
@@ -293,12 +329,21 @@ th {
 
 #managementlist table th {
     vertical-align: top;
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 /* deliveries stuff checked */
 .delivery-table {
     width: 70%;
     font-size: 14px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
+}
+
+/* cookie consent stuff checked */
+.cc-window{
+    font-family: "Source Sans Pro Light";
+    background-color: #fefffa;
+}
+.cc-btn{
+    font-size: 0.875rem;
 }

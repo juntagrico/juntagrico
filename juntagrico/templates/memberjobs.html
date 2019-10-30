@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    <h3>
+        {% trans "Alle deine Einsätze" %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% for assignment in assignments %}
+        <div class="row align-items-center mt-2">
+            <div class="col-md-3">
+                <a href="{% url 'job' assignment.job.id %}">
+                    {{ assignment.job.type }}
+                </a>
+            </div>
+            <div class="col-md-3">
+                {{ assignment.job.time|date:"d.m.y H:i" }}-{{ assignment.job.end_time|date:"H:i" }}
+            </div>
+            <div class="col-md-2">
+                {% if assignment.job.type.activityarea.core %}
+                    <img alt="Kernbereich" title="Kernbereich" src="{% images "core" %}"/>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

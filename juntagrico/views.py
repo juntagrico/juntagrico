@@ -1,36 +1,36 @@
-# -*- coding: utf-8 -*-
-
-import random
-import string
-from datetime import date
-
+from datetime import datetime as dt
 
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.translation import gettext as _
 
-from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.deliverydao import DeliveryDao
+from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.jobdao import JobDao
+from juntagrico.dao.jobextradao import JobExtraDao
+from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.forms import *
 from juntagrico.models import *
-from juntagrico.util.messages import *
+from juntagrico.util import addons
+from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.mailer import *
 from juntagrico.util.management import *
-from juntagrico.util.addons import *
-from juntagrico.personalisation.personal_utils import enrich_menu_dict
+from juntagrico.util.messages import *
+
+
+def get_page_dict(request):
+    return {
+        'view_name': request.resolver_match.view_name.replace('.', '-'),
+    }
 
 
 def get_menu_dict(request):
     member = request.user.member
-    next_jobs = []
+    next_jobs = [a.job for a in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time')]
 
     required_assignments = 0
     if member.subscription is not None:
@@ -44,16 +44,9 @@ def get_menu_dict(request):
         userassignments = AssignmentDao.assignments_for_member_current_business_year(
             member)
         required_assignments = member.subscription.required_assignments
-        assignmentsrange = list(range(
-            0, max(required_assignments, len(userassignments) + len(partner_assignments))))
-
-        for assignment in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time'):
-            next_jobs.append(assignment.job)
     else:
-        assignmentsrange = None
         partner_assignments = []
         userassignments = []
-        next_jobs = []
 
     userassignments_total = int(sum(a.amount for a in userassignments))
     userassignemnts_core = int(
@@ -66,7 +59,8 @@ def get_menu_dict(request):
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
-    menu_dict = {
+    menu_dict = get_page_dict(request)
+    menu_dict.update({
         'user': request.user,
         'assignmentsrange': assignmentsrange,
         'userassignments_bound': userassignments_total,
@@ -84,10 +78,11 @@ def get_menu_dict(request):
         'show_core': ActivityAreaDao.all_core_areas().count() > 0,
         'show_extras': JobExtraDao.all_job_extras().count() > 0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription)) > 0,
-        'admin_menus': get_admin_menus(),
+        'admin_menus': addons.config.get_admin_menus(),
+        'user_menus': addons.config.get_user_menus(),
         'messages': [],
-    }
-    enrich_menu_dict(request, menu_dict)
+
+    })
     return menu_dict
 
 
@@ -99,12 +94,12 @@ def home(request):
 
     next_jobs = set(JobDao.get_current_jobs()[:7])
     pinned_jobs = set(JobDao.get_pinned_jobs())
-    next_pormotedjobs = set(JobDao.get_promoted_jobs())
+    next_promotedjobs = set(JobDao.get_promoted_jobs())
     renderdict = get_menu_dict(request)
     renderdict['messages'].extend(home_messages(request))
     renderdict.update({
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_pormotedjobs), key=lambda job: job.time),
-        'teams': ActivityAreaDao.all_visible_areas_ordered(),
+        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda job: job.time),
+        'areas': ActivityAreaDao.all_visible_areas_ordered(),
     })
 
     return render(request, 'home.html', renderdict)
@@ -138,7 +133,7 @@ def job(request, job_id):
         send_job_signup([member.email], job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
-        return HttpResponseRedirect('my/jobs')
+        return redirect('job', job_id=job_id)
 
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
@@ -150,9 +145,9 @@ def job(request, job_id):
     for member in unique_participants:
         name = '{} {}'.format(member.first_name, member.last_name)
         if member.assignment_for_job == 2:
-            name += ' (mit einer weiteren Person)'
+            name += _(' (mit einer weiteren Person)')
         elif member.assignment_for_job > 2:
-            name += ' (mit {} weiteren Personen)'.format(member.assignment_for_job - 1)
+            name += _(' (mit {} weiteren Personen)').format(member.assignment_for_job - 1)
         contact_url = '/my/contact/member/{}/{}/'.format(member.id, job_id)
         extras = []
         for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):
@@ -183,7 +178,8 @@ def job(request, job_id):
         'job': job,
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
-        'can_subscribe': can_subscribe
+        'can_subscribe': can_subscribe,
+        'edit_url': get_job_admin_url(request, job)
     })
     return render(request, 'job.html', renderdict)
 
@@ -203,30 +199,13 @@ def depot(request, depot_id):
 
 
 @login_required
-def participation(request):
+def areas(request):
     '''
     Details for all areas a member can participate
     '''
     member = request.user.member
     my_areas = []
-    success = False
-    if request.method == 'POST':
-        old_areas = set(member.areas.all())
-        new_areas = set(area for area in ActivityAreaDao.all_visible_areas()
-                        if request.POST.get('area' + str(area.id)))
-        if old_areas != new_areas:
-            member.areas.set(new_areas)
-            member.save()
-            for area in new_areas - old_areas:
-                send_new_member_in_activityarea_to_operations(area, member)
-            for area in old_areas - new_areas:
-                send_removed_member_in_activityarea_to_operations(area, member)
-
-        success = True
-
     for area in ActivityAreaDao.all_visible_areas():
-        if area.hidden:
-            continue
         my_areas.append({
             'name': area.name,
             'checked': member in area.members.all(),
@@ -239,61 +218,71 @@ def participation(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
         'areas': my_areas,
-        'success': success,
-        'menu': {'participation': 'active'},
+        'menu': {'area': 'active'},
     })
-    return render(request, 'participation.html', renderdict)
+    return render(request, 'areas.html', renderdict)
 
 
 @login_required
-def pastjobs(request):
+def memberjobs(request):
     '''
-    All past jobs of current user
+    All jobs of current user
     '''
     member = request.user.member
-
     allassignments = AssignmentDao.assignments_for_member(member)
-    past_assignments = []
-
-    for assignment in allassignments:
-        if assignment.job.time < timezone.now():
-            past_assignments.append(assignment)
-
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'assignments': past_assignments,
-        'menu': {'participation': 'active'},
+        'assignments': allassignments,
+        'menu': {'jobs': 'active'},
     })
-    return render(request, 'pastjobs.html', renderdict)
+    return render(request, 'memberjobs.html', renderdict)
 
 
 @login_required
-def team(request, area_id):
+def show_area(request, area_id):
     '''
-    Details for a team
+    Details for an area
     '''
-
+    area = get_object_or_404(ActivityArea, id=int(area_id))
     job_types = JobTypeDao.types_by_area(area_id)
-
     otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
-
     jobs = list(rjobs)
-
     if len(otjobs) > 0:
         jobs.extend(list(otjobs))
         jobs.sort(key=lambda job: job.time)
-
+    area_checked = request.user.member in area.members.all()
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'team': get_object_or_404(ActivityArea, id=int(area_id)),
+        'area': area,
         'jobs': jobs,
+        'area_checked': area_checked,
     })
-    return render(request, 'team.html', renderdict)
+    return render(request, 'area.html', renderdict)
 
 
 @login_required
-def assignments(request):
+def area_join(request, area_id):
+    new_area = get_object_or_404(ActivityArea, id=int(area_id))
+    member = request.user.member
+    new_area.members.add(member)
+    send_new_member_in_activityarea_to_operations(new_area, member)
+    new_area.save()
+    return HttpResponse('')
+
+
+@login_required
+def area_leave(request, area_id):
+    old_area = get_object_or_404(ActivityArea, id=int(area_id))
+    member = request.user.member
+    old_area.members.remove(member)
+    send_removed_member_in_activityarea_to_operations(old_area, member)
+    old_area.save()
+    return HttpResponse('')
+
+
+@login_required
+def jobs(request):
     '''
     All jobs to be sorted etc.
     '''
@@ -310,7 +299,7 @@ def assignments(request):
 
 
 @login_required
-def assignments_all(request):
+def all_jobs(request):
     '''
     All jobs to be sorted etc.
     '''
@@ -414,21 +403,11 @@ def profile(request):
             success = True
     else:
         memberform = MemberProfileForm(instance=member)
-    asc = member.active_shares_count
-    sub = member.subscription
-    f_sub = member.future_subscription
-    future = f_sub is not None and f_sub.share_overflow-asc < 0
-    current = sub is not None and sub.share_overflow-asc < 0
-    coop_cond = member != '' and not future and not current
     renderdict = get_menu_dict(request)
     renderdict.update({
         'memberform': memberform,
         'success': success,
-        'coop_member': member.is_cooperation_member,
-        'end_date': next_membership_end_date(),
         'member': member,
-        'can_cancel': not member.is_cooperation_member or (coop_cond),
-        'missing_iban': member.iban is None,
         'menu': {'personalInfo': 'active'},
     })
     return render(request, 'profile.html', renderdict)
@@ -439,10 +418,11 @@ def cancel_membership(request):
     member = request.user.member
     if request.method == 'POST':
         now = timezone.now().date()
-        end_date = request.POST.get('end_date')
+        end_date = dt.strptime(request.POST.get('end_date'), '%Y-%m-%d').date()
         message = request.POST.get('message')
         member = request.user.member
         member.canceled = True
+        member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
             send_membership_canceled(member, end_date, message)
@@ -454,7 +434,7 @@ def cancel_membership(request):
             share.cancelled_date = now
             share.termination_date = end_date
             share.save()
-        return redirect('/my/profile')
+        return redirect('profile')
 
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
@@ -516,21 +496,24 @@ def new_password(request):
     sent = False
     if request.method == 'POST':
         sent = True
-        members = MemberDao.members_by_email(request.POST.get('username'))
-        if len(members) > 0:
-            member = members[0]
+        member = MemberDao.member_by_email(request.POST.get('username'))
+        if member is not None:
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()
             send_mail_password_reset(member.email, pw)
 
-    renderdict = {
+    renderdict = get_page_dict(request)
+    renderdict.update({
         'sent': sent
-    }
+    })
     return render(request, 'newpassword.html', renderdict)
 
 
 def logout_view(request):
     auth.logout(request)
-    # Redirect to a success page.
-    return HttpResponseRedirect('/my/home')
+    return redirect('home')
+
+
+def cookies(request):
+    return render(request, 'cookie.html', {})

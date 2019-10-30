@@ -1,99 +1,71 @@
-{% extends "base.html" %}
+{% extends "no_menu_base.html" %}
+{% load i18n %}
 {% load config %}
 {% block all_page_title %}
-    <div class="col-md-3">
-        &nbsp;
-    </div>
-    <div class="col-md-9 juntagrico">
-        <h3>Wähle dein {% vocabulary "subscription" %}</h3>
+    {% vocabulary "subscription" as v_subscription %}
+    <div class="page-title offset-md-2 col-md-8">
+        <h3>
+            {% blocktrans %}Wähle deine {{ v_subscription }}-Grösse{% endblocktrans %}
+        </h3>
     </div>
 {% endblock %}
-
 {% block allcontent %}
-    {% config "enable_shares" as enable_shares %}
-    <div class="row">
-        <div class="offset-md-2 col-md-8">
-            <form action="" method="post">
-                {% csrf_token %}
-                {% for ss in subscriptionsizes %}
-                    <div class="form-group row">
-                        <label class="col-md-3">
-                            {% if forloop.first %}{% vocabulary "subscription" %}-Grösse{% endif %}</label>
-                        <div class="col-md-9">
-                            {{ ss.long_name }}
-                            <br/>
-                            {{ ss.description }}
-                        </div>
-                    </div>
-                    {% for type in ss.types.all %}
-                        {% if type.visible %}
-                            <div class="form-group row">
-                                <div class="col-md-9 offset-md-3">
-                                    <div class="row align-items-center h-100 no-gutters">
-                                        <div class="col-md-2">
-                                    <span class="switch switch-sm">
-                                      <input type="radio" class="switch" name="subscription"
-                                             value="{{ type.id }}" id="{{ type.name }}"
-                                             {% if selected_subscription == type.id %}checked="checked"{% endif %}/>
-                                        <label for="{{ type.name }}"></label>
-                                    </span>
-                                        </div>
-                                        <label for="{{ type.name }}" class="col-md-10">
-                                            {% if type.long_name.strip %}{{ type.long_name }}<br/>{% endif %}
-                                            {% if type.description.strip %}{{ type.description }}<br/>{% endif %}
-                                            {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
-                                            {% if enable_shares %}
-                                                <br/>
-                                                {% vocabulary "share_pl" %}: {{ type.shares }}
-                                            {% endif %}
-                                            <br/>
-                                            Arbeitseinsätze: {{ type.required_assignments }} {% if hours_used %}
-                                            Stunden{% endif %}
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-                <div class="form-group row">
-                    <div class="offset-md-3 col-md-9">
-                        Kein {% vocabulary "subscription" %}
-                    </div>
+    {% config "organisation_name" as c_organisation_name %}
+    {% config "currency" as c_currency %}
+    {% vocabulary "member_type" as v_member_type %}
+    {% vocabulary "member_type_pl" as v_member_type_pl %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
+    {% config "enable_shares" as c_enable_shares %}
+    <div class="offset-md-2 col-md-8">
+        <form action="" method="post">
+            {% csrf_token %}
+            {% include "snippets/snippet_subscription_selection.html" %}
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <b>Kein {% vocabulary "subscription" %}</b>
                 </div>
-                <div class="form-group">
-                    <div class="col-md-9 offset-md-3">
-                        <div class="row align-items-center h-100 no-gutters">
-                            <div class="col-md-2">
-                                    <span class="switch switch-sm">
-                                      <input type="radio" class="switch" name="subscription"
-                                             value="-1" id="none"
-                                             {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
-                                        <label for="none"></label>
-                                    </span>
-                            </div>
-                            <label class="col-md-10">
-                                Du kannst auch ohne
-                                Gemüseabo {% config "organisation_name" %}-{% vocabulary "member_type" %} sein. Bleibe
-                                auf dem Laufenden und mach mit, wenn du Lust hast.<br/>
-                                {% config "base_fee" as base_fee %}
-                                {% if base_fee.strip %}
-                                    {% vocabulary "member_type_pl" %} ohne {% vocabulary "subscription" %} bezahlen
-                                    einen Jahresbeitrag von {{ base_fee }} {% config "currency" %}
-                                {% endif %}
-                            </label>
-                        </div>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <div class="offset-md-2 col-md-1">
+                    <span class="switch switch-sm">
+                        <input type="checkbox" class="switch" name="subscription" value="-1" id="none" {% if selected_subscription == -1 %}checked="checked"{% endif %}/>
+                        <label for="none">
+                        </label>
+                    </span>
                 </div>
-                <div class="form-actions row">
-                    <div class="offset-md-3 col-md-9">
-                        <button type="submit" class="btn btn-success">Weiter</button>
-                        <a href="/my/create/subscription/cancel" class="btn">Abbrechen</a>
-                    </div>
+                <label class="col-md-9">
+                    {% blocktrans trimmed %}
+                    Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-
+                    {{ v_member_type }} sein. Bleibe
+                    auf dem Laufenden und mach mit, wenn du Lust hast.
+                    {% endblocktrans %}
+                    <br/>
+                    {% config "base_fee" as base_fee %}
+                    {% if base_fee.strip %}
+                        {% blocktrans trimmed%}
+                        {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
+                        einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
+                        {% endblocktrans %}
+                    {% endif %}
+                </label>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success">
+                        {% trans "Weiter" %}
+                    </button>
+                    <a href="{% url 'cs-cancel' %}" class="btn">
+                        {% trans "Abbrechen" %}
+                    </a>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-
 {% endblock %}
-
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initCreateSubscription.js">
+    </script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "no_menu_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block all_page_title %}
+    {% vocabulary "member_type" as v_member_type %}
+    <div class="page-title col-md-12">
+        <h3>
+            {% trans "Cookies" %}
+        </h3>
+    </div>
+{% endblock %}
+{% block allcontent %}
+    {% config "adminportal_name" as an%}
+    {% blocktrans with an=an%}
+    {{ an }} verwendet Cookies.
+    {{ an }} verwendet aber keine Cookies für Tracking etc.
+    {{ an }} verwendet Session Cookies und Cookies zur CSRF Bekämpfung.
+    Und um zu speichern ob du den Cookie Consent bestätigt hast.
+
+    <p/>
+
+    Standartmässig speichert {{ an }} im Session Cookie nur eine ID und die Session Daten in der Datenbank.
+    Das Session Cookie wird 2 Wochen gespeichert. <br/>
+    Die Aktuelle Informationen zu den Standard Einstellungen findest du hier:<br/>
+    <a href="https://docs.djangoproject.com/en/dev/topics/http/sessions/">https://docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/>
+    Diese Einstellungen können natürlich von deiner Initiative geändert worden sein.
+
+    <p/>
+
+    Mehr Infos zum CSRF Cookie findest du hier:
+    <a href="https://docs.djangoproject.com/en/dev/ref/csrf/">https://docs.djangoproject.com/en/dev/ref/csrf/</a>
+
+    <p/>
+
+    Das Cookie Consent Cookie speichert für ein Jahr ab, ob du den Cookies zugestimmt hast.
+
+    <p/>
+
+    Gerne kannst du das natürlich bei dir konkret überprüfen und uns mitteilen wenn das was hier steht nicht stimmt oder nicht mehr stimmt.
+    {% endblocktrans %}
+{% endblock %}

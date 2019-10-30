@@ -1,21 +1,19 @@
-{% extends "base.html" %}
+{% extends "no_menu_base.html" %}
+{% load i18n %}
 {% load config %}
 {% block all_page_title %}
-    <div class="col-md-3"> 
-            &nbsp;
-    </div>
-    <div class="col-md-9 juntagrico">
-        <h3>Herzlich willkommen bei {% enriched_organisation "D" %}!</h3>
-    </div>
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    <h3 class="page-title">
+        {% blocktrans %}Herzlich willkommen bei {{ v_d_enriched_organisation }}!{% endblocktrans %}
+    </h3>
 {% endblock %}
-
 {% block allcontent %}
     <div class="alert alert-success">
-        {% if no_subscription %}
-        Du bist jetzt {% vocabulary "member_type" %} bei {% enriched_organisation "D" %}.
-        {% else %}
-        Dein {% vocabulary "subscription" %} wurde erstellt und wartet nun darauf aktiviert zu werden. 
+        {% enriched_organisation "D" as v_d_enriched_organisation %} {% vocabulary "member_type" as v_member_type %} {% vocabulary "subscription" as v_subscription %}
+        {% blocktrans %}Du bist jetzt {{ v_member_type }} bei {{ v_d_enriched_organisation }}.{% endblocktrans %}
+        {% if not no_subscription %}
+            {% blocktrans %}Du wurdest als {{ v_subscription }}-Bezieher zur Warteliste hinzugefügt.{% endblocktrans %}
         {% endif %}
-        Du erhälst eine Email mit allen weiteren infos an die von dir angegebene Emailadresse ( unsere Mails verirren sich manchmal in den SPAM Ordner ).
-    </div><br/><br/>
+        {% trans "Du erhälst eine Email mit allen weiteren infos an die von dir angegebene Emailadresse ( unsere Mails verirren sich manchmal in den SPAM Ordner )." %}
+    </div>
 {% endblock %}

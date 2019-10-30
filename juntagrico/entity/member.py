@@ -1,14 +1,14 @@
-# encoding: utf-8
-
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.utils.translation import gettext as _
 
-from juntagrico.util.users import *
 from juntagrico.config import Config
+from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.lifecycle.member import check_member_consistency
+from juntagrico.util.users import *
 
 
-class Member(models.Model):
+class Member(JuntagricoBaseModel):
     '''
     Additional fields for Django's default user class.
     '''
@@ -39,14 +39,17 @@ class Member(models.Model):
     old_subscriptions = models.ManyToManyField(
         'Subscription', related_name='members_old')
 
-    confirmed = models.BooleanField('bestätigt', default=False)
+    confirmed = models.BooleanField(_('bestätigt'), default=False)
     reachable_by_email = models.BooleanField(
-        'Kontaktierbar von der Job Seite aus', default=False)
+        _('Kontaktierbar von der Job Seite aus'), default=False)
 
-    canceled = models.BooleanField('gekündigt', default=False)
+    canceled = models.BooleanField(_('gekündigt'), default=False)
     cancelation_date = models.DateField(
-        'Kündigüngssdatum', null=True, blank=True)
-    inactive = models.BooleanField('inaktiv', default=False)
+        _('Kündigüngsdatum'), null=True, blank=True)
+    end_date = models.DateField(
+        _('Enddatum'), null=True, blank=True)
+    inactive = models.BooleanField(_('inaktiv'), default=False)
+    notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
 
     @property
     def is_cooperation_member(self):
@@ -55,18 +58,24 @@ class Member(models.Model):
 
     @property
     def active_shares(self):
-        return self.share_set.filter(
-            cancelled_date__isnull=True)
+        return self.share_set.filter(cancelled_date__isnull=True)
 
     @property
     def active_shares_count(self):
         return self.active_shares.count()
 
     @property
+    def in_subscription(self):
+        return (self.future_subscription is not None) | (self.subscription is not None)
+
+    @property
     def blocked(self):
         future = self.future_subscription is not None
         current = self.subscription is None or not self.subscription.canceled
         return future or not current
+
+    def clean(self):
+        check_member_consistency(self)
 
     def __str__(self):
         return self.get_name()
@@ -89,16 +98,10 @@ class Member(models.Model):
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
-    @classmethod
-    def pre_save(cls, sender, instance, **kwds):
-        if instance.inactive is True:
-            instance.areas.clear()
-
     class Meta:
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
-        permissions = (('can_filter_members', _('Benutzer kann ') +
-                        Config.vocabulary('member_pl') + _(' filtern')),)
+        permissions = (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
 
     def get_name(self):
         return '%s %s' % (self.first_name, self.last_name)
