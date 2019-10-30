@@ -100,6 +100,23 @@ Release Notes
 * major template rewrites. Check custom css besides custom logos
 
 
+1.1.9
+----
+ Has migrations
+
+* Added Cookie consent
+* Design a bit more responsive
+* Job display name used where possible
+* Updated share management
+* Added user management to deactivate canceled users
+* Fix in welcome mail
+* Fix in Subscription deactivation
+* Links in emails work now also for internal links
+* Old subscriptions are now visible in Member admin
+* Fixed small bug in the size change
+*
+
+
 Dev
 ----
  Has no migrations
