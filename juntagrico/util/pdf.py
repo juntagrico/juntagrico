@@ -28,7 +28,7 @@ def return_pdf_http(filename):
     if default_storage.exists(filename):
         with default_storage.open(filename) as pdf_file:
             content = pdf_file.read()
-        content_disposition = "attachment; filename='" + filename + "'"
+        content_disposition = "attachment; filename=" + filename
         response = HttpResponse(content, content_type='application/pdf')
         response['Content-Disposition'] = content_disposition
         return response
