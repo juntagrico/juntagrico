@@ -23,230 +23,144 @@ class Command(BaseCommand):
 
         print('*** welcome  mit abo***')
 
-        plaintext = get_template(Config.emails('welcome'))
-        d = {
+        print(get_email_content('welcome', base_dict({
             'username': 'email@email.de',
             'password': 'password',
             'hash': 'hash',
-            'subscription': subscription,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+            'subscription': subscription
+        })))
         print()
 
         print('*** welcome  ohne abo***')
 
-        plaintext = get_template(Config.emails('welcome'))
-        d = {
+        print(get_email_content('welcome', base_dict({
             'username': 'email@email.de',
             'password': 'password',
             'hash': 'hash',
-            'subscription': None,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+            'subscription': None
+        })))
         print()
 
         print('*** s_created ***')
 
-        plaintext = get_template(Config.emails('s_created'))
-        d = {
-            'share': share,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        print(get_email_content('s_created', base_dict({'share': share})))
         print()
 
         print('*** n_sub ***')
 
-        plaintext = get_template(Config.emails('n_sub'))
-        d = {
-            'subscription': subscription,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        print(get_email_content('n_sub', base_dict({'subscription': subscription})))
         print()
 
         print('*** co_welcome ***')
 
-        plaintext = get_template(Config.emails('co_welcome'))
-        d = {
+        print(get_email_content('co_welcome', base_dict({
             'username': 'email@email.org',
             'name': 'Hans Muster',
             'password': 'password',
             'hash': 'hash',
-            'shares': '9',
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+            'shares': '9'
+        })))
         print()
 
         print('*** co_added ***')
 
-        plaintext = get_template(Config.emails('co_added'))
-        d = {
+        print(get_email_content('co_added', base_dict({
             'username': 'email@email.org',
             'name': 'Hans Muster',
             'password': 'password',
             'hash': 'hash',
-            'shares': '9',
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+            'shares': '9'
+        })))
         print()
 
         print('*** password ***')
 
-        plaintext = get_template(Config.emails('password'))
-        d = {
+        print(get_email_content('password', base_dict({
             'email': 'email@email.org',
             'password': 'password',
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        })))
         print()
 
         print('*** j_reminder ***')
 
-        plaintext = get_template(Config.emails('j_reminder'))
-        coordinator = job.type.activityarea.coordinator
-        contact = coordinator.first_name + ' ' + \
-            coordinator.last_name + ': ' + job.type.activityarea.contact()
-        d = {
+        contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
+        print(get_email_content('j_reminder', base_dict({
             'job': job,
             'participants': [member],
-            'serverurl': get_server(),
             'contact': contact
-        }
-        content = plaintext.render(d)
-        print(content)
+        })))
         print()
 
         print('*** j_canceled ***')
 
-        plaintext = get_template(Config.emails('j_canceled'))
-        d = {
-            'job': job,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        print(get_email_content('j_canceled', base_dict({'job': job})))
         print()
 
         print('*** confirm ***')
 
-        plaintext = get_template(Config.emails('confirm'))
-        d = {
-            'hash': 'hash',
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        print(get_email_content('confirm', base_dict({'hash': 'hash'})))
         print()
 
         print('*** j_changed ***')
 
-        plaintext = get_template(Config.emails('j_changed'))
-        d = {
-            'job': job,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        print(get_email_content('j_changed', base_dict({'job': job})))
         print()
 
         print('*** j_signup ***')
 
-        plaintext = get_template(Config.emails('j_signup'))
-        d = {
-            'job': job,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        print(get_email_content('j_signup', base_dict({'job': job})))
         print()
 
         print('*** d_changed ***')
 
-        plaintext = get_template(Config.emails('d_changed'))
-        d = {
-            'depot': depot,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+        print(get_email_content('d_changed', base_dict({'depot': depot})))
         print()
 
         print('*** s_canceled ***')
 
-        plaintext = get_template(Config.emails('s_canceled'))
-        d = {
+        print(get_email_content('s_canceled', base_dict({
             'subscription': subscription,
-            'message': 'Nachricht',
-        }
-        content = plaintext.render(d)
-        print(content)
+            'message': 'Nachricht'
+        })))
         print()
 
         print('*** m_canceled ***')
 
-        plaintext = get_template(Config.emails('m_canceled'))
-        d = {
+        print(get_email_content('m_canceled', base_dict({
             'member': member,
             'end_date': timezone.now(),
-            'message': 'Nachricht',
-        }
-        content = plaintext.render(d)
-        print(content)
+            'message': 'Nachricht'
+        })))
         print()
 
         print('*** b_share ***')
 
-        plaintext = get_template(Config.emails('b_share'))
-        d = {
+        print(get_email_content('b_share', base_dict({
             'member': member,
             'bill': bill,
-            'share': share,
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+            'share': share
+        })))
         print()
 
         print('*** b_sub ***')
 
-        plaintext = get_template(Config.emails('b_sub'))
-        d = {
+        print(get_email_content('b_sub', base_dict({
             'member': member,
             'bill': bill,
             'sub': subscription,
             'start': timezone.now(),
-            'end': timezone.now(),
-            'serverurl': get_server()
-        }
-        content = plaintext.render(d)
-        print(content)
+            'end': timezone.now()
+        })))
         print()
 
         if extrasub is not None:
             print('*** b_esub ***')
 
-            plaintext = get_template(Config.emails('b_esub'))
-            d = {
+            print(get_email_content('b_esub', base_dict({
                 'member': member,
                 'bill': bill,
                 'extrasub': extrasub,
                 'start': timezone.now(),
-                'end': timezone.now(),
-                'serverurl': get_server()
-            }
-            content = plaintext.render(d)
-            print(content)
+                'end': timezone.now()
+            })))
             print()
