@@ -1,0 +1,15 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load config %}
+{% block content %}{% vocabulary "subscription_pl" as v_subscription_pl %}
+{% trans "Hallo" %}
+{% blocktrans with fn=member.first_name ln=member.last_name e=member.email sh=member.active_shares_count sub=member.subscription.size_name|default:"-" %}
+Soeben hat {{ fn }} {{ ln }} sich registriert.
+E-Mail: {{ e }}
+Anteilschein(e): {{ sh }}
+{{ v_subscription_pl }}: {{ sub }}
+{% endblocktrans %}
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
+
+{% endblock %}

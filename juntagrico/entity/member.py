@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.entity import JuntagricoBaseModel, include_notification_permissions
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.util.users import *
 
@@ -74,16 +74,27 @@ class Member(JuntagricoBaseModel):
         current = self.subscription is None or not self.subscription.canceled
         return future or not current
 
-    def clean(self):
-        check_member_consistency(self)
+    def get_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+    def get_phone(self):
+        if self.mobile_phone != '':
+            return self.mobile_phone
+        return self.phone
+
+    def get_hash(self):
+        return hashlib.sha1((str(self.email) + str(self.pk)).encode('utf8')).hexdigest()
 
     def __str__(self):
         return self.get_name()
 
+    def clean(self):
+        check_member_consistency(self)
+
     @classmethod
     def create(cls, sender, instance, created, **kwds):
         '''
-        Callback to create corresponding member when new user is created.
+        Callback to create corresponding user when new member is created.
         '''
         if created and instance.user is None:
             username = make_username(
@@ -101,12 +112,7 @@ class Member(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
-        permissions = (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
-
-    def get_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
-    def get_phone(self):
-        if self.mobile_phone != '':
-            return self.mobile_phone
-        return self.phone
+        permissions = include_notification_permissions(
+            'member',
+            (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
+        )

@@ -1,7 +1,6 @@
 from django.template.loader import get_template
 from django.conf import settings
 
-from juntagrico.util.users import get_users_by_permission
 from juntagrico.config import Config
 
 
@@ -28,11 +27,10 @@ def get_emails_by_permission(permission_code):
     Get all email addresses of members by permission of user
     returns info email if no member has given permission
     """
-    emails = []
-    for user in get_users_by_permission(permission_code):
-        emails.append(user.member.email)
+    from juntagrico.dao.memberdao import MemberDao
+    emails = MemberDao.members_by_permission(permission_code).values_list('email', flat=True)
     if not emails:
-        emails = [Config.info_email()]
+        return [Config.info_email()]
     return emails
 
 

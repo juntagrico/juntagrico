@@ -81,3 +81,8 @@ class MemberDao:
             core_assignment_count=Sum(Case(
                 When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, assignment__core_cache=True,
                      then='assignment__amount'))))
+
+    @staticmethod
+    def members_by_permission(permission_codename):
+        perm = Permission.objects.get(codename=permission_codename)
+        return Member.objects.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()

@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from juntagrico.models import *
+from juntagrico.util.mailer import get_email_content, base_dict
 
 
 def get_server():
@@ -15,18 +16,18 @@ class Command(BaseCommand):
             extrasub = ExtraSubscription.objects.all()[0]
         else:
             extrasub = None
-        share = Share.objects.all()[0]
+        shares = Share.objects.all()[:2]
         job = RecuringJob.objects.all()[0]
         member = Member.objects.all()[0]
+        co_member = Member.objects.filter(subscription__isnull=False)[0]
         depot = Depot.objects.all()[0]
         bill = Bill(ref_number='123456789', amount='1234.99')
 
         print('*** welcome  mit abo***')
 
         print(get_email_content('welcome', base_dict({
-            'username': 'email@email.de',
+            'member': member,
             'password': 'password',
-            'hash': 'hash',
             'subscription': subscription
         })))
         print()
@@ -34,16 +35,15 @@ class Command(BaseCommand):
         print('*** welcome  ohne abo***')
 
         print(get_email_content('welcome', base_dict({
-            'username': 'email@email.de',
+            'member': member,
             'password': 'password',
-            'hash': 'hash',
             'subscription': None
         })))
         print()
 
         print('*** s_created ***')
 
-        print(get_email_content('s_created', base_dict({'share': share})))
+        print(get_email_content('s_created', base_dict({'shares': shares})))
         print()
 
         print('*** n_sub ***')
@@ -54,22 +54,17 @@ class Command(BaseCommand):
         print('*** co_welcome ***')
 
         print(get_email_content('co_welcome', base_dict({
-            'username': 'email@email.org',
-            'name': 'Hans Muster',
-            'password': 'password',
-            'hash': 'hash',
-            'shares': '9'
+            'co_member': co_member,
+            'password': 'password'
         })))
         print()
 
         print('*** co_added ***')
 
         print(get_email_content('co_added', base_dict({
-            'username': 'email@email.org',
-            'name': 'Hans Muster',
+            'co_member': co_member,
             'password': 'password',
-            'hash': 'hash',
-            'shares': '9'
+            'new_shares': '9'
         })))
         print()
 
@@ -124,6 +119,13 @@ class Command(BaseCommand):
         })))
         print()
 
+        print('*** a_member_created ***')
+
+        print(get_email_content('a_member_created', base_dict({
+            'member': member
+        })))
+        print()
+
         print('*** m_canceled ***')
 
         print(get_email_content('m_canceled', base_dict({
@@ -138,7 +140,7 @@ class Command(BaseCommand):
         print(get_email_content('b_share', base_dict({
             'member': member,
             'bill': bill,
-            'share': share
+            'share': shares[0]
         })))
         print()
 

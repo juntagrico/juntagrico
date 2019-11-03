@@ -9,14 +9,11 @@
 {% vocabulary "member_type" as v_member_type %}
 {% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
 
-{% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutzte folgende Daten{% endblocktrans %}:
-{% trans "Email" %}: {{ username }}
+{% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutze folgende Daten{% endblocktrans %}:
+{% trans "Email" %}: {{ member.email }}
 {% trans "Passwort" %}: {{ password }}
-{% trans "Bitte setze dir hier gleich ein neues Passwort:" %}
-{{serverurl}}/my/password
-
-{% blocktrans %}Damit wir dich als {{ v_member_type }} freischalten können nutze den Bestätigungslink um deine Email zu bestätigen.{% endblocktrans %}
-{% trans "Bestätigungslink" %}: {{ serverurl }}/my/confirm/{{ onetime_code }}
+{% blocktrans %}Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen und gleich dein Passwort zu ändern.{% endblocktrans %}
+{% trans "Bestätigungslink" %}: {{ serverurl }}{% url 'confirm' member.get_hash %}
 
 {% if c_faq_doc.strip %}
 {% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ c_info_email }}.{% endblocktrans %}
