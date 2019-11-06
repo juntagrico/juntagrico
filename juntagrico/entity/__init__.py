@@ -3,13 +3,6 @@ from django.utils.translation import gettext as _
 from polymorphic.models import PolymorphicModel
 
 
-def include_notification_permissions(entity_name, verbose_name, permissions=None):
-    return list(permissions or []) + [
-        (f'notified_on_{entity_name}_creation', _('Wird bei {0} Erstellung informiert').format(verbose_name)),
-        (f'notified_on_{entity_name}_cancellation', _('Wird bei {0} Kündigung informiert').format(verbose_name))
-    ]
-
-
 class OldHolder:
     '''find a better name'''
     _old = None
@@ -28,6 +21,10 @@ class JuntagricoBasePoly(PolymorphicModel, OldHolder):
 
 
 def notifiable(cls):
-    name = cls.__qualname__.split('.')[0].lower()
-    cls.permissions = include_notification_permissions(name, cls.verbose_name, cls.permissions)
+    entity_name = cls.__qualname__.split('.')[0].lower()
+    new_permissions = list(cls.permissions or []) + [
+        (f'notified_on_{entity_name}_creation', _('Wird bei {0} Erstellung informiert').format(cls.verbose_name)),
+        (f'notified_on_{entity_name}_cancellation', _('Wird bei {0} Kündigung informiert').format(cls.verbose_name))
+    ]
+    cls.permissions = new_permissions
     return cls
