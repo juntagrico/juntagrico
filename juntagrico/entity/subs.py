@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity import include_notification_permissions, notifiable
+from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.subtypes import *
 from juntagrico.lifecycle.sub import check_sub_consistency
