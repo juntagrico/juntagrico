@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel, include_notification_permissions
+from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.util.users import *
 
@@ -109,10 +109,8 @@ class Member(JuntagricoBaseModel):
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
+    @notifiable
     class Meta:
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
-        permissions = include_notification_permissions(
-            'member',
-            (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
-        )
+        permissions = (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)

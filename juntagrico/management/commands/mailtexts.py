@@ -119,6 +119,13 @@ class Command(BaseCommand):
         })))
         print()
 
+        print('*** a_share_created ***')
+
+        print(get_email_content('a_share_created', base_dict({
+            'shares': shares
+        })))
+        print()
+
         print('*** a_member_created ***')
 
         print(get_email_content('a_member_created', base_dict({

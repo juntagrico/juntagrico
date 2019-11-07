@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity import include_notification_permissions
+from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.subtypes import *
 from juntagrico.lifecycle.sub import check_sub_consistency
@@ -219,11 +219,8 @@ class Subscription(Billable):
     def clean(self):
         check_sub_consistency(self)
 
+    @notifiable
     class Meta:
         verbose_name = Config.vocabulary('subscription')
         verbose_name_plural = Config.vocabulary('subscription_pl')
-        permissions = include_notification_permissions(
-            'subscription',
-            (('can_filter_subscriptions',
-              _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),)
-        )
+        permissions = (('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),)
