@@ -117,6 +117,7 @@ class Config:
             's_created': 'mails/member/share_created.txt',
             'n_sub': 'mails/admin/subscription_created.txt',
             's_canceled': 'mails/admin/subscription_canceled.txt',
+            'a_share_created': 'mails/admin/share_created.txt',
             'a_member_created': 'mails/admin/member_created.txt',
             'm_canceled': 'mails/admin/member_canceled.txt',
             'b_share': 'mails/billing/share.txt',

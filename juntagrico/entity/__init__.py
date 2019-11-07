@@ -22,7 +22,7 @@ class JuntagricoBasePoly(PolymorphicModel, OldHolder):
 
 def notifiable(cls):
     entity_name = cls.__qualname__.split('.')[0].lower()
-    new_permissions = list(cls.permissions or []) + [
+    new_permissions = list(getattr(cls, 'permissions', [])) + [
         (f'notified_on_{entity_name}_creation', _('Wird bei {0} Erstellung informiert').format(cls.verbose_name)),
         (f'notified_on_{entity_name}_cancellation', _('Wird bei {0} Kündigung informiert').format(cls.verbose_name))
     ]

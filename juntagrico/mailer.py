@@ -113,6 +113,14 @@ class AdminNotification:
         )
 
     @staticmethod
+    def share_created(shares):
+        send_mail(
+            organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
+            get_email_content('a_share_created', base_dict(locals())),
+            get_emails_by_permission('notified_on_share_creation')
+        )
+
+    @staticmethod
     def member_created(member):
         send_mail(
             organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
