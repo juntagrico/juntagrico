@@ -2,9 +2,9 @@
 
 from django.db.models import Sum, Case, When
 from django.utils import timezone
-
 from juntagrico.models import *
 from juntagrico.util import temporal
+from datetime import datetime
 
 
 class MemberDao:
@@ -44,6 +44,12 @@ class MemberDao:
     @staticmethod
     def members_for_email():
         return Member.objects.exclude(inactive=True)
+
+    @staticmethod
+    def get_jobs_for_current_day():
+        today = timezone.now()
+        daystart = datetime(year=today.year, month=today.month, day=today.day, hour=0, second=0)
+        return Job.objects.filter(time__gte=daystart).order_by('time')
 
     @staticmethod
     def members_for_email_with_subscription():

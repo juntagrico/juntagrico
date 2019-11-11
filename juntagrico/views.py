@@ -11,6 +11,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobdao import JobDao
+from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.forms import *
@@ -287,8 +288,7 @@ def jobs(request):
     All jobs to be sorted etc.
     '''
     renderdict = get_menu_dict(request)
-
-    jobs = JobDao.get_current_jobs()
+    jobs = MemberDao.get_jobs_for_current_day()
     renderdict.update({
         'jobs': jobs,
         'show_all': True,
