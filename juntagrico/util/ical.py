@@ -15,7 +15,7 @@ def generate_ical_for_job(job):
     e.name = Config.organisation_name() + ' ' + _('Einsatz')+':' + job.type.get_name
     e.location = job.type.location
     e.description = job.type.description
-    e.begin = job.time.strftime('%Y%m%d %H:%M:%S')
-    e.end = job.time.strftime('%Y%m%d %H:%M:%S')
-    # c.events.append(e)
+    e.begin = job.time.strftime('%Y-%m-%d %H:%M:%S')
+    e.end = job.time.strftime('%Y-%m-%d %H:%M:%S')
+    c.events.add(e)
     return str(c).replace('\n', '\r\n') + '\r\n'

@@ -1,5 +1,7 @@
 import hashlib
 
+from collections import namedtuple
+
 from django.contrib.auth.models import Permission, User
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Q
@@ -10,8 +12,10 @@ from django.utils.translation import gettext as _
 
 # from juntagrico.util.ical import *
 from juntagrico.config import Config
+from juntagrico.util.ical import generate_ical_for_job
 from juntagrico.util.organisation_name import enriched_organisation
 
+attachment_tup = namedtuple("attachment", ["name", "object", "type"])
 
 def get_server():
     return 'http://' + Config.adminportal_server_url()
@@ -25,7 +29,7 @@ def filter_whitelist_emails(to_emails):
 
 
 # sends mail only to specified email-addresses if dev mode
-def send_mail(subject, message, from_email, to_emails, reply_to_email=None, html_message=None, attachments=None):
+def send_mail(subject, message, from_email, to_emails, reply_to_email=None, html_message=None, attachments=None, files=None):
     okmails = to_emails if settings.DEBUG is False else filter_whitelist_emails(to_emails)
     if len(okmails) > 0:
         kwargs = {'bcc': okmails}
@@ -34,10 +38,15 @@ def send_mail(subject, message, from_email, to_emails, reply_to_email=None, html
         msg = EmailMultiAlternatives(subject, message, from_email, **kwargs)
         if html_message is not None:
             msg.attach_alternative(html_message, 'text/html')
+        if files is None:
+            files = []
+        for file in files:
+            msg.attach(file.name, file.read())
+
         if attachments is None:
             attachments = []
         for attachment in attachments:
-            msg.attach(attachment.name, attachment.read())
+            msg.attach(attachment.name, attachment.object, attachment.type)
         print(('Mail sent to ' + ', '.join(okmails) +
                (', on whitelist' if settings.DEBUG else '')))
         mailer = import_string(Config.default_mailer())
@@ -56,16 +65,16 @@ def send_contact_form(subject, message, member, copy_to_member):
         send_mail(subject, message, Config.info_email(), [member.email])
 
 
-def send_contact_member_form(subject, message, member, contact_member, copy_to_member, attachments):
+def send_contact_member_form(subject, message, member, contact_member, copy_to_member, files):
     subject = _('Nachricht per {0}:').format(Config.adminportal_name()) + subject
     send_mail(subject, message, Config.info_email(), [contact_member.email], reply_to_email=member.email,
-              attachments=attachments)
+              files=files)
     if copy_to_member:
         send_mail(subject, message, Config.info_email(), [member.email], reply_to_email=member.email,
-                  attachments=attachments)
+                  files=files)
 
 
-def send_filtered_mail(subject, message, text_message, emails, attachments, sender):
+def send_filtered_mail(subject, message, text_message, emails, files, sender):
     plaintext = get_template('mails/filtered_mail.txt')
     htmly = get_template('mails/filtered_mail.html')
 
@@ -82,7 +91,7 @@ def send_filtered_mail(subject, message, text_message, emails, attachments, send
     }
     text_content = plaintext.render(textd)
     html_content = htmly.render(htmld)
-    send_mail(subject, text_content, sender, emails, html_message=html_content, attachments=attachments)
+    send_mail(subject, text_content, sender, emails, html_message=html_content, files=files)
 
 
 '''
@@ -233,10 +242,10 @@ def send_job_time_changed(emails, job):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    #    ical_content = genecrate_ical_for_job(job)
+    ical_content = generate_ical_for_job(job)
+    attachment = attachment_tup(name='einsatz.ics', object=ical_content, type='text/calendar')
     send_mail(_('{0} - Einsatz-Zeit geändert').format(Config.organisation_name()),
-              content, Config.info_email(), emails)
-    #   msg.attach('einsatz.ics', ical_content, 'text/calendar')
+              content, Config.info_email(), emails, attachments=[attachment])
 
 
 def send_job_signup(emails, job):
@@ -246,11 +255,10 @@ def send_job_signup(emails, job):
         'serverurl': get_server()
     }
     content = plaintext.render(d)
-    # ical_content = generate_ical_for_job(job)
+    ical_content = generate_ical_for_job(job)
+    attachment = attachment_tup(name='einsatz.ics', object=ical_content, type='text/calendar')
     send_mail(_('{0} - für Einsatz angemeldet').format(Config.organisation_name()),
-              content, Config.info_email(), emails)
-    # Not attaching ics as it is not correct
-    # msg.attach('einsatz.ics', ical_content, 'text/calendar')
+              content, Config.info_email(), emails, attachments=[attachment])
 
 
 def send_depot_changed(emails, depot):

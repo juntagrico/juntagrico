@@ -363,10 +363,10 @@ def contact_member(request, member_id, job_id):
 
     if request.method == 'POST':
         # send mail to member
-        attachments = []
-        append_attachements(request, attachments)
+        files = []
+        append_attachements(request, files)
         send_contact_member_form(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
-                                 request.POST.get('copy'), attachments)
+                                 request.POST.get('copy'), files)
         is_sent = True
     job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)

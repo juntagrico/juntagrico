@@ -66,14 +66,14 @@ def send_email_intern(request):
     if request.POST.get('allsingleemail'):
         emails |= set(request.POST.get('singleemail').split(' '))
 
-    attachements = []
-    append_attachements(request, attachements)
+    files = []
+    append_attachements(request, files)
 
     if len(emails) > 0:
         send_filtered_mail(request.POST.get('subject'),
                            request.POST.get('message'),
                            request.POST.get('textMessage'),
-                           emails, attachements, sender=sender)
+                           emails, files, sender=sender)
         sent = len(emails)
     return redirect('mail-result', numsent=sent)
 
