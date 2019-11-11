@@ -288,7 +288,7 @@ def jobs(request):
     '''
     renderdict = get_menu_dict(request)
 
-    jobs = JobDao.get_current_jobs()
+    jobs = JobDao.get_jobs_for_current_day()
     renderdict.update({
         'jobs': jobs,
         'show_all': True,
