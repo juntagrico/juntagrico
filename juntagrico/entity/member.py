@@ -45,8 +45,11 @@ class Member(JuntagricoBaseModel):
 
     canceled = models.BooleanField(_('gekündigt'), default=False)
     cancelation_date = models.DateField(
-        _('Kündigüngssdatum'), null=True, blank=True)
+        _('Kündigüngsdatum'), null=True, blank=True)
+    end_date = models.DateField(
+        _('Enddatum'), null=True, blank=True)
     inactive = models.BooleanField(_('inaktiv'), default=False)
+    notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
 
     @property
     def is_cooperation_member(self):
@@ -60,6 +63,10 @@ class Member(JuntagricoBaseModel):
     @property
     def active_shares_count(self):
         return self.active_shares.count()
+
+    @property
+    def in_subscription(self):
+        return (self.future_subscription is not None) | (self.subscription is not None)
 
     @property
     def blocked(self):

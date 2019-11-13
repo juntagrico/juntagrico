@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from juntagrico.models import *
 from juntagrico.config import Config
+from datetime import datetime, time, date
 
 
 class JobDao:
@@ -37,6 +38,11 @@ class JobDao:
     @staticmethod
     def get_current_jobs():
         return Job.objects.filter(time__gte=timezone.now()).order_by('time')
+
+    @staticmethod
+    def get_jobs_for_current_day():
+        daystart = datetime.combine(date.today(), time.min)
+        return Job.objects.filter(time__gte=daystart).order_by('time')
 
     @staticmethod
     def get_current_one_time_jobs():

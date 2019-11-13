@@ -11,7 +11,7 @@
                 {% for job in next_jobs %}
                     <li>
                         <a href="{% url 'job' job.id %}" {% if job.canceled %}class="canceled"{% endif %}>
-                            {{ job.type.name }}
+                            {{ job.type.get_name }}
                         </a>
                         <br/>
                         <div class="time">

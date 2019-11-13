@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -286,7 +288,7 @@ def jobs(request):
     '''
     renderdict = get_menu_dict(request)
 
-    jobs = JobDao.get_current_jobs()
+    jobs = JobDao.get_jobs_for_current_day()
     renderdict.update({
         'jobs': jobs,
         'show_all': True,
@@ -416,10 +418,11 @@ def cancel_membership(request):
     member = request.user.member
     if request.method == 'POST':
         now = timezone.now().date()
-        end_date = request.POST.get('end_date')
+        end_date = dt.strptime(request.POST.get('end_date'), '%Y-%m-%d').date()
         message = request.POST.get('message')
         member = request.user.member
         member.canceled = True
+        member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
             send_membership_canceled(member, end_date, message)
@@ -513,5 +516,4 @@ def logout_view(request):
 
 
 def cookies(request):
-    renderdict = get_menu_dict(request)
-    return render(request, 'cookie.html', renderdict)
+    return render(request, 'cookie.html', {})

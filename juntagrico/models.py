@@ -45,8 +45,8 @@ signals.pre_save.connect(job_pre_save, sender=RecuringJob)
 signals.pre_save.connect(job_pre_save, sender=Job)
 juntagrico.signals.job_canceled.connect(handle_job_canceled, sender=OneTimeJob)
 juntagrico.signals.job_canceled.connect(handle_job_canceled, sender=RecuringJob)
-juntagrico.signals.job_canceled.connect(handle_job_time_changed, sender=OneTimeJob)
-juntagrico.signals.job_canceled.connect(handle_job_time_changed, sender=RecuringJob)
+juntagrico.signals.job_time_changed.connect(handle_job_time_changed, sender=OneTimeJob)
+juntagrico.signals.job_time_changed.connect(handle_job_time_changed, sender=RecuringJob)
 ''' subscription signal handling '''
 signals.pre_save.connect(sub_pre_save, sender=Subscription)
 juntagrico.signals.sub_activated.connect(handle_sub_activated, sender=Subscription)
@@ -60,7 +60,7 @@ juntagrico.signals.extra_sub_deactivated.connect(handle_extra_sub_deactivated, s
 signals.post_save.connect(share_post_save, sender=Share)
 juntagrico.signals.share_created.connect(handle_share_created, sender=Share)
 ''' member handling '''
-signals.post_save.connect(member_pre_save, sender=Member)
+signals.pre_save.connect(member_pre_save, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
 ''' lifecycle all post init'''
 register_entities_for_post_init()

@@ -3,7 +3,7 @@
 {% load config %}
 {% block page_title %}
     <h3>
-        {{ job.type.name }}
+        {{ job.type.get_name }}
         {% if edit_url.strip %}
          <a href="{{ edit_url }}" class="edit">
             <i class="fas fa-pen">
