@@ -13,6 +13,7 @@ from django.core.management.base import BaseCommand
 from juntagrico.config import Config
 from juntagrico.models import *
 
+
 class Command(BaseCommand):
 
     members = []
@@ -30,8 +31,8 @@ class Command(BaseCommand):
 
     def get_manynames(self, N):
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-        req = urllib.request.Request('https://uinames.com/api/?amount=' + str(N), data=None,\
-            headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) \
+        req = urllib.request.Request('https://uinames.com/api/?amount=' + str(N), data=None,
+                                     headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) \
             AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'})
         data = urllib.request.urlopen(req, context=cert)
         name_data = json.loads(data.read().decode(
@@ -39,9 +40,9 @@ class Command(BaseCommand):
         for person in name_data:
             name = str(person['surname'])
             prename = str(person['name'])
-            email = str(slugify(prename) + '.' + slugify(name) + 
-                    str(timezone.now().microsecond) + '@' + 
-                    Config.info_email().split('@')[-1])
+            email = str(slugify(prename) + '.' + slugify(name) +
+                        str(timezone.now().microsecond) + '@' +
+                        Config.info_email().split('@')[-1])
             self.manynames.append({'name': name, 'prename': prename, 'email': email})
 
     def get_name(self, i):
@@ -55,24 +56,24 @@ class Command(BaseCommand):
         url = 'https://nominatim.openstreetmap.org/reverse?lat=' + \
             str(point[1]) + '&lon=' + str(point[0]) + '&format=json'
         print(url)
-        req = urllib.request.Request(\
+        req = urllib.request.Request(
             url,
-            data=None,\
+            data=None,
             headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) \
             AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36'})
-        f = urllib.request.urlopen(req,context=cert)
+        f = urllib.request.urlopen(req, context=cert)
         data = f.read()
         print(json.loads(data))
         address_data = json.loads(data)['address']
         print(address_data)
-        mytime.sleep(1) # ensure rate limit on nominatim lookup
+        mytime.sleep(1)  # ensure rate limit on nominatim lookup
         result = {'strasselang': 'Backupstrasse', 'hnr': '42', 'plz': '8001', 'ort': 'Zürich'}
         if 'road' in address_data:
             result['strasselang'] = address_data['road']
         if 'house_number' in address_data:
             result['hnr'] = address_data['house_number']
         if 'postal_code' in address_data:
-           result['plz'] = address_data['postal_code']
+            result['plz'] = address_data['postal_code']
         if 'city' in address_data:
             result['ort'] = address_data['city']
         return result
@@ -102,7 +103,7 @@ class Command(BaseCommand):
     def generate_depot(self, props, member, i, coordinates):
         depot_dict = {'code': 'D'+str(i), 'name': props['betriebsname'], 'weekday': 2, 'latitude': str(coordinates[1]),
                       'longitude': str(coordinates[0]), 'addr_street': props['strasselang'] + ' ' + props['hnr'], 'addr_zipcode': props['plz'],
-                      'addr_location': props['ort'], 'description': 'Hinter dem Restaurant '+ props['betriebsname'], 'contact': member}
+                      'addr_location': props['ort'], 'description': 'Hinter dem Restaurant ' + props['betriebsname'], 'contact': member}
         depot = Depot.objects.create(**depot_dict)
         return depot
 
@@ -133,7 +134,7 @@ class Command(BaseCommand):
         self.generate_subscription(main_member, co_member, depot, type)
 
     # entry point used by manage.py
-    def handle(self, *args, **options):        
+    def handle(self, *args, **options):
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
 
         subprod_field = {'name': 'Gemüse'}
@@ -146,8 +147,8 @@ class Command(BaseCommand):
         depots_to_generate = int(input('Number of depots to generate? [4] ') or 4)
         subs_per_depot = int(input('Number of supscriptions per depot? [10] ') or 10)
         job_amount = int(input('Jobs per area? [10] ') or 10)
-        self.get_manynames(500) # Get 500 fake names (max number per API call)
-        
+        self.get_manynames(500)  # Get 500 fake names (max number per API call)
+
         subsize_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'units': sub_size,
                           'depot_list': True,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
