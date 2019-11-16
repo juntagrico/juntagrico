@@ -23,17 +23,22 @@ def primary_member_of_subscription(view):
     return wrapper
 
 
-def create_subscription_session(view):
-    @wraps(view)
-    def wrapper(request, *args, **kwargs):
-        som = SessionObjectManager(request, 'create_subscription', CSSessionObject)
-        session_object = som.data
-        if request.user.is_authenticated:
-            session_object.main_member = request.user.member
-        if session_object.main_member is None and request.resolver_match.url_name is not 'signup':
-            return redirect('signup')
-        response = view(request, som.data, *args, **kwargs)
-        som.store()
-        return response
+def create_subscription_session(view=None, *, session_object_class=CSSessionObject):
 
-    return wrapper
+    def outer(view):
+        @wraps(view)
+        def wrapper(request, *args, **kwargs):
+            som = SessionObjectManager(request, 'create_subscription', session_object_class)
+            session_object = som.data
+            if request.user.is_authenticated:
+                session_object.main_member = request.user.member
+            if session_object.main_member is None and request.resolver_match.url_name != 'signup':
+                return redirect('signup')
+            response = view(request, som.data, *args, **kwargs)
+            som.store()
+            return response
+
+        return wrapper
+    if view:
+        return outer(view)
+    return outer
