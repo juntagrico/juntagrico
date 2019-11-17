@@ -23,7 +23,7 @@
         {% crispy memberform %}
     </form>
     <div class="row mb-2">
-        <div class="offset-md-3 col-md-9">
+        <div class="col-md-9">
             <a href="{% url 'password' %}" class="btn btn-success">
                 {% trans "Passwort ändern" %}
             </a>
@@ -31,7 +31,7 @@
     </div>
     {% if not member.canceled %}
         <div class="row mb-2">
-            <div class="offset-md-3 col-md-9">
+            <div class="col-md-9">
                 <a href="{% url 'cancel-membership' %}" class="btn btn-danger">
                     {% trans "Mitgliedschaft künden" %}
                 </a>
