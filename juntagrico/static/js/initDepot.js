@@ -1,34 +1,13 @@
 /*global define, depot, google */
 define([], function () {
 
-    if (window.google) { // make it bullet proof if google is not available
-        var initialize = function () {
-            var mapOptions = {
-                zoom: 14,
-                center: new google.maps.LatLng(depot.latitude, depot.longitude)
-            };
-            var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-            var createDepotMap = function (name, addr, zip, city, lat, long) {
-                var depotMarker = new google.maps.Marker({
-                    position: new google.maps.LatLng(lat, long),
-                    map: map,
-                    title: depot.name
-                });
-                new google.maps.InfoWindow({
-                    content: "<h1>" + name + "</h1>" + addr + "<br/>" + zip + " " + city
-                }).open(map, depotMarker);
-            };
+    var map = L.map('depot-map').setView([depot.latitude, depot.longitude], 17);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);
+    var marker = L.marker([depot.latitude, depot.longitude]).addTo(map);
+    marker.bindPopup("<b>" + depot.name + "</b><br/>" +
+                        depot.addr_street + "<br/>"
+                        + depot.addr_zipcode + " " + depot.addr_location).openPopup();
 
-            if (depot.latitude) {
-                createDepotMap(depot.name, depot.addr_street, depot.addr_zipcode, depot.addr_location, depot.latitude, depot.longitude);
-            }
-
-            $(window).resize(function () {
-                google.maps.event.trigger(map, 'resize');
-                console.log("yea")
-            });
-            google.maps.event.trigger(map, 'resize');
-        };
-        $(document).ready(initialize);
-    }
 });

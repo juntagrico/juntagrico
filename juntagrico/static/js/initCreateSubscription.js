@@ -1,13 +1,27 @@
 /*global define, $, mwember_shares, depots, destinations, google */
-define(['modules/depotDistance'], function (depotDistance) {
+define([], function () {
 
-    if (typeof member_addr !== 'undefined') {
+    if (typeof depots !== 'undefined') {
         // preselect depot
         if (window.depot_id) {
             $("#depot").val(window.depot_id);
         }
+        var map = L.map('depot-map').setView([depots[0].latitude, depots[0].longitude], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);
 
-        depotDistance.calculate(member_addr, destinations, depots);
+        markers = []
+        $.each(depots, function (i, depot) {
+                    var marker = L.marker([depot.latitude, depot.longitude]).addTo(map);
+                    marker.bindPopup("<b>" + depot.name + "</b><br/>" +
+                            depot.addr_street + "<br/>"
+                            + depot.addr_zipcode + " " + depot.addr_location);
+                    markers.push(marker)
+        });
+        var group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds(),{padding:[100,100]});
+
     }
 
     function total_selected_subs() {

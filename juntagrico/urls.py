@@ -106,7 +106,6 @@ urlpatterns = [
     path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
     path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
-    path('my/maps', juntagrico_admin.maps, name='maps'),
 
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
 ]
