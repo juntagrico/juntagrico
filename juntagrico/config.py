@@ -302,4 +302,3 @@ class Config:
                 'single_core': '/static/img/single_core.png',
                 'core': '/static/img/core.png'
                 }[key]
-
