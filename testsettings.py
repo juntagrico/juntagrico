@@ -118,8 +118,6 @@ LOGIN_REDIRECT_URL = "/my/home"
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-GOOGLE_API_KEY = 'AIzaSyCcii4Z71qyky54kEQtRhFbB_z-2zbSU28'
-
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
