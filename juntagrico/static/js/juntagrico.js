@@ -122,12 +122,17 @@ function map_with_markers(depots){
 
     markers = []
     $.each(depots, function (i, depot) {
-                var marker = L.marker([depot.latitude, depot.longitude]).addTo(map);
-                marker.bindPopup("<b>" + depot.name + "</b><br/>" +
-                        depot.addr_street + "<br/>"
-                        + depot.addr_zipcode + " " + depot.addr_location);
-                markers.push(marker)
+        var marker = add_marker(depot, map)
+        markers.push(marker)
     });
     var group = new L.featureGroup(markers);
     map.fitBounds(group.getBounds(),{padding:[100,100]});
+}
+
+function add_marker(depot, map){
+    var marker = L.marker([depot.latitude, depot.longitude]).addTo(map);
+    marker.bindPopup("<b>" + depot.name + "</b><br/>" +
+            depot.addr_street + "<br/>"
+            + depot.addr_zipcode + " " + depot.addr_location);
+    return marker
 }
