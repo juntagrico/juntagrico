@@ -2,6 +2,7 @@ import calendar
 import datetime
 from datetime import timedelta
 from django.utils import timezone
+import iso8601
 
 from django.utils.translation import gettext as _
 
@@ -127,6 +128,13 @@ def calculate_last_offset(day, month, offset):
     else:
         year = offset.year-1
     return datetime.date(year, month, day)
+
+
+def get_datetime_from_iso8601_string(date_str, default):
+    try:
+        return iso8601.parse_date(date_str)
+    except iso8601.ParseError:
+        return default
 
 
 month_choices = ((1, _('Januar')),

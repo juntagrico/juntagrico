@@ -36,6 +36,10 @@ class JobDao:
         return Job.objects.filter(time__range=(now, end), reminder_sent__exact=False)
 
     @staticmethod
+    def jobs_by_time(start, end):
+        return Job.objects.filter(time__range=(start, end))
+
+    @staticmethod
     def get_current_jobs():
         return Job.objects.filter(time__gte=timezone.now()).order_by('time')
 

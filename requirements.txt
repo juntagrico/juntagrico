@@ -6,3 +6,4 @@ ics==0.6
 schwifty==2018.9.1
 xhtml2pdf==0.2.3
 XlsxWriter==1.2.2
+iso8601==0.1.12

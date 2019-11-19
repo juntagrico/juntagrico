@@ -347,3 +347,201 @@ th {
 .cc-btn{
     font-size: 0.875rem;
 }
+
+
+/*********************/
+/* calendar job view */
+.fc-time {
+    font-weight: normal !important;
+    font-style: italic;
+}
+
+#jobs_calendar .area,
+#jobs_calendar .location {
+    font-weight: normal !important;
+    font-style: italic;
+}
+
+#jobs_calendar .area::after {
+    content: ':';
+    padding-right: 0.3em;
+}
+
+#jobs_calendar .location::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f105";
+    padding-left: 0.3em;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 8pt;
+    line-height: 18px;
+    vertical-align: middle;
+    padding-left: 0.8em;
+    padding-right: 0.3em;
+}
+
+#jobs_calendar .info {
+    float: right;
+    line-height: 1.5em;
+    color: rgba(0,0,0,0.4);
+    /* increase hover area */
+    display: inline-block;
+    padding: 25px 20px 20px 0;
+    margin: -25px -20px -20px 0;
+}
+
+#jobs_calendar .is_core .fc-title,
+#jobs_calendar .is_core .fc-list-item-title a {
+    font-weight: bold;
+}
+
+#jobs_calendar .canceled,
+#jobs_calendar .canceled .fc-event-dot{
+    color: #ff3399;
+    background-color: transparent !important;
+}
+#jobs_calendar .canceled .fc-title,
+#jobs_calendar .canceled .fc-list-item-title {
+    text-decoration: line-through;
+}
+
+.fc-title {
+    display: block;
+}
+
+#jobs_calendar .past {
+    opacity: 0.4;
+}
+
+.fc-today {
+    background-color: #cefccd;
+}
+
+/* calendar marker */
+.occupied_places {
+    font-weight: bold;
+}
+
+.fc-list-item-marker.p0   { color: red; }
+.fc-list-item-marker.p25  { color: orange; }
+.fc-list-item-marker.p50  { color: #e1be00; }
+.fc-list-item-marker.p75  { color: #6eb900; }
+.fc-list-item-marker.p100 { color: #66cc66; }
+
+/* calendar tooltip */
+.bs-tooltip-right .arrow::before,
+.bs-tooltip-left .arrow::before {
+    border-left-color:rgba(0,0,0,.1) !important;
+    border-right-color:transparent !important;
+}
+
+.bs-tooltip-top .arrow::before,
+.bs-tooltip-bottom .arrow::before {
+    border-bottom-color:rgba(0,0,0,.1) !important;
+    border-top-color:rgba(0,0,0,.1) !important;
+}
+
+.tooltip-inner {
+    font-family: "Source Sans Pro Regular";
+    text-align: left;
+    color: inherit;
+    background-color: white;
+    border: 1px solid rgba(0,0,0,.1);
+    max-width: 500px;
+}
+
+.tooltip-inner pre {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.tooltip .tooltip-title {
+    font-weight: bold;
+}
+
+@media (min-width: 992px) {
+    .tooltip-inner .tooltip-list-area,
+    .tooltip-inner .tooltip-list-location{
+        display: none;
+    }
+}
+
+/* job search */
+#job_search {
+    text-align: right;
+}
+
+#job_search input {
+    display: inline-block;
+    width: 15em;
+}
+
+@media (min-width: 403px) {
+    #job_search input::placeholder {
+        color: transparent !important;
+    }
+}
+
+/* small screens */
+.fc-right {
+    /* keep navigation together */
+    white-space: nowrap
+}
+
+@media (max-width: 991px) {
+    /* hide month view */
+    .fc-header-toolbar .fc-center {
+        display: none;
+    }
+    #jobs_calendar .area,
+    #jobs_calendar .location{
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    /* break job time */
+    .fc-list-item td {
+        display: inline-block;
+        box-sizing: border-box;
+    }
+    td.fc-list-item-time,
+    td.fc-list-item-marker {
+        height: 1.4em;
+        padding-top: 0;
+    }
+    td.fc-list-item-time {
+        width: 70%;
+    }
+    td.fc-list-item-marker {
+        text-align: right;
+        padding-right: 14px !important;
+        width: 30%;
+    }
+    td.fc-list-item-title {
+        display: block;
+        width: 100%;
+        border-top: none;
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 402px) {
+    /* move search field label */
+    #job_search input {
+        width: 100%;
+    }
+    #job_search label {
+        display: none;
+    }
+}
+
+/* large screens */
+@media (min-width: 768px) {
+    .fc-list-item-title a,
+    #jobs_calendar .area,
+    #jobs_calendar .location {
+        display:inline-block;
+    }
+}

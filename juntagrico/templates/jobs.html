@@ -7,13 +7,23 @@
     </h3>
 {% endblock %}
 {% block content %}
-    <div id="jobs">
-        {% include "snippets/snippet_jobs.html" %}
-    </div>
+    <div id="job_search"><label>{% trans "Suchen:" %}</label> <input type="search" class="form-control input-sm" placeholder="{% trans "Suchen" %}"></div>
+    <div id="jobs_calendar"></div>
+{% endblock %}
+{% block styles %}
+    <link href='/static/external/fullcalendar/core/main.min.css' rel='stylesheet' />
+    <link href='/static/external/fullcalendar/daygrid/main.min.css' rel='stylesheet' />
+    <link href='/static/external/fullcalendar/list/main.min.css' rel='stylesheet' />
+    <link href='/static/external/fullcalendar/bootstrap/main.min.css' rel='stylesheet' />
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js">
+    <script type="text/javascript" src='/static/external/fullcalendar/core/main.min.js'></script>
+    <script type="text/javascript" src='/static/external/fullcalendar/bootstrap/main.min.js'></script>
+    <script type="text/javascript" src='/static/external/fullcalendar/daygrid/main.min.js'></script>
+    <script type="text/javascript" src='/static/external/fullcalendar/list/main.min.js'></script>
+    <script type="text/javascript" src='/static/external/fullcalendar/core/locales/de.js'></script>
+    <script>
+        var json_job_url = '{% url "jobs-json" %}'
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initJobs.js">
-    </script>
+    <script type="text/javascript" src='/static/js/jobcalendar.js'></script>
 {% endblock %}

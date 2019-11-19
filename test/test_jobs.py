@@ -8,8 +8,8 @@ class JobTests(JuntagricoTestCase):
     def testAssignments(self):
         self.assertGet(reverse('jobs'))
 
-    def testAssignmentsAll(self):
-        self.assertGet(reverse('jobs-all'))
+    def testJobsJson(self):
+        self.assertGet(reverse('jobs-json'))
 
     def testJob(self):
         self.assertGet(reverse('job', args=[self.job1.pk]))
