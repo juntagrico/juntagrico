@@ -1,4 +1,5 @@
 from juntagrico.config import Config
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 
 
 class SessionObjectManager:
@@ -36,6 +37,7 @@ class CSSessionObject(SessionObject):
         self.depot = None
         self.start_date = None
         self.edit = False
+        self.trial = None
 
     @property
     def main_member(self):
@@ -90,7 +92,7 @@ class CSSessionObject(SessionObject):
         return shares
 
     def evaluate_ordered_shares(self, shares=None):
-        if not Config.enable_shares():  # skip if no shares are needed
+        if not Config.enable_shares() or self.trial is True:  # skip if no shares are needed
             return True
         shares = shares or self.count_shares()
         # count new shares
@@ -102,6 +104,9 @@ class CSSessionObject(SessionObject):
 
     def next_page(self):
         has_subs = self.subscription_size() > 0
+        has_trial = SubscriptionTypeDao.get_trial().count() > 0
+        if has_trial and self.trial is None:
+            return 'cs-trial'
         if not self.subscriptions:
             return 'cs-subscription'
         elif has_subs and not self.depot:

@@ -94,6 +94,30 @@ class Subscription(Billable):
         return str(member) if member is not None else ''
 
     @property
+    def trial(self):
+        result = False
+        for type in self.types.all():
+            result = result or type.trial
+        return result
+
+    @property
+    def remaining_trial_days(self):
+        if not self.trial or self.state != 'active':
+            return None
+        # assume same duration and duration entity for all types in trial subscription
+        sub_type = self.types.first()
+        start_date = self.activation_date
+        duration = sub_type.trial_duration
+        if sub_type.trial_duration_entity == 'DELS':
+            wd = self.depot.weekday -1
+            days_ahead = wd - self.start_date.weekday() if wd - self.start_date.weekday() > 0 else wd - self.start_date.weekday() + 7
+            start_date = self.start_date + timedelta(days_ahead)
+            duration = sub_type.trial_duration * 7
+        return duration - (start_date - timezone.now().date()).days
+
+
+
+    @property
     def state(self):
         if self.active is False and self.deactivation_date is None:
             return 'waiting'

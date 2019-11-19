@@ -19,7 +19,7 @@
             </div>
         </div>
         {% for type in subscription_size.types.all %}
-            {% if type.visible %}
+            {% if type.visible and type.trial == trial_subs %}
                 <div class="form-group row">
                     <div class="col-md-3">
                         <input type="number" name="amount[{{ type.id }}]" class="form-control"

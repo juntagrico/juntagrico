@@ -21,6 +21,7 @@
         <form action="" method="post">
             {% csrf_token %}
             {% include "snippets/snippet_subscription_selection.html" %}
+            {% if not trial_subs %}
             <div class="form-group row">
                 <div class="col-md-12">
                     <b>Kein {% vocabulary "subscription" %}</b>
@@ -50,6 +51,7 @@
                     {% endif %}
                 </label>
             </div>
+            {% endif %}
             <div class="form-group row">
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-success">

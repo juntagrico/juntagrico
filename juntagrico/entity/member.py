@@ -71,7 +71,7 @@ class Member(JuntagricoBaseModel):
     @property
     def blocked(self):
         future = self.future_subscription is not None
-        current = self.subscription is None or not self.subscription.canceled
+        current = self.subscription is None or not self.subscription.canceled or not self.subscription.trial
         return future or not current
 
     def clean(self):

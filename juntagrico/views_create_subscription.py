@@ -13,6 +13,19 @@ from juntagrico.util.management import *
 
 
 @create_subscription_session
+def cs_start(request, cs_session):
+    return redirect(cs_session.next_page())
+
+
+@create_subscription_session
+def cs_select_trial(request, cs_session):
+    if request.method == 'POST':
+        cs_session.trial = request.POST.get('trial') == 'yes'
+        return redirect(cs_session.next_page())
+    return render(request, 'createsubscription/select_trial.html')
+
+
+@create_subscription_session
 def cs_select_subscription(request, cs_session):
     if request.method == 'POST':
         # create dict with subscription type -> selected amount
@@ -23,6 +36,7 @@ def cs_select_subscription(request, cs_session):
         'selected_subscriptions': cs_session.subscriptions,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'products': SubscriptionProductDao.get_all(),
+        'trial_subs': cs_session.trial,
     }
     return render(request, 'createsubscription/select_subscription.html', render_dict)
 

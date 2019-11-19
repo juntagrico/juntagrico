@@ -29,6 +29,7 @@
             </a>
         </div>
     </div>
+{% if not subscription.trial %}
     <div class="row mt-3">
         <div class="col-md-2">
             {% trans "Grösse" %}
@@ -126,6 +127,7 @@
             </a>
         </div>
     </div>
+{% endif %}
 {% endif %}
 
 {% endblock %}

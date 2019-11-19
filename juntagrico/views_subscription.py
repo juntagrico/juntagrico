@@ -67,6 +67,8 @@ def subscription(request, subscription_id=None):
             'next_size_date': Subscription.next_size_change_date(),
             'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
+            'trial': subscription.trial and request.user.member.future_subscription is None,
+            'trial_days': subscription.remaining_trial_days,
         })
     renderdict.update({
         'no_subscription': subscription is None,
@@ -160,6 +162,7 @@ def size_change(request, subscription_id):
         'next_cancel_date': temporal.next_cancelation_date(),
         'selected_subscription': subscription.future_types.all()[0].id,
         'products': products,
+        'trial_subs': False,
     })
     return render(request, 'size_change.html', renderdict)
 

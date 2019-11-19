@@ -1,0 +1,42 @@
+{% extends "no_menu_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block all_page_title %}
+    <div class="page-title offset-md-2 col-md-8">
+        <h3>
+
+        </h3>
+    </div>
+{% endblock %}
+{% block allcontent %}
+    {% vocabulary "subscription" as v_subscription %}
+    <div class="offset-md-2 col-md-8">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                {% blocktrans %}
+                    Willst du ein/e/n Probe {{ v_subscription }} ?
+                {% endblocktrans %}
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="trial" value="yes">
+                     <button type="submit" class="btn btn-success">
+                        {% trans "Ja" %}
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-2">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="trial" value="no">
+                     <button type="submit" class="btn btn-success">
+                        {% trans "Nein" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

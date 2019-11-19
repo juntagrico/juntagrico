@@ -21,13 +21,29 @@
                 {% trans "Mehr Infos dazu findest du hier" %}
             </a>
         </div>
+    {% elif trial %}
+        <div class="alert
+                {% if trial_days > 30 %}
+                    alert-success
+                {% elif trial_days > 10 %}
+                    alert-warning
+                {% else %}
+                    alert-danger
+                {% endif %} ">
+            {% blocktrans %}Du bist nur Probe {{ v_subscription }}-Bezieher.{% endblocktrans %}
+            <br/>
+            {% blocktrans %}{{ v_subscription }} definitv beziehen?{% endblocktrans %}
+            <a href="{% url 'cs-entrypoint' %}">
+                {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}
+            </a>
+        </div>
     {% elif can_order %}
         <div class="alert alert-warning">
             {% blocktrans %}Du bist entweder kein {{ v_subscription }}-Bezieher oder hast gekündigt.{% endblocktrans %}
             <br/>
             {% blocktrans %}{{ v_subscription }} (wieder) neu beziehen?{% endblocktrans %}
             {% trans "Melde dich hier an" %}:
-            <a href="{% url 'cs-subscription' %}">
+            <a href="{% url 'cs-entrypoint' %}">
                 {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}
             </a>
         </div>
