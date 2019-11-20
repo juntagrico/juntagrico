@@ -341,7 +341,6 @@ def cancel_subscription(request, subscription_id):
         elif subscription.active is False and subscription.deactivation_date is None:
             subscription.delete()
         return redirect('sub-detail')
-
     renderdict = get_menu_dict(request)
     renderdict.update({
         'end_date': end_date,
@@ -366,7 +365,7 @@ def leave_subscription(request, subscription_id):
             member.subscription = None
             member.old_subscriptions.add(subscription)
         member.save()
-        #TODO notify primary member
+        # TODO notify primary member
         return redirect('home')
     renderdict = get_menu_dict(request)
     return render(request, 'leavesubscription.html', renderdict)
