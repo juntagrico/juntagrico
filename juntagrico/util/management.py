@@ -4,7 +4,7 @@ import random
 import string
 
 from juntagrico.models import Share, Subscription, TSST, TFSST
-from juntagrico.mailer import send_welcome_mail
+from juntagrico.mailer import send_welcome_mail, send_subscription_canceled
 from juntagrico.mailer import send_been_added_to_subscription
 from juntagrico.mailer import send_share_created_mail
 from juntagrico.config import Config
@@ -78,3 +78,31 @@ def replace_subscription_types(subscription, selected_types):
             itertools.chain(*[[through_class(subscription=subscription, type=sub_type)] * amount
                               for sub_type, amount in selected_types.items()])
         )
+
+
+def cancel_sub(subscription, end_date, message):
+    if subscription.active is True and subscription.canceled is False:
+        subscription.canceled = True
+        subscription.end_date = end_date
+        subscription.save()
+
+        send_subscription_canceled(subscription, message)
+    elif subscription.active is False and subscription.deactivation_date is None:
+        subscription.delete()
+
+
+def cancel_extra_sub(extra):
+    if extra.active is True:
+        extra.canceled = True
+        extra.save()
+    elif extra.active is False and extra.deactivation_date is None:
+        extra.delete()
+
+
+def cancel_share(share, now, end_date):
+    if share.paid_date is None:
+        share.delete()
+    else:
+        share.cancelled_date = now
+        share.termination_date = end_date
+        share.save()

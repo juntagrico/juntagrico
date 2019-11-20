@@ -30,7 +30,7 @@ from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_or_update_member, replace_subscription_types
-from juntagrico.util.subs import cancel_sub, cancel_extra_sub
+from juntagrico.util.management import cancel_sub, cancel_extra_sub
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict, get_page_dict
