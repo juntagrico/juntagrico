@@ -334,7 +334,7 @@ def jobs_as_json(request):
 
     events = [
         {
-            'id': str(job.id) + 's' if search is not '' else str(job.id),
+            'id': str(job.id) + 's' if search else str(job.id),
             'title': job.type.get_name,
             'start': job.time,
             'end': job.time + timedelta(hours=job.type.duration),

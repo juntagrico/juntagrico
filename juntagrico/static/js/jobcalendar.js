@@ -157,8 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if( deep_search ) {
                 deep_search.remove()
             }
-            // restore events from original source
-            calendar.getEventSourceById('original').refetch()
         }
     })
 
