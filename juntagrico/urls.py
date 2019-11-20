@@ -42,6 +42,8 @@ urlpatterns = [
          name='sub-change'),  #
     path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
          name='depot-change'),  #
+    path('my/subscription/change/primary/<int:subscription_id>/', juntagrico_subscription.primary_change,
+         name='primary-change'),  #
     path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),
     #
     path('my/subscription/change/extra/<int:subscription_id>/', juntagrico_subscription.extra_change,

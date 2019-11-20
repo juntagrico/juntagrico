@@ -7,8 +7,11 @@
     </h3>
 {% endblock %}
 {% block content %}
+    {% config "enable_shares" as c_enable_shares %}
     {% vocabulary "depot" as v_depot %}
+    {% vocabulary "share" as v_share %}
     {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "co_member_pl" as v_co_member_pl %}
     {% trans "Welchen Teil möchtest du ändern?" %}
 
     <div class="row mt-3">
@@ -117,7 +120,26 @@
         </div>
     </div>
 {% endif %}
-
+<div class="row mt-3">
+        <div class="col-md-2">
+            {% blocktrans %}Haupt {{ v_subscription }}-Bezieher {% endblocktrans %}
+        </div>
+        <div class="col-md-4">
+            {% blocktrans %}
+                Du möchtest nicht mehr der haupt {{ v_subscription }}-Bezieher sein? Du kannst jederzeit wechseln, vorausgesetzt jemand deiner {{ v_co_member_pl }} kann haupt {{ v_subscription }}-Bezieher werden
+            {% endblocktrans %}
+            {% if c_enable_shares %}
+                {% blocktrans %} Dazu muss er mindesten 1 bezahlte/n/s {{ v_share }} besitzen {% endblocktrans %}
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'primary-change' subscription.id %}" class="btn btn-success">
+                {% blocktrans %}Haupt {{ v_subscription }}-Bezieher ändern{% endblocktrans %}
+            </a>
+        </div>
+    </div>
 {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
     <div class="row mt-5">
         <div class="col-md-12">

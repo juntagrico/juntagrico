@@ -132,6 +132,29 @@ def depot_change(request, subscription_id):
     })
     return render(request, 'depot_change.html', renderdict)
 
+@primary_member_of_subscription
+def primary_change(request, subscription_id):
+    '''
+    change primary member
+    '''
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    if request.method == 'POST':
+        new_primary = get_object_or_404(Member, id=int(request.POST.get('primary')))
+        subscription.primary_member = new_primary
+        subscription.save()
+        return redirect('sub-detail-id', subscription_id=subscription.id)
+    renderdict = get_menu_dict(request)
+    if Config.enable_shares():
+        co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
+    else:
+        co_members = subscription.other_recipients()
+    renderdict.update({
+        'subscription': subscription,
+        'co_members': co_members,
+        'has_comembers': len(co_members) > 0
+    })
+    return render(request, 'pm_change.html', renderdict)
+
 
 @primary_member_of_subscription
 def size_change(request, subscription_id):

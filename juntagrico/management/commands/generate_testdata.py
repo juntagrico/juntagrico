@@ -46,16 +46,20 @@ class Command(BaseCommand):
         depot2 = Depot.objects.create(**depot2_fields)
         sub_1_fields = {'depot': depot1, 'future_depot': None, 'active': True,
                         'activation_date': '2017-03-27', 'deactivation_date': None, 'creation_date': '2017-03-27',
-                        'start_date': '2018-01-01', 'primary_member': member_1}
+                        'start_date': '2018-01-01'}
         sub_2_fields = {'depot': depot2, 'future_depot': None,
                         'active': True, 'activation_date': '2017-03-27', 'deactivation_date': None,
-                        'creation_date': '2017-03-27', 'start_date': '2018-01-01', 'primary_member': member_2}
+                        'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
         subscription_1 = Subscription.objects.create(**sub_1_fields)
         member_1.subscription = subscription_1
         member_1.save()
+        subscription_1.primary_member = member_1
+        subscription_1.save()
         subscription_2 = Subscription.objects.create(**sub_2_fields)
         member_2.subscription = subscription_2
         member_2.save()
+        subscription_2.primary_member = member_2
+        subscription_2.save()
         TSST.objects.create(subscription=subscription_1, type=subtype)
         TSST.objects.create(subscription=subscription_2, type=subtype)
         TFSST.objects.create(subscription=subscription_1, type=subtype)

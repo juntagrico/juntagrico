@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from juntagrico.entity.share import Share
@@ -18,6 +19,16 @@ class JobTests(JuntagricoTestCase):
 
     def testSubChange(self):
         self.assertGet(reverse('sub-change', args=[self.sub.pk]))
+
+    def testPrimaryChange(self):
+        self.assertGet(reverse('primary-change', args=[self.sub.pk]))
+        self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member3.pk},302)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.primary_member.id, self.member3.id)
+
+    def testPrimaryChangeError(self):
+        with self.assertRaises(ValidationError):
+            self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk},500)
 
     def testDepotChange(self):
         self.assertGet(reverse('depot-change', args=[self.sub.pk]))
