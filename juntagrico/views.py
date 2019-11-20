@@ -418,7 +418,7 @@ def cancel_membership(request):
     member = request.user.member
     if request.method == 'POST':
         now = timezone.now().date()
-        end_date = dt.strptime(request.POST.get('end_date'), '%Y-%m-%d').date()
+        end_date = next_membership_end_date()
         message = request.POST.get('message')
         member = request.user.member
         member.canceled = True

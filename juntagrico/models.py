@@ -14,9 +14,10 @@ from juntagrico.entity.delivery import *
 from juntagrico.entity.listmessage import *
 from juntagrico.lifecycle.extrasub import extra_sub_pre_save, handle_extra_sub_deactivated, handle_extra_sub_activated
 from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
-from juntagrico.lifecycle.member import member_pre_save, handle_member_deactivated
+from juntagrico.lifecycle.member import member_pre_save, handle_member_deactivated, handle_member_created
 from juntagrico.lifecycle.share import share_post_save, handle_share_created
-from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_sub_deactivated, handle_sub_activated
+from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_sub_deactivated, handle_sub_activated, \
+    sub_post_save, handle_sub_created
 from juntagrico.util.signals import register_entities_for_post_init
 
 
@@ -48,6 +49,8 @@ juntagrico.signals.job_canceled.connect(handle_job_time_changed, sender=OneTimeJ
 juntagrico.signals.job_canceled.connect(handle_job_time_changed, sender=RecuringJob)
 ''' subscription signal handling '''
 signals.pre_save.connect(sub_pre_save, sender=Subscription)
+signals.post_save.connect(sub_post_save, sender=Subscription)
+juntagrico.signals.sub_created.connect(handle_sub_created, sender=Subscription)
 juntagrico.signals.sub_activated.connect(handle_sub_activated, sender=Subscription)
 juntagrico.signals.sub_deactivated.connect(handle_sub_deactivated, sender=Subscription)
 juntagrico.signals.sub_canceled.connect(handle_sub_canceled, sender=Subscription)
@@ -61,5 +64,6 @@ juntagrico.signals.share_created.connect(handle_share_created, sender=Share)
 ''' member handling '''
 signals.pre_save.connect(member_pre_save, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
+juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 ''' lifecycle all post init'''
 register_entities_for_post_init()

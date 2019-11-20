@@ -9,6 +9,7 @@ E-Mail: {{ e }}
 Anteilschein(e): {{ sh }}
 {{ v_subscription_pl }}: {{ sub }}
 {% endblocktrans %}
+{{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}
 

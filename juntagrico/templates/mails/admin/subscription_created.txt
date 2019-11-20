@@ -13,7 +13,7 @@
 {% for member in subscription.recipients_all%}
 {{member.first_name}} {{member.last_name}}: {{member.email}}
 {% endfor%}
-
+{{ serverurl }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}
 

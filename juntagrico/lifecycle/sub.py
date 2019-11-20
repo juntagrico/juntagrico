@@ -3,9 +3,15 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled
+from juntagrico.mailer import AdminNotification
+from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
 from juntagrico.util.bills import bill_subscription
 from juntagrico.util.lifecycle import handle_activated_deactivated
+
+
+def sub_post_save(sender, instance, created, **kwargs):
+    if created:
+        sub_created.send(sender=sender, instance=instance)
 
 
 def sub_pre_save(sender, instance, **kwargs):
@@ -40,6 +46,10 @@ def handle_sub_deactivated(sender, instance, **kwargs):
 
 def handle_sub_canceled(sender, instance, **kwargs):
     instance.cancelation_date = timezone.now().date()
+
+
+def handle_sub_created(sender, instance, **kwargs):
+    AdminNotification.subscription_created(instance)
 
 
 def check_sub_consistency(instance):

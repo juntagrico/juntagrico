@@ -6,9 +6,10 @@
 {% vocabulary "share_pl" as v_share_pl %}
 {% trans "Hallo" %}
 
-{% blocktrans with m=shares.0.member sc=shares.count%}{{m}} hat soeben {{sc}} {{ v_share_pl }} bestellt{% endblocktrans %}:
-{% for share in shares %}{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
-{% endfor %}
+{% blocktrans with m=shares.0.member%}{{m}} hat soeben 1 {{ v_share_pl }} bestellt{% endblocktrans %}:
+{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
+{{ serverurl }}{% url 'admin:juntagrico_share_change' share.id %}
+
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}

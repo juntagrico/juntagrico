@@ -1,4 +1,5 @@
 from django.contrib import auth
+from django.contrib.auth.models import Permission
 from django.core import mail
 from django.urls import reverse
 
@@ -51,6 +52,13 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertEqual(response.status_code, 302)
 
     def testSignup(self):
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_subscription_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_member_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_share_creation'))
+        self.member.user.save()
         new_member_data = {
             'last_name': 'Last Name',
             'first_name': 'First Name',
@@ -101,4 +109,4 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertEqual(Member.objects.filter(email=new_member_data['email']).count(), 1)
         self.assertEqual(Share.objects.filter(member__email=new_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(primary_member__email=new_member_data['email']).count(), 1)
-        self.assertEqual(len(mail.outbox), 3)  # welcome mail, share mail & admin notification
+        self.assertEqual(len(mail.outbox), 4)  # welcome mail, share mail & admin notifications

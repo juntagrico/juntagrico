@@ -17,7 +17,7 @@ def new_signup(signup_data):
     member, creation_data = create_or_update_member(signup_data.main_member)
 
     # create share(s) for member
-    create_share(member, signup_data.main_member.new_shares, notify_admin=False)
+    create_share(member, signup_data.main_member.new_shares)
 
     # create subscription for member
     subscription = None
@@ -26,23 +26,21 @@ def new_signup(signup_data):
 
     # add co-members
     for co_member in signup_data.co_members:
-        create_or_update_co_member(co_member, subscription, co_member.new_shares, notify_admin=False)
+        create_or_update_co_member(co_member, subscription, co_member.new_shares)
 
     # send notifications
     if creation_data['created']:
         MemberNotification.welcome(member, creation_data['password'])
-        AdminNotification.member_created(member)
 
 
-def create_or_update_co_member(co_member, subscription, new_shares, notify_admin=True):
+def create_or_update_co_member(co_member, subscription, new_shares):
     co_member, creation_data = create_or_update_member(co_member)
     # create share(s) for co-member(s)
-    create_share(co_member, new_shares, notify_admin)
+    create_share(co_member, new_shares)
     # add co-member to subscription
     add_recipient_to_subscription(subscription, co_member)
     # notify co-member
     MemberNotification.welcome_co_member(co_member, creation_data['password'], new_shares, new=creation_data['created'])
-    #TODO: Also notify admin if notify_admin and creation_data['created']
 
 
 def create_or_update_member(member):
@@ -60,14 +58,12 @@ def create_or_update_member(member):
     }
 
 
-def create_share(member, amount=1, notify_admin=True):
+def create_share(member, amount=1):
     if amount and Config.enable_shares():
         shares = []
         for i in range(amount):
             shares.append(Share.objects.create(member=member))
         MemberNotification.shares_created(member, shares)
-        if notify_admin:
-            AdminNotification.share_created(shares)
 
 
 def create_subscription(start_date, depot, subscription_types, member):

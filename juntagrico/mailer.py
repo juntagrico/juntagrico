@@ -1,7 +1,7 @@
 import hashlib
 
-from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
@@ -113,7 +113,7 @@ class AdminNotification:
         )
 
     @staticmethod
-    def share_created(shares):
+    def share_created(share):
         send_mail(
             organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
             get_email_content('a_share_created', base_dict(locals())),

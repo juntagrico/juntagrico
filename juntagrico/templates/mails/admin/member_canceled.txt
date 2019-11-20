@@ -6,8 +6,9 @@
 {% blocktrans with fn=member.first_name ln=member.last_name e=member.email ed=end_date %}
 Soeben hat {{ fn }} {{ ln }} die Mitgliedschaft per {{ ed }} gekündet.
 E-Mail: {{ e }}
-
 {% endblocktrans %}
+{{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
+
 {% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
 {{ message}}
 
