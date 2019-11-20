@@ -47,6 +47,14 @@ class JobTests(JuntagricoTestCase):
             self.assertEqual(self.sub.future_types.all()[0], self.sub_type2)
             self.assertEqual(self.sub.future_types.count(), 1)
 
+    def testLeave(self):
+        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
+        Share.objects.create(**self.get_share_data(self.member3))
+        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
+        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.recipients.count(), 1)
+
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.assertEqual(self.member2.old_subscriptions.count(), 0)

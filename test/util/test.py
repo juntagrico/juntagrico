@@ -70,20 +70,23 @@ class JuntagricoTestCase(TestCase):
         self.admin.user.is_superuser = True
         self.admin.user.save()
 
+    def get_share_data(self, member):
+        return {'member': member,
+                'paid_date': '2017-03-27',
+                'issue_date': '2017-03-27',
+                'booking_date': None,
+                'cancelled_date': None,
+                'termination_date': None,
+                'payback_date': None,
+                'number': None,
+                'notes': ''
+                }
+
     def set_up_shares(self):
         """
                 shares
                 """
-        self.share_data = {'member': self.member,
-                           'paid_date': '2017-03-27',
-                           'issue_date': '2017-03-27',
-                           'booking_date': None,
-                           'cancelled_date': None,
-                           'termination_date': None,
-                           'payback_date': None,
-                           'number': None,
-                           'notes': ''
-                           }
+        self.share_data = self.get_share_data(self.member)
         Share.objects.create(**self.share_data)
 
     def set_up_area(self):
@@ -99,7 +102,6 @@ class JuntagricoTestCase(TestCase):
         self.area2 = ActivityArea.objects.create(**area_data2)
 
     def set_up_job(self):
-
         """
         job_type
         """

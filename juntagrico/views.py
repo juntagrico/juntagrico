@@ -431,9 +431,12 @@ def cancel_membership(request):
 
         member.save()
         for share in member.active_shares:
-            share.cancelled_date = now
-            share.termination_date = end_date
-            share.save()
+            if share.paid_date is None:
+                share.delete()
+            else:
+                share.cancelled_date = now
+                share.termination_date = end_date
+                share.save()
         return redirect('profile')
 
     missing_iban = member.iban == ''

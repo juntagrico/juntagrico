@@ -232,5 +232,14 @@
                 </div>
             </div>
         {% endif %}
+        {% if subscription.state != 'inactive' and can_leave %}
+            <div class="row mb-3">
+                <div class="offset-3 col-md-9">
+                    <a href="{% url 'sub-leave' subscription.id %}"class="btn btn-danger">
+                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+                    </a>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
