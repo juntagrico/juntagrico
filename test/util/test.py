@@ -18,6 +18,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_area()
         self.set_up_job()
         self.set_up_depots()
+        self.set_up_sub_types()
         self.set_up_sub()
 
     @staticmethod
@@ -177,7 +178,7 @@ class JuntagricoTestCase(TestCase):
             'weekday': 1}
         self.depot2 = Depot.objects.create(**depot_data)
 
-    def set_up_sub(self):
+    def set_up_sub_types(self):
         """
         subscription product, size and types
         """
@@ -215,6 +216,8 @@ class JuntagricoTestCase(TestCase):
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
+
+    def set_up_sub(self):
         """
         subscription
         """

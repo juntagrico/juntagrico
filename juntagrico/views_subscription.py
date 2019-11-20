@@ -132,6 +132,7 @@ def depot_change(request, subscription_id):
     })
     return render(request, 'depot_change.html', renderdict)
 
+
 @primary_member_of_subscription
 def primary_change(request, subscription_id):
     '''

@@ -48,7 +48,7 @@ def check_sub_consistency(instance):
             _('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
             code='invalid')
     pm_waiting = instance.primary_member in instance.recipients_all_for_state('waiting')
-    pm_active =instance.primary_member in instance.recipients_all_for_state('active')
+    pm_active = instance.primary_member in instance.recipients_all_for_state('active')
     if instance.primary_member is not None and not (pm_waiting or pm_active):
         raise ValidationError(
             _('Hauptbezieher muss auch {}-Bezieher sein').format(Config.vocabulary('subscription')),
