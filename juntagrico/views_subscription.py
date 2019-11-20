@@ -30,6 +30,7 @@ from juntagrico.mailer import send_subscription_canceled
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_or_update_member, replace_subscription_types
+from juntagrico.util.subs import cancel_sub, cancel_extra_sub
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict, get_page_dict
@@ -324,19 +325,8 @@ def cancel_subscription(request, subscription_id):
     end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
-            if extra.active is True:
-                extra.canceled = True
-                extra.save()
-            elif extra.active is False and extra.deactivation_date is None:
-                extra.delete()
-        if subscription.active is True and subscription.canceled is False:
-            subscription.canceled = True
-            subscription.end_date = request.POST.get('end_date')
-            subscription.save()
-            message = request.POST.get('message')
-            send_subscription_canceled(subscription, message)
-        elif subscription.active is False and subscription.deactivation_date is None:
-            subscription.delete()
+            cancel_extra_sub(extra)
+        cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
     renderdict = get_menu_dict(request)
     renderdict.update({
