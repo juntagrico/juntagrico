@@ -122,7 +122,7 @@ class Command(BaseCommand):
         print('*** a_share_created ***')
 
         print(get_email_content('a_share_created', base_dict({
-            'shares': shares
+            'share': shares[0]
         })))
         print()
 
