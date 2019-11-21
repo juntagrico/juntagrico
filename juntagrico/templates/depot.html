@@ -34,7 +34,7 @@
         </div>
         <div class="col-md-9">
             {{ depot.contact.first_name }} {{ depot.contact.last_name }}
-            <ahref="mailto:{{ depot.contact.email }}">
+            <a href="mailto:{{ depot.contact.email }}">
                 {{ depot.contact.email }}
             </a>
         </div>
@@ -51,21 +51,27 @@
     {% endif %}
     <div class="row">
         <div class="offset-md-3 col-md-9">
-            <div style="height: 20rem" id="depot-map">
-            </div>
+            {% if requires_map %}
+                <div style="height: 20rem" id="depot-map">
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript">
-        var depot =
-        {longitude: '{{ depot.longitude }}',
-        latitude: '{{ depot.latitude }}',
-        name: '{{ depot.name }}',
-        addr_street: '{{ depot.addr_street }}',
-        addr_zipcode: '{{ depot.addr_zipcode }}',
-        addr_location: '{{ depot.addr_location }}'
-        }
+        var depots = [];
+        {% if depot.has_geo %}
+            depots.push(
+            {name: '{{ depot.name }}',
+            addr_street: '{{ depot.addr_street }}',
+            addr_zipcode: '{{ depot.addr_zipcode }}',
+            addr_location: '{{ depot.addr_location }}',
+            latitude: '{{ depot.latitude }}',
+            longitude: '{{ depot.longitude }}',
+            code: '{{ depot.code }}'
+            });
+        {% endif %}
     </script>
     <script type="text/javascript" src="/static/external/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initDepot.js">
