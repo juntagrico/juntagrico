@@ -67,8 +67,15 @@
                         {% endif %}
                     </td>
                 {% endif %}
-                <td>
-                    <img alt="{% trans "Status" %}: {{ job.get_status_percentage }}"src="{% images job.get_status_percentage %}"/>
+                <td class="
+                    {% if job.status_percentage < 25 %}
+                        text-danger
+                    {% elif job.status_percentage < 100%}
+                    {% else %}
+                        text-success
+                    {% endif %}
+                ">
+                    {{ job.occupied_slots }} / {{ job.slots }}
                 </td>
                 {% if show_extras %}
                     <td>

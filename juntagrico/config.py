@@ -292,12 +292,7 @@ class Config:
         if hasattr(settings, 'IMAGES'):
             if key in settings.IMAGES:
                 return settings.IMAGES[key]
-        return {'status_100': '/static/img/status_100.png',
-                'status_75': '/static/img/status_75.png',
-                'status_50': '/static/img/status_50.png',
-                'status_25': '/static/img/status_25.png',
-                'status_0': '/static/img/status_0.png',
-                'single_full': '/static/img/single_full.png',
+        return {'single_full': '/static/img/single_full.png',
                 'single_empty': '/static/img/single_empty.png',
                 'single_core': '/static/img/single_core.png',
                 'core': '/static/img/core.png'
