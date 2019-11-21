@@ -143,12 +143,14 @@ class Job(JuntagricoBasePoly):
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
+    @property
     def free_slots(self):
         if not (self.slots is None):
-            return self.slots - self.occupied_places()
+            return self.slots - self.occupied_slots
         else:
             return 0
 
+    @property
     def occupied_slots(self):
         return self.assignment_set.count()
 
