@@ -7,23 +7,26 @@ define([], function () {
     });
 
     var table = $("#filter-table").DataTable({
+        "responsive": true,
         "paging": false,
         "info": false,
         "ordering": false,
         "search": {
-            "regex": true,
-            "smart": false
+            "smart": true
         },
         "language": {
             "search": "Suchen: "
-        }
+        },
+        "columnDefs": [
+            {
+                "targets": [ 1 ],
+                "visible": false
+            }
+        ]
     });
     decorate_man_list_inputs();
 
     align_filter();
 
     table_column_search(table);
-
-    job_collapsible(table);
-
 });

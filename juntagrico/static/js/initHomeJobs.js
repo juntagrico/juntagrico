@@ -1,12 +1,6 @@
 /*global define*/
 define([], function () {
     
-    var table = $("#filter-table").DataTable({
-        "paging": false,
-        "info": false,
-        "ordering": false,
-        "searching": false,
-    });
+    job_no_search_datatable();
 
-    job_collapsible(table);
 });

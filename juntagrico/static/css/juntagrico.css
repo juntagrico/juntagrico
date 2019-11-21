@@ -277,6 +277,31 @@ textarea#recipients[disabled=disabled] {
     height: 400px;
 }
 
+/* stuff for responsive tables */
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td:first-child::before {
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    font-weight: 900;
+    font-size: 27px;
+    line-height: 1;
+    color: #66cc66;
+    background: inherit;
+    border: none;
+    box-shadow: none;
+    padding: 0.445rem;
+    content: "\f105";
+    top: 0px;
+    left: 0px;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before {
+    content: "\f107";
+}
+
+.dtr-title > input {
+    display: none;
+}
+
 /* arrows for collapsible list elements */
 .details-control, .shown .details-control {
     font-family: 'Font Awesome 5 Free';
