@@ -35,6 +35,8 @@ def handle_sub_deactivated(sender, instance, **kwargs):
     for member in instance.recipients_all_for_state('active'):
         member.old_subscriptions.add(instance)
         member.subscription = None
+        if member.active_shares_count == 0:
+            member.inactive = True
         member.save()
 
 
