@@ -23,7 +23,7 @@
         </div>
     {% elif can_order %}
         <div class="alert alert-warning">
-            {% blocktrans %}Du bist entweder kein {{ v_subscription }}-Bezieher oder hast gekündigt.{% endblocktrans %}
+            {% blocktrans %}Du bist entweder keinE {{ v_subscription }}-BezieherIn oder hast gekündigt.{% endblocktrans %}
             <br/>
             {% blocktrans %}{{ v_subscription }} (wieder) neu beziehen?{% endblocktrans %}
             {% trans "Melde dich hier an" %}:
@@ -143,7 +143,7 @@
                     </a>
                 {% else %}
                     {% blocktrans trimmed %}
-                    Nur der Hauptabonnnent kann weitere {{ v_co_member_pl }} hinzufügen.
+                    Nur Haupt-{{ v_subscription }}-BeziehierIn kann weitere {{ v_co_member_pl }} hinzufügen.
                     {% endblocktrans %}
                 {% endif %}
             </div>
