@@ -145,4 +145,3 @@ class Config:
     # demo settings
     demouser = _get_setting('DEMO_USER')
     demopwd = _get_setting('DEMO_PWD')
-
