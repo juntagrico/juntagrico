@@ -109,4 +109,4 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertEqual(Member.objects.filter(email=new_member_data['email']).count(), 1)
         self.assertEqual(Share.objects.filter(member__email=new_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(primary_member__email=new_member_data['email']).count(), 1)
-        self.assertEqual(len(mail.outbox), 4)  # welcome mail, share mail & admin notifications
+        self.assertEqual(len(mail.outbox), 5)  # welcome mail, share mail & 3 admin notifications

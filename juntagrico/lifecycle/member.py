@@ -6,7 +6,7 @@ from juntagrico.mailer import AdminNotification
 from juntagrico.signals import member_deactivated, member_created, member_canceled
 
 
-def sub_post_save(sender, instance, created, **kwargs):
+def member_post_save(sender, instance, created, **kwargs):
     if created:
         member_created.send(sender=sender, instance=instance)
 

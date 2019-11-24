@@ -3,10 +3,9 @@
 {% load config %}
 {% block content %}
 {% vocabulary "share" as v_share %}
-{% vocabulary "share_pl" as v_share_pl %}
 {% trans "Hallo" %}
 
-{% blocktrans with m=shares.0.member%}{{m}} hat soeben 1 {{ v_share_pl }} bestellt{% endblocktrans %}:
+{% blocktrans with m=share.member%}{{m}} hat soeben 1 {{ v_share }} bestellt{% endblocktrans %}:
 {% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
 {{ serverurl }}{% url 'admin:juntagrico_share_change' share.id %}
 

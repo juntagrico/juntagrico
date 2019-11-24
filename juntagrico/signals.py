@@ -15,7 +15,8 @@ extra_sub_activated = Signal(providing_args=['instance'])
 extra_sub_deactivated = Signal(providing_args=['instance'])
 
 ''' share signals '''
-share_created = Signal(providing_args=['instance', 'created'])
+share_created = Signal(providing_args=['instance'])
+share_canceled = Signal(providing_args=['instance'])
 
 ''' member signals '''
 member_created = Signal(providing_args=['instance'])
