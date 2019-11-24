@@ -1,9 +1,9 @@
-/*global define, $, loco_scheine, depots, destinations, google */
-define(['modules/depotDistance'], function (depotDistance) {
+/*global define */
+define([], function () {
 
     // preselect depot
     $("#depot").val(depot_id);
-
-    depotDistance.calculate(member_addr, destinations, depots);
+    
+    map_with_markers(depots)
 
 });

@@ -302,9 +302,3 @@ class Config:
                 'single_core': '/static/img/single_core.png',
                 'core': '/static/img/core.png'
                 }[key]
-
-    @staticmethod
-    def google_api_key():
-        if hasattr(settings, 'GOOGLE_API_KEY'):
-            return settings.GOOGLE_API_KEY
-        return 'GOOGLE_API_KEY'
