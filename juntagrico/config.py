@@ -90,7 +90,6 @@ class Config:
             'url': '/my/cookies'
         }
     )
-    google_api_key = _get_setting('GOOGLE_API_KEY', 'GOOGLE_API_KEY')
 
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
@@ -146,3 +145,4 @@ class Config:
     # demo settings
     demouser = _get_setting('DEMO_USER')
     demopwd = _get_setting('DEMO_PWD')
+

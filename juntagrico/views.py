@@ -194,7 +194,8 @@ def depot(request, depot_id):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'depot': depot
+        'depot': depot,
+        'requires_map': depot.has_geo
     })
     return render(request, 'depot.html', renderdict)
 
@@ -289,7 +290,7 @@ def jobs(request):
     '''
     renderdict = get_menu_dict(request)
 
-    jobs = JobDao.get_current_jobs()
+    jobs = JobDao.get_jobs_for_current_day()
     renderdict.update({
         'jobs': jobs,
         'show_all': True,

@@ -543,15 +543,3 @@ EMAILS
         'b_sub': 'mails/bill_sub.txt',
         'b_esub': 'mails/bill_extrasub.txt'
     }
-
-GOOGLE_API_KEY
---------------
-  The google api key to enable the maps in juntagrico
-  
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "GOOGLE_API_KEY"
