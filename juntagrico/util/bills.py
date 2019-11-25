@@ -8,9 +8,7 @@ from juntagrico.util.temporal import start_of_specific_business_year
 from juntagrico.util.temporal import end_of_specific_business_year
 from juntagrico.util.temporal import start_of_business_year
 from juntagrico.config import Config
-from juntagrico.mailer import send_bill_extrasub
-from juntagrico.mailer import send_bill_sub
-from juntagrico.mailer import send_bill_share
+from juntagrico.mailer import BillingEmails
 
 
 type_codes = {'subscription': '01', 'share': '02', 'extra': '03'}
@@ -72,7 +70,7 @@ def bill_subscription(subscription):
                                amount=price,
                                ref_number=refnumber,
                                bill_date=now)
-    send_bill_sub(bill, subscription, start, end, subscription.primary_member)
+    BillingEmails.subscription(bill, subscription, start, end, subscription.primary_member)
 
 
 def bill_share(share):
@@ -83,7 +81,7 @@ def bill_share(share):
                                amount=price,
                                ref_number=refnumber,
                                bill_date=now)
-    send_bill_share(bill, share, share.member)
+    BillingEmails.share(bill, share, share.member)
 
 
 def bill_extra_subscription(extra):
@@ -105,4 +103,4 @@ def bill_extra_subscription(extra, period):
                                ref_number=refnumber,
                                bill_date=now)
     member = extra.main_subscription.primary_member
-    send_bill_extrasub(bill, extra, start, end, member)
+    BillingEmails.extrasub(bill, extra, start, end, member)
