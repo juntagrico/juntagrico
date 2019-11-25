@@ -16,7 +16,7 @@
             {% csrf_token %}
             <div class="form-group row">
                 <label class="control-label col-md-3" for="primary">
-                    {% blocktrans %}NeueR Haupt-{{ v_subscription }}-BezieherIn{% endblocktrans %}
+                    {% blocktrans %}Neue/r Haupt-{{ v_subscription }}-BezieherIn{% endblocktrans %}
                 </label>
                 <div class="controls col-md-9">
                     <select name="primary" id = "primary" class="form-control">
@@ -27,7 +27,7 @@
                         {% endfor %}
                     </select>
                     <label for="primary">
-                        {% blocktrans %}Wähle 1 {{ v_member }} als zukünftigeN Haupt-{{ v_subscription }}-BezieherIn aus. {% endblocktrans %}
+                        {% blocktrans %}Wähle 1 {{ v_member }} als zukünftige/n Haupt-{{ v_subscription }}-BezieherIn aus. {% endblocktrans %}
                     </label>
                 </div>
             </div>
