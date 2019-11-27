@@ -5,7 +5,7 @@
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "co_member_pl" as v_co_member_pl %}
     <h3>
-        {% blocktrans %}Haupt {{ v_subscription }}-Bezieher ändern{% endblocktrans %}
+        {% blocktrans %}Haupt {{ v_subscription }}-BezieherIn ändern{% endblocktrans %}
     </h3>
 {% endblock %}
 {% block content %}
@@ -16,7 +16,7 @@
             {% csrf_token %}
             <div class="form-group row">
                 <label class="control-label col-md-3" for="primary">
-                    {% blocktrans %}Neue/s/r haupt {{ v_subscription }}-Bezieher{% endblocktrans %}
+                    {% blocktrans %}Neue/r Haupt-{{ v_subscription }}-BezieherIn{% endblocktrans %}
                 </label>
                 <div class="controls col-md-9">
                     <select name="primary" id = "primary" class="form-control">
@@ -27,7 +27,7 @@
                         {% endfor %}
                     </select>
                     <label for="primary">
-                        {% blocktrans %}Wähle 1 {{ v_member }} aus als zukünftiger haupt {{ v_subscription }}-Bezieher. {% endblocktrans %}
+                        {% blocktrans %}Wähle 1 {{ v_member }} als zukünftige/n Haupt-{{ v_subscription }}-BezieherIn aus. {% endblocktrans %}
                     </label>
                 </div>
             </div>
@@ -40,10 +40,10 @@
     {% else %}
          <div class="alert alert-warning">
                 {% blocktrans%}
-                Leider kann niemand deiner {{ v_co_member_pl }} Haupt {{ v_subscription }}-Bezieher werden.
+                Leider kann niemand deiner {{ v_co_member_pl }} Haupt-{{ v_subscription }}-BezieherIn werden.
                 {% endblocktrans %}
             <br/>
-            <a href="{% url 'sub-detail-id' subscription.id %}/">
+            <a href="{% url 'sub-detail-id' subscription.id %}">
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
             </a>
         </div>

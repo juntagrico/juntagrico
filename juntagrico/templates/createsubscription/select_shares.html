@@ -70,7 +70,7 @@
                 <label class="col-md-6 col-form-label">
                     {% if shares.existing_main_member == 0 %}
                         {% blocktrans trimmed %}
-                        Du brauchst als Haupt-Bezieher mindestens 1 {{ v_share }}.
+                        Du brauchst als HauptbezieherIn mindestens 1 {{ v_share }}.
                         {% endblocktrans %}
                     {% else %}
                         {% blocktrans trimmed with msc=member.active_shares.count%}
