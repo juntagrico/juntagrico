@@ -109,7 +109,7 @@ def cancel_sub(subscription, end_date, message):
         subscription.end_date = end_date
         subscription.save()
 
-        send_subscription_canceled(subscription, message)
+        AdminNotification.subscription_canceled(subscription, message)
     elif subscription.active is False and subscription.deactivation_date is None:
         subscription.delete()
 

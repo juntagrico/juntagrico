@@ -192,6 +192,14 @@ class MemberNotification:
         )
 
     @staticmethod
+    def co_member_left_subscription(primary_member, co_member, message):
+        send_mail(
+            organisation_subject(_('Austritt aus {}').format(Config.vocabulary('subscription'))),
+            get_email_content('m_left_subscription', base_dict(locals())),
+            primary_member.email
+        )
+
+    @staticmethod
     def job_signup(emails, job):
         send_mail(
             organisation_subject(_('Für Einsatz angemeldet')),

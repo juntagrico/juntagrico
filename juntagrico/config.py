@@ -113,6 +113,7 @@ class Config:
             'j_signup': 'mails/member/job_signup.txt',
             'd_changed': 'mails/member/depot_changed.txt',
             's_created': 'mails/member/share_created.txt',
+            'm_left_subscription': 'mails/member/co_member_left_subscription.txt',
             'n_sub': 'mails/admin/subscription_created.txt',
             's_canceled': 'mails/admin/subscription_canceled.txt',
             'a_share_created': 'mails/admin/share_created.txt',
