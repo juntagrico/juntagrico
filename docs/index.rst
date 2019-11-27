@@ -9,7 +9,6 @@ It provides the basic functionality like
 - management of shares
 - delivery management 
 - management of members
-- automatic billing
     
     
 .. toctree::

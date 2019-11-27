@@ -1,8 +1,5 @@
-import hashlib
-
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -21,15 +18,14 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
-from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
-from juntagrico.mailer import send_subscription_canceled
+from juntagrico.mailer import AdminNotification
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
-from juntagrico.util.management import create_or_update_member, replace_subscription_types
+from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict, get_page_dict
@@ -204,7 +200,7 @@ def extra_change(request, subscription_id):
         return redirect('extra-change', subscription_id=subscription.id)
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'types': ExtraSubscriptionTypeDao.all_extra_types(),
+        'types': ExtraSubscriptionTypeDao.all_visible_extra_types(),
         'extras': subscription.extra_subscription_set.all(),
         'sub_id': subscription_id
     })
@@ -250,13 +246,13 @@ class SignupView(FormView, ModelFormMixin):
         return self.render_to_response(self.get_context_data(**kwargs))
 
 
-def confirm(request, hash):
-    '''
+def confirm(request, member_hash):
+    """
     Confirm from a user that has been added as a co_subscription member
-    '''
+    """
 
-    for member in MemberDao.all_members():
-        if hash == hashlib.sha1((member.email + str(member.id)).encode('utf8')).hexdigest():
+    for member in MemberDao.all_members().filter(confirmed=False):
+        if member_hash == member.get_hash():
             member.confirmed = True
             member.save()
 
@@ -288,7 +284,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def form_valid(self, form):
         # create new member from form data
-        create_or_update_member(form.instance, self.subscription, form.cleaned_data['shares'], self.request.user.member)
+        create_or_update_co_member(form.instance, self.subscription, form.cleaned_data['shares'])
         return self._done()
 
     def _done(self):
@@ -356,7 +352,7 @@ def cancel_subscription(request, subscription_id):
             subscription.end_date = request.POST.get('end_date')
             subscription.save()
             message = request.POST.get('message')
-            send_subscription_canceled(subscription, message)
+            AdminNotification.subscription_canceled(subscription, message)
         elif subscription.active is False and subscription.deactivation_date is None:
             subscription.delete()
         return redirect('sub-detail')
@@ -411,9 +407,7 @@ def order_shares(request):
         except ValueError:
             shareerror = True
         if not shareerror:
-            member = request.user.member
-            for num in range(0, shares):
-                Share.objects.create(member=member, paid_date=None)
+            create_share(request.user.member, shares)
             return redirect('{}?referer={}'.format(reverse('share-order-success'), referer))
     else:
         shareerror = False

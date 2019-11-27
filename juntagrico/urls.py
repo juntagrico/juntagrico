@@ -50,7 +50,7 @@ urlpatterns = [
          name='extra-change'),
     path('my/signup/', juntagrico_subscription.SignupView.as_view(), name='signup'),
     path('my/cosubmember/<int:subscription_id>/', juntagrico_subscription.AddCoMemberView.as_view(), name='add-member'),
-    path('my/confirm/<str:hash>/', juntagrico_subscription.confirm, name='confirm'),
+    path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
     path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
          name='sub-activate'),  #
     path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
@@ -108,7 +108,6 @@ urlpatterns = [
     path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
     path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
-    path('my/maps', juntagrico_admin.maps, name='maps'),
 
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
 ]

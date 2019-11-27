@@ -1,34 +1,27 @@
 import hashlib
 
-from django.contrib.auth.models import Permission, User
-from django.core.mail import EmailMultiAlternatives
-from django.db.models import Q
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 
-# from juntagrico.util.ical import *
 from juntagrico.config import Config
+from juntagrico.util.mailer import get_emails_by_permission, base_dict, get_email_content, filter_whitelist_emails
 from juntagrico.util.organisation_name import enriched_organisation
 
 
-def get_server():
-    return 'http://' + Config.adminportal_server_url()
-
-
-def filter_whitelist_emails(to_emails):
-    okmails = [x for x in to_emails if x in settings.WHITELIST_EMAILS]
-    not_send = [x for x in to_emails if x not in settings.WHITELIST_EMAILS]
-    print(('Mail not sent to: ' + ', '.join(not_send) + ' not in whitelist'))
-    return okmails
+def organisation_subject(subject):
+    return Config.organisation_name() + ' - ' + subject
 
 
 # sends mail only to specified email-addresses if dev mode
-def send_mail(subject, message, from_email, to_emails, reply_to_email=None, html_message=None, attachments=None):
-    okmails = to_emails if settings.DEBUG is False else filter_whitelist_emails(to_emails)
-    if len(okmails) > 0:
-        kwargs = {'bcc': okmails}
+def send_mail(subject, message, to_emails, from_email=None, reply_to_email=None, html_message=None, attachments=None):
+    to_emails = [to_emails] if isinstance(to_emails, str) else to_emails
+    ok_mails = filter_whitelist_emails(to_emails)
+    from_email = from_email or Config.info_email()
+    if len(ok_mails) > 0:
+        kwargs = {'bcc': ok_mails}
         if reply_to_email is not None:
             kwargs['reply_to'] = [reply_to_email]
         msg = EmailMultiAlternatives(subject, message, from_email, **kwargs)
@@ -38,295 +31,200 @@ def send_mail(subject, message, from_email, to_emails, reply_to_email=None, html
             attachments = []
         for attachment in attachments:
             msg.attach(attachment.name, attachment.read())
-        print(('Mail sent to ' + ', '.join(okmails) +
+        print(('Mail sent to ' + ', '.join(ok_mails) +
                (', on whitelist' if settings.DEBUG else '')))
         mailer = import_string(Config.default_mailer())
         mailer.send(msg)
 
 
-'''
-From forms Emails
-'''
+class FormEmails:
+    """
+    Form emails
+    """
+    @staticmethod
+    def contact(subject, message, member, copy_to_member):
+        subject = _('Anfrage per {0}:').format(Config.adminportal_name()) + subject
+        send_mail(subject, message, Config.info_email(), reply_to_email=member.email)
+        if copy_to_member:
+            send_mail(subject, message, member.email)
+
+    @staticmethod
+    def contact_member(subject, message, member, contact_member, copy_to_member, attachments):
+        subject = _('Nachricht per {0}:').format(Config.adminportal_name()) + subject
+        send_mail(subject, message, contact_member.email, reply_to_email=member.email, attachments=attachments)
+        if copy_to_member:
+            send_mail(subject, message, member.email, reply_to_email=member.email, attachments=attachments)
+
+    @staticmethod
+    def internal(subject, message, text_message, emails, attachments, sender):
+        htmld = base_dict({
+            'mail_template': Config.mail_template,
+            'subject': subject,
+            'content': message
+        })
+        textd = base_dict({
+            'subject': subject,
+            'content': text_message
+        })
+        text_content = get_template('mails/form/filtered_mail.txt').render(textd)
+        html_content = get_template('mails/form/filtered_mail.html').render(htmld)
+        send_mail(subject, text_content, emails, sender, html_message=html_content, attachments=attachments)
 
 
-def send_contact_form(subject, message, member, copy_to_member):
-    subject = _('Anfrage per {0}:').format(Config.adminportal_name()) + subject
-    send_mail(subject, message, Config.info_email(), [Config.info_email()], reply_to_email=member.email)
-    if copy_to_member:
-        send_mail(subject, message, Config.info_email(), [member.email])
+class AdminNotification:
+    """
+    Admin notification emails
+    """
+    @staticmethod
+    def member_joined_activityarea(area, member):
+        send_mail(
+            organisation_subject(_('Neues Mitglied im Taetigkeitsbereich {0}').format(area.name)),
+            _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
+                member.first_name, member.last_name, area.name
+            ),
+            area.get_email()
+        )
+
+    @staticmethod
+    def member_left_activityarea(area, member):
+        send_mail(
+            organisation_subject(_('Mitglied verlässt Taetigkeitsbereich {0}').format(area.name)),
+            _('Soeben hat sich {0} {1} aus dem Taetigkeitsbereich {2} ausgetragen. '
+              'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
+                member.first_name, member.last_name, area.name
+            ),
+            area.get_email()
+        )
+
+    @staticmethod
+    def subscription_created(subscription):
+        send_mail(
+            organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('subscription'))),
+            get_email_content('n_sub', base_dict(locals())),
+            get_emails_by_permission('notified_on_subscription_creation')
+        )
+
+    @staticmethod
+    def subscription_canceled(subscription, message):
+        send_mail(
+            organisation_subject(_('{} gekündigt').format(Config.vocabulary('subscription'))),
+            get_email_content('s_canceled', base_dict(locals())),
+            get_emails_by_permission('notified_on_subscription_cancellation')
+        )
+
+    @staticmethod
+    def share_created(share):
+        send_mail(
+            organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
+            get_email_content('a_share_created', base_dict(locals())),
+            get_emails_by_permission('notified_on_share_creation')
+        )
+
+    @staticmethod
+    def member_created(member):
+        send_mail(
+            organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
+            get_email_content('a_member_created', base_dict(locals())),
+            get_emails_by_permission('notified_on_member_creation')
+        )
+
+    @staticmethod
+    def member_canceled(member, end_date, message):
+        send_mail(
+            organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
+            get_email_content('m_canceled', base_dict(locals())),
+            get_emails_by_permission('notified_on_member_cancellation')
+        )
 
 
-def send_contact_member_form(subject, message, member, contact_member, copy_to_member, attachments):
-    subject = _('Nachricht per {0}:').format(Config.adminportal_name()) + subject
-    send_mail(subject, message, Config.info_email(), [contact_member.email], reply_to_email=member.email,
-              attachments=attachments)
-    if copy_to_member:
-        send_mail(subject, message, Config.info_email(), [member.email], reply_to_email=member.email,
-                  attachments=attachments)
+class MemberNotification:
+    """
+    Member notification emails
+    """
+    @staticmethod
+    def welcome(member, password):
+        send_mail(
+            _('Willkommen bei {0}').format(enriched_organisation('D')),
+            get_email_content('welcome', base_dict(locals())),
+            member.email
+        )
 
+    @staticmethod
+    def welcome_co_member(co_member, password, new_shares, new=True):
+        # sends either welcome mail or just information mail to new/added co-member
+        send_mail(
+            _('Willkommen bei {0}').format(enriched_organisation('D')),
+            get_email_content('co_welcome' if new else 'co_added', base_dict(locals())),
+            co_member.email
+        )
 
-def send_filtered_mail(subject, message, text_message, emails, attachments, sender):
-    plaintext = get_template('mails/filtered_mail.txt')
-    htmly = get_template('mails/filtered_mail.html')
+    @staticmethod
+    def shares_created(member, shares):
+        send_mail(
+            organisation_subject(_('Dein neuer Anteilschein')),
+            get_email_content('s_created', base_dict(locals())),
+            member.email
+        )
 
-    htmld = {
-        'mail_template': Config.mail_template,
-        'subject': subject,
-        'content': message,
-        'serverurl': get_server()
-    }
-    textd = {
-        'subject': subject,
-        'content': text_message,
-        'serverurl': get_server()
-    }
-    text_content = plaintext.render(textd)
-    html_content = htmly.render(htmld)
-    send_mail(subject, text_content, sender, emails, html_message=html_content, attachments=attachments)
+    @staticmethod
+    def email_confirmation(member):
+        d = {'hash': member.get_hash()}
+        send_mail(
+            organisation_subject(_('E-Mail-Adresse bestätigen')),
+            get_email_content('confirm', base_dict(d)),
+            member.email
+        )
 
+    @staticmethod
+    def reset_password(email, password):
+        send_mail(
+            organisation_subject(_('Dein neues Passwort')),
+            get_email_content('password', base_dict(locals())),
+            email
+        )
 
-'''
-Server generated Emails
-'''
+    @staticmethod
+    def depot_changed(emails, depot):
+        send_mail(
+            organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
+            get_email_content('d_changed', base_dict(locals())),
+            emails
+        )
 
+    @staticmethod
+    def job_signup(emails, job):
+        send_mail(
+            organisation_subject(_('Für Einsatz angemeldet')),
+            get_email_content('j_signup', base_dict(locals())),
+            emails
+        )
+        # ical_content = generate_ical_for_job(job)
+        # Not attaching ics as it is not correct
+        # msg.attach('einsatz.ics', ical_content, 'text/calendar')
 
-def get_area_email(area):
-    if area.email is not None:
-        return [area.email]
-    else:
-        return [area.coordinator.email]
+    @staticmethod
+    def job_reminder(emails, job, participants):
+        contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
+        send_mail(
+            organisation_subject(_('Einsatz-Erinnerung')),
+            get_email_content('j_reminder', base_dict(locals())),
+            emails
+        )
 
+    @staticmethod
+    def job_time_changed(emails, job):
+        send_mail(
+            organisation_subject(_('Einsatz-Zeit geändert')),
+            get_email_content('j_changed', base_dict(locals())),
+            emails
+        )
+        #    ical_content = genecrate_ical_for_job(job)
+        #   msg.attach('einsatz.ics', ical_content, 'text/calendar')
 
-def send_new_member_in_activityarea_to_operations(area, member):
-    emails = get_area_email(area)
-    send_mail(
-        _('Neues Mitglied im Taetigkeitsbereich {0}').format(area.name),
-        _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
-            member.first_name, member.last_name, area.name),
-        Config.info_email(), emails)
-
-
-def send_removed_member_in_activityarea_to_operations(area, member):
-    emails = get_area_email(area)
-    send_mail(
-        _('Mitglied verlässt Taetigkeitsbereich {0}').format(area.name),
-        _('Soeben hat sich {0} {1} aus dem Taetigkeitsbereich {2} ausgetragen. '
-          'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
-            member.first_name, member.last_name, area.name),
-        Config.info_email(), emails)
-
-
-def send_welcome_mail(email, password, onetime_code, subscription):
-    plaintext = get_template(Config.emails('welcome'))
-    d = {
-        'username': email,
-        'password': password,
-        'onetime_code': onetime_code,
-        'subscription': subscription,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('Willkommen bei {0}').format(enriched_organisation('D')), content, Config.info_email(), [email])
-
-
-def send_share_created_mail(member, share):
-    plaintext = get_template(Config.emails('s_created'))
-    d = {
-        'share': share,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('Dein neuer Anteilschein'), content, Config.info_email(), [member.email])
-
-
-def send_subscription_created_mail(subscription):
-    plaintext = get_template(Config.emails('n_sub'))
-    d = {
-        'subscription': subscription,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    perm = Permission.objects.get(codename='new_subscription')
-    users = User.objects.filter(
-        Q(groups__permissions=perm) | Q(user_permissions=perm)).distinct()
-    emails = []
-    for user in users:
-        emails.append(user.member.email)
-    if len(emails) == 0:
-        emails = [Config.info_email()]
-    send_mail(_('Neuer Anteilschein erstellt'), content, Config.info_email(), emails)
-
-
-def send_been_added_to_subscription(email, password, onetime_code, name, shares, welcome=True):
-    if welcome:
-        plaintext = get_template(Config.emails('co_welcome'))
-    else:
-        plaintext = get_template(Config.emails('co_added'))
-    d = {
-        'username': email,
-        'name': name,
-        'password': password,
-        'onetime_code': onetime_code,
-        'shares': shares,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('Willkommen bei {0}').format(enriched_organisation('D')),
-              content, Config.info_email(), [email])
-
-
-def send_mail_password_reset(email, password):
-    plaintext = get_template(Config.emails('password'))
-    subject = _('Dein neues {0} Passwort').format(Config.organisation_name())
-    d = {
-        'email': email,
-        'password': password,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(subject, content, Config.info_email(), [email])
-
-
-def send_job_reminder(emails, job, participants):
-    plaintext = get_template(Config.emails('j_reminder'))
-    coordinator = job.type.activityarea.coordinator
-    contact = coordinator.first_name + ' ' + \
-        coordinator.last_name + ': ' + job.type.activityarea.contact()
-    d = {
-        'job': job,
-        'participants': participants,
-        'serverurl': get_server(),
-        'contact': contact
-    }
-    content = plaintext.render(d)
-    send_mail(_('{0} - Einsatz-Erinnerung').format(Config.organisation_name()),
-              content, Config.info_email(), emails)
-
-
-def send_job_canceled(emails, job):
-    plaintext = get_template(Config.emails('j_canceled'))
-    d = {
-        'job': job,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('{0} - Einsatz abgesagt').format(Config.organisation_name()),
-              content, Config.info_email(), emails)
-
-
-def send_confirm_mail(member):
-    plaintext = get_template(Config.emails('confirm'))
-    d = {
-        'hash': hashlib.sha1((member.email + str(
-            member.id)).encode('utf8')).hexdigest(),
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('{0} - Email Adresse ändern').format(Config.organisation_name()),
-              content, Config.info_email(), [member.email])
-
-
-def send_job_time_changed(emails, job):
-    plaintext = get_template(Config.emails('j_changed'))
-    d = {
-        'job': job,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    #    ical_content = genecrate_ical_for_job(job)
-    send_mail(_('{0} - Einsatz-Zeit geändert').format(Config.organisation_name()),
-              content, Config.info_email(), emails)
-    #   msg.attach('einsatz.ics', ical_content, 'text/calendar')
-
-
-def send_job_signup(emails, job):
-    plaintext = get_template(Config.emails('j_signup'))
-    d = {
-        'job': job,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    # ical_content = generate_ical_for_job(job)
-    send_mail(_('{0} - für Einsatz angemeldet').format(Config.organisation_name()),
-              content, Config.info_email(), emails)
-    # Not attaching ics as it is not correct
-    # msg.attach('einsatz.ics', ical_content, 'text/calendar')
-
-
-def send_depot_changed(emails, depot):
-    plaintext = get_template(Config.emails('d_changed'))
-    d = {
-        'depot': depot,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('{0} - {1} geändert').format(Config.organisation_name(), Config.vocabulary('depot')),
-              content, Config.info_email(), emails)
-
-
-def send_subscription_canceled(subscription, message):
-    plaintext = get_template(Config.emails('s_canceled'))
-    d = {
-        'subscription': subscription,
-        'message': message,
-    }
-    content = plaintext.render(d)
-    emails = [Config.info_email()]
-    send_mail(_('{0} - {1} gekündigt').format(Config.organisation_name(), Config.vocabulary('subscription')),
-              content, Config.info_email(), emails)
-
-
-def send_membership_canceled(member, end_date, message):
-    plaintext = get_template(Config.emails('m_canceled'))
-    d = {
-        'member': member,
-        'end_date': end_date,
-        'message': message,
-    }
-    content = plaintext.render(d)
-    emails = [Config.info_email()]
-    send_mail(_('{0} - {1} gekündigt').format(Config.organisation_name(), Config.vocabulary('member_type')),
-              content, Config.info_email(), emails)
-
-
-def send_bill_share(bill, share, member):
-    plaintext = get_template(Config.emails('b_share'))
-    d = {
-        'member': member,
-        'bill': bill,
-        'share': share,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('{0} - Rechnung {1}').format(Config.organisation_name(), Config.vocabulary('share')),
-              content, Config.info_email(), [member.email])
-
-
-def send_bill_sub(bill, subscription, start, end, member):
-    plaintext = get_template(Config.emails('b_sub'))
-    d = {
-        'member': member,
-        'bill': bill,
-        'sub': subscription,
-        'start': start,
-        'end': end,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('{0} - Rechnung {1}').format(Config.organisation_name(), Config.vocabulary('subscription')),
-              content, Config.info_email(), [member.email])
-
-
-def send_bill_extrasub(bill, extrasub, start, end, member):
-    plaintext = get_template(Config.emails('b_esub'))
-    d = {
-        'member': member,
-        'bill': bill,
-        'extrasub': extrasub,
-        'start': start,
-        'end': end,
-        'serverurl': get_server()
-    }
-    content = plaintext.render(d)
-    send_mail(_('{0} - Rechnung Extra-Abo').format(Config.organisation_name()),
-              content, Config.info_email(), [member.email])
+    @staticmethod
+    def job_canceled(emails, job):
+        send_mail(
+            organisation_subject(_('Einsatz abgesagt')),
+            get_email_content('j_canceled', base_dict(locals())),
+            emails
+        )

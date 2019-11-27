@@ -1,0 +1,15 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load config %}
+{% block content %}{% vocabulary "subscription_pl" as v_subscription_pl %}
+{% trans "Hallo" %}
+{% blocktrans with fn=member.first_name ln=member.last_name e=member.email %}
+Soeben hat {{ fn }} {{ ln }} sich registriert.
+E-Mail: {{ e }}
+{% endblocktrans %}
+{{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
+
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
+
+{% endblock %}
