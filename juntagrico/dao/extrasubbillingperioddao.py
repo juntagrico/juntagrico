@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from django.utils import timezone
-from django.db.models import Q
 
 import juntagrico
 

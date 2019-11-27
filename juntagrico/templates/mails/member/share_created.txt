@@ -12,14 +12,12 @@
 {% vocabulary "share_pl" as v_share_pl %}
 {% trans "Hallo" %}
 
-{% blocktrans with sid=share.id %}Du hast bei {{ v_d_enriched_organisation }} 1 {{ v_share }} bestellt.
-Diese/r/s {{ v_share }} hat die Systemnummer {{ sid }}.{% endblocktrans %}
-
-{% blocktrans %}Bitte überweise den Betrag von {{ c_currency }} {{ c_share_price }} auf das folgende Konto ein{% endblocktrans %}:
+{% blocktrans with sc=shares.count%}Du hast bei {{ v_d_enriched_organisation }} {{sc}} {{ v_share_pl }} bestellt{% endblocktrans %}:
+{% for share in shares %}{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
+{% endfor %}
+{% blocktrans with sc=shares.count%}Bitte überweise {{sc}} Mal den Betrag von {{ c_currency }} {{ c_share_price }} auf das folgende Konto{% endblocktrans %}:
     {{ c_addr.name }}
-    {% if c_addr.extra %}
-    {{ c_addr.extra }}
-    {% endif %}    
+    {% if c_addr.extra %}{{ c_addr.extra }}{% endif %}
     {{ c_addr.street }} {{ c_addr.number }}
     {{ c_addr.zip }} {{ c_addr.city }}
     {{ c_bank.NAME }}
@@ -28,7 +26,7 @@ Diese/r/s {{ v_share }} hat die Systemnummer {{ sid }}.{% endblocktrans %}
     {% trans "BIC" %}: {{ c_bank.BIC }}
 
 {% blocktrans %}Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur 1 {{ v_share }} auf einmal.
-Zusätzlich gib im Betreff die Systemnummer an und die Emailadresse des Halters des/r {{ v_share }} an
+Gib im Betreff die Systemnummer an und die Emailadresse der Halterin oder des Halters des/r {{ v_share }} an
 (dies ist vor allem wichtig wenn du diese/n/s {{ v_share }} für jemand anderen bezahlst){% endblocktrans %}
 
 {% blocktrans trimmed %}

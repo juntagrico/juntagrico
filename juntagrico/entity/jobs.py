@@ -34,6 +34,12 @@ class ActivityArea(JuntagricoBaseModel):
         else:
             return self.coordinator.email
 
+    def get_email(self):
+        if self.email is not None:
+            return self.email
+        else:
+            return self.coordinator.email
+
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
         verbose_name_plural = _('Tätigkeitsbereiche')

@@ -1,12 +1,9 @@
-import hashlib
 import itertools
 import random
 import string
 
 from juntagrico.models import Share, Subscription, TSST, TFSST
-from juntagrico.mailer import send_welcome_mail, send_subscription_canceled
-from juntagrico.mailer import send_been_added_to_subscription
-from juntagrico.mailer import send_share_created_mail
+from juntagrico.mailer import MemberNotification, AdminNotification
 from juntagrico.config import Config
 
 
@@ -15,55 +12,81 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
         random.choice(chars) for _ in range(size))
 
 
-def create_subscription(start_date, depot, selected_subscriptions):
-    subscription = Subscription()
-    subscription.start_date = start_date
-    subscription.depot = depot
-    subscription.save()
-    replace_subscription_types(subscription, selected_subscriptions)
-    return subscription
+def new_signup(signup_data):
+    # create member (or get existing)
+    member, creation_data = create_or_update_member(signup_data.main_member)
+
+    # create share(s) for member
+    create_share(member, signup_data.main_member.new_shares)
+
+    # create subscription for member
+    subscription = None
+    if sum(signup_data.subscriptions.values()) > 0:
+        subscription = create_subscription(signup_data.start_date, signup_data.depot, signup_data.subscriptions, member)
+
+    # add co-members
+    for co_member in signup_data.co_members:
+        create_or_update_co_member(co_member, subscription, co_member.new_shares)
+
+    # send notifications
+    if creation_data['created']:
+        MemberNotification.welcome(member, creation_data['password'])
 
 
-def create_or_update_member(member, subscription, shares=None, main_member=None):
-    create = member.pk is None
-    # add member to subscription
-    add_subscription_to_member(member, subscription)
+def create_or_update_co_member(co_member, subscription, new_shares):
+    co_member, creation_data = create_or_update_member(co_member)
+    # create share(s) for co-member(s)
+    create_share(co_member, new_shares)
+    # add co-member to subscription
+    add_recipient_to_subscription(subscription, co_member)
+    # notify co-member
+    MemberNotification.welcome_co_member(co_member, creation_data['password'], new_shares, new=creation_data['created'])
+
+
+def create_or_update_member(member):
+    created = member.pk is None
     member.save()
-    # create shares for member
-    create_share(member, shares)
     # generate password if member is new
     password = None
-    member_hash = None
-    if create:
+    if created:
         password = password_generator()
         member.user.set_password(password)
         member.user.save()
-        key = (member.email + str(member.id)).encode('utf8')
-        member_hash = hashlib.sha1(key).hexdigest()
-        if main_member is None:
-            send_welcome_mail(member.email, password, member_hash, subscription)
-    # notify main member of subscription
-    if main_member is not None:
-        name = main_member.get_name()
-        email = member.email
-        send_been_added_to_subscription(email, password, member_hash, name, shares, create)
+    return member, {
+        'created': created,
+        'password': password,
+    }
 
 
 def create_share(member, amount=1):
     if amount and Config.enable_shares():
+        shares = []
         for i in range(amount):
-            share = Share.objects.create(member=member)
-            send_share_created_mail(member, share)
+            shares.append(Share.objects.create(member=member))
+        MemberNotification.shares_created(member, shares)
 
 
-def add_subscription_to_member(member, subscription):
-    if subscription is not None:
-        if subscription.state == 'waiting':
-            member.future_subscription = subscription
-        elif subscription.state == 'inactive':
-            member.old_subscriptions.add(subscription)
-        else:
-            member.subscription = subscription
+def create_subscription(start_date, depot, subscription_types, member):
+    # create instance
+    subscription = Subscription.objects.create(start_date=start_date, depot=depot)
+    # add member
+    add_recipient_to_subscription(subscription, member)
+    subscription.primary_member = member
+    subscription.save()
+    # set types
+    replace_subscription_types(subscription, subscription_types)
+    return subscription
+
+
+def add_recipient_to_subscription(subscription, recipient):
+    if subscription.state == 'waiting':
+        recipients = subscription.members_future
+    elif subscription.state == 'inactive':
+        recipients = subscription.members_old
+    else:
+        recipients = subscription.members
+    recipients.add(recipient)
+    subscription.save()
 
 
 def replace_subscription_types(subscription, selected_types):

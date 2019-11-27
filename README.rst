@@ -45,7 +45,6 @@ It provides the basic functionality like
 - management of shares
 - delivery management 
 - management of members
-- automatic billing
 
 Detailed documentation how to install and configure juntagrico can be found here http://juntagrico.readthedocs.io
 

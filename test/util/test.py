@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Permission
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
@@ -10,6 +10,7 @@ from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType, TSST, TFSST
 
 
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
 
     def setUp(self):
