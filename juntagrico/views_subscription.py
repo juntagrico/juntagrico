@@ -176,7 +176,7 @@ def extra_change(request, subscription_id):
         return redirect('extra-change', subscription_id=subscription.id)
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'types': ExtraSubscriptionTypeDao.all_extra_types(),
+        'types': ExtraSubscriptionTypeDao.all_visible_extra_types(),
         'extras': subscription.extra_subscription_set.all(),
         'sub_id': subscription_id
     })
