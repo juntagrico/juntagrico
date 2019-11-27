@@ -1,0 +1,15 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load config %}
+{% block content %}
+{% vocabulary "share" as v_share %}
+{% trans "Hallo" %}
+
+{% blocktrans with m=share.member%}{{m}} hat soeben 1 {{ v_share }} bestellt{% endblocktrans %}:
+{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
+{{ serverurl }}{% url 'admin:juntagrico_share_change' share.id %}
+
+
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
+{% endblock %}

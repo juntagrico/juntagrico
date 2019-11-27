@@ -1,13 +1,12 @@
 /*global define, $, mwember_shares, depots, destinations, google */
-define(['modules/depotDistance'], function (depotDistance) {
+define([], function () {
 
-    if (typeof member_addr !== 'undefined') {
+    if (typeof depots !== 'undefined') {
         // preselect depot
         if (window.depot_id) {
             $("#depot").val(window.depot_id);
         }
-
-        depotDistance.calculate(member_addr, destinations, depots);
+        map_with_markers(depots)
     }
 
     function total_selected_subs() {

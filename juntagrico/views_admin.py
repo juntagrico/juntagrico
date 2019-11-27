@@ -19,7 +19,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.models import Depot, ActivityArea, Member, Share
-from juntagrico.mailer import send_filtered_mail
+from juntagrico.mailer import FormEmails
 from juntagrico.util import return_to_previous_location
 from juntagrico.util.subs import subscriptions_with_assignments
 from juntagrico.views import get_menu_dict
@@ -70,10 +70,12 @@ def send_email_intern(request):
     append_attachements(request, attachements)
 
     if len(emails) > 0:
-        send_filtered_mail(request.POST.get('subject'),
-                           request.POST.get('message'),
-                           request.POST.get('textMessage'),
-                           emails, attachements, sender=sender)
+        FormEmails.internal(
+            request.POST.get('subject'),
+            request.POST.get('message'),
+            request.POST.get('textMessage'),
+            emails, attachements, sender=sender
+        )
         sent = len(emails)
     return redirect('mail-result', numsent=sent)
 
@@ -249,16 +251,6 @@ def get_mail_template(request, template_id):
     c = Context(renderdict)
     result = t.render(c)
     return HttpResponse(result)
-
-
-@permission_required('juntagrico.is_operations_group')
-def maps(request):
-    renderdict = {
-        'depots': DepotDao.all_depots(),
-        'subscriptions': SubscriptionDao.all_active_subscritions(),
-    }
-
-    return render(request, 'maps.html', renderdict)
 
 
 @permission_required('juntagrico.is_operations_group')

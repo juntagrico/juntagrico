@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.mailer import MemberNotification
 from juntagrico.models import *
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.temporal import weekdays
@@ -44,7 +44,7 @@ class Command(BaseCommand):
                 emails = []
                 for member in subscription.recipients:
                     emails.append(member.email)
-                send_depot_changed(emails, subscription.depot)
+                MemberNotification.depot_changed(emails, subscription.depot)
 
         if options['force'] and not options['future']:
             print('future depots ignored, use --future to override')

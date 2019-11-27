@@ -526,15 +526,3 @@ EMAILS
         's_canceled': 'mails/subscription_canceled_mail.txt',
         'm_canceled': 'mails/membership_canceled_mail.txt',
     }
-
-GOOGLE_API_KEY
---------------
-  The google api key to enable the maps in juntagrico
-  
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "GOOGLE_API_KEY"

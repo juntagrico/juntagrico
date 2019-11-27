@@ -1,7 +1,9 @@
+from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity.billing import *
+from juntagrico.entity import notifiable
+from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
 
 
@@ -27,6 +29,7 @@ class Share(Billable):
     def __str__(self):
         return _('Anteilschein {0}').format(self.id)
 
+    @notifiable
     class Meta:
         verbose_name = Config.vocabulary('share')
         verbose_name_plural = Config.vocabulary('share_pl')
