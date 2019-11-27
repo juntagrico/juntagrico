@@ -70,8 +70,7 @@ class Config:
         return {'PC': '01-123-5',
                 'IBAN': 'CH 00 12345 67890 12345 67890 10',
                 'BIC': 'BIC1234500',
-                'NAME': 'Juntagrico Bank',
-                'ESR': '01-123-45'}
+                'NAME': 'Juntagrico Bank',}
 
     @staticmethod
     def info_email():
@@ -140,9 +139,6 @@ class Config:
                 'n_sub': 'mails/new_subscription.txt',
                 's_canceled': 'mails/subscription_canceled_mail.txt',
                 'm_canceled': 'mails/membership_canceled_mail.txt',
-                'b_share': 'mails/bill_share.txt',
-                'b_sub': 'mails/bill_sub.txt',
-                'b_esub': 'mails/bill_extrasub.txt'
                 }[key]
 
     @staticmethod
@@ -234,12 +230,6 @@ class Config:
         if hasattr(settings, 'DEPOT_LIST_GENERATION_DAYS'):
             return settings.DEPOT_LIST_GENERATION_DAYS
         return [0, 1, 2, 3, 4, 5, 6]
-
-    @staticmethod
-    def billing():
-        if hasattr(settings, 'BILLING'):
-            return settings.BILLING
-        return False
 
     @staticmethod
     def business_year_start():

@@ -2,9 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from juntagrico.config import Config
 from juntagrico.signals import share_created
-from juntagrico.util.bills import bill_share
 
 
 def share_post_save(sender, instance, created, **kwargs):
@@ -13,8 +11,7 @@ def share_post_save(sender, instance, created, **kwargs):
 
 
 def handle_share_created(sender, instance, created, **kwargs):
-    if created and Config.billing():
-        bill_share(instance)
+    pass
 
 
 def check_share_consistency(instance):

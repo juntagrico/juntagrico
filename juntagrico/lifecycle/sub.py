@@ -4,7 +4,6 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled
-from juntagrico.util.bills import bill_subscription
 from juntagrico.util.lifecycle import handle_activated_deactivated
 
 
@@ -26,8 +25,6 @@ def handle_sub_activated(sender, instance, **kwargs):
         member.subscription = instance
         member.future_subscription = None
         member.save()
-    if Config.billing():
-        bill_subscription(instance)
 
 
 def handle_sub_deactivated(sender, instance, **kwargs):

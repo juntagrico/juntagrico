@@ -1,8 +1,8 @@
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.entity.billing import *
 from juntagrico.lifecycle.share import check_share_consistency
-from juntagrico.util.bills import *
 
 
 class Share(Billable):
