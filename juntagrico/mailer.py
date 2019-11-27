@@ -168,7 +168,7 @@ class MemberNotification:
 
     @staticmethod
     def email_confirmation(member):
-        d = {'hash': hashlib.sha1((member.email + str(member.id)).encode('utf8')).hexdigest()}
+        d = {'hash': member.get_hash()}
         send_mail(
             organisation_subject(_('E-Mail-Adresse bestätigen')),
             get_email_content('confirm', base_dict(d)),

@@ -12,7 +12,7 @@
 {% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutze folgende Daten{% endblocktrans %}:
 {% trans "Email" %}: {{ member.email }}
 {% trans "Passwort" %}: {{ password }}
-{% blocktrans %}Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen und gleich dein Passwort zu ändern.{% endblocktrans %}
+{% blocktrans %}Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen.{% endblocktrans %}
 {% trans "Bestätigungslink" %}: {{ serverurl }}{% url 'confirm' member.get_hash %}
 
 {% if c_faq_doc.strip %}

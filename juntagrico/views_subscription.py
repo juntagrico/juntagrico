@@ -231,10 +231,8 @@ def confirm(request, member_hash):
         if member_hash == member.get_hash():
             member.confirmed = True
             member.save()
-            # hash also acts as one time login
-            login(request, member.user)
 
-    return redirect('password')
+    return redirect('home')
 
 
 class AddCoMemberView(FormView, ModelFormMixin):
