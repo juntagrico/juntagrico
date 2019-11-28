@@ -70,8 +70,11 @@ class Subscription(Billable):
         members = self.recipients
         return ', '.join(str(member) for member in members)
 
+    def other_recipients(self):
+        return self.recipients.exclude(email=self.primary_member.email)
+
     def other_recipients_names(self):
-        members = self.recipients.exclude(email=self.primary_member.email)
+        members = self.other_recipients()
         return ', '.join(str(member) for member in members)
 
     @property
