@@ -46,5 +46,3 @@ def render_to_pdf_storage(template_name, renderdict, filename):
     pdf = BytesIO()
     pisa.CreatePDF(BytesIO(str(rendered_html).encode('utf-8')), dest=pdf)
     default_storage.save(filename, ContentFile(pdf.getvalue()))
-
-

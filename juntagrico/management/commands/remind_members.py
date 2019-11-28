@@ -1,7 +1,9 @@
+import datetime
+
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from juntagrico.mailer import MemberNotification
-from juntagrico.models import *
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 

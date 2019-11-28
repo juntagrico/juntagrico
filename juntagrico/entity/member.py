@@ -1,3 +1,5 @@
+import hashlib
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import gettext as _
@@ -5,7 +7,7 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
-from juntagrico.util.users import *
+from juntagrico.util.users import make_username
 
 
 class Member(JuntagricoBaseModel):

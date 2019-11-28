@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
 from django.utils import timezone
 
-from juntagrico.models import *
+
 from juntagrico.config import Config
 from datetime import datetime, time, date
+
+from juntagrico.entity.jobs import Job, RecuringJob, OneTimeJob
 
 
 class JobDao:

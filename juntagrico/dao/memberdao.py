@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-
-from django.db.models import Sum, Case, When
+from django.contrib.auth.models import Permission
+from django.db.models import Sum, Case, When, Q
 from django.utils import timezone
 
-from juntagrico.models import *
+from juntagrico.entity.member import Member
 from juntagrico.util import temporal
 
 
