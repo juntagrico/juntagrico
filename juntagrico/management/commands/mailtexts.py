@@ -3,7 +3,6 @@ from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
