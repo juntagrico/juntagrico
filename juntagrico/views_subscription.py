@@ -1,4 +1,4 @@
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
 from django.http import Http404
@@ -18,6 +18,7 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
@@ -136,6 +137,30 @@ def depot_change(request, subscription_id):
 
 
 @primary_member_of_subscription
+def primary_change(request, subscription_id):
+    '''
+    change primary member
+    '''
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    if request.method == 'POST':
+        new_primary = get_object_or_404(Member, id=int(request.POST.get('primary')))
+        subscription.primary_member = new_primary
+        subscription.save()
+        return redirect('sub-detail-id', subscription_id=subscription.id)
+    renderdict = get_menu_dict(request)
+    if Config.enable_shares():
+        co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
+    else:
+        co_members = subscription.other_recipients()
+    renderdict.update({
+        'subscription': subscription,
+        'co_members': co_members,
+        'has_comembers': len(co_members) > 0
+    })
+    return render(request, 'pm_change.html', renderdict)
+
+
+@primary_member_of_subscription
 def size_change(request, subscription_id):
     """
     change the size of a subscription
@@ -174,7 +199,7 @@ def extra_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
         for type in ExtraSubscriptionTypeDao.all_extra_types():
-            value = int(request.POST.get('extra'+str(type.id)))
+            value = int(request.POST.get('extra' + str(type.id)))
             if value > 0:
                 for x in range(value):
                     ExtraSubscription.objects.create(
@@ -408,7 +433,7 @@ def order_shares(request):
         if request.META.get('HTTP_REFERER')is not None:
             referer = request.META.get('HTTP_REFERER')
         else:
-            referer = 'http://'+Config.adminportal_server_url()
+            referer = 'http://' + Config.adminportal_server_url()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'referer': referer,
@@ -422,7 +447,7 @@ def order_shares_success(request):
     if request.GET.get('referer')is not None:
         referer = request.GET.get('referer')
     else:
-        referer = 'http://'+Config.adminportal_server_url()
+        referer = 'http://' + Config.adminportal_server_url()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'referer': referer

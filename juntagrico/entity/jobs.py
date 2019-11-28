@@ -1,12 +1,14 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.jobs import get_status_image
-from juntagrico.util.temporal import *
+from juntagrico.util.temporal import weekday_short
 
 
 class ActivityArea(JuntagricoBaseModel):

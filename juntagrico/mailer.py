@@ -1,5 +1,3 @@
-import hashlib
-
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
@@ -31,8 +29,7 @@ def send_mail(subject, message, to_emails, from_email=None, reply_to_email=None,
             attachments = []
         for attachment in attachments:
             msg.attach(attachment.name, attachment.read())
-        print(('Mail sent to ' + ', '.join(ok_mails) +
-               (', on whitelist' if settings.DEBUG else '')))
+        print(('Mail sent to ' + ', '.join(ok_mails) + (', on whitelist' if settings.DEBUG else '')))
         mailer = import_string(Config.default_mailer())
         mailer.send(msg)
 

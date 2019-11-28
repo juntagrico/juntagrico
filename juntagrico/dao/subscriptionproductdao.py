@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-import juntagrico
+from juntagrico.entity.subtypes import SubscriptionProduct
 
 
 class SubscriptionProductDao:
 
     @staticmethod
     def get_all():
-        return juntagrico.models.SubscriptionProduct.objects.all()
+        return SubscriptionProduct.objects.all()

@@ -30,7 +30,7 @@ def create_subscription_session(view):
         session_object = som.data
         if request.user.is_authenticated:
             session_object.main_member = request.user.member
-        if session_object.main_member is None and request.resolver_match.url_name is not 'signup':
+        if session_object.main_member is None and request.resolver_match.url_name != 'signup':
             return redirect('signup')
         response = view(request, som.data, *args, **kwargs)
         som.store()
