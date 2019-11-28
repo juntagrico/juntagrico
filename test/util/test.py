@@ -86,15 +86,15 @@ class JuntagricoTestCase(TestCase):
 
     def set_up_shares(self):
         """
-                shares
-                """
+        shares
+        """
         self.share_data = self.get_share_data(self.member)
         Share.objects.create(**self.share_data)
 
     def set_up_area(self):
         """
-                area
-                """
+        area
+        """
         area_data = {'name': 'name',
                      'coordinator': self.member}
         area_data2 = {'name': 'name2',
@@ -203,7 +203,7 @@ class JuntagricoTestCase(TestCase):
             'name': 'sub_type_name2',
             'long_name': 'sub_type_long_name',
             'size': self.sub_size,
-            'shares': 3,
+            'shares': 2,
             'visible': True,
             'required_assignments': 10,
             'price': 1000,

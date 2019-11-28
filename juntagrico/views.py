@@ -24,7 +24,7 @@ from juntagrico.mailer import FormEmails, MemberNotification, AdminNotification
 from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.mailer import append_attachements
-from juntagrico.util.management import password_generator
+from juntagrico.util.management import password_generator, cancel_share
 from juntagrico.util.messages import home_messages, job_messages
 from juntagrico.util.temporal import next_membership_end_date
 
