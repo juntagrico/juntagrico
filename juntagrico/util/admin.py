@@ -10,8 +10,7 @@ from juntagrico.entity.jobs import OneTimeJob, RecuringJob
 
 def formfield_for_coordinator(request, field_name, perm, query_function, **kwargs):
     if field_name == 'type' and request.user.has_perm(perm) and (
-            not (request.user.is_superuser or
-                 request.user.has_perm('juntagrico.is_operations_group'))):
+            not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
         kwargs['queryset'] = query_function(request.user.member)
     return kwargs
 
@@ -31,8 +30,7 @@ def extra_context_for_past_jobs(request, job_type, object_id, extra_context):
     job_canceled = job.canceled
     job_read_only = job_canceled or job_is_running or job_is_in_past
     if job_read_only and (
-            not (request.user.is_superuser or
-                 request.user.has_perm('juntagrico.can_edit_past_jobs'))):
+            not (request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))):
         extra_context = extra_context or {}
         extra_context['readonly'] = True
     return extra_context

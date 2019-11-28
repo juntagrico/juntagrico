@@ -46,9 +46,7 @@ class Command(BaseCommand):
         for person in name_data:
             name = str(person['surname'])
             prename = str(person['name'])
-            email = str(slugify(prename) + '.' + slugify(name) +
-                        str(timezone.now().microsecond) + '@' +
-                        Config.info_email().split('@')[-1])
+            email = str(slugify(prename) + '.' + slugify(name) + str(timezone.now().microsecond) + '@' + Config.info_email().split('@')[-1])
             self.manynames.append({'name': name, 'prename': prename, 'email': email})
 
     def get_name(self, i):
