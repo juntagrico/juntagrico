@@ -2,11 +2,11 @@ import itertools
 import random
 import string
 
+from juntagrico.config import Config
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TFSST, TSST
-from juntagrico.mailer import MemberNotification, AdminNotification
-from juntagrico.config import Config
+from juntagrico.mailer import MemberNotification
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits):

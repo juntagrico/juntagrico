@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 

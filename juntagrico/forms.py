@@ -1,19 +1,17 @@
-# -*- coding: utf-8 -*-
+from crispy_forms.bootstrap import FormActions
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, Submit, HTML
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput
-from django.utils.html import escape
-from django.utils.translation import gettext as _
-from django.utils.safestring import mark_safe
 from django.urls import reverse
-
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 from schwifty import IBAN
 
+from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.models import Member, Subscription
-from juntagrico.config import Config
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, HTML, Hidden
-from crispy_forms.bootstrap import FormActions
 
 
 class Slider(Field):
