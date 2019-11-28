@@ -55,7 +55,6 @@ class Command(BaseCommand):
         return person
 
     def get_address(self, point):
-        latlng = str(point[1]) + ',' + str(point[0])
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
         url = 'https://nominatim.openstreetmap.org/reverse?lat=' + \
             str(point[1]) + '&lon=' + str(point[0]) + '&format=json'

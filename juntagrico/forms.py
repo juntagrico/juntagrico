@@ -81,7 +81,7 @@ class MemberProfileForm(ModelForm):
     def clean_iban(self):
         if self.data['iban'] != '':
             try:
-                iban = IBAN(self.data['iban'])
+                IBAN(self.data['iban'])
             except ValueError:
                 raise ValidationError(_('IBAN ist nicht gültig'))
         return self.data['iban']

@@ -19,10 +19,6 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         subscription = Subscription.objects.all()[0]
-        if ExtraSubscription.objects.all().count() > 0:
-            extrasub = ExtraSubscription.objects.all()[0]
-        else:
-            extrasub = None
         shares = Share.objects.all()[:2]
         job = RecuringJob.objects.all()[0]
         member = Member.objects.all()[0]
