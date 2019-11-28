@@ -1,26 +1,32 @@
-from datetime import datetime as dt
-
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
+from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.forms import *
-from juntagrico.mailer import FormEmails
-from juntagrico.models import *
+from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import Job, Assignment, ActivityArea
+from juntagrico.entity.member import Member
+from juntagrico.forms import MemberProfileForm, PasswordForm
+from juntagrico.mailer import FormEmails, MemberNotification, AdminNotification
 from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.mailer import append_attachements
-from juntagrico.util.management import *
-from juntagrico.util.messages import *
+from juntagrico.util.management import password_generator
+from juntagrico.util.messages import home_messages, job_messages
+from juntagrico.util.temporal import next_membership_end_date
 
 
 def get_page_dict(request):

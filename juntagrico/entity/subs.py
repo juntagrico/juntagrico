@@ -1,14 +1,18 @@
+import datetime
 import time
 
+from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
-from juntagrico.entity.subtypes import *
+from juntagrico.entity.depot import Depot
 from juntagrico.lifecycle.sub import check_sub_consistency
-from juntagrico.util.temporal import *
+from juntagrico.util.temporal import start_of_next_business_year
 
 
 class Subscription(Billable):
@@ -17,7 +21,7 @@ class Subscription(Billable):
     '''
     depot = models.ForeignKey(
         'Depot', on_delete=models.PROTECT, related_name='subscription_set')
-    future_depot = models.ForeignKey('Depot', on_delete=models.PROTECT, related_name='future_subscription_set', null=True,
+    future_depot = models.ForeignKey(Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True,
                                      blank=True, )
     types = models.ManyToManyField(
         'SubscriptionType', through='TSST', related_name='subscription_set')

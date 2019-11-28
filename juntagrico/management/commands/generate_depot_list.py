@@ -1,10 +1,15 @@
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
+from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
+from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.mailer import MemberNotification
-from juntagrico.models import *
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.temporal import weekdays
 

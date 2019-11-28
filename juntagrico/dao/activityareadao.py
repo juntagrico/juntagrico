@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from juntagrico.models import *
+from juntagrico.entity.jobs import ActivityArea
 
 
 class ActivityAreaDao:

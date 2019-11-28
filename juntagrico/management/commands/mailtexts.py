@@ -1,6 +1,13 @@
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
-from juntagrico.models import *
+from juntagrico.config import Config
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.entity.jobs import RecuringJob
+from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
 from juntagrico.util.mailer import get_email_content, base_dict
 
 
@@ -21,7 +28,6 @@ class Command(BaseCommand):
         member = Member.objects.all()[0]
         co_member = Member.objects.filter(subscription__isnull=False)[0]
         depot = Depot.objects.all()[0]
-        bill = Bill(ref_number='123456789', amount='1234.99')
 
         print('*** welcome  mit abo***')
 
@@ -141,35 +147,3 @@ class Command(BaseCommand):
             'message': 'Nachricht'
         })))
         print()
-
-        print('*** b_share ***')
-
-        print(get_email_content('b_share', base_dict({
-            'member': member,
-            'bill': bill,
-            'share': shares[0]
-        })))
-        print()
-
-        print('*** b_sub ***')
-
-        print(get_email_content('b_sub', base_dict({
-            'member': member,
-            'bill': bill,
-            'sub': subscription,
-            'start': timezone.now(),
-            'end': timezone.now()
-        })))
-        print()
-
-        if extrasub is not None:
-            print('*** b_esub ***')
-
-            print(get_email_content('b_esub', base_dict({
-                'member': member,
-                'bill': bill,
-                'extrasub': extrasub,
-                'start': timezone.now(),
-                'end': timezone.now()
-            })))
-            print()

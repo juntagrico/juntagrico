@@ -18,7 +18,10 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.models import Depot, ActivityArea, Member, Share
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
 from juntagrico.mailer import FormEmails
 from juntagrico.util import return_to_previous_location
 from juntagrico.util.subs import subscriptions_with_assignments

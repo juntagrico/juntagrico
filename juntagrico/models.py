@@ -1,17 +1,14 @@
+from django.db import models
 from django.db.models import signals
 from django.utils.translation import gettext as _
 
 import juntagrico
-from juntagrico.entity.billing import *
-from juntagrico.entity.extrasubs import *
-from juntagrico.entity.subs import *
-from juntagrico.entity.depot import *
-from juntagrico.entity.member import *
-from juntagrico.entity.share import *
-from juntagrico.entity.jobs import *
-from juntagrico.entity.mailing import *
-from juntagrico.entity.delivery import *
-from juntagrico.entity.listmessage import *
+from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.entity.jobs import Assignment, OneTimeJob, RecuringJob, Job
+from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
+
 from juntagrico.lifecycle.extrasub import extra_sub_pre_save, handle_extra_sub_deactivated, handle_extra_sub_activated
 from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
 from juntagrico.lifecycle.member import member_pre_save, member_post_save, handle_member_deactivated, \

@@ -1,6 +1,12 @@
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
-from juntagrico.models import *
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType, TSST, TFSST
 
 
 class Command(BaseCommand):
