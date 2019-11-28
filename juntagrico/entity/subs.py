@@ -64,7 +64,7 @@ class Subscription(Billable):
         sizes = {}
         for type in self.types.all():
             sizes[type.size.product.name] = type.size.units + sizes.get(type.size.product.name, 0)
-        return ', '.join([key+':'+str(value) for key, value in sizes.items()])
+        return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
 
     @property
     def types_changed(self):

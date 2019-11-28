@@ -193,7 +193,7 @@ def extra_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
         for type in ExtraSubscriptionTypeDao.all_extra_types():
-            value = int(request.POST.get('extra'+str(type.id)))
+            value = int(request.POST.get('extra' + str(type.id)))
             if value > 0:
                 for x in range(value):
                     ExtraSubscription.objects.create(
@@ -415,7 +415,7 @@ def order_shares(request):
         if request.META.get('HTTP_REFERER')is not None:
             referer = request.META.get('HTTP_REFERER')
         else:
-            referer = 'http://'+Config.adminportal_server_url()
+            referer = 'http://' + Config.adminportal_server_url()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'referer': referer,
@@ -429,7 +429,7 @@ def order_shares_success(request):
     if request.GET.get('referer')is not None:
         referer = request.GET.get('referer')
     else:
-        referer = 'http://'+Config.adminportal_server_url()
+        referer = 'http://' + Config.adminportal_server_url()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'referer': referer

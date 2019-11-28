@@ -62,7 +62,7 @@ def get_menu_dict(request):
     partner_assignments_core = int(
         sum(a.amount for a in partner_assignments if a.is_core()))
     assignmentsrange = list(range(
-        0, max(required_assignments, userassignments_total+partner_assignments_total)))
+        0, max(required_assignments, userassignments_total + partner_assignments_total)))
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
@@ -127,7 +127,7 @@ def job(request, job_id):
         if Config.assignment_unit() == 'ENTITY':
             amount = job.multiplier
         elif Config.assignment_unit() == 'HOURS':
-            amount = job.multiplier*job.type.duration
+            amount = job.multiplier * job.type.duration
         add = int(num)
         for i in range(add):
             assignment = Assignment.objects.create(
@@ -450,8 +450,8 @@ def cancel_membership(request):
     f_sub = member.future_subscription
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
     current_active = sub is not None and sub.state == 'active' and sub.state == 'waiting'
-    future = future_active and f_sub.share_overflow-asc < 0
-    current = current_active and sub.share_overflow-asc < 0
+    future = future_active and f_sub.share_overflow - asc < 0
+    current = current_active and sub.share_overflow - asc < 0
     share_error = future or current
     can_cancel = not coop_member or (not missing_iban and not share_error)
 

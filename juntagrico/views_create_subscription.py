@@ -211,7 +211,7 @@ def cs_finish(request, cs_session, cancelled=False):
         return redirect('sub-detail')
     elif cancelled:
         cs_session.clear()
-        return redirect('http://'+Config.server_url())
+        return redirect('http://' + Config.server_url())
     else:
         # keep session for welcome message
         return redirect('welcome')

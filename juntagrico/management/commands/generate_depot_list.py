@@ -133,7 +133,7 @@ class Command(BaseCommand):
             'overview': overview,
             'depots': depots,
             'subscription_ids': subscription_ids,
-            'subscriptioncount': len(subscription_ids)+1,
+            'subscriptioncount': len(subscription_ids) + 1,
             'categories': categories,
             'types': types,
             'es_types': types[len(subscription_ids):],
