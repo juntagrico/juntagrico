@@ -23,10 +23,11 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
-from juntagrico.mailer import AdminNotification
+from juntagrico.mailer import MemberNotification
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
+from juntagrico.util.management import cancel_sub, cancel_extra_sub
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict, get_page_dict
@@ -55,15 +56,20 @@ def subscription(request, subscription_id=None):
         cancelation_date = subscription.cancelation_date
         if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
+        asc = member.active_shares_count
+        share_error = subscription.share_overflow-asc < 0
+        primary = subscription.primary_member.id == member.id
+        can_leave = member.is_cooperation_member and not share_error and not primary
         renderdict.update({
             'subscription': subscription,
             'co_members': subscription.recipients.exclude(
-                email=request.user.member.email),
-            'primary': subscription.primary_member.email == request.user.member.email,
+                email=member.email),
+            'primary': subscription.primary_member.email == member.email,
             'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
             'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
+            'can_leave': can_leave,
         })
     renderdict.update({
         'no_subscription': subscription is None,
@@ -337,32 +343,44 @@ def activate_future_types(request, subscription_id):
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     now = timezone.now().date()
-    if now <= cancelation_date():
-        end_date = end_of_business_year()
-    else:
-        end_date = end_of_next_business_year()
+    end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
-            if extra.active is True:
-                extra.canceled = True
-                extra.save()
-            elif extra.active is False and extra.deactivation_date is None:
-                extra.delete()
-        if subscription.active is True and subscription.canceled is False:
-            subscription.canceled = True
-            subscription.end_date = request.POST.get('end_date')
-            subscription.save()
-            message = request.POST.get('message')
-            AdminNotification.subscription_canceled(subscription, message)
-        elif subscription.active is False and subscription.deactivation_date is None:
-            subscription.delete()
+            cancel_extra_sub(extra)
+        cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
-
     renderdict = get_menu_dict(request)
     renderdict.update({
         'end_date': end_date,
     })
     return render(request, 'cancelsubscription.html', renderdict)
+
+
+@login_required
+def leave_subscription(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    member = request.user.member
+    asc = member.active_shares_count
+    share_error = subscription.share_overflow - asc < 0
+    primary = subscription.primary_member.id == member.id
+    can_leave = member.is_cooperation_member and not share_error and not primary
+    if not can_leave:
+        return redirect('sub-detail')
+    if request.method == 'POST':
+        primary_member = None
+        if member.future_subscription is not None and member.future_subscription.id == subscription_id:
+            primary_member = member.future_subscription.primary_member
+            member.future_subscription = None
+        elif member.subscription is not None and member.subscription.id == subscription_id:
+            primary_member = member.subscription.primary_member
+            member.subscription = None
+            member.old_subscriptions.add(subscription)
+        member.save()
+        if primary_member:
+            MemberNotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
+        return redirect('home')
+    renderdict = get_menu_dict(request)
+    return render(request, 'leavesubscription.html', renderdict)
 
 
 @permission_required('juntagrico.is_operations_group')

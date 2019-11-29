@@ -1,0 +1,16 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load config %}
+{% block content %}
+{% config "organisation_name" as c_organisation_name %}
+{% vocabulary "subscription" as v_subscription %}
+
+{% blocktrans %}
+Soeben ist {{ co_member }} aus eurer/m gemeinsamen {{ v_subscription }} ausgetreten und hat folgende Nachricht hinterlassen:
+{% endblocktrans %}
+{{ message }}
+
+{% blocktrans %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
+{% endblock %}

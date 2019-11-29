@@ -57,6 +57,8 @@ urlpatterns = [
          name='sub-deactivate'),  #
     path('my/subscription/cancel/<int:subscription_id>/', juntagrico_subscription.cancel_subscription,
          name='sub-cancel'),
+    path('my/subscription/leave/<int:subscription_id>/', juntagrico_subscription.leave_subscription,
+         name='sub-leave'),  #
     path('my/type/change/<int:subscription_id>/', juntagrico_subscription.activate_future_types,
          name='activate-future-types'),
     path('my/extra/activate/<int:extra_id>/', juntagrico_subscription.activate_extra, name='extra-activate'),
