@@ -19,6 +19,8 @@ weekday_choices = ((1, _('Montag')),
 
 weekdays = dict(weekday_choices)
 
+def can_change_subscription():
+    return start_of_business_year() <= timezone.now().date() <= cancelation_date()
 
 def weekday_short(day, num):
     weekday = weekdays[day]
