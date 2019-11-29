@@ -1,5 +1,3 @@
-import hashlib
-
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
@@ -31,8 +29,7 @@ def send_mail(subject, message, to_emails, from_email=None, reply_to_email=None,
             attachments = []
         for attachment in attachments:
             msg.attach(attachment.name, attachment.read())
-        print(('Mail sent to ' + ', '.join(ok_mails) +
-               (', on whitelist' if settings.DEBUG else '')))
+        print(('Mail sent to ' + ', '.join(ok_mails) + (', on whitelist' if settings.DEBUG else '')))
         mailer = import_string(Config.default_mailer())
         mailer.send(msg)
 
@@ -189,6 +186,14 @@ class MemberNotification:
             organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
             get_email_content('d_changed', base_dict(locals())),
             emails
+        )
+
+    @staticmethod
+    def co_member_left_subscription(primary_member, co_member, message):
+        send_mail(
+            organisation_subject(_('Austritt aus {}').format(Config.vocabulary('subscription'))),
+            get_email_content('m_left_subscription', base_dict(locals())),
+            primary_member.email
         )
 
     @staticmethod

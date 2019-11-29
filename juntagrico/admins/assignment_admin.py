@@ -1,5 +1,3 @@
-from django.contrib import admin
-
 from juntagrico.admins import BaseAdmin
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.util.admin import formfield_for_coordinator

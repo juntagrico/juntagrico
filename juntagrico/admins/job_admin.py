@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
@@ -74,5 +74,5 @@ class JobAdmin(BaseAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def change_view(self, request, object_id, extra_context=None):
-        extra_context = extra_context_for_past_jobs(request,RecuringJob,object_id,extra_context)
+        extra_context = extra_context_for_past_jobs(request, RecuringJob, object_id, extra_context)
         return super().change_view(request, object_id, extra_context=extra_context)

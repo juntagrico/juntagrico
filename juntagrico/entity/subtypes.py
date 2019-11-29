@@ -69,7 +69,7 @@ class SubscriptionType(JuntagricoBaseModel):
 
     def __str__(self):
         return self.name + ' - ' + _('Grösse') + ': ' + self.size.name \
-               + ' - ' + _('Produkt') + ': ' + self.size.product.name
+            + ' - ' + _('Produkt') + ': ' + self.size.product.name
 
     def __lt__(self, other):
         return self.pk < other.pk

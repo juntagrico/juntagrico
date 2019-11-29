@@ -1,7 +1,5 @@
 import hashlib
 
-from django.contrib.auth.models import Permission, User
-from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 

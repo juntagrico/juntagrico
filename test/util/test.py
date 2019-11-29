@@ -19,6 +19,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_area()
         self.set_up_job()
         self.set_up_depots()
+        self.set_up_sub_types()
         self.set_up_sub()
 
     @staticmethod
@@ -71,26 +72,29 @@ class JuntagricoTestCase(TestCase):
         self.admin.user.is_superuser = True
         self.admin.user.save()
 
+    def get_share_data(self, member):
+        return {'member': member,
+                'paid_date': '2017-03-27',
+                'issue_date': '2017-03-27',
+                'booking_date': None,
+                'cancelled_date': None,
+                'termination_date': None,
+                'payback_date': None,
+                'number': None,
+                'notes': ''
+                }
+
     def set_up_shares(self):
         """
-                shares
-                """
-        self.share_data = {'member': self.member,
-                           'paid_date': '2017-03-27',
-                           'issue_date': '2017-03-27',
-                           'booking_date': None,
-                           'cancelled_date': None,
-                           'termination_date': None,
-                           'payback_date': None,
-                           'number': None,
-                           'notes': ''
-                           }
+        shares
+        """
+        self.share_data = self.get_share_data(self.member)
         Share.objects.create(**self.share_data)
 
     def set_up_area(self):
         """
-                area
-                """
+        area
+        """
         area_data = {'name': 'name',
                      'coordinator': self.member}
         area_data2 = {'name': 'name2',
@@ -100,7 +104,6 @@ class JuntagricoTestCase(TestCase):
         self.area2 = ActivityArea.objects.create(**area_data2)
 
     def set_up_job(self):
-
         """
         job_type
         """
@@ -168,7 +171,7 @@ class JuntagricoTestCase(TestCase):
             'weekday': 1}
         self.depot2 = Depot.objects.create(**depot_data)
 
-    def set_up_sub(self):
+    def set_up_sub_types(self):
         """
         subscription product, size and types
         """
@@ -206,6 +209,8 @@ class JuntagricoTestCase(TestCase):
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
+
+    def set_up_sub(self):
         """
         subscription
         """
@@ -216,7 +221,6 @@ class JuntagricoTestCase(TestCase):
                     'deactivation_date': None,
                     'creation_date': '2017-03-27',
                     'start_date': '2018-01-01',
-                    'primary_member': self.member
                     }
         sub_data2 = {'depot': self.depot,
                      'future_depot': None,
@@ -224,17 +228,20 @@ class JuntagricoTestCase(TestCase):
                      'activation_date': None,
                      'deactivation_date': None,
                      'creation_date': '2017-03-27',
-                     'start_date': '2018-01-01',
-                     'primary_member': self.member2
+                     'start_date': '2018-01-01'
                      }
         self.sub = Subscription.objects.create(**sub_data)
         self.sub2 = Subscription.objects.create(**sub_data2)
         self.member.subscription = self.sub
         self.member.save()
+        self.sub.primary_member = self.member
+        self.sub.save()
         self.member3.subscription = self.sub
         self.member3.save()
         self.member2.future_subscription = self.sub2
         self.member2.save()
+        self.sub2.primary_member = self.member2
+        self.sub2.save()
         TSST.objects.create(subscription=self.sub, type=self.sub_type)
         TFSST.objects.create(subscription=self.sub, type=self.sub_type)
 

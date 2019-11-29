@@ -4,16 +4,18 @@
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
-        {% blocktrans %}Künde dein/e/n {{ v_subscription }}{% endblocktrans %}
+        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
     </h3>
 {% endblock %}
 {% block content %}
     {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "member_type" as v_member_type %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
     <div class="row mb-3">
         <div class="col-md-12">
-            {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
-            Hier kannst du dein/e/n {{ v_subscription }} kündigen. Der nächste
-            reguläre Kündigungstermin ist der <b>{{ ed }}</b>.
+            {% blocktrans trimmed %}
+            Hier kannst du dein/e/n {{ v_subscription }} verlassen. Dabei bleibst du aber {{ v_member_type }} bei {{ v_d_enriched_organisation }}.
+            Unter Personalien kannst du diese/s/n künden.
             {% endblocktrans %}
         </div>
     </div>
@@ -21,16 +23,15 @@
         <div class="col-md-12">
             <form action="" method="post">
                 {% csrf_token %}
-                <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                 <div class="form-group">
                     <label for="message">
-                        {% trans "Mitteilung" %}
+                        {% blocktrans trimmed %} Mitteilung an den/die Haupt-{{ v_subscription }}-BezieherIn {% endblocktrans %}
                     </label>
-                    <textarea name="message" id="message" class="form-control" rows="12"placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
+                    <textarea name="message" id="message" class="form-control" rows="12" placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-danger">
-                        {% blocktrans %}{{ v_subscription }} künden{% endblocktrans %}
+                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
                     </button>
                 </div>
             </form>

@@ -2,7 +2,6 @@ import datetime
 
 from django import forms
 from django.contrib import admin
-from django.contrib.admin import widgets
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 

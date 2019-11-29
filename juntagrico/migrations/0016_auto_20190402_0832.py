@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     def createProduct(apps, schema_editor):
         SubscriptionProduct = apps.get_model('juntagrico', 'SubscriptionProduct')
         SubscriptionSize = apps.get_model('juntagrico', 'SubscriptionSize')
-        if SubscriptionSize.objects.count()>0:
+        if SubscriptionSize.objects.count() > 0:
             SubscriptionProduct.objects.create(name='Product', description='')
 
     dependencies = [

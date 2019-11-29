@@ -1,26 +1,32 @@
-from datetime import datetime as dt
-
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
+from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.forms import *
-from juntagrico.mailer import FormEmails
-from juntagrico.models import *
+from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import Job, Assignment, ActivityArea
+from juntagrico.entity.member import Member
+from juntagrico.forms import MemberProfileForm, PasswordForm
+from juntagrico.mailer import FormEmails, MemberNotification, AdminNotification
 from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.mailer import append_attachements
-from juntagrico.util.management import *
-from juntagrico.util.messages import *
+from juntagrico.util.management import password_generator, cancel_share
+from juntagrico.util.messages import home_messages, job_messages
+from juntagrico.util.temporal import next_membership_end_date
 
 
 def get_page_dict(request):
@@ -57,7 +63,7 @@ def get_menu_dict(request):
     partner_assignments_core = int(
         sum(a.amount for a in partner_assignments if a.is_core()))
     assignmentsrange = list(range(
-        0, max(required_assignments, userassignments_total+partner_assignments_total)))
+        0, max(required_assignments, userassignments_total + partner_assignments_total)))
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
@@ -122,7 +128,7 @@ def job(request, job_id):
         if Config.assignment_unit() == 'ENTITY':
             amount = job.multiplier
         elif Config.assignment_unit() == 'HOURS':
-            amount = job.multiplier*job.type.duration
+            amount = job.multiplier * job.type.duration
         add = int(num)
         for i in range(add):
             assignment = Assignment.objects.create(
@@ -433,9 +439,7 @@ def cancel_membership(request):
 
         member.save()
         for share in member.active_shares:
-            share.cancelled_date = now
-            share.termination_date = end_date
-            share.save()
+            cancel_share(share, now, end_date)
         return redirect('profile')
 
     missing_iban = member.iban == ''
@@ -445,8 +449,8 @@ def cancel_membership(request):
     f_sub = member.future_subscription
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
     current_active = sub is not None and sub.state == 'active' and sub.state == 'waiting'
-    future = future_active and f_sub.share_overflow-asc < 0
-    current = current_active and sub.share_overflow-asc < 0
+    future = future_active and f_sub.share_overflow - asc < 0
+    current = current_active and sub.share_overflow - asc < 0
     share_error = future or current
     can_cancel = not coop_member or (not missing_iban and not share_error)
 
