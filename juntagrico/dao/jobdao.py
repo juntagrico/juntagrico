@@ -61,3 +61,7 @@ class JobDao:
     def get_promoted_jobs():
         return RecuringJob.objects.filter(type__name__in=Config.promoted_job_types(),
                                           time__gte=timezone.now()).order_by('time')[:Config.promomted_jobs_amount()]
+
+    @staticmethod
+    def upcomming_jobs_for_member(member):
+        return Job.objects.filter(time__gte=timezone.now(), assignment__member=member).distinct()

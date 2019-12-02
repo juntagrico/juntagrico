@@ -37,7 +37,7 @@ def get_page_dict(request):
 
 def get_menu_dict(request):
     member = request.user.member
-    next_jobs = [a.job for a in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time')]
+    next_jobs = JobDao.upcomming_jobs_for_member(member)
 
     required_assignments = 0
     if member.subscription is not None:
