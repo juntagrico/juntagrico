@@ -56,7 +56,8 @@ def check_sub_consistency(instance):
             code='invalid')
     pm_waiting = instance.primary_member in instance.recipients_all_for_state('waiting')
     pm_active = instance.primary_member in instance.recipients_all_for_state('active')
-    if instance.primary_member is not None and not (pm_waiting or pm_active):
+    pm_form = instance._future_members and instance.primary_member in instance._future_members
+    if instance.primary_member is not None and not (pm_waiting or pm_active or pm_form):
         raise ValidationError(
             _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
             code='invalid')
