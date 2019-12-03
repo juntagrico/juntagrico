@@ -42,8 +42,8 @@ def start_of_next_business_year():
 
 
 def end_of_next_business_year():
-    tmp = end_of_business_year()
-    return datetime.date(tmp.year + 1, tmp.month, tmp.day)
+    tmp = start_of_next_business_year()
+    return datetime.date(tmp.year + 1, tmp.month, tmp.day) - timedelta(days=1)
 
 
 def start_of_specific_business_year(refdate):
