@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.utils.timezone import get_default_timezone as gdtz
 
 
 from juntagrico.config import Config
@@ -42,7 +43,7 @@ class JobDao:
 
     @staticmethod
     def get_jobs_for_current_day():
-        daystart = datetime.combine(date.today(), time.min)
+        daystart = datetime.combine(date.today(), time.min, tzinfo=gdtz())
         return Job.objects.filter(time__gte=daystart).order_by('time')
 
     @staticmethod

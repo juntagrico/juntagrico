@@ -90,7 +90,7 @@ def subscription_change(request, subscription_id):
     change an subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now().date()
+    now = timezone.now()
     can_change = not (temporal.cancelation_date() <= now < temporal.start_of_next_business_year())
     renderdict = get_menu_dict(request)
     renderdict.update({

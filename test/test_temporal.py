@@ -1,6 +1,8 @@
-from datetime import date
+from datetime import datetime
 
 from django.test import TestCase
+from django.utils import timezone
+from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.util.temporal import start_of_business_year
 from juntagrico.util.temporal import start_of_specific_business_year,\
@@ -10,22 +12,22 @@ from juntagrico.util.temporal import start_of_specific_business_year,\
 class BusinessYearTests(TestCase):
 
     def test_start_of_business_year(self):
-        today = date.today()
-        expected_start = date(today.year, 1, 1)
+        today = timezone.now()
+        expected_start = datetime(today.year, 1, 1, tzinfo=gdtz())
         self.assertEqual(expected_start, start_of_business_year())
 
     def test_start_of_specific_business_year(self):
-        self.assertEqual(date(2018, 1, 1),
-                         start_of_specific_business_year(date(2018, 7, 24)))
-        self.assertEqual(date(2018, 1, 1),
-                         start_of_specific_business_year(date(2018, 1, 1)))
-        self.assertEqual(date(2018, 1, 1),
-                         start_of_specific_business_year(date(2018, 12, 31)))
+        self.assertEqual(datetime(2018, 1, 1, tzinfo=gdtz()),
+                         start_of_specific_business_year(datetime(2018, 7, 24, tzinfo=gdtz())))
+        self.assertEqual(datetime(2018, 1, 1, tzinfo=gdtz()),
+                         start_of_specific_business_year(datetime(2018, 1, 1, tzinfo=gdtz())))
+        self.assertEqual(datetime(2018, 1, 1, tzinfo=gdtz()),
+                         start_of_specific_business_year(datetime(2018, 12, 31, tzinfo=gdtz())))
 
     def test_end_of_specific_business_year(self):
-        self.assertEqual(date(2018, 12, 31),
-                         end_of_specific_business_year(date(2018, 7, 24)))
-        self.assertEqual(date(2018, 12, 31),
-                         end_of_specific_business_year(date(2018, 1, 1)))
-        self.assertEqual(date(2018, 12, 31),
-                         end_of_specific_business_year(date(2018, 12, 31)))
+        self.assertEqual(datetime(2018, 12, 31, tzinfo=gdtz()),
+                         end_of_specific_business_year(datetime(2018, 7, 24, tzinfo=gdtz())))
+        self.assertEqual(datetime(2018, 12, 31, tzinfo=gdtz()),
+                         end_of_specific_business_year(datetime(2018, 1, 1, tzinfo=gdtz())))
+        self.assertEqual(datetime(2018, 12, 31, tzinfo=gdtz()),
+                         end_of_specific_business_year(datetime(2018, 12, 31, tzinfo=gdtz())))
