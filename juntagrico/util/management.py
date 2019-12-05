@@ -6,7 +6,7 @@ from juntagrico.config import Config
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TFSST, TSST
-from juntagrico.mailer import MemberNotification
+from juntagrico.mailer import MemberNotification, AdminNotification
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
