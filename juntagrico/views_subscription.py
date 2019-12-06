@@ -198,7 +198,7 @@ def extra_change(request, subscription_id):
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
-        for type in ExtraSubscriptionTypeDao.all_extra_types():
+        for type in ExtraSubscriptionTypeDao.all_visible_extra_types():
             value = int(request.POST.get('extra' + str(type.id)))
             if value > 0:
                 for x in range(value):
