@@ -6,8 +6,11 @@ from juntagrico.mailer import AdminNotification
 from juntagrico.signals import share_created
 
 
-def share_post_save(sender, instance, created, **kwargs):
+def share_pre_save(sender, instance, **kwargs):
     check_share_consistency(instance)
+
+
+def share_post_save(sender, instance, created, **kwargs):
     if created:
         share_created.send(sender=sender, instance=instance)
 

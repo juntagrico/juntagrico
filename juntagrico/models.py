@@ -13,10 +13,10 @@ from juntagrico.lifecycle.extrasub import extra_sub_pre_save, handle_extra_sub_d
 from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
 from juntagrico.lifecycle.member import member_pre_save, member_post_save, handle_member_deactivated, \
     handle_member_created
-from juntagrico.lifecycle.share import share_post_save, handle_share_created
+from juntagrico.lifecycle.share import share_post_save, handle_share_created, share_pre_save
 from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_sub_deactivated, handle_sub_activated, \
     sub_post_save, handle_sub_created
-from juntagrico.util.signals import register_entities_for_post_init
+from juntagrico.util.signals import register_entities_for_post_init_and_save
 
 
 class SpecialRoles(models.Model):
@@ -57,6 +57,7 @@ signals.pre_save.connect(extra_sub_pre_save, sender=ExtraSubscription)
 juntagrico.signals.extra_sub_activated.connect(handle_extra_sub_activated, sender=ExtraSubscription)
 juntagrico.signals.extra_sub_deactivated.connect(handle_extra_sub_deactivated, sender=ExtraSubscription)
 ''' share handling '''
+signals.pre_save.connect(share_pre_save, sender=Share)
 signals.post_save.connect(share_post_save, sender=Share)
 juntagrico.signals.share_created.connect(handle_share_created, sender=Share)
 ''' member handling '''
@@ -65,4 +66,4 @@ signals.post_save.connect(member_post_save, sender=Member)
 juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
 ''' lifecycle all post init'''
-register_entities_for_post_init()
+register_entities_for_post_init_and_save()
