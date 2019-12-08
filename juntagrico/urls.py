@@ -23,8 +23,8 @@ urlpatterns = [
     path('my/depot/<int:depot_id>/', juntagrico.depot, name='depot'),  #
     path('my/deliveries', juntagrico.deliveries, name='deliveries'),  #
     path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),
-    path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),
-    path('my/cookies', juntagrico.cookies, name='cookies'),
+    path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),  #
+    path('my/cookies', juntagrico.cookies, name='cookies'),  #
     path('logout/', juntagrico.logout_view, name='logout'),
     path('accounts/login/', LoginView.as_view(), name='login'),
 
