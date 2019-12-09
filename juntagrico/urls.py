@@ -36,8 +36,7 @@ urlpatterns = [
 
     # subscription related juntagrico stuff
     path('my/subscription/detail/', juntagrico_subscription.subscription, name='sub-detail'),  #
-    path('my/subscription/detail/<int:subscription_id>/', juntagrico_subscription.subscription, name='sub-detail-id'),
-    #
+    path('my/subscription/detail/<int:subscription_id>/', juntagrico_subscription.subscription, name='sub-detail-id'),  #
     path('my/subscription/change/overview/<int:subscription_id>/', juntagrico_subscription.subscription_change,
          name='sub-change'),  #
     path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
