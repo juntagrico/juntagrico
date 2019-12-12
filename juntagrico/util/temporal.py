@@ -1,8 +1,9 @@
 import calendar
 import datetime
 from datetime import timedelta
-from django.utils import timezone
 
+from django.utils import timezone
+from django.utils.timezone import get_default_timezone as gdtz
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -44,8 +45,8 @@ def start_of_next_business_year():
 
 
 def end_of_next_business_year():
-    tmp = end_of_business_year()
-    return datetime.date(tmp.year + 1, tmp.month, tmp.day)
+    tmp = start_of_next_business_year()
+    return datetime.datetime(tmp.year + 1, tmp.month, tmp.day, tzinfo=gdtz()) - timedelta(days=1)
 
 
 def start_of_specific_business_year(refdate):
@@ -73,7 +74,7 @@ def next_cancelation_date():
         year = now.year
     else:
         year = now.year + 1
-    return datetime.date(year, c_month, calendar.monthrange(year, c_month)[1])
+    return datetime.datetime(year, c_month, calendar.monthrange(year, c_month)[1], tzinfo=gdtz())
 
 
 def cancelation_date():
@@ -83,11 +84,11 @@ def cancelation_date():
         year = start.year
     else:
         year = start.year + 1
-    return datetime.date(year, c_month, calendar.monthrange(year, c_month)[1])
+    return datetime.datetime(year, c_month, calendar.monthrange(year, c_month)[1], tzinfo=gdtz())
 
 
 def next_membership_end_date():
-    now = timezone.now().date()
+    now = timezone.now()
     month = Config.membership_end_month()
     if now <= cancelation_date():
         offset = end_of_business_year()
@@ -103,7 +104,7 @@ def calculate_next(day, month):
         year = now.year
     else:
         year = now.year + 1
-    return datetime.date(year, month, day)
+    return datetime.datetime(year, month, day, tzinfo=gdtz())
 
 
 def calculate_last(day, month):
@@ -112,7 +113,7 @@ def calculate_last(day, month):
         year = now.year
     else:
         year = now.year - 1
-    return datetime.date(year, month, day)
+    return datetime.datetime(year, month, day, tzinfo=gdtz())
 
 
 def calculate_next_offset(day, month, offset):
@@ -120,7 +121,7 @@ def calculate_next_offset(day, month, offset):
         year = offset.year
     else:
         year = offset.year + 1
-    return datetime.date(year, month, day)
+    return datetime.datetime(year, month, day, tzinfo=gdtz())
 
 
 def calculate_last_offset(day, month, offset):
@@ -128,7 +129,7 @@ def calculate_last_offset(day, month, offset):
         year = offset.year
     else:
         year = offset.year - 1
-    return datetime.date(year, month, day)
+    return datetime.datetime(year, month, day, tzinfo=gdtz())
 
 
 month_choices = ((1, _('Januar')),

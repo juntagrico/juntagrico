@@ -14,7 +14,7 @@ def share_pain001(request):
         raise Http404
     now = timezone.now()
     response = HttpResponse(content_type='text/xml')
-    response['Content-Disposition'] = 'attachment; filename = "share_pain'+now.strftime('%y_%m_%d_%H_%M')+'.xml"'
+    response['Content-Disposition'] = 'attachment; filename = "share_pain' + now.strftime('%y_%m_%d_%H_%M') + '.xml"'
     t = loader.get_template('iso20022/share_pain.001.xml')
     share_ids = request.POST.get('share_ids').split('_')
     shares = [get_object_or_404(Share, id=int(sid)) for sid in share_ids]

@@ -39,7 +39,7 @@ def job_messages(request, job):
         result.append(get_template('messages/job_running.html').render())
     if member in all_participants:
         render_dict = {
-            'amount': all_participants.count(member)-1,
+            'amount': all_participants.count(member) - 1,
         }
         template = get_template('messages/job_assigned.html')
         render_result = template.render(render_dict)

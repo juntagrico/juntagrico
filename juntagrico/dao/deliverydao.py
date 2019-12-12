@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-from juntagrico.models import Delivery
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.delivery import Delivery
 
 
 class DeliveryDao:

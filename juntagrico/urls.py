@@ -23,8 +23,8 @@ urlpatterns = [
     path('my/depot/<int:depot_id>/', juntagrico.depot, name='depot'),  #
     path('my/deliveries', juntagrico.deliveries, name='deliveries'),  #
     path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),
-    path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),
-    path('my/cookies', juntagrico.cookies, name='cookies'),
+    path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),  #
+    path('my/cookies', juntagrico.cookies, name='cookies'),  #
     path('logout/', juntagrico.logout_view, name='logout'),
     path('accounts/login/', LoginView.as_view(), name='login'),
 
@@ -36,25 +36,28 @@ urlpatterns = [
 
     # subscription related juntagrico stuff
     path('my/subscription/detail/', juntagrico_subscription.subscription, name='sub-detail'),  #
-    path('my/subscription/detail/<int:subscription_id>/', juntagrico_subscription.subscription, name='sub-detail-id'),
-    #
+    path('my/subscription/detail/<int:subscription_id>/', juntagrico_subscription.subscription, name='sub-detail-id'),  #
     path('my/subscription/change/overview/<int:subscription_id>/', juntagrico_subscription.subscription_change,
          name='sub-change'),  #
     path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
          name='depot-change'),  #
+    path('my/subscription/change/primary/<int:subscription_id>/', juntagrico_subscription.primary_change,
+         name='primary-change'),  #
     path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),
     #
     path('my/subscription/change/extra/<int:subscription_id>/', juntagrico_subscription.extra_change,
          name='extra-change'),
     path('my/signup/', juntagrico_subscription.SignupView.as_view(), name='signup'),
     path('my/cosubmember/<int:subscription_id>/', juntagrico_subscription.AddCoMemberView.as_view(), name='add-member'),
-    path('my/confirm/<str:hash>/', juntagrico_subscription.confirm, name='confirm'),
+    path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
     path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
          name='sub-activate'),  #
     path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
          name='sub-deactivate'),  #
     path('my/subscription/cancel/<int:subscription_id>/', juntagrico_subscription.cancel_subscription,
          name='sub-cancel'),
+    path('my/subscription/leave/<int:subscription_id>/', juntagrico_subscription.leave_subscription,
+         name='sub-leave'),  #
     path('my/type/change/<int:subscription_id>/', juntagrico_subscription.activate_future_types,
          name='activate-future-types'),
     path('my/extra/activate/<int:extra_id>/', juntagrico_subscription.activate_extra, name='extra-activate'),
@@ -106,7 +109,6 @@ urlpatterns = [
     path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
     path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
-    path('my/maps', juntagrico_admin.maps, name='maps'),
 
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
 ]

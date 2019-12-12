@@ -1,25 +1,32 @@
-from datetime import datetime as dt
-
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
+from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.forms import *
-from juntagrico.models import *
+from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import Job, Assignment, ActivityArea
+from juntagrico.entity.member import Member
+from juntagrico.forms import MemberProfileForm, PasswordForm
+from juntagrico.mailer import FormEmails, MemberNotification, AdminNotification
 from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.mailer import *
-from juntagrico.util.management import *
-from juntagrico.util.messages import *
+from juntagrico.util.mailer import append_attachements
+from juntagrico.util.management import password_generator, cancel_share
+from juntagrico.util.messages import home_messages, job_messages
+from juntagrico.util.temporal import next_membership_end_date
 
 
 def get_page_dict(request):
@@ -30,7 +37,7 @@ def get_page_dict(request):
 
 def get_menu_dict(request):
     member = request.user.member
-    next_jobs = [a.job for a in AssignmentDao.upcomming_assignments_for_member(member).order_by('job__time')]
+    next_jobs = JobDao.upcomming_jobs_for_member(member)
 
     required_assignments = 0
     if member.subscription is not None:
@@ -55,7 +62,7 @@ def get_menu_dict(request):
     partner_assignments_core = int(
         sum(a.amount for a in partner_assignments if a.is_core()))
     assignmentsrange = list(range(
-        0, max(required_assignments, userassignments_total+partner_assignments_total)))
+        0, max(required_assignments, userassignments_total + partner_assignments_total)))
 
     depot_admin = DepotDao.depots_for_contact(request.user.member)
     area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
@@ -120,7 +127,7 @@ def job(request, job_id):
         if Config.assignment_unit() == 'ENTITY':
             amount = job.multiplier
         elif Config.assignment_unit() == 'HOURS':
-            amount = job.multiplier*job.type.duration
+            amount = job.multiplier * job.type.duration
         add = int(num)
         for i in range(add):
             assignment = Assignment.objects.create(
@@ -130,7 +137,7 @@ def job(request, job_id):
                 assignment.job_extras.add(extra)
         assignment.save()
 
-        send_job_signup([member.email], job)
+        MemberNotification.job_signup([member.email], job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return redirect('job', job_id=job_id)
@@ -193,7 +200,8 @@ def depot(request, depot_id):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'depot': depot
+        'depot': depot,
+        'requires_map': depot.has_geo
     })
     return render(request, 'depot.html', renderdict)
 
@@ -266,7 +274,7 @@ def area_join(request, area_id):
     new_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     new_area.members.add(member)
-    send_new_member_in_activityarea_to_operations(new_area, member)
+    AdminNotification.member_joined_activityarea(new_area, member)
     new_area.save()
     return HttpResponse('')
 
@@ -276,7 +284,7 @@ def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     old_area.members.remove(member)
-    send_removed_member_in_activityarea_to_operations(old_area, member)
+    AdminNotification.member_left_activityarea(old_area, member)
     old_area.save()
     return HttpResponse('')
 
@@ -288,7 +296,7 @@ def jobs(request):
     '''
     renderdict = get_menu_dict(request)
 
-    jobs = JobDao.get_current_jobs()
+    jobs = JobDao.get_jobs_for_current_day()
     renderdict.update({
         'jobs': jobs,
         'show_all': True,
@@ -338,9 +346,8 @@ def contact(request):
     is_sent = False
 
     if request.method == 'POST':
-        # send mail to bg
-        send_contact_form(request.POST.get('subject'), request.POST.get(
-            'message'), member, request.POST.get('copy'))
+        # send mail to organisation
+        FormEmails.contact(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
         is_sent = True
 
     renderdict = get_menu_dict(request)
@@ -365,8 +372,8 @@ def contact_member(request, member_id, job_id):
         # send mail to member
         attachments = []
         append_attachements(request, attachments)
-        send_contact_member_form(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
-                                 request.POST.get('copy'), attachments)
+        FormEmails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
+                                  request.POST.get('copy'), attachments)
         is_sent = True
     job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)
@@ -418,22 +425,20 @@ def cancel_membership(request):
     member = request.user.member
     if request.method == 'POST':
         now = timezone.now().date()
-        end_date = dt.strptime(request.POST.get('end_date'), '%Y-%m-%d').date()
+        end_date = next_membership_end_date().date()
         message = request.POST.get('message')
         member = request.user.member
         member.canceled = True
         member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
-            send_membership_canceled(member, end_date, message)
+            AdminNotification.member_canceled(member, end_date, message)
         else:
             member.inactive = True
 
         member.save()
         for share in member.active_shares:
-            share.cancelled_date = now
-            share.termination_date = end_date
-            share.save()
+            cancel_share(share, now, end_date)
         return redirect('profile')
 
     missing_iban = member.iban == ''
@@ -443,8 +448,8 @@ def cancel_membership(request):
     f_sub = member.future_subscription
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
     current_active = sub is not None and sub.state == 'active' and sub.state == 'waiting'
-    future = future_active and f_sub.share_overflow-asc < 0
-    current = current_active and sub.share_overflow-asc < 0
+    future = future_active and f_sub.share_overflow - asc < 0
+    current = current_active and sub.share_overflow - asc < 0
     share_error = future or current
     can_cancel = not coop_member or (not missing_iban and not share_error)
 
@@ -461,7 +466,7 @@ def cancel_membership(request):
 
 @login_required
 def send_confirm(request):
-    send_confirm_mail(request.user.member)
+    MemberNotification.email_confirmation(request.user.member)
     renderdict = get_menu_dict(request)
     return render(request, 'info/confirmation_sent.html', renderdict)
 
@@ -501,7 +506,7 @@ def new_password(request):
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()
-            send_mail_password_reset(member.email, pw)
+            MemberNotification.reset_password(member.email, pw)
 
     renderdict = get_page_dict(request)
     renderdict.update({

@@ -1,12 +1,9 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.admin import widgets
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
 
-from juntagrico.config import Config
-from juntagrico.entity.subs import Subscription
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.subs import Subscription
+
 
 # This form exists to restrict primary user choice to users that have actually set the
 # current subscription as their subscription
