@@ -29,7 +29,7 @@ from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
 from juntagrico.util.management import cancel_sub, cancel_extra_sub
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date
+    cancelation_date, is_date_in_cancelation_period
 from juntagrico.views import get_menu_dict, get_page_dict
 from juntagrico.util import addons
 
@@ -54,7 +54,7 @@ def subscription(request, subscription_id=None):
 
     if subscription is not None:
         cancelation_date = subscription.cancelation_date
-        if cancelation_date is not None and cancelation_date <= next_cancelation_date():
+        if cancelation_date is not None and cancelation_date <= next_cancelation_date().date():
             end_date = end_of_business_year()
         asc = member.active_shares_count
         share_error = subscription.share_overflow-asc < 0
@@ -168,7 +168,7 @@ def size_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     share_error = False
-    if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month():
+    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now()):
         # create dict with subscription type -> selected amount
         selected = selected_subscription_types(request.POST)
         # check if members of sub have enough shares

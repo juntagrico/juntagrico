@@ -8,7 +8,6 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 
-
 weekday_choices = ((1, _('Montag')),
                    (2, _('Dienstag')),
                    (3, _('Mittwoch')),
@@ -17,8 +16,11 @@ weekday_choices = ((1, _('Montag')),
                    (6, _('Samstag')),
                    (7, _('Sonntag')))
 
-
 weekdays = dict(weekday_choices)
+
+
+def is_date_in_cancelation_period(date):
+    return start_of_business_year() <= date <= cancelation_date()
 
 
 def weekday_short(day, num):
