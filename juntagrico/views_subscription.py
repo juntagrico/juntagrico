@@ -168,7 +168,7 @@ def size_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     share_error = False
-    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now().date()):
+    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now()):
         # create dict with subscription type -> selected amount
         selected = selected_subscription_types(request.POST)
         # check if members of sub have enough shares
