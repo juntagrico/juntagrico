@@ -86,6 +86,7 @@ def get_menu_dict(request):
         'show_extras': JobExtraDao.all_job_extras().count() > 0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription)) > 0,
         'admin_menus': addons.config.get_admin_menus(),
+        'admin_subscription_menus': addons.config.get_admin_subscription_menu(),
         'user_menus': addons.config.get_user_menus(),
         'messages': [],
 

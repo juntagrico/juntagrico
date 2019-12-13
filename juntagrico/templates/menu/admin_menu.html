@@ -68,6 +68,9 @@
                             </a>
                         </li>
                     {% endif %}
+                    {% for menu in admin_subscription_menus %}
+                        {% include menu %}
+                    {% endfor %}
                 </ul>
             </div>
         </li>
