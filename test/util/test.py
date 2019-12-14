@@ -3,6 +3,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
@@ -244,6 +245,17 @@ class JuntagricoTestCase(TestCase):
         self.sub2.save()
         TSST.objects.create(subscription=self.sub, type=self.sub_type)
         TFSST.objects.create(subscription=self.sub, type=self.sub_type)
+
+    def set_up_extra_sub(self):
+        '''
+        extra subscription
+        '''
+        esub_cat_data = {'name': 'Extrasub_Category'}
+        self.esub_cat = ExtraSubscriptionCategory.objects.create(**esub_cat_data)
+        esub_type_data = {'name': 'Extrasub_Type',
+                          'description': 'desc',
+                          'category': self.esub_cat}
+        self.esub_type = ExtraSubscriptionType.objects.create(**esub_type_data)
 
     def assertGet(self, url, code=200, member=None):
         login_member = member or self.member
