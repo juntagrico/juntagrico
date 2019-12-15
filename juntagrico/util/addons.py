@@ -10,6 +10,7 @@ class AddonsConfig:
 
     def __init__(self):
         self._admin_menus = []
+        self._admin_subscription_menus = []
         self._user_menus = []
         self._sub_overview = []
         self._sub_change = []
@@ -46,6 +47,12 @@ class AddonsConfig:
 
     def get_sub_changes(self):
         return self._sub_change
+
+    def register_admin_subscription_menu(self, template):
+        self._admin_subscription_menus.append(template)
+
+    def get_admin_subscription_menu(self):
+        return self._admin_subscription_menus
 
 
 class DefaultAddonsConfig(LazyObject):
