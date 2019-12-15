@@ -22,6 +22,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_depots()
         self.set_up_sub_types()
         self.set_up_sub()
+        self.set_up_extra_sub()
 
     @staticmethod
     def create_member(email):
