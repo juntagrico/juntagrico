@@ -48,7 +48,7 @@ class ExtraSubBillingPeriod(JuntagricoBaseModel):
         return calculate_next_offset(self.cancel_day,
                                      self.cancel_month,
                                      self.get_actual_start())
-    
+
     def __str__(self):
         return '{0}({1}.{2} - {3}.{4})'.format(self.type.name,
                                                self.start_day,
