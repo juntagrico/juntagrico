@@ -1,8 +1,8 @@
-Django==2.2.6
-django-crispy-forms==1.8.0
+Django==3.0
+django-crispy-forms==1.8.1
 django-impersonate==1.4.1
 django-polymorphic==2.1.2
 ics==0.6
 schwifty==2018.9.1
 xhtml2pdf==0.2.3
-XlsxWriter==1.2.2
+XlsxWriter==1.2.6
