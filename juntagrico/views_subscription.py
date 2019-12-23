@@ -275,6 +275,11 @@ class AddCoMemberView(FormView, ModelFormMixin):
         self.object = None
         self.subscription = None
 
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients_all]
+        return form_kwargs
+
     def get_initial(self):
         # use address from main member as default
         mm = self.request.user.member
