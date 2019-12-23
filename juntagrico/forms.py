@@ -190,6 +190,9 @@ class CoMemberBaseForm(MemberBaseForm):
                 self.existing_member = existing_member
         return email
 
+    def clean(self):
+        return self.cleaned_data
+
     @staticmethod
     def get_submit_button():
         return Submit('submit', _('{} hinzufügen').format(Config.vocabulary('co_member')), css_class='btn-success')

@@ -277,7 +277,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients_all]
+        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
         return form_kwargs
 
     def get_initial(self):
@@ -295,8 +295,10 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # create new member from form data
-        create_or_update_co_member(form.instance, self.subscription, form.cleaned_data['shares'])
+        # create new member from form data or update existing
+        co_member = form.instance
+        co_member.pk = getattr(getattr(form, 'existing_member', None), 'pk', None)
+        create_or_update_co_member(co_member, self.subscription, form.cleaned_data['shares'])
         return self._done()
 
     def _done(self):
