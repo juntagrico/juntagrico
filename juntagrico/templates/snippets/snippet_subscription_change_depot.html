@@ -1,0 +1,21 @@
+{% load i18n %}
+{% load config %}
+{% vocabulary "depot" as v_depot %}
+<div class="row mt-3">
+    <div class="col-md-2">
+        {% vocabulary "depot" %}
+    </div>
+    <div class="col-md-4">
+        {% trans "Du bist umgezogen oder möchtest aus einem anderen Grund wechseln?" %} {% trans "Du kannst jederzeit wechseln - die Änderung wird sobald aktiv von uns kommuniziert." %}
+    </div>
+    <div class="col-md-4">
+        {% trans "Aktuell" %}:
+        <br/>
+        {{ subscription.depot.name }}
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'depot-change' subscription.id %}" class="btn btn-success">
+            {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}
+        </a>
+    </div>
+</div>

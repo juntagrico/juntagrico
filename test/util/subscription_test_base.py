@@ -47,7 +47,6 @@ class SubscriptionTestBase(django.test.TestCase):
 
         self.subscription = Subscription.objects.create(
             depot=depot,
-            primary_member=member,
             active=True,
             activation_date=date(2018, 1, 1)
             )

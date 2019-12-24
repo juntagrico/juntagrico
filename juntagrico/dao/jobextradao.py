@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-from django.utils import timezone
-
-from juntagrico.models import *
-from juntagrico.config import Config
+from juntagrico.entity.jobs import JobExtra
 
 
 class JobExtraDao:

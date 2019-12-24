@@ -8,6 +8,7 @@
 Soeben hat {{ fn }} {{ ln }} die {{ v_subscriptions }} per {{ sd }} gekündet.
 email : {{e }}
 {% endblocktrans %}
+{{ serverurl }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 
 {% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
 {{ message}}

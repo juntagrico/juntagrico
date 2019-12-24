@@ -64,8 +64,9 @@ class ExtraSubscription(Billable):
     def can_cancel(self):
         period = ExtraSubBillingPeriodDao.get_current_period_per_type(
             self.type)
-        print(period.get_actual_cancel())
-        return timezone.now().date() <= period.get_actual_cancel()
+        if period is not None:
+            return timezone.now() <= period.get_actual_cancel()
+        return False
 
     @property
     def state(self):

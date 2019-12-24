@@ -113,7 +113,6 @@ ORGANISATION_BANK_CONNECTION
   - BIC
   - IBAN
   - NAME
-  - ESR (if you enable billing)
 
   default value
 
@@ -122,8 +121,7 @@ ORGANISATION_BANK_CONNECTION
     {"PC" : "01-123-5",
         "IBAN" : "CH 00 12345 67890 12345 67890 10",
         "BIC" : "BIC12345XX",
-        "NAME" : "Juntagrico Bank",
-        "ESR" : "01-123-45"}
+        "NAME" : "Juntagrico Bank",}
 
 INFO_EMAIL
 ----------
@@ -402,18 +400,6 @@ DEPOT_LIST_GENERATION_DAYS
 
     [0,1,2,3,4,5,6]
 
-BILLING
--------
-  Enabling bill generation and management
-  
-  Type: Boolean
-
-  default value
-
-  .. code-block:: python
-
-    False
-
 BUSINESS_YEAR_START
 -------------------
   Defining the start of the business year
@@ -539,19 +525,4 @@ EMAILS
         'n_sub': 'mails/new_subscription.txt',
         's_canceled': 'mails/subscription_canceled_mail.txt',
         'm_canceled': 'mails/membership_canceled_mail.txt',
-        'b_share': 'mails/bill_share.txt',
-        'b_sub': 'mails/bill_sub.txt',
-        'b_esub': 'mails/bill_extrasub.txt'
     }
-
-GOOGLE_API_KEY
---------------
-  The google api key to enable the maps in juntagrico
-  
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "GOOGLE_API_KEY"
