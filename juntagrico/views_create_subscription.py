@@ -116,12 +116,12 @@ class CSAddMemberView(FormView, ModelFormMixin):
 
     def form_invalid(self, form):
         if form.existing_member:  # use existing member if found
-            return self._add_or_replace_co_member(form.existing_member)
+            return self.form_valid(form)
         return super().form_invalid(form)
 
     def form_valid(self, form):
         # create new member from form data
-        return self._add_or_replace_co_member(form.instance)
+        return self._add_or_replace_co_member(form.existing_member or form.instance)
 
     def _add_or_replace_co_member(self, member):
         if self.edit:
