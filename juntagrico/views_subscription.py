@@ -185,7 +185,6 @@ def size_change(request, subscription_id):
         'shareerror': share_error,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
-        'selected_subscription': subscription.future_types.all()[0].id,
         'products': products,
     })
     return render(request, 'size_change.html', renderdict)
@@ -349,7 +348,7 @@ def activate_future_types(request, subscription_id):
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now().date()
+    now = timezone.now()
     end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
