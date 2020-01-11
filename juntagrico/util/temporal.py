@@ -46,7 +46,7 @@ def start_of_next_business_year():
 
 def end_of_next_business_year():
     tmp = start_of_next_business_year()
-    return datetime.datetime(tmp.year + 1, tmp.month, tmp.day, tzinfo=gdtz()) - timedelta(days=1)
+    return datetime.date(tmp.year + 1, tmp.month, tmp.day) - timedelta(days=1)
 
 
 def start_of_specific_business_year(refdate):
@@ -74,7 +74,7 @@ def next_cancelation_date():
         year = now.year
     else:
         year = now.year + 1
-    return datetime.datetime(year, c_month, calendar.monthrange(year, c_month)[1], tzinfo=gdtz())
+    return datetime.date(year, c_month, calendar.monthrange(year, c_month)[1])
 
 
 def cancelation_date():
@@ -84,11 +84,11 @@ def cancelation_date():
         year = start.year
     else:
         year = start.year + 1
-    return datetime.datetime(year, c_month, calendar.monthrange(year, c_month)[1], tzinfo=gdtz())
+    return datetime.date(year, c_month, calendar.monthrange(year, c_month)[1])
 
 
 def next_membership_end_date():
-    now = timezone.now()
+    now = timezone.now().date()
     month = Config.membership_end_month()
     if now <= cancelation_date():
         offset = end_of_business_year()
@@ -104,7 +104,7 @@ def calculate_next(day, month):
         year = now.year
     else:
         year = now.year + 1
-    return datetime.datetime(year, month, day, tzinfo=gdtz())
+    return datetime.date(year, month, day)
 
 
 def calculate_last(day, month):
@@ -113,7 +113,7 @@ def calculate_last(day, month):
         year = now.year
     else:
         year = now.year - 1
-    return datetime.datetime(year, month, day, tzinfo=gdtz())
+    return datetime.date(year, month, day)
 
 
 def calculate_next_offset(day, month, offset):
@@ -121,7 +121,7 @@ def calculate_next_offset(day, month, offset):
         year = offset.year
     else:
         year = offset.year + 1
-    return datetime.datetime(year, month, day, tzinfo=gdtz())
+    return datetime.date(year, month, day)
 
 
 def calculate_last_offset(day, month, offset):
@@ -129,7 +129,7 @@ def calculate_last_offset(day, month, offset):
         year = offset.year
     else:
         year = offset.year - 1
-    return datetime.datetime(year, month, day, tzinfo=gdtz())
+    return datetime.date(year, month, day)
 
 
 month_choices = ((1, _('Januar')),

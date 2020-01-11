@@ -65,7 +65,7 @@ class ExtraSubscription(Billable):
         period = ExtraSubBillingPeriodDao.get_current_period_per_type(
             self.type)
         if period is not None:
-            return timezone.now() <= period.get_actual_cancel()
+            return timezone.now().date() <= period.get_actual_cancel()
         return False
 
     @property
