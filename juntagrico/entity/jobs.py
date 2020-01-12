@@ -120,8 +120,10 @@ class AbstractJobType(JuntagricoBaseModel):
 
 class JobType(AbstractJobType):
     '''
-    Recuring type of job. do not add field here do it in the parent
+    Recuring type of job. do only add fields here you do not need in a onetime job
     '''
+
+    visible = models.BooleanField(_('Sichtbar'), default=True)
 
     class Meta:
         verbose_name = _('Jobart')
