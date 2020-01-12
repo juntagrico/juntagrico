@@ -17,6 +17,7 @@ class ExtraSubscriptionType(JuntagricoBaseModel):
     description = models.TextField(_('Beschreibung'), max_length=1000)
     sort_order = models.FloatField(_('Groesse zum Sortieren'), default=1.0)
     visible = models.BooleanField(_('Sichtbar'), default=True)
+    depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
     category = models.ForeignKey('ExtraSubscriptionCategory', related_name='category', null=True, blank=True,
 
                                  on_delete=models.PROTECT)
