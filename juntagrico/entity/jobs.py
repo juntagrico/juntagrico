@@ -215,6 +215,7 @@ class Job(JuntagricoBasePoly):
 
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT)
+    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, default='')
 
     class Meta:
         verbose_name = _('Job')
