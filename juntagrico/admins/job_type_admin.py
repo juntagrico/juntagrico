@@ -38,6 +38,7 @@ class JobTypeAdmin(BaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,
+                                           db_field.name,
                                            'activityarea',
                                            'juntagrico.is_area_admin',
                                            ActivityAreaDao.areas_by_coordinator)

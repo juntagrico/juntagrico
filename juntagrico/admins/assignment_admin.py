@@ -17,6 +17,7 @@ class AssignmentAdmin(BaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,
+                                           db_field.name,
                                            'job',
                                            'juntagrico.is_area_admin',
                                            JobDao.ids_for_area_by_contact)
