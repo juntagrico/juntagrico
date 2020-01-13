@@ -39,6 +39,7 @@ class ExtraSubscriptionCategory(JuntagricoBaseModel):
         _('Beschreibung'), max_length=1000, blank=True)
     sort_order = models.FloatField(_('Nummer zum Sortieren'), default=1.0)
     visible = models.BooleanField(_('Sichtbar'), default=True)
+    depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
 
     def __str__(self):
         return '%s %s' % (self.id, self.name)

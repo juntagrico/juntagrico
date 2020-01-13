@@ -76,7 +76,7 @@ class Command(BaseCommand):
             cat['count'] = count
             categories.append(cat)
 
-        for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
+        for category in ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered():
             cat = {'name': category.name, 'description': category.description}
             count = 0
             for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_for_depot_list_ordered(category):
