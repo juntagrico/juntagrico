@@ -132,7 +132,7 @@ class JobType(AbstractJobType):
 
 class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plaetze'), default=0)
-    infinite_slots =  models.BooleanField(_('Unendlich Plaetze'), default=False)
+    infinite_slots = models.BooleanField(_('Unendlich Plaetze'), default=False)
     time = models.DateTimeField()
     multiplier = models.PositiveIntegerField(
         _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
