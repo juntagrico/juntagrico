@@ -66,6 +66,12 @@ class JobTests(JuntagricoTestCase):
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.recipients.count(), 1)
 
+    def testCancel(self):
+        self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
+        self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.canceled, 1)
+
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.assertEqual(self.member2.old_subscriptions.count(), 0)
