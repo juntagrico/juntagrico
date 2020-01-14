@@ -131,7 +131,13 @@ Release Notes
 * Billing stubs are remoived to extension
 * Fix in upcoming jobs widget
 * Fix in cancelation date calculation
-* Fic in Co Member adding
+* Fix in Co Member adding
+
+1.2.1
+-----
+ Has no migrations
+
+* Fix in subscription change view bug from version 1.2.0
 
 
 Dev
