@@ -348,7 +348,7 @@ def activate_future_types(request, subscription_id):
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now()
+    now = timezone.now().date()
     end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
