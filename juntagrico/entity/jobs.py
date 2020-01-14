@@ -131,7 +131,8 @@ class JobType(AbstractJobType):
 
 
 class Job(JuntagricoBasePoly):
-    slots = models.PositiveIntegerField(_('Plaetze'))
+    slots = models.PositiveIntegerField(_('Plaetze'), default=0)
+    infinite_slots =  models.BooleanField(_('Unendlich Plaetze'), default=False)
     time = models.DateTimeField()
     multiplier = models.PositiveIntegerField(
         _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
@@ -154,11 +155,13 @@ class Job(JuntagricoBasePoly):
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
+    @property
     def free_slots(self):
         if not (self.slots is None):
             return self.slots - self.occupied_places()
-        else:
-            return 0
+        if self.infinite_slots:
+            return -1
+        return 0
 
     def end_time(self):
         return self.time + timezone.timedelta(hours=self.type.duration)
@@ -177,6 +180,12 @@ class Job(JuntagricoBasePoly):
 
     def is_core(self):
         return self.type.activityarea.core
+
+    @property
+    def get_css_classes(self):
+        result = 'area'+str(self.activityarea.pk)
+        if self.canceled:
+            result += ' canceled'
 
     def extras(self):
         extras_result = []

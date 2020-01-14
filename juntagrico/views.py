@@ -173,7 +173,8 @@ def job(request, job_id):
     job_is_in_past = job.end_time() < timezone.now()
     job_is_running = job.start_time() < timezone.now()
     job_canceled = job.canceled
-    can_subscribe = not (
+    job_infinite_spots = job.infinite_slots
+    can_subscribe = job_infinite_spots or not (
         job_fully_booked or job_is_in_past or job_is_running or job_canceled)
 
     renderdict = get_menu_dict(request)

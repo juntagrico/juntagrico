@@ -37,6 +37,7 @@
         </div>
         <div class="col-md-5">
             {% spaceless %}
+            {% if job.free_slots > -1 %}
             {% for i in slotrange %}
                 {% if i < number_of_participants %}
                     <img class="" src="{% images "single_full" %}"title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
@@ -44,11 +45,12 @@
                     <img class="" src="{% images "single_empty" %}"title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% endif %}
             {% endfor %}
+            {% endif %}
             {% endspaceless %}
         </div>
     </div>
     <br/>
-    {% if job.multiplier != 1 %}
+    {% if job.multiplier > 1 %}
         <div class="row">
             <div class="col-md-3">
                 {% vocabulary "assignment_pl" %}:
@@ -60,7 +62,20 @@
             </div>
         </div>
         <br/>
+    {% elif job.multiplier == 0 %}
+        <div class="row">
+            <div class="col-md-3">
+                {% vocabulary "assignment_pl" %}:
+            </div>
+            <div class="col-md-5">
+                {% blocktrans trimmed with jm=job.multiplier %}
+                Du erhälst für diesen Event keine{{ v_assignment_pl }} gutgeschrieben.
+                {% endblocktrans %}
+            </div>
+        </div>
+        <br/>
     {% endif %}
+
     {% if job.extras.strip %}
         <div class="row">
             <div class="col-md-3">
