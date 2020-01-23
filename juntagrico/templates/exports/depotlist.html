@@ -66,6 +66,7 @@
         td {
             font-size: 14px;
             line-height: 14px;
+            vertical-align: top;
         }
 
         table {
@@ -82,13 +83,13 @@
 
 <body>
 
-<div id="header_content">
+<div id="header_content" style="text-align: right;">
     {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
 </div>
 
 {% for depot in depots %}
-    <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
-    <h3 style="font-size: 16px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
+    <h2 style="font-size: 18px; margin: 0px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
+    <h3 style="font-size: 16px; margin: 0px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
     {% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}: {{ depot.contact.first_name }}
     {{ depot.contact.last_name }}
     <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
