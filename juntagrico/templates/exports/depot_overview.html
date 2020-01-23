@@ -1,3 +1,4 @@
+{% load common %}
 {% load depot_extras %}
 {% load i18n %}
 {% load config %}
@@ -80,40 +81,43 @@
 </head>
 
 <body>
-
+{% for w, wd in weekday_depots.items %}
 <div id="header_content">
     {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
 </div>
+    <h2 style="font-size: 18px;">{{ w }}</h2>
 <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
     <tr>
-        <td></td>
         <td></td>
         {% for category in categories %}
             <th colspan="{{ category.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ category.name }}<br/><span
                     style="font-size:11px">{{ category.description }}</span></th>
         {% endfor %}
-        <th colspan="2" class="top-border right-border"></th>
     </tr>
     <tr>
-        <td></td>
         <td></td>
         {% for type in types %}
             <td class="small bottom-border {% if forloop.first %}left-border{% endif %} {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
         {% endfor %}
-        <td></td>
-        <td class="small bottom-border right-border"></td>
     </tr>
-    {% for depot in depots %}
+    {% for depot in wd %}
         <tr>
-            <td style="width:180px;"></td>
-            <td style="width:180px; text-align:right;">{{ depot.weekday_name }} - {{ depot.name }}</td>
+            <td style="width:360px;">{{ depot.name }}</td>
             {% for value in depot.overview_cache %}
-                <td style="width:40px; text-align:right;">{{ value }}</td>
+                <td style="text-align:right;">{{ value }}</td>
             {% endfor %}
-            <td style="width:60px;"></td>
-            <td style="width:60px;"></td>
         </tr>
     {% endfor %}
+    <tr>
+        <td>{% trans "Total" %}</td>
+        {% for value in overview|get_item:w %}
+            {% if not forloop.first %}
+            <td style="text-align:right">{{ value|floatformat }}</td>
+            {% endif %}
+        {% endfor %}
+    </tr>
 </table>
+<div class="page-break"></div>
+{% endfor %}
 </body>
 </html>

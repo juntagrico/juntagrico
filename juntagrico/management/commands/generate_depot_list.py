@@ -129,9 +129,17 @@ class Command(BaseCommand):
             overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.units * overview['all'][
                 index]
             index += 1
+
+        weekday_depots = {}
+        for depot in depots:
+            wd = weekday_depots.get(depot.weekday_name, [])
+            wd.append(depot)
+            weekday_depots[depot.weekday_name] = wd
+
         renderdict = {
             'overview': overview,
             'depots': depots,
+            'weekday_depots': weekday_depots,
             'subscription_ids': subscription_ids,
             'subscriptioncount': len(subscription_ids) + 1,
             'categories': categories,
