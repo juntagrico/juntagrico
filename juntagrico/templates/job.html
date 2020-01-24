@@ -31,13 +31,13 @@
         </div>
     </div>
     <br/>
+    {% if job.free_slots > -1 %}
     <div class="row">
         <div class="col-md-3">
             {% trans "Status" %}:
         </div>
         <div class="col-md-5">
             {% spaceless %}
-            {% if job.free_slots > -1 %}
             {% for i in slotrange %}
                 {% if i < number_of_participants %}
                     <img class="" src="{% images "single_full" %}"title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
@@ -45,11 +45,11 @@
                     <img class="" src="{% images "single_empty" %}"title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
                 {% endif %}
             {% endfor %}
-            {% endif %}
             {% endspaceless %}
         </div>
     </div>
     <br/>
+    {% endif %}
     {% if job.multiplier > 1 %}
         <div class="row">
             <div class="col-md-3">
@@ -69,7 +69,7 @@
             </div>
             <div class="col-md-5">
                 {% blocktrans trimmed with jm=job.multiplier %}
-                Du erhälst für diesen Event keine{{ v_assignment_pl }} gutgeschrieben.
+                Du erhältst für diesen Event keine {{ v_assignment_pl }} gutgeschrieben.
                 {% endblocktrans %}
             </div>
         </div>
@@ -110,9 +110,8 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-5">
-            {{ job.type.description|linebreaksbr|urlize }}
-            <br/>
-            {{ job.additional_description|linebreaksbr|urlize }}
+            <div class="job-description">{{ job.type.description|linebreaksbr|urlize }}</div>
+            <div class="job-additional-description">{{ job.additional_description|linebreaksbr|urlize }}</div>
         </div>
     </div>
     <br/>

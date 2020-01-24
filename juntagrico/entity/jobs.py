@@ -157,10 +157,10 @@ class Job(JuntagricoBasePoly):
 
     @property
     def free_slots(self):
-        if not (self.slots is None):
-            return self.slots - self.occupied_places()
         if self.infinite_slots:
             return -1
+        if not (self.slots is None):
+            return self.slots - self.occupied_places()
         return 0
 
     def end_time(self):
