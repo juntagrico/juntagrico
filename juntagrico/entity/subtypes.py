@@ -101,4 +101,6 @@ class TFSST(JuntagricoBaseModel):
     subscription = models.ForeignKey(
         'Subscription', related_name='STFSST', on_delete=models.CASCADE)
     type = models.ForeignKey(
-        'SubscriptionType', related_name='TTFSST', on_delete=models.PROTECT)
+        'SubscriptionType', related_name='TTFSST', on_delete=models.PROTECT,
+        help_text='Muss gleich eingestellt sein wie {}-Typen oben, wenn keine Änderung ansteht'
+        .format(Config.vocabulary('subscription')))

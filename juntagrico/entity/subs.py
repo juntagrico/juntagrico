@@ -21,15 +21,18 @@ class Subscription(Billable):
     '''
     depot = models.ForeignKey(
         'Depot', on_delete=models.PROTECT, related_name='subscription_set')
-    future_depot = models.ForeignKey(Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True,
-                                     blank=True, )
+    future_depot = models.ForeignKey(
+        Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
+        verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
+        help_text='Nur setzen, wenn {} geändert werden soll'.format(Config.vocabulary('depot')))
     types = models.ManyToManyField(
         'SubscriptionType', through='TSST', related_name='subscription_set')
     future_types = models.ManyToManyField(
         'SubscriptionType', through='TFSST', related_name='future_subscription_set')
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
-                                       on_delete=models.PROTECT)
-    active = models.BooleanField(default=False)
+                                       on_delete=models.PROTECT,
+                                       verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
+    active = models.BooleanField(default=False, verbose_name='Aktiv')
     canceled = models.BooleanField(_('gekündigt'), default=False)
     activation_date = models.DateField(
         _('Aktivierungssdatum'), null=True, blank=True)
@@ -43,7 +46,9 @@ class Subscription(Billable):
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
-    notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
+    notes = models.TextField(
+        _('Notizen'), max_length=1000, blank=True,
+        help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     _future_members = None
 
     def __str__(self):
@@ -74,6 +79,8 @@ class Subscription(Billable):
         members = self.recipients
         return ', '.join(str(member) for member in members)
 
+    recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
+
     def other_recipients(self):
         return self.recipients.exclude(email=self.primary_member.email)
 
@@ -100,6 +107,8 @@ class Subscription(Billable):
     def primary_member_nullsave(self):
         member = self.primary_member
         return str(member) if member is not None else ''
+
+    primary_member_nullsave.short_description = primary_member.verbose_name
 
     @property
     def state(self):

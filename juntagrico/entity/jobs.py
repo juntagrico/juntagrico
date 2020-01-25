@@ -16,14 +16,17 @@ class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, default='')
-    email = models.EmailField(null=True, blank=True)
     core = models.BooleanField(_('Kernbereich'), default=False)
-    hidden = models.BooleanField(_('versteckt'), default=False)
-    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT)
-    members = models.ManyToManyField(
-        'Member', related_name='areas', blank=True)
+    hidden = models.BooleanField(
+        _('versteckt'), default=False,
+        help_text=_('Nicht auf der "Kernbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
+    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
+    email = models.EmailField(_('E-Mail'), null=True, blank=True,
+                              help_text=_('Wenn leer wird E-Mail-Adresse von KoordinatorIn angezeigt'))
     show_coordinator_phonenumber = models.BooleanField(
-        _('Koordinator Tel Nr Veröffentlichen'), default=False)
+        _('Telefonnummer von KoordinatorIn veröffentlichen'), default=False)
+    members = models.ManyToManyField(
+        'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
 
     def __str__(self):
         return '%s' % self.name
@@ -41,6 +44,8 @@ class ActivityArea(JuntagricoBaseModel):
             return self.email
         else:
             return self.coordinator.email
+
+    get_email.short_description = email.verbose_name
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -99,7 +104,7 @@ class AbstractJobType(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
-    activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
+    activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
     duration = models.PositiveIntegerField(_('Dauer in Stunden'))
     location = models.CharField('Ort', max_length=100, default='')
 
@@ -131,9 +136,9 @@ class JobType(AbstractJobType):
 
 
 class Job(JuntagricoBasePoly):
-    slots = models.PositiveIntegerField(_('Plaetze'), default=0)
-    infinite_slots = models.BooleanField(_('Unendlich Plaetze'), default=False)
-    time = models.DateTimeField()
+    slots = models.PositiveIntegerField(_('Plätze'), default=0)
+    infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
+    time = models.DateTimeField(_('Zeitpunkt'))
     multiplier = models.PositiveIntegerField(
         _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
     pinned = models.BooleanField(default=False)
@@ -162,6 +167,8 @@ class Job(JuntagricoBasePoly):
         if not (self.slots is None):
             return self.slots - self.occupied_places()
         return 0
+
+    free_slots.fget.short_description = _('Freie Plätze')
 
     def end_time(self):
         return self.time + timezone.timedelta(hours=self.type.duration)
@@ -223,7 +230,7 @@ class Job(JuntagricoBasePoly):
 
 
 class RecuringJob(Job):
-    type = models.ForeignKey(JobType, on_delete=models.PROTECT)
+    type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
     additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, default='')
 
     class Meta:
@@ -257,7 +264,7 @@ class Assignment(JuntagricoBaseModel):
     Single assignment (work unit).
     '''
     job = models.ForeignKey(Job, on_delete=models.PROTECT)
-    member = models.ForeignKey('Member', on_delete=models.PROTECT)
+    member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
     job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True)
     amount = models.FloatField(_('Wert'))

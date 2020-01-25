@@ -4,7 +4,6 @@ from django.contrib import admin
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subs import Subscription
 
-
 # This form exists to restrict primary user choice to users that have actually set the
 # current subscription as their subscription
 
@@ -14,8 +13,9 @@ class SubscriptionAdminForm(forms.ModelForm):
         model = Subscription
         fields = '__all__'
 
-    subscription_members = forms.ModelMultipleChoiceField(queryset=MemberDao.all_members(), required=False,
-                                                          widget=admin.widgets.FilteredSelectMultiple('Member', False))
+    subscription_members = forms.ModelMultipleChoiceField(
+        queryset=MemberDao.all_members(), required=False, widget=admin.widgets.FilteredSelectMultiple('Member', False),
+        label=Subscription.recipients_names.short_description)
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
