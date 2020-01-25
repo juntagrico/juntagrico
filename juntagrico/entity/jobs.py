@@ -120,8 +120,10 @@ class AbstractJobType(JuntagricoBaseModel):
 
 class JobType(AbstractJobType):
     '''
-    Recuring type of job. do not add field here do it in the parent
+    Recuring type of job. do only add fields here you do not need in a onetime job
     '''
+
+    visible = models.BooleanField(_('Sichtbar'), default=True)
 
     class Meta:
         verbose_name = _('Jobart')
@@ -129,7 +131,8 @@ class JobType(AbstractJobType):
 
 
 class Job(JuntagricoBasePoly):
-    slots = models.PositiveIntegerField(_('Plaetze'))
+    slots = models.PositiveIntegerField(_('Plaetze'), default=0)
+    infinite_slots = models.BooleanField(_('Unendlich Plaetze'), default=False)
     time = models.DateTimeField()
     multiplier = models.PositiveIntegerField(
         _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
@@ -152,11 +155,13 @@ class Job(JuntagricoBasePoly):
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
+    @property
     def free_slots(self):
+        if self.infinite_slots:
+            return -1
         if not (self.slots is None):
             return self.slots - self.occupied_places()
-        else:
-            return 0
+        return 0
 
     def end_time(self):
         return self.time + timezone.timedelta(hours=self.type.duration)
@@ -175,6 +180,12 @@ class Job(JuntagricoBasePoly):
 
     def is_core(self):
         return self.type.activityarea.core
+
+    @property
+    def get_css_classes(self):
+        result = 'area'+str(self.type.activityarea.pk)
+        if self.canceled:
+            result += ' canceled'
 
     def extras(self):
         extras_result = []
@@ -213,6 +224,7 @@ class Job(JuntagricoBasePoly):
 
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT)
+    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, default='')
 
     class Meta:
         verbose_name = _('Job')

@@ -90,7 +90,7 @@ def subscription_change(request, subscription_id):
     change an subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now()
+    now = timezone.now().date()
     can_change = not (temporal.cancelation_date() <= now < temporal.start_of_next_business_year())
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -168,7 +168,7 @@ def size_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     share_error = False
-    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now()):
+    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now().date()):
         # create dict with subscription type -> selected amount
         selected = selected_subscription_types(request.POST)
         # check if members of sub have enough shares
@@ -348,7 +348,7 @@ def activate_future_types(request, subscription_id):
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now()
+    now = timezone.now().date()
     end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
