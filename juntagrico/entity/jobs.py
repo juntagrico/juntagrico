@@ -19,12 +19,12 @@ class ActivityArea(JuntagricoBaseModel):
     core = models.BooleanField(_('Kernbereich'), default=False)
     hidden = models.BooleanField(
         _('versteckt'), default=False,
-        help_text=_('Nicht auf der "Kernbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
+        help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
     email = models.EmailField(_('E-Mail'), null=True, blank=True,
                               help_text=_('Wenn leer wird E-Mail-Adresse von KoordinatorIn angezeigt'))
     show_coordinator_phonenumber = models.BooleanField(
-        _('Telefonnummer von KoordinatorIn veröffentlichen'), default=False)
+        _('Telefonnummer von KoordinatorIn anzeigen'), default=False)
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
 
