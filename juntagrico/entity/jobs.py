@@ -183,9 +183,10 @@ class Job(JuntagricoBasePoly):
 
     @property
     def get_css_classes(self):
-        result = 'area'+str(self.type.activityarea.pk)
+        result = 'area-'+str(self.type.activityarea.pk)
         if self.canceled:
             result += ' canceled'
+        return result
 
     def extras(self):
         extras_result = []
@@ -224,7 +225,7 @@ class Job(JuntagricoBasePoly):
 
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT)
-    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, default='')
+    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
 
     class Meta:
         verbose_name = _('Job')
