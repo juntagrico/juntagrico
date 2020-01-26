@@ -29,7 +29,7 @@
                                {% else %}
                                     {{ selected_subscriptions|get_item:type|default:0 }}
                                {% endif %}{% endspaceless %}"
-                               min="0"/>
+                               min="0" required/>
                     </div>
                     <label for="type{{ type.id }}" class="col-md-9">
                         {% if type.long_name.strip %}
