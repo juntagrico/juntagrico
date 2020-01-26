@@ -69,14 +69,14 @@ class CSSessionObject(SessionObject):
         return sum([getattr(co_member, 'new_shares', 0) for co_member in self.co_members])
 
     def subscription_size(self):
-        return sum([sub_type.size.units * amount for sub_type, amount in self.subscriptions.items()])
+        return sum([sub_type.size.units * (amount or 0) for sub_type, amount in self.subscriptions.items()])
 
     def required_shares(self):
-        return sum([sub_type.shares * amount for sub_type, amount in self.subscriptions.items()])
+        return sum([sub_type.shares * (amount or 0) for sub_type, amount in self.subscriptions.items()])
 
     def to_dict(self):
         build_dict = {k: getattr(self, k) for k in ['main_member', 'co_members', 'depot', 'start_date']}
-        build_dict['subscriptions'] = {k: v for k, v in self.subscriptions.items() if v > 0}
+        build_dict['subscriptions'] = {k: v for k, v in self.subscriptions.items() if v and v > 0}
         return build_dict
 
     def count_shares(self):

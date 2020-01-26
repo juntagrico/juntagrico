@@ -22,14 +22,13 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
-from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionTypeEditForm
 from juntagrico.mailer import MemberNotification
 from juntagrico.util import temporal, return_to_previous_location
-from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
 from juntagrico.util.management import cancel_sub, cancel_extra_sub
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date, is_date_in_cancelation_period
+    cancelation_date
 from juntagrico.views import get_menu_dict, get_page_dict
 from juntagrico.util import addons
 
@@ -167,25 +166,21 @@ def size_change(request, subscription_id):
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
-    share_error = False
-    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now().date()):
-        # create dict with subscription type -> selected amount
-        selected = selected_subscription_types(request.POST)
-        # check if members of sub have enough shares
-        if subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
-            share_error = True
-        elif sum(selected.values()) > 0:  # check that at least one subscription was selected
-            replace_subscription_types(subscription, selected)
+    if request.method == 'POST':
+        form = SubscriptionTypeEditForm(subscription, request.POST)
+        if form.is_valid():
+            replace_subscription_types(subscription, form.get_selected())
             saved = True
-    products = SubscriptionProductDao.get_all()
+    else:
+        form = SubscriptionTypeEditForm(subscription)
+
     renderdict = get_menu_dict(request)
     renderdict.update({
+        'form': form,
         'saved': saved,
         'subscription': subscription,
-        'shareerror': share_error,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
-        'products': products,
     })
     return render(request, 'size_change.html', renderdict)
 
