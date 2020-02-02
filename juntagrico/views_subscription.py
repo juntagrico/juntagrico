@@ -54,7 +54,7 @@ def subscription(request, subscription_id=None):
 
     if subscription is not None:
         cancelation_date = subscription.cancelation_date
-        if cancelation_date is not None and cancelation_date <= next_cancelation_date().date():
+        if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
         asc = member.active_shares_count
         share_error = subscription.share_overflow-asc < 0

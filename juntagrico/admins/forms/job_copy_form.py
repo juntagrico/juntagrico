@@ -4,6 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from django.utils.timezone import localtime
 
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.util.temporal import weekday_choices
@@ -34,7 +35,7 @@ class JobCopyForm(forms.ModelForm):
 
         self.fields['start_date'].initial = inst.time.date() + \
             datetime.timedelta(days=1)
-        self.fields['time'].initial = inst.time
+        self.fields['time'].initial = localtime(inst.time)
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
 
     def clean(self):
