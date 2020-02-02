@@ -18,8 +18,7 @@ class ExtraSubscriptionType(JuntagricoBaseModel):
     sort_order = models.FloatField(_('Groesse zum Sortieren'), default=1.0)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
-    category = models.ForeignKey('ExtraSubscriptionCategory', related_name='category', null=True, blank=True,
-
+    category = models.ForeignKey('ExtraSubscriptionCategory', related_name='types', null=True, blank=True,
                                  on_delete=models.PROTECT)
 
     def __str__(self):
@@ -43,6 +42,10 @@ class ExtraSubscriptionCategory(JuntagricoBaseModel):
 
     def __str__(self):
         return '%s %s' % (self.id, self.name)
+
+    @property
+    def types_for_depot_list(self):
+        return self.types.filter(depot_list=True).order_by('sort_order') if self.depot_list else []
 
     class Meta:
         verbose_name = _('Zusatz-Abo-Kategorie')

@@ -6,181 +6,38 @@
 <head>
     <title>{% blocktrans %}{{ v_depot }}-Listen{% endblocktrans %}</title>
     <meta charset="utf-8">
-    <style>
-        @font-face {
-            font-family: Symbola, "Symbola";
-            src: url(/code/static/fonts/Symbola.ttf);
-        }
-        @page {
-            size: A4;
-            @frame content_frame {
-            left: 50pt;
-            width: 512pt;
-            top: 90pt;
-            height: 660pt;
-        }
-        @frame header_frame {
-        -pdf-frame-content:header_content;
-        left: 50pt;
-        width: 512pt;
-        top: 50pt;
-        height: 40pt;
-        text-align:center;
-        }
-
-        }
-
-        body {
-            font-family: Symbola;
-        }
-
-        .page-break {
-            page-break-after: always;
-        }
-
-        .full-border {
-            border: 1px black solid;
-        }
-
-        .left-border {
-            border-left: 1px black solid;
-        }
-
-        .top-border {
-            border-top: 1px black solid;
-        }
-
-        .right-border {
-            border-right: 1px black solid;
-        }
-
-        .bottom-border {
-            border-bottom: 1px black solid;
-        }
-
-        th {
-            text-align: left;
-            font-size: 14px;
-        }
-
-        td {
-            font-size: 14px;
-            line-height: 14px;
-            vertical-align: top;
-        }
-
-        table {
-            table-layout: fixed;
-        }
-
-        .name {
-            width: 360px;
-        }
-
-
-    </style>
+    <style>{% include "./snippets/snippet_depotlist_style.css" %}</style>
 </head>
 
 <body>
-
 <div id="header_content" style="text-align: right;">
-    {% trans "Erstellt am" %} {{ datum |date:"d.m.Y H:i" }}
+    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
 </div>
-
 {% for depot in depots %}
-    <h2 style="font-size: 18px; margin: 0px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
-    <h3 style="font-size: 16px; margin: 0px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
-    {% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}: {{ depot.contact.first_name }}
-    {{ depot.contact.last_name }}
-    <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
+    {% include "./snippets/snippet_depotlist_header.html" with first=True %}
+    {% for subscription in depot.active_subscriptions %}
         <tr>
-            <td style="width:360px;" class="name"></td>
-            {% for category in categories %}
-                <th colspan="{{ category.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ category.name }}<br/><span
-                        style="font-size:11px">{{ category.description }}</span></th>
-            {% endfor %}
-            <th colspan="2" class="top-border right-border"></th>
-        </tr>
-        <tr>
-            <td></td>
-            {% for type in types %}
-                <td class="small bottom-border {% if forloop.first %}left-border{% endif %} {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
-            {% endfor %}
-            <td class="small bottom-border"></td>
-            <td class="small bottom-border right-border"></td>
-        </tr>
-        <tr>
-            <td>{% trans "TOTAL" %}</td>
-            {% for value in depot.overview_cache %}
-                <td>{{ value }}</td>
-            {% endfor %}
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <th style="width:360px;">{% trans "Name" %}</th>
-            {% for type in types %}
-                <th></th>
-            {% endfor %}
-            <th style="font-size:11px">{% trans "abgeholt" %}</th>
-            <th style="font-size:11px">{% trans "Tasche retour" %}</th>
-        </tr>
-        {% for subscription in depot.subscription_cache.all %}
-            <tr>
-                <td style="width:360px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
-                {% for subscription_id in subscription_ids %}
-                    <td  class="top-border left-border">
-                        {% if subscription|subscriptions_amount:subscription_id %}
-                            {{ subscription|subscriptions_amount:subscription_id }}{% endif %}</td>
+            <td style="width:360px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
+            {% for product in products %}
+                {% for size in product.sizes_for_depot_list %}
+                    <td  class="top-border left-border">{{ subscription|sub_size:size|count|default:'' }}</td>
                 {% endfor %}
-                {% for type in es_types %}
-                    <td  class="top-border left-border">
-                        {% if subscription|extra_subscription:type.name %}
-                            {{ subscription|extra_subscription_amount:type.name }}{% endif %}</td>
+            {% endfor %}
+            {% for category in extra_sub_categories %}
+                {% for type in category.types_for_depot_list %}
+                    <td  class="top-border left-border">{{ subscription|extra_sub_type:type|count|default:'' }}</td>
                 {% endfor %}
-                <td style="width:80px;" class="top-border left-border"></td>
-                <td style="width:80px;" class="top-border left-border right-border"></td>
-            </tr>
-            {% if forloop.counter0|divisibleby:14 and forloop.counter0 > 0 and not forloop.last %}
-                </table>
-                <div class="page-break"></div>
-                <h2 style="font-size: 18px;">{{ depot.weekday_name }} - {{ depot.name }} {% trans "Fortsetzung" %}</h2>
-                <table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
-                <tr>
-                    <td style="width:360px;" class="name"></td>
-                    {% for category in categories %}
-                        <th colspan="{{ category.count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ category.name }}<br/><span
-                                style="font-size:11px">{{ category.description }}</span></th>
-                    {% endfor %}
-                    <th colspan="2" class="top-border right-border"></th>
-                </tr>
-                <tr>
-                    <td></td>
-                    {% for type in types %}
-                        <td class="small bottom-border {% if forloop.first %}left-border{% endif %} {% if type.last == True %}right-border{% endif %}">{{ type.size }}</td>
-                    {% endfor %}
-                    <td class="small bottom-border"></td>
-                    <td class="small bottom-border right-border"></td>
-                </tr>
-                <tr>
-                    <td>{% trans "TOTAL" %}</td>
-                    {% for value in depot.overview_cache %}
-                        <td>{{ value }}</td>
-                    {% endfor %}
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <th style="width:360px;">{% trans "Name" %}</th>
-                    {% for type in types %}
-                        <th></th>
-                    {% endfor %}
-                    <th style="font-size:11px">{% trans "abgeholt" %}</th>
-                    <th style="font-size:11px">{% trans "Tasche retour" %}</th>
-                </tr>
-            {% endif %}
-        {% endfor %}
-        </table>
+            {% endfor %}
+            <td style="width:80px;" class="top-border left-border"></td>
+            <td style="width:80px;" class="top-border left-border right-border"></td>
+        </tr>
+        {% if forloop.counter0|divisibleby:14 and forloop.counter0 > 0 and not forloop.last %}
+            </table>
+            <div class="page-break"></div>
+            {% include "./snippets/snippet_depotlist_header.html" %}
+        {% endif %}
+    {% endfor %}
+    </table>
     <br/>
     <div>
         {% for message in messages %}

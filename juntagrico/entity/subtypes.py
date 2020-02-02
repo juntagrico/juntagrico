@@ -16,6 +16,10 @@ class SubscriptionProduct(JuntagricoBaseModel):
     def __str__(self):
         return self.name
 
+    @property
+    def sizes_for_depot_list(self):
+        return self.sizes.filter(depot_list=True).order_by('units')
+
     class Meta:
         verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
