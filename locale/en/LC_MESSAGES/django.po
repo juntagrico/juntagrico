@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-03 08:52+0100\n"
-"PO-Revision-Date: 2019-07-17 20:48+0000\n"
-"Last-Translator: Weblate Admin <admin@admin.admin>\n"
+"PO-Revision-Date: 2020-02-03 10:53+0000\n"
+"Last-Translator: Weblate Admin <weblate@example.com>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
 "juntagrico/juntagrico/en/>\n"
 "Language: en\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 3.7.1\n"
+"X-Generator: Weblate 3.10.3\n"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:18
 msgid "Wochentage"
@@ -67,7 +67,7 @@ msgstr "Future {0}"
 #: .\juntagrico\admins\forms\member_admin_form.py:54
 #, python-brace-format
 msgid "Alte {0}"
-msgstr ""
+msgstr "Old {0}"
 
 #: .\juntagrico\admins\inlines\subscription_type_inlines.py:18
 #, python-brace-format
@@ -180,15 +180,15 @@ msgstr "Depots"
 
 #: .\juntagrico\config.py:86
 msgid "{} verwendet folgende Cookies: session, csfr, cookieconsent."
-msgstr ""
+msgstr "{} uses the following Cookies: session, csfr, cookieconsent."
 
 #: .\juntagrico\config.py:87
 msgid "einverstanden"
-msgstr ""
+msgstr "accept"
 
 #: .\juntagrico\config.py:88
 msgid "Hier findest du mehr zum Thema"
-msgstr ""
+msgstr "Here you can find more information"
 
 #: .\juntagrico\entity\__init__.py:26
 #, fuzzy, python-brace-format
@@ -199,7 +199,7 @@ msgstr "Inform users about subscription orders"
 #: .\juntagrico\entity\__init__.py:27
 #, python-brace-format
 msgid "Wird bei {0} Kündigung informiert"
-msgstr ""
+msgstr "Will be informed at {0} cancelation"
 
 #: .\juntagrico\entity\billing.py:14
 msgid "Verrechenbare Einheit"
@@ -524,7 +524,7 @@ msgstr "Slots"
 
 #: .\juntagrico\entity\jobs.py:135
 msgid "Unendlich Plaetze"
-msgstr ""
+msgstr "Infinite slots"
 
 #: .\juntagrico\entity\jobs.py:138
 #, python-brace-format
@@ -844,7 +844,7 @@ msgstr ""
 
 #: .\juntagrico\forms.py:55
 msgid "Kontaktiere {} um den Namen zu ändern."
-msgstr ""
+msgstr "Contact {} to change the name."
 
 #: .\juntagrico\forms.py:56
 #, fuzzy
@@ -910,7 +910,7 @@ msgstr "Change"
 
 #: .\juntagrico\forms.py:176
 msgid "Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet."
-msgstr ""
+msgstr "This email address is already in use by you or your {}."
 
 #: .\juntagrico\forms.py:181
 #, fuzzy
@@ -930,7 +930,7 @@ msgstr ""
 
 #: .\juntagrico\forms.py:198
 msgid "{} hinzufügen"
-msgstr ""
+msgstr "add {}"
 
 #: .\juntagrico\forms.py:213 .\juntagrico\forms.py:226
 #: .\juntagrico\forms.py:255
@@ -964,11 +964,11 @@ msgstr "A recipient still has an active {0}"
 
 #: .\juntagrico\lifecycle\member.py:34 .\juntagrico\lifecycle\member.py:38
 msgid "Diese/r/s {} ist noch HauptbezieherIn in einer/m {}"
-msgstr ""
+msgstr "This {} is still main recipient in a/n {}"
 
 #: .\juntagrico\lifecycle\share.py:32
 msgid "Bitte \"Bezahlt am\" ausfüllen"
-msgstr ""
+msgstr "please fill out \"paid at\""
 
 #: .\juntagrico\lifecycle\share.py:34
 #, fuzzy
@@ -978,11 +978,11 @@ msgstr "Canceled to"
 
 #: .\juntagrico\lifecycle\share.py:36
 msgid "Bitte \"Gekündigt auf\" ausfüllen"
-msgstr ""
+msgstr "please fill out \"canceled at\""
 
 #: .\juntagrico\lifecycle\share.py:38
 msgid "Daten Reihenfolge stimm nicht."
-msgstr ""
+msgstr "The sequence of dates is inconsistent."
 
 #: .\juntagrico\lifecycle\sub.py:28
 #, python-brace-format
@@ -996,7 +996,7 @@ msgstr "Deactivated {0} can not be reactivated"
 
 #: .\juntagrico\lifecycle\sub.py:64
 msgid "HauptbezieherIn muss auch {}-BezieherIn sein"
-msgstr ""
+msgstr "Main recipents has to be {} recipient as well"
 
 #: .\juntagrico\mailer.py:43
 #, python-brace-format
@@ -1078,7 +1078,7 @@ msgstr "{0} - {1} changed"
 
 #: .\juntagrico\mailer.py:194
 msgid "Austritt aus {}"
-msgstr ""
+msgstr "Leaving {}"
 
 #: .\juntagrico\mailer.py:202
 #, fuzzy
@@ -1361,7 +1361,7 @@ msgstr "Choose a file"
 
 #: .\juntagrico\templates\cookie.html:8
 msgid "Cookies"
-msgstr ""
+msgstr "Cookies"
 
 #: .\juntagrico\templates\cookie.html:14
 #, python-format
@@ -1401,6 +1401,8 @@ msgid ""
 "mitteilen wenn das was hier steht nicht stimmt oder nicht mehr stimmt.\n"
 "    "
 msgstr ""
+"\n"
+"\n"
 
 #: .\juntagrico\templates\createsubscription\add_member_cs.html:22
 #, fuzzy, python-format
@@ -2133,7 +2135,7 @@ msgstr "Order %(v_share_pl)s"
 #: .\juntagrico\templates\mails\member\share_created.txt:16
 #, python-format
 msgid "%(v_share)s mit Systemnummer %(sid)s"
-msgstr ""
+msgstr "%(v_share)s with Systemnumber %(sid)s"
 
 #: .\juntagrico\templates\mails\admin\subscription_canceled.txt:7
 #, python-format
