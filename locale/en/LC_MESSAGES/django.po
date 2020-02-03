@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-03 08:52+0100\n"
-"PO-Revision-Date: 2020-02-03 10:53+0000\n"
+"PO-Revision-Date: 2020-02-03 11:42+0000\n"
 "Last-Translator: Weblate Admin <weblate@example.com>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
 "juntagrico/juntagrico/en/>\n"
@@ -733,7 +733,7 @@ msgstr "Desired end date"
 #: .\juntagrico\entity\subs.py:50 .\juntagrico\entity\subs.py:57
 #, python-brace-format
 msgid " Einheiten {0}"
-msgstr " Units {0}"
+msgstr "Units {0}"
 
 #: .\juntagrico\entity\subs.py:53
 #, python-brace-format
@@ -2000,6 +2000,8 @@ msgid ""
 "%(v_member_type)s bei %(v_d_enriched_organisation)s. Unter Personalien "
 "kannst du diese/s/n künden."
 msgstr ""
+"Here you can cancel your %(v_subscription)s. You stay %(v_member_type)s at "
+"%(v_d_enriched_organisation)s. You can cancel your membership at Profile."
 
 #: .\juntagrico\templates\leavesubscription.html:28
 #, fuzzy, python-format
@@ -2214,6 +2216,8 @@ msgid ""
 "Soeben ist %(co_member)s aus eurer/m gemeinsamen %(v_subscription)s "
 "ausgetreten und hat folgende Nachricht hinterlassen:\n"
 msgstr ""
+"Just now %(co_member)s left your %(v_subscription)s  and left the following "
+"message:"
 
 #: .\juntagrico\templates\mails\member\co_member_left_subscription.txt:13
 #, fuzzy, python-format
@@ -2272,6 +2276,8 @@ msgid ""
 "Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen und gleich "
 "dein Passwort zu ändern."
 msgstr ""
+"Use the confimration link to confirm your email address and at the same time "
+"to change your password."
 
 #: .\juntagrico\templates\mails\member\co_member_welcome.txt:28
 #: .\juntagrico\templates\mails\member\member_welcome.txt:16
@@ -2924,6 +2930,8 @@ msgid ""
 "%(v_subscription)s-BezieherIn werden.\n"
 "                "
 msgstr ""
+"Unfortunatelly no one of your %(v_co_member_pl)s can become  main "
+"%(v_subscription)s recipient."
 
 #: .\juntagrico\templates\profile.html:14
 msgid "Personalien erfolgreich geändert"
@@ -3092,11 +3100,14 @@ msgid ""
 "kann Haupt-%(v_subscription)s-BezieherIn werden\n"
 "        "
 msgstr ""
+"You want no longer be the main %(v_subscription)s recipient? You can change "
+"this at any moment, provided one of your %(v_co_member_pl)s can become main "
+"%(v_subscription)s recipient."
 
 #: .\juntagrico\templates\snippets\snippet_subscription_change_main_member.html:16
 #, python-format
 msgid " Dazu muss sie oder er mindestens 1 bezahlte/n/s %(v_share)s besitzen."
-msgstr ""
+msgstr "For this he or she has to own at least one paid %(v_share)s"
 
 #: .\juntagrico\templates\snippets\snippet_subscription_change_size.html:9
 #, python-format
@@ -3488,11 +3499,11 @@ msgstr "December"
 
 #: .\juntagrico\views.py:156
 msgid " (mit einer weiteren Person)"
-msgstr " (with another person)"
+msgstr "(with another person)"
 
 #: .\juntagrico\views.py:158
 msgid " (mit {} weiteren Personen)"
-msgstr " (with {} other people)"
+msgstr "(with {} other people)"
 
 #: .\juntagrico\views_admin.py:283
 msgid "-Kein Tätigkeitsbereich-"
