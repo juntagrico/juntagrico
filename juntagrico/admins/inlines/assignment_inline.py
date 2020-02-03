@@ -19,7 +19,7 @@ class AssignmentInline(admin.TabularInline):
         #    return 0
         if obj is None:
             return 0
-        return obj.free_slots()
+        return obj.free_slots
 
     def get_max_num(self, request, obj=None, **kwargs):
         if obj is None:

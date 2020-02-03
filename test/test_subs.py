@@ -77,6 +77,8 @@ class JobTests(JuntagricoTestCase):
         self.assertEqual(self.member2.old_subscriptions.count(), 0)
         self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()
+        self.sub2.refresh_from_db()
+        self.assertFalse(self.sub2.active)
         self.assertIsNone(self.member2.subscription)
         self.assertEqual(self.member2.old_subscriptions.count(), 1)
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)

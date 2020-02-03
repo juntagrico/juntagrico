@@ -173,7 +173,7 @@ def job(request, job_id):
     job_is_in_past = job.end_time() < timezone.now()
     job_is_running = job.start_time() < timezone.now()
     job_canceled = job.canceled
-    can_subscribe = not (
+    can_subscribe = job.infinite_slots or not (
         job_fully_booked or job_is_in_past or job_is_running or job_canceled)
 
     renderdict = get_menu_dict(request)
@@ -426,7 +426,7 @@ def cancel_membership(request):
     member = request.user.member
     if request.method == 'POST':
         now = timezone.now().date()
-        end_date = next_membership_end_date().date()
+        end_date = next_membership_end_date()
         message = request.POST.get('message')
         member = request.user.member
         member.canceled = True

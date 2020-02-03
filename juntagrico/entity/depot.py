@@ -84,8 +84,8 @@ class Depot(JuntagricoBaseModel):
                 size_id = subscription_size.id
                 amounts = self.subscription_amounts(cache, size_id)
                 self.overview_cache.append(amounts)
-        for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
-            types = ExtraSubscriptionTypeDao.extra_types_by_category_ordered(
+        for category in ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered():
+            types = ExtraSubscriptionTypeDao.extra_types_by_category_for_depot_list_ordered(
                 category)
             for extra_subscription in types:
                 code = extra_subscription.name

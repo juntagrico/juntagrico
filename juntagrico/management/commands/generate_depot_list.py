@@ -76,17 +76,18 @@ class Command(BaseCommand):
             cat['count'] = count
             categories.append(cat)
 
-        for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
+        for category in ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered():
             cat = {'name': category.name, 'description': category.description}
             count = 0
-            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_ordered(category):
+            for extra_subscription in ExtraSubscriptionTypeDao.extra_types_by_category_for_depot_list_ordered(category):
                 count += 1
                 es_type = {'name': extra_subscription.name,
                            'size': extra_subscription.size, 'last': False}
                 types.append(es_type)
             es_type['last'] = True
             cat['count'] = count
-            categories.append(cat)
+            if count > 0:
+                categories.append(cat)
 
         used_weekdays = []
         for item in DepotDao.distinct_weekdays():
@@ -129,9 +130,17 @@ class Command(BaseCommand):
             overview['all'][insert_point] = overview['all'][insert_point] + subscription_size.units * overview['all'][
                 index]
             index += 1
+
+        weekday_depots = {}
+        for depot in depots:
+            wd = weekday_depots.get(depot.weekday_name, [])
+            wd.append(depot)
+            weekday_depots[depot.weekday_name] = wd
+
         renderdict = {
             'overview': overview,
             'depots': depots,
+            'weekday_depots': weekday_depots,
             'subscription_ids': subscription_ids,
             'subscriptioncount': len(subscription_ids) + 1,
             'categories': categories,
