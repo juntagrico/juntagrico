@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-06 11:52+0100\n"
+"POT-Creation-Date: 2020-02-06 20:28+0100\n"
 "PO-Revision-Date: 2020-02-03 11:42+0000\n"
 "Last-Translator: Weblate Admin <weblate@example.com>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -1401,8 +1401,6 @@ msgid ""
 "mitteilen wenn das was hier steht nicht stimmt oder nicht mehr stimmt.\n"
 "    "
 msgstr ""
-"\n"
-"\n"
 
 #: .\juntagrico\templates\createsubscription\add_member_cs.html:22
 #, fuzzy, python-format
@@ -2125,7 +2123,6 @@ msgstr ""
 "\n"
 "%(fn)s %(ln)s has just canceled his membership per %(ed)s\n"
 "email: %(e)s\n"
-"\n"
 
 #: .\juntagrico\templates\mails\admin\share_created.txt:8
 #, fuzzy, python-format
@@ -2216,8 +2213,9 @@ msgid ""
 "Soeben ist %(co_member)s aus eurer/m gemeinsamen %(v_subscription)s "
 "ausgetreten und hat folgende Nachricht hinterlassen:\n"
 msgstr ""
+"\n"
 "Just now %(co_member)s left your %(v_subscription)s  and left the following "
-"message:"
+"message:\n"
 
 #: .\juntagrico\templates\mails\member\co_member_left_subscription.txt:13
 #, fuzzy, python-format
@@ -2930,8 +2928,10 @@ msgid ""
 "%(v_subscription)s-BezieherIn werden.\n"
 "                "
 msgstr ""
-"Unfortunatelly no one of your %(v_co_member_pl)s can become  main "
-"%(v_subscription)s recipient."
+"\n"
+"                Unfortunatelly no one of your %(v_co_member_pl)s can become  main "
+"%(v_subscription)s recipient.\n"
+"                "
 
 #: .\juntagrico\templates\profile.html:14
 msgid "Personalien erfolgreich geändert"
@@ -3100,9 +3100,11 @@ msgid ""
 "kann Haupt-%(v_subscription)s-BezieherIn werden\n"
 "        "
 msgstr ""
-"You want no longer be the main %(v_subscription)s recipient? You can change "
+"\n"
+"            You want no longer be the main %(v_subscription)s recipient? You can change "
 "this at any moment, provided one of your %(v_co_member_pl)s can become main "
-"%(v_subscription)s recipient."
+"%(v_subscription)s recipient.\n"
+"        "
 
 #: .\juntagrico\templates\snippets\snippet_subscription_change_main_member.html:16
 #, python-format
