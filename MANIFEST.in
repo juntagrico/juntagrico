@@ -2,6 +2,6 @@ include LICENSE
 include README.rst
 recursive-include juntagrico/static *
 recursive-include juntagrico/templates *
-recursive-include locale *
+recursive-include locale/it/LC_MESSAGES *
 include requirements.txt
 global-exclude *.pyc
