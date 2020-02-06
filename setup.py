@@ -19,7 +19,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='juntagrico',
-    version='1.2.2',
+    version='1.2.2dev',
     packages=find_packages(),
     include_package_data=True,
     license='GNU Lesser General Public License v3 (LGPLv3)',
