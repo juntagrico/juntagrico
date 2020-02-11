@@ -19,7 +19,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='juntagrico',
-    version='1.2.1',
+    version='1.2.2dev3',
     packages=find_packages(),
     include_package_data=True,
     license='GNU Lesser General Public License v3 (LGPLv3)',
@@ -32,7 +32,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 2.0',
+        'Framework :: Django :: 3.0',
         'Intended Audience :: Developers',
         'Intended Audience :: Other Audience',
         'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
