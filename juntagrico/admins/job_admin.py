@@ -73,7 +73,8 @@ class JobAdmin(BaseAdmin):
                                                db_field.name,
                                                'type',
                                                'juntagrico.is_area_admin',
-                                               JobTypeDao.visible_types_by_coordinator)
+                                               JobTypeDao.visible_types_by_coordinator,
+                                               **kwargs)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def change_view(self, request, object_id, extra_context=None):
