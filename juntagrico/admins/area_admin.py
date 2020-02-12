@@ -1,7 +1,10 @@
+from django.contrib.admin import register
 from juntagrico.admins import BaseAdmin
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.util.admin import queryset_for_coordinator
 
 
+@register(ActivityArea)
 class AreaAdmin(BaseAdmin):
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']

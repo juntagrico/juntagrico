@@ -1,9 +1,10 @@
 from django.conf.urls import url
 from django.contrib import messages
+from django.contrib.admin import register
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
-from juntagrico.admins import BaseAdmin
+from juntagrico.admins.base_admin import BaseAdmin
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
@@ -12,6 +13,7 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 from juntagrico.admins.filters import FutureDateTimeFilter
 
 
+@register(RecuringJob)
 class JobAdmin(BaseAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
