@@ -26,7 +26,7 @@ class SubscriptionAdmin(BaseAdmin):
         (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'subscription_members']}),
         (_('Depot'), {'fields': ['depot', 'future_depot']}),
         (_('Status'), {'fields': ['creation_date', 'start_date', 'active', 'activation_date',
-                'canceled', 'cancelation_date', 'end_date', 'deactivation_date']}),
+                                  'canceled', 'cancelation_date', 'end_date', 'deactivation_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]
     add_fieldsets = [

@@ -18,5 +18,3 @@ from juntagrico.admins.assignment_admin import AssignmentAdmin
 from juntagrico.admins.depot_admin import DepotAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
 from juntagrico.admins.delivery_admin import DeliveryAdmin
-
-
