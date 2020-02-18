@@ -64,9 +64,9 @@ def send_email_intern(request):
         emails.update(MemberDao.members_for_email(
         ).values_list('email', flat=True))
     if request.POST.get('recipients'):
-        emails.update(re.split(r'\s*,?\s*', request.POST.get('recipients')))
+        emails.update(re.split(r'[\s,;]+', request.POST.get('recipients')))
     if request.POST.get('allsingleemail'):
-        emails |= set(request.POST.get('singleemail').split(' '))
+        emails.update(re.split(r'[\s,;]+', request.POST.get('singleemail')))
 
     attachements = []
     append_attachements(request, attachements)
