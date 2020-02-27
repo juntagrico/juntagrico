@@ -98,7 +98,7 @@
         </div>
         <div class="col-md-5">
             {{ job.type.location }} (
-            <a href="https://www.google.ch/maps/place/{{ job.type.location }}" target="_blank">
+            <a href="https://www.google.com/maps/search/?api=1&query={{ job.type.location | urlencode }}" target="_blank">
                 Karte
             </a>
             )
