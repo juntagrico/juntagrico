@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
@@ -7,6 +9,8 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.util.mailer import get_emails_by_permission, base_dict, get_email_content, filter_whitelist_emails
 from juntagrico.util.organisation_name import enriched_organisation
+
+log = logging.getLogger('juntagrico.mailer')
 
 
 def organisation_subject(subject):
@@ -29,7 +33,7 @@ def send_mail(subject, message, to_emails, from_email=None, reply_to_email=None,
             attachments = []
         for attachment in attachments:
             msg.attach(attachment.name, attachment.read())
-        print(('Mail sent to ' + ', '.join(ok_mails) + (', on whitelist' if settings.DEBUG else '')))
+        log.info(('Mail sent to ' + ', '.join(ok_mails) + (', on whitelist' if settings.DEBUG else '')))
         mailer = import_string(Config.default_mailer())
         mailer.send(msg)
 
