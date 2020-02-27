@@ -5,4 +5,4 @@ django-polymorphic==2.1.2
 ics==0.6
 schwifty==2020.2.2
 xhtml2pdf==0.2.4
-XlsxWriter==1.2.7
+XlsxWriter==1.2.8
