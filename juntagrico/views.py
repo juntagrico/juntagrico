@@ -162,8 +162,7 @@ def job(request, job_id):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
         reachable = member.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == member
-        participants_summary.append(
-            (name, None, contact_url, reachable, ' '.join(extras)))
+        participants_summary.append((name, contact_url, reachable, ' '.join(extras)))
         emails.append(member.email)
 
     slotrange = list(range(0, job.slots))
