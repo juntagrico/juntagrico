@@ -2,10 +2,15 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from juntagrico.config import Config
+from juntagrico.dao.depotdao import DepotDao
+from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
+from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.mailer import MemberNotification
 from juntagrico.util.pdf import render_to_pdf_storage
-from juntagrico.util.view_dicts.pdf_lists import get_depotlist_dict, get_depotoverview_dict, get_amountlist_dict
+
+from juntagrico.util.temporal import weekdays
 
 
 class Command(BaseCommand):
@@ -48,9 +53,19 @@ class Command(BaseCommand):
         if options['force'] and not options['future']:
             print('future depots ignored, use --future to override')
 
+        depot_dict = {
+            'subscriptions': SubscriptionDao.all_active_subscritions(),
+            'products': SubscriptionProductDao.get_all(),
+            'extra_sub_categories': ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered(),
+            'depots': DepotDao.all_depots_order_by_code(),
+            'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in
+                                 DepotDao.distinct_weekdays()},
+            'messages': ListMessageDao.all_active()
+        }
+
         render_to_pdf_storage('exports/depotlist.html',
-                              get_depotlist_dict(), 'depotlist.pdf')
+                              depot_dict, 'depotlist.pdf')
         render_to_pdf_storage('exports/depot_overview.html',
-                              get_depotoverview_dict(), 'depot_overview.pdf')
+                              depot_dict, 'depot_overview.pdf')
         render_to_pdf_storage('exports/amount_overview.html',
-                              get_amountlist_dict(), 'amount_overview.pdf')
+                              depot_dict, 'amount_overview.pdf')
