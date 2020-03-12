@@ -4,7 +4,7 @@ from juntagrico.util.admin import formfield_for_coordinator
 
 
 class AssignmentAdmin(BaseAdmin):
-    list_display = ['__str__', 'member', 'job']
+    list_display = ['__str__', 'member', 'time', 'amount', 'job']
     search_fields = ['member__first_name', 'member__last_name']
     raw_id_fields = ['member', 'job']
 

@@ -9,10 +9,12 @@ from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
+from juntagrico.admins.filters import FutureDateTimeFilter
 
 
 class JobAdmin(BaseAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
+    list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']

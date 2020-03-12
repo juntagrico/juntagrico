@@ -1,3 +1,4 @@
+from django.db.models import Max
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
@@ -11,7 +12,9 @@ from juntagrico.util.models import attribute_copy
 
 
 class JobTypeAdmin(BaseAdmin):
-    list_display = ['__str__']
+    list_display = ['__str__', 'activityarea',
+                    'duration', 'location', 'visible']
+    list_filter = ('activityarea', 'visible')
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
 
@@ -34,7 +37,8 @@ class JobTypeAdmin(BaseAdmin):
     transform_job_type.short_description = _('Jobart in EinzelJobs konvertieren')
 
     def get_queryset(self, request):
-        return queryset_for_coordinator(self, request, 'activityarea__coordinator')
+        qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
+        return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,
