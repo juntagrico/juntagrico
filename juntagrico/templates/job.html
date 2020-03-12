@@ -142,11 +142,9 @@
                 {% trans "Noch niemand" %} :-(
             {% else %}
                 <ul>
-                    {% for participant, comments, url, reachable, extras in participants_summary %}
+                    {% for participant, url, reachable, extras in participants_summary %}
                         <li>
-                            <a class="job-participant" member-id="{{ participant }}" href="#">
-                                {{ participant }}
-                            </a>
+                            {{ participant }}
                             {{ extras|safe }}
                             {% if reachable %}
                                 &nbsp;
@@ -155,14 +153,6 @@
                                     </i>
                                 </a>
                             {% endif %}
-                            <br/>
-                            {% for comment in comments %}
-                                <span class="member-job-comments">
-                                    {% trans "Hinweis" %}: {{ comment }}
-                                </span>
-                                <br/>
-                            {% endfor %}
-                            <br/>
                         </li>
                     {% endfor %}
                 </ul>
