@@ -13,16 +13,11 @@ from juntagrico.util.models import attribute_copy
 
 class JobTypeAdmin(BaseAdmin):
     list_display = ['__str__', 'activityarea',
-                    'duration', 'location', 'visible', 'last_used']
+                    'duration', 'location', 'visible']
     list_filter = ('activityarea', 'visible')
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
 
-    def last_used(self, instance):
-        return instance.last_used
-
-    last_used.short_description = _('Zuletzt verwendet')
-    last_used.admin_order_field = 'last_used'
 
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
@@ -44,7 +39,6 @@ class JobTypeAdmin(BaseAdmin):
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
-        qs = qs.annotate(last_used=Max('recuringjob__time'))
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

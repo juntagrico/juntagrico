@@ -29,7 +29,7 @@ class SubscriptionAdmin(BaseAdmin):
     ]
     add_fieldsets = [
         (Config.vocabulary('member_pl'), {'fields': ['subscription_members']}),
-        (_('Depot'), {'fields': ['depot']}),
+        (Config.vocabulary('depot'), {'fields': ['depot']}),
         (_('Status'), {'fields': ['start_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]

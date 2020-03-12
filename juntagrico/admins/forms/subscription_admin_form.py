@@ -19,7 +19,8 @@ class SubscriptionAdminForm(forms.ModelForm):
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        self.fields['primary_member'].queryset = self.instance.recipients
+        if 'primary_member' in self.fields.keys():
+            self.fields['primary_member'].queryset = self.instance.recipients
         if self.instance.pk is None:
             self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription()
         elif self.instance.state == 'waiting':
