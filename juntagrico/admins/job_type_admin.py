@@ -18,7 +18,6 @@ class JobTypeAdmin(BaseAdmin):
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
 
-
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
             i = 0

@@ -18,4 +18,3 @@ if Config.enable_shares():
 
 class SubscriptionSizeAdmin(BaseAdmin):
     list_display = ['__str__', 'units', 'product', 'visible', 'depot_list']
-
