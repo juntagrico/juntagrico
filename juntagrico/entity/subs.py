@@ -117,21 +117,21 @@ class Subscription(Billable):
         return self.extra_subscription_set.filter(active=True)
 
     @property
-    def paid_shares(self):
-        return ShareDao.paid_shares(self).count()
+    def future_extra_subscriptions(self):
+        return self.extra_subscription_set.filter(
+            Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
 
     @property
     def all_shares(self):
         return ShareDao.all_shares_subscription(self).count()
 
     @property
-    def share_overflow(self):
-        return self.all_shares - self.required_shares
+    def paid_shares(self):
+        return ShareDao.paid_shares(self).count()
 
     @property
-    def future_extra_subscriptions(self):
-        return self.extra_subscription_set.filter(
-            Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
+    def share_overflow(self):
+        return self.all_shares - self.required_shares
 
     @property
     def extrasubscriptions_changed(self):
@@ -139,19 +139,15 @@ class Subscription(Billable):
         future_extrasubscriptions = self.future_extra_subscriptions.all()
         return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
-    def subscription_amount(self, size_id):
-        return self.calc_subscription_amount(self.types, size_id)
+    def subscription_amount(self, size):
+        return self.calc_subscription_amount(self.types, size)
 
-    def subscription_amount_future(self, size_id):
-        return self.calc_subscription_amount(self.future_types, size_id)
+    def subscription_amount_future(self, size):
+        return self.calc_subscription_amount(self.future_types, size)
 
     @staticmethod
-    def calc_subscription_amount(types, size_id):
-        result = 0
-        for type in types.all():
-            if type.size.id == size_id:
-                result += 1
-        return result
+    def calc_subscription_amount(types, size):
+        return types.filter(size=size).count()
 
     def future_amount_by_type(self, type):
         return len(self.future_types.filter(id=type))
@@ -217,11 +213,8 @@ class Subscription(Billable):
     def future_size_name(self):
         return Subscription.get_size_name(types=self.future_types)
 
-    def extra_subscription(self, code):
-        return self.extra_subscription_amount(code) > 0
-
-    def extra_subscription_amount(self, code):
-        return len(self.extra_subscriptions.all().filter(type__name=code))
+    def extra_subscription_amount(self, extra_sub_type):
+        return self.extra_subscriptions.filter(type=extra_sub_type).count()
 
     def clean(self):
         check_sub_consistency(self)
