@@ -1,7 +1,6 @@
 from django.utils.translation import gettext as _
-from django.contrib.admin import register
 
-from juntagrico.admins.base_admin import BaseAdmin
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
@@ -12,7 +11,6 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 from juntagrico.util.models import attribute_copy
 
 
-@register(OneTimeJob)
 class OneTimeJobAdmin(BaseAdmin):
     list_display = ['__str__', 'time', 'slots', 'free_slots']
     list_filter = ('activityarea', ('time', FutureDateTimeFilter))

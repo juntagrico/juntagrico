@@ -267,7 +267,7 @@ class Assignment(JuntagricoBaseModel):
     job = models.ForeignKey(Job, on_delete=models.PROTECT)
     member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
-    job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True, verbose_name=_('Job Extras'))
+    job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True)
     amount = models.FloatField(_('Wert'))
 
     def __str__(self):
@@ -275,7 +275,6 @@ class Assignment(JuntagricoBaseModel):
 
     def time(self):
         return self.job.time
-    time.admin_order_field = 'job__time'
 
     def is_core(self):
         return self.job.type.activityarea.core

@@ -1,13 +1,10 @@
-from django.contrib.admin import register
 from juntagrico.admins import BaseAdmin
-from juntagrico.entity.jobs import Assignment
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.util.admin import formfield_for_coordinator
 
 
-@register(Assignment)
 class AssignmentAdmin(BaseAdmin):
-    list_display = ['__str__', 'member', 'time', 'amount', 'job']
+    list_display = ['__str__', 'member', 'job']
     search_fields = ['member__first_name', 'member__last_name']
     raw_id_fields = ['member', 'job']
 

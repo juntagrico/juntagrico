@@ -1,16 +1,13 @@
 from django.utils.translation import gettext as _
-from django.contrib.admin import register
 
-from juntagrico.admins.base_admin import BaseAdmin
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
 from juntagrico.admins.inlines.extra_subscription_inline import ExtraSubscriptionInline
 from juntagrico.admins.inlines.subscription_type_inlines import FutureSubscriptionTypeInline
 from juntagrico.admins.inlines.subscription_type_inlines import SubscriptionTypeInline
-from juntagrico.entity.subs import Subscription
 from juntagrico.config import Config
 
 
-@register(Subscription)
 class SubscriptionAdmin(BaseAdmin):
     form = SubscriptionAdminForm
     readonly_fields = ('creation_date',)
@@ -20,6 +17,7 @@ class SubscriptionAdmin(BaseAdmin):
                      'members_future__user__username', 'members_future__first_name', 'members_future__last_name',
                      'members_old__user__username', 'members_old__first_name', 'members_old__last_name',
                      'depot__name']
+
     inlines = [SubscriptionTypeInline, FutureSubscriptionTypeInline, ExtraSubscriptionInline]
     add_inlines = [SubscriptionTypeInline, ExtraSubscriptionInline]
     fieldsets = [

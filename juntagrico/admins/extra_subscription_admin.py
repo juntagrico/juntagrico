@@ -1,8 +1,5 @@
-from django.contrib.admin import register
-from juntagrico.admins.base_admin import BaseAdmin
-from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.admins import BaseAdmin
 
 
-@register(ExtraSubscription)
 class ExtraSubscriptionAdmin(BaseAdmin):
     raw_id_fields = ['main_subscription']

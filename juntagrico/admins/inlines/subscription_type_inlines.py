@@ -11,8 +11,7 @@ class SubscriptionTypeInlineFormset(BaseInlineFormSet):
     def clean(self):
         required_shares = 0
         for form in self.forms:
-            if form.instance.pk:
-                required_shares += form.instance.type.shares
+            required_shares += form.instance.type.shares
         available_shares = sum([member.active_shares_count for member in self.instance._future_members])
         if required_shares > available_shares:
             raise ValidationError(

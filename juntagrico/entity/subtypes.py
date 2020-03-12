@@ -33,8 +33,8 @@ class SubscriptionSize(JuntagricoBaseModel):
     visible = models.BooleanField(_('Sichtbar'), default=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
-    product = models.ForeignKey('SubscriptionProduct', on_delete=models.PROTECT,
-                                related_name='sizes', verbose_name=_('Produkt'))
+    product = models.ForeignKey(
+        'SubscriptionProduct', on_delete=models.PROTECT, related_name='sizes')
 
     def __str__(self):
         return self.name
@@ -52,8 +52,8 @@ class SubscriptionType(JuntagricoBaseModel):
     '''
     name = models.CharField(_('Name'), max_length=100)
     long_name = models.CharField(_('Langer Name'), max_length=100, blank=True)
-    size = models.ForeignKey('SubscriptionSize', on_delete=models.PROTECT,
-                             related_name='types', verbose_name=_('Grösse'))
+    size = models.ForeignKey(
+        'SubscriptionSize', on_delete=models.PROTECT, related_name='types')
     shares = models.PositiveIntegerField(
         _('Anz benötigter Anteilsscheine'), default=0)
     required_assignments = models.PositiveIntegerField(
@@ -62,8 +62,8 @@ class SubscriptionType(JuntagricoBaseModel):
         _('Anz benötigter Kern Arbeitseinsätze'), default=0)
     price = models.IntegerField(_('Preis'))
     visible = models.BooleanField(_('Sichtbar'), default=True)
-    trial = models.BooleanField(_('Probe-Abo'), default=False)
-    trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
+    trial = models.BooleanField(_('ProbeAbo'), default=False)
+    trial_days = models.IntegerField(_('ProbeAbo Dauer in Tagen'), default=0)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
 

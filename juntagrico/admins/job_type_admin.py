@@ -1,18 +1,16 @@
-from django.contrib.admin import register
 from django.db.models import Max
 from django.utils.translation import gettext as _
 
-from juntagrico.admins.base_admin import BaseAdmin
+from juntagrico.admins import BaseAdmin
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import OneTimeJob, JobType
+from juntagrico.entity.jobs import OneTimeJob
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
-@register(JobType)
 class JobTypeAdmin(BaseAdmin):
     list_display = ['__str__', 'activityarea',
                     'duration', 'location', 'visible', 'last_used']
