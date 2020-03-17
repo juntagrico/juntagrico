@@ -8,7 +8,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity import notifiable
+from juntagrico.entity import notifiable, JuntagricoBaseModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.lifecycle.sub import check_sub_consistency
@@ -233,3 +233,17 @@ class Subscription(Billable):
         verbose_name = Config.vocabulary('subscription')
         verbose_name_plural = Config.vocabulary('subscription_pl')
         permissions = (('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),)
+
+
+class SubscriptionPart(JuntagricoBaseModel):
+    subscription = models.ForeignKey('Subscription', related_name='parts', on_delete=models.CASCADE,
+                                     verbose_name=Config.vocabulary('subscription'))
+    type = models.ForeignKey('SubscriptionType', related_name='subscriptions', on_delete=models.PROTECT,
+                             verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
+    cancellation_date = models.DateField(_('Kündigüngssdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))

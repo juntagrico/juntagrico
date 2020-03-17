@@ -3,6 +3,7 @@ from django.utils.translation import gettext as _
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
 from juntagrico.admins.inlines.extra_subscription_inline import ExtraSubscriptionInline
+from juntagrico.admins.inlines.subscription_part_inlines import SubscriptionPartInline
 from juntagrico.admins.inlines.subscription_type_inlines import FutureSubscriptionTypeInline
 from juntagrico.admins.inlines.subscription_type_inlines import SubscriptionTypeInline
 from juntagrico.config import Config
@@ -18,7 +19,7 @@ class SubscriptionAdmin(BaseAdmin):
                      'members_old__user__username', 'members_old__first_name', 'members_old__last_name',
                      'depot__name']
 
-    inlines = [SubscriptionTypeInline, FutureSubscriptionTypeInline, ExtraSubscriptionInline]
+    inlines = [SubscriptionTypeInline, FutureSubscriptionTypeInline, ExtraSubscriptionInline, SubscriptionPartInline]
     add_inlines = [SubscriptionTypeInline, ExtraSubscriptionInline]
     fieldsets = [
         (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'subscription_members']}),
