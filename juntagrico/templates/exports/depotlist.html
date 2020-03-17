@@ -14,7 +14,7 @@
     {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
 </div>
 {% for depot in depots %}
-    {{ categories_first|safe }}
+    {% include "./snippets/snippet_depotlist_header.html" with first=True %}
     {% for subscription in depot.active_subscriptions %}
         <tr>
             <td style="width:360px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
@@ -34,7 +34,7 @@
         {% if forloop.counter0|divisibleby:14 and forloop.counter0 > 0 and not forloop.last %}
             </table>
             <div class="page-break"></div>
-            {{ categories|safe }}
+            {% include "./snippets/snippet_depotlist_header.html" %}
         {% endif %}
     {% endfor %}
     </table>
