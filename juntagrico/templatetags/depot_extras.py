@@ -34,9 +34,9 @@ def sub_size(subscriptions, size):
 def extra_sub_type(subscriptions, es_type):
     # case 1: single subscription object is passed
     if isinstance(subscriptions, Subscription):
-        return subscriptions.extra_subscription_set.filter(type=es_type)
+        return subscriptions.extra_subscription_set.filter(type=es_type, active=True)
     # case 2: queryset of subscriptions is passed
-    return subscriptions.filter(extra_subscription_set__type=es_type)
+    return subscriptions.filter(extra_subscription_set__type=es_type, extra_subscription_set__active=True)
 
 
 @register.filter
