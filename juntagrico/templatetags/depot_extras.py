@@ -9,6 +9,8 @@ register = template.Library()
 
 @register.filter
 def count(subscriptions):
+    if not subscriptions:
+        return 0
     if isinstance(subscriptions, QuerySet):
         return subscriptions.count()  # for efficiency
     if isinstance(subscriptions, Subscription):
@@ -18,6 +20,8 @@ def count(subscriptions):
 
 @register.filter
 def count_units(subscriptions):
+    if not subscriptions:
+        return 0
     if isinstance(subscriptions, Subscription):
         # case 1: single subscription object is passed
         units = subscriptions.types.aggregate(units=Sum('size__units'))
@@ -31,7 +35,7 @@ def count_units(subscriptions):
 def sub_size(subscriptions, size):
     # case 1: single subscription object is passed
     if isinstance(subscriptions, Subscription):
-        return subscriptions if subscriptions.types.filter(size=size) else []
+        return subscriptions if subscriptions.types.filter(size=size) else None
     # case 2: queryset of subscriptions is passed
     return subscriptions.filter(types__size=size)
 
@@ -49,7 +53,7 @@ def extra_sub_type(subscriptions, es_type):
 def weekday(queryset_or_sub, weekday_id):
     # case 1: single subscription object is passed
     if isinstance(queryset_or_sub, Subscription):
-        return queryset_or_sub if queryset_or_sub.depot.weekday == weekday_id else []
+        return queryset_or_sub if queryset_or_sub.depot.weekday == weekday_id else None
     # case 2: queryset of subscriptions or depots is passed
     if queryset_or_sub.model == Subscription:
         return queryset_or_sub.filter(depot__weekday=weekday_id)
@@ -60,6 +64,6 @@ def weekday(queryset_or_sub, weekday_id):
 def depot(subscriptions, depot):
     # case 1: single subscription object is passed
     if isinstance(subscriptions, Subscription):
-        return subscriptions if subscriptions.depot == depot else []
+        return subscriptions if subscriptions.depot == depot else None
     # case 2: queryset of subscriptions is passed
     return subscriptions.filter(depot=depot)
