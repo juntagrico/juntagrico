@@ -11,21 +11,27 @@ register = template.Library()
 def count(subscriptions):
     if isinstance(subscriptions, QuerySet):
         return subscriptions.count()  # for efficiency
+    if isinstance(subscriptions, Subscription):
+        return 1
     return len(subscriptions)
 
 
 @register.filter
 def count_units(subscriptions):
-    # sum each unit of each subscription type
-    units = subscriptions.aggregate(units=Sum('types__size__units'))
-    return units['units'] or 0
+    if isinstance(subscriptions, Subscription):
+        # case 1: single subscription object is passed
+        units = subscriptions.types.aggregate(units=Sum('size__units'))
+    else:
+        # case 2: sum each unit of each subscription type
+        units = subscriptions.aggregate(units=Sum('types__size__units'))
+    return int(units['units'] or 0)
 
 
 @register.filter
 def sub_size(subscriptions, size):
     # case 1: single subscription object is passed
     if isinstance(subscriptions, Subscription):
-        return [subscriptions] if subscriptions.types.filter(size=size) else []
+        return subscriptions if subscriptions.types.filter(size=size) else []
     # case 2: queryset of subscriptions is passed
     return subscriptions.filter(types__size=size)
 
@@ -43,7 +49,7 @@ def extra_sub_type(subscriptions, es_type):
 def weekday(queryset_or_sub, weekday_id):
     # case 1: single subscription object is passed
     if isinstance(queryset_or_sub, Subscription):
-        return [queryset_or_sub] if queryset_or_sub.depot.weekday == weekday_id else []
+        return queryset_or_sub if queryset_or_sub.depot.weekday == weekday_id else []
     # case 2: queryset of subscriptions or depots is passed
     if queryset_or_sub.model == Subscription:
         return queryset_or_sub.filter(depot__weekday=weekday_id)
@@ -54,6 +60,6 @@ def weekday(queryset_or_sub, weekday_id):
 def depot(subscriptions, depot):
     # case 1: single subscription object is passed
     if isinstance(subscriptions, Subscription):
-        return [subscriptions] if subscriptions.depot == depot else []
+        return subscriptions if subscriptions.depot == depot else []
     # case 2: queryset of subscriptions is passed
     return subscriptions.filter(depot=depot)
