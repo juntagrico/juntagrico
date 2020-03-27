@@ -1,56 +1,66 @@
 from django import template
-from django.db.models import Sum
+from django.db.models import Sum, Model
 from django.db.models.query import QuerySet
 
+from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
 
 
 @register.filter
-def count(subscriptions):
-    if not subscriptions:
+def count(entity):
+    if not entity:
         return 0
-    if isinstance(subscriptions, QuerySet):
-        return subscriptions.count()  # for efficiency
-    if isinstance(subscriptions, Subscription):
+    if isinstance(entity, Model):
         return 1
-    return len(subscriptions)
+    if isinstance(entity, QuerySet):
+        return entity.count()  # for efficiency
+    return len(entity)
 
 
 @register.filter
-def count_units(subscriptions):
-    if not subscriptions:
+def count_units(subs_or_types):
+    if not subs_or_types:
         return 0
-    if isinstance(subscriptions, Subscription):
+    if isinstance(subs_or_types, Subscription):
         # case 1: single subscription object is passed
-        units = subscriptions.types.aggregate(units=Sum('size__units'))
-    else:
-        # case 2: sum each unit of each subscription type
-        units = subscriptions.aggregate(units=Sum('types__size__units'))
+        units = subs_or_types.types.aggregate(units=Sum('size__units'))
+    elif isinstance(subs_or_types, QuerySet):
+        if subs_or_types.model is Subscription:
+            # case 2: sum each unit of each subscription type
+            units = subs_or_types.aggregate(units=Sum('types__size__units'))
+        elif subs_or_types.model is SubscriptionType:
+            # case 3: queryset of types is passed
+            units = subs_or_types.aggregate(units=Sum('size__units'))
     return int(units['units'] or 0)
 
 
 @register.filter
-def sub_size(subscriptions, size):
-    # case 1: single subscription object is passed
+def get_types_by_size(subscriptions, size):
     if isinstance(subscriptions, Subscription):
-        return subscriptions if subscriptions.types.filter(size=size) else None
-    # case 2: queryset of subscriptions is passed
-    return subscriptions.filter(types__size=size)
+        # case 1: single subscription object is passed
+        types = subscriptions.types
+    else:
+        # case 2: queryset of subscriptions is passed
+        types = SubscriptionType.objects.filter(subscription_set__in=subscriptions)
+    return types.filter(size=size)
 
 
 @register.filter
-def extra_sub_type(subscriptions, es_type):
-    # case 1: single subscription object is passed
+def get_extra_subs_by_type(subscriptions, es_type):
     if isinstance(subscriptions, Subscription):
-        return subscriptions.extra_subscription_set.filter(type=es_type, active=True)
-    # case 2: queryset of subscriptions is passed
-    return subscriptions.filter(extra_subscription_set__type=es_type, extra_subscription_set__active=True)
+        # case 1: single subscription object is passed
+        es = subscriptions.extra_subscription_set
+    else:
+        # case 2: queryset of subscriptions is passed
+        es = ExtraSubscription.objects.filter(main_subscription__in=subscriptions)
+    return es.filter(type=es_type, active=True)
 
 
 @register.filter
-def weekday(queryset_or_sub, weekday_id):
+def by_weekday(queryset_or_sub, weekday_id):
     # case 1: single subscription object is passed
     if isinstance(queryset_or_sub, Subscription):
         return queryset_or_sub if queryset_or_sub.depot.weekday == weekday_id else None
@@ -61,7 +71,7 @@ def weekday(queryset_or_sub, weekday_id):
 
 
 @register.filter
-def depot(subscriptions, depot):
+def by_depot(subscriptions, depot):
     # case 1: single subscription object is passed
     if isinstance(subscriptions, Subscription):
         return subscriptions if subscriptions.depot == depot else None

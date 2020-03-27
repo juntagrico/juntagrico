@@ -45,15 +45,15 @@
         {% for weekday_name, weekday_id in weekdays.items %}
             <tr>
                 <td>{{ weekday_name }}</td>
-                <td style="text-align:right">{{ subscriptions|weekday:weekday_id|count_units|floatformat }}</td>
+                <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|count_units|floatformat }}</td>
                 {% for product in products %}
                     {% for size in product.sizes_for_depot_list %}
-                        <td style="text-align:right">{{ subscriptions|weekday:weekday_id|sub_size:size|count|floatformat }}</td>
+                        <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|get_types_by_size:size|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
                 {% for category in extra_sub_categories %}
                     {% for type in category.types_for_depot_list %}
-                        <td style="text-align:right">{{ subscriptions|weekday:weekday_id|extra_sub_type:type|count|floatformat }}</td>
+                        <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|get_extra_subs_by_type:type|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
@@ -63,12 +63,12 @@
             <td style="text-align:right">{{ subscriptions|count_units|floatformat }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
-                    <td style="text-align:right">{{ subscriptions|sub_size:size|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|get_types_by_size:size|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
             {% for category in extra_sub_categories %}
                 {% for type in category.types_for_depot_list %}
-                    <td style="text-align:right">{{ subscriptions|extra_sub_type:type|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|get_extra_subs_by_type:type|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
         </tr>
