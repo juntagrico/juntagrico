@@ -111,7 +111,7 @@ class JuntagricoTestCase(TestCase):
         """
         job_type_data = {'name': 'name',
                          'activityarea': self.area,
-                         'duration': 2}
+                         'default_duration': 2}
         self.job_type = JobType.objects.create(**job_type_data)
         """
         job_extra
@@ -144,7 +144,7 @@ class JuntagricoTestCase(TestCase):
         time = timezone.now() + timezone.timedelta(hours=2)
         one_time_job_data = {'name': 'name',
                              'activityarea': self.area,
-                             'duration': 2,
+                             'default_duration': 2,
                              'slots': 1,
                              'time': time}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)

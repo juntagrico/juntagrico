@@ -128,7 +128,7 @@ def job(request, job_id):
         if Config.assignment_unit() == 'ENTITY':
             amount = job.multiplier
         elif Config.assignment_unit() == 'HOURS':
-            amount = job.multiplier * job.type.duration
+            amount = job.multiplier * job.duration
         add = int(num)
         for i in range(add):
             assignment = Assignment.objects.create(
