@@ -1,8 +1,11 @@
-# -*- coding: utf-8 -*-
 from django.utils import timezone
+from django.utils.timezone import get_default_timezone as gdtz
 
-from juntagrico.models import *
+
 from juntagrico.config import Config
+from datetime import datetime, time, date
+
+from juntagrico.entity.jobs import Job, RecuringJob, OneTimeJob
 
 
 class JobDao:
@@ -39,6 +42,11 @@ class JobDao:
         return Job.objects.filter(time__gte=timezone.now()).order_by('time')
 
     @staticmethod
+    def get_jobs_for_current_day():
+        daystart = datetime.combine(date.today(), time.min, tzinfo=gdtz())
+        return Job.objects.filter(time__gte=daystart).order_by('time')
+
+    @staticmethod
     def get_current_one_time_jobs():
         return OneTimeJob.objects.filter(time__gte=timezone.now()).order_by('time')
 
@@ -54,3 +62,7 @@ class JobDao:
     def get_promoted_jobs():
         return RecuringJob.objects.filter(type__name__in=Config.promoted_job_types(),
                                           time__gte=timezone.now()).order_by('time')[:Config.promomted_jobs_amount()]
+
+    @staticmethod
+    def upcomming_jobs_for_member(member):
+        return Job.objects.filter(time__gte=timezone.now(), assignment__member=member).distinct()

@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load config %}
+<div class="row mt-3">
+    <div class="col-md-2">
+        {% trans "Zusatz-Abos" %}
+    </div>
+    <div class="col-md-4">
+        {% trans "Zusatz-Abos können nur mit einer Frist von mind. einem Monat geändert werden für die betreffende Verechnungsperiode." %}
+        <br/>
+        {% config "extra_sub_info" as extra_sub_info %}
+        {% if extra_sub_info.strip %}
+            <a href="{{ extra_sub_info }}"target="_blank">
+                {% trans "Weitere Infos zu den Zusatzabos" %}
+            </a>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        {% trans "Nächstmögliches Datum" %}:
+        <br/>
+        {{ next_extra_subscription_date |date:"d.m.Y" }}
+        <br/>
+        {% trans "Zukünftige Zusatz-Abos" %}:
+        <br/>
+        {% if not  subscription.extrasubscriptions_changed %}
+            {% if subscription.extra_subscriptions.all|length == 0 %}
+                {% trans "Keine Zusatz-Abos" %}
+            {% else %}
+                {% for extrasubscription in subscription.extra_subscriptions.all %}
+                    <li>
+                        {{ extrasubscription.type.name }}
+                    </li>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            {% if subscription.future_extra_subscriptions.all|length == 0 %}
+                {% trans "Keine Zusatz-Abos" %}
+            {% else %}
+                {% for extrasubscription in subscription.future_extra_subscriptions.all %}
+                    <li>
+                        {{ extrasubscription.type.name }}
+                    </li>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'extra-change' subscription.id %}"class="btn btn-success">
+            {% trans "Zusatz-Abos ändern" %}
+        </a>
+    </div>
+</div>

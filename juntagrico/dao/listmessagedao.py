@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from juntagrico.models import *
+from juntagrico.entity.listmessage import ListMessage
 
 
 class ListMessageDao:

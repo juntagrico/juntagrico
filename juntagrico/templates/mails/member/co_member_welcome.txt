@@ -1,0 +1,51 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load config %}
+{% block content %}
+{% config "enable_shares" as c_enable_shares %}
+{% config "info_email" as c_info_email %}
+{% config "bylaws" as c_bylaws %}
+{% config "business_regulations" as c_business_regulations %}
+{% config "faq_doc" as c_faq_doc %}
+{% config "organisation_name" as c_organisation_name %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% vocabulary "co_member" as v_co_member %}
+{% vocabulary "share_pl" as v_share_pl %}
+{% vocabulary "member_type" as v_member_type %}
+{% vocabulary "subscription" as v_subscription %}
+{% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
+
+{% if c_enable_shares %}
+{% blocktrans with pm=co_member.subscription.primary_member shares=co_member.active_shares_count %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt und für dich {{ shares }} {{ v_share_pl }} bestellt.{% endblocktrans %}
+{% else %}
+{% blocktrans with pm=co_member.subscription.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
+{% endif %}
+
+{% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutze folgende Daten{% endblocktrans %}:
+{% trans "Email" %}: {{ co_member.email }}
+{% trans "Passwort" %}: {{ password }}
+{% blocktrans %}Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen und gleich dein Passwort zu ändern.{% endblocktrans %}
+{% trans "Bestätigungslink" %}: {{ serverurl }}{% url 'confirm' co_member.get_hash %}
+
+{% trans "Damit bestätigst du dass du damit einverstanden bist" %}:
+- {% blocktrans %}{{ c_organisation_name }}-{{ v_member_type }} zu werden{% endblocktrans %}
+- {% blocktrans %}dem/r {{ v_subscription }} beizutreten{% endblocktrans %}
+- {% blocktrans %}die bestellten {{ v_share_pl }} zu erwerben{% endblocktrans %}
+{% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:
+ - {% trans "die Statuten" %} ({{ c_bylaws|safe }})
+{% if c_business_regulations.strip %}
+- {% trans "das Betriebsreglement" %} ({{ c_business_regulations|safe }})
+{% endif %}
+
+{% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein, melde dies bitte {{ c_info_email }}.{% endblocktrans %}
+
+{% if c_faq_doc.strip %}
+{% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ c_info_email }}.{% endblocktrans %}
+{% else %}
+{% blocktrans %}Für weitere Fragen schreibe eine Mail an {{ c_info_email }}.{% endblocktrans %}
+{% endif %}
+
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
+{% endblock %}

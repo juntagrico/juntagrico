@@ -12,7 +12,7 @@ from juntagrico.config import Config
 def generate_ical_for_job(job):
     c = Calendar()
     e = Event()
-    e.name = Config.organisation_name() + ' ' + _('Einsatz')+':' + job.type.get_name
+    e.name = Config.organisation_name() + ' ' + _('Einsatz') + ':' + job.type.get_name
     e.location = job.type.location
     e.description = job.type.description
     e.begin = job.time.strftime('%Y-%m-%d %H:%M:%S')

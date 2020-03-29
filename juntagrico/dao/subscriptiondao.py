@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from juntagrico.models import *
+from juntagrico.entity.subs import Subscription
 
 
 class SubscriptionDao:
