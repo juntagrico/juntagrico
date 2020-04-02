@@ -138,7 +138,7 @@ def job(request, job_id):
                 assignment.job_extras.add(extra)
         assignment.save()
 
-        MemberNotification.job_signup([member.email], job)
+        MemberNotification.job_signup(member.email, job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return redirect('job', job_id=job_id)
