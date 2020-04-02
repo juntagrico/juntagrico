@@ -54,6 +54,23 @@ class Email(EmailMultiAlternatives):
         self.attach(ics.name, ics.content)
         return self
 
+    @staticmethod
+    def _get_thread_id(uid):
+        return f'<{uid}@{Config.server_url()}>'
+
+    def start_thread(self, uid):
+        # Tested and working on Thunderbird, Gmail and K9-Mail
+        # Does not work on any Microsoft E-Mail client:
+        #   Tried this without success https://bugzilla.mozilla.org/show_bug.cgi?id=411601
+        # Apples not tested
+        self.extra_headers.update({'Message-ID': self._get_thread_id(uid)})
+        return self
+
+    def continue_thread(self, uid):
+        tid = self._get_thread_id(uid)
+        self.extra_headers.update({'References': tid, 'In-Reply-To': tid})
+        return self
+
 
 class FormEmails:
     """
@@ -218,7 +235,7 @@ class MemberNotification:
         Email(
             organisation_subject(_('Für Einsatz angemeldet')),
             get_email_content('j_signup', base_dict(locals()))
-        ).attach_ics(generate_ical_for_job(job)).send_to(email)
+        ).attach_ics(generate_ical_for_job(job)).start_thread(repr(job)).send_to(email)
 
     @staticmethod
     def job_reminder(emails, job, participants):
@@ -227,7 +244,7 @@ class MemberNotification:
             organisation_subject(_('Einsatz-Erinnerung')),
             get_email_content('j_reminder', base_dict(locals())),
             bcc=emails
-        ).attach_ics(generate_ical_for_job(job)).send()
+        ).attach_ics(generate_ical_for_job(job)).continue_thread(repr(job)).send()
 
     @staticmethod
     def job_time_changed(emails, job):
@@ -235,7 +252,7 @@ class MemberNotification:
             organisation_subject(_('Einsatz-Zeit geändert')),
             get_email_content('j_changed', base_dict(locals())),
             bcc=emails
-        ).attach_ics(generate_ical_for_job(job)).send()
+        ).attach_ics(generate_ical_for_job(job)).continue_thread(repr(job)).send()
 
     @staticmethod
     def job_canceled(emails, job):
@@ -243,4 +260,4 @@ class MemberNotification:
             organisation_subject(_('Einsatz abgesagt')),
             get_email_content('j_canceled', base_dict(locals())),
             bcc=emails
-        ).attach_ics(generate_ical_for_job(job)).send()
+        ).attach_ics(generate_ical_for_job(job)).continue_thread(repr(job)).send()
