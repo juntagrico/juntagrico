@@ -10,19 +10,12 @@ from juntagrico.util.mailer import filter_whitelist_emails
 log = logging.getLogger('juntagrico.mailer')
 
 
-def chainable(func):
-    def wrapper(*args, **kwargs):
-        func(*args, **kwargs)
-        return args[-1]
-    return wrapper
-
-
 def prepare_email(*args, **kwargs):
     kwargs.setdefault("from_email", Config.info_email())
     return EmailMultiAlternatives(*args, **kwargs)
 
 
-def send_to(to, email, **kwargs):
+def send_to(email, to, **kwargs):
     to = [to] if isinstance(to, str) else to
     email.to = to
     for key, value in kwargs.items():
@@ -41,19 +34,16 @@ def send(email):
     mailer.send(email)
 
 
-@chainable
-def attach_html(html, email):
+def attach_html(email, html):
     email.attach_alternative(html, 'text/html')
 
 
-@chainable
-def attach_files(files, email):
+def attach_files(email, files):
     for file in files or []:
         email.attach(file.name, file.read())
 
 
-@chainable
-def attach_ics(ics, email):
+def attach_ics(email, ics):
     email.attach(ics.name, ics.content)
 
 
@@ -61,8 +51,7 @@ def get_thread_id(uid):
     return f'<{uid}@{Config.server_url()}>'
 
 
-@chainable
-def start_thread(uid, email):
+def start_thread(email, uid):
     # Tested and working on Thunderbird, Gmail and K9-Mail
     # Does not work on any Microsoft E-Mail client:
     #   Tried this without success https://bugzilla.mozilla.org/show_bug.cgi?id=411601
@@ -70,7 +59,6 @@ def start_thread(uid, email):
     email.extra_headers.update({'Message-ID': get_thread_id(uid)})
 
 
-@chainable
-def continue_thread(uid, email):
+def continue_thread(email, uid):
     tid = get_thread_id(uid)
     email.extra_headers.update({'References': tid, 'In-Reply-To': tid})

@@ -37,17 +37,18 @@ class FormEmails:
     def contact(subject, message, member, copy_to_member):
         subject = _('Anfrage per {0}:').format(Config.adminportal_name()) + subject
         email = prepare_email(subject, message)
-        send_to(Config.info_email(), email, reply_to=member.email)
+        send_to(email, Config.info_email(), reply_to=member.email)
         if copy_to_member:
-            send_to(member.email, email)
+            send_to(email, member.email)
 
     @staticmethod
     def contact_member(subject, message, member, contact_member, copy_to_member, files):
         subject = _('Nachricht per {0}:').format(Config.adminportal_name()) + subject
-        email = attach_files(files, prepare_email(subject, message, reply_to=[member.email]))
-        send_to(contact_member.email, email)
+        email =prepare_email(subject, message, reply_to=[member.email])
+        attach_files(email, files)
+        send_to(email, contact_member.email)
         if copy_to_member:
-            send_to(member.email, email)
+            send_to(email, member.email)
 
     @staticmethod
     def internal(subject, message, text_message, emails, files, sender):
@@ -62,7 +63,10 @@ class FormEmails:
         })
         text_content = get_template('mails/form/filtered_mail.txt').render(textd)
         html_content = get_template('mails/form/filtered_mail.html').render(htmld)
-        send(attach_files(files, attach_html(html_content,prepare_email(subject, text_content, bcc=emails, from_email=sender))))
+        email = prepare_email(subject, text_content, bcc=emails, from_email=sender)
+        attach_html(email, html_content)
+        attach_files(email, files)
+        send(email)
 
 
 class AdminNotification:
@@ -71,62 +75,69 @@ class AdminNotification:
     """
     @staticmethod
     def member_joined_activityarea(area, member):
-        send_to(area.get_email(),prepare_email(
+        email = prepare_email(
             organisation_subject(_('Neues Mitglied im Taetigkeitsbereich {0}').format(area.name)),
             _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
                 member.first_name, member.last_name, area.name
             )
-        ))
+        )
+        send_to(email, area.get_email())
 
     @staticmethod
     def member_left_activityarea(area, member):
-        send_to(area.get_email(),prepare_email(
+        email = prepare_email(
             organisation_subject(_('Mitglied verlässt Taetigkeitsbereich {0}').format(area.name)),
             _('Soeben hat sich {0} {1} aus dem Taetigkeitsbereich {2} ausgetragen. '
               'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
                 member.first_name, member.last_name, area.name
             ),
-        ))
+        )
+        send_to(email, area.get_email())
 
     @staticmethod
     def subscription_created(subscription):
-        send(prepare_email(
+        email= prepare_email(
             organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('subscription'))),
             get_email_content('n_sub', base_dict(locals())),
             bcc=get_emails_by_permission('notified_on_subscription_creation')
-        ))
+        )
+        send(email)
 
     @staticmethod
     def subscription_canceled(subscription, message):
-        send(prepare_email(
+        email = prepare_email(
             organisation_subject(_('{} gekündigt').format(Config.vocabulary('subscription'))),
             get_email_content('s_canceled', base_dict(locals())),
             bcc=get_emails_by_permission('notified_on_subscription_cancellation')
-        ))
+        )
+        send(email)
 
     @staticmethod
     def share_created(share):
-        send(prepare_email(
+        email = prepare_email(
             organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
             get_email_content('a_share_created', base_dict(locals())),
             bcc=get_emails_by_permission('notified_on_share_creation')
-        ))
+        )
+        send(email)
 
     @staticmethod
     def member_created(member):
-        send(prepare_email(
+        email = prepare_email(
             organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
             get_email_content('a_member_created', base_dict(locals())),
             bcc=get_emails_by_permission('notified_on_member_creation')
-        ))
+        )
+        send(email)
 
     @staticmethod
     def member_canceled(member, end_date, message):
-        send(prepare_email(
+        email = prepare_email(
             organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
             get_email_content('m_canceled', base_dict(locals())),
             bcc=get_emails_by_permission('notified_on_member_cancellation')
-        ))
+        )
+        send(email)
 
 
 class MemberNotification:
@@ -135,85 +146,103 @@ class MemberNotification:
     """
     @staticmethod
     def welcome(member, password):
-        send_to(member.email, prepare_email(
+        email = prepare_email(
             _('Willkommen bei {0}').format(enriched_organisation('D')),
             get_email_content('welcome', base_dict(locals())),
-        ))
+        )
+        send_to(email, member.email)
 
     @staticmethod
     def welcome_co_member(co_member, password, new_shares, new=True):
         # sends either welcome mail or just information mail to new/added co-member
-        send_to(co_member.email, prepare_email(
+        email = prepare_email(
             _('Willkommen bei {0}').format(enriched_organisation('D')),
             get_email_content('co_welcome' if new else 'co_added', base_dict(locals())),
-        ))
+        )
+        send_to(email, co_member.email)
 
     @staticmethod
     def shares_created(member, shares):
-        send_to(member.email, prepare_email(
+        email = prepare_email(
             organisation_subject(_('Dein neuer Anteilschein')),
             get_email_content('s_created', base_dict(locals())),
-        ))
+        )
+        send_to(email, member.email)
 
     @staticmethod
     def email_confirmation(member):
         d = {'hash': member.get_hash()}
-        send_to(member.email, prepare_email(
+        email= prepare_email(
             organisation_subject(_('E-Mail-Adresse bestätigen')),
             get_email_content('confirm', base_dict(d)),
-        ))
+        )
+        send_to(email, member.email)
 
     @staticmethod
-    def reset_password(email, password):
-        send_to(email, prepare_email(
+    def reset_password(email_adr, password):
+        email = prepare_email(
             organisation_subject(_('Dein neues Passwort')),
             get_email_content('password', base_dict(locals())),
-        ))
+        )
+        send_to(email, email_adr)
 
     @staticmethod
     def depot_changed(emails, depot):
-        send(prepare_email(
+        email = prepare_email(
             organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
             get_email_content('d_changed', base_dict(locals())),
             bcc=emails
-        ))
+        )
+        send(email)
 
     @staticmethod
     def co_member_left_subscription(primary_member, co_member, message):
-        send(prepare_email(
+        email = prepare_email(
             organisation_subject(_('Austritt aus {}').format(Config.vocabulary('subscription'))),
             get_email_content('m_left_subscription', base_dict(locals())),
             to=[primary_member.email]
-        ))
+        )
+        send(email)
 
     @staticmethod
-    def job_signup(email, job):
-        send_to(email,attach_ics(generate_ical_for_job(job), start_thread(repr(job), prepare_email(
+    def job_signup(email_adr, job):
+        email = prepare_email(
             organisation_subject(_('Für Einsatz angemeldet')),
             get_email_content('j_signup', base_dict(locals()))
-        ))))
+        )
+        start_thread(email, repr(job))
+        attach_ics(email, generate_ical_for_job(job))
+        send_to(email, email_adr)
 
     @staticmethod
     def job_reminder(emails, job, participants):
         contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
-        send(continue_thread(repr(job), attach_ics(generate_ical_for_job(job)), prepare_email(
+        email = prepare_email(
             organisation_subject(_('Einsatz-Erinnerung')),
             get_email_content('j_reminder', base_dict(locals())),
             bcc=emails
-        )))
+        )
+        attach_ics(email, generate_ical_for_job(job))
+        continue_thread(email, repr(job))
+        send(email)
 
     @staticmethod
     def job_time_changed(emails, job):
-        send(continue_thread(repr(job)), attach_ics(generate_ical_for_job(job), prepare_email(
+        email = prepare_email(
             organisation_subject(_('Einsatz-Zeit geändert')),
             get_email_content('j_changed', base_dict(locals())),
             bcc=emails
-        )))
+        )
+        attach_ics(email, generate_ical_for_job(job))
+        continue_thread(email, repr(job))
+        send(email)
 
     @staticmethod
     def job_canceled(emails, job):
-        send(continue_thread(repr(job), prepare_email(
+        email = prepare_email(
             organisation_subject(_('Einsatz abgesagt')),
             get_email_content('j_canceled', base_dict(locals())),
             bcc=emails
-        )))
+        )
+        continue_thread(email, repr(job))
+        send(email)
