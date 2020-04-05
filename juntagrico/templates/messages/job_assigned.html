@@ -2,9 +2,11 @@
 {% load config %}
 <div class="alert alert-success">
     {% trans "Du hast dich bereits für den Einsatz eingeschrieben." %}
-    {% blocktrans trimmed count a=amount %}
-    Zusammen mit einer weiteren Person.
-    {% plural %}
-    Zusammen mit {{ a }} weiteren Personen.
-    {% endblocktrans %}
+    {% if amount != 0 %}
+        {% blocktrans trimmed count a=amount %}
+        Zusammen mit einer weiteren Person.
+        {% plural %}
+        Zusammen mit {{ a }} weiteren Personen.
+        {% endblocktrans %}
+    {% endif %}
 </div>
