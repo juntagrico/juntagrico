@@ -5,7 +5,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils.module_loading import import_string
 
 from juntagrico.config import Config
-from juntagrico.util.mailer import filter_whitelist_emails
+from juntagrico.mailer import filter_whitelist_emails
 
 log = logging.getLogger('juntagrico.mailer')
 

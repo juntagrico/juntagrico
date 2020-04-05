@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.mailer import MemberNotification
+from juntagrico.mailer.membernotification import MemberNotification
 from juntagrico.signals import job_canceled, job_time_changed
 
 

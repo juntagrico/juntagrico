@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import AdminNotification
+from juntagrico.mailer.adminnotification import AdminNotification
 from juntagrico.signals import member_deactivated, member_created, member_canceled
 
 

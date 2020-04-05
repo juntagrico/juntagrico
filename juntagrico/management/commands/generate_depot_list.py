@@ -7,7 +7,7 @@ from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategor
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.mailer import MemberNotification
+from juntagrico.mailer.membernotification import MemberNotification
 from juntagrico.util.pdf import render_to_pdf_storage
 
 from juntagrico.util.temporal import weekdays

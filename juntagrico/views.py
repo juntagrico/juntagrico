@@ -20,10 +20,12 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm
-from juntagrico.mailer import FormEmails, MemberNotification, AdminNotification
+from juntagrico.mailer import append_attachements
+from juntagrico.mailer.membernotification import MemberNotification
+from juntagrico.mailer.adminnotification import AdminNotification
+from juntagrico.mailer.formemails import FormEmails
 from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.mailer import append_attachements
 from juntagrico.util.management import password_generator, cancel_share
 from juntagrico.util.messages import home_messages, job_messages
 from juntagrico.util.temporal import next_membership_end_date
