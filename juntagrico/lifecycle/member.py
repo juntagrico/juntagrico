@@ -25,7 +25,7 @@ def handle_member_deactivated(sender, instance, **kwargs):
 
 def check_member_consistency(instance):
     if instance._old['inactive'] != instance.inactive and instance.inactive is True:
-        if instance.share_set.filter(payback_date__isnull=True).count() > 0:
+        if instance.is_cooperation_member:
             raise ValidationError(
                 _('Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}').format(Config.vocabulary('member'), Config.vocabulary('share')),
                 code='invalid')

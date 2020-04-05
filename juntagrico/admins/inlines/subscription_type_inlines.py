@@ -13,7 +13,7 @@ class SubscriptionTypeInlineFormset(BaseInlineFormSet):
         for form in self.forms:
             if form.instance.pk:
                 required_shares += form.instance.type.shares
-        available_shares = sum([member.active_shares_count for member in self.instance._future_members])
+        available_shares = sum([member.usable_shares_count for member in self.instance._future_members])
         if required_shares > available_shares:
             raise ValidationError(
                 _('Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}').format(Config.vocabulary('share_pl'),

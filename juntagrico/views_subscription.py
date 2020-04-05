@@ -56,7 +56,7 @@ def subscription(request, subscription_id=None):
         cancelation_date = subscription.cancelation_date
         if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
-        asc = member.active_shares_count
+        asc = member.usable_shares_count
         share_error = subscription.share_overflow-asc < 0
         primary = subscription.primary_member.id == member.id
         can_leave = member.is_cooperation_member and not share_error and not primary
@@ -366,7 +366,7 @@ def cancel_subscription(request, subscription_id):
 def leave_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     member = request.user.member
-    asc = member.active_shares_count
+    asc = member.usable_shares_count
     share_error = subscription.share_overflow - asc < 0
     primary = subscription.primary_member.id == member.id
     can_leave = member.is_cooperation_member and not share_error and not primary
@@ -464,7 +464,7 @@ def order_shares_success(request):
 @permission_required('juntagrico.is_operations_group')
 def payout_share(request, share_id):
     share = get_object_or_404(Share, id=share_id)
-    share.payback_date = timezone.now()
+    share.payback_date = timezone.now().date()
     share.save()
     member = share.member
     if member.active_shares_count == 0 and member.canceled is True:
