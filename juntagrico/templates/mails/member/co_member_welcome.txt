@@ -33,9 +33,7 @@
 - {% blocktrans %}die bestellten {{ v_share_pl }} zu erwerben{% endblocktrans %}
 {% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:
  - {% trans "die Statuten" %} ({{ c_bylaws|safe }})
-{% if c_business_regulations.strip %}
-- {% trans "das Betriebsreglement" %} ({{ c_business_regulations|safe }})
-{% endif %}
+{% if c_business_regulations.strip %} - {% trans "das Betriebsreglement" %} ({{ c_business_regulations|safe }}){% endif %}
 
 {% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein, melde dies bitte {{ c_info_email }}.{% endblocktrans %}
 
