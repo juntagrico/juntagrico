@@ -14,6 +14,12 @@ from juntagrico.util.organisation_name import enriched_organisation
 log = logging.getLogger('juntagrico.mailer')
 
 
+def chainable(func):
+    def wrapper(*args, **kwargs):
+        func(*args, **kwargs)
+        return args[0]
+    return wrapper
+
 def organisation_subject(subject):
     return Config.organisation_name() + ' - ' + subject
 
@@ -26,7 +32,6 @@ class Email(EmailMultiAlternatives):
     def send_to(self, to=None, **kwargs):
         to = [to] if isinstance(to, str) else to
         self.to = to or self.to
-        # allow overriding of settings
         for key, value in kwargs.items():
             setattr(self, key, value)
         self.send()
@@ -41,35 +46,35 @@ class Email(EmailMultiAlternatives):
         mailer = import_string(Config.default_mailer())
         mailer.send(super())
 
+    @chainable
     def attach_html(self, html):
         self.attach_alternative(html, 'text/html')
-        return self
 
+    @chainable
     def attach_files(self, files):
         for file in files or []:
             self.attach(file.name, file.read())
-        return self
 
+    @chainable
     def attach_ics(self, ics):
         self.attach(ics.name, ics.content)
-        return self
 
     @staticmethod
     def _get_thread_id(uid):
         return f'<{uid}@{Config.server_url()}>'
 
+    @chainable
     def start_thread(self, uid):
         # Tested and working on Thunderbird, Gmail and K9-Mail
         # Does not work on any Microsoft E-Mail client:
         #   Tried this without success https://bugzilla.mozilla.org/show_bug.cgi?id=411601
         # Apples not tested
         self.extra_headers.update({'Message-ID': self._get_thread_id(uid)})
-        return self
 
+    @chainable
     def continue_thread(self, uid):
         tid = self._get_thread_id(uid)
         self.extra_headers.update({'References': tid, 'In-Reply-To': tid})
-        return self
 
 
 class FormEmails:
@@ -87,7 +92,7 @@ class FormEmails:
     @staticmethod
     def contact_member(subject, message, member, contact_member, copy_to_member, files):
         subject = _('Nachricht per {0}:').format(Config.adminportal_name()) + subject
-        email = Email(subject, message, reply_to=member.email).attach_files(files)
+        email = Email(subject, message, reply_to=[member.email]).attach_files(files)
         email.send_to(contact_member.email)
         if copy_to_member:
             email.send_to(member.email)
@@ -105,6 +110,7 @@ class FormEmails:
         })
         text_content = get_template('mails/form/filtered_mail.txt').render(textd)
         html_content = get_template('mails/form/filtered_mail.html').render(htmld)
+        email = Email(subject, text_content, bcc=emails, from_email=sender)
         Email(subject, text_content, bcc=emails, from_email=sender)\
             .attach_html(html_content).attach_files(files).send()
 
@@ -227,8 +233,8 @@ class MemberNotification:
         Email(
             organisation_subject(_('Austritt aus {}').format(Config.vocabulary('subscription'))),
             get_email_content('m_left_subscription', base_dict(locals())),
-            primary_member.email
-        )
+            to=[primary_member.email]
+        ).send()
 
     @staticmethod
     def job_signup(email, job):
