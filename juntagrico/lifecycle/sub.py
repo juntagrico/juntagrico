@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.mailer.adminnotification import AdminNotification
+from juntagrico.mailer import adminnotification
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
 from juntagrico.util.lifecycle import handle_activated_deactivated
 
@@ -48,7 +48,7 @@ def handle_sub_canceled(sender, instance, **kwargs):
 
 
 def handle_sub_created(sender, instance, **kwargs):
-    AdminNotification.subscription_created(instance)
+    adminnotification.subscription_created(instance)
 
 
 def check_sub_consistency(instance):

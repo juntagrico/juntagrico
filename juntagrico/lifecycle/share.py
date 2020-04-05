@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from juntagrico.mailer.adminnotification import AdminNotification
+from juntagrico.mailer import adminnotification
 from juntagrico.signals import share_created
 
 
@@ -16,7 +16,7 @@ def share_post_save(sender, instance, created, **kwargs):
 
 
 def handle_share_created(sender, instance, **kwargs):
-    AdminNotification.share_created(instance)
+    adminnotification.share_created(instance)
 
 
 def check_share_consistency(instance):

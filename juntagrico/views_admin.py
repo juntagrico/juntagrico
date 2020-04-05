@@ -22,7 +22,7 @@ from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.mailer import append_attachements
-from juntagrico.mailer.formemails import FormEmails
+from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
@@ -72,7 +72,7 @@ def send_email_intern(request):
     append_attachements(request, files)
 
     if len(emails) > 0:
-        FormEmails.internal(
+        formemails.internal(
             request.POST.get('subject'),
             request.POST.get('message'),
             request.POST.get('textMessage'),

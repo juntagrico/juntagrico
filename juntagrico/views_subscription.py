@@ -23,7 +23,7 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
-from juntagrico.mailer.membernotification import MemberNotification
+from juntagrico.mailer import membernotification
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
@@ -383,7 +383,7 @@ def leave_subscription(request, subscription_id):
             member.old_subscriptions.add(subscription)
         member.save()
         if primary_member:
-            MemberNotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
+            membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
         return redirect('home')
     renderdict = get_menu_dict(request)
     return render(request, 'leavesubscription.html', renderdict)
