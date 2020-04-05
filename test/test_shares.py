@@ -24,4 +24,3 @@ class ShareTests(JuntagricoTestCase):
         share.save()
         self.assertGet(reverse('share-payout', args=[share.pk]), 302)
         self.assertEqual(self.member2.active_shares.count(), 0)
-
