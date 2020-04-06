@@ -1,4 +1,5 @@
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from juntagrico import views as juntagrico
@@ -27,6 +28,10 @@ urlpatterns = [
     path('my/cookies', juntagrico.cookies, name='cookies'),
     path('logout/', juntagrico.logout_view, name='logout'),
     path('accounts/login/', LoginView.as_view(), name='login'),
+    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='password_reset.html', email_template_name='mails/member/django_password_reset.txt'), name='password_reset'),
+    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password_reset_sent.html'), name='password_reset_done'),
+    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
 
     # area stuff
     path('my/areas', juntagrico.areas, name='areas'),  #
