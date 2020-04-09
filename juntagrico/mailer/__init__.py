@@ -1,11 +1,12 @@
 import logging
 
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
-from django.conf import settings
 from django.utils.module_loading import import_string
 
 from juntagrico.config import Config
+from juntagrico.util.decorators import chainable
 
 log = logging.getLogger('juntagrico.mailer')
 
@@ -41,21 +42,18 @@ def filter_whitelist_emails(to_emails):
     if settings.DEBUG:
         ok_mails = [x for x in to_emails if x in settings.WHITELIST_EMAILS]
         not_send = [x for x in to_emails if x not in settings.WHITELIST_EMAILS]
-        print(('Mail not sent to: ' + ', '.join(not_send) + ' not in whitelist'))
+        log.info(('Mail not sent to: ' + ', '.join(not_send) + ' not in whitelist'))
         return ok_mails
     else:
         return to_emails
 
 
-def chainable(func):
-    def wrapper(*args, **kwargs):
-        func(*args, **kwargs)
-        return args[0]
-    return wrapper
-
-
 def organisation_subject(subject):
     return Config.organisation_name() + ' - ' + subject
+
+
+def get_thread_id(obj):
+    return f'<{type(obj).__name__}{obj.id}@{Config.server_url()}>'
 
 
 class EmailSender:
@@ -73,9 +71,9 @@ class EmailSender:
     def __init__(self, email):
         self.email = email
 
-    def send_to(self, to=None, **kwargs):
+    def send_to(self, to, **kwargs):
         to = [to] if isinstance(to, str) else to
-        self.email.to = to or self.email.to
+        self.email.to = to
         for key, value in kwargs.items():
             setattr(self.email, key, value)
         self.send()
@@ -103,19 +101,15 @@ class EmailSender:
     def attach_ics(self, ics):
         self.email.attach(ics.name, ics.content)
 
-    @staticmethod
-    def _get_thread_id(uid):
-        return f'<{uid}@{Config.server_url()}>'
-
     @chainable
     def start_thread(self, uid):
         # Tested and working on Thunderbird, Gmail and K9-Mail
         # Does not work on any Microsoft E-Mail client:
         #   Tried this without success https://bugzilla.mozilla.org/show_bug.cgi?id=411601
         # Apples not tested
-        self.email.extra_headers.update({'Message-ID': self._get_thread_id(uid)})
+        self.email.extra_headers.update({'Message-ID': get_thread_id(uid)})
 
     @chainable
     def continue_thread(self, uid):
-        tid = self._get_thread_id(uid)
+        tid = get_thread_id(uid)
         self.email.extra_headers.update({'References': tid, 'In-Reply-To': tid})

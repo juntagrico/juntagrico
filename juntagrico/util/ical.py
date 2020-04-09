@@ -1,9 +1,9 @@
 import re
-from django.utils import timezone
-from ics import Calendar, Event
 from collections import namedtuple
 
+from django.utils import timezone
 from django.utils.translation import gettext as _
+from ics import Calendar, Event
 from ics.parse import ContentLine
 
 from juntagrico.config import Config

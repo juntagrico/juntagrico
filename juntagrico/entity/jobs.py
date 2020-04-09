@@ -153,9 +153,6 @@ class Job(JuntagricoBasePoly):
     def __str__(self):
         return _('Job {0}').format(self.id)
 
-    def __repr__(self):
-        return f'{type(self).__name__}{self.id}'
-
     def weekday_name(self):
         day = self.time.isoweekday()
         return weekday_short(day, 2)
@@ -193,7 +190,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def get_css_classes(self):
-        result = 'area-'+str(self.type.activityarea.pk)
+        result = 'area-' + str(self.type.activityarea.pk)
         if self.canceled:
             result += ' canceled'
         return result
