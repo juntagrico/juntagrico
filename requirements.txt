@@ -3,6 +3,6 @@ django-crispy-forms==1.9.0
 django-impersonate==1.5
 django-polymorphic==2.1.2
 ics==0.7
-schwifty==2020.2.2
+schwifty==2020.4.1
 xhtml2pdf==0.2.4
 XlsxWriter==1.2.8
