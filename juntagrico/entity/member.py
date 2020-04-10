@@ -72,7 +72,7 @@ class Member(JuntagricoBaseModel):
 
     @property
     def usable_shares(self):
-        """ :return: shares that have been paid and not cancelled yet
+        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
         """
         return self.share_set.filter(cancelled_date__isnull=True)
 
