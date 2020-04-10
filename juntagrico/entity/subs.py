@@ -1,14 +1,18 @@
+import datetime
 import time
 
+from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
-from juntagrico.entity.subtypes import *
+from juntagrico.entity.depot import Depot
 from juntagrico.lifecycle.sub import check_sub_consistency
-from juntagrico.util.temporal import *
+from juntagrico.util.temporal import start_of_next_business_year
 
 
 class Subscription(Billable):
@@ -17,15 +21,18 @@ class Subscription(Billable):
     '''
     depot = models.ForeignKey(
         'Depot', on_delete=models.PROTECT, related_name='subscription_set')
-    future_depot = models.ForeignKey('Depot', on_delete=models.PROTECT, related_name='future_subscription_set', null=True,
-                                     blank=True, )
+    future_depot = models.ForeignKey(
+        Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
+        verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
+        help_text='Nur setzen, wenn {} geändert werden soll'.format(Config.vocabulary('depot')))
     types = models.ManyToManyField(
         'SubscriptionType', through='TSST', related_name='subscription_set')
     future_types = models.ManyToManyField(
         'SubscriptionType', through='TFSST', related_name='future_subscription_set')
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
-                                       on_delete=models.PROTECT)
-    active = models.BooleanField(default=False)
+                                       on_delete=models.PROTECT,
+                                       verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
+    active = models.BooleanField(default=False, verbose_name='Aktiv')
     canceled = models.BooleanField(_('gekündigt'), default=False)
     activation_date = models.DateField(
         _('Aktivierungssdatum'), null=True, blank=True)
@@ -39,7 +46,9 @@ class Subscription(Billable):
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
-    notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
+    notes = models.TextField(
+        _('Notizen'), max_length=1000, blank=True,
+        help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     _future_members = None
 
     def __str__(self):
@@ -60,7 +69,7 @@ class Subscription(Billable):
         sizes = {}
         for type in self.types.all():
             sizes[type.size.product.name] = type.size.units + sizes.get(type.size.product.name, 0)
-        return ', '.join([key+':'+str(value) for key, value in sizes.items()])
+        return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
 
     @property
     def types_changed(self):
@@ -70,8 +79,13 @@ class Subscription(Billable):
         members = self.recipients
         return ', '.join(str(member) for member in members)
 
+    recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
+
+    def other_recipients(self):
+        return self.recipients.exclude(email=self.primary_member.email)
+
     def other_recipients_names(self):
-        members = self.recipients.exclude(email=self.primary_member.email)
+        members = self.other_recipients()
         return ', '.join(str(member) for member in members)
 
     @property
@@ -94,6 +108,8 @@ class Subscription(Billable):
         member = self.primary_member
         return str(member) if member is not None else ''
 
+    primary_member_nullsave.short_description = primary_member.verbose_name
+
     @property
     def state(self):
         if self.active is False and self.deactivation_date is None:
@@ -110,21 +126,21 @@ class Subscription(Billable):
         return self.extra_subscription_set.filter(active=True)
 
     @property
-    def paid_shares(self):
-        return ShareDao.paid_shares(self).count()
+    def future_extra_subscriptions(self):
+        return self.extra_subscription_set.filter(
+            Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
 
     @property
     def all_shares(self):
         return ShareDao.all_shares_subscription(self).count()
 
     @property
-    def share_overflow(self):
-        return self.all_shares - self.required_shares
+    def paid_shares(self):
+        return ShareDao.paid_shares(self).count()
 
     @property
-    def future_extra_subscriptions(self):
-        return self.extra_subscription_set.filter(
-            Q(active=False, deactivation_date=None) | Q(active=True, canceled=False))
+    def share_overflow(self):
+        return self.all_shares - self.required_shares
 
     @property
     def extrasubscriptions_changed(self):
@@ -132,19 +148,15 @@ class Subscription(Billable):
         future_extrasubscriptions = self.future_extra_subscriptions.all()
         return set(current_extrasubscriptions) != set(future_extrasubscriptions)
 
-    def subscription_amount(self, size_id):
-        return self.calc_subscription_amount(self.types, size_id)
+    def subscription_amount(self, size):
+        return self.calc_subscription_amount(self.types, size)
 
-    def subscription_amount_future(self, size_id):
-        return self.calc_subscription_amount(self.future_types, size_id)
+    def subscription_amount_future(self, size):
+        return self.calc_subscription_amount(self.future_types, size)
 
     @staticmethod
-    def calc_subscription_amount(types, size_id):
-        result = 0
-        for type in types.all():
-            if type.size.id == size_id:
-                result += 1
-        return result
+    def calc_subscription_amount(types, size):
+        return types.filter(size=size).count()
 
     def future_amount_by_type(self, type):
         return len(self.future_types.filter(id=type))
@@ -210,11 +222,8 @@ class Subscription(Billable):
     def future_size_name(self):
         return Subscription.get_size_name(types=self.future_types)
 
-    def extra_subscription(self, code):
-        return self.extra_subscription_amount(code) > 0
-
-    def extra_subscription_amount(self, code):
-        return len(self.extra_subscriptions.all().filter(type__name=code))
+    def extra_subscription_amount(self, extra_sub_type):
+        return self.extra_subscriptions.filter(type=extra_sub_type).count()
 
     def clean(self):
         check_sub_consistency(self)

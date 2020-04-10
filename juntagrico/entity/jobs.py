@@ -1,12 +1,14 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.jobs import get_status_image
-from juntagrico.util.temporal import *
+from juntagrico.util.temporal import weekday_short
 
 
 class ActivityArea(JuntagricoBaseModel):
@@ -14,14 +16,17 @@ class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, default='')
-    email = models.EmailField(null=True, blank=True)
     core = models.BooleanField(_('Kernbereich'), default=False)
-    hidden = models.BooleanField(_('versteckt'), default=False)
-    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT)
-    members = models.ManyToManyField(
-        'Member', related_name='areas', blank=True)
+    hidden = models.BooleanField(
+        _('versteckt'), default=False,
+        help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
+    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
+    email = models.EmailField(_('E-Mail'), null=True, blank=True,
+                              help_text=_('Wenn leer wird E-Mail-Adresse von KoordinatorIn angezeigt'))
     show_coordinator_phonenumber = models.BooleanField(
-        _('Koordinator Tel Nr Veröffentlichen'), default=False)
+        _('Telefonnummer von KoordinatorIn anzeigen'), default=False)
+    members = models.ManyToManyField(
+        'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
 
     def __str__(self):
         return '%s' % self.name
@@ -39,6 +44,8 @@ class ActivityArea(JuntagricoBaseModel):
             return self.email
         else:
             return self.coordinator.email
+
+    get_email.short_description = email.verbose_name
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -97,7 +104,7 @@ class AbstractJobType(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
-    activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT)
+    activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
     duration = models.PositiveIntegerField(_('Dauer in Stunden'))
     location = models.CharField('Ort', max_length=100, default='')
 
@@ -118,8 +125,10 @@ class AbstractJobType(JuntagricoBaseModel):
 
 class JobType(AbstractJobType):
     '''
-    Recuring type of job. do not add field here do it in the parent
+    Recuring type of job. do only add fields here you do not need in a onetime job
     '''
+
+    visible = models.BooleanField(_('Sichtbar'), default=True)
 
     class Meta:
         verbose_name = _('Jobart')
@@ -127,8 +136,9 @@ class JobType(AbstractJobType):
 
 
 class Job(JuntagricoBasePoly):
-    slots = models.PositiveIntegerField(_('Plaetze'))
-    time = models.DateTimeField()
+    slots = models.PositiveIntegerField(_('Plätze'), default=0)
+    infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
+    time = models.DateTimeField(_('Zeitpunkt'))
     multiplier = models.PositiveIntegerField(
         _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
     pinned = models.BooleanField(default=False)
@@ -150,11 +160,15 @@ class Job(JuntagricoBasePoly):
     def time_stamp(self):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
+    @property
     def free_slots(self):
+        if self.infinite_slots:
+            return -1
         if not (self.slots is None):
             return self.slots - self.occupied_places()
-        else:
-            return 0
+        return 0
+
+    free_slots.fget.short_description = _('Freie Plätze')
 
     def end_time(self):
         return self.time + timezone.timedelta(hours=self.type.duration)
@@ -173,6 +187,13 @@ class Job(JuntagricoBasePoly):
 
     def is_core(self):
         return self.type.activityarea.core
+
+    @property
+    def get_css_classes(self):
+        result = 'area-' + str(self.type.activityarea.pk)
+        if self.canceled:
+            result += ' canceled'
+        return result
 
     def extras(self):
         extras_result = []
@@ -210,7 +231,8 @@ class Job(JuntagricoBasePoly):
 
 
 class RecuringJob(Job):
-    type = models.ForeignKey(JobType, on_delete=models.PROTECT)
+    type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
+    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
 
     class Meta:
         verbose_name = _('Job')
@@ -243,9 +265,9 @@ class Assignment(JuntagricoBaseModel):
     Single assignment (work unit).
     '''
     job = models.ForeignKey(Job, on_delete=models.PROTECT)
-    member = models.ForeignKey('Member', on_delete=models.PROTECT)
+    member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
-    job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True)
+    job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True, verbose_name=_('Job Extras'))
     amount = models.FloatField(_('Wert'))
 
     def __str__(self):
@@ -253,6 +275,7 @@ class Assignment(JuntagricoBaseModel):
 
     def time(self):
         return self.job.time
+    time.admin_order_field = 'job__time'
 
     def is_core(self):
         return self.job.type.activityarea.core

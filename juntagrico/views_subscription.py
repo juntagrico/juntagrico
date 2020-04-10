@@ -1,4 +1,4 @@
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
 from django.http import Http404
@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
+from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -15,21 +16,22 @@ from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategor
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
-from juntagrico.mailer import AdminNotification
+from juntagrico.mailer import membernotification
+from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.form_evaluation import selected_subscription_types
+from juntagrico.util.management import cancel_sub, cancel_extra_sub
 from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date
+    cancelation_date, is_date_in_cancelation_period
 from juntagrico.views import get_menu_dict, get_page_dict
-from juntagrico.util import addons
 
 
 @login_required
@@ -54,15 +56,20 @@ def subscription(request, subscription_id=None):
         cancelation_date = subscription.cancelation_date
         if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
+        asc = member.active_shares_count
+        share_error = subscription.share_overflow - asc < 0
+        primary = subscription.primary_member.id == member.id
+        can_leave = member.is_cooperation_member and not share_error and not primary
         renderdict.update({
             'subscription': subscription,
             'co_members': subscription.recipients.exclude(
-                email=request.user.member.email),
-            'primary': subscription.primary_member.email == request.user.member.email,
+                email=member.email),
+            'primary': subscription.primary_member.email == member.email,
             'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
             'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
+            'can_leave': can_leave,
         })
     renderdict.update({
         'no_subscription': subscription is None,
@@ -130,6 +137,30 @@ def depot_change(request, subscription_id):
 
 
 @primary_member_of_subscription
+def primary_change(request, subscription_id):
+    '''
+    change primary member
+    '''
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    if request.method == 'POST':
+        new_primary = get_object_or_404(Member, id=int(request.POST.get('primary')))
+        subscription.primary_member = new_primary
+        subscription.save()
+        return redirect('sub-detail-id', subscription_id=subscription.id)
+    renderdict = get_menu_dict(request)
+    if Config.enable_shares():
+        co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
+    else:
+        co_members = subscription.other_recipients()
+    renderdict.update({
+        'subscription': subscription,
+        'co_members': co_members,
+        'has_comembers': len(co_members) > 0
+    })
+    return render(request, 'pm_change.html', renderdict)
+
+
+@primary_member_of_subscription
 def size_change(request, subscription_id):
     """
     change the size of a subscription
@@ -137,7 +168,7 @@ def size_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     share_error = False
-    if request.method == 'POST' and int(timezone.now().strftime('%m')) <= Config.business_year_cancelation_month():
+    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now().date()):
         # create dict with subscription type -> selected amount
         selected = selected_subscription_types(request.POST)
         # check if members of sub have enough shares
@@ -154,7 +185,6 @@ def size_change(request, subscription_id):
         'shareerror': share_error,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
-        'selected_subscription': subscription.future_types.all()[0].id,
         'products': products,
     })
     return render(request, 'size_change.html', renderdict)
@@ -167,8 +197,8 @@ def extra_change(request, subscription_id):
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
-        for type in ExtraSubscriptionTypeDao.all_extra_types():
-            value = int(request.POST.get('extra'+str(type.id)))
+        for type in ExtraSubscriptionTypeDao.all_visible_extra_types():
+            value = int(request.POST.get('extra' + str(type.id)))
             if value > 0:
                 for x in range(value):
                     ExtraSubscription.objects.create(
@@ -244,6 +274,11 @@ class AddCoMemberView(FormView, ModelFormMixin):
         self.object = None
         self.subscription = None
 
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
+        return form_kwargs
+
     def get_initial(self):
         # use address from main member as default
         mm = self.request.user.member
@@ -259,8 +294,10 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # create new member from form data
-        create_or_update_co_member(form.instance, self.subscription, form.cleaned_data['shares'])
+        # create new member from form data or update existing
+        co_member = form.instance
+        co_member.pk = getattr(getattr(form, 'existing_member', None), 'pk', None)
+        create_or_update_co_member(co_member, self.subscription, form.cleaned_data['shares'])
         return self._done()
 
     def _done(self):
@@ -312,32 +349,44 @@ def activate_future_types(request, subscription_id):
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     now = timezone.now().date()
-    if now <= cancelation_date():
-        end_date = end_of_business_year()
-    else:
-        end_date = end_of_next_business_year()
+    end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
-            if extra.active is True:
-                extra.canceled = True
-                extra.save()
-            elif extra.active is False and extra.deactivation_date is None:
-                extra.delete()
-        if subscription.active is True and subscription.canceled is False:
-            subscription.canceled = True
-            subscription.end_date = request.POST.get('end_date')
-            subscription.save()
-            message = request.POST.get('message')
-            AdminNotification.subscription_canceled(subscription, message)
-        elif subscription.active is False and subscription.deactivation_date is None:
-            subscription.delete()
+            cancel_extra_sub(extra)
+        cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
-
     renderdict = get_menu_dict(request)
     renderdict.update({
         'end_date': end_date,
     })
     return render(request, 'cancelsubscription.html', renderdict)
+
+
+@login_required
+def leave_subscription(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    member = request.user.member
+    asc = member.active_shares_count
+    share_error = subscription.share_overflow - asc < 0
+    primary = subscription.primary_member.id == member.id
+    can_leave = member.is_cooperation_member and not share_error and not primary
+    if not can_leave:
+        return redirect('sub-detail')
+    if request.method == 'POST':
+        primary_member = None
+        if member.future_subscription is not None and member.future_subscription.id == subscription_id:
+            primary_member = member.future_subscription.primary_member
+            member.future_subscription = None
+        elif member.subscription is not None and member.subscription.id == subscription_id:
+            primary_member = member.subscription.primary_member
+            member.subscription = None
+            member.old_subscriptions.add(subscription)
+        member.save()
+        if primary_member:
+            membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
+        return redirect('home')
+    renderdict = get_menu_dict(request)
+    return render(request, 'leavesubscription.html', renderdict)
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -390,7 +439,7 @@ def order_shares(request):
         if request.META.get('HTTP_REFERER')is not None:
             referer = request.META.get('HTTP_REFERER')
         else:
-            referer = 'http://'+Config.adminportal_server_url()
+            referer = 'http://' + Config.adminportal_server_url()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'referer': referer,
@@ -404,7 +453,7 @@ def order_shares_success(request):
     if request.GET.get('referer')is not None:
         referer = request.GET.get('referer')
     else:
-        referer = 'http://'+Config.adminportal_server_url()
+        referer = 'http://' + Config.adminportal_server_url()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'referer': referer

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.entity import JuntagricoBasePoly, JuntagricoBaseModel
-from juntagrico.util.temporal import month_choices
+from juntagrico.util.temporal import month_choices, calculate_last, calculate_next, calculate_next_offset
 
 
 class Billable(JuntagricoBasePoly):
@@ -34,6 +34,20 @@ class ExtraSubBillingPeriod(JuntagricoBaseModel):
         _('Kündigungs Monat'), choices=month_choices)
     code = models.TextField(_('Code für Teilabrechnung'),
                             max_length=1000, default='', blank=True)
+
+    def get_actual_start(self, activation_date=None):
+        start = calculate_last(self.start_day, self.start_month)
+        if activation_date is None:
+            return start
+        return max(activation_date, start)
+
+    def get_actual_end(self):
+        return calculate_next(self.end_day, self.end_month)
+
+    def get_actual_cancel(self):
+        return calculate_next_offset(self.cancel_day,
+                                     self.cancel_month,
+                                     self.get_actual_start())
 
     def __str__(self):
         return '{0}({1}.{2} - {3}.{4})'.format(self.type.name,

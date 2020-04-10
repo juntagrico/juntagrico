@@ -1,0 +1,26 @@
+{% load i18n %}
+{% load config %}
+{% config "enable_shares" as c_enable_shares %}
+{% vocabulary "share" as v_share %}
+{% vocabulary "co_member_pl" as v_co_member_pl %}
+{% vocabulary "subscription" as v_subscription %}
+<div class="row mt-3">
+    <div class="col-md-2">
+        {% blocktrans %}Haupt-{{ v_subscription }}-BezieherIn {% endblocktrans %}
+    </div>
+    <div class="col-md-4">
+        {% blocktrans %}
+            Du möchtest nicht mehr Haupt-{{ v_subscription }}-BezieherIn sein? Du kannst jederzeit wechseln, vorausgesetzt jemand deiner {{ v_co_member_pl }} kann Haupt-{{ v_subscription }}-BezieherIn werden
+        {% endblocktrans %}
+        {% if c_enable_shares %}
+            {% blocktrans %} Dazu muss sie oder er mindestens 1 bezahlte/n/s {{ v_share }} besitzen.{% endblocktrans %}
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-2">
+        <a href="{% url 'primary-change' subscription.id %}" class="btn btn-success">
+            {% blocktrans %}Haupt-{{ v_subscription }}-BezieherIn ändern{% endblocktrans %}
+        </a>
+    </div>
+</div>

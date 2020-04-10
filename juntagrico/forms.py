@@ -1,19 +1,17 @@
-# -*- coding: utf-8 -*-
+from crispy_forms.bootstrap import FormActions
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, Submit, HTML
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput
-from django.utils.html import escape
-from django.utils.translation import gettext as _
-from django.utils.safestring import mark_safe
 from django.urls import reverse
-
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 from schwifty import IBAN
 
+from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.models import Member, Subscription
-from juntagrico.config import Config
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, HTML, Hidden
-from crispy_forms.bootstrap import FormActions
 
 
 class Slider(Field):
@@ -83,7 +81,7 @@ class MemberProfileForm(ModelForm):
     def clean_iban(self):
         if self.data['iban'] != '':
             try:
-                iban = IBAN(self.data['iban'])
+                IBAN(self.data['iban'])
             except ValueError:
                 raise ValidationError(_('IBAN ist nicht gültig'))
         return self.data['iban']
@@ -137,8 +135,7 @@ class RegisterMemberForm(MemberBaseForm):
             )
         )
         self.fields['email'].error_messages['unique'] = mark_safe(
-            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) +
-            ' <a href="' + reverse("home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + '<a href="' + reverse("home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
         )
 
     @staticmethod
@@ -192,6 +189,9 @@ class CoMemberBaseForm(MemberBaseForm):
                 # store existing member for reevaluation
                 self.existing_member = existing_member
         return email
+
+    def clean(self):
+        return self.cleaned_data
 
     @staticmethod
     def get_submit_button():
