@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
+from juntagrico.view_decorators import create_subscription_session
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -9,7 +10,6 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm
 from juntagrico.util import temporal
-from juntagrico.decorators import create_subscription_session
 from juntagrico.util.form_evaluation import selected_subscription_types
 from juntagrico.util.management import new_signup
 

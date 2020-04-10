@@ -194,7 +194,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def get_css_classes(self):
-        result = 'area-'+str(self.type.activityarea.pk)
+        result = 'area-' + str(self.type.activityarea.pk)
         if self.canceled:
             result += ' canceled'
         return result

@@ -1,9 +1,8 @@
 from django.contrib import messages
-from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from django.urls import reverse
 
 from juntagrico.admins import BaseAdmin
 from juntagrico.config import Config
@@ -45,17 +44,17 @@ class MemberAdmin(BaseAdmin):
 
     def subscription_link(self, obj):
         return self._get_single_link(obj.subscription, 'juntagrico_subscription_change') \
-               or _('Kein/e/n {}').format(Config.vocabulary('subscription'))
+            or _('Kein/e/n {}').format(Config.vocabulary('subscription'))
     subscription_link.short_description = Config.vocabulary('subscription')
 
     def future_subscription_link(self, obj):
         return self._get_single_link(obj.future_subscription, 'juntagrico_subscription_change') \
-               or _('Kein/e/n zukünftige/n/s {}').format(Config.vocabulary('subscription'))
+            or _('Kein/e/n zukünftige/n/s {}').format(Config.vocabulary('subscription'))
     future_subscription_link.short_description = _('Zukünftige/r/s {}').format(Config.vocabulary('subscription'))
 
     def old_subscription_link(self, obj):
         return self._get_multi_link(obj.old_subscriptions.all(), 'juntagrico_subscription_change') \
-               or _('Keine alten {}').format(Config.vocabulary('subscription_pl'))
+            or _('Keine alten {}').format(Config.vocabulary('subscription_pl'))
     old_subscription_link.short_description = _('Alte {}').format(Config.vocabulary('subscription_pl'))
 
     def user_link(self, obj):
@@ -83,5 +82,5 @@ class MemberAdminWithShares(MemberAdmin):
 
     def share_link(self, obj):
         return self._get_multi_link(obj.share_set.all(), 'juntagrico_share_change') \
-               or _('Kein/e/n {}').format(Config.vocabulary('share'))
+            or _('Kein/e/n {}').format(Config.vocabulary('share'))
     share_link.short_description = Config.vocabulary('share_pl')

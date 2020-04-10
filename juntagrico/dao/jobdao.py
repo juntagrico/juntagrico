@@ -1,10 +1,9 @@
+from datetime import datetime, time, date
+
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz
 
-
 from juntagrico.config import Config
-from datetime import datetime, time, date
-
 from juntagrico.entity.jobs import Job, RecuringJob, OneTimeJob
 
 

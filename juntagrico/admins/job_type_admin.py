@@ -1,4 +1,3 @@
-from django.db.models import Max
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin

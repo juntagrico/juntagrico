@@ -3,8 +3,8 @@ import datetime
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
 from django.utils.timezone import localtime
+from django.utils.translation import gettext as _
 
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.util.temporal import weekday_choices
