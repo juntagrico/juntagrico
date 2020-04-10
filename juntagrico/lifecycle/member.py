@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.mailer import AdminNotification
+from juntagrico.mailer import adminnotification
 from juntagrico.signals import member_deactivated, member_created, member_canceled
 
 
@@ -40,4 +40,4 @@ def check_member_consistency(instance):
 
 
 def handle_member_created(sender, instance, **kwargs):
-    AdminNotification.member_created(instance)
+    adminnotification.member_created(instance)

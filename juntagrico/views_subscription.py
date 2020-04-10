@@ -8,14 +8,13 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
+from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
@@ -23,14 +22,14 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionTypeEditForm
-from juntagrico.mailer import MemberNotification
+from juntagrico.mailer import membernotification
+from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
-from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
 from juntagrico.util.management import cancel_sub, cancel_extra_sub
+from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.views import get_menu_dict, get_page_dict
-from juntagrico.util import addons
 
 
 @login_required
@@ -53,10 +52,10 @@ def subscription(request, subscription_id=None):
 
     if subscription is not None:
         cancelation_date = subscription.cancelation_date
-        if cancelation_date is not None and cancelation_date <= next_cancelation_date().date():
+        if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
         asc = member.active_shares_count
-        share_error = subscription.share_overflow-asc < 0
+        share_error = subscription.share_overflow - asc < 0
         primary = subscription.primary_member.id == member.id
         can_leave = member.is_cooperation_member and not share_error and not primary
         renderdict.update({
@@ -378,7 +377,7 @@ def leave_subscription(request, subscription_id):
             member.old_subscriptions.add(subscription)
         member.save()
         if primary_member:
-            MemberNotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
+            membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
         return redirect('home')
     renderdict = get_menu_dict(request)
     return render(request, 'leavesubscription.html', renderdict)

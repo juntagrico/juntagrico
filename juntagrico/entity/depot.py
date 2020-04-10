@@ -3,11 +3,6 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.extrasubscriptioncategorydao \
-    import ExtraSubscriptionCategoryDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.util.temporal import weekday_choices, weekdays
 
@@ -58,43 +53,6 @@ class Depot(JuntagricoBaseModel):
         if 8 > self.weekday > 0:
             day = weekdays[self.weekday]
         return day
-
-    @staticmethod
-    def subscription_amounts(subscriptions, id):
-        amount = 0
-        for subscription in subscriptions.all():
-            amount += subscription.subscription_amount(id)
-        return amount
-
-    @staticmethod
-    def extra_subscription(subscriptions, code):
-        amount = 0
-        for subscription in subscriptions.all():
-            esubs = subscription.extra_subscriptions.all()
-            filtered_esubs = esubs.filter(type__name=code)
-            amount += len(filtered_esubs)
-        return amount
-
-    def fill_overview_cache(self):
-        self.fill_active_subscription_cache()
-        self.overview_cache = []
-        for product in SubscriptionProductDao.get_all():
-            for subscription_size in SubscriptionSizeDao.sizes_for_depot_list_by_product(product):
-                cache = self.subscription_cache
-                size_id = subscription_size.id
-                amounts = self.subscription_amounts(cache, size_id)
-                self.overview_cache.append(amounts)
-        for category in ExtraSubscriptionCategoryDao.all_categories_ordered():
-            types = ExtraSubscriptionTypeDao.extra_types_by_category_ordered(
-                category)
-            for extra_subscription in types:
-                code = extra_subscription.name
-                cache = self.subscription_cache
-                esub = self.extra_subscription(cache, code)
-                self.overview_cache.append(esub)
-
-    def fill_active_subscription_cache(self):
-        self.subscription_cache = self.active_subscriptions()
 
     class Meta:
         verbose_name = Config.vocabulary('depot')

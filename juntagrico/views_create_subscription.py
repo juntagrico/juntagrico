@@ -8,7 +8,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, SubscriptionTypeSelectForm
 from juntagrico.util import temporal
-from juntagrico.decorators import create_subscription_session
+from juntagrico.view_decorators import create_subscription_session
 from juntagrico.util.management import new_signup
 
 

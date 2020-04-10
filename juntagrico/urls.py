@@ -93,10 +93,6 @@ urlpatterns = [
     path('my/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
          name='filter-subs-depot'),  #
     path('my/future', juntagrico_admin.future, name='future'),
-    path('my/export', juntagrico_admin.export, name='export'),  #
-    path('my/export/membersfilter', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),  #
-    path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),  #
-    path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),  #
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),  #
@@ -105,10 +101,19 @@ urlpatterns = [
     path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),  #
     path('my/share/canceledlist', juntagrico_admin.share_canceledlist, name='share-mgmt-canceledlist'),  #
     path('my/member/canceledlist', juntagrico_admin.member_canceledlist, name='member-mgmt-canceledlist'),
+    path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
+
+    # lists
     path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),
     path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
     path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
-    path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
 
+    # exports
+    path('my/export', juntagrico_admin.export, name='export'),  #
+    path('my/export/membersfilter', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),  #
+    path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),  #
+    path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),  #
+
+    # iso20022
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
 ]

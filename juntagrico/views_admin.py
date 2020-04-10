@@ -21,9 +21,9 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.mailer import FormEmails
+from juntagrico.mailer import append_attachements
+from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location
-from juntagrico.util.mailer import append_attachements
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.subs import subscriptions_with_assignments
@@ -64,19 +64,19 @@ def send_email_intern(request):
         emails.update(MemberDao.members_for_email(
         ).values_list('email', flat=True))
     if request.POST.get('recipients'):
-        emails.update(re.split(r'\s*,?\s*', request.POST.get('recipients')))
+        emails.update(re.split(r'[\s,;]+', request.POST.get('recipients')))
     if request.POST.get('allsingleemail'):
-        emails |= set(request.POST.get('singleemail').split(' '))
+        emails.update(re.split(r'[\s,;]+', request.POST.get('singleemail')))
 
-    attachements = []
-    append_attachements(request, attachements)
+    files = []
+    append_attachements(request, files)
 
     if len(emails) > 0:
-        FormEmails.internal(
+        formemails.internal(
             request.POST.get('subject'),
             request.POST.get('message'),
             request.POST.get('textMessage'),
-            emails, attachements, sender=sender
+            emails, files, sender=sender
         )
         sent = len(emails)
     return redirect('mail-result', numsent=sent)

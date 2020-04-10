@@ -139,6 +139,18 @@ Release Notes
 
 * Fix in subscription change view bug from version 1.2.0
 
+1.2.2
+-----
+ Has migrations
+
+* Various date related fixes for subscription change cancellation and job copying
+* Recuring jobs can no have instance specific additional descriptions
+* Extra subscription and types can now be hidden on the depot list
+* The depot overview list is now grouped by day and contains a total
+* Jobs can now have an infinite number of participants
+* Job types can be hidden
+* Fix for the coordinator bug
+
 
 Dev
 ----

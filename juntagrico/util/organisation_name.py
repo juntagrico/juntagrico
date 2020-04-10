@@ -1,6 +1,6 @@
-from juntagrico.config import Config
-
 from django.utils.translation import gettext as _
+
+from juntagrico.config import Config
 
 """
     c means case
