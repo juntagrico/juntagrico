@@ -8,7 +8,6 @@ from juntagrico.entity.jobs import Assignment, OneTimeJob, RecuringJob, Job
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-
 from juntagrico.lifecycle.extrasub import extra_sub_pre_save, handle_extra_sub_deactivated, handle_extra_sub_activated
 from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
 from juntagrico.lifecycle.member import member_pre_save, member_post_save, handle_member_deactivated, \

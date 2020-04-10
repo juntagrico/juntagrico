@@ -3,10 +3,6 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.extrasubscriptioncategorydao \
-    import ExtraSubscriptionCategoryDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.util.temporal import weekday_choices, weekdays
 
