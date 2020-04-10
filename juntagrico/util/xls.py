@@ -1,4 +1,5 @@
 from io import BytesIO
+
 from django.db import models
 from django.http import HttpResponse
 from xlsxwriter import Workbook
