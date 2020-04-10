@@ -7,7 +7,7 @@ from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.util.mailer import get_email_content, base_dict
+from juntagrico.mailer import get_email_content, base_dict
 
 
 def get_server():

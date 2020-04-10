@@ -3,8 +3,8 @@ from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext as _
 
-from juntagrico.entity.subs import Subscription
 from juntagrico.config import Config
+from juntagrico.entity.subs import Subscription
 
 
 class SubscriptionTypeInlineFormset(BaseInlineFormSet):

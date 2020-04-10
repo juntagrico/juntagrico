@@ -4,6 +4,7 @@ from django.contrib import admin
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subs import Subscription
 
+
 # This form exists to restrict primary user choice to users that have actually set the
 # current subscription as their subscription
 
