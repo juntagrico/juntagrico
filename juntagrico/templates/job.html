@@ -31,6 +31,7 @@
         </div>
     </div>
     <br/>
+    {% if job.free_slots > -1 %}
     <div class="row">
         <div class="col-md-3">
             {% trans "Status" %}:
@@ -48,7 +49,8 @@
         </div>
     </div>
     <br/>
-    {% if job.multiplier != 1 %}
+    {% endif %}
+    {% if job.multiplier > 1 %}
         <div class="row">
             <div class="col-md-3">
                 {% vocabulary "assignment_pl" %}:
@@ -60,7 +62,20 @@
             </div>
         </div>
         <br/>
+    {% elif job.multiplier == 0 %}
+        <div class="row">
+            <div class="col-md-3">
+                {% vocabulary "assignment_pl" %}:
+            </div>
+            <div class="col-md-5">
+                {% blocktrans trimmed with jm=job.multiplier %}
+                Du erhältst für diesen Event keine {{ v_assignment_pl }} gutgeschrieben.
+                {% endblocktrans %}
+            </div>
+        </div>
+        <br/>
     {% endif %}
+
     {% if job.extras.strip %}
         <div class="row">
             <div class="col-md-3">
@@ -83,7 +98,7 @@
         </div>
         <div class="col-md-5">
             {{ job.type.location }} (
-            <a href="https://www.google.ch/maps/place/{{ job.type.location }}" target="_blank">
+            <a href="https://www.google.com/maps/search/?api=1&query={{ job.type.location | urlencode }}" target="_blank">
                 Karte
             </a>
             )
@@ -95,7 +110,8 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-5">
-            {{ job.type.description|linebreaksbr|urlize }}
+            <div class="job-description">{{ job.type.description|linebreaksbr|urlize }}</div>
+            <div class="job-additional-description">{{ job.additional_description|linebreaksbr|urlize }}</div>
         </div>
     </div>
     <br/>
@@ -126,11 +142,9 @@
                 {% trans "Noch niemand" %} :-(
             {% else %}
                 <ul>
-                    {% for participant, comments, url, reachable, extras in participants_summary %}
+                    {% for participant, url, reachable, extras in participants_summary %}
                         <li>
-                            <a class="job-participant" member-id="{{ participant }}" href="#">
-                                {{ participant }}
-                            </a>
+                            {{ participant }}
                             {{ extras|safe }}
                             {% if reachable %}
                                 &nbsp;
@@ -139,14 +153,6 @@
                                     </i>
                                 </a>
                             {% endif %}
-                            <br/>
-                            {% for comment in comments %}
-                                <span class="member-job-comments">
-                                    {% trans "Hinweis" %}: {{ comment }}
-                                </span>
-                                <br/>
-                            {% endfor %}
-                            <br/>
                         </li>
                     {% endfor %}
                 </ul>

@@ -1,10 +1,8 @@
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.entity import JuntagricoBasePoly, JuntagricoBaseModel
-from juntagrico.util.temporal import calculate_next, calculate_next_offset
-from juntagrico.util.temporal import month_choices, calculate_last
+from juntagrico.util.temporal import month_choices, calculate_last, calculate_next, calculate_next_offset
 
 
 class Billable(JuntagricoBasePoly):
@@ -15,46 +13,6 @@ class Billable(JuntagricoBasePoly):
     class Meta:
         verbose_name = _('Verrechenbare Einheit')
         verbose_name_plural = _('Verrechenbare Einheiten')
-
-
-class Bill(JuntagricoBaseModel):
-    '''
-    Actuall Bill for billables
-    '''
-    billable = models.ForeignKey('Billable', related_name='bills',
-                                 null=False, blank=False,
-                                 on_delete=models.PROTECT)
-    paid = models.BooleanField(_('bezahlt'), default=False)
-    bill_date = models.DateField(
-        _('Aktivierungssdatum'), null=True, blank=True)
-    ref_number = models.CharField(
-        _('Referenznummer'), max_length=30, unique=True)
-    amount = models.FloatField(_('Betrag'), null=False, blank=False)
-
-    def __str__(self):
-        return '%s' % self.ref_number
-
-    class Meta:
-        verbose_name = _('Rechnung')
-        verbose_name_plural = _('Rechnungen')
-
-
-class Payment(JuntagricoBaseModel):
-    '''
-    Payment for bill
-    '''
-    bill = models.ForeignKey('Bill', related_name='payments',
-                             null=False, blank=False,
-                             on_delete=models.PROTECT)
-    paid_date = models.DateField(_('Bezahldatum'), null=True, blank=True)
-    amount = models.FloatField(_('Betrag'), null=False, blank=False)
-
-    def __str__(self):
-        return '%s' % self.ref_number
-
-    class Meta:
-        verbose_name = _('Zahlung')
-        verbose_name_plural = _('Zahlungen')
 
 
 class ExtraSubBillingPeriod(JuntagricoBaseModel):
@@ -76,29 +34,6 @@ class ExtraSubBillingPeriod(JuntagricoBaseModel):
         _('Kündigungs Monat'), choices=month_choices)
     code = models.TextField(_('Code für Teilabrechnung'),
                             max_length=1000, default='', blank=True)
-
-    def partial_price(self):
-        now = timezone.now()
-        start = calculate_last(self.start_day, self.start_month)
-        end = calculate_next(self.end_day, self.end_month)
-        return self.calc_price(start, end, now)
-
-    def calculated_price(self, activation_date):
-        start = calculate_last(self.start_day, self.start_month)
-        end = calculate_next(self.end_day, self.end_month)
-        ref_date = max(activation_date, start)
-        return self.calc_price(start, end, ref_date=ref_date)
-
-    def calc_price(self, start, end, now=None, ref_date=None):
-        if self.code != '':
-            exec(self.code)
-        else:
-            total_days = (end - start).days
-            c_start = ref_date or start
-            c_end = now or end
-            passed_days = (c_end - c_start).days
-            price = self.price * (passed_days/total_days)
-        return price
 
     def get_actual_start(self, activation_date=None):
         start = calculate_last(self.start_day, self.start_month)

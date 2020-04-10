@@ -1,17 +1,23 @@
-﻿# -*- coding: utf-8 -*-
-import math
-import json
+﻿import json
 import ssl
 import sys
+import time as mytime
 import urllib.error
 import urllib.parse
 import urllib.request
-import time as mytime
 
+import math
 from django.core.management.base import BaseCommand
+from django.utils import timezone
+from django.utils.text import slugify
 
 from juntagrico.config import Config
-from juntagrico.models import *
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subtypes import TSST, TFSST, SubscriptionProduct, SubscriptionSize, SubscriptionType
 
 
 class Command(BaseCommand):
@@ -22,12 +28,12 @@ class Command(BaseCommand):
 
     def get_phone_number(self, number):
         if number < 10:
-            return '079 123 45 0'+str(number)
+            return '079 123 45 0' + str(number)
         if number < 100:
-            return '079 123 45 '+str(number)
+            return '079 123 45 ' + str(number)
         if number < 1000:
-            return '079 123 4'+str(number/100)+' '+str(number % 100)
-        return '079 123 '+str(number/100)+' '+str(number % 100)
+            return '079 123 4' + str(number / 100) + ' ' + str(number % 100)
+        return '079 123 ' + str(number / 100) + ' ' + str(number % 100)
 
     def get_manynames(self, N):
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
@@ -40,9 +46,7 @@ class Command(BaseCommand):
         for person in name_data:
             name = str(person['surname'])
             prename = str(person['name'])
-            email = str(slugify(prename) + '.' + slugify(name) +
-                        str(timezone.now().microsecond) + '@' +
-                        Config.info_email().split('@')[-1])
+            email = str(slugify(prename) + '.' + slugify(name) + str(timezone.now().microsecond) + '@' + Config.info_email().split('@')[-1])
             self.manynames.append({'name': name, 'prename': prename, 'email': email})
 
     def get_name(self, i):
@@ -51,7 +55,6 @@ class Command(BaseCommand):
         return person
 
     def get_address(self, point):
-        latlng = str(point[1])+','+str(point[0])
         cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
         url = 'https://nominatim.openstreetmap.org/reverse?lat=' + \
             str(point[1]) + '&lon=' + str(point[0]) + '&format=json'
@@ -95,13 +98,13 @@ class Command(BaseCommand):
         return result
 
     def generate_shares(self, member, sub_share):
-        amount = int(math.ceil(float(sub_share)/2.0))
+        amount = int(math.ceil(float(sub_share) / 2.0))
         for i in range(0, amount):
             share_dict = self.generate_share_dict(member)
             Share.objects.create(**share_dict)
 
     def generate_depot(self, props, member, i, coordinates):
-        depot_dict = {'code': 'D'+str(i), 'name': props['betriebsname'], 'weekday': 2, 'latitude': str(coordinates[1]),
+        depot_dict = {'code': 'D' + str(i), 'name': props['betriebsname'], 'weekday': 2, 'latitude': str(coordinates[1]),
                       'longitude': str(coordinates[0]), 'addr_street': props['strasselang'] + ' ' + props['hnr'], 'addr_zipcode': props['plz'],
                       'addr_location': props['ort'], 'description': 'Hinter dem Restaurant ' + props['betriebsname'], 'contact': member}
         depot = Depot.objects.create(**depot_dict)
@@ -195,14 +198,14 @@ class Command(BaseCommand):
                         'hidden': False, 'coordinator': self.members[1], 'show_coordinator_phonenumber': False}
         area_1 = ActivityArea.objects.create(**area1_fields)
         if len(self.members) > 2:
-            area_1.members.set(self.members[2:int((len(self.members))/2)])
+            area_1.members.set(self.members[2:int((len(self.members)) / 2)])
         else:
             area_1.members.set(self.members)
         area_1.save()
         area_2 = ActivityArea.objects.create(**area2_fields)
         if len(self.members) > 2:
             area_2.members.set(self.members[int(
-                (len(self.members))/2)+1:int((len(self.members))/2-1)])
+                (len(self.members)) / 2) + 1:int((len(self.members)) / 2 - 1)])
         else:
             area_2.members.set(self.members)
         area_2.save()

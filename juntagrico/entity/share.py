@@ -1,8 +1,10 @@
+from django.db import models
 from django.utils.translation import gettext as _
 
-from juntagrico.entity.billing import *
+from juntagrico.config import Config
+from juntagrico.entity import notifiable
+from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
-from juntagrico.util.bills import *
 
 
 class Share(Billable):
@@ -19,7 +21,8 @@ class Share(Billable):
         _('Anteilschein Nummer'), null=True, blank=True)
     sent_back = models.BooleanField(_('Zurückgesandt'), default=False)
     notes = models.TextField(
-        _('Notizen'), max_length=1000, default='', blank=True)
+        _('Notizen'), max_length=1000, default='', blank=True,
+        help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
     def clean(self):
         check_share_consistency(self)
@@ -27,6 +30,7 @@ class Share(Billable):
     def __str__(self):
         return _('Anteilschein {0}').format(self.id)
 
+    @notifiable
     class Meta:
         verbose_name = Config.vocabulary('share')
         verbose_name_plural = Config.vocabulary('share_pl')

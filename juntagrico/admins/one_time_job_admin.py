@@ -1,7 +1,7 @@
-from django.contrib import admin
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
+from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
@@ -13,6 +13,7 @@ from juntagrico.util.models import attribute_copy
 
 class OneTimeJobAdmin(BaseAdmin):
     list_display = ['__str__', 'time', 'slots', 'free_slots']
+    list_filter = ('activityarea', ('time', FutureDateTimeFilter))
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
     exclude = ['reminder_sent']
@@ -45,6 +46,7 @@ class OneTimeJobAdmin(BaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,
+                                           db_field.name,
                                            'activityarea',
                                            'juntagrico.is_area_admin',
                                            ActivityAreaDao.areas_by_coordinator)

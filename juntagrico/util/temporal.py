@@ -1,12 +1,11 @@
 import calendar
 import datetime
 from datetime import timedelta
-from django.utils import timezone
 
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-
 
 weekday_choices = ((1, _('Montag')),
                    (2, _('Dienstag')),
@@ -16,8 +15,11 @@ weekday_choices = ((1, _('Montag')),
                    (6, _('Samstag')),
                    (7, _('Sonntag')))
 
-
 weekdays = dict(weekday_choices)
+
+
+def is_date_in_cancelation_period(date):
+    return start_of_business_year() <= date <= cancelation_date()
 
 
 def weekday_short(day, num):
@@ -42,8 +44,8 @@ def start_of_next_business_year():
 
 
 def end_of_next_business_year():
-    tmp = end_of_business_year()
-    return datetime.date(tmp.year+1, tmp.month, tmp.day)
+    tmp = start_of_next_business_year()
+    return datetime.date(tmp.year + 1, tmp.month, tmp.day) - timedelta(days=1)
 
 
 def start_of_specific_business_year(refdate):
@@ -67,20 +69,20 @@ def end_of_specific_business_year(refdate):
 def next_cancelation_date():
     now = timezone.now()
     c_month = Config.business_year_cancelation_month()
-    if now.month < c_month+1:
+    if now.month < c_month + 1:
         year = now.year
     else:
-        year = now.year+1
+        year = now.year + 1
     return datetime.date(year, c_month, calendar.monthrange(year, c_month)[1])
 
 
 def cancelation_date():
     start = start_of_business_year()
     c_month = Config.business_year_cancelation_month()
-    if start.month < c_month+1:
+    if start.month < c_month + 1:
         year = start.year
     else:
-        year = start.year+1
+        year = start.year + 1
     return datetime.date(year, c_month, calendar.monthrange(year, c_month)[1])
 
 
@@ -100,7 +102,7 @@ def calculate_next(day, month):
     if now.month < month or (now.month == month and now.day <= day):
         year = now.year
     else:
-        year = now.year+1
+        year = now.year + 1
     return datetime.date(year, month, day)
 
 
@@ -125,7 +127,7 @@ def calculate_last_offset(day, month, offset):
     if offset.month > month or (offset.month == month and offset.day >= day):
         year = offset.year
     else:
-        year = offset.year-1
+        year = offset.year - 1
     return datetime.date(year, month, day)
 
 

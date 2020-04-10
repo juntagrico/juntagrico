@@ -1,10 +1,12 @@
-# -*- coding: utf-8 -*-
+from datetime import datetime, time
 
-from django.db.models import Sum, Case, When
+from django.contrib.auth.models import Permission
+from django.db.models import Sum, Case, When, Q
 from django.utils import timezone
+from django.utils.timezone import get_default_timezone as gdtz
 
-from juntagrico.models import *
-from juntagrico.util import temporal
+from juntagrico.entity.member import Member
+from juntagrico.util.temporal import start_of_business_year
 
 
 class MemberDao:
@@ -76,8 +78,14 @@ class MemberDao:
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
         now = timezone.now()
+        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
         return members.annotate(assignment_count=Sum(
-            Case(When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, then='assignment__amount')))).annotate(
+            Case(When(assignment__job__time__gte=start, assignment__job__time__lt=now, then='assignment__amount')))).annotate(
             core_assignment_count=Sum(Case(
-                When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, assignment__core_cache=True,
+                When(assignment__job__time__gte=start, assignment__job__time__lt=now, assignment__core_cache=True,
                      then='assignment__amount'))))
+
+    @staticmethod
+    def members_by_permission(permission_codename):
+        perm = Permission.objects.get(codename=permission_codename)
+        return Member.objects.filter(Q(user__groups__permissions=perm) | Q(user__user_permissions=perm)).distinct()

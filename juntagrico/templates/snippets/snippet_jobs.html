@@ -47,7 +47,7 @@
                     {{ job.weekday_name }}&nbsp;{{ job.time |date:"d." }}{{ job.time |date:"m." }}{{ job.time |date:"Y" }}
                 </td>
                 <td>
-                    <a href="{% url 'job' job.id %}"{% if job.canceled %}class="canceled"{% endif %}>
+                    <a href="{% url 'job' job.id %}" class="{{ job.get_css_classes }}">
                         {{ job.type.get_name }}
                     </a>
                 </td>
@@ -75,7 +75,9 @@
                         text-success
                     {% endif %}
                 ">
+                    {% if job.free_slots > -1 %}
                     {{ job.occupied_slots }} / {{ job.slots }}
+                    {% endif %}
                 </td>
                 {% if show_extras %}
                     <td>

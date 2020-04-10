@@ -2,14 +2,16 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
+from juntagrico.view_decorators import create_subscription_session
 
+from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.forms import *
-from juntagrico.models import *
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
+    RegisterFirstMultiCoMemberForm
 from juntagrico.util import temporal
-from juntagrico.decorators import create_subscription_session
 from juntagrico.util.form_evaluation import selected_subscription_types
-from juntagrico.util.management import *
+from juntagrico.util.management import new_signup
 
 
 @create_subscription_session
@@ -114,12 +116,12 @@ class CSAddMemberView(FormView, ModelFormMixin):
 
     def form_invalid(self, form):
         if form.existing_member:  # use existing member if found
-            return self._add_or_replace_co_member(form.existing_member)
+            return self.form_valid(form)
         return super().form_invalid(form)
 
     def form_valid(self, form):
         # create new member from form data
-        return self._add_or_replace_co_member(form.instance)
+        return self._add_or_replace_co_member(form.existing_member or form.instance)
 
     def _add_or_replace_co_member(self, member):
         if self.edit:
@@ -196,22 +198,8 @@ class CSSummaryView(TemplateView):
 
     @staticmethod
     def post(request, cs_session):
-        # create subscription
-        subscription = None
-        if sum(cs_session.subscriptions.values()) > 0:
-            subscription = create_subscription(cs_session.start_date, cs_session.depot, cs_session.subscriptions)
-
-        # create and/or add members to subscription and create their shares
-        create_or_update_member(cs_session.main_member, subscription, cs_session.main_member.new_shares)
-        for co_member in cs_session.co_members:
-            create_or_update_member(co_member, subscription, co_member.new_shares, cs_session.main_member)
-
-        # set primary member of subscription
-        if subscription is not None:
-            subscription.primary_member = cs_session.main_member
-            subscription.save()
-            send_subscription_created_mail(subscription)
-
+        # handle new signup
+        new_signup(cs_session)
         # finish registration
         return cs_finish(request)
 
@@ -223,7 +211,7 @@ def cs_finish(request, cs_session, cancelled=False):
         return redirect('sub-detail')
     elif cancelled:
         cs_session.clear()
-        return redirect('http://'+Config.server_url())
+        return redirect('http://' + Config.server_url())
     else:
         # keep session for welcome message
         return redirect('welcome')
