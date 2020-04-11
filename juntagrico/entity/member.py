@@ -57,17 +57,28 @@ class Member(JuntagricoBaseModel):
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
     @property
-    def is_cooperation_member(self):
-        return self.share_set.filter(paid_date__isnull=False).filter(
-            payback_date__isnull=True).count() > 0
-
-    @property
     def active_shares(self):
-        return self.share_set.filter(cancelled_date__isnull=True)
+        """ :return: shares that have been paid by member and not cancelled AND paid back yet
+        """
+        return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
 
     @property
     def active_shares_count(self):
         return self.active_shares.count()
+
+    @property
+    def is_cooperation_member(self):
+        return self.active_shares_count > 0
+
+    @property
+    def usable_shares(self):
+        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
+        """
+        return self.share_set.filter(cancelled_date__isnull=True)
+
+    @property
+    def usable_shares_count(self):
+        return self.usable_shares.count()
 
     @property
     def in_subscription(self):

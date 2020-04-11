@@ -445,7 +445,7 @@ def cancel_membership(request):
 
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
-    asc = member.active_shares_count
+    asc = member.usable_shares_count
     sub = member.subscription
     f_sub = member.future_subscription
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'

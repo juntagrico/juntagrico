@@ -2,12 +2,15 @@ import itertools
 import random
 import string
 
+from django.utils import timezone
+
 from juntagrico.config import Config
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TFSST, TSST
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import membernotification
+from juntagrico.util.temporal import next_membership_end_date
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
@@ -126,6 +129,8 @@ def cancel_extra_sub(extra):
 
 
 def cancel_share(share, now, end_date):
+    now = now or timezone.now().date()
+    end_date = end_date or next_membership_end_date()
     if share.paid_date is None:
         share.delete()
     else:
