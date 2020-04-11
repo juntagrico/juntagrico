@@ -1,6 +1,6 @@
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, HTML
+from crispy_forms.layout import Layout, Field, Submit, HTML, Div
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput
 from django.urls import reverse
@@ -11,12 +11,19 @@ from schwifty import IBAN
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.models import Member, Subscription
 
 
 class Slider(Field):
     def __init__(self, *args, **kwargs):
         super().__init__(template='forms/slider.html', css_class='slider', *args, **kwargs)
+
+
+class LinkButton(HTML):
+    def __init__(self, name, href, css_classes=None):
+        super().__init__(f'<a href="{href}" class="btn {css_classes}">{name}</a>')
 
 
 class PasswordForm(Form):
@@ -210,7 +217,7 @@ class AddCoMemberForm(CoMemberBaseForm):
             *fields,
             FormActions(
                 self.get_submit_button(),
-                HTML('<a href="' + reverse("sub-detail") + '" class="btn">' + _("Abbrechen") + '</a>'),
+                LinkButton(_("Abbrechen"), reverse("sub-detail")),
             )
         )
 
@@ -222,8 +229,8 @@ class RegisterMultiCoMemberForm(CoMemberBaseForm):
             *self.base_layout,  # keep first 9 fields
             FormActions(
                 self.get_submit_button(),
-                HTML('<a href="?next" class="btn btn-success">' + self.button_next_text() + '</a>'),
-                HTML('<a href="' + reverse("cs-cancel") + '" class="btn">' + _('Abbrechen') + '</a>')
+                LinkButton(self.button_next_text(), '?next', css_classes='btn-success'),
+                LinkButton(_('Abbrechen'), reverse("cs-cancel"))
             )
         )
 
@@ -252,6 +259,126 @@ class EditCoMemberForm(CoMemberBaseForm):
             'edit',
             FormActions(
                 Submit('submit', _('Ändern'), css_class='btn-success'),
-                HTML('<a href="?" class="btn">' + _('Abbrechen') + '</a>')
+                LinkButton(_('Abbrechen'), '?')
             )
         )
+
+
+class CategoryContainer(Div):
+    template = "forms/layout/category_container.html"
+
+    def __init__(self, *fields, instance, name=None, description=None, **kwargs):
+        super().__init__(*fields, **kwargs)
+        self.instance = instance
+        self.name = name or instance.name
+        self.description = description or instance.description
+
+
+class SubscriptionTypeField(Field):
+    template = 'forms/subscription_type_field.html'
+
+    def __init__(self, *args, instance, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance = instance
+
+    def render(self, *args, **kwargs):
+        extra_context = kwargs.pop('extra_context', {})
+        extra_context['type'] = self.instance
+        return super().render(*args, extra_context=extra_context, **kwargs)
+
+
+class SubscriptionTypeBaseForm(Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-3'
+        self.helper.field_class = 'col-md-9'
+
+    def _collect_type_fields(self):
+        containers = []
+        for product in SubscriptionProductDao.get_all():
+            product_container = CategoryContainer(instance=product)
+            for subscription_size in product.sizes.filter(visible=True):
+                size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
+                for subscription_type in subscription_size.types.filter(visible=True):
+                    field_name = f'amount[{subscription_type.id}]'
+                    self.fields[field_name] = IntegerField(label=subscription_type.name, min_value=0,
+                                                           initial=self._get_initial(subscription_type))
+
+                    size_container.append(SubscriptionTypeField(field_name, instance=subscription_type))
+                product_container.append(size_container)
+            containers.append(product_container)
+        return containers
+
+    def _get_initial(self, subscription_type):
+        raise NotImplementedError
+
+    def get_selected(self):
+        return {
+            sub_type: getattr(self, 'cleaned_data', {}).get('amount[' + str(sub_type.id) + ']', 0)
+            for sub_type in SubscriptionTypeDao.get_all()
+        }
+
+
+class SubscriptionTypeSelectForm(SubscriptionTypeBaseForm):
+    def __init__(self, selected, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.selected = selected
+        containers = self._collect_type_fields()
+
+        self.fields['no_subscription'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
+                                                      initial=True, required=False)
+
+        self.helper.layout = Layout(
+            *containers,
+            Field('no_subscription', template='forms/no_subscription_field.html'),
+            FormActions(
+                Submit('submit', _('Weiter'), css_class='btn-success'),
+                LinkButton(_('Abbrechen'), reverse('cs-cancel'))
+            )
+        )
+
+    def _get_initial(self, subscription_type):
+        if subscription_type in self.selected.keys():
+            return self.selected[subscription_type]
+        return 0
+
+
+class SubscriptionTypeEditForm(SubscriptionTypeBaseForm):
+    def __init__(self, subscription, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.subscription = subscription
+        self.helper.layout = Layout(
+            *self._collect_type_fields(),
+            FormActions(
+                Submit('submit', _('{}-Grösse ändern').format(Config.vocabulary('subscription')),
+                       css_class='btn-success')
+            )
+        )
+
+    def _get_initial(self, subscription_type):
+        if self.subscription.pk:
+            return self.subscription.future_amount_by_type(subscription_type.id)
+        return 0
+
+    def clean(self):
+        selected = self.get_selected()
+        # check if members in subscription have sufficient shares
+        if self.subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
+            share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Grösse!{}').format(
+                Config.vocabulary('share_pl'),
+                '<br/><a href="{}" class="alert-link">{}</a>'.format(
+                    reverse('share-order'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
+            ))
+            raise ValidationError(share_error_message, code='share_error')
+        # check that at least one subscription was selected
+        if sum(selected.values()) == 0:
+            amount_error_message = mark_safe(_('Wähle mindestens 1 {} aus.{}').format(
+                Config.vocabulary('subscription'),
+                '<br/><a href="{}" class="alert-link">{}</a>'.format(
+                    reverse('sub-cancel', args=[self.subscription.id]),
+                    _('&rarr; Oder {} komplett künden').format(Config.vocabulary('subscription')))
+            ))
+            raise ValidationError(amount_error_message, code='amount_error')
+        return super().clean()

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load crispy_forms_tags %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
@@ -20,26 +21,9 @@
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
             </a>
         </div>
-    {% elif shareerror %}
-        <div class="alert alert-danger">
-            {% blocktrans %}Es sind zu wenig {{ v_share_pl }} vorhanden für diese Grösse!{% endblocktrans %}
-            <br/>
-            <a href="{% url 'share-order' %}" class="alert-link">
-                {% blocktrans %}Bestelle hier mehr {{ v_share_pl }}.{% endblocktrans %}
-            </a>
-        </div>
     {% else %}
-        <form method="post">
-            {% csrf_token %}
-            {% include "snippets/snippet_subscription_selection.html" %}
-            <div class="form-group form-row">
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-success">
-                        {% blocktrans %}{{ v_subscription }}-Grösse ändern{% endblocktrans %}
-                    </button>
-                </div>
-            </div>
-        </form>
+        {% crispy form %}
+
         {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
             <div class="row mb-3">
                 <div class="col-md-12">
