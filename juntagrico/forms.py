@@ -21,7 +21,7 @@ class Slider(Field):
         super().__init__(template='forms/slider.html', css_class='slider', *args, **kwargs)
 
 
-class Link(HTML):
+class LinkButton(HTML):
     def __init__(self, name, href, css_classes=None):
         super().__init__(f'<a href="{href}" class="btn {css_classes}">{name}</a>')
 
@@ -217,7 +217,7 @@ class AddCoMemberForm(CoMemberBaseForm):
             *fields,
             FormActions(
                 self.get_submit_button(),
-                Link(_("Abbrechen"), reverse("sub-detail")),
+                LinkButton(_("Abbrechen"), reverse("sub-detail")),
             )
         )
 
@@ -229,8 +229,8 @@ class RegisterMultiCoMemberForm(CoMemberBaseForm):
             *self.base_layout,  # keep first 9 fields
             FormActions(
                 self.get_submit_button(),
-                Link(self.button_next_text(), '?next', css_classes='btn-success'),
-                Link(_('Abbrechen'), reverse("cs-cancel"))
+                LinkButton(self.button_next_text(), '?next', css_classes='btn-success'),
+                LinkButton(_('Abbrechen'), reverse("cs-cancel"))
             )
         )
 
@@ -259,7 +259,7 @@ class EditCoMemberForm(CoMemberBaseForm):
             'edit',
             FormActions(
                 Submit('submit', _('Ändern'), css_class='btn-success'),
-                Link(_('Abbrechen'), '?')
+                LinkButton(_('Abbrechen'), '?')
             )
         )
 
@@ -335,7 +335,7 @@ class SubscriptionTypeSelectForm(SubscriptionTypeBaseForm):
             Field('no_subscription', template='forms/no_subscription_field.html'),
             FormActions(
                 Submit('submit', _('Weiter'), css_class='btn-success'),
-                Link(_('Abbrechen'), reverse('cs-cancel'))
+                LinkButton(_('Abbrechen'), reverse('cs-cancel'))
             )
         )
 
