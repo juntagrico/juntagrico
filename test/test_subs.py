@@ -5,7 +5,7 @@ from juntagrico.entity.share import Share
 from test.util.test import JuntagricoTestCase
 
 
-class JobTests(JuntagricoTestCase):
+class SubscriptionTests(JuntagricoTestCase):
 
     def testSub(self):
         self.assertGet(reverse('sub-detail'))
@@ -48,12 +48,16 @@ class JobTests(JuntagricoTestCase):
     def testSizeChange(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
             self.assertGet(reverse('size-change', args=[self.sub.pk]))
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), {'amount[' + str(self.sub_type2.pk) + ']': 1})
+            post_data = {
+                'amount[' + str(self.sub_type.pk) + ']': 0,
+                'amount[' + str(self.sub_type2.pk) + ']': 1
+            }
+            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_types.all()[0], self.sub_type)
             self.assertEqual(self.sub.future_types.count(), 1)
             Share.objects.create(**self.share_data)
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), {'amount[' + str(self.sub_type2.pk) + ']': 1})
+            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_types.all()[0], self.sub_type2)
             self.assertEqual(self.sub.future_types.count(), 1)
