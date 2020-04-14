@@ -7,7 +7,7 @@ from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.util.mailer import get_email_content, base_dict
+from juntagrico.mailer import get_email_content, base_dict
 
 
 def get_server():
@@ -20,7 +20,8 @@ class Command(BaseCommand):
         subscription = Subscription.objects.all()[0]
         shares = Share.objects.all()[:2]
         job = RecuringJob.objects.all()[0]
-        member = Member.objects.all()[0]
+        member = Member.objects.filter(subscription__isnull=False)[0]
+        member_wo_subs = Member.objects.filter(subscription__isnull=True)[0]
         co_member = Member.objects.filter(subscription__isnull=False)[0]
         depot = Depot.objects.all()[0]
 
@@ -28,17 +29,15 @@ class Command(BaseCommand):
 
         print(get_email_content('welcome', base_dict({
             'member': member,
-            'password': 'password',
-            'subscription': subscription
+            'password': 'password'
         })))
         print()
 
         print('*** welcome  ohne abo***')
 
         print(get_email_content('welcome', base_dict({
-            'member': member,
-            'password': 'password',
-            'subscription': None
+            'member': member_wo_subs,
+            'password': 'password'
         })))
         print()
 
@@ -82,8 +81,7 @@ class Command(BaseCommand):
         contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
         print(get_email_content('j_reminder', base_dict({
             'job': job,
-            'participants': [member],
-            'contact': contact
+            'participants': ", ".join([str(member), str(co_member)])
         })))
         print()
 

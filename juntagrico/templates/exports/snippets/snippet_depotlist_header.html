@@ -37,12 +37,12 @@
         <td>{% trans "TOTAL" %}</td>
         {% for product in products %}
             {% for size in product.sizes_for_depot_list %}
-                <td>{{ subscriptions|depot:depot|sub_size:size|count }}</td>
+                <td>{{ subscriptions|by_depot:depot|get_types_by_size:size|count }}</td>
             {% endfor %}
         {% endfor %}
         {% for category in extra_sub_categories %}
             {% for type in category.types_for_depot_list %}
-                <td>{{ subscriptions|depot:depot|extra_sub_type:type|count }}</td>
+                <td>{{ subscriptions|by_depot:depot|get_extra_subs_by_type:type|count }}</td>
             {% endfor %}
         {% endfor %}
         <td colspan="2" ></td>

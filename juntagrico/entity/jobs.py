@@ -34,10 +34,8 @@ class ActivityArea(JuntagricoBaseModel):
     def contact(self):
         if self.show_coordinator_phonenumber is True:
             return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
-        elif self.email is not None:
-            return self.email
         else:
-            return self.coordinator.email
+            return self.get_email()
 
     def get_email(self):
         if self.email is not None:
@@ -190,7 +188,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def get_css_classes(self):
-        result = 'area-'+str(self.type.activityarea.pk)
+        result = 'area-' + str(self.type.activityarea.pk)
         if self.canceled:
             result += ' canceled'
         return result

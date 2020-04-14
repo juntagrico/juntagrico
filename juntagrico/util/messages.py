@@ -3,8 +3,8 @@
 from django.template.loader import get_template
 from django.utils import timezone
 
-from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.sharedao import ShareDao
 
 
 def home_messages(request):

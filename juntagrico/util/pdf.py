@@ -15,7 +15,7 @@ def render_to_pdf_http(template_name, renderdict, filename):
     rendered_html = get_template(template_name).render(renderdict)
 
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = "attachment; filename='" + filename + "'"
+    response['Content-Disposition'] = "attachment; filename=\"" + filename + "\""
 
     success = pisa.CreatePDF(rendered_html, dest=response)
 

@@ -8,30 +8,28 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
+from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TSST, TFSST
-from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm
-from juntagrico.mailer import MemberNotification
-from juntagrico.util import temporal, return_to_previous_location
-from juntagrico.util.form_evaluation import selected_subscription_types
-from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
-from juntagrico.util.management import cancel_sub, cancel_extra_sub
-from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date, is_date_in_cancelation_period
-from juntagrico.views import get_menu_dict, get_page_dict
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionTypeEditForm
+from juntagrico.mailer import membernotification
 from juntagrico.util import addons
+from juntagrico.util import temporal, return_to_previous_location
+from juntagrico.util.management import cancel_sub, cancel_extra_sub
+from juntagrico.util.management import create_or_update_co_member, replace_subscription_types, create_share
+from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
+    cancelation_date
+from juntagrico.views import get_menu_dict, get_page_dict
 
 
 @login_required
@@ -56,8 +54,8 @@ def subscription(request, subscription_id=None):
         cancelation_date = subscription.cancelation_date
         if cancelation_date is not None and cancelation_date <= next_cancelation_date():
             end_date = end_of_business_year()
-        asc = member.active_shares_count
-        share_error = subscription.share_overflow-asc < 0
+        asc = member.usable_shares_count
+        share_error = subscription.share_overflow - asc < 0
         primary = subscription.primary_member.id == member.id
         can_leave = member.is_cooperation_member and not share_error and not primary
         renderdict.update({
@@ -167,25 +165,21 @@ def size_change(request, subscription_id):
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
-    share_error = False
-    if request.method == 'POST' and is_date_in_cancelation_period(timezone.now().date()):
-        # create dict with subscription type -> selected amount
-        selected = selected_subscription_types(request.POST)
-        # check if members of sub have enough shares
-        if subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
-            share_error = True
-        elif sum(selected.values()) > 0:  # check that at least one subscription was selected
-            replace_subscription_types(subscription, selected)
+    if request.method == 'POST':
+        form = SubscriptionTypeEditForm(subscription, request.POST)
+        if form.is_valid():
+            replace_subscription_types(subscription, form.get_selected())
             saved = True
-    products = SubscriptionProductDao.get_all()
+    else:
+        form = SubscriptionTypeEditForm(subscription)
+
     renderdict = get_menu_dict(request)
     renderdict.update({
+        'form': form,
         'saved': saved,
         'subscription': subscription,
-        'shareerror': share_error,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
-        'products': products,
     })
     return render(request, 'size_change.html', renderdict)
 
@@ -366,7 +360,7 @@ def cancel_subscription(request, subscription_id):
 def leave_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     member = request.user.member
-    asc = member.active_shares_count
+    asc = member.usable_shares_count
     share_error = subscription.share_overflow - asc < 0
     primary = subscription.primary_member.id == member.id
     can_leave = member.is_cooperation_member and not share_error and not primary
@@ -383,7 +377,7 @@ def leave_subscription(request, subscription_id):
             member.old_subscriptions.add(subscription)
         member.save()
         if primary_member:
-            MemberNotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
+            membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
         return redirect('home')
     renderdict = get_menu_dict(request)
     return render(request, 'leavesubscription.html', renderdict)
@@ -464,7 +458,7 @@ def order_shares_success(request):
 @permission_required('juntagrico.is_operations_group')
 def payout_share(request, share_id):
     share = get_object_or_404(Share, id=share_id)
-    share.payback_date = timezone.now()
+    share.payback_date = timezone.now().date()
     share.save()
     member = share.member
     if member.active_shares_count == 0 and member.canceled is True:

@@ -55,7 +55,10 @@ class Subscription(Billable):
         namelist = [_(' Einheiten {0}').format(self.size)]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
-        return _('Abo ({0}) {0}').format(' + '.join(namelist), self.id)
+        return _('Abo ({1}) {0}').format(' + '.join(namelist), self.id)
+
+    def __repr__(self):
+        return _('Abo ({})').format(self.id)
 
     @property
     def overview(self):

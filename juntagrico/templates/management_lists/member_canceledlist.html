@@ -76,7 +76,7 @@
                         </form>
                     </td>
                     <td>
-                        {% if not member.in_subscription and not member.active_shares_count > 0 %}
+                        {% if not member.in_subscription and not member.is_cooperation_member %}
                             <a href="{% url 'member-deactivate' member.id %}"class="btn btn-success">
                                 {% trans "deaktivieren" %}
                             </a>

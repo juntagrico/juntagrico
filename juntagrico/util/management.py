@@ -2,11 +2,15 @@ import itertools
 import random
 import string
 
+from django.utils import timezone
+
 from juntagrico.config import Config
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import TFSST, TSST
-from juntagrico.mailer import MemberNotification, AdminNotification
+from juntagrico.mailer import adminnotification
+from juntagrico.mailer import membernotification
+from juntagrico.util.temporal import next_membership_end_date
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
@@ -32,7 +36,7 @@ def new_signup(signup_data):
 
     # send notifications
     if creation_data['created']:
-        MemberNotification.welcome(member, creation_data['password'])
+        membernotification.welcome(member, creation_data['password'])
 
 
 def create_or_update_co_member(co_member, subscription, new_shares):
@@ -42,7 +46,7 @@ def create_or_update_co_member(co_member, subscription, new_shares):
     # add co-member to subscription
     add_recipient_to_subscription(subscription, co_member)
     # notify co-member
-    MemberNotification.welcome_co_member(co_member, creation_data['password'], new_shares, new=creation_data['created'])
+    membernotification.welcome_co_member(co_member, creation_data['password'], new_shares, new=creation_data['created'])
 
 
 def create_or_update_member(member):
@@ -65,7 +69,7 @@ def create_share(member, amount=1):
         shares = []
         for i in range(amount):
             shares.append(Share.objects.create(member=member))
-        MemberNotification.shares_created(member, shares)
+        membernotification.shares_created(member, shares)
 
 
 def create_subscription(start_date, depot, subscription_types, member):
@@ -111,7 +115,7 @@ def cancel_sub(subscription, end_date, message):
         subscription.end_date = end_date
         subscription.save()
 
-        AdminNotification.subscription_canceled(subscription, message)
+        adminnotification.subscription_canceled(subscription, message)
     elif subscription.active is False and subscription.deactivation_date is None:
         subscription.delete()
 
@@ -125,6 +129,8 @@ def cancel_extra_sub(extra):
 
 
 def cancel_share(share, now, end_date):
+    now = now or timezone.now().date()
+    end_date = end_date or next_membership_end_date()
     if share.paid_date is None:
         share.delete()
     else:

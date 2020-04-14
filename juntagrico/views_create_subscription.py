@@ -5,26 +5,27 @@ from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm
+    RegisterFirstMultiCoMemberForm, SubscriptionTypeSelectForm
 from juntagrico.util import temporal
-from juntagrico.decorators import create_subscription_session
-from juntagrico.util.form_evaluation import selected_subscription_types
+from juntagrico.view_decorators import create_subscription_session
 from juntagrico.util.management import new_signup
 
 
 @create_subscription_session
 def cs_select_subscription(request, cs_session):
     if request.method == 'POST':
-        # create dict with subscription type -> selected amount
-        selected = selected_subscription_types(request.POST)
-        cs_session.subscriptions = selected
-        return redirect(cs_session.next_page())
+        form = SubscriptionTypeSelectForm(cs_session.subscriptions, request.POST)
+        if form.is_valid():
+            cs_session.subscriptions = form.get_selected()
+            return redirect(cs_session.next_page())
+    else:
+        form = SubscriptionTypeSelectForm(cs_session.subscriptions)
+
     render_dict = {
-        'selected_subscriptions': cs_session.subscriptions,
+        'form': form,
+        'subscription_selected': sum(form.get_selected().values()) > 0,
         'hours_used': Config.assignment_unit() == 'HOURS',
-        'products': SubscriptionProductDao.get_all(),
     }
     return render(request, 'createsubscription/select_subscription.html', render_dict)
 

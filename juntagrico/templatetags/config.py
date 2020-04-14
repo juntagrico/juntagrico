@@ -1,4 +1,5 @@
 from django import template
+
 from juntagrico.config import Config
 from juntagrico.util.organisation_name import enriched_organisation as eo
 

@@ -5,6 +5,7 @@
 {% config "enable_shares" as c_enable_shares %}
 {% config "info_email" as c_info_email %}
 {% config "faq_doc" as c_faq_doc %}
+{% config "organisation_name" as c_organisation_name %}
 {% enriched_organisation "D" as v_d_enriched_organisation %}
 {% vocabulary "member_type" as v_member_type %}
 {% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}

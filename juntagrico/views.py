@@ -20,10 +20,12 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm
-from juntagrico.mailer import FormEmails, MemberNotification, AdminNotification
+from juntagrico.mailer import adminnotification
+from juntagrico.mailer import append_attachements
+from juntagrico.mailer import formemails
+from juntagrico.mailer import membernotification
 from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.mailer import append_attachements
 from juntagrico.util.management import password_generator, cancel_share
 from juntagrico.util.messages import home_messages, job_messages
 from juntagrico.util.temporal import next_membership_end_date
@@ -138,7 +140,7 @@ def job(request, job_id):
                 assignment.job_extras.add(extra)
         assignment.save()
 
-        MemberNotification.job_signup([member.email], job)
+        membernotification.job_signup(member.email, job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return redirect('job', job_id=job_id)
@@ -274,7 +276,7 @@ def area_join(request, area_id):
     new_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     new_area.members.add(member)
-    AdminNotification.member_joined_activityarea(new_area, member)
+    adminnotification.member_joined_activityarea(new_area, member)
     new_area.save()
     return HttpResponse('')
 
@@ -284,7 +286,7 @@ def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     old_area.members.remove(member)
-    AdminNotification.member_left_activityarea(old_area, member)
+    adminnotification.member_left_activityarea(old_area, member)
     old_area.save()
     return HttpResponse('')
 
@@ -347,7 +349,7 @@ def contact(request):
 
     if request.method == 'POST':
         # send mail to organisation
-        FormEmails.contact(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
+        formemails.contact(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
         is_sent = True
 
     renderdict = get_menu_dict(request)
@@ -370,10 +372,10 @@ def contact_member(request, member_id, job_id):
 
     if request.method == 'POST':
         # send mail to member
-        attachments = []
-        append_attachements(request, attachments)
-        FormEmails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
-                                  request.POST.get('copy'), attachments)
+        files = []
+        append_attachements(request, files)
+        formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
+                                  request.POST.get('copy'), files)
         is_sent = True
     job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)
@@ -432,7 +434,7 @@ def cancel_membership(request):
         member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
-            AdminNotification.member_canceled(member, end_date, message)
+            adminnotification.member_canceled(member, end_date, message)
         else:
             member.inactive = True
 
@@ -443,7 +445,7 @@ def cancel_membership(request):
 
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
-    asc = member.active_shares_count
+    asc = member.usable_shares_count
     sub = member.subscription
     f_sub = member.future_subscription
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
@@ -466,7 +468,7 @@ def cancel_membership(request):
 
 @login_required
 def send_confirm(request):
-    MemberNotification.email_confirmation(request.user.member)
+    membernotification.email_confirmation(request.user.member)
     renderdict = get_menu_dict(request)
     return render(request, 'info/confirmation_sent.html', renderdict)
 
@@ -506,7 +508,7 @@ def new_password(request):
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()
-            MemberNotification.reset_password(member.email, pw)
+            membernotification.reset_password(member.email, pw)
 
     renderdict = get_page_dict(request)
     renderdict.update({

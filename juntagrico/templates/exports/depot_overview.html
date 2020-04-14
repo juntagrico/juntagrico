@@ -41,17 +41,17 @@
             {% endfor %}
         {% endfor %}
     </tr>
-    {% for depot in depots|weekday:weekday_id %}
+    {% for depot in depots|by_weekday:weekday_id %}
         <tr>
             <td style="width:360px;">{{ depot.name }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
-                    <td style="text-align:right">{{ subscriptions|depot:depot|sub_size:size|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|by_depot:depot|get_types_by_size:size|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
             {% for category in extra_sub_categories %}
                 {% for type in category.types_for_depot_list %}
-                    <td style="text-align:right">{{ subscriptions|depot:depot|extra_sub_type:type|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|by_depot:depot|get_extra_subs_by_type:type|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
         </tr>
@@ -60,12 +60,12 @@
         <td>{% trans "Total" %}</td>
         {% for product in products %}
             {% for size in product.sizes_for_depot_list %}
-                <td style="text-align:right">{{ subscriptions|weekday:weekday_id|sub_size:size|count|floatformat }}</td>
+                <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|get_types_by_size:size|count|floatformat }}</td>
             {% endfor %}
         {% endfor %}
         {% for category in extra_sub_categories %}
             {% for type in category.types_for_depot_list %}
-                <td style="text-align:right">{{ subscriptions|weekday:weekday_id|extra_sub_type:type|count|floatformat }}</td>
+                <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|get_extra_subs_by_type:type|count|floatformat }}</td>
             {% endfor %}
         {% endfor %}
     </tr>

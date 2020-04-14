@@ -14,18 +14,18 @@
     {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
 </div>
 {% for depot in depots %}
-    {{ categories_first|safe }}
+    {% include "./snippets/snippet_depotlist_header.html" with first=True %}
     {% for subscription in depot.active_subscriptions %}
         <tr>
             <td style="width:360px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
-                    <td  class="top-border left-border">{{ subscription|sub_size:size|count|default:'' }}</td>
+                    <td  class="top-border left-border">{{ subscription|get_types_by_size:size|count|default:'' }}</td>
                 {% endfor %}
             {% endfor %}
             {% for category in extra_sub_categories %}
                 {% for type in category.types_for_depot_list %}
-                    <td  class="top-border left-border">{{ subscription|extra_sub_type:type|count|default:'' }}</td>
+                    <td  class="top-border left-border">{{ subscription|get_extra_subs_by_type:type|count|default:'' }}</td>
                 {% endfor %}
             {% endfor %}
             <td style="width:80px;" class="top-border left-border"></td>
@@ -34,7 +34,7 @@
         {% if forloop.counter0|divisibleby:14 and forloop.counter0 > 0 and not forloop.last %}
             </table>
             <div class="page-break"></div>
-            {{ categories|safe }}
+            {% include "./snippets/snippet_depotlist_header.html" %}
         {% endif %}
     {% endfor %}
     </table>
