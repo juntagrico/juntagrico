@@ -1,4 +1,5 @@
 from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.util.models import q_active, q_cancelled, q_deactivated
 
 
 class ExtraSubscriptionDao:
@@ -9,11 +10,11 @@ class ExtraSubscriptionDao:
 
     @staticmethod
     def canceled_extra_subs():
-        return ExtraSubscription.objects.filter(active=True, canceled=True)
+        return ExtraSubscription.objects.filter(q_active & q_cancelled & ~q_deactivated)
 
     @staticmethod
     def waiting_extra_subs():
-        return ExtraSubscription.objects.filter(active=False, deactivation_date=None)
+        return ExtraSubscription.objects.filter(~q_active)
 
     @staticmethod
     def extrasubscriptions_by_date(fromdate, tilldate):

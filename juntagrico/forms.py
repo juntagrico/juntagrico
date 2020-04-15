@@ -345,14 +345,14 @@ class SubscriptionTypeSelectForm(SubscriptionTypeBaseForm):
         return 0
 
 
-class SubscriptionTypeEditForm(SubscriptionTypeBaseForm):
+class SubscriptionTypeOrderForm(SubscriptionTypeBaseForm):
     def __init__(self, subscription, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.subscription = subscription
         self.helper.layout = Layout(
             *self._collect_type_fields(),
             FormActions(
-                Submit('submit', _('{}-Grösse ändern').format(Config.vocabulary('subscription')),
+                Submit('submit', _('{}-Bestandteile bestellen').format(Config.vocabulary('subscription')),
                        css_class='btn-success')
             )
         )
@@ -365,8 +365,11 @@ class SubscriptionTypeEditForm(SubscriptionTypeBaseForm):
     def clean(self):
         selected = self.get_selected()
         # check if members in subscription have sufficient shares
-        if self.subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
-            share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Grösse!{}').format(
+        available_shares = self.subscription.all_shares
+        new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
+        existing_required_shares = self.subscription.required_shares
+        if available_shares < new_required_shares + existing_required_shares:
+            share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Bestandteile!{}').format(
                 Config.vocabulary('share_pl'),
                 '<br/><a href="{}" class="alert-link">{}</a>'.format(
                     reverse('share-order'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))

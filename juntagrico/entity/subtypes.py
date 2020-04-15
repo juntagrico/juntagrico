@@ -81,30 +81,3 @@ class SubscriptionType(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Typ').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Typen').format(Config.vocabulary('subscription'))
-
-
-'''
-through classes
-'''
-
-
-class TSST(JuntagricoBaseModel):
-    '''
-    through class for subscription and subscription types
-    '''
-    subscription = models.ForeignKey(
-        'Subscription', related_name='STSST', on_delete=models.CASCADE)
-    type = models.ForeignKey(
-        'SubscriptionType', related_name='TTSST', on_delete=models.PROTECT)
-
-
-class TFSST(JuntagricoBaseModel):
-    '''
-    through class for future subscription and subscription types
-    '''
-    subscription = models.ForeignKey(
-        'Subscription', related_name='STFSST', on_delete=models.CASCADE)
-    type = models.ForeignKey(
-        'SubscriptionType', related_name='TTFSST', on_delete=models.PROTECT,
-        help_text='Muss gleich eingestellt sein wie {}-Typen oben, wenn keine Änderung ansteht'
-        .format(Config.vocabulary('subscription')))

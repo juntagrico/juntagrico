@@ -49,7 +49,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_subscription():
-        return Member.objects.exclude(subscription=None).filter(subscription__active=True).exclude(inactive=True)
+        return Member.objects.exclude(subscription=None).filter(subscription__activation_date__isnull=False).exclude(inactive=True)
 
     @staticmethod
     def members_for_email_with_shares():

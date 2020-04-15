@@ -54,13 +54,14 @@ class SubscriptionTests(JuntagricoTestCase):
             }
             self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_types.all()[0], self.sub_type)
-            self.assertEqual(self.sub.future_types.count(), 1)
+            self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+            self.assertEqual(self.sub.future_parts.count(), 1)
             Share.objects.create(**self.share_data)
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
+            self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
+            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_types.all()[0], self.sub_type2)
-            self.assertEqual(self.sub.future_types.count(), 1)
+            self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
+            self.assertEqual(self.sub.future_parts.count(), 1)
 
     def testLeave(self):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
@@ -74,7 +75,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
         self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)
         self.sub.refresh_from_db()
-        self.assertEqual(self.sub.canceled, 1)
+        self.assertIsNotNone(self.sub.cancellation_date)
 
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
@@ -85,6 +86,6 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertFalse(self.sub2.active)
         self.assertIsNone(self.member2.subscription)
         self.assertEqual(self.member2.old_subscriptions.count(), 1)
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
+        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 200)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)

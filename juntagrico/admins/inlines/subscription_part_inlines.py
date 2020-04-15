@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext as _
 
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.config import Config
 
 
@@ -24,7 +24,7 @@ class SubscriptionTypeInlineFormset(BaseInlineFormSet):
 
 class SubscriptionPartInline(admin.TabularInline):
     formset = SubscriptionTypeInlineFormset
-    model = Subscription.parts
+    model = SubscriptionPart
     verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
     verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
     extra = 0

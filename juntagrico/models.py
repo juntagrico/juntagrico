@@ -7,7 +7,7 @@ from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.jobs import Assignment, OneTimeJob, RecuringJob, Job
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.lifecycle.extrasub import extra_sub_pre_save, handle_extra_sub_deactivated, handle_extra_sub_activated
 from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
 from juntagrico.lifecycle.member import member_pre_save, member_post_save, handle_member_deactivated, \
@@ -15,6 +15,7 @@ from juntagrico.lifecycle.member import member_pre_save, member_post_save, handl
 from juntagrico.lifecycle.share import share_post_save, handle_share_created, share_pre_save
 from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_sub_deactivated, handle_sub_activated, \
     sub_post_save, handle_sub_created
+from juntagrico.lifecycle.subpart import sub_part_pre_save, handle_sub_part_deactivated, handle_sub_part_activated
 from juntagrico.util.signals import register_entities_for_post_init_and_save
 
 
@@ -55,6 +56,10 @@ juntagrico.signals.sub_canceled.connect(handle_sub_canceled, sender=Subscription
 signals.pre_save.connect(extra_sub_pre_save, sender=ExtraSubscription)
 juntagrico.signals.extra_sub_activated.connect(handle_extra_sub_activated, sender=ExtraSubscription)
 juntagrico.signals.extra_sub_deactivated.connect(handle_extra_sub_deactivated, sender=ExtraSubscription)
+''' subscription part handling'''
+signals.pre_save.connect(sub_part_pre_save, sender=SubscriptionPart)
+juntagrico.signals.extra_sub_activated.connect(handle_sub_part_activated, sender=SubscriptionPart)
+juntagrico.signals.extra_sub_deactivated.connect(handle_sub_part_deactivated, sender=SubscriptionPart)
 ''' share handling '''
 signals.pre_save.connect(share_pre_save, sender=Share)
 signals.post_save.connect(share_post_save, sender=Share)

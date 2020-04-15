@@ -24,36 +24,36 @@ def migrate_parts(apps, schema_editor):
                 a_part = create_a_part(SubscriptionPart, sub, type)
                 c_part = create_c_part(SubscriptionPart, sub, type)
                 SubscriptionPart.objects.bulk_create(itertools.chain(*[[a_part] * f_count]))
-                SubscriptionPart.objects.bulk_create(itertools.chain(*[[c_part] * (c_count-f_count)]))
+                SubscriptionPart.objects.bulk_create(itertools.chain(*[[c_part] * (c_count - f_count)]))
             else:
                 a_part = create_a_part(SubscriptionPart, sub, type)
                 w_part = create_w_part(SubscriptionPart, sub, type)
                 SubscriptionPart.objects.bulk_create(itertools.chain(*[[a_part] * c_count]))
-                SubscriptionPart.objects.bulk_create(itertools.chain(*[[w_part] * (f_count-c_count)]))
+                SubscriptionPart.objects.bulk_create(itertools.chain(*[[w_part] * (f_count - c_count)]))
 
 
 def create_a_part(part_class, sub, type):
     return part_class(subscription=sub,
-                     type=type,
-                     activation_date=sub.activation_date,
-                     cancellation_date=sub.cancelation_date,
-                     deactivation_date=sub.deactivation_date)
+                      type=type,
+                      activation_date=sub.activation_date,
+                      cancellation_date=sub.cancelation_date,
+                      deactivation_date=sub.deactivation_date)
 
 
 def create_c_part(part_class, sub, type):
     return part_class(subscription=sub,
-                     type=type,
-                     activation_date=sub.activation_date,
-                     cancellation_date=timezone.now().date(),
-                     deactivation_date=sub.deactivation_date)
+                      type=type,
+                      activation_date=sub.activation_date,
+                      cancellation_date=timezone.now().date(),
+                      deactivation_date=sub.deactivation_date)
 
 
 def create_w_part(part_class, sub, type):
     return part_class(subscription=sub,
-                     type=type,
-                     activation_date=None,
-                     cancellation_date=None,
-                     deactivation_date=None)
+                      type=type,
+                      activation_date=None,
+                      cancellation_date=None,
+                      deactivation_date=None)
 
 
 def analyze_types(types):
@@ -66,7 +66,7 @@ def analyze_types(types):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0021_auto_20200314_0715'),
+        ('juntagrico', '0022_subscriptionpart'),
     ]
 
     operations = [

@@ -13,26 +13,56 @@
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
     {% vocabulary "share_pl" as v_share_pl %}
-    {% if saved %}
-        <div class="alert alert-success">
-            {% blocktrans %}Die {{ v_subscription }}-Grösse wurde erfolgreich geändert.{% endblocktrans %}
-            <br/>
-            <a href="{% url 'sub-detail' %}" class="alert-link">
-                {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
-            </a>
+    <div>
+            <table id="filter-table" class="table" style="display: table;">
+                <thead>
+                    <tr>
+                        <th>
+                            {% trans "Grösse" %}
+                        </th>
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for part in parts %}
+                        <tr>
+                            <td>
+                                {{ part.type.size.name }}
+                            </td>
+                            <td>
+                                {{ part.state_text }}
+                            </td>
+                            <td>
+                                {% if not part.canceled and part.deactivation_date is None and part.can_cancel %}
+                                    <a href="{% url 'part-cancel' part.id subscription.id %}"class="btn btn-success">
+                                        {% trans "kündigen" %}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    {% else %}
-        {% crispy form %}
 
-        {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <a href="{% url 'sub-cancel' subscription.id %}"class="btn btn-danger">
-                        {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
-                    </a>
-                </div>
+    <div class="row mt-3 mb-3">
+        <b class="col-md-12">{% trans "Bestandteile bestellen" %}</b>
+    </div>
+
+    {% crispy form %}
+
+    {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <a href="{% url 'sub-cancel' subscription.id %}"class="btn btn-danger">
+                    {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                </a>
             </div>
-        {% endif %}
+        </div>
     {% endif %}
 {% endblock %}
 {% block scripts %}

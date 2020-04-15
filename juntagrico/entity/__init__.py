@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.models import PolymorphicModel
 
@@ -15,6 +16,61 @@ class JuntagricoBaseModel(models.Model, OldHolder):
 
 
 class JuntagricoBasePoly(PolymorphicModel, OldHolder):
+
+    class Meta:
+        abstract = True
+
+
+class SimpleStateModel(models.Model):
+
+    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
+    cancellation_date = models.DateField(_('Kündigüngssdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
+
+    def activate(self, time=None):
+        now = time or timezone.now().date()
+        self.activation_date = self.activation_date or now
+        self.save()
+
+    def cancel(self, time=None):
+        now = time or timezone.now().date()
+        self.cancellation_date = self.cancellation_date or now
+        self.save()
+
+    def deactivate(self, time=None):
+        now = time or timezone.now().date()
+        self.deactivation_date = self.deactivation_date or now
+        self.save()
+
+    @property
+    def active(self):
+        return self.state == 'active'
+
+    @property
+    def state(self):
+        if self.activation_date is None and self.deactivation_date is None and self.deactivation_date is None:
+            return 'waiting'
+        elif self.activation_date is not None and self.deactivation_date is None and self.deactivation_date is None:
+            return 'active'
+        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is None:
+            return 'canceled'
+        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is not None:
+            return 'inactive'
+        else:
+            return 'error'
+
+    @property
+    def state_text(self):
+        if self.activation_date is None and self.deactivation_date is None and self.deactivation_date is None:
+            return _('wartend')
+        elif self.activation_date is not None and self.deactivation_date is None and self.deactivation_date is None:
+            return _('aktiv')
+        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is None:
+            return _('aktiv - gekündigt')
+        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is not None:
+            return _('inaktiv-gekündigt')
+        else:
+            return _('Fehler!')
 
     class Meta:
         abstract = True
