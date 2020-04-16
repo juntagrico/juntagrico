@@ -48,29 +48,29 @@ class SimpleStateModel(models.Model):
 
     @property
     def state(self):
+        result = 'error'
         if self.activation_date is None and self.deactivation_date is None and self.deactivation_date is None:
-            return 'waiting'
+            result = 'waiting'
         elif self.activation_date is not None and self.deactivation_date is None and self.deactivation_date is None:
-            return 'active'
+            result = 'active'
         elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is None:
-            return 'canceled'
+            result = 'canceled'
         elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is not None:
-            return 'inactive'
-        else:
-            return 'error'
+            result = 'inactive'
+        return result
 
     @property
     def state_text(self):
+        result = _('Fehler!')
         if self.activation_date is None and self.deactivation_date is None and self.deactivation_date is None:
-            return _('wartend')
+            result = _('wartend')
         elif self.activation_date is not None and self.deactivation_date is None and self.deactivation_date is None:
-            return _('aktiv')
+            result = _('aktiv')
         elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is None:
-            return _('aktiv - gekündigt')
+            result = _('aktiv - gekündigt')
         elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is not None:
-            return _('inaktiv-gekündigt')
-        else:
-            return _('Fehler!')
+            result = _('inaktiv-gekündigt')
+        return result
 
     class Meta:
         abstract = True
