@@ -23,6 +23,16 @@ class JuntagricoBasePoly(PolymorphicModel, OldHolder):
 
 class SimpleStateModel(models.Model):
 
+    __state_text_dict = {0: _('wartend'),
+                         1: _('aktiv'),
+                         3: _('aktiv - gekündigt'),
+                         7: _('inaktiv-gekündigt')}
+
+    __state_dict = {0: 'waiting',
+                    1: 'active',
+                    3: 'canceled',
+                    7: 'inactive'}
+
     activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
     cancellation_date = models.DateField(_('Kündigüngssdatum'), null=True, blank=True)
     deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
@@ -47,30 +57,19 @@ class SimpleStateModel(models.Model):
         return self.state == 'active'
 
     @property
+    def __state_code(self):
+        active = (self.activation_date is not None) << 0
+        cancelled = (self.cancellation_date is not None) << 1
+        deactivated = (self.deactivation_date is not None) << 2
+        return active + cancelled + deactivated
+
+    @property
     def state(self):
-        result = 'error'
-        if self.activation_date is None and self.deactivation_date is None and self.deactivation_date is None:
-            result = 'waiting'
-        elif self.activation_date is not None and self.deactivation_date is None and self.deactivation_date is None:
-            result = 'active'
-        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is None:
-            result = 'canceled'
-        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is not None:
-            result = 'inactive'
-        return result
+        return SimpleStateModel.__state_dict.get(self.__state_code, 'error')
 
     @property
     def state_text(self):
-        result = _('Fehler!')
-        if self.activation_date is None and self.deactivation_date is None and self.deactivation_date is None:
-            result = _('wartend')
-        elif self.activation_date is not None and self.deactivation_date is None and self.deactivation_date is None:
-            result = _('aktiv')
-        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is None:
-            result = _('aktiv - gekündigt')
-        elif self.activation_date is not None and self.deactivation_date is not None and self.deactivation_date is not None:
-            result = _('inaktiv-gekündigt')
-        return result
+        return SimpleStateModel.__state_text_dict.get(self.__state_code, _('Fehler!'))
 
     class Meta:
         abstract = True
