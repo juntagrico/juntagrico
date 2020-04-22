@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
-from juntagrico.util.models import q_deactivated, q_active
+from juntagrico.util.models import q_deactivated, q_activated
 from juntagrico.util.temporal import weekday_choices, weekdays
 
 
@@ -37,7 +37,7 @@ class Depot(JuntagricoBaseModel):
         return '%s %s' % (self.id, self.name)
 
     def active_subscriptions(self):
-        return self.subscription_set.filter(q_active & ~q_deactivated)
+        return self.subscription_set.filter(q_activated & ~q_deactivated)
 
     @property
     def has_geo(self):

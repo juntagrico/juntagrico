@@ -11,7 +11,7 @@ from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.lifecycle.sub import check_sub_consistency
-from juntagrico.util.models import q_active, q_cancelled, q_deactivated
+from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
 from juntagrico.util.temporal import start_of_next_business_year
 
 
@@ -69,7 +69,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
-        return self.parts.filter(q_active & ~q_deactivated)
+        return self.parts.filter(q_activated & ~q_deactivated)
 
     @property
     def future_parts(self):
@@ -84,7 +84,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_active | (q_cancelled & ~q_deactivated)).count()
+        return self.parts.filter(~q_activated | (q_cancelled & ~q_deactivated)).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -176,7 +176,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.extra_subscription_set.filter(q_active & ~q_deactivated)
+        return self.extra_subscription_set.filter(q_activated & ~q_deactivated)
 
     @property
     def future_extra_subscriptions(self):

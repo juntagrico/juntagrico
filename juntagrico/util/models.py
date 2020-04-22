@@ -14,7 +14,7 @@ def attribute_copy(source, target):
             target.__dict__[field.attname] = source.__dict__[field.attname]
 
 
-q_active = Q(activation_date__isnull=False)
+q_activated = Q(activation_date__isnull=False)
 
 
 q_cancelled = Q(cancellation_date__isnull=False)

@@ -1,5 +1,5 @@
 from juntagrico.entity.subs import Subscription
-from juntagrico.util.models import q_deactivated, q_active, q_cancelled
+from juntagrico.util.models import q_deactivated, q_activated, q_cancelled
 
 
 class SubscriptionDao:
@@ -10,7 +10,7 @@ class SubscriptionDao:
 
     @staticmethod
     def active_subscritions_by_depot(depot):
-        return Subscription.objects.filter(depot=depot).filter(q_active)
+        return Subscription.objects.filter(depot=depot).filter(q_activated)
 
     @staticmethod
     def subscritions_with_future_depots():
@@ -18,11 +18,11 @@ class SubscriptionDao:
 
     @staticmethod
     def all_active_subscritions():
-        return Subscription.objects.filter(q_active & ~q_deactivated)
+        return Subscription.objects.filter(q_activated & ~q_deactivated)
 
     @staticmethod
     def not_started_subscriptions():
-        return Subscription.objects.filter(~q_active).order_by('start_date')
+        return Subscription.objects.filter(~q_activated).order_by('start_date')
 
     @staticmethod
     def future_subscriptions():
