@@ -7,7 +7,7 @@ from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.config import Config
 
 
-class SubscriptionTypeInlineFormset(BaseInlineFormSet):
+class SubscriptionPartInlineFormset(BaseInlineFormSet):
     def clean(self):
         required_shares = 0
         for form in self.forms:
@@ -23,7 +23,7 @@ class SubscriptionTypeInlineFormset(BaseInlineFormSet):
 
 
 class SubscriptionPartInline(admin.TabularInline):
-    formset = SubscriptionTypeInlineFormset
+    formset = SubscriptionPartInlineFormset
     model = SubscriptionPart
     verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
     verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
