@@ -287,7 +287,7 @@ class SubscriptionTypeField(Field):
         return super().render(*args, extra_context=extra_context, **kwargs)
 
 
-class SubscriptionTypeBaseForm(Form):
+class SubscriptionPartBaseForm(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -321,7 +321,7 @@ class SubscriptionTypeBaseForm(Form):
         }
 
 
-class SubscriptionTypeSelectForm(SubscriptionTypeBaseForm):
+class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
     def __init__(self, selected, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.selected = selected
@@ -345,8 +345,8 @@ class SubscriptionTypeSelectForm(SubscriptionTypeBaseForm):
         return 0
 
 
-class SubscriptionTypeOrderForm(SubscriptionTypeBaseForm):
-    def __init__(self, subscription, *args, **kwargs):
+class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
+    def __init__(self, subscription=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.subscription = subscription
         self.helper.layout = Layout(
@@ -358,8 +358,6 @@ class SubscriptionTypeOrderForm(SubscriptionTypeBaseForm):
         )
 
     def _get_initial(self, subscription_type):
-        if self.subscription.pk:
-            return self.subscription.future_amount_by_type(subscription_type.id)
         return 0
 
     def clean(self):

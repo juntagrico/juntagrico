@@ -22,7 +22,7 @@ from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionTypeOrderForm
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
@@ -166,12 +166,12 @@ def size_change(request, subscription_id):
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     if request.method == 'POST':
-        form = SubscriptionTypeOrderForm(subscription, request.POST)
+        form = SubscriptionPartOrderForm(subscription, request.POST)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected())
             return return_to_previous_location(request)
     else:
-        form = SubscriptionTypeOrderForm(subscription)
+        form = SubscriptionPartOrderForm()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'form': form,

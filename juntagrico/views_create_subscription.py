@@ -6,7 +6,7 @@ from django.views.generic.edit import ModelFormMixin
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, SubscriptionTypeSelectForm
+    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import create_subscription_session
 from juntagrico.util.management import new_signup
@@ -15,12 +15,12 @@ from juntagrico.util.management import new_signup
 @create_subscription_session
 def cs_select_subscription(request, cs_session):
     if request.method == 'POST':
-        form = SubscriptionTypeSelectForm(cs_session.subscriptions, request.POST)
+        form = SubscriptionPartSelectForm(cs_session.subscriptions, request.POST)
         if form.is_valid():
             cs_session.subscriptions = form.get_selected()
             return redirect(cs_session.next_page())
     else:
-        form = SubscriptionTypeSelectForm(cs_session.subscriptions)
+        form = SubscriptionPartSelectForm(cs_session.subscriptions)
 
     render_dict = {
         'form': form,

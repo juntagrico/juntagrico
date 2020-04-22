@@ -13,7 +13,12 @@
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
     {% vocabulary "share_pl" as v_share_pl %}
-    <div>
+
+
+    <div class="row mb-3">
+        <b>{% trans "Bestandteile verwalten" %}</b>
+    </div>
+    <div class="row">
             <table id="filter-table" class="table" style="display: table;">
                 <thead>
                     <tr>
@@ -28,7 +33,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for part in parts %}
+                    {% for part in subscription.parts.all %}
                         <tr>
                             <td>
                                 {{ part.type.size.name }}
@@ -49,14 +54,19 @@
             </table>
         </div>
 
-    <div class="row mt-3 mb-3">
-        <b class="col-md-12">{% trans "Bestandteile bestellen" %}</b>
+    <div class="row mt-5 mb-3">
+        <b>{% trans "Bestandteile bestellen" %}</b>
     </div>
 
     {% crispy form %}
 
+
+
+    <div class="row mt-5 mb-3">
+        <b>{% blocktrans %}{{ v_subscription }} künden{% endblocktrans %}</b>
+    </div>
     {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
-        <div class="row mb-3">
+        <div class="row">
             <div class="col-md-12">
                 <a href="{% url 'sub-cancel' subscription.id %}"class="btn btn-danger">
                     {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
