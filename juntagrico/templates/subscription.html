@@ -53,7 +53,7 @@
     {% else %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% blocktrans %}{{ v_subscription }}grösse{% endblocktrans %}
+                {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
             </div>
             <div class="col-md-9">
                 {{ subscription.size_name|safe }}
@@ -206,7 +206,7 @@
         {% if subscription.types_changed %}
             <div class="row mb-3">
                 <div class="col-md-3">
-                    {% blocktrans %}Neue {{ v_subscription }}-Grösse{% endblocktrans %}
+                    {% blocktrans %}Neue {{ v_subscription }}-Bestandteile{% endblocktrans %}
                 </div>
                 <div class="col-md-9">
                     ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
