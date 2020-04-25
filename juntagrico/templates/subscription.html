@@ -209,7 +209,7 @@
                     {% blocktrans %}Neue {{ v_subscription }}-Grösse{% endblocktrans %}
                 </div>
                 <div class="col-md-9">
-                    ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
+                    ({% blocktrans trimmed with nes=next_size_date|date:"d.m.Y" %}
                     Die Änderung tritt voraussichtlich am {{ nes }} in Kraft
                     {% endblocktrans %})
                     <br/>
