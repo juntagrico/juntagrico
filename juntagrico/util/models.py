@@ -15,10 +15,10 @@ def attribute_copy(source, target):
             target.__dict__[field.attname] = source.__dict__[field.attname]
 
 
-q_activated = Q(activation_date__isnull=False, activation_date__gte=timezone.now().date())
+q_activated = Q(activation_date__isnull=False, activation_date__lte=timezone.now().date())
 
 
-q_cancelled = Q(cancellation_date__isnull=False, cancellation_date__gte=timezone.now().date())
+q_cancelled = Q(cancellation_date__isnull=False, cancellation_date__lte=timezone.now().date())
 
 
-q_deactivated = Q(deactivation_date__isnull=False, deactivation_date__gte=timezone.now().date())
+q_deactivated = Q(deactivation_date__isnull=False, deactivation_date__lte=timezone.now().date())

@@ -58,9 +58,10 @@ class SimpleStateModel(models.Model):
 
     @property
     def __state_code(self):
-        active = (self.activation_date is not None) << 0
-        cancelled = (self.cancellation_date is not None) << 1
-        deactivated = (self.deactivation_date is not None) << 2
+        now = timezone.now().date()
+        active = (self.activation_date is not None and self.activation_date <= now) << 0
+        cancelled = (self.cancellation_date is not None and self.cancellation_date <= now) << 1
+        deactivated = (self.deactivation_date is not None and self.deactivation_date <= now) << 2
         return active + cancelled + deactivated
 
     @property

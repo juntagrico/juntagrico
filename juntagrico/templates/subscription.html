@@ -213,7 +213,7 @@
                     Die Änderung tritt voraussichtlich am {{ nes }} in Kraft
                     {% endblocktrans %})
                     <br/>
-                    {{ subscription.future_size_name }}
+                    {{ subscription.future_size_name|safe }}
                 </div>
             </div>
         {% endif %}
@@ -223,7 +223,7 @@
         {% if subscription.state != 'inactive' %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
-                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
+                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}">
                         {% blocktrans %}{{ v_subscription }} ändern{% endblocktrans %}
                     </a>
                     {% if not primary %}
@@ -235,7 +235,7 @@
         {% if subscription.state != 'inactive' and can_leave %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
-                    <a href="{% url 'sub-leave' subscription.id %}"class="btn btn-danger">
+                    <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
                         {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
                     </a>
                 </div>
