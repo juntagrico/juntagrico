@@ -54,9 +54,13 @@
                         </form>
                     </td>
                     <td>
+                        {% if subscription.deactivation_date %}
                         <a href="{% url 'sub-deactivate' subscription.id %}"class="btn btn-success">
                             {% trans "deaktivieren" %}
                         </a>
+                        {% else %}
+                        {% trans "Wurde bereits deaktiviert" %} {{ subscription.deactivation_date }}
+                        {% endif %}
                     </td>
                     <td>
                         {{ subscription.notes }}

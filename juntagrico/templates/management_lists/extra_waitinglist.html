@@ -43,9 +43,13 @@
                         </form>
                     </td>
                     <td>
+                        {% if extrasubscription.activation_date %}
                         <a href="{% url 'extra-activate' extrasubscription.id %}"class="btn btn-success">
                             {% trans "aktivieren" %}
                         </a>
+                        {% else %}
+                        {% trans "Wurde bereits aktiviert" %} {{ extrasubscription.activation_date }}
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
