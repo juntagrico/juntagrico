@@ -32,7 +32,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for part in subscription.parts.all %}
+                {% for part in subscription.active_and_future_parts.all %}
                     <tr>
                         <td>
                             {{ part.type.size.name }}

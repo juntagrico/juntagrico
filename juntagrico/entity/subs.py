@@ -76,6 +76,10 @@ class Subscription(Billable, SimpleStateModel):
         return self.parts.filter(~q_cancelled & ~q_deactivated)
 
     @property
+    def active_and_future_parts(self):
+        return self.parts.filter(~q_deactivated)
+
+    @property
     def size(self):
         sizes = {}
         for part in self.active_parts.all():
