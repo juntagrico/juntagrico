@@ -12,7 +12,7 @@ from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
-from juntagrico.util.temporal import start_of_next_business_year
+from juntagrico.util.temporal import start_of_next_business_year, calculate_next_from_list
 
 
 class Subscription(Billable, SimpleStateModel):
@@ -202,14 +202,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def next_extra_change_date():
-        month = int(time.strftime('%m'))
-        if month >= 7:
-            next_extra = datetime.date(
-                day=1, month=1, year=timezone.now().today().year + 1)
-        else:
-            next_extra = datetime.date(
-                day=1, month=7, year=timezone.now().today().year)
-        return next_extra
+        return calculate_next_from_list(Config.extra_sub_change_date())
 
     @staticmethod
     def next_size_change_date():

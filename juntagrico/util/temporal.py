@@ -106,6 +106,11 @@ def calculate_next(day, month):
     return datetime.date(year, month, day)
 
 
+def calculate_next_from_list(options):
+    now = timezone.now().date()
+    return min(calculate_next_offset(d[0], d[1], now) for d in options)
+
+
 def calculate_last(day, month):
     now = timezone.now()
     if now.month > month or (now.month == month and now.day >= day):
