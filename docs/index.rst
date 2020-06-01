@@ -17,4 +17,5 @@ It provides the basic functionality like
 
    instalation.rst
    settings.rst
+   theming.rst
    release_notes.rst
