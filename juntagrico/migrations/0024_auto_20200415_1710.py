@@ -48,11 +48,6 @@ class Migration(migrations.Migration):
             model_name='subscription',
             name='types',
         ),
-        migrations.AddField(
-            model_name='extrasubscription',
-            name='cancellation_date',
-            field=models.DateField(blank=True, null=True, verbose_name='Kündigüngssdatum'),
-        ),
         migrations.AlterField(
             model_name='subscriptionpart',
             name='type',

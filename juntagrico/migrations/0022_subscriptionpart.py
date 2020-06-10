@@ -28,4 +28,9 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),
+        migrations.AddField(
+            model_name='extrasubscription',
+            name='cancellation_date',
+            field=models.DateField(blank=True, null=True, verbose_name='Kündigüngssdatum'),
+        ),
     ]

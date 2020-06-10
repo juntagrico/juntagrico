@@ -3,7 +3,7 @@ from django.db.models import Sum, Model
 from django.db.models.query import QuerySet
 
 from juntagrico.entity.extrasubs import ExtraSubscription
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
@@ -41,11 +41,11 @@ def count_units(subs_or_types):
 def get_types_by_size(subscriptions, size):
     if isinstance(subscriptions, Subscription):
         # case 1: single subscription object is passed
-        types = SubscriptionType.objects.filter(subscription_parts__subscription=subscriptions)
+        parts = subscriptions.active_parts
     else:
         # case 2: queryset of subscriptions is passed
-        types = SubscriptionType.objects.filter(subscription_parts__subscription__in=subscriptions)
-    return types.filter(size=size)
+        parts = SubscriptionPart.objects.filter(subscription__in=subscriptions, activation_date__isnull=False, deactivation_date__isnull=True)
+    return parts.filter(type__size=size)
 
 
 @register.filter
@@ -56,7 +56,7 @@ def get_extra_subs_by_type(subscriptions, es_type):
     else:
         # case 2: queryset of subscriptions is passed
         es = ExtraSubscription.objects.filter(main_subscription__in=subscriptions)
-    return es.filter(type=es_type, deactivation_date__isnull=False)
+    return es.filter(type=es_type, activation_date__isnull=False, deactivation_date__isnull=True)
 
 
 @register.filter

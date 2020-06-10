@@ -44,11 +44,11 @@
                     </td>
                     <td>
                         {% if extrasubscription.deactivation_date %}
+                        {% trans "Wurde bereits deaktiviert" %} {{ extrasubscription.deactivation_date }}
+                        {% else %}
                         <a href="{% url 'extra-deactivate' extrasubscription.id %}"class="btn btn-success">
                             {% trans "deaktivieren" %}
                         </a>
-                        {% else %}
-                        {% trans "Wurde bereits deaktiviert" %} {{ extrasubscription.deactivation_date }}
                         {% endif %}
                     </td>
                 </tr>
