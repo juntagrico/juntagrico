@@ -51,7 +51,10 @@
                         </form>
                     </td>
                     <td>
-                        {{ subscription.size_name }}
+                        {{ subscription.size_name|safe }}
+                    </td>
+                    <td>
+                        {{ subscription.future_size_name|safe }}
                     </td>
                     <td>
                         {{ subscription.future_size_name }}
