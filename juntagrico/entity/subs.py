@@ -226,6 +226,10 @@ class Subscription(Billable):
     def clean(self):
         check_sub_consistency(self)
 
+    @property
+    def type_updated_at(self):
+        return self.STFSST.first().updated_at
+
     @notifiable
     class Meta:
         verbose_name = Config.vocabulary('subscription')

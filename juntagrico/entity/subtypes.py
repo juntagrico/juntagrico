@@ -102,3 +102,4 @@ class TFSST(JuntagricoBaseModel):
         'Subscription', related_name='STFSST', on_delete=models.CASCADE)
     type = models.ForeignKey(
         'SubscriptionType', related_name='TTFSST', on_delete=models.PROTECT)
+    updated_at = models.DateField(auto_now=True)

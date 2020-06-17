@@ -25,6 +25,9 @@
                 <th class="filter">
                     {% trans "Neue Grösse" %}
                 </th>
+                <th class="filter">
+                    {% trans "Änderungsdatum" %}
+                </th>
                 <th>
                 </th>
             </tr>
@@ -57,7 +60,7 @@
                         {{ subscription.future_size_name|safe }}
                     </td>
                     <td>
-                        {{ subscription.future_size_name }}
+                        {{ subscription.type_updated_at }}
                     </td>
                     <td>
                         <a href="{% url 'activate-future-types' subscription.id %}" class="btn btn-success">
