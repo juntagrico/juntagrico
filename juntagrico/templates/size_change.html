@@ -42,7 +42,8 @@
                         </td>
                         <td>
                             {% if part.active and part.can_cancel %}
-                                <a href="{% url 'part-cancel' part.id subscription.id %}"class="btn btn-success">
+                                <a href="{% url 'part-cancel' part.id subscription.id %}"class="btn btn-success"
+                                onclick="return confirm('{% trans "Möchtest du sicher deiesen Bestandteil verbindlich künden?" %}')">
                                     {% trans "kündigen" %}
                                 </a>
                             {% endif %}

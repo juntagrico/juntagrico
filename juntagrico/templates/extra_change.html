@@ -36,7 +36,8 @@
                             </td>
                             <td>
                                 {% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
-                                    <a href="{% url 'extra-cancel' extra.id sub_id %}"class="btn btn-success">
+                                    <a href="{% url 'extra-cancel' extra.id sub_id %}"class="btn btn-success"
+                                       onclick="return confirm('{% trans "Möchtest du sicher dieses Zusatzabo verbindlich künden?" %}')">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}
