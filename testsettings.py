@@ -28,12 +28,8 @@ INSTALLED_APPS = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ortoloco',
-        'USER': "postgres",
-        'PASSWORD': "password",
-        'HOST': "localhost",
-        'PORT': "5433"
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':  'yourdatabasename.db',
     }
 }
 

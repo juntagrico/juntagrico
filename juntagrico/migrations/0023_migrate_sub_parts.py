@@ -41,6 +41,7 @@ def migrate_parts(apps, schema_editor):
 def create_a_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
+                      creation_date = sub.activation_date,
                       activation_date=sub.activation_date,
                       cancellation_date=sub.cancelation_date,
                       deactivation_date=sub.deactivation_date)
@@ -49,6 +50,7 @@ def create_a_part(part_class, sub, type):
 def create_c_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
+                      creation_date = sub.activation_date,
                       activation_date=sub.activation_date,
                       cancellation_date=timezone.now().date(),
                       deactivation_date=sub.deactivation_date)
@@ -73,8 +75,10 @@ def migrate_extras(apps, schema_editor):
     for sub in ExtraSubscription.objects.all():
         if sub.cancellation_date is None and sub.deactivation_date is not None:
             sub.cancellation_date = sub.deactivation_date
-        elif sub.canceled  and sub.cancellation_date is None:
+        elif sub.canceled and sub.cancellation_date is None:
             sub.cancellation_date = timezone.now().date()
+        if sub.activation_date is not None:
+            sub.creation_date = sub.activation_date
         sub.save()
 
 class Migration(migrations.Migration):

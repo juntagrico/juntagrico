@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
             name='SubscriptionPart',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('creation_date', models.DateField(auto_now_add=True, null=True, verbose_name='Erstellungsdatum')),
                 ('activation_date', models.DateField(blank=True, null=True, verbose_name='Aktivierungssdatum')),
                 ('cancellation_date', models.DateField(blank=True, null=True, verbose_name='Kündigüngssdatum')),
                 ('deactivation_date', models.DateField(blank=True, null=True, verbose_name='Deaktivierungssdatum')),
@@ -32,5 +33,10 @@ class Migration(migrations.Migration):
             model_name='extrasubscription',
             name='cancellation_date',
             field=models.DateField(blank=True, null=True, verbose_name='Kündigüngssdatum'),
+        ),
+        migrations.AddField(
+            model_name='extrasubscription',
+            name='creation_date',
+            field=models.DateField(auto_now_add=True, null=True, verbose_name='Erstellungsdatum'),
         ),
     ]

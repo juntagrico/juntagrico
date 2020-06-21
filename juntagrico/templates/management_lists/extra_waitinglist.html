@@ -19,6 +19,9 @@
                 <th class="filter">
                     {% trans "Email" %}
                 </th>
+                <th class="filter">
+                    {% trans "Bestelldatum" %}
+                </th>
                 <th>
                 </th>
             </tr>
@@ -41,6 +44,9 @@
                                 {{ extrasubscription.main_subscription.primary_member.email }}
                             </a>
                         </form>
+                    </td>
+                    <td>
+                        {{ extrasubscription.creation_date|date:"Y-m-d" }}
                     </td>
                     <td>
                         {% if extrasubscription.activation_date %}

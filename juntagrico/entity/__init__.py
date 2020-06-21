@@ -33,6 +33,7 @@ class SimpleStateModel(models.Model):
                     3: 'canceled',
                     7: 'inactive'}
 
+    creation_date = models.DateField(_('Erstellungsdatum'), null=True, blank=True, auto_now_add=True)
     activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
     cancellation_date = models.DateField(_('Kündigüngssdatum'), null=True, blank=True)
     deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)

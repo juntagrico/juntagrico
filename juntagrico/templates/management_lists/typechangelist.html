@@ -25,6 +25,9 @@
                 <th class="filter">
                     {% trans "Neue Bestandteile" %}
                 </th>
+                <th class="filter">
+                    {% trans "Bestelldatum" %}
+                </th>
                 <th>
                 </th>
             </tr>
@@ -55,6 +58,9 @@
                     </td>
                     <td>
                         {{ subscription.future_size_name }}
+                    </td>
+                    <td>
+                        {{ subscription.part_change_date|date:"Y-m-d" }}
                     </td>
                     <td>
                         <a href="{% url 'activate-future-types' subscription.id %}" class="btn btn-success">

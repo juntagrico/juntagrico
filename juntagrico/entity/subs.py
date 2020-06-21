@@ -28,8 +28,6 @@ class Subscription(Billable, SimpleStateModel):
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
                                        on_delete=models.PROTECT,
                                        verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
-    creation_date = models.DateField(
-        _('Erstellungsdatum'), null=True, blank=True, auto_now_add=True)
     start_date = models.DateField(
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
@@ -78,6 +76,10 @@ class Subscription(Billable, SimpleStateModel):
     @property
     def active_and_future_parts(self):
         return self.parts.filter(~q_deactivated)
+
+    @property
+    def part_change_date(self):
+        return max(self.future_parts.values_list('creation_date', flat=True).order_by('creation_date'))
 
     @property
     def size(self):
