@@ -55,7 +55,7 @@ class Subscription(Billable, SimpleStateModel):
         size_names = [key + ':' + str(value) for key, value in size_dict.items()]
         if len(size_names) > 0:
             return '<br>'.join(size_names)
-        return _('kein/e/n {0}').format(Config.vocabulary('subscription'))
+        return _('keine {0}-Bestandteile').format(Config.vocabulary('subscription'))
 
     @property
     def size_name(self):
@@ -79,7 +79,10 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def part_change_date(self):
-        return max(self.future_parts.values_list('creation_date', flat=True).order_by('creation_date'))
+        order_dates = list(self.future_parts.values_list('creation_date', flat=True).order_by('creation_date'))
+        cancel_dates = list(self.active_parts.values_list('cancellation_date', flat=True).order_by('cancellation_date'))
+        dates = order_dates + cancel_dates
+        return max([date for date in dates if date is not None])
 
     @property
     def size(self):
