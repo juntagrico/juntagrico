@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -83,6 +84,11 @@ class EmailSender:
         self.email.to = filter_whitelist_emails(self.email.to)
         self.email.cc = filter_whitelist_emails(self.email.cc)
         self.email.bcc = filter_whitelist_emails(self.email.bcc)
+        # apply from filter
+        if not re.match(Config.from_filter('filter_expression'), self.email.from_email):
+            reply_to = self.email.reply_to or [self.email.from_email]
+            self.email.from_email = Config.from_filter('replacement_from')
+            self.email.reply_to = reply_to
         # send with juntagrico mailer or custom mailer
         log.info(('Mail sent to ' + ', '.join(self.email.recipients()) + (', on whitelist' if settings.DEBUG else '')))
         mailer = import_string(Config.default_mailer())
