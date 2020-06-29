@@ -4,11 +4,22 @@ import itertools
 from django.db import migrations
 from django.utils import timezone
 
+from juntagrico.util.temporal import start_of_specific_business_year
+
 
 def migrate_parts(apps, schema_editor):
     Subscription = apps.get_model('juntagrico', 'Subscription')
     SubscriptionPart = apps.get_model('juntagrico', 'SubscriptionPart')
     for sub in Subscription.objects.all():
+        # activation date missing
+        if (sub.active or sub.deactivation_date is not None) and sub.activation_date is None:
+            if sub.start_date is not None:
+                sub.activation_date = sub.start_date
+            else:
+                start_date = sub.creation_date
+                start_date.year += 1
+                sub.activation_date = start_of_specific_business_year(start_date)
+        # cancellation date missing
         if sub.cancelation_date is None and sub.deactivation_date is not None:
             sub.cancelation_date = sub.deactivation_date
         elif sub.canceled  and sub.cancelation_date is None:
