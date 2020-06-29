@@ -37,7 +37,7 @@ class Depot(JuntagricoBaseModel):
         return '%s %s' % (self.id, self.name)
 
     def active_subscriptions(self):
-        return self.subscription_set.filter(q_activated & ~q_deactivated)
+        return self.subscription_set.filter(q_activated & ~q_deactivated).order_by('primary_member__first_name')
 
     @property
     def has_geo(self):
