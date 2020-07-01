@@ -164,7 +164,7 @@ def job(request, job_id):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
         reachable = participant.reachable_by_email is True or request.user.is_staff or \
-                    job.type.activityarea.coordinator == participant
+            job.type.activityarea.coordinator == participant
         participants_summary.append((name, contact_url, reachable, ' '.join(extras)))
         emails.append(participant.email)
 
