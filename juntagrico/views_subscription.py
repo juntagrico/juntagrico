@@ -288,10 +288,14 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # create new member from form data or update existing
-        co_member = form.instance
-        co_member.pk = getattr(getattr(form, 'existing_member', None), 'pk', None)
-        create_or_update_co_member(co_member, self.subscription, form.cleaned_data['shares'])
+        # add existing member
+        co_member = getattr(form, 'existing_member', None)
+        shares = 0
+        # or create new member and order shares for them
+        if co_member is None:
+            shares = form.cleaned_data['shares']
+            co_member = form.instance
+        create_or_update_co_member(co_member, self.subscription, shares)
         return self._done()
 
     def _done(self):
