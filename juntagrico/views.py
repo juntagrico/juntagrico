@@ -152,20 +152,21 @@ def job(request, job_id):
 
     participants_summary = []
     emails = []
-    for member in unique_participants:
-        name = '{} {}'.format(member.first_name, member.last_name)
-        if member.assignment_for_job == 2:
+    for participant in unique_participants:
+        name = '{} {}'.format(participant.first_name, participant.last_name)
+        if participant.assignment_for_job == 2:
             name += _(' (mit einer weiteren Person)')
-        elif member.assignment_for_job > 2:
-            name += _(' (mit {} weiteren Personen)').format(member.assignment_for_job - 1)
-        contact_url = '/my/contact/member/{}/{}/'.format(member.id, job_id)
+        elif participant.assignment_for_job > 2:
+            name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
+        contact_url = '/my/contact/member/{}/{}/'.format(participant.id, job_id)
         extras = []
-        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):
+        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
-        reachable = member.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == member
+        reachable = participant.reachable_by_email is True or request.user.is_staff or \
+                    job.type.activityarea.coordinator == participant
         participants_summary.append((name, contact_url, reachable, ' '.join(extras)))
-        emails.append(member.email)
+        emails.append(participant.email)
 
     slotrange = list(range(0, job.slots))
     allowed_additional_participants = list(
@@ -180,7 +181,9 @@ def job(request, job_id):
     renderdict = get_menu_dict(request)
     renderdict['messages'].extend(job_messages(request, job))
     renderdict.update({
-        'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
+        'can_contact':
+            request.user.has_perm('juntagrico.can_send_mails') or
+            (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
         'emails': '\n'.join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
