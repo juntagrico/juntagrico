@@ -64,6 +64,8 @@ urlpatterns = [
     path('my/extra/deactivate/<int:extra_id>/', juntagrico_subscription.deactivate_extra, name='extra-deactivate'),
     path('my/extra/cancel/<int:extra_id>/<int:subscription_id>/', juntagrico_subscription.cancel_extra,
          name='extra-cancel'),
+    path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
+         name='part-cancel'),
     path('my/order/share/', juntagrico_subscription.order_shares, name='share-order'),
     path('my/order/share/success', juntagrico_subscription.order_shares_success, name='share-order-success'),
     path('my/payout/share/<int:share_id>/', juntagrico_subscription.payout_share, name='share-payout'),

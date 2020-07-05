@@ -5,7 +5,7 @@
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
-        {% blocktrans %}{{ v_subscription }}-Grösse ändern{% endblocktrans %}
+        {% blocktrans %}{{ v_subscription }}-Bestandteile ändern{% endblocktrans %}
     </h3>
 {% endblock %}
 {% block content %}
@@ -13,26 +13,66 @@
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
     {% vocabulary "share_pl" as v_share_pl %}
-    {% if saved %}
-        <div class="alert alert-success">
-            {% blocktrans %}Die {{ v_subscription }}-Grösse wurde erfolgreich geändert.{% endblocktrans %}
-            <br/>
-            <a href="{% url 'sub-detail' %}" class="alert-link">
-                {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
-            </a>
-        </div>
-    {% else %}
-        {% crispy form %}
 
-        {% if subscription.state != 'canceled' and  subscription.state != 'inactive' %}
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    <a href="{% url 'sub-cancel' subscription.id %}"class="btn btn-danger">
-                        {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
-                    </a>
-                </div>
+    <div class="row mb-3">
+        <h4>{% trans "Bestandteile verwalten" %}</h4>
+    </div>
+    <div class="row">
+        <table class="table subscription-table">
+            <thead>
+                <tr>
+                    <th>
+                        {% trans "Grösse" %}
+                    </th>
+                    <th>
+                        {% trans "Status" %}
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for part in subscription.active_and_future_parts.all %}
+                    <tr>
+                        <td>
+                            {{ part.type.size.name }}
+                        </td>
+                        <td>
+                            {{ part.state_text }}
+                        </td>
+                        <td>
+                            {% if part.active and part.can_cancel %}
+                                <a href="{% url 'part-cancel' part.id subscription.id %}"class="btn btn-success"
+                                onclick="return confirm('{% trans "Möchtest du sicher deiesen Bestandteil verbindlich künden?" %}')">
+                                    {% trans "kündigen" %}
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row mt-5 mb-3">
+        <h4>{% trans "Bestandteile bestellen" %}</h4>
+    </div>
+
+    {% crispy form %}
+
+
+
+    <div class="row mt-5 mb-3">
+        <b>{% blocktrans %}{{ v_subscription }} künden{% endblocktrans %}</b>
+    </div>
+    {% if subscription.state != 'canceled' and subscription.state != 'inactive' %}
+        <div class="row">
+            <div class="col-md-12">
+                <a href="{% url 'sub-cancel' subscription.id %}" class="btn btn-danger">
+                    {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                </a>
             </div>
-        {% endif %}
+        </div>
     {% endif %}
 {% endblock %}
 {% block scripts %}

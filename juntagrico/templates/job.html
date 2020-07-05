@@ -166,7 +166,7 @@
                 {% trans "Ich trage mich ein" %}:
             </div>
             <div class="col-md-3">
-                <form action="" method="POST"onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
+                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}
                         <div>
