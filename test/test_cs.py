@@ -49,7 +49,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
 
     def testWelcome(self):
         response = self.client.get(reverse('welcome'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def testSignup(self):
         self.member.user.user_permissions.add(
@@ -105,7 +105,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertRedirects(response, reverse('cs-summary'))
         # confirm summary
         response = self.client.post(reverse('cs-summary'))
-        self.assertRedirects(response, reverse('welcome'))
+        self.assertRedirects(response, reverse('welcome-with-sub'))
         self.assertEqual(Member.objects.filter(email=new_member_data['email']).count(), 1)
         self.assertEqual(Share.objects.filter(member__email=new_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(primary_member__email=new_member_data['email']).count(), 1)
