@@ -37,11 +37,13 @@ class MemberDao:
 
     @staticmethod
     def members_for_future_subscription(subscription):
-        return Member.objects.filter((Q(subscription=None) | Q(subscription__canceled=True)) & Q(future_subscription=None) | Q(future_subscription=subscription))
+        return Member.objects.filter((Q(subscription=None) | Q(subscription__cancellation_date__isnull=False))
+                                     & Q(future_subscription=None) | Q(future_subscription=subscription))
 
     @staticmethod
     def members_for_create_subscription():
-        return Member.objects.filter((Q(subscription=None) | Q(subscription__canceled=True)) & Q(future_subscription=None))
+        return Member.objects.filter((Q(subscription=None) | Q(subscription__cancellation_date__isnull=False))
+                                     & Q(future_subscription=None))
 
     @staticmethod
     def members_for_email():
@@ -49,7 +51,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_subscription():
-        return Member.objects.exclude(subscription=None).filter(subscription__active=True).exclude(inactive=True)
+        return Member.objects.exclude(subscription=None).filter(subscription__activation_date__isnull=False).exclude(inactive=True)
 
     @staticmethod
     def members_for_email_with_shares():
