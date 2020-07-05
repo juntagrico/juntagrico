@@ -3,5 +3,3 @@ def chainable(func):
         func(*args, **kwargs)
         return args[0]
     return wrapper
-
-
