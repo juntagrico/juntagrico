@@ -52,7 +52,7 @@ def migrate_parts(apps, schema_editor):
 def create_a_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
-                      creation_date = sub.activation_date,
+                      creation_date=sub.creation_date,
                       activation_date=sub.activation_date,
                       cancellation_date=sub.cancelation_date,
                       deactivation_date=sub.deactivation_date)
@@ -61,7 +61,7 @@ def create_a_part(part_class, sub, type):
 def create_c_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
-                      creation_date = sub.activation_date,
+                      creation_date=sub.creation_date,
                       activation_date=sub.activation_date,
                       cancellation_date=timezone.now().date(),
                       deactivation_date=sub.deactivation_date)
@@ -70,6 +70,7 @@ def create_c_part(part_class, sub, type):
 def create_w_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
+                      creation_date=sub.creation_date,
                       activation_date=None,
                       cancellation_date=None,
                       deactivation_date=None)
