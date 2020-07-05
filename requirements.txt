@@ -1,6 +1,6 @@
-Django==3.0.7
+Django==3.0.8
 django-crispy-forms==1.9.1
-django-impersonate==1.5
+django-impersonate==1.5.1
 django-polymorphic==2.1.2
 ics==0.7
 schwifty==2020.5.3
