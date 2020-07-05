@@ -15,9 +15,9 @@ script:
 after_script:
   - coverage xml
   - ls -la
-  - ./cc-test-reporter format-coverage -t coverage.py
+  - ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
   - ls -la
-  - ./cc-test-reporter upload-coverage
+  - ./cc-test-reporter upload-coverage -p coverageupload
   - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 env:
   global:
