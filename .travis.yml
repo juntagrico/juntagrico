@@ -1,19 +1,22 @@
 dist: xenial
 language: python
 python:
-- '3.8'
+  - '3.8'
 install:
-- pip install --upgrade -r requirements.txt
-- pip install coverage django_coverage_plugin
+  - pip install --upgrade -r requirements.txt
+  - pip install coverage django_coverage_plugin
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-- django-admin.py makemigrations
-- coverage run ./manage.py test
+  - django-admin.py makemigrations
+  - coverage run ./manage.py test
 after_script:
   - coverage xml
+  - pwd
+  - echo $TRAVIS_TEST_RESULT
+  - cat $TRAVIS_TEST_RESULT
   - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 env:
   global:
