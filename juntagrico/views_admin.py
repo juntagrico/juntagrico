@@ -380,7 +380,7 @@ def typechangelist(request):
     changedlist = []
     subscriptions_list = SubscriptionDao.all_active_subscritions()
     for subscription in subscriptions_list:
-        if subscription.types_changed:
+        if subscription.types_changed > 0:
             changedlist.append(subscription)
     return subscription_management_list(changedlist, render_dict, 'management_lists/typechangelist.html', request)
 

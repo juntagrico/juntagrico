@@ -116,8 +116,6 @@ class AbstractJobType(JuntagricoBaseModel):
         return self.name
 
     class Meta:
-        verbose_name = _('AbstractJobart')
-        verbose_name_plural = _('AbstractJobarten')
         abstract = True
 
 

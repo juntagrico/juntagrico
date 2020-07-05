@@ -80,6 +80,7 @@ class Command(BaseCommand):
 
         contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
         print(get_email_content('j_reminder', base_dict({
+            'contact': contact,
             'job': job,
             'participants': ", ".join([str(member), str(co_member)])
         })))

@@ -287,7 +287,7 @@ class SubscriptionTypeField(Field):
         return super().render(*args, extra_context=extra_context, **kwargs)
 
 
-class SubscriptionTypeBaseForm(Form):
+class SubscriptionPartBaseForm(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -321,7 +321,7 @@ class SubscriptionTypeBaseForm(Form):
         }
 
 
-class SubscriptionTypeSelectForm(SubscriptionTypeBaseForm):
+class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
     def __init__(self, selected, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.selected = selected
@@ -345,28 +345,29 @@ class SubscriptionTypeSelectForm(SubscriptionTypeBaseForm):
         return 0
 
 
-class SubscriptionTypeEditForm(SubscriptionTypeBaseForm):
-    def __init__(self, subscription, *args, **kwargs):
+class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
+    def __init__(self, subscription=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.subscription = subscription
         self.helper.layout = Layout(
             *self._collect_type_fields(),
             FormActions(
-                Submit('submit', _('{}-Grösse ändern').format(Config.vocabulary('subscription')),
+                Submit('submit', _('{}-Bestandteile bestellen').format(Config.vocabulary('subscription')),
                        css_class='btn-success')
             )
         )
 
     def _get_initial(self, subscription_type):
-        if self.subscription.pk:
-            return self.subscription.future_amount_by_type(subscription_type.id)
         return 0
 
     def clean(self):
         selected = self.get_selected()
         # check if members in subscription have sufficient shares
-        if self.subscription.all_shares < sum([sub_type.shares * amount for sub_type, amount in selected.items()]):
-            share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Grösse!{}').format(
+        available_shares = self.subscription.all_shares
+        new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
+        existing_required_shares = self.subscription.required_shares
+        if available_shares < new_required_shares + existing_required_shares:
+            share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Bestandteile!{}').format(
                 Config.vocabulary('share_pl'),
                 '<br/><a href="{}" class="alert-link">{}</a>'.format(
                     reverse('share-order'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))

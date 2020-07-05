@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
-from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.entity import JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 
 
@@ -52,16 +52,12 @@ class ExtraSubscriptionCategory(JuntagricoBaseModel):
         verbose_name_plural = _('Zusatz-Abo-Kategorien')
 
 
-class ExtraSubscription(Billable):
+class ExtraSubscription(Billable, SimpleStateModel):
     '''
     The actiual extra subscription
     '''
     main_subscription = models.ForeignKey('Subscription', related_name='extra_subscription_set',
                                           on_delete=models.PROTECT)
-    active = models.BooleanField(default=False)
-    canceled = models.BooleanField(_('gekündigt'), default=False)
-    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
-    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
     type = models.ForeignKey(ExtraSubscriptionType, related_name='extra_subscriptions', null=False, blank=False,
                              on_delete=models.PROTECT)
 
@@ -72,17 +68,6 @@ class ExtraSubscription(Billable):
         if period is not None:
             return timezone.now().date() <= period.get_actual_cancel()
         return False
-
-    @property
-    def state(self):
-        if self.active is False and self.deactivation_date is None:
-            return _('wartend')
-        elif self.active is True and self.canceled is False:
-            return _('aktiv')
-        elif self.active is True and self.canceled is True:
-            return _('aktiv - gekündigt')
-        elif self.active is False and self.deactivation_date is not None:
-            return _('inaktiv-gekündigt')
 
     def __str__(self):
         return '%s %s' % (self.id, self.type.name)
