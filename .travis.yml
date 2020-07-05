@@ -13,6 +13,7 @@ script:
   - django-admin.py makemigrations
   - coverage run ./manage.py test
 after_script:
+  - coverage xml
   - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter format-coverage -t coverage.py -o coverageupload; cat coverageupload; ./cc-test-reporter upload-coverage -i coverageupload;fi
 env:
   global:
