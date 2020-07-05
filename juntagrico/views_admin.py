@@ -24,7 +24,7 @@ from juntagrico.entity.share import Share
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location
-from juntagrico.util.decorators import any_permission_required
+from juntagrico.view_decorators import any_permission_required
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.subs import subscriptions_with_assignments
