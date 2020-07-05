@@ -14,7 +14,7 @@ script:
   - coverage run ./manage.py test
 after_script:
   - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
-  - cat coverage/coverage.json
+  - ls -la
 env:
   global:
   - PYTHONPATH=.
