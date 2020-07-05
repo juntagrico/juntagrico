@@ -4,23 +4,18 @@ python:
 - '3.8'
 install:
 - pip install --upgrade -r requirements.txt
-- pip install --upgrade coverage==4.3
-- pip install codeclimate-test-reporter
+- pip install coverage django_coverage_plugin
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 script:
 - django-admin.py makemigrations
 - django-admin.py test
-- which django-admin.py
-- coverage run /home/travis/virtualenv/python3.8.0/bin/django-admin.py test
-- pwd
-- ls -la
-- codeclimate-test-reporter --token 89d74b27f8d96964e6842103d41e4d361f63da1bf3e9f7820454ed4778bffb7e
-after_success:
-- git status
-- git add . *.po
-- git status
-- git remote -v
-- git diff
-- git remote add gettext https://${GH_TOKEN}@github.com/juntagrico/juntagrico.git
+- coverage run ./manage.py test
+after_script:
+  - coverage xml
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 env:
   global:
   - PYTHONPATH=.
