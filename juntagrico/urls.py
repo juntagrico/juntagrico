@@ -64,6 +64,8 @@ urlpatterns = [
     path('my/extra/deactivate/<int:extra_id>/', juntagrico_subscription.deactivate_extra, name='extra-deactivate'),
     path('my/extra/cancel/<int:extra_id>/<int:subscription_id>/', juntagrico_subscription.cancel_extra,
          name='extra-cancel'),
+    path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
+         name='part-cancel'),
     path('my/order/share/', juntagrico_subscription.order_shares, name='share-order'),
     path('my/order/share/success', juntagrico_subscription.order_shares_success, name='share-order-success'),
     path('my/payout/share/<int:share_id>/', juntagrico_subscription.payout_share, name='share-payout'),
@@ -81,11 +83,13 @@ urlpatterns = [
     path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),
     path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),
     path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),
+    path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),
     path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),  #
     path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),  #
     path('my/mails', juntagrico_admin.mails, name='mail'),  #
     path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),
     path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),
+    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),
     path('my/filters', juntagrico_admin.filters, name='filters'),
     path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),
     path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),

@@ -16,12 +16,12 @@ def sub_post_save(sender, instance, created, **kwargs):
 def sub_pre_save(sender, instance, **kwargs):
     check_sub_consistency(instance)
     handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
-    if instance._old['canceled'] != instance.canceled:
+    if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
         sub_canceled.send(sender=sender, instance=instance)
 
 
 def handle_sub_activated(sender, instance, **kwargs):
-    instance.activation_date = instance.activation_date if instance.activation_date is not None else timezone.now().date()
+    instance.activation_date = instance.activation_date or timezone.now().date()
     for member in instance.recipients_all_for_state('waiting'):
         if member.subscription is not None:
             raise ValidationError(
@@ -34,7 +34,7 @@ def handle_sub_activated(sender, instance, **kwargs):
 
 
 def handle_sub_deactivated(sender, instance, **kwargs):
-    instance.deactivation_date = instance.deactivation_date if instance.deactivation_date is not None else timezone.now().date()
+    instance.deactivation_date = instance.deactivation_date or timezone.now().date()
     for member in instance.recipients_all_for_state('active'):
         member.old_subscriptions.add(instance)
         member.subscription = None
@@ -44,7 +44,7 @@ def handle_sub_deactivated(sender, instance, **kwargs):
 
 
 def handle_sub_canceled(sender, instance, **kwargs):
-    instance.cancelation_date = timezone.now().date()
+    instance.cancellation_date = instance.cancellation_date or timezone.now().date()
 
 
 def handle_sub_created(sender, instance, **kwargs):
@@ -52,7 +52,7 @@ def handle_sub_created(sender, instance, **kwargs):
 
 
 def check_sub_consistency(instance):
-    if instance._old['active'] != instance.active and instance._old['deactivation_date'] is not None:
+    if instance._old['deactivation_date'] is not None and instance.deactivation_date is None:
         raise ValidationError(
             _('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
             code='invalid')

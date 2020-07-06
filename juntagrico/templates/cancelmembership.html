@@ -55,7 +55,7 @@
     <div class="row mb-3">
         <div class="col-md-12">
             {% if can_cancel %}
-                <form action="" method="post">
+                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du sicher deine Mitgliedschaft verbindlich künden?" %}')">
                     {% csrf_token %}
                     <div class="form-group row">
                         <label class="col-md-3" for="message">

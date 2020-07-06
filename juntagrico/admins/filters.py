@@ -21,4 +21,3 @@ class FutureDateTimeFilter(DateFieldListFilter):
                 self.lookup_kwarg_until: str(today + datetime.timedelta(days=7)),
             }),
         ) + self.links[1:]
-        print(self.links)
