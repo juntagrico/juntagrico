@@ -14,10 +14,7 @@ script:
   - coverage run ./manage.py test
 after_script:
   - coverage xml
-  - pwd
-  - echo $TRAVIS_TEST_RESULT
-  - cat $TRAVIS_TEST_RESULT
-  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter format-coverage -t coverage.py -o coverageupload; cat coverageupload; ./cc-test-reporter upload-coverage -i coverageupload;fi
 env:
   global:
   - PYTHONPATH=.
