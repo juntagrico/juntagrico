@@ -18,6 +18,10 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
 
 
 def new_signup(signup_data):
+    """ create all elements from data collected during the signup process
+    :param signup_data: a CSSessionObject
+    :return the main member
+    """
     # create member (or get existing)
     member, creation_data = create_or_update_member(signup_data.main_member)
 
@@ -36,6 +40,8 @@ def new_signup(signup_data):
     # send notifications
     if creation_data['created']:
         membernotification.welcome(member, creation_data['password'])
+
+    return member
 
 
 def create_or_update_co_member(co_member, subscription, new_shares):
