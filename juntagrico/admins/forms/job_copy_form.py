@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from django.utils.timezone import localtime
+from django.utils.timezone import get_default_timezone as gdtz, localtime, is_naive
 from django.utils.translation import gettext as _
 
 from juntagrico.entity.jobs import RecuringJob
@@ -35,7 +35,10 @@ class JobCopyForm(forms.ModelForm):
 
         self.fields['start_date'].initial = inst.time.date() + \
             datetime.timedelta(days=1)
-        self.fields['time'].initial = localtime(inst.time)
+        if is_naive(inst.time):
+            self.fields['time'].initial = gdtz().localize(inst.time)
+        else:
+            self.fields['time'].initial = localtime(inst.time)
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
 
     def clean(self):

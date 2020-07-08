@@ -4,11 +4,22 @@ import itertools
 from django.db import migrations
 from django.utils import timezone
 
+from juntagrico.util.temporal import start_of_specific_business_year
+
 
 def migrate_parts(apps, schema_editor):
     Subscription = apps.get_model('juntagrico', 'Subscription')
     SubscriptionPart = apps.get_model('juntagrico', 'SubscriptionPart')
     for sub in Subscription.objects.all():
+        # activation date missing
+        if (sub.active or sub.deactivation_date is not None) and sub.activation_date is None:
+            if sub.start_date is not None:
+                sub.activation_date = sub.start_date
+            else:
+                start_date = sub.creation_date
+                start_date.year += 1
+                sub.activation_date = start_of_specific_business_year(start_date)
+        # cancellation date missing
         if sub.cancelation_date is None and sub.deactivation_date is not None:
             sub.cancelation_date = sub.deactivation_date
         elif sub.canceled  and sub.cancelation_date is None:
@@ -41,7 +52,7 @@ def migrate_parts(apps, schema_editor):
 def create_a_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
-                      creation_date = sub.activation_date,
+                      creation_date=sub.creation_date,
                       activation_date=sub.activation_date,
                       cancellation_date=sub.cancelation_date,
                       deactivation_date=sub.deactivation_date)
@@ -50,7 +61,7 @@ def create_a_part(part_class, sub, type):
 def create_c_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
-                      creation_date = sub.activation_date,
+                      creation_date=sub.creation_date,
                       activation_date=sub.activation_date,
                       cancellation_date=timezone.now().date(),
                       deactivation_date=sub.deactivation_date)
@@ -59,6 +70,7 @@ def create_c_part(part_class, sub, type):
 def create_w_part(part_class, sub, type):
     return part_class(subscription=sub,
                       type=type,
+                      creation_date=sub.creation_date,
                       activation_date=None,
                       cancellation_date=None,
                       deactivation_date=None)

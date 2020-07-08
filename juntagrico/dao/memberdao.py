@@ -80,7 +80,7 @@ class MemberDao:
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
         now = timezone.now()
-        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
+        start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
         return members.annotate(assignment_count=Sum(
             Case(When(assignment__job__time__gte=start, assignment__job__time__lt=now, then='assignment__amount')))).annotate(
             core_assignment_count=Sum(Case(
