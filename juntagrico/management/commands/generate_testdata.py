@@ -80,9 +80,9 @@ class Command(BaseCommand):
         area_2.members.set([member_1])
         area_2.save()
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
-                        'duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': 'auf dem Hof'}
         type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
-                        'duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': 'auf dem Hof'}
         type_1 = JobType.objects.create(**type1_fields)
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,

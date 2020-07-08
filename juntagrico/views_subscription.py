@@ -286,10 +286,14 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # create new member from form data or update existing
-        co_member = form.instance
-        co_member.pk = getattr(getattr(form, 'existing_member', None), 'pk', None)
-        create_or_update_co_member(co_member, self.subscription, form.cleaned_data['shares'])
+        # add existing member
+        co_member = getattr(form, 'existing_member', None)
+        shares = 0
+        # or create new member and order shares for them
+        if co_member is None:
+            shares = form.cleaned_data['shares']
+            co_member = form.instance
+        create_or_update_co_member(co_member, self.subscription, shares)
         return self._done()
 
     def _done(self):
@@ -302,6 +306,8 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
+        for part in subscription.future_parts.all():
+            part.activate(change_date)
     except ValidationError:
         renderdict = get_menu_dict(request)
         return render(request, 'activation_error.html', renderdict)
@@ -315,6 +321,10 @@ def deactivate_subscription(request, subscription_id):
     subscription.deactivate(change_date)
     for extra in subscription.extra_subscription_set.all():
         extra.deactivate(change_date)
+    for part in subscription.active_parts.all():
+        part.deactivate(change_date)
+    for part in subscription.future_parts.all():
+        part.delete()
     return return_to_previous_location(request)
 
 
@@ -333,7 +343,7 @@ def activate_future_types(request, subscription_id):
 
 @primary_member_of_subscription
 def cancel_part(request, part_id, subscription_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=part_id)
     if part.activation_date is None:
         part.delete()
     else:
@@ -349,6 +359,10 @@ def cancel_subscription(request, subscription_id):
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
             cancel_extra_sub(extra)
+        for part in subscription.active_parts.all():
+            part.cancel()
+        for part in subscription.future_parts.all():
+            part.delete()
         cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
     renderdict = get_menu_dict(request)
@@ -405,7 +419,7 @@ def deactivate_extra(request, extra_id):
 
 @primary_member_of_subscription
 def cancel_extra(request, extra_id, subscription_id):
-    extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    extra = get_object_or_404(ExtraSubscription, subscription__id=subscription_id, id=extra_id)
     if extra.activation_date is None:
         extra.delete()
     else:

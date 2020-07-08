@@ -12,7 +12,7 @@ from juntagrico.util.models import attribute_copy
 
 class JobTypeAdmin(BaseAdmin):
     list_display = ['__str__', 'activityarea',
-                    'duration', 'location', 'visible']
+                    'default_duration', 'location', 'visible']
     list_filter = ('activityarea', 'visible')
     actions = ['transform_job_type']
     inlines = [JobExtraInline]

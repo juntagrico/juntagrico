@@ -75,19 +75,22 @@ urlpatterns = [
     path('my/create/subscription/addmembers/', juntagrico_cs.CSAddMemberView.as_view(), name='cs-co-members'),
     path('my/create/subscription/shares/', juntagrico_cs.CSSelectSharesView.as_view(), name='cs-shares'),
     path('my/create/subscription/summary/', juntagrico_cs.CSSummaryView.as_view(), name='cs-summary'),
-    path('my/create/subscription/cancel/', juntagrico_cs.cs_finish, {'cancelled': True}, name='cs-cancel'),
+    path('my/create/subscription/cancel/', juntagrico_cs.cs_cancel, name='cs-cancel'),
     path('my/welcome/', juntagrico_cs.cs_welcome, name='welcome'),
+    path('my/welcome/with_sub', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
 
     # admin related juntagrico stuff
     path('my/changedate', juntagrico_admin.set_change_date, name='changedate-set'),
     path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),
     path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),
     path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),
+    path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),
     path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),  #
     path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),  #
     path('my/mails', juntagrico_admin.mails, name='mail'),  #
     path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),
     path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),
+    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),
     path('my/filters', juntagrico_admin.filters, name='filters'),
     path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),
     path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),
