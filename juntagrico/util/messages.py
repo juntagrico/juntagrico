@@ -46,3 +46,8 @@ def job_messages(request, job):
     if len(allowed_additional_participants) == 0 and not job.canceled:
         result.append(get_template('messages/job_fully_booked.html').render())
     return result
+
+
+def error_message(request):
+    result = [get_template('messages/error.html').render()]
+    return result
