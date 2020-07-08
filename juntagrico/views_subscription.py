@@ -306,6 +306,8 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
+        for part in subscription.future_parts.all():
+            part.activate(change_date)
     except ValidationError:
         renderdict = get_menu_dict(request)
         return render(request, 'activation_error.html', renderdict)
@@ -319,6 +321,10 @@ def deactivate_subscription(request, subscription_id):
     subscription.deactivate(change_date)
     for extra in subscription.extra_subscription_set.all():
         extra.deactivate(change_date)
+    for part in subscription.active_parts.all():
+        part.deactivate(change_date)
+    for part in subscription.future_parts.all():
+        part.delete()
     return return_to_previous_location(request)
 
 
@@ -353,6 +359,10 @@ def cancel_subscription(request, subscription_id):
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
             cancel_extra_sub(extra)
+        for part in subscription.active_parts.all():
+            part.cancel()
+        for part in subscription.future_parts.all():
+            part.delete()
         cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
     renderdict = get_menu_dict(request)
