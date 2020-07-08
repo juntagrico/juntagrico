@@ -34,10 +34,8 @@ class ActivityArea(JuntagricoBaseModel):
     def contact(self):
         if self.show_coordinator_phonenumber is True:
             return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
-        elif self.email is not None:
-            return self.email
         else:
-            return self.coordinator.email
+            return self.get_email()
 
     def get_email(self):
         if self.email is not None:
@@ -120,8 +118,6 @@ class AbstractJobType(JuntagricoBaseModel):
         return self.name
 
     class Meta:
-        verbose_name = _('AbstractJobart')
-        verbose_name_plural = _('AbstractJobarten')
         abstract = True
 
 

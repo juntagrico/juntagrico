@@ -62,7 +62,7 @@ class Config:
     )
     share_price = _get_setting('SHARE_PRICE', '250')
     business_regulations = _get_setting('BUSINESS_REGULATIONS')
-    bylaws = _get_setting('BUSINESS_REGULATIONS')
+    bylaws = _get_setting('BYLAWS')
     gdpr_info = _get_setting('GDPR_INFO')
     faq_doc = _get_setting('FAQ_DOC')
     extra_sub_info = _get_setting('EXTRA_SUB_INFO')

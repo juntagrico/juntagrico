@@ -6,15 +6,15 @@
 {% trans "Nicht vergessen" %}:
 
 {% blocktrans trimmed with jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
-Am {{ jt }}-{{ jet }} findet dein {{ c }}-Arbeitseinsatz "{{ jtg }}" statt.
+Am {{ jt }}-{{ jet }} findet dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" statt.
 {% endblocktrans %}
 
 {% trans "Details" %}:
 
 {% trans "Job" %}:             {{ job.type.description }}
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-{% trans "Teilnehmer" %}:        {{ participants }}
-{% trans "Verantwortlich" %}:  {{ contact }}
+{% trans "Teilnehmer" %}:      {{ participants }}
+{% trans "Verantwortlich" %}:  {{ job.type.activityarea.coordinator }}: {{ job.type.activityarea.contact }}
 {% blocktrans trimmed %}
 Wir freuen uns, dich zu sehen und zählen auf dich!
 {% endblocktrans %}

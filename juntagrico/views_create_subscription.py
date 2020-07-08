@@ -6,7 +6,7 @@ from django.views.generic.edit import ModelFormMixin
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, SubscriptionTypeSelectForm
+    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import create_subscription_session
 from juntagrico.util.management import new_signup
@@ -15,12 +15,12 @@ from juntagrico.util.management import new_signup
 @create_subscription_session
 def cs_select_subscription(request, cs_session):
     if request.method == 'POST':
-        form = SubscriptionTypeSelectForm(cs_session.subscriptions, request.POST)
+        form = SubscriptionPartSelectForm(cs_session.subscriptions, request.POST)
         if form.is_valid():
             cs_session.subscriptions = form.get_selected()
             return redirect(cs_session.next_page())
     else:
-        form = SubscriptionTypeSelectForm(cs_session.subscriptions)
+        form = SubscriptionPartSelectForm(cs_session.subscriptions)
 
     render_dict = {
         'form': form,
@@ -200,28 +200,21 @@ class CSSummaryView(TemplateView):
     @staticmethod
     def post(request, cs_session):
         # handle new signup
-        new_signup(cs_session)
+        member = new_signup(cs_session.pop())
         # finish registration
-        return cs_finish(request)
+        if member.future_subscription is None:
+            return redirect('welcome')
+        return redirect('welcome-with-sub')
+
+
+def cs_welcome(request, with_sub=False):
+    return render(request, 'welcome.html', {'no_subscription': not with_sub})
 
 
 @create_subscription_session
-def cs_finish(request, cs_session, cancelled=False):
-    if request.user.is_authenticated:
-        cs_session.clear()
-        return redirect('sub-detail')
-    elif cancelled:
-        cs_session.clear()
-        return redirect('http://' + Config.server_url())
-    else:
-        # keep session for welcome message
-        return redirect('welcome')
-
-
-@create_subscription_session
-def cs_welcome(request, cs_session):
-    render_dict = {
-        'no_subscription': cs_session.main_member.future_subscription is None
-    }
+def cs_cancel(request, cs_session):
     cs_session.clear()
-    return render(request, 'welcome.html', render_dict)
+    if request.user.is_authenticated:
+        return redirect('sub-detail')
+    else:
+        return redirect('http://' + Config.server_url())

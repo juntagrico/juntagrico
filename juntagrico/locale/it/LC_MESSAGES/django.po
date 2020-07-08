@@ -1143,7 +1143,7 @@ msgid "Beende dies hier"
 msgstr "Finisci qui"
 
 #: .\juntagrico\templates\cancelmembership.html:6
-msgid "Künde deine Migliedshaft"
+msgid "Künde deine Mitgliedschaft"
 msgstr "Annuncia la tua iscrizione"
 
 #: .\juntagrico\templates\cancelmembership.html:17
@@ -1192,7 +1192,7 @@ msgid "Hier Nachricht eingeben"
 msgstr "Inserire qui il messaggio"
 
 #: .\juntagrico\templates\cancelmembership.html:71
-msgid "Migliedshaft künden"
+msgid "Mitgliedschaft künden"
 msgstr "rassegnare le dimissioni"
 
 #: .\juntagrico\templates\cancelmembership.html:77

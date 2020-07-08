@@ -3,15 +3,15 @@ from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext as _
 
+from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.config import Config
-from juntagrico.entity.subs import Subscription
 
 
-class SubscriptionTypeInlineFormset(BaseInlineFormSet):
+class SubscriptionPartInlineFormset(BaseInlineFormSet):
     def clean(self):
         required_shares = 0
         for form in self.forms:
-            if form.instance.pk:
+            if form.instance.deactivation_date is None and not form.cleaned_data.get('DELETE', True):
                 required_shares += form.instance.type.shares
         available_shares = sum([member.active_shares_count for member in self.instance._future_members])
         if required_shares > available_shares:
@@ -22,17 +22,9 @@ class SubscriptionTypeInlineFormset(BaseInlineFormSet):
                 code='invalid')
 
 
-class SubscriptionTypeInline(admin.TabularInline):
-    formset = SubscriptionTypeInlineFormset
-    model = Subscription.types.through
-    verbose_name = _('{0}-Typ').format(Config.vocabulary('subscription'))
-    verbose_name_plural = _('{0}-Typen').format(Config.vocabulary('subscription'))
-    extra = 0
-
-
-class FutureSubscriptionTypeInline(admin.TabularInline):
-    formset = SubscriptionTypeInlineFormset
-    model = Subscription.future_types.through
-    verbose_name = _('Zukunft {0}-Typ').format(Config.vocabulary('subscription'))
-    verbose_name_plural = _('Zukunft {0}-Typen').format(Config.vocabulary('subscription'))
+class SubscriptionPartInline(admin.TabularInline):
+    formset = SubscriptionPartInlineFormset
+    model = SubscriptionPart
+    verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
+    verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
     extra = 0
