@@ -470,6 +470,18 @@ DEFAULT_MAILER
 
     'juntagrico.util.defaultmailer.Mailer'
 
+
+FROM_FILTER
+-----------
+  Consisting of a regular expression and a default replacement. If the regular expression does not match the default replacement is used, and the orogonal from is set as reply to
+
+  default value
+
+  .. code-block:: python
+    {
+        'filter_expression': '.*',
+        'replacement_from': ''
+    }
 COOKIE_CONSENT
 -----------
   The text, confirm text, link text and url of the cookie consent
