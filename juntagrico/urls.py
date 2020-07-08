@@ -75,8 +75,9 @@ urlpatterns = [
     path('my/create/subscription/addmembers/', juntagrico_cs.CSAddMemberView.as_view(), name='cs-co-members'),
     path('my/create/subscription/shares/', juntagrico_cs.CSSelectSharesView.as_view(), name='cs-shares'),
     path('my/create/subscription/summary/', juntagrico_cs.CSSummaryView.as_view(), name='cs-summary'),
-    path('my/create/subscription/cancel/', juntagrico_cs.cs_finish, {'cancelled': True}, name='cs-cancel'),
+    path('my/create/subscription/cancel/', juntagrico_cs.cs_cancel, name='cs-cancel'),
     path('my/welcome/', juntagrico_cs.cs_welcome, name='welcome'),
+    path('my/welcome/with_sub', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
 
     # admin related juntagrico stuff
     path('my/changedate', juntagrico_admin.set_change_date, name='changedate-set'),
