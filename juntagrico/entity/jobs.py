@@ -99,11 +99,13 @@ class AbstractJobType(JuntagricoBaseModel):
     '''
     Abstract type of job.
     '''
-    name = models.CharField(_('Name'), max_length=100, unique=True)
+    name = models.CharField(_('Name'), max_length=100, unique=True,
+                            help_text='Eindeutiger Name des Einsatzes')
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
-    duration = models.PositiveIntegerField(_('Dauer in Stunden'))
+    default_duration = models.PositiveIntegerField(_('Dauer in Stunden'),
+                                                   help_text='Standard-Dauer für diese Jobart')
     location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
@@ -166,8 +168,12 @@ class Job(JuntagricoBasePoly):
 
     free_slots.fget.short_description = _('Freie Plätze')
 
+    @property
+    def duration(self):
+        return self.type.default_duration
+
     def end_time(self):
-        return self.time + timezone.timedelta(hours=self.type.duration)
+        return self.time + timezone.timedelta(hours=self.duration)
 
     def start_time(self):
         return self.time
@@ -229,6 +235,14 @@ class Job(JuntagricoBasePoly):
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
     additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
+    duration_override = models.PositiveIntegerField(
+        _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None,
+        help_text=_('Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.')
+    )
+
+    @property
+    def duration(self):
+        return self.duration_override if self.duration_override else super().duration
 
     class Meta:
         verbose_name = _('Job')

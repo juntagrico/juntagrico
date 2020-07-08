@@ -42,7 +42,7 @@ def generate_ical_for_job(job):
     e.description = job.type.description
     # Using FORM 2: https://tools.ietf.org/html/rfc5545#section-3.3.5
     e.begin = job.start_time()
-    e.duration = {'hours': job.type.duration}
+    e.duration = {'hours': job.duration}
     e.extra.append(ContentLine(name=f"ORGANIZER;CN={Config.organisation_name()}",
                                value=f"mailto:{job.type.activityarea.get_email()}"))
     if job.canceled:
