@@ -336,6 +336,7 @@ def excel_export_members(request):
 @permission_required('juntagrico.is_operations_group')
 def excel_export_shares(request):
     fields = [
+        'id',
         'number',
         'paid_date',
         'issue_date',
