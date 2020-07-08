@@ -343,7 +343,7 @@ def activate_future_types(request, subscription_id):
 
 @primary_member_of_subscription
 def cancel_part(request, part_id, subscription_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part = get_object_or_404(SubscriptionPart,subscription__id=subscription_id, id=part_id)
     if part.activation_date is None:
         part.delete()
     else:
@@ -353,7 +353,7 @@ def cancel_part(request, part_id, subscription_id):
 
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
+    subscription = get_object_or_404(Subscription,subscription__id=subscription_id, id=subscription_id)
     now = timezone.now().date()
     end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
@@ -419,7 +419,7 @@ def deactivate_extra(request, extra_id):
 
 @primary_member_of_subscription
 def cancel_extra(request, extra_id, subscription_id):
-    extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    extra = get_object_or_404(ExtraSubscription, subscription__id=subscription_id, id=extra_id)
     if extra.activation_date is None:
         extra.delete()
     else:
