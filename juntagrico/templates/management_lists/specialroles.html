@@ -1,0 +1,55 @@
+{% extends "management_lists/specialroles_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    <h3>
+        {% trans "Special User Roles" %}
+    </h3>
+    <p>Lists users with the following special roles: admins, staff, members of groups.</p>
+{% endblock %}
+{% block list %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "User" %}
+                </th>
+                <th class="filter">
+                    {% trans "Superuser" %}
+                </th>
+                <th class="filter">
+                    {% trans "Staff" %}
+                </th>
+                <th class="filter">
+                    {% trans "Groups" %}
+                </th>
+                <th class="filter">
+                    {% trans "Active" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in specialuser_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:auth_user_change' user.id %}">
+                            {{ user.username }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if user.is_superuser %}Yes{% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_staff %}Yes{% endif %}
+                    </td>
+                    <td>
+                        {{ user.groups_str }}
+                    </td>
+                    <td>
+                        {% if user.is_active %}Yes{% else %}No{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

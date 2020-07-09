@@ -96,6 +96,7 @@ urlpatterns = [
     path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),  #
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #
+    path('my/specialroles', juntagrico_admin.specialroles, name='sub-mgmt-specialroles'),  #
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),  #
     path('my/typechangedlist', juntagrico_admin.typechangelist, name='sub-mgmt-changelist'),  #
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),  #
