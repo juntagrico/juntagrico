@@ -7,8 +7,8 @@ from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscrip
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType, TSST, TFSST
+from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
@@ -111,7 +111,7 @@ class JuntagricoTestCase(TestCase):
         """
         job_type_data = {'name': 'name',
                          'activityarea': self.area,
-                         'duration': 2}
+                         'default_duration': 2}
         self.job_type = JobType.objects.create(**job_type_data)
         """
         job_extra
@@ -144,7 +144,7 @@ class JuntagricoTestCase(TestCase):
         time = timezone.now() + timezone.timedelta(hours=2)
         one_time_job_data = {'name': 'name',
                              'activityarea': self.area,
-                             'duration': 2,
+                             'default_duration': 2,
                              'slots': 1,
                              'time': time}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
@@ -218,7 +218,6 @@ class JuntagricoTestCase(TestCase):
         """
         sub_data = {'depot': self.depot,
                     'future_depot': None,
-                    'active': True,
                     'activation_date': '2017-03-27',
                     'deactivation_date': None,
                     'creation_date': '2017-03-27',
@@ -226,7 +225,6 @@ class JuntagricoTestCase(TestCase):
                     }
         sub_data2 = {'depot': self.depot,
                      'future_depot': None,
-                     'active': False,
                      'activation_date': None,
                      'deactivation_date': None,
                      'creation_date': '2017-03-27',
@@ -244,8 +242,7 @@ class JuntagricoTestCase(TestCase):
         self.member2.save()
         self.sub2.primary_member = self.member2
         self.sub2.save()
-        TSST.objects.create(subscription=self.sub, type=self.sub_type)
-        TFSST.objects.create(subscription=self.sub, type=self.sub_type)
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
 
     def set_up_extra_sub(self):
         '''

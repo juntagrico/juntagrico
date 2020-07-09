@@ -2,29 +2,30 @@ from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
-from juntagrico.view_decorators import create_subscription_session
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm
+    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm
 from juntagrico.util import temporal
-from juntagrico.util.form_evaluation import selected_subscription_types
+from juntagrico.view_decorators import create_subscription_session
 from juntagrico.util.management import new_signup
 
 
 @create_subscription_session
 def cs_select_subscription(request, cs_session):
     if request.method == 'POST':
-        # create dict with subscription type -> selected amount
-        selected = selected_subscription_types(request.POST)
-        cs_session.subscriptions = selected
-        return redirect(cs_session.next_page())
+        form = SubscriptionPartSelectForm(cs_session.subscriptions, request.POST)
+        if form.is_valid():
+            cs_session.subscriptions = form.get_selected()
+            return redirect(cs_session.next_page())
+    else:
+        form = SubscriptionPartSelectForm(cs_session.subscriptions)
+
     render_dict = {
-        'selected_subscriptions': cs_session.subscriptions,
+        'form': form,
+        'subscription_selected': sum(form.get_selected().values()) > 0,
         'hours_used': Config.assignment_unit() == 'HOURS',
-        'products': SubscriptionProductDao.get_all(),
     }
     return render(request, 'createsubscription/select_subscription.html', render_dict)
 
@@ -199,28 +200,21 @@ class CSSummaryView(TemplateView):
     @staticmethod
     def post(request, cs_session):
         # handle new signup
-        new_signup(cs_session)
+        member = new_signup(cs_session.pop())
         # finish registration
-        return cs_finish(request)
+        if member.future_subscription is None:
+            return redirect('welcome')
+        return redirect('welcome-with-sub')
+
+
+def cs_welcome(request, with_sub=False):
+    return render(request, 'welcome.html', {'no_subscription': not with_sub})
 
 
 @create_subscription_session
-def cs_finish(request, cs_session, cancelled=False):
-    if request.user.is_authenticated:
-        cs_session.clear()
-        return redirect('sub-detail')
-    elif cancelled:
-        cs_session.clear()
-        return redirect('http://' + Config.server_url())
-    else:
-        # keep session for welcome message
-        return redirect('welcome')
-
-
-@create_subscription_session
-def cs_welcome(request, cs_session):
-    render_dict = {
-        'no_subscription': cs_session.main_member.future_subscription is None
-    }
+def cs_cancel(request, cs_session):
     cs_session.clear()
-    return render(request, 'welcome.html', render_dict)
+    if request.user.is_authenticated:
+        return redirect('sub-detail')
+    else:
+        return redirect('http://' + Config.server_url())
