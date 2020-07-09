@@ -210,6 +210,26 @@
             </a>
         </li>
     {% endif %}
+    {% if is_superuser %}
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#subadmin">
+                {% blocktrans %}Admin Tools{% endblocktrans %}
+                <i class="fas fa-angle-right">
+                </i>
+            </a>
+            <div class="collapse" id="subadmin">
+                <ul class="nav flex-column subadmin-menu">
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin-specialroles' %}">
+                                {% trans "Special Roles" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
     {% for menu in admin_menus %}
         {% include menu %}
     {% endfor %}
