@@ -1,0 +1,28 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load config %}
+{% block content %}
+{% config "enable_shares" as c_enable_shares %}
+{% config "info_email" as c_info_email %}
+{% config "faq_doc" as c_faq_doc %}
+{% config "organisation_name" as c_organisation_name %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% vocabulary "member_type" as v_member_type %}
+{% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
+
+{% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutze folgende Daten{% endblocktrans %}:
+{% trans "Email" %}: {{ member.email }}
+{% trans "Passwort" %}: {{ password }}
+{% blocktrans %}Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen.{% endblocktrans %}
+{% trans "Bestätigungslink" %}: {{ serverurl }}{% url 'confirm' member.get_hash %}
+
+{% if c_faq_doc.strip %}
+{% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ c_info_email }}.{% endblocktrans %}
+{% else %}
+{% blocktrans %}Für weitere Fragen schreibe eine Mail an {{ c_info_email }}.{% endblocktrans %}
+{% endif %}
+
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
+{% endblock %}

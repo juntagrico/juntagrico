@@ -1,9 +1,10 @@
 from django.conf.urls import url
-from django.contrib import admin, messages
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
+from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
@@ -13,6 +14,7 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 
 class JobAdmin(BaseAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
+    list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
@@ -67,12 +69,16 @@ class JobAdmin(BaseAdmin):
         return queryset_for_coordinator(self, request, 'type__activityarea__coordinator')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        kwargs = formfield_for_coordinator(request,
-                                           'type',
-                                           'juntagrico.is_area_admin',
-                                           JobTypeDao.types_by_coordinator)
+        if db_field.name == 'type':
+            kwargs['queryset'] = JobTypeDao.visible_types()
+            kwargs = formfield_for_coordinator(request,
+                                               db_field.name,
+                                               'type',
+                                               'juntagrico.is_area_admin',
+                                               JobTypeDao.visible_types_by_coordinator,
+                                               **kwargs)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def change_view(self, request, object_id, extra_context=None):
-        extra_context = extra_context_for_past_jobs(request,RecuringJob,object_id,extra_context)
+        extra_context = extra_context_for_past_jobs(request, RecuringJob, object_id, extra_context)
         return super().change_view(request, object_id, extra_context=extra_context)

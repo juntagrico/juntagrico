@@ -36,7 +36,7 @@
                     {% if operation_group %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-changelist' %}">
-                                {% trans "Grössen Änderungen" %}
+                                {% trans "Bestandteile Änderungen" %}
                             </a>
                         </li>
                     {% endif %}
@@ -68,6 +68,9 @@
                             </a>
                         </li>
                     {% endif %}
+                    {% for menu in admin_subscription_menus %}
+                        {% include menu %}
+                    {% endfor %}
                 </ul>
             </div>
         </li>

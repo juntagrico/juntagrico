@@ -19,7 +19,7 @@ class JobTests(JuntagricoTestCase):
 
     def testJobPost(self):
         self.assertPost(reverse('job', args=[self.job1.pk]), {'jobs': 1}, 302)
-        self.assertEqual(self.job1.free_slots(), 0)
+        self.assertEqual(self.job1.free_slots, 0)
         self.assertEqual(self.job1.assignment_set.first().amount, 1)
 
     def testJobExtras(self):

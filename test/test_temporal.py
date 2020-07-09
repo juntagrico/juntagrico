@@ -1,6 +1,8 @@
 from datetime import date
 
 from django.test import TestCase
+from django.utils import timezone
+from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.util.temporal import start_of_business_year
 from juntagrico.util.temporal import start_of_specific_business_year,\
@@ -10,7 +12,7 @@ from juntagrico.util.temporal import start_of_specific_business_year,\
 class BusinessYearTests(TestCase):
 
     def test_start_of_business_year(self):
-        today = date.today()
+        today = timezone.now()
         expected_start = date(today.year, 1, 1)
         self.assertEqual(expected_start, start_of_business_year())
 

@@ -1,0 +1,35 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load config %}
+{% block content %}
+{% config "organisation_address" as c_addr %}
+{% config "organisation_bank_connection" as c_bank %}
+{% config "share_price" as c_share_price %}
+{% config "currency" as c_currency %}
+{% config "organisation_name" as c_organisation_name %}
+{% enriched_organisation "D" as v_d_enriched_organisation %}
+{% vocabulary "share" as v_share %}
+{% vocabulary "share_pl" as v_share_pl %}
+{% trans "Hallo" %}
+
+{% blocktrans with sc=shares|length%}Du hast bei {{ v_d_enriched_organisation }} {{sc}} {{ v_share_pl }} bestellt{% endblocktrans %}:
+{% for share in shares %}{% blocktrans with sid=share.id %}{{ v_share }} mit Systemnummer {{ sid }}{% endblocktrans %}
+{% endfor %}
+{% blocktrans with sc=shares|length %}Bitte überweise {{sc}} Mal den Betrag von {{ c_currency }} {{ c_share_price }} auf das folgende Konto{% endblocktrans %}:
+    {{ c_addr.name }}
+    {% if c_addr.extra %}{{ c_addr.extra }}{% endif %}
+    {{ c_addr.street }} {{ c_addr.number }}
+    {{ c_addr.zip }} {{ c_addr.city }}
+    {{ c_bank.NAME }}
+    {% trans "Postkonto-Nummer" %}: {{ c_bank.PC }}
+    {% trans "IBAN" %}: {{ c_bank.IBAN }}
+    {% trans "BIC" %}: {{ c_bank.BIC }}
+
+{% blocktrans %}Um die Arbeit der Buchhaltung zu erleichtern zahle bitte nur 1 {{ v_share }} auf einmal.
+Gib im Betreff die Systemnummer an und die Emailadresse der Halterin oder des Halters des/r {{ v_share }} an
+(dies ist vor allem wichtig wenn du diese/n/s {{ v_share }} für jemand anderen bezahlst){% endblocktrans %}
+
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
+{% endblock %}

@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from django.template.loader import get_template
 from django.utils import timezone
 
-from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.sharedao import ShareDao
 
 
 def home_messages(request):
@@ -39,7 +37,7 @@ def job_messages(request, job):
         result.append(get_template('messages/job_running.html').render())
     if member in all_participants:
         render_dict = {
-            'amount': all_participants.count(member)-1,
+            'amount': all_participants.count(member) - 1,
         }
         template = get_template('messages/job_assigned.html')
         render_result = template.render(render_dict)
@@ -47,4 +45,9 @@ def job_messages(request, job):
 
     if len(allowed_additional_participants) == 0 and not job.canceled:
         result.append(get_template('messages/job_fully_booked.html').render())
+    return result
+
+
+def error_message(request):
+    result = [get_template('messages/error.html').render()]
     return result

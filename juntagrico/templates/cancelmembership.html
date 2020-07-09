@@ -3,7 +3,7 @@
 {% load config %}
 {% block page_title %}
     <h3>
-        {% trans "Künde deine Migliedshaft" %}
+        {% trans "Künde deine Mitgliedschaft" %}
     </h3>
 {% endblock %}
 {% block content %}
@@ -55,9 +55,8 @@
     <div class="row mb-3">
         <div class="col-md-12">
             {% if can_cancel %}
-                <form action="" method="post">
+                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du sicher deine Mitgliedschaft verbindlich künden?" %}')">
                     {% csrf_token %}
-                    <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                     <div class="form-group row">
                         <label class="col-md-3" for="message">
                             {% trans "Mitteilung" %}
@@ -69,7 +68,7 @@
                     <div class="form-group row">
                         <div class="offset-md-3 col-md-9">
                             <button type="submit" class="btn btn-success">
-                                {% trans "Migliedshaft künden" %}
+                                {% trans "Mitgliedschaft künden" %}
                             </button>
                         </div>
                     </div>

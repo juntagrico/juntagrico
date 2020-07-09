@@ -3,7 +3,7 @@
 {% load config %}
 {% block page_title %}
     <h3>
-        {% trans "Grössen Änderungsliste" %}
+        {% trans "Bestandteile Änderungsliste" %}
     </h3>
 {% endblock %}
 {% block list %}
@@ -20,10 +20,13 @@
                     {% trans "Email" %}
                 </th>
                 <th class="filter">
-                    {% trans "Aktuelle Grösse" %}
+                    {% trans "Aktuelle Bestandteile" %}
                 </th>
                 <th class="filter">
-                    {% trans "Neue Grösse" %}
+                    {% trans "Neue Bestandteile" %}
+                </th>
+                <th class="filter">
+                    {% trans "Änderungsdatum" %}
                 </th>
                 <th>
                 </th>
@@ -55,6 +58,9 @@
                     </td>
                     <td>
                         {{ subscription.future_size_name }}
+                    </td>
+                    <td>
+                        {{ subscription.part_change_date|date:"Y-m-d" }}
                     </td>
                     <td>
                         <a href="{% url 'activate-future-types' subscription.id %}" class="btn btn-success">

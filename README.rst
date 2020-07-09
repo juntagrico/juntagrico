@@ -1,8 +1,8 @@
 juntagrico
 ==========
 
-.. image:: https://travis-ci.org/juntagrico/juntagrico.svg?branch=master
-    :target: https://travis-ci.org/juntagrico/juntagrico
+.. image:: https://travis-ci.com/juntagrico/juntagrico.svg?branch=master
+    :target: https://travis-ci.com/juntagrico/juntagrico
    
 .. image:: https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/maintainability
    :target: https://codeclimate.com/github/juntagrico/juntagrico/maintainability
@@ -45,7 +45,6 @@ It provides the basic functionality like
 - management of shares
 - delivery management 
 - management of members
-- automatic billing
 
 Detailed documentation how to install and configure juntagrico can be found here http://juntagrico.readthedocs.io
 

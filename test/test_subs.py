@@ -1,10 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from juntagrico.entity.share import Share
 from test.util.test import JuntagricoTestCase
 
 
-class JobTests(JuntagricoTestCase):
+class SubscriptionTests(JuntagricoTestCase):
 
     def testSub(self):
         self.assertGet(reverse('sub-detail'))
@@ -18,6 +19,16 @@ class JobTests(JuntagricoTestCase):
 
     def testSubChange(self):
         self.assertGet(reverse('sub-change', args=[self.sub.pk]))
+
+    def testPrimaryChange(self):
+        self.assertGet(reverse('primary-change', args=[self.sub.pk]))
+        self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member3.pk}, 302)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.primary_member.id, self.member3.id)
+
+    def testPrimaryChangeError(self):
+        with self.assertRaises(ValidationError):
+            self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk}, 500)
 
     def testDepotChange(self):
         self.assertGet(reverse('depot-change', args=[self.sub.pk]))
@@ -37,23 +48,44 @@ class JobTests(JuntagricoTestCase):
     def testSizeChange(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
             self.assertGet(reverse('size-change', args=[self.sub.pk]))
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), {'amount[' + str(self.sub_type2.pk) + ']': 1})
+            post_data = {
+                'amount[' + str(self.sub_type.pk) + ']': 0,
+                'amount[' + str(self.sub_type2.pk) + ']': 1
+            }
+            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_types.all()[0], self.sub_type)
-            self.assertEqual(self.sub.future_types.count(), 1)
+            self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+            self.assertEqual(self.sub.future_parts.count(), 1)
             Share.objects.create(**self.share_data)
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), {'amount[' + str(self.sub_type2.pk) + ']': 1})
+            self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
+            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_types.all()[0], self.sub_type2)
-            self.assertEqual(self.sub.future_types.count(), 1)
+            self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
+            self.assertEqual(self.sub.future_parts.count(), 1)
+
+    def testLeave(self):
+        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
+        Share.objects.create(**self.get_share_data(self.member3))
+        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
+        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.recipients.count(), 1)
+
+    def testCancel(self):
+        self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
+        self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)
+        self.sub.refresh_from_db()
+        self.assertIsNotNone(self.sub.cancellation_date)
 
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.assertEqual(self.member2.old_subscriptions.count(), 0)
         self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()
+        self.sub2.refresh_from_db()
+        self.assertFalse(self.sub2.active)
         self.assertIsNone(self.member2.subscription)
         self.assertEqual(self.member2.old_subscriptions.count(), 1)
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
+        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 200)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)

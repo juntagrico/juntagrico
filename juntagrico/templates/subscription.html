@@ -23,7 +23,7 @@
         </div>
     {% elif can_order %}
         <div class="alert alert-warning">
-            {% blocktrans %}Du bist entweder kein {{ v_subscription }}-Bezieher oder hast gekündigt.{% endblocktrans %}
+            {% blocktrans %}Du bist entweder kein/e {{ v_subscription }}-BezieherIn oder hast gekündigt.{% endblocktrans %}
             <br/>
             {% blocktrans %}{{ v_subscription }} (wieder) neu beziehen?{% endblocktrans %}
             {% trans "Melde dich hier an" %}:
@@ -53,7 +53,7 @@
     {% else %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% blocktrans %}{{ v_subscription }}grösse{% endblocktrans %}
+                {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
             </div>
             <div class="col-md-9">
                 {{ subscription.size_name|safe }}
@@ -143,7 +143,7 @@
                     </a>
                 {% else %}
                     {% blocktrans trimmed %}
-                    Nur der Hauptabonnnent kann weitere {{ v_co_member_pl }} hinzufügen.
+                    Nur Haupt-{{ v_subscription }}-BeziehierIn kann weitere {{ v_co_member_pl }} hinzufügen.
                     {% endblocktrans %}
                 {% endif %}
             </div>
@@ -206,14 +206,14 @@
         {% if subscription.types_changed %}
             <div class="row mb-3">
                 <div class="col-md-3">
-                    {% blocktrans %}Neue {{ v_subscription }}-Grösse{% endblocktrans %}
+                    {% blocktrans %}Neue {{ v_subscription }}-Bestandteile{% endblocktrans %}
                 </div>
                 <div class="col-md-9">
-                    ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
+                    ({% blocktrans trimmed with nes=next_size_date|date:"d.m.Y" %}
                     Die Änderung tritt voraussichtlich am {{ nes }} in Kraft
                     {% endblocktrans %})
                     <br/>
-                    {{ subscription.future_size_name }}
+                    {{ subscription.future_size_name|safe }}
                 </div>
             </div>
         {% endif %}
@@ -223,12 +223,21 @@
         {% if subscription.state != 'inactive' %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
-                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
+                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}">
                         {% blocktrans %}{{ v_subscription }} ändern{% endblocktrans %}
                     </a>
                     {% if not primary %}
                         {% trans "Nur der Hauptbezieher kann Änderungen durchführen." %}
                     {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        {% if subscription.state != 'inactive' and can_leave %}
+            <div class="row mb-3">
+                <div class="offset-3 col-md-9">
+                    <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
+                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+                    </a>
                 </div>
             </div>
         {% endif %}

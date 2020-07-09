@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    {% vocabulary "subscription" as v_subscription %}
+    <h3>
+        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "member_type" as v_member_type %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    <div class="row mb-3">
+        <div class="col-md-12">
+            {% blocktrans trimmed %}
+            Hier kannst du dein/e/n {{ v_subscription }} verlassen. Dabei bleibst du aber {{ v_member_type }} bei {{ v_d_enriched_organisation }}.
+            Unter Personalien kannst du diese/s/n künden.
+            {% endblocktrans %}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="message">
+                        {% blocktrans trimmed %} Mitteilung an den/die Haupt-{{ v_subscription }}-BezieherIn {% endblocktrans %}
+                    </label>
+                    <textarea name="message" id="message" class="form-control" rows="12" placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger">
+                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

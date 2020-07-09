@@ -12,11 +12,15 @@
             <form action="{% url 'changedate-set' %}" method="POST">
                 {% csrf_token %}
                 <div class="row mb-3">
-                    <div class="col-md-3">
-                        <input name="date" data-toggle="datepicker"/>
-                    </div>
-                    <div class="col-md-6">
-                        {% trans "Lege das Datum für die Änderung fest." %}
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control docs-date" name="date" data-toggle="datepicker" placeholder="{% trans "Lege das Datum für die Änderung fest." %}" autocomplete="off">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary docs-datepicker-trigger" disabled="">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-success">
@@ -35,6 +39,7 @@
             </div>
         {% endif %}
     {% endif %}
+    {% if not email_form_disabled %}
     <div class="row">
         <div class="col-md-12">
             <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
@@ -50,6 +55,7 @@
             </form>
         </div>
     </div>
+    {% endif %}
     {% block management_cmd %}
     {% endblock %}
     <div id="managementlist" class="row">

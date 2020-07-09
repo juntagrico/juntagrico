@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-from juntagrico.models import Delivery
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.delivery import Delivery
 
 
 class DeliveryDao:
@@ -18,8 +15,8 @@ class DeliveryDao:
     def deliveries_by_subscription(subscription):
         if subscription is not None:
             member_subscription_size_ids = []
-            for subscription_type in subscription.types.all():
-                member_subscription_size_ids.append(subscription_type.size)
+            for part in subscription.active_parts.all():
+                member_subscription_size_ids.append(part.type.size)
             member_subscription_weekday = (subscription.depot.weekday % 7) + 1
             return DeliveryDao.all_deliveries_order_by_delivery_date_desc().\
                 filter(delivery_date__week_day=member_subscription_weekday).\
