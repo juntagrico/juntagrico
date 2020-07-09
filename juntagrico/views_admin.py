@@ -28,6 +28,9 @@ from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.xls import generate_excel
 from juntagrico.util.mailer import append_attachements
 from juntagrico.util.views_admin import subscription_management_list
+from django.contrib.auth.models import User
+from django.db.models import Q
+from django.contrib.auth.decorators import user_passes_test
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -358,6 +361,17 @@ def waitinglist(request):
     render_dict.update(get_changedate(request))
     return subscription_management_list(SubscriptionDao.not_started_subscriptions(), render_dict,
                                         'management_lists/waitinglist.html', request)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def specialroles(request):
+    renderdict = get_menu_dict(request)
+    renderdict.update(get_changedate(request))
+    specialusers = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True) | ~Q(groups=None))
+    for user in specialusers:
+        user.groups_str = ', '.join(str(group) for group in user.groups.all().order_by('name'))
+    renderdict.update(specialuser_list=specialusers)
+    return render(request, 'management_lists/specialroles.html', renderdict)
 
 
 @permission_required('juntagrico.is_operations_group')
