@@ -29,6 +29,7 @@ class MemberAdmin(BaseAdmin):
         return not instance.inactive
 
     active.short_description = _('Aktiv')
+    active.admin_order_field = 'inactive'
     active.boolean = True
 
     def impersonate_job(self, request, queryset):
