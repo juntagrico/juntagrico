@@ -368,6 +368,7 @@ def waitinglist(request):
     return subscription_management_list(SubscriptionDao.not_started_subscriptions(), render_dict,
                                         'management_lists/waitinglist.html', request)
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def specialroles(request):
     renderdict = get_menu_dict(request)
@@ -376,17 +377,6 @@ def specialroles(request):
     for user in specialusers:
         user.groups_str = ', '.join(str(group) for group in user.groups.all().order_by('name'))
     renderdict.update(specialuser_list=specialusers)
-    return render(request, 'management_lists/specialroles.html', renderdict)
-
-
-@user_passes_test(lambda u: u.is_superuser)
-def specialroles(request):
-    renderdict = get_menu_dict(request)
-    renderdict.update(get_changedate(request))
-    specialusers = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True) | ~Q(groups=None))
-    for user in specialusers:
-        user.groups_str = ', '.join(str(group) for group in user.groups.all().order_by('name'))
-    renderdict.update(specialuser_list = specialusers)
     return render(request, 'management_lists/specialroles.html', renderdict)
 
 
