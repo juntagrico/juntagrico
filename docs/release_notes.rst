@@ -10,7 +10,25 @@ Has no migrations
 -----
 Has Migrations
 
-
+* Minor bugfixes and fixed typos
+* More display and filter fields as well as new helptexts in the admin section
+* Fix in subscription part selection (only integers allowed)
+* Rewrite of depot list generation to be more performant and extensible
+* Fix for email address parsing for python 3.8
+* Fixes in job overview page
+* Using logging instead of print in all places
+* Various timezone related fixes
+* Allow to disable email in management list
+* Fix in depot list change
+* Fix in share created mail
+* Recuring jobs can now override the duration for specific instances
+* Email sending has been completely overhauled, including grouping certain emails in threads
+* Prevent job overassignemnt
+* Added documentation for theming an juntagrico instance
+* Share id also on the export
+* Added FROM_FILTER setting
+* Added subscription parts as through model for the subscription - type mapping
+* Removed all active and cancelled flags. From now on only the corresponding dates are used to calculate the state of a subscription, extrasubscrion or subscription part.
 
 
 1.2.2
