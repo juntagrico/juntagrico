@@ -1,75 +1,75 @@
 Release Notes
 =============
 
-1.1.3
+Dev
+----
+Has no migrations
+
+
+1.2.3
 -----
- No migrations
+Has Migrations
 
-* Fixed Typo in Billable
-* Empty strings as default for settings containing an url t a document
-* Empty url configs prevent link from being displayed in templates
-* fix for writing list and paid shares
-* empty strings in profile IBAN field form are not validated anymore
-* doc updated
-* error in onetime job fixed
 
-1.1.4
+
+
+1.2.2
 -----
- Has migrations
+Has migrations
 
-* Fixed profile error
-* IBAN field not nullable blank used for no value
+* Various date related fixes for subscription change cancellation and job copying
+* Recuring jobs can no have instance specific additional descriptions
+* Extra subscription and types can now be hidden on the depot list
+* The depot overview list is now grouped by day and contains a total
+* Jobs can now have an infinite number of participants
+* Job types can be hidden
+* Fix for the coordinator bug
 
 
-1.1.5
+1.2.1
 -----
- Has migrations
+Has no migrations
 
-* Fixed various errors and bugs in the onboarding process
-* Other various bugfixes
+* Fix in subscription change view bug from version 1.2.0
 
 
-1.1.6
+1.2.0
 -----
- Has migrations
+Has migrations
 
-* Work in progress
-* Ability to display messages at the bottom of depot lists. Added in the data administration.
-* Area admins are now informed when a member leaves their activity area
-* New setting ORGANISATION_NAME_CONFIG to enrich the organisation name
-* made texts more neutral on context of the organisation type
-* removed the MEMBER_STRING, MEMBERS_STRING, ASSIGNMENT_STRING and ASSIGNMENTS_STRING for the VOCABULARY setting
-* added new setting ENABLE_SHARES to enable or disable all share related functions
-* upgrade to bootstrap 4.1.3
-* upgraded requirements
-* added possibility to imitate special dates when activating and deactivating subscriptions and extrasubscriptions
-* overhauled mail stuff. possibility to exchange mail sending code with the following setting DEFAULT_MAILER
-* new setting ENABLE_REGISTRATION
-* possibility to hide subscription sizes in subscription creation
+* Mailer code refactored, new permissions to be notified when a member, subscription or share is created or canceled
+* Jobs are visible if they are on the same day even if they have already started
+* Job time changed bugfix
+* Removed google maps and corresponding setting
+* Members can leave subscription
+* Main member can be changed by Members themselfes
+* Non share holders are deactivated when subscription is deactivated
+* Better gender texts
+* Billing stubs are remoived to extension
+* Fix in upcoming jobs widget
+* Fix in cancelation date calculation
+* Fix in Co Member adding
 
 
-1.1.7
+1.1.9
 -----
- Has migrations
+Has migrations
 
-* New setting GDPR_INFO to make it EU compliant
-* Introduced Products in order to have multiple sizes for different Products. on existing Instances a default product called Product will be added
-* Added gettext so that strings can be translated
-* Texts where adapted
-* Shares are controlled more thoroughly if enabled
-* Possibility to easily pay back canceled shares by generating iso20022 pain001 xml file
-* Only active subscriptions and members are shown in the filters
-* Better sorting in the filters, also added textmarkers to be able to use better regex filtering
-* Next jobs bug fixed so that all see there next jobs
-* Subscription list bug with the duplicate subscription was fixed
-* More information shown for Assignemnts on the admin overview page
-* upgraded requirements
-* added menu hooks for apps
+* Added Cookie consent
+* Design a bit more responsive
+* Job display name used where possible
+* Updated share management
+* Added user management to deactivate canceled users
+* Fix in welcome mail
+* Fix in Subscription deactivation
+* Links in emails work now also for internal links
+* Old subscriptions are now visible in Member admin
+* Fixed small bug in the size change
 
 
 1.1.8
 -----
- Has no migrations
+Has no migrations
 
 * personal template loader removed adapt your settings accordingly
 * Added crispy-forms
@@ -100,58 +100,68 @@ Release Notes
 * major template rewrites. Check custom css besides custom logos
 
 
-1.1.9
+1.1.7
 -----
- Has migrations
+Has migrations
 
-* Added Cookie consent
-* Design a bit more responsive
-* Job display name used where possible
-* Updated share management
-* Added user management to deactivate canceled users
-* Fix in welcome mail
-* Fix in Subscription deactivation
-* Links in emails work now also for internal links
-* Old subscriptions are now visible in Member admin
-* Fixed small bug in the size change
+* New setting GDPR_INFO to make it EU compliant
+* Introduced Products in order to have multiple sizes for different Products. on existing Instances a default product called Product will be added
+* Added gettext so that strings can be translated
+* Texts where adapted
+* Shares are controlled more thoroughly if enabled
+* Possibility to easily pay back canceled shares by generating iso20022 pain001 xml file
+* Only active subscriptions and members are shown in the filters
+* Better sorting in the filters, also added textmarkers to be able to use better regex filtering
+* Next jobs bug fixed so that all see there next jobs
+* Subscription list bug with the duplicate subscription was fixed
+* More information shown for Assignemnts on the admin overview page
+* upgraded requirements
+* added menu hooks for apps
 
 
-1.2.0
+1.1.6
 -----
- Has migrations
+Has migrations
 
-* Mailer code refactored, new permissions to be notified when a member, subscription or share is created or canceled
-* Jobs are visible if they are on the same day even if they have already started
-* Job time changed bugfix
-* Removed google maps and corresponding setting
-* Members can leave subscription
-* Main member can be changed by Members themselfes
-* Non share holders are deactivated when subscription is deactivated
-* Better gender texts
-* Billing stubs are remoived to extension
-* Fix in upcoming jobs widget
-* Fix in cancelation date calculation
-* Fix in Co Member adding
+* Work in progress
+* Ability to display messages at the bottom of depot lists. Added in the data administration.
+* Area admins are now informed when a member leaves their activity area
+* New setting ORGANISATION_NAME_CONFIG to enrich the organisation name
+* made texts more neutral on context of the organisation type
+* removed the MEMBER_STRING, MEMBERS_STRING, ASSIGNMENT_STRING and ASSIGNMENTS_STRING for the VOCABULARY setting
+* added new setting ENABLE_SHARES to enable or disable all share related functions
+* upgrade to bootstrap 4.1.3
+* upgraded requirements
+* added possibility to imitate special dates when activating and deactivating subscriptions and extrasubscriptions
+* overhauled mail stuff. possibility to exchange mail sending code with the following setting DEFAULT_MAILER
+* new setting ENABLE_REGISTRATION
+* possibility to hide subscription sizes in subscription creation
 
-1.2.1
+
+1.1.5
 -----
- Has no migrations
+Has migrations
 
-* Fix in subscription change view bug from version 1.2.0
+* Fixed various errors and bugs in the onboarding process
+* Other various bugfixes
 
-1.2.2
+
+1.1.4
 -----
- Has migrations
+Has migrations
 
-* Various date related fixes for subscription change cancellation and job copying
-* Recuring jobs can no have instance specific additional descriptions
-* Extra subscription and types can now be hidden on the depot list
-* The depot overview list is now grouped by day and contains a total
-* Jobs can now have an infinite number of participants
-* Job types can be hidden
-* Fix for the coordinator bug
+* Fixed profile error
+* IBAN field not nullable blank used for no value
 
 
-Dev
-----
- Has no migrations
+1.1.3
+-----
+No migrations
+
+* Fixed Typo in Billable
+* Empty strings as default for settings containing an url t a document
+* Empty url configs prevent link from being displayed in templates
+* fix for writing list and paid shares
+* empty strings in profile IBAN field form are not validated anymore
+* doc updated
+* error in onetime job fixed
