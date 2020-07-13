@@ -26,9 +26,6 @@ def job_messages(request, job):
     result = []
     member = request.user.member
     all_participants = list(MemberDao.members_by_job(job))
-    number_of_participants = len(all_participants)
-    allowed_additional_participants = list(
-        range(1, job.slots - number_of_participants + 1))
     if job.canceled:
         result.append(get_template('messages/job_canceled.html').render())
     elif job.end_time() < timezone.now():
@@ -43,7 +40,7 @@ def job_messages(request, job):
         render_result = template.render(render_dict)
         result.append(render_result)
 
-    if len(allowed_additional_participants) == 0 and not job.canceled:
+    if job.free_slots == 0 and not job.canceled:
         result.append(get_template('messages/job_fully_booked.html').render())
     return result
 
