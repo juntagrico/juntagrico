@@ -21,6 +21,7 @@ class Command(BaseCommand):
         shares = Share.objects.all()[:2]
         job = RecuringJob.objects.all()[0]
         member = Member.objects.filter(subscription__isnull=False)[0]
+        member_with_future_sub = Member.objects.filter(future_subscription__isnull=False)[0]
         member_wo_subs = Member.objects.filter(subscription__isnull=True)[0]
         co_member = Member.objects.filter(subscription__isnull=False)[0]
         depot = Depot.objects.all()[0]
@@ -28,7 +29,7 @@ class Command(BaseCommand):
         print('*** welcome  mit abo***')
 
         print(get_email_content('welcome', base_dict({
-            'member': member,
+            'member': member_with_future_sub,
             'password': 'password'
         })))
         print()
