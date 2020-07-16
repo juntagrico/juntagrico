@@ -10,25 +10,35 @@ Has no migrations
 -----
 Has Migrations
 
-* Minor bugfixes and fixed typos
-* More display and filter fields as well as new helptexts in the admin section
-* Fix in subscription part selection (only integers allowed)
-* Rewrite of depot list generation to be more performant and extensible
-* Fix for email address parsing for python 3.8
-* Fixes in job overview page
-* Using logging instead of print in all places
-* Various timezone related fixes
-* Allow to disable email in management list
-* Fix in depot list change
-* Fix in share created mail
-* Recuring jobs can now override the duration for specific instances
-* Email sending has been completely overhauled, including grouping certain emails in threads
-* Prevent job overassignemnt
-* Added documentation for theming an juntagrico instance
-* Share id also on the export
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+* Updated subscription management
+   * Added subscription parts as through model for the subscription - type mapping
+   * Removed all active and cancelled flags. From now on only the corresponding dates are used to calculate the state of a subscription, extrasubscrion or subscription part.
+   * The new permissions for the subscription part model must be given to the users that manage subscriptions
+* Enabled emails to job participants for area admin
+* More display and filter fields as well as new help texts in the admin section
+* Recurring jobs can now override the duration for specific instances
+* Show share id on the export
 * Added FROM_FILTER setting
-* Added subscription parts as through model for the subscription - type mapping
-* Removed all active and cancelled flags. From now on only the corresponding dates are used to calculate the state of a subscription, extrasubscrion or subscription part.
+* Email sending has been completely overhauled, including grouping certain emails in threads
+* Added documentation for theming an juntagrico instance
+* Rewrite of depot list generation to be more performant and extensible
+* Allow to disable email in management list
+* Refactor of subscription part selection using form objects
+
+Fixes
+^^^^^
+* Fix in subscription part selection (only integers allowed)
+* Fix in share created mail
+* Fix for email address parsing for python 3.8
+* Fix in depot list change
+* Prevent job overassignment
+* Fixes in job overview page
+* Various timezone related fixes
+* Using logging instead of print in all places
+* Minor bugfixes and fixed typos
 
 
 1.2.2
