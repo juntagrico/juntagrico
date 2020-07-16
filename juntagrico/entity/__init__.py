@@ -34,9 +34,9 @@ class SimpleStateModel(models.Model):
                     7: 'inactive'}
 
     creation_date = models.DateField(_('Erstellungsdatum'), null=True, blank=True, auto_now_add=True)
-    activation_date = models.DateField(_('Aktivierungssdatum'), null=True, blank=True)
-    cancellation_date = models.DateField(_('Kündigüngssdatum'), null=True, blank=True)
-    deactivation_date = models.DateField(_('Deaktivierungssdatum'), null=True, blank=True)
+    activation_date = models.DateField(_('Aktivierungsdatum'), null=True, blank=True)
+    cancellation_date = models.DateField(_('Kündigungsdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(_('Deaktivierungsdatum'), null=True, blank=True)
 
     def activate(self, time=None):
         now = time or timezone.now().date()

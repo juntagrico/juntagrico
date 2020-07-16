@@ -11,7 +11,7 @@ class SubscriptionAdmin(BaseAdmin):
     form = SubscriptionAdminForm
     readonly_fields = ('creation_date',)
     list_display = ['__str__', 'recipients_names',
-                    'primary_member_nullsave', 'depot']
+                    'primary_member_nullsave', 'depot', 'active']
     search_fields = ['members__user__username', 'members__first_name', 'members__last_name',
                      'members_future__user__username', 'members_future__first_name', 'members_future__last_name',
                      'members_old__user__username', 'members_old__first_name', 'members_old__last_name',
@@ -32,6 +32,15 @@ class SubscriptionAdmin(BaseAdmin):
         (_('Status'), {'fields': ['start_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]
+
+    def active(self, instance):
+        """ this method is necessary to show icons in the list view
+        """
+        return instance.active
+
+    active.short_description = _('Aktiv')
+    active.admin_order_field = 'activation_date'
+    active.boolean = True
 
     def get_fieldsets(self, request, obj=None):
         if not obj:
