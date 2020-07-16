@@ -11,7 +11,7 @@ before_script:
   - ./cc-test-reporter before-build
 script:
   - django-admin.py makemigrations
-  - coverage run --omit 'home/*'./manage.py test
+  - coverage run --omit 'home/*' -m manage test
 after_script:
   - coverage report
   - coverage xml
