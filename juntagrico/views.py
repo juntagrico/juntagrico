@@ -180,9 +180,7 @@ def job(request, job_id):
 
     renderdict['messages'].extend(job_messages(request, job))
     renderdict.update({
-        'can_contact':
-            request.user.has_perm('juntagrico.can_send_mails') or
-            (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
+        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
         'emails': '\n'.join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,

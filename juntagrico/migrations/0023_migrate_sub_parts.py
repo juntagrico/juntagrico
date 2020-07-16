@@ -22,7 +22,7 @@ def migrate_parts(apps, schema_editor):
         # cancellation date missing
         if sub.cancelation_date is None and sub.deactivation_date is not None:
             sub.cancelation_date = sub.deactivation_date
-        elif sub.canceled  and sub.cancelation_date is None:
+        elif sub.canceled and sub.cancelation_date is None:
             sub.cancelation_date = timezone.now().date()
         sub.save()
         c_types = analyze_types(sub.types.all())
@@ -46,7 +46,6 @@ def migrate_parts(apps, schema_editor):
                 w_part = create_w_part(SubscriptionPart, sub, type)
                 SubscriptionPart.objects.bulk_create(itertools.chain(*[[a_part] * c_count]))
                 SubscriptionPart.objects.bulk_create(itertools.chain(*[[w_part] * (f_count - c_count)]))
-
 
 
 def create_a_part(part_class, sub, type):
@@ -82,6 +81,7 @@ def analyze_types(types):
         analyzed_types[type] = analyzed_types.get(type, 0) + 1
     return analyzed_types
 
+
 def migrate_extras(apps, schema_editor):
     ExtraSubscription = apps.get_model('juntagrico', 'ExtraSubscription')
     for sub in ExtraSubscription.objects.all():
@@ -92,6 +92,7 @@ def migrate_extras(apps, schema_editor):
         if sub.activation_date is not None:
             sub.creation_date = sub.activation_date
         sub.save()
+
 
 class Migration(migrations.Migration):
 
