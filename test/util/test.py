@@ -91,7 +91,7 @@ class JuntagricoTestCase(TestCase):
         shares
         """
         self.share_data = self.get_share_data(self.member)
-        Share.objects.create(**self.share_data)
+        self.share = Share.objects.create(**self.share_data)
 
     def set_up_area(self):
         """
