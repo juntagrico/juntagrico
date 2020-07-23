@@ -3,8 +3,9 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType
+from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType, ExtraSubscription
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
+from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -16,6 +17,7 @@ class JuntagricoTestCase(TestCase):
 
     def setUp(self):
         self.set_up_member()
+        self.set_up_admin()
         self.set_up_shares()
         self.set_up_area()
         self.set_up_job()
@@ -23,6 +25,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_sub_types()
         self.set_up_sub()
         self.set_up_extra_sub()
+        self.set_up_mail_template()
 
     @staticmethod
     def create_member(email):
@@ -33,6 +36,7 @@ class JuntagricoTestCase(TestCase):
                        'addr_zipcode': 'addr_zipcode',
                        'addr_location': 'addr_location',
                        'phone': 'phone',
+                       'mobile_phone': 'phone',
                        'confirmed': True,
                        }
         member = Member.objects.create(**member_data)
@@ -50,12 +54,20 @@ class JuntagricoTestCase(TestCase):
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
+            Permission.objects.get(codename='is_area_admin'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_filter_members'))
+        self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_filter_subscriptions'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_operations_group'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_send_mails'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_load_templates'))
         self.member.user.save()
+
+    def set_up_admin(self):
         """
         admin member
         """
@@ -104,6 +116,8 @@ class JuntagricoTestCase(TestCase):
                       'hidden': True}
         self.area = ActivityArea.objects.create(**area_data)
         self.area2 = ActivityArea.objects.create(**area_data2)
+        self.member.areas.add(self.area)
+        self.member.save()
 
     def set_up_job(self):
         """
@@ -254,6 +268,15 @@ class JuntagricoTestCase(TestCase):
                           'description': 'desc',
                           'category': self.esub_cat}
         self.esub_type = ExtraSubscriptionType.objects.create(**esub_type_data)
+        esub_data = {'main_subscription': self.sub2,
+                     'type': self.esub_type}
+        self.esub = ExtraSubscription.objects.create(**esub_data)
+        esub_data['activation_date'] = timezone.now().date()
+        self.esub2 = ExtraSubscription.objects.create(**esub_data)
+
+    def set_up_mail_template(self):
+        mail_template_data = {'name': 'MailTemplate'}
+        self.mail_template = MailTemplate.objects.create(**mail_template_data)
 
     def assertGet(self, url, code=200, member=None):
         login_member = member or self.member

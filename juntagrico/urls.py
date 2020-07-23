@@ -80,25 +80,25 @@ urlpatterns = [
     path('my/welcome/with_sub', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
 
     # admin related juntagrico stuff
-    path('my/changedate', juntagrico_admin.set_change_date, name='changedate-set'),
-    path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),
-    path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),
-    path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),
-    path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),
+    path('my/changedate', juntagrico_admin.set_change_date, name='changedate-set'),  #
+    path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),  #
+    path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),  #
+    path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),  #
+    path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),  #
     path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),  #
     path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),  #
     path('my/mails', juntagrico_admin.mails, name='mail'),  #
-    path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),
-    path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),
-    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),
-    path('my/filters', juntagrico_admin.filters, name='filters'),
-    path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),
-    path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),
+    path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),  #
+    path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),  #
+    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'), #
+    path('my/filters', juntagrico_admin.filters, name='filters'),  #
+    path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),  #
+    path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),  #
     path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),  #
     path('my/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
          name='filter-subs-depot'),  #
-    path('my/future', juntagrico_admin.future, name='future'),
-    path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
+    path('my/future', juntagrico_admin.future, name='future'),  #
+    path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),  #
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),  #
     path('my/typechangedlist', juntagrico_admin.typechangelist, name='sub-mgmt-changelist'),  #
@@ -109,9 +109,9 @@ urlpatterns = [
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
 
     # lists
-    path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),
-    path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
-    path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
+    path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),  #
+    path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),  #
+    path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),  #
 
     # exports
     path('my/export', juntagrico_admin.export, name='export'),  #

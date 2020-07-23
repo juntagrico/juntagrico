@@ -8,7 +8,7 @@ class HomeTests(JuntagricoTestCase):
     def testHome(self):
         self.assertGet(reverse('home'))
 
-    def testHome(self):
+    def testCookies(self):
         self.assertGet(reverse('cookies'))
 
     def testUnpaidSharesInfo(self):

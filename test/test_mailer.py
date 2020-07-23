@@ -7,6 +7,7 @@ class MailerTests(JuntagricoTestCase):
 
     def testMailer(self):
         self.assertGet(reverse('mail'))
+        self.assertGet(reverse('mail'), member=self.member2, code=302)
 
     def testMailSend(self):
         with open('test/test_mailer.py') as fp:
@@ -25,4 +26,25 @@ class MailerTests(JuntagricoTestCase):
 
     def testMailResult(self):
         self.assertGet(reverse('mail-result', args=[1]))
-        self.assertGet(reverse('mail-result', args=[1]))
+
+    def testMailArea(self):
+        self.assertGet(reverse('mail-area'))
+        self.assertGet(reverse('mail-area-send'), code=404)
+        self.assertPost(reverse('mail-area-send'), code=302)
+        self.assertGet(reverse('mail-area'), member=self.member2, code=302)
+
+    def testMailDepot(self):
+        self.assertGet(reverse('mail-depot'))
+        self.assertGet(reverse('mail-depot-send'), code=404)
+        self.assertPost(reverse('mail-depot-send'), code=302)
+        self.assertGet(reverse('mail-depot'), member=self.member2, code=302)
+
+    def testMailJob(self):
+        self.assertGet(reverse('mail-job'))
+        self.assertGet(reverse('mail-job-send'), code=404)
+        self.assertPost(reverse('mail-job-send'), code=302)
+        self.assertGet(reverse('mail-job'), member=self.member2, code=302)
+
+    def testMailTemplate(self):
+        self.assertGet(reverse('mail-template', args=[self.mail_template.pk]))
+        self.assertGet(reverse('mail-template', args=[self.mail_template.pk]), member=self.member2, code=302)
