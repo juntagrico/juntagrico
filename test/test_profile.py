@@ -52,6 +52,7 @@ class ProfileTests(JuntagricoTestCase):
     def testChangePasswordPost(self):
         self.assertPost(reverse('password'), {'password': 'password',
                                               'passwordRepeat': 'password'})
+
     def testNewPassword(self):
         self.assertGet(reverse('new-password'))
         self.assertEqual(len(mail.outbox), 0)
