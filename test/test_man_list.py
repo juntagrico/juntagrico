@@ -39,4 +39,3 @@ class ManListTests(JuntagricoTestCase):
         self.assertPost(reverse('changedate-set'), member=self.member2, code=302)
         self.assertGet(reverse('changedate-unset'), code=302)
         self.assertGet(reverse('changedate-unset'), member=self.member2, code=302)
-
