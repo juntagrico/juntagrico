@@ -4,4 +4,3 @@ from juntagrico.config import Config
 
 class ExtraSubscriptionTypeAdmin(BaseAdmin):
     exclude = []
-

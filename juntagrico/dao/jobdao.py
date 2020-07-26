@@ -31,7 +31,7 @@ class JobDao:
         rjidlist = list(
             RecuringJob.objects.filter(type__activityarea__coordinator=member).values_list('id', flat=True))
         alllist = otjidlist + rjidlist
-        return JobDao.jobs_by_ids(alllist);
+        return JobDao.jobs_by_ids(alllist)
 
     @staticmethod
     def jobs_by_ids(jidlist):
