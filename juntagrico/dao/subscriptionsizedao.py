@@ -8,10 +8,6 @@ class SubscriptionSizeDao:
         return SubscriptionSize.objects.filter(depot_list=True).order_by('units')
 
     @staticmethod
-    def sizes_for_depot_list_by_product(product):
-        return SubscriptionSize.objects.filter(depot_list=True).filter(product=product).order_by('units')
-
-    @staticmethod
     def all_sizes_ordered():
         return SubscriptionSize.objects.order_by('product', 'units')
 

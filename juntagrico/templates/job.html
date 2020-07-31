@@ -98,7 +98,7 @@
         </div>
         <div class="col-md-5">
             {{ job.type.location }} (
-            <a href="https://www.google.ch/maps/place/{{ job.type.location }}" target="_blank">
+            <a href="https://www.google.com/maps/search/?api=1&query={{ job.type.location | urlencode }}" target="_blank">
                 Karte
             </a>
             )
@@ -115,13 +115,13 @@
         </div>
     </div>
     <br/>
-    {% if admin %}
+    {% if can_contact %}
         <div class="row">
             <div class="col-md-3">
                 {% trans "Kontaktieren" %}:
             </div>
             <div class="col-md-5">
-                <form id="email-sender" action="{% url 'mail' %}" method="POST">
+                <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="recipients" id="recipients" value="{{ emails }}"/>
                     <input type="hidden" name="recipients_count" id="recipients_count"value="{{ number_of_participants }}"/>
@@ -142,11 +142,9 @@
                 {% trans "Noch niemand" %} :-(
             {% else %}
                 <ul>
-                    {% for participant, comments, url, reachable, extras in participants_summary %}
+                    {% for participant, url, reachable, extras in participants_summary %}
                         <li>
-                            <a class="job-participant" member-id="{{ participant }}" href="#">
-                                {{ participant }}
-                            </a>
+                            {{ participant }}
                             {{ extras|safe }}
                             {% if reachable %}
                                 &nbsp;
@@ -155,14 +153,6 @@
                                     </i>
                                 </a>
                             {% endif %}
-                            <br/>
-                            {% for comment in comments %}
-                                <span class="member-job-comments">
-                                    {% trans "Hinweis" %}: {{ comment }}
-                                </span>
-                                <br/>
-                            {% endfor %}
-                            <br/>
                         </li>
                     {% endfor %}
                 </ul>
@@ -176,7 +166,7 @@
                 {% trans "Ich trage mich ein" %}:
             </div>
             <div class="col-md-3">
-                <form action="" method="POST"onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
+                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}
                         <div>

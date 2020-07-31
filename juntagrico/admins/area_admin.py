@@ -5,7 +5,7 @@ from juntagrico.util.admin import queryset_for_coordinator
 class AreaAdmin(BaseAdmin):
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']
-    list_display = ['name', 'core', 'hidden', 'coordinator']
+    list_display = ['name', 'core', 'hidden', 'coordinator', 'get_email']
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'coordinator')

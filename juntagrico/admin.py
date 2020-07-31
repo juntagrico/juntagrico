@@ -10,11 +10,11 @@ from juntagrico.admins.extra_subscription_type_admin import ExtraSubscriptionTyp
 from juntagrico.admins.job_admin import JobAdmin
 from juntagrico.admins.job_type_admin import JobTypeAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
-from juntagrico.admins.member_admin import MemberAdmin
+from juntagrico.admins.member_admin import MemberAdmin, MemberAdminWithShares
 from juntagrico.admins.one_time_job_admin import OneTimeJobAdmin
 from juntagrico.admins.share_admin import ShareAdmin
 from juntagrico.admins.subscription_admin import SubscriptionAdmin
-from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin
+from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin, SubscriptionSizeAdmin
 from juntagrico.config import Config
 from juntagrico.entity.billing import ExtraSubBillingPeriod
 from juntagrico.entity.delivery import Delivery
@@ -36,11 +36,11 @@ admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraSubscription, ExtraSubscriptionAdmin)
 admin.site.register(ExtraSubscriptionType, ExtraSubscriptionTypeAdmin)
 admin.site.register(ExtraSubscriptionCategory, BaseAdmin)
-admin.site.register(SubscriptionSize, BaseAdmin)
+admin.site.register(SubscriptionSize, SubscriptionSizeAdmin)
 admin.site.register(SubscriptionType, SubscriptionTypeAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
-admin.site.register(Member, MemberAdmin)
+admin.site.register(Member, MemberAdminWithShares if Config.enable_shares() else MemberAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(Delivery, DeliveryAdmin)

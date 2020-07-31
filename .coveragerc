@@ -1,0 +1,5 @@
+[run]
+include =
+    juntagrico/*
+omit =
+    juntagrico/migrations/*

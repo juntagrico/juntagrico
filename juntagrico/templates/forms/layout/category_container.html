@@ -1,0 +1,9 @@
+{% load crispy_forms_field %}
+<div class="form-group row">
+    <div class="col-md-12">
+        <strong>{{ div.name }}</strong>
+        <br/>
+        {{ div.description|linebreaksbr }}
+    </div>
+</div>
+{{ fields|safe }}

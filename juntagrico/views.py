@@ -20,12 +20,14 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm
-from juntagrico.mailer import FormEmails, MemberNotification, AdminNotification
+from juntagrico.mailer import adminnotification
+from juntagrico.mailer import append_attachements
+from juntagrico.mailer import formemails
+from juntagrico.mailer import membernotification
 from juntagrico.util import addons
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.mailer import append_attachements
 from juntagrico.util.management import password_generator, cancel_share
-from juntagrico.util.messages import home_messages, job_messages
+from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
 
 
@@ -120,28 +122,38 @@ def job(request, job_id):
     '''
     member = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
+    slotrange = list(range(0, job.slots))
+    allowed_additional_participants = list(
+        range(1, job.free_slots + 1))
+    job_fully_booked = len(allowed_additional_participants) == 0
+    job_is_in_past = job.end_time() < timezone.now()
+    job_is_running = job.start_time() < timezone.now()
+    job_canceled = job.canceled
+    can_subscribe = job.infinite_slots or not (
+        job_fully_booked or job_is_in_past or job_is_running or job_canceled)
+    renderdict = get_menu_dict(request)
 
-    if request.method == 'POST':
-        num = request.POST.get('jobs')
+    if request.method == 'POST' and can_subscribe and 0 < int(request.POST.get('jobs')) <= job.free_slots:
+        num = int(request.POST.get('jobs'))
         # adding participants
         amount = 1
         if Config.assignment_unit() == 'ENTITY':
             amount = job.multiplier
         elif Config.assignment_unit() == 'HOURS':
-            amount = job.multiplier * job.type.duration
-        add = int(num)
-        for i in range(add):
+            amount = job.multiplier * job.duration
+        for i in range(num):
             assignment = Assignment.objects.create(
                 member=member, job=job, amount=amount)
         for extra in job.type.job_extras_set.all():
             if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
                 assignment.job_extras.add(extra)
         assignment.save()
-
-        MemberNotification.job_signup([member.email], job)
+        membernotification.job_signup(member.email, job)
         # redirect to same page such that refresh in the browser or back
         # button does not trigger a resubmission of the form
         return redirect('job', job_id=job_id)
+    elif request.method == 'POST':
+        renderdict['messages'].extend(error_message(request))
 
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
@@ -150,36 +162,25 @@ def job(request, job_id):
 
     participants_summary = []
     emails = []
-    for member in unique_participants:
-        name = '{} {}'.format(member.first_name, member.last_name)
-        if member.assignment_for_job == 2:
+    for participant in unique_participants:
+        name = '{} {}'.format(participant.first_name, participant.last_name)
+        if participant.assignment_for_job == 2:
             name += _(' (mit einer weiteren Person)')
-        elif member.assignment_for_job > 2:
-            name += _(' (mit {} weiteren Personen)').format(member.assignment_for_job - 1)
-        contact_url = '/my/contact/member/{}/{}/'.format(member.id, job_id)
+        elif participant.assignment_for_job > 2:
+            name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
+        contact_url = '/my/contact/member/{}/{}/'.format(participant.id, job_id)
         extras = []
-        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, member):
+        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
-        reachable = member.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == member
-        participants_summary.append(
-            (name, None, contact_url, reachable, ' '.join(extras)))
-        emails.append(member.email)
+        reachable = participant.reachable_by_email is True or request.user.is_staff or \
+            job.type.activityarea.coordinator == participant
+        participants_summary.append((name, contact_url, reachable, ' '.join(extras)))
+        emails.append(participant.email)
 
-    slotrange = list(range(0, job.slots))
-    allowed_additional_participants = list(
-        range(1, job.slots - number_of_participants + 1))
-    job_fully_booked = len(allowed_additional_participants) == 0
-    job_is_in_past = job.end_time() < timezone.now()
-    job_is_running = job.start_time() < timezone.now()
-    job_canceled = job.canceled
-    can_subscribe = job.infinite_slots or not (
-        job_fully_booked or job_is_in_past or job_is_running or job_canceled)
-
-    renderdict = get_menu_dict(request)
     renderdict['messages'].extend(job_messages(request, job))
     renderdict.update({
-        'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
+        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
         'emails': '\n'.join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
@@ -275,7 +276,7 @@ def area_join(request, area_id):
     new_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     new_area.members.add(member)
-    AdminNotification.member_joined_activityarea(new_area, member)
+    adminnotification.member_joined_activityarea(new_area, member)
     new_area.save()
     return HttpResponse('')
 
@@ -285,7 +286,7 @@ def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     old_area.members.remove(member)
-    AdminNotification.member_left_activityarea(old_area, member)
+    adminnotification.member_left_activityarea(old_area, member)
     old_area.save()
     return HttpResponse('')
 
@@ -348,12 +349,12 @@ def contact(request):
 
     if request.method == 'POST':
         # send mail to organisation
-        FormEmails.contact(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
+        formemails.contact(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
         is_sent = True
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'usernameAndEmail': member.first_name + ' ' + member.last_name + '<' + member.email + '>',
+        'usernameAndEmail': member.first_name + ' ' + member.last_name + ' <' + member.email + '>',
         'is_sent': is_sent,
         'menu': {'contact': 'active'},
     })
@@ -371,10 +372,10 @@ def contact_member(request, member_id, job_id):
 
     if request.method == 'POST':
         # send mail to member
-        attachments = []
-        append_attachements(request, attachments)
-        FormEmails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
-                                  request.POST.get('copy'), attachments)
+        files = []
+        append_attachements(request, files)
+        formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
+                                  request.POST.get('copy'), files)
         is_sent = True
     job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)
@@ -433,7 +434,7 @@ def cancel_membership(request):
         member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
-            AdminNotification.member_canceled(member, end_date, message)
+            adminnotification.member_canceled(member, end_date, message)
         else:
             member.inactive = True
 
@@ -444,7 +445,7 @@ def cancel_membership(request):
 
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
-    asc = member.active_shares_count
+    asc = member.usable_shares_count
     sub = member.subscription
     f_sub = member.future_subscription
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
@@ -467,7 +468,7 @@ def cancel_membership(request):
 
 @login_required
 def send_confirm(request):
-    MemberNotification.email_confirmation(request.user.member)
+    membernotification.email_confirmation(request.user.member)
     renderdict = get_menu_dict(request)
     return render(request, 'info/confirmation_sent.html', renderdict)
 
@@ -507,7 +508,7 @@ def new_password(request):
             pw = password_generator()
             member.user.set_password(pw)
             member.user.save()
-            MemberNotification.reset_password(member.email, pw)
+            membernotification.reset_password(member.email, pw)
 
     renderdict = get_page_dict(request)
     renderdict.update({

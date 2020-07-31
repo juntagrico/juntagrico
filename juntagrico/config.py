@@ -1,6 +1,5 @@
-from django.utils.translation import gettext as _
-
 from django.conf import settings
+from django.utils.translation import gettext as _
 
 
 def _get_setting(setting_key, default: object = ''):
@@ -63,7 +62,7 @@ class Config:
     )
     share_price = _get_setting('SHARE_PRICE', '250')
     business_regulations = _get_setting('BUSINESS_REGULATIONS')
-    bylaws = _get_setting('BUSINESS_REGULATIONS')
+    bylaws = _get_setting('BYLAWS')
     gdpr_info = _get_setting('GDPR_INFO')
     faq_doc = _get_setting('FAQ_DOC')
     extra_sub_info = _get_setting('EXTRA_SUB_INFO')
@@ -96,6 +95,11 @@ class Config:
     adminportal_name = _get_setting('ADMINPORTAL_NAME', 'my.juntagrico')
     adminportal_server_url = _get_setting('ADMINPORTAL_SERVER_URL', 'my.juntagrico.juntagrico')
     default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.defaultmailer.Mailer')
+    from_filter = _get_setting_with_key('FROM_FILTER',
+                                        {
+                                            'filter_expression': '.*',
+                                            'replacement_from': ''
+                                        })
 
     # template settings
     mail_template = _get_setting('MAIL_TEMPLATE', 'mails/email.html')

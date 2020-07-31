@@ -14,18 +14,18 @@
                     {% vocabulary "subscription" %}
                 </th>
                 <th class="filter">
-                    {% trans "End Datum" %}
+                    {% trans "Enddatum" %}
                 </th>
                 <th class="filter">
                     {% trans "Kontakt" %}
                 </th>
                 <th class="filter">
-                    {% trans "Email" %}
+                    {% trans "E-Mail" %}
                 </th>
                 <th>
                 </th>
                 <th>
-                    {% trans "Notizen" %})
+                    {% trans "Notizen" %}
                 </th>
             </tr>
         </thead>
@@ -54,9 +54,13 @@
                         </form>
                     </td>
                     <td>
+                        {% if subscription.deactivation_date %}
+                        {% trans "Wurde bereits deaktiviert" %} {{ subscription.deactivation_date }}
+                        {% else %}
                         <a href="{% url 'sub-deactivate' subscription.id %}"class="btn btn-success">
                             {% trans "deaktivieren" %}
                         </a>
+                        {% endif %}
                     </td>
                     <td>
                         {{ subscription.notes }}
