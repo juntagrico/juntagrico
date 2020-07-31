@@ -119,7 +119,7 @@ LOGIN_REDIRECT_URL = "/my/home"
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'juntagrico/locale'),
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

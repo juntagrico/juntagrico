@@ -5,13 +5,16 @@ from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
+from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.entity.jobs import OneTimeJob
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
 class JobTypeAdmin(BaseAdmin):
-    list_display = ['__str__']
+    list_display = ['__str__', 'activityarea',
+                    'default_duration', 'location', 'visible']
+    list_filter = ('activityarea', 'visible')
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
 
@@ -25,16 +28,24 @@ class JobTypeAdmin(BaseAdmin):
                 oj.name += str(i)
                 i += 1
                 oj.save()
+                for je in JobExtraDao.by_type(inst.id):
+                    je.recuring_type = None
+                    je.onetime_type = oj
+                    je.pk = None
+                    je.save()
                 for b in AssignmentDao.assignments_for_job(rj.id):
                     b.job = oj
                     b.save()
                 rj.delete()
+            for je in JobExtraDao.by_type(inst.id):
+                je.delete()
             inst.delete()
 
     transform_job_type.short_description = _('Jobart in EinzelJobs konvertieren')
 
     def get_queryset(self, request):
-        return queryset_for_coordinator(self, request, 'activityarea__coordinator')
+        qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
+        return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,

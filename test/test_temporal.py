@@ -2,11 +2,10 @@ from datetime import date
 
 from django.test import TestCase
 from django.utils import timezone
-from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.util.temporal import start_of_business_year
-from juntagrico.util.temporal import start_of_specific_business_year,\
-                                    end_of_specific_business_year
+from juntagrico.util.temporal import start_of_specific_business_year, \
+    end_of_specific_business_year
 
 
 class BusinessYearTests(TestCase):

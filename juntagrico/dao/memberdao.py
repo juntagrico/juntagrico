@@ -1,9 +1,12 @@
+from datetime import datetime, time
+
 from django.contrib.auth.models import Permission
 from django.db.models import Sum, Case, When, Q
 from django.utils import timezone
+from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.entity.member import Member
-from juntagrico.util import temporal
+from juntagrico.util.temporal import start_of_business_year
 
 
 class MemberDao:
@@ -34,11 +37,11 @@ class MemberDao:
 
     @staticmethod
     def members_for_future_subscription(subscription):
-        return Member.objects.filter((Q(subscription=None) | Q(subscription__canceled=True)) & Q(future_subscription=None) | Q(future_subscription=subscription))
+        return Member.objects.filter((Q(subscription=None) | Q(subscription__cancellation_date__isnull=False)) & Q(future_subscription=None) | Q(future_subscription=subscription))
 
     @staticmethod
     def members_for_create_subscription():
-        return Member.objects.filter((Q(subscription=None) | Q(subscription__canceled=True)) & Q(future_subscription=None))
+        return Member.objects.filter((Q(subscription=None) | Q(subscription__cancellation_date__isnull=False)) & Q(future_subscription=None))
 
     @staticmethod
     def members_for_email():
@@ -46,7 +49,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_subscription():
-        return Member.objects.exclude(subscription=None).filter(subscription__active=True).exclude(inactive=True)
+        return Member.objects.exclude(subscription=None).filter(subscription__activation_date__isnull=False).exclude(inactive=True)
 
     @staticmethod
     def members_for_email_with_shares():
@@ -75,10 +78,11 @@ class MemberDao:
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
         now = timezone.now()
+        start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
         return members.annotate(assignment_count=Sum(
-            Case(When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, then='assignment__amount')))).annotate(
+            Case(When(assignment__job__time__gte=start, assignment__job__time__lt=now, then='assignment__amount')))).annotate(
             core_assignment_count=Sum(Case(
-                When(assignment__job__time__gte=temporal.start_of_business_year(), assignment__job__time__lt=now, assignment__core_cache=True,
+                When(assignment__job__time__gte=start, assignment__job__time__lt=now, assignment__core_cache=True,
                      then='assignment__amount'))))
 
     @staticmethod

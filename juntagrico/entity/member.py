@@ -34,14 +34,14 @@ class Member(JuntagricoBaseModel):
 
     iban = models.CharField('IBAN', max_length=100, blank=True, default='')
 
-    future_subscription = models.ForeignKey('Subscription', related_name='members_future', null=True, blank=True,
-                                            on_delete=models.SET_NULL)
-    subscription = models.ForeignKey('Subscription', related_name='members', null=True, blank=True,
-                                     on_delete=models.SET_NULL)
+    future_subscription = models.ForeignKey(
+        'Subscription', related_name='members_future', null=True, blank=True, on_delete=models.SET_NULL)
+    subscription = models.ForeignKey(
+        'Subscription', related_name='members', null=True, blank=True, on_delete=models.SET_NULL)
     old_subscriptions = models.ManyToManyField(
         'Subscription', related_name='members_old')
 
-    confirmed = models.BooleanField(_('bestätigt'), default=False)
+    confirmed = models.BooleanField(_('E-Mail-Adresse bestätigt'), default=False)
     reachable_by_email = models.BooleanField(
         _('Kontaktierbar von der Job Seite aus'), default=False)
 
@@ -50,21 +50,35 @@ class Member(JuntagricoBaseModel):
         _('Kündigüngsdatum'), null=True, blank=True)
     end_date = models.DateField(
         _('Enddatum'), null=True, blank=True)
-    inactive = models.BooleanField(_('inaktiv'), default=False)
-    notes = models.TextField(_('Notizen'), max_length=1000, blank=True)
-
-    @property
-    def is_cooperation_member(self):
-        return self.share_set.filter(paid_date__isnull=False).filter(
-            payback_date__isnull=True).count() > 0
+    inactive = models.BooleanField(_('inaktiv'), default=False,
+                                   help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
+    notes = models.TextField(
+        _('Notizen'), max_length=1000, blank=True,
+        help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
     @property
     def active_shares(self):
-        return self.share_set.filter(cancelled_date__isnull=True)
+        """ :return: shares that have been paid by member and not cancelled AND paid back yet
+        """
+        return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
 
     @property
     def active_shares_count(self):
         return self.active_shares.count()
+
+    @property
+    def is_cooperation_member(self):
+        return self.active_shares_count > 0
+
+    @property
+    def usable_shares(self):
+        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
+        """
+        return self.share_set.filter(cancelled_date__isnull=True)
+
+    @property
+    def usable_shares_count(self):
+        return self.usable_shares.count()
 
     @property
     def in_subscription(self):

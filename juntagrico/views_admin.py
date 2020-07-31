@@ -21,9 +21,10 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.mailer import FormEmails
+from juntagrico.mailer import append_attachements
+from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location
-from juntagrico.util.mailer import append_attachements
+from juntagrico.view_decorators import any_permission_required
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.subs import subscriptions_with_assignments
@@ -44,6 +45,11 @@ def send_email_depot(request):
 
 @permission_required('juntagrico.is_area_admin')
 def send_email_area(request):
+    return send_email_intern(request)
+
+
+@any_permission_required('juntagrico.is_area_admin', 'juntagrico.can_send_mails')
+def send_email_job(request):
     return send_email_intern(request)
 
 
@@ -68,15 +74,15 @@ def send_email_intern(request):
     if request.POST.get('allsingleemail'):
         emails.update(re.split(r'[\s,;]+', request.POST.get('singleemail')))
 
-    attachements = []
-    append_attachements(request, attachements)
+    files = []
+    append_attachements(request, files)
 
     if len(emails) > 0:
-        FormEmails.internal(
+        formemails.internal(
             request.POST.get('subject'),
             request.POST.get('message'),
             request.POST.get('textMessage'),
-            emails, attachements, sender=sender
+            emails, files, sender=sender
         )
         sent = len(emails)
     return redirect('mail-result', numsent=sent)
@@ -104,6 +110,11 @@ def mails_depot(request):
 @permission_required('juntagrico.is_area_admin')
 def mails_area(request):
     return my_mails_intern(request, 'mail-area-send')
+
+
+@any_permission_required('juntagrico.is_area_admin', 'juntagrico.can_send_mails')
+def mails_job(request):
+    return my_mails_intern(request, 'mail-job-send')
 
 
 def my_mails_intern(request, mail_url, error_message=None):
@@ -226,15 +237,15 @@ def future(request):
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
                 subscription_size)
-        for users_subscription in subscription.extra_subscriptions.all():
-            extra_lines[users_subscription.type.name]['now'] += 1
+    for users_subscription in ExtraSubscriptionDao.all_active_extrasubscritions():
+        extra_lines[users_subscription.type.name]['now'] += 1
 
     for subscription in SubscriptionDao.future_subscriptions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
                 subscription_size)
-        for users_subscription in subscription.future_extra_subscriptions.all():
-            extra_lines[users_subscription.type.name]['future'] += 1
+    for users_subscription in ExtraSubscriptionDao.future_extrasubscriptions():
+        extra_lines[users_subscription.type.name]['future'] += 1
 
     renderdict.update({
         'changed': request.GET.get('changed'),
@@ -325,6 +336,7 @@ def excel_export_members(request):
 @permission_required('juntagrico.is_operations_group')
 def excel_export_shares(request):
     fields = [
+        'id',
         'number',
         'paid_date',
         'issue_date',
@@ -369,7 +381,7 @@ def typechangelist(request):
     changedlist = []
     subscriptions_list = SubscriptionDao.all_active_subscritions()
     for subscription in subscriptions_list:
-        if subscription.types_changed:
+        if subscription.types_changed > 0:
             changedlist.append(subscription)
     return subscription_management_list(changedlist, render_dict, 'management_lists/typechangelist.html', request)
 

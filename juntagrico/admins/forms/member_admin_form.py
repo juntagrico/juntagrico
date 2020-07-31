@@ -2,9 +2,9 @@ from django import forms
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.entity.member import Member
 from juntagrico.util.admin import MyHTMLWidget
-from juntagrico.config import Config
 
 
 class MemberAdminForm(forms.ModelForm):
@@ -53,4 +53,4 @@ class MemberAdminForm(forms.ModelForm):
     old_subscription_link = forms.URLField(widget=MyHTMLWidget(), required=False,
                                            label=_('Alte {0}').format(Config.vocabulary('subscription_pl')))
     share_link = forms.URLField(widget=MyHTMLWidget(), required=False,
-                                           label=_(Config.vocabulary('share_pl')))
+                                label=_(Config.vocabulary('share_pl')))
