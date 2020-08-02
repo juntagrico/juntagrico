@@ -1,8 +1,6 @@
-from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import timezone
 
-from juntagrico.entity.share import Share
 from test.util.test import JuntagricoTestCase
 
 

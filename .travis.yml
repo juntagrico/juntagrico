@@ -11,8 +11,9 @@ before_script:
   - ./cc-test-reporter before-build
 script:
   - django-admin.py makemigrations
-  - coverage run ./manage.py test
+  - coverage run -m manage test
 after_script:
+  - coverage report
   - coverage xml
   - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter format-coverage -t coverage.py -o coverageupload; cat coverageupload; ./cc-test-reporter upload-coverage -i coverageupload;fi
 env:

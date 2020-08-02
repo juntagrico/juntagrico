@@ -25,6 +25,15 @@ class JobDao:
         return otjidlist + rjidlist
 
     @staticmethod
+    def for_area_by_contact(member):
+        otjidlist = list(
+            OneTimeJob.objects.filter(activityarea__coordinator=member).values_list('id', flat=True))
+        rjidlist = list(
+            RecuringJob.objects.filter(type__activityarea__coordinator=member).values_list('id', flat=True))
+        alllist = otjidlist + rjidlist
+        return JobDao.jobs_by_ids(alllist)
+
+    @staticmethod
     def jobs_by_ids(jidlist):
         return Job.objects.filter(id__in=jidlist)
 

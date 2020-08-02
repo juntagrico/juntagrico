@@ -89,3 +89,10 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 200)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
+
+    def testFuture(self):
+        self.assertGet(reverse('future'))
+        self.assertGet(reverse('future'), member=self.member2, code=302)
+
+    def testPrimaryMember(self):
+        self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), member=self.member3, code=302)

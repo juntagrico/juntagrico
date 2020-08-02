@@ -38,6 +38,9 @@ class JobTests(JuntagricoTestCase):
         self.assertEqual(self.job4.assignment_set.count(), 5)
         self.assertGet(reverse('job', args=[self.job4.pk]))
 
+    def testOverassignement(self):
+        self.assertPost(reverse('job', args=[self.job4.pk]), {'jobs': 1000})
+
     def testHours(self):
         with self.settings(ASSIGNMENT_UNIT='HOURS'):
             self.assertPost(reverse('job', args=[self.job5.pk]), {'jobs': 1}, 302)

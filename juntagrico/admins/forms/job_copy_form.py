@@ -57,6 +57,8 @@ class JobCopyForm(forms.ModelForm):
         newjobs = []
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
+            if is_naive(dt):
+                dt = gdtz().localize(dt)
             job = RecuringJob.objects.create(
                 type=inst.type, slots=inst.slots, time=dt)
             newjobs.append(job)
