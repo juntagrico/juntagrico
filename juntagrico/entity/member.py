@@ -130,3 +130,16 @@ class Member(JuntagricoBaseModel):
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
         permissions = (('can_filter_members', _('Benutzer kann {0} filtern').format(Config.vocabulary('member_pl'))),)
+
+
+class SubscriptionMembership(JuntagricoBaseModel):
+
+    member = models.ForeignKey('Member', on_delete=models.CASCADE)
+    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
+    join_date = models.DateField(_('Beitrittsdatum'), auto_now_add=True, blank=True)
+    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
+
+    class Meta:
+        unique_together = ('member', 'subscription')
+        verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
+        verbose_name_plural =_('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))

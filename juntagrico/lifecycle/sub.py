@@ -27,20 +27,10 @@ def handle_sub_activated(sender, instance, **kwargs):
             raise ValidationError(
                 _('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription')),
                 code='invalid')
-    for member in instance.recipients_all_for_state('waiting'):
-        member.subscription = instance
-        member.future_subscription = None
-        member.save()
 
 
 def handle_sub_deactivated(sender, instance, **kwargs):
     instance.deactivation_date = instance.deactivation_date or timezone.now().date()
-    for member in instance.recipients_all_for_state('active'):
-        member.old_subscriptions.add(instance)
-        member.subscription = None
-        if member.share_set.filter(payback_date__isnull=True).count() == 0:
-            member.inactive = True
-        member.save()
 
 
 def handle_sub_canceled(sender, instance, **kwargs):
@@ -56,10 +46,9 @@ def check_sub_consistency(instance):
         raise ValidationError(
             _('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
             code='invalid')
-    pm_waiting = instance.primary_member in instance.recipients_all_for_state('waiting')
-    pm_active = instance.primary_member in instance.recipients_all_for_state('active')
+    pm_sub = instance.primary_member in instance.recipients
     pm_form = instance._future_members and instance.primary_member in instance._future_members
-    if instance.primary_member is not None and not (pm_waiting or pm_active or pm_form):
+    if instance.primary_member is not None and not (pm_sub or pm_form):
         raise ValidationError(
             _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
             code='invalid')

@@ -163,19 +163,11 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return self.recipients_all.filter(inactive=False)
+        return self.subscriptionmembership_set.filter(leave_date__isnull=True)
 
     @property
     def recipients_all(self):
-        return self.recipients_all_for_state(self.state)
-
-    def recipients_all_for_state(self, state):
-        if state == 'waiting':
-            return self.members_future.all()
-        elif state == 'inactive':
-            return self.members_old.all()
-        else:
-            return self.members.all()
+        return self.subscriptionmembership_set.filter(leave_date__isnull=True)
 
     def primary_member_nullsave(self):
         member = self.primary_member

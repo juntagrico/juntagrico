@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 import juntagrico
 from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.jobs import Assignment, OneTimeJob, RecuringJob, Job
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.lifecycle.extrasub import extra_sub_pre_save
@@ -16,6 +16,7 @@ from juntagrico.lifecycle.share import share_post_save, handle_share_created, sh
 from juntagrico.lifecycle.simplestate import handle_simple_deactivated, handle_simple_activated
 from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_sub_deactivated, handle_sub_activated, \
     sub_post_save, handle_sub_created
+from juntagrico.lifecycle.submembership import sub_membership_pre_save
 from juntagrico.lifecycle.subpart import sub_part_pre_save
 from juntagrico.util.signals import register_entities_for_post_init_and_save
 
@@ -61,6 +62,8 @@ juntagrico.signals.extra_sub_deactivated.connect(handle_simple_deactivated, send
 signals.pre_save.connect(sub_part_pre_save, sender=SubscriptionPart)
 juntagrico.signals.extra_sub_activated.connect(handle_simple_activated, sender=SubscriptionPart)
 juntagrico.signals.extra_sub_deactivated.connect(handle_simple_deactivated, sender=SubscriptionPart)
+''' subscription membership handling '''
+signals.pre_save.connect(sub_membership_pre_save, sender=SubscriptionMembership)
 ''' share handling '''
 signals.pre_save.connect(share_pre_save, sender=Share)
 signals.post_save.connect(share_post_save, sender=Share)
