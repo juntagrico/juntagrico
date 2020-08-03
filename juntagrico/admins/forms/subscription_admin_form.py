@@ -37,7 +37,7 @@ class SubscriptionAdminForm(forms.ModelForm):
     def clean(self):
         # enforce integrity constraint on primary_member
         members = self.cleaned_data['subscription_members']
-        primary = self.cleaned_data['primary_member']
+        primary = self.cleaned_data.get('primary_member')
         if primary not in members:
             self.cleaned_data['primary_member'] = members[0] if members else None
         new_members = set(self.cleaned_data['subscription_members'])
