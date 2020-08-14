@@ -1,16 +1,16 @@
 {% load depot_extras %}
 {% load i18n %}
-<h2 style="font-size: 18px; margin: 0px;">{{ depot.weekday_name }} - {{ depot.name }}{% if not first %} {% trans "Fortsetzung" %}{% endif %}</h2>
-{% if first %}
-<h3 style="font-size: 16px; margin: 0px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
-{% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}: {{ depot.contact.first_name }}
-{{ depot.contact.last_name }}
-{% endif %}
-<table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" class="bottom-border">
+<table cellpadding="5" cellspacing="0" style="margin-bottom:5px;" repeat="5">
     <tr>
-        <td style="width:360px;" class="name"></td>
+        <th colspan="9">
+            <h2 style="font-size: 24px; margin: 0px;">{{ depot.weekday_name }} - {{ depot.name }}</h2>
+            <h3 style="font-size: 14px; margin: 0px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }} ({% trans "Kontakt" %}: {{ depot.contact.first_name }} {{ depot.contact.last_name }})</h3>
+        </th>
+    </tr>
+    <tr>
+        <th style="width:360px;" class="name"></th>
         {% for product in products %}
-            <th colspan="{{ product.sizes_for_depot_list|count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}<br/><span
+            <th colspan="{{ product.sizes_for_depot_list|count }}" class="top-border {% if forloop.first %}left-border{% endif %} {% if category %}right-border{% endif %}">{{ product.name }}<br/><span
                     style="font-size:11px">{{ product.description }}</span></th>
         {% endfor %}
         {% for category in extra_sub_categories %}
@@ -19,7 +19,7 @@
         {% endfor %}
         <th colspan="2" class="top-border right-border"></th>
     </tr>
-    <tr>
+    <tr class="bottom-border">
         <td></td>
         {% for product in products %}
             {% for size in product.sizes_for_depot_list %}
@@ -28,13 +28,13 @@
         {% endfor %}
         {% for category in extra_sub_categories %}
             {% for type in category.types_for_depot_list %}
-                <td class="small bottom-border {% if forloop.first %}left-border{% endif %} {% if forloop.last %}right-border{% endif %}">{{ type.size }}</td>
+                <td class="small bottom-border {% if forloop.first and forloop.parentloop.first %}left-border{% endif %} {% if forloop.last %}right-border{% endif %}">{{ type.size }}</td>
             {% endfor %}
         {% endfor %}
         <td colspan="2" class="small bottom-border right-border"></td>
     </tr>
     <tr>
-        <td>{% trans "TOTAL" %}</td>
+        <td style="text-align: left;">{% trans "TOTAL" %}:</td>
         {% for product in products %}
             {% for size in product.sizes_for_depot_list %}
                 <td>{{ subscriptions|by_depot:depot|get_types_by_size:size|count }}</td>
@@ -47,7 +47,7 @@
         {% endfor %}
         <td colspan="2" ></td>
     </tr>
-    <tr>
+    <tr class="bottom-border">
         <th style="width:360px;">{% trans "Name" %}</th>
         {% for product in products %}
             <th colspan="{{ product.sizes_for_depot_list|count }}"></th>

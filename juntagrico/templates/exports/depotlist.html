@@ -11,12 +11,18 @@
 
 <body>
 <div id="header_content" style="text-align: right;">
-    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
+    {% now "d.m.Y H:i" %}
 </div>
+<div id="footer_content">
+    {% for message in messages %}
+        <div style="width: 100%; text-align: center; font-size: 18pt;">{{ message }}</div>
+    {% endfor %}
+</div>
+
 {% for depot in depots %}
     {% include "./snippets/snippet_depotlist_header.html" with first=True %}
     {% for subscription in depot.active_subscriptions %}
-        <tr>
+        <tr class="bottom-border">
             <td style="width:360px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
@@ -31,19 +37,8 @@
             <td style="width:80px;" class="top-border left-border"></td>
             <td style="width:80px;" class="top-border left-border right-border"></td>
         </tr>
-        {% if forloop.counter0|divisibleby:14 and forloop.counter0 > 0 and not forloop.last %}
-            </table>
-            <div class="page-break"></div>
-            {% include "./snippets/snippet_depotlist_header.html" %}
-        {% endif %}
     {% endfor %}
     </table>
-    <br/>
-    <div>
-        {% for message in messages %}
-            <div style="width: 100%; text-align: center; font-size: 18pt;">{{ message }}</div>
-        {% endfor %}
-    </div>
     <div class="page-break"></div>
 {% endfor %}
 </body>

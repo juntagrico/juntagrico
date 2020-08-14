@@ -8,8 +8,9 @@
     @frame content_frame {
         left: 50pt;
         width: 512pt;
-        top: 90pt;
-        height: 660pt;
+        top: 45pt;
+        height: 710pt;
+/*        -pdf-frame-border: 1;*/    /* for debugging the layout */
     }
 
     @frame header_frame {
@@ -17,7 +18,16 @@
         left: 50pt;
         width: 512pt;
         top: 50pt;
-        height: 40pt;
+        height: 20pt;
+        text-align:center;
+    }
+
+    @frame footer_frame {
+        -pdf-frame-content:footer_content;
+        left: 50pt;
+        width: 512pt;
+        top: 760pt;
+        height: 90pt;
         text-align:center;
     }
 }
