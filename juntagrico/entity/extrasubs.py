@@ -67,7 +67,7 @@ class ExtraSubscription(Billable, SimpleStateModel):
             self.type)
         if period is not None:
             return timezone.now().date() <= period.get_actual_cancel()
-        return False
+        return True
 
     def __str__(self):
         return '%s %s' % (self.id, self.type.name)
