@@ -79,6 +79,6 @@ class JobAdmin(BaseAdmin):
                                                **kwargs)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def change_view(self, request, object_id,form_url='', extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context_for_past_jobs(request, RecuringJob, object_id, extra_context)
         return super().change_view(request, object_id, extra_context=extra_context)

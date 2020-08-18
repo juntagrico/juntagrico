@@ -49,4 +49,3 @@ class AdminTests(JuntagricoTestCase):
         form.full_clean()
         form.save()
         self.assertEqual(RecuringJob.objects.all().count(), initial_count + 2)
-
