@@ -10,12 +10,12 @@
 </head>
 
 <body>
-<div id="header_content" style="text-align: right;">
+<div id="header_content" class="gendate">
     {% now "d.m.Y H:i" %}
 </div>
 <div id="footer_content">
     {% for message in messages %}
-        <div style="width: 100%; text-align: center; font-size: 18pt;">{{ message }}</div>
+        <div class="message">{{ message }}</div>
     {% endfor %}
 </div>
 
@@ -23,7 +23,7 @@
     {% include "./snippets/snippet_depotlist_header.html" with first=True %}
     {% for subscription in depot.active_subscriptions %}
         <tr class="bottom-border">
-            <td style="width:360px;" class="top-border left-border">{{ subscription.recipients_names }}</td>
+            <td class="namecol top-border left-border horz-left">{{ subscription.recipients_names }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
                     <td  class="top-border left-border">{{ subscription|get_types_by_size:size|count|default:'' }}</td>
@@ -34,8 +34,8 @@
                     <td  class="top-border left-border">{{ subscription|get_extra_subs_by_type:type|count|default:'' }}</td>
                 {% endfor %}
             {% endfor %}
-            <td style="width:80px;" class="top-border left-border"></td>
-            <td style="width:80px;" class="top-border left-border right-border"></td>
+            <td class="checkboxcol top-border left-border"></td>
+            <td class="checkboxcol top-border left-border right-border"></td>
         </tr>
     {% endfor %}
     </table>

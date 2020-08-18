@@ -10,7 +10,7 @@
         width: 512pt;
         top: 45pt;
         height: 710pt;
-/*        -pdf-frame-border: 1;*/    /* for debugging the layout */
+/*        -pdf-frame-border: 1;    */    /* for debugging the layout */
     }
 
     @frame header_frame {
@@ -61,16 +61,71 @@ body {
 }
 
 th {
-    text-align: left;
     font-size: 14px;
+    vertical-align: top;
+    text-align: center;
 }
 
 td {
     font-size: 14px;
     line-height: 14px;
     vertical-align: top;
+    text-align: center;
+}
+
+.vert-top {
+    vertical-align: top;
+}
+
+.vert-bottom {
+    vertical-align: bottom;
+}
+
+.horz-left {
+    text-align: left;
+}
+
+.horz-center {
+    text-align: center;
+}
+
+.namecol {
+    width:300px;
+}
+
+.checkboxcol {
+    width:50px;
+}
+
+.message {
+    width: 100%;
+    text-align: center;
+    font-size: 18pt;
+}
+
+.depot {
+    font-size: 24px;
+    margin: 0px;
+}
+
+.depotaddr {
+    font-size: 14px;
+    margin: 0px;
+}
+
+.fontsmall {
+    font-size:11px
+}
+
+.gendate {
+    text-align: right;
+}
+
+.proddescr {
+    font-size:11px
 }
 
 table {
     table-layout: fixed;
+    margin-bottom:5px;
 }
