@@ -2,6 +2,7 @@ import hashlib
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -33,13 +34,6 @@ class Member(JuntagricoBaseModel):
         _('Mobile'), max_length=50, null=True, blank=True)
 
     iban = models.CharField('IBAN', max_length=100, blank=True, default='')
-
-    future_subscription = models.ForeignKey(
-        'Subscription', related_name='members_future', null=True, blank=True, on_delete=models.SET_NULL)
-    subscription = models.ForeignKey(
-        'Subscription', related_name='members', null=True, blank=True, on_delete=models.SET_NULL)
-    old_subscriptions = models.ManyToManyField(
-        'Subscription', related_name='members_old')
 
     confirmed = models.BooleanField(_('E-Mail-Adresse bestätigt'), default=False)
     reachable_by_email = models.BooleanField(
@@ -81,13 +75,42 @@ class Member(JuntagricoBaseModel):
         return self.usable_shares.count()
 
     @property
+    def subscription_future(self):
+        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=True).first()
+        return getattr(sub_membership, 'subscription', None)
+
+    @property
+    def subscription_current(self):
+        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=False,
+                                                                subscription__deactivation_date__isnull=True).first()
+        return getattr(sub_membership, 'subscription', None)
+
+    @property
+    def subscriptions_old(self):
+        return [sm.subscription for sm in self.subscriptionmembership_set.filter(leave_date__isnull=False)]
+
+    def join_subscription(self, subscription):
+        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
+        if sub_membership and sub_membership.leave_date:
+            sub_membership.leave_date = None
+            sub_membership.saeve()
+        else:
+            SubscriptionMembership.objects.create(member=self, subscription=subscription)
+
+    def leave_subscription(self, subscription):
+        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
+        if sub_membership and sub_membership.leave_date is None:
+            sub_membership.leave_date = timezone.now().date()
+            sub_membership.save()
+
+    @property
     def in_subscription(self):
-        return (self.future_subscription is not None) | (self.subscription is not None)
+        return (self.subscription_future is not None) | (self.subscription_current is not None)
 
     @property
     def blocked(self):
-        future = self.future_subscription is not None
-        current = self.subscription is None or not self.subscription.canceled
+        future = self.subscription_future is not None
+        current = self.subscription_current is None or not self.subscription_current.canceled
         return future or not current
 
     def get_name(self):
@@ -136,10 +159,10 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
-    join_date = models.DateField(_('Beitrittsdatum'), auto_now_add=True, blank=True)
+    join_date = models.DateField(_('Beitrittsdatum'), default=timezone.now, blank=True)
     leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
 
     class Meta:
         unique_together = ('member', 'subscription')
         verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
-        verbose_name_plural =_('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))
+        verbose_name_plural = _('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))

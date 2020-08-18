@@ -50,6 +50,7 @@ class SimpleStateModel(models.Model):
 
     def deactivate(self, time=None):
         now = time or timezone.now().date()
+        self.cancellation_date = self.cancellation_date or now
         self.deactivation_date = self.deactivation_date or now
         self.save()
 

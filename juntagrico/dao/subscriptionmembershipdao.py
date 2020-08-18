@@ -1,6 +1,4 @@
 from juntagrico.entity.member import SubscriptionMembership
-from juntagrico.entity.subs import SubscriptionPart
-from juntagrico.util.models import q_activated, q_cancelled
 
 
 class SubscriptionMembershipDao:
@@ -18,3 +16,7 @@ class SubscriptionMembershipDao:
                     subscription__cancellation_date__isnull=True,
                     subscription__deactivation_date__isnull=True)\
             .filter(member=member)
+
+    @staticmethod
+    def get_all_for_subscription(subscription):
+        return SubscriptionMembership.objects.filter(subscription=subscription)

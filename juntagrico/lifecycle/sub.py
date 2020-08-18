@@ -22,8 +22,8 @@ def sub_pre_save(sender, instance, **kwargs):
 
 def handle_sub_activated(sender, instance, **kwargs):
     instance.activation_date = instance.activation_date or timezone.now().date()
-    for member in instance.recipients_all_for_state('waiting'):
-        if member.subscription is not None:
+    for member in instance.recipients:
+        if member.subscription_current is not None:
             raise ValidationError(
                 _('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription')),
                 code='invalid')

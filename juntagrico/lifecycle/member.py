@@ -29,11 +29,11 @@ def check_member_consistency(instance):
             raise ValidationError(
                 _('Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}').format(Config.vocabulary('member'), Config.vocabulary('share')),
                 code='invalid')
-        if instance.future_subscription is not None and instance.future_subscription.primary_member.pk == instance.pk:
+        if instance.subscription_future is not None and instance.subscription_future.primary_member.pk == instance.pk:
             raise ValidationError(
                 _('Diese/r/s {} ist noch HauptbezieherIn in einer/m {}').format(Config.vocabulary('member'), Config.vocabulary('subscription')),
                 code='invalid')
-        if instance.subscription is not None and instance.subscription.primary_member.pk == instance.pk:
+        if instance.subscription_current is not None and instance.subscription_current.primary_member.pk == instance.pk:
             raise ValidationError(
                 _('Diese/r/s {} ist noch HauptbezieherIn in einer/m {}').format(Config.vocabulary('member'), Config.vocabulary('subscription')),
                 code='invalid')

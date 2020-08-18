@@ -154,8 +154,12 @@ class Subscription(Billable, SimpleStateModel):
 
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
+    def co_members(self, member):
+        return [m.member for m in
+                self.subscriptionmembership_set.filter(leave_date__isnull=True).exclude(member__email=member.email).prefetch_related('member').all()]
+
     def other_recipients(self):
-        return self.recipients.exclude(email=self.primary_member.email)
+        return self.co_members(self.primary_member)
 
     def other_recipients_names(self):
         members = self.other_recipients()
@@ -163,11 +167,11 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return self.subscriptionmembership_set.filter(leave_date__isnull=True)
+        return [m.member for m in self.subscriptionmembership_set.filter(leave_date__isnull=True).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
-        return self.subscriptionmembership_set.filter(leave_date__isnull=True)
+        return [m.member for m in self.subscriptionmembership_set.prefetch_related('member').all()]
 
     def primary_member_nullsave(self):
         member = self.primary_member
