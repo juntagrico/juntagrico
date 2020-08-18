@@ -412,7 +412,7 @@ def deactivate_extra(request, extra_id):
 
 @primary_member_of_subscription
 def cancel_extra(request, extra_id, subscription_id):
-    extra = get_object_or_404(ExtraSubscription, subscription__id=subscription_id, id=extra_id)
+    extra = get_object_or_404(ExtraSubscription, main_subscription__id=subscription_id, id=extra_id)
     if extra.activation_date is None:
         extra.delete()
     else:
