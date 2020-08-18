@@ -119,7 +119,6 @@ For your convenience all settings with default values to copy into your settings
                 'single_empty': '/static/img/single_empty.png', 
                 'single_core': '/static/img/single_core.png',
                 'core': '/static/img/core.png'}
-    GOOGLE_API_KEY = 'GOOGLE_API_KEY'
     EMAILS = {
         'welcome': 'mails/welcome_mail.txt',
         'co_welcome': 'mails/welcome_added_mail.txt',
