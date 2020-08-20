@@ -1,5 +1,6 @@
 {% load depot_extras %}
 {% load i18n %}
+{% load config %}
 <h2 style="font-size: 18px; margin: 0px;">{{ depot.weekday_name }} - {{ depot.name }}{% if not first %} {% trans "Fortsetzung" %}{% endif %}</h2>
 {% if first %}
 <h3 style="font-size: 16px; margin: 0px;">{{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}</h3>
@@ -56,5 +57,5 @@
             <th colspan="{{ category.types_for_depot_list|count }}"></th>
         {% endfor %}
         <th style="font-size:11px">{% trans "abgeholt" %}</th>
-        <th style="font-size:11px">{% trans "Tasche retour" %}</th>
+        <th style="font-size:11px">{% vocabulary "package" %} {% trans "retour" %}</th>
     </tr>
