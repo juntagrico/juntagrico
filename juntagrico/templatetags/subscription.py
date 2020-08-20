@@ -22,6 +22,3 @@ def overview(part_overview):
     loop(result, '', part_overview)
     result.append('</ul>')
     return '\n'.join(result)
-
-
-

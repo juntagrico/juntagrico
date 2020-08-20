@@ -61,7 +61,6 @@ class Subscription(Billable, SimpleStateModel):
             result[product_name] = product
         return result
 
-
     @property
     def part_overview(self):
         return Subscription.get_part_overview(self.active_parts)
