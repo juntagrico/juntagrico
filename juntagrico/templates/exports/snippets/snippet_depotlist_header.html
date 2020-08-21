@@ -1,5 +1,6 @@
 {% load depot_extras %}
 {% load i18n %}
+{% load config %}
 <table cellpadding="2" cellspacing="0" repeat="5">
     <tr>
         <th colspan="3" class="horz-left">{% comment "#TODO: get number of columns from data. workaround: there will be at least 3 columns" %}{% endcomment %}
@@ -59,5 +60,5 @@
             <th colspan="{{ category.types_for_depot_list|count }}"></th>
         {% endfor %}
         <th class="fontsmall vert-bottom">{% trans "abgeholt" %}</th>
-        <th class="fontsmall vert-bottom">{% trans "Tasche retour" %}</th>
+        <th class="fontsmall vert-bottom">{% vocabulary "package" %} {% trans "retour" %}</th>
     </tr>

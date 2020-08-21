@@ -33,7 +33,8 @@ class Config:
             'member_type': _('Mitglied'),
             'member_type_pl': _('Mitglieder'),
             'depot': _('Depot'),
-            'depot_pl': _('Depots')
+            'depot_pl': _('Depots'),
+            'package': _('Tasche'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
