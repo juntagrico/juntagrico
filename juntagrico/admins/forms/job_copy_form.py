@@ -13,7 +13,7 @@ from juntagrico.util.temporal import weekday_choices
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
-        fields = ['type', 'slots']
+        fields = ['type', 'slots', 'infinite_slots']
 
     weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
@@ -60,7 +60,7 @@ class JobCopyForm(forms.ModelForm):
             if is_naive(dt):
                 dt = gdtz().localize(dt)
             job = RecuringJob.objects.create(
-                type=inst.type, slots=inst.slots, time=dt)
+                type=inst.type, slots=inst.slots, infinite_slots=inst.infinite_slots, time=dt)
             newjobs.append(job)
             job.save()
 
