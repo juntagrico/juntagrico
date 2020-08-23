@@ -294,8 +294,8 @@ def excel_export_members_filter(request):
             member.all_areas = str(_('-Kein Tätigkeitsbereich-'))
 
         member.depot_name = str(_('Kein Depot definiert'))
-        if member.subscription is not None:
-            member.depot_name = member.subscription.depot.name
+        if member.subscription_current is not None:
+            member.depot_name = member.subscription_current.depot.name
         looco_full_name = member.first_name + ' ' + member.last_name
         worksheet_s.write_string(row, 0, looco_full_name)
         worksheet_s.write(row, 1, member.assignment_count)

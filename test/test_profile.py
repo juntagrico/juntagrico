@@ -37,7 +37,7 @@ class ProfileTests(JuntagricoTestCase):
             share.payback_date = timezone.now().date()
             share.save()
         # and delete the subscription
-        self.member.subscription.delete()
+        self.member.subscription_current.delete()
         self.assertPost(reverse('member-deactivate', args=(self.member.pk,)), code=302)
         self.member.refresh_from_db()
         self.assertTrue(self.member.inactive)
