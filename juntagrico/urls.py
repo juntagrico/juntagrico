@@ -49,6 +49,7 @@ urlpatterns = [
          name='extra-change'),
     path('my/signup/', juntagrico_subscription.SignupView.as_view(), name='signup'),
     path('my/cosubmember/<int:subscription_id>/', juntagrico_subscription.AddCoMemberView.as_view(), name='add-member'),
+    path('my/subnickname/<int:subscription_id>/', juntagrico_subscription.change_nickname, name='change-nickname'),
     path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
     path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
          name='sub-activate'),  #

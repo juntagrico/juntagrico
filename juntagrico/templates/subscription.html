@@ -148,9 +148,22 @@
                 {% endif %}
             </div>
         </div>
+        {% if subscription.nickname %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% vocabulary "depot" %}
+                {% blocktrans %}Spitzname für {{ v_depot }}-Liste{% endblocktrans %}
+            </div>
+            <div class="col-md-9">
+                {{ subscription.nickname }}
+                {% if primary %}
+                    (<a href="{% url 'change-nickname' subscription.id %}">{% blocktrans %}ändern{% endblocktrans %}</a>)
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                {{ v_depot }}
             </div>
             <div class="col-md-9">
                 {{ subscription.depot.name }}
