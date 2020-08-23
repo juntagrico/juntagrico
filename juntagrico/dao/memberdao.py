@@ -6,7 +6,9 @@ from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.entity.member import Member
-from juntagrico.util.models import PropertyQuerySet
+
+from juntagrico.util.models import PropertyQuerySet, q_deactivated
+from juntagrico.util.models import q_cancelled
 from juntagrico.util.temporal import start_of_business_year
 
 
@@ -34,7 +36,7 @@ class MemberDao:
 
     @staticmethod
     def canceled_members():
-        return Member.objects.filter(canceled=True).exclude(inactive=True)
+        return Member.objects.filter(q_cancelled).exclude(q_deactivated)
 
     @staticmethod
     def member_by_email(email):
@@ -78,16 +80,16 @@ class MemberDao:
 
     @staticmethod
     def members_for_email():
-        return Member.objects.exclude(inactive=True)
+        return Member.objects.exclude(q_deactivated)
 
     @staticmethod
     def members_for_email_with_subscription():
         return Member.objects.filter(subscriptionmembership__subscription__activation_date__isnull=False).exclude(
-            inactive=True)
+            q_deactivated)
 
     @staticmethod
     def members_for_email_with_shares():
-        return Member.objects.filter(share__isnull=False).exclude(inactive=True)
+        return Member.objects.filter(share__isnull=False).exclude(q_deactivated)
 
     @staticmethod
     def members_with_assignments_count():
@@ -95,16 +97,16 @@ class MemberDao:
 
     @staticmethod
     def active_members_with_assignments_count():
-        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(inactive=False))
+        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(~q_deactivated))
 
     @staticmethod
     def members_with_assignments_count_for_depot(depot):
         return MemberDao.annotate_members_with_assignemnt_count(
-            Member.objects.filter(subscriptionmembership__subscription__depot=depot).filter(inactive=False))
+            Member.objects.filter(subscriptionmembership__subscription__depot=depot).filter(~q_deactivated))
 
     @staticmethod
     def members_with_assignments_count_in_area(area):
-        return MemberDao.annotate_members_with_assignemnt_count(area.members.all().filter(inactive=False))
+        return MemberDao.annotate_members_with_assignemnt_count(area.members.all().filter(~q_deactivated))
 
     @staticmethod
     def members_with_assignments_count_in_subscription(subscription):

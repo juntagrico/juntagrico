@@ -18,12 +18,12 @@ class Command(BaseCommand):
         mem1_fields = {'first_name': 'Boro', 'last_name': 'Sadler', 'email': 'boro.sadler@juntagrico.juntagrico',
                        'addr_street': 'Mühlezelgstrasse 1', 'addr_zipcode': '8047', 'addr_location': 'Zürich',
                        'birthday': '2017-03-27', 'phone': '079 123 45 99', 'mobile_phone': '', 'confirmed': True,
-                       'reachable_by_email': False, 'inactive': False}
+                       'reachable_by_email': False}
         mem2_fields = {'first_name': 'Deepak', 'last_name': 'Olvirsson',
                        'email': 'deepak.olvirsson@juntagico.juntagrico', 'addr_street': 'Otto-Lang-Weg 1',
                        'addr_zipcode': '8044', 'addr_location': 'Zürich', 'birthday': '2017-03-27',
                        'phone': '079 123 45 99', 'mobile_phone': '', 'confirmed': True,
-                       'reachable_by_email': False, 'inactive': False}
+                       'reachable_by_email': False}
         member_1 = Member.objects.create(**mem1_fields)
         member_2 = Member.objects.create(**mem2_fields)
         share_all_fields = {'member': member_1, 'paid_date': '2017-03-27', 'issue_date': '2017-03-27', 'booking_date': None,

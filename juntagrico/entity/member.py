@@ -38,17 +38,23 @@ class Member(JuntagricoBaseModel):
     confirmed = models.BooleanField(_('E-Mail-Adresse bestätigt'), default=False)
     reachable_by_email = models.BooleanField(
         _('Kontaktierbar von der Job Seite aus'), default=False)
-
-    canceled = models.BooleanField(_('gekündigt'), default=False)
-    cancelation_date = models.DateField(
+    cancellation_date = models.DateField(
         _('Kündigüngsdatum'), null=True, blank=True)
+    deactivation_date = models.DateField(
+        _('Deaktivierungsdatum'), null=True, blank=True, help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
     end_date = models.DateField(
         _('Enddatum'), null=True, blank=True)
-    inactive = models.BooleanField(_('inaktiv'), default=False,
-                                   help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+
+    @property
+    def canceled(self):
+        return self.cancellation_date is not None and self.cancellation_date <= timezone.now().date()
+
+    @property
+    def inactive(self):
+        return self.deactivation_date is not None and self.deactivation_date <= timezone.now().date()
 
     @property
     def active_shares(self):

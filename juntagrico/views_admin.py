@@ -328,7 +328,7 @@ def excel_export_members(request):
         'mobile_phone',
         'confirmed',
         'reachable_by_email',
-        'inactive',
+        'deactivation_date',
     ]
     return generate_excel(fields, Member)
 
@@ -421,7 +421,7 @@ def member_canceledlist(request):
 @permission_required('juntagrico.is_operations_group')
 def deactivate_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-    member.inactive = True
+    member.deactivation_date = timezone.now().date()
     member.save()
     return return_to_previous_location(request)
 

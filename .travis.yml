@@ -10,7 +10,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
-  - django-admin.py makemigrations
+  - django-admin.py makemigrations --noinput
   - coverage run -m manage test
 after_script:
   - coverage report

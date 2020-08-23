@@ -21,7 +21,7 @@ class MemberAdmin(BaseAdmin):
         (_('Kontakt'), {'fields': ['email', 'confirmed', 'reachable_by_email', 'phone', 'mobile_phone']}),
         (_('Adresse'), {'fields': ['addr_street', 'addr_zipcode', 'addr_location']}),
         (_('Bankdaten'), {'fields': ['iban']}),
-        (_('Status'), {'fields': ['canceled', 'cancelation_date', 'end_date', 'inactive']}),
+        (_('Status'), {'fields': ['cancellation_date', 'end_date', 'deactivation_date']}),
         (Config.vocabulary('subscription_pl'),
          {'fields': ['subscription_link', 'future_subscription_link', 'old_subscription_link']}),
         (_('Administration'), {'fields': ['notes', 'user_link']}),

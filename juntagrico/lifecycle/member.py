@@ -13,9 +13,9 @@ def member_post_save(sender, instance, created, **kwargs):
 
 def member_pre_save(sender, instance, **kwargs):
     check_member_consistency(instance)
-    if instance._old['inactive'] != instance.inactive and instance.inactive is True:
+    if instance._old['deactivation_date'] != instance.deactivation_date and instance.deactivation_date is not None:
         member_deactivated.send(sender=sender, instance=instance)
-    if instance._old['canceled'] != instance.canceled and instance.canceled is True:
+    if instance._old['cancellation_date'] != instance.cancellation_date and instance.cancellation_date is not None:
         member_canceled.send(sender=sender, instance=instance)
 
 
@@ -24,7 +24,7 @@ def handle_member_deactivated(sender, instance, **kwargs):
 
 
 def check_member_consistency(instance):
-    if instance._old['inactive'] != instance.inactive and instance.inactive is True:
+    if instance._old['deactivation_date'] != instance.deactivation_date and instance.deactivation_date is not None:
         if instance.is_cooperation_member:
             raise ValidationError(
                 _('Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}').format(Config.vocabulary('member'), Config.vocabulary('share')),
