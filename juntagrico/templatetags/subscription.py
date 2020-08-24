@@ -12,7 +12,7 @@ def overview(part_overview):
         for new_key, new_value in value.items():
             if isinstance(new_value, int):
                 display_name = new_key[1] if new_key[1] != '' else key
-                result_list.append('<li> {} : {} </li>'.format(display_name, new_value))
+                result_list.append('<li> {} x {} </li>'.format(new_value, display_name))
             else:
                 loop(result_list, new_key, new_value, len(value.items()) > 1)
         if more_than_one:

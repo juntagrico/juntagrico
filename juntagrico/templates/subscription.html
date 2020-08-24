@@ -57,7 +57,11 @@
                 {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
             </div>
             <div class="col-md-9">
+                {% if subscription.state == 'waiting' %}
+                {{ subscription.future_part_overview|overview|safe }}
+                {% else %}
                 {{ subscription.part_overview|overview|safe }}
+                {% endif %}
             </div>
         </div>
         <div class="row mb-3">

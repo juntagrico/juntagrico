@@ -49,6 +49,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def get_part_overview(parts):
+        # building multi-dimensional dictionary [product_name][size_long_name][(type_name, type_long_name)] -> amount
         result = {}
         for part in parts.all():
             product_name = part.type.size.product.name
