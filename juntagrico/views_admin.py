@@ -237,15 +237,15 @@ def future(request):
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
                 subscription_size)
-        for users_subscription in subscription.extra_subscriptions.all():
-            extra_lines[users_subscription.type.name]['now'] += 1
+    for users_subscription in ExtraSubscriptionDao.all_active_extrasubscritions():
+        extra_lines[users_subscription.type.name]['now'] += 1
 
     for subscription in SubscriptionDao.future_subscriptions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
                 subscription_size)
-        for users_subscription in subscription.future_extra_subscriptions.all():
-            extra_lines[users_subscription.type.name]['future'] += 1
+    for users_subscription in ExtraSubscriptionDao.future_extrasubscriptions():
+        extra_lines[users_subscription.type.name]['future'] += 1
 
     renderdict.update({
         'changed': request.GET.get('changed'),
