@@ -23,7 +23,7 @@
     {% include "./snippets/snippet_depotlist_header.html" with first=True %}
     {% for subscription in depot.active_subscriptions %}
         <tr class="bottom-border">
-            <td class="namecol top-border left-border horz-left">{{ subscription.recipients_names }}</td>
+            <td class="namecol top-border left-border horz-left">{{ subscription.nickname_or_recipients_names }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
                     <td class="top-border left-border">{{ subscription|get_types_by_size:size|count|default:'' }}</td>

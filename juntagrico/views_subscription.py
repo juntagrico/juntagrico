@@ -22,7 +22,7 @@ from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, NicknameForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
@@ -425,6 +425,24 @@ def cancel_extra(request, extra_id, subscription_id):
     else:
         extra.cancel()
     return return_to_previous_location(request)
+
+
+@primary_member_of_subscription
+def change_nickname(request, subscription_id):
+    subscription = get_object_or_404(Subscription, id=subscription_id)
+    if request.method == 'POST':
+        form = NicknameForm(request.POST)
+        if form.is_valid():
+            subscription.nickname = form.cleaned_data['nickname']
+            subscription.save()
+            return redirect('sub-detail-id', subscription_id=subscription_id)
+    else:
+        form = NicknameForm()
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'form': form,
+    })
+    return render(request, 'change_nickname.html', renderdict)
 
 
 @login_required

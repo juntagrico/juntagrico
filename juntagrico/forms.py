@@ -383,3 +383,12 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             ))
             raise ValidationError(amount_error_message, code='amount_error')
         return super().clean()
+
+
+class NicknameForm(Form):
+    nickname = CharField(label=_('{}-Spitzname').format(Config.vocabulary('subscription')), max_length=30, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', _('Speichern')))
