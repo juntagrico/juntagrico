@@ -28,7 +28,7 @@ class Subscription(Billable, SimpleStateModel):
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
                                        on_delete=models.PROTECT,
                                        verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
-    nickname = models.CharField(max_length=30, blank=True, help_text=_('Ersetzt die Namen auf der {}-Liste'.format(Config.vocabulary('depot'))))
+    nickname = models.CharField(_('Spitzname'), max_length=30, blank=True, help_text=_('Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste.'.format(Config.vocabulary('subscription'),Config.vocabulary('depot'))))
     start_date = models.DateField(
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
@@ -150,13 +150,19 @@ class Subscription(Billable, SimpleStateModel):
         return result
 
     def recipients_names(self):
+        members = self.recipients
+        return ', '.join(str(member) for member in members)
+
+    recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
+
+    def nickname_or_recipients_names(self):
         if self.nickname:
-            return self.nickname
+            return self.nickname + ' ({})'.format(self.primary_member_nullsave())
         else:
             members = self.recipients
             return ', '.join(str(member) for member in members)
 
-    recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
+    nickname_or_recipients_names.short_description = _('{}-Spitzname oder -BezieherInnen').format(Config.vocabulary('subscription'))
 
     def other_recipients(self):
         return self.recipients.exclude(email=self.primary_member.email)

@@ -430,8 +430,6 @@ def cancel_extra(request, extra_id, subscription_id):
 @primary_member_of_subscription
 def change_nickname(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    if subscription.nickname is None:
-        return redirect('sub-detail-id', subscription_id=subscription_id)
     if request.method == 'POST':
         form = NicknameForm(request.POST)
         if form.is_valid():

@@ -386,9 +386,9 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
 
 
 class NicknameForm(Form):
-    nickname = CharField(label=_('Abo-Spitzname'), min_length=3, max_length=30)
+    nickname = CharField(label=_('{}-Spitzname').format(Config.vocabulary('subscription')), max_length=30, required = False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', 'Speichern'))
+        self.helper.add_input(Submit('submit', _('Speichern')))

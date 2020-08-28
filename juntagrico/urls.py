@@ -41,6 +41,8 @@ urlpatterns = [
          name='sub-change'),  #
     path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
          name='depot-change'),  #
+    path('my/subscription/change/nickname/<int:subscription_id>/', juntagrico_subscription.change_nickname,
+         name='nickname-change'),
     path('my/subscription/change/primary/<int:subscription_id>/', juntagrico_subscription.primary_change,
          name='primary-change'),  #
     path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),
@@ -49,7 +51,6 @@ urlpatterns = [
          name='extra-change'),
     path('my/signup/', juntagrico_subscription.SignupView.as_view(), name='signup'),
     path('my/cosubmember/<int:subscription_id>/', juntagrico_subscription.AddCoMemberView.as_view(), name='add-member'),
-    path('my/subnickname/<int:subscription_id>/', juntagrico_subscription.change_nickname, name='change-nickname'),
     path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
     path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
          name='sub-activate'),  #
