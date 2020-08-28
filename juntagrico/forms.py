@@ -386,7 +386,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
 
 
 class NicknameForm(Form):
-    nickname = CharField(label=_('{}-Spitzname').format(Config.vocabulary('subscription')), max_length=30, required = False)
+    nickname = CharField(label=_('{}-Spitzname').format(Config.vocabulary('subscription')), max_length=30, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

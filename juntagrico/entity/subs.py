@@ -28,7 +28,8 @@ class Subscription(Billable, SimpleStateModel):
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
                                        on_delete=models.PROTECT,
                                        verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
-    nickname = models.CharField(_('Spitzname'), max_length=30, blank=True, help_text=_('Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste.'.format(Config.vocabulary('subscription'),Config.vocabulary('depot'))))
+    nickname = models.CharField(_('Spitzname'), max_length=30, blank=True,
+                                help_text=_('Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste.'.format(Config.vocabulary('subscription'), Config.vocabulary('depot'))))
     start_date = models.DateField(
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
