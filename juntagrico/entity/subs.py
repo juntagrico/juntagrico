@@ -252,6 +252,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         # TODO
         return True
 
+    @notifiable
     class Meta:
         verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
