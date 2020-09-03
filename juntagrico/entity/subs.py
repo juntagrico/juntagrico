@@ -28,6 +28,8 @@ class Subscription(Billable, SimpleStateModel):
     primary_member = models.ForeignKey('Member', related_name='subscription_primary', null=True, blank=True,
                                        on_delete=models.PROTECT,
                                        verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
+    nickname = models.CharField(_('Spitzname'), max_length=30, blank=True,
+                                help_text=_('Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste.'.format(Config.vocabulary('subscription'), Config.vocabulary('depot'))))
     start_date = models.DateField(
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
@@ -48,22 +50,27 @@ class Subscription(Billable, SimpleStateModel):
         return '%s' % (' + '.join(namelist))
 
     @staticmethod
-    def get_size_name(parts):
-        size_dict = {}
+    def get_part_overview(parts):
+        # building multi-dimensional dictionary [product_name][size_long_name][(type_name, type_long_name)] -> amount
+        result = {}
         for part in parts.all():
-            size_dict[str(part.type)] = 1 + size_dict.get(str(part.type), 0)
-        size_names = [key + ':' + str(value) for key, value in size_dict.items()]
-        if len(size_names) > 0:
-            return '<br>'.join(size_names)
-        return _('keine {0}-Bestandteile').format(Config.vocabulary('subscription'))
+            product_name = part.type.size.product.name
+            product = result.get(product_name, {})
+            size_name = part.type.size.long_name
+            size = product.get(size_name, {})
+            type_name = (part.type.name, part.type.long_name)
+            size[type_name] = 1 + size.get(type_name, 0)
+            product[size_name] = size
+            result[product_name] = product
+        return result
 
     @property
-    def size_name(self):
-        return Subscription.get_size_name(self.active_parts)
+    def part_overview(self):
+        return Subscription.get_part_overview(self.active_parts)
 
     @property
-    def future_size_name(self):
-        return Subscription.get_size_name(self.future_parts)
+    def future_part_overview(self):
+        return Subscription.get_part_overview(self.future_parts)
 
     @property
     def active_parts(self):
@@ -158,6 +165,15 @@ class Subscription(Billable, SimpleStateModel):
         return [m.member for m in
                 self.subscriptionmembership_set.filter(leave_date__isnull=True).exclude(member__email=member.email).prefetch_related('member').all()]
 
+    def nickname_or_recipients_names(self):
+        if self.nickname:
+            return self.nickname + ' ({})'.format(self.primary_member_nullsave())
+        else:
+            members = self.recipients
+            return ', '.join(str(member) for member in members)
+
+    nickname_or_recipients_names.short_description = _('{}-Spitzname oder -BezieherInnen').format(Config.vocabulary('subscription'))
+
     def other_recipients(self):
         return self.co_members(self.primary_member)
 
@@ -232,6 +248,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         # TODO
         return True
 
+    @notifiable
     class Meta:
         verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))

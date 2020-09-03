@@ -45,6 +45,13 @@ class SubscriptionTests(JuntagricoTestCase):
     def testDepot(self):
         self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
 
+    def testNicknameChange(self):
+        test_nickname = 'My Nickname'
+        self.assertGet(reverse('nickname-change', args=[self.sub.pk]))
+        self.assertPost(reverse('nickname-change', args=[self.sub.pk]), {'nickname': test_nickname}, 302)
+        self.sub.refresh_from_db()
+        self.assertEqual(self.sub.nickname, test_nickname)
+
     def testSizeChange(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
             self.assertGet(reverse('size-change', args=[self.sub.pk]))

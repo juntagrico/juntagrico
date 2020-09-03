@@ -10,6 +10,7 @@
     {% vocabulary "subscription" as v_subscription %}
     {% trans "Welchen Teil möchtest du ändern?" %}
     {% include "snippets/snippet_subscription_change_depot.html" %}
+    {% include "snippets/snippet_subscription_change_nickname.html" %}
     {% include "snippets/snippet_subscription_change_size.html" %}
     {% for sub_change_addon in sub_change_addons %}
         {% include sub_change_addon %}

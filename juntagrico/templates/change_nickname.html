@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load config %}
+{% load crispy_forms_tags %}
+{% block page_title %}
+    {% vocabulary "subscription" as v_subscription %}
+    <h3>
+        {% blocktrans %}{{ v_subscription }}-Spitznamen ändern{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% vocabulary "depot" as v_depot %}
+    {% vocabulary "subscription" as v_subscription %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            {% blocktrans %}Ändere hier den Spitznamen für die {{ v_depot }}-Liste.{% endblocktrans %} {% blocktrans %}Das Feld leer lassen und speichern, um wieder alle Namen anstatt des Spitznamens anzeigen zu lassen.{% endblocktrans %} {% blocktrans %}Bitte vergiss nicht, deine MitabonentInnen zu informieren.{% endblocktrans %}
+        </div>
+    </div>
+    {% crispy form %}
+{% endblock %}

@@ -29,7 +29,8 @@ VOCABULARY
         'member_type' : 'Mitglied',
         'member_type_pl' : 'Mitglieder',
         'depot' : 'Depot',
-        'depot_pl' : 'Depots'
+        'depot_pl' : 'Depots',
+        'package': 'Tasche',
     }
 
 ORGANISATION_NAME
