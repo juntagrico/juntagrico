@@ -54,8 +54,20 @@ class SimpleStateModel(models.Model):
         self.save()
 
     @property
+    def waiting(self):
+        return self.state == 'waiting'
+
+    @property
     def active(self):
         return self.state == 'active'
+
+    @property
+    def canceled(self):
+        return self.state == 'canceled'
+
+    @property
+    def inactive(self):
+        return self.state == 'inactive'
 
     @property
     def __state_code(self):
