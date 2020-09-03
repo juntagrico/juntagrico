@@ -245,8 +245,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @property
     def can_cancel(self):
-        # TODO
-        return True
+        return self.cancellation_date is None and self.subscription.active_and_future_parts.count() > 1
 
     @notifiable
     class Meta:
