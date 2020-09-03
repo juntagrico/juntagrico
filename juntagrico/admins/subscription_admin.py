@@ -16,12 +16,12 @@ class SubscriptionAdmin(BaseAdmin):
     search_fields = ['members__user__username', 'members__first_name', 'members__last_name',
                      'members_future__user__username', 'members_future__first_name', 'members_future__last_name',
                      'members_old__user__username', 'members_old__first_name', 'members_old__last_name',
-                     'depot__name']
+                     'depot__name', 'nickname']
 
     inlines = [SubscriptionMembershipInline, SubscriptionPartInline, ExtraSubscriptionInline]
     add_inlines = [SubscriptionMembershipInline, SubscriptionPartInline, ExtraSubscriptionInline]
     fieldsets = [
-        (Config.vocabulary('member_pl'), {'fields': ['primary_member']}),
+        (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'nickname']}),
         (_('Depot'), {'fields': ['depot', 'future_depot']}),
         (_('Status'), {'fields': ['creation_date', 'start_date', 'activation_date',
                                   'cancellation_date', 'end_date', 'deactivation_date']}),
