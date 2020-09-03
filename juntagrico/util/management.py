@@ -2,12 +2,14 @@ import itertools
 import random
 import string
 
+from django.utils import timezone
+
 from juntagrico.config import Config
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
-from juntagrico.entity.subtypes import TFSST, TSST
+from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import membernotification
+from juntagrico.util.temporal import next_membership_end_date
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
@@ -16,6 +18,10 @@ def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
 
 
 def new_signup(signup_data):
+    """ create all elements from data collected during the signup process
+    :param signup_data: a CSSessionObject
+    :return the main member
+    """
     # create member (or get existing)
     member, creation_data = create_or_update_member(signup_data.main_member)
 
@@ -34,6 +40,8 @@ def new_signup(signup_data):
     # send notifications
     if creation_data['created']:
         membernotification.welcome(member, creation_data['password'])
+
+    return member
 
 
 def create_or_update_co_member(co_member, subscription, new_shares):
@@ -77,7 +85,7 @@ def create_subscription(start_date, depot, subscription_types, member):
     subscription.primary_member = member
     subscription.save()
     # set types
-    replace_subscription_types(subscription, subscription_types)
+    create_subscription_parts(subscription, subscription_types)
     return subscription
 
 
@@ -92,40 +100,32 @@ def add_recipient_to_subscription(subscription, recipient):
     subscription.save()
 
 
-def replace_subscription_types(subscription, selected_types):
-    # always replace future sub types
-    through_classes = [TFSST]
-    # replace the current sub types as well, if the subscription is not active yet
-    if subscription.state == 'waiting':
-        through_classes.append(TSST)
-    for through_class in through_classes:
-        through_class.objects.filter(subscription=subscription).delete()
-        through_class.objects.bulk_create(
-            itertools.chain(*[[through_class(subscription=subscription, type=sub_type)] * amount
-                              for sub_type, amount in selected_types.items()])
-        )
+def create_subscription_parts(subscription, selected_types):
+    SubscriptionPart.objects.bulk_create(
+        itertools.chain(*[[SubscriptionPart(subscription=subscription, type=sub_type)] * amount
+                          for sub_type, amount in selected_types.items()]))
 
 
 def cancel_sub(subscription, end_date, message):
-    if subscription.active is True and subscription.canceled is False:
-        subscription.canceled = True
+    if subscription.activation_date is not None and subscription.cancellation_date is None:
+        subscription.cancel()
         subscription.end_date = end_date
         subscription.save()
-
         adminnotification.subscription_canceled(subscription, message)
-    elif subscription.active is False and subscription.deactivation_date is None:
+    elif subscription.activation_date is None and subscription.deactivation_date is None:
         subscription.delete()
 
 
 def cancel_extra_sub(extra):
-    if extra.active is True:
-        extra.canceled = True
-        extra.save()
-    elif extra.active is False and extra.deactivation_date is None:
+    if extra.deactivation_date is not None:
+        extra.cancel()
+    elif extra.activation_date is None and extra.deactivation_date is None:
         extra.delete()
 
 
 def cancel_share(share, now, end_date):
+    now = now or timezone.now().date()
+    end_date = end_date or next_membership_end_date()
     if share.paid_date is None:
         share.delete()
     else:

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load subscription %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
@@ -53,10 +54,14 @@
     {% else %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% blocktrans %}{{ v_subscription }}grösse{% endblocktrans %}
+                {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.size_name|safe }}
+                {% if subscription.state == 'waiting' %}
+                {{ subscription.future_part_overview|overview|safe }}
+                {% else %}
+                {{ subscription.part_overview|overview|safe }}
+                {% endif %}
             </div>
         </div>
         <div class="row mb-3">
@@ -148,9 +153,19 @@
                 {% endif %}
             </div>
         </div>
+        {% if subscription.nickname %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% vocabulary "depot" %}
+                {% blocktrans %}Name auf {{ v_depot }}-Liste{% endblocktrans %}
+            </div>
+            <div class="col-md-9">
+                {{ subscription.nickname_or_recipients_names }}
+            </div>
+        </div>
+        {% endif %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                {{ v_depot }}
             </div>
             <div class="col-md-9">
                 {{ subscription.depot.name }}
@@ -206,14 +221,14 @@
         {% if subscription.types_changed %}
             <div class="row mb-3">
                 <div class="col-md-3">
-                    {% blocktrans %}Neue {{ v_subscription }}-Grösse{% endblocktrans %}
+                    {% blocktrans %}Neue {{ v_subscription }}-Bestandteile{% endblocktrans %}
                 </div>
                 <div class="col-md-9">
-                    ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
+                    ({% blocktrans trimmed with nes=next_size_date|date:"d.m.Y" %}
                     Die Änderung tritt voraussichtlich am {{ nes }} in Kraft
                     {% endblocktrans %})
                     <br/>
-                    {{ subscription.future_size_name }}
+                    {{ subscription.future_part_overview|overview|safe }}
                 </div>
             </div>
         {% endif %}
@@ -223,7 +238,7 @@
         {% if subscription.state != 'inactive' %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
-                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}"class="btn btn-success {% if not primary %}disabled{% endif %}">
+                    <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}">
                         {% blocktrans %}{{ v_subscription }} ändern{% endblocktrans %}
                     </a>
                     {% if not primary %}
@@ -235,7 +250,7 @@
         {% if subscription.state != 'inactive' and can_leave %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
-                    <a href="{% url 'sub-leave' subscription.id %}"class="btn btn-danger">
+                    <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
                         {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
                     </a>
                 </div>

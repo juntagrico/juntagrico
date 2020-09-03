@@ -1,8 +1,8 @@
 juntagrico
 ==========
 
-.. image:: https://travis-ci.org/juntagrico/juntagrico.svg?branch=master
-    :target: https://travis-ci.org/juntagrico/juntagrico
+.. image:: https://travis-ci.com/juntagrico/juntagrico.svg?branch=master
+    :target: https://travis-ci.com/juntagrico/juntagrico
    
 .. image:: https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/maintainability
    :target: https://codeclimate.com/github/juntagrico/juntagrico/maintainability

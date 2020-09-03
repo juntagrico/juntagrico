@@ -10,6 +10,7 @@ from juntagrico.config import Config
 
 class MemberAdmin(BaseAdmin):
     list_display = ['email', 'first_name', 'last_name', 'active']
+    list_filter = ['user__is_superuser', 'user__is_staff','user__groups']
     search_fields = ['first_name', 'last_name', 'email', 'phone', 'mobile_phone']
     exclude = ['user', 'future_subscription', 'subscription', 'old_subscriptions']
     readonly_fields = ['subscription_link', 'future_subscription_link', 'old_subscription_link', 'user_link']
@@ -29,6 +30,7 @@ class MemberAdmin(BaseAdmin):
         return not instance.inactive
 
     active.short_description = _('Aktiv')
+    active.admin_order_field = 'inactive'
     active.boolean = True
 
     def impersonate_job(self, request, queryset):

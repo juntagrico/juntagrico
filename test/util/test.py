@@ -3,12 +3,13 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType
+from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType, ExtraSubscription
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
+from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType, TSST, TFSST
+from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
@@ -16,6 +17,7 @@ class JuntagricoTestCase(TestCase):
 
     def setUp(self):
         self.set_up_member()
+        self.set_up_admin()
         self.set_up_shares()
         self.set_up_area()
         self.set_up_job()
@@ -23,6 +25,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_sub_types()
         self.set_up_sub()
         self.set_up_extra_sub()
+        self.set_up_mail_template()
 
     @staticmethod
     def create_member(email):
@@ -33,6 +36,7 @@ class JuntagricoTestCase(TestCase):
                        'addr_zipcode': 'addr_zipcode',
                        'addr_location': 'addr_location',
                        'phone': 'phone',
+                       'mobile_phone': 'phone',
                        'confirmed': True,
                        }
         member = Member.objects.create(**member_data)
@@ -50,29 +54,44 @@ class JuntagricoTestCase(TestCase):
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
+            Permission.objects.get(codename='is_area_admin'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_filter_members'))
+        self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_filter_subscriptions'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_operations_group'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_send_mails'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_load_templates'))
         self.member.user.save()
+
+    def set_up_admin(self):
         """
-        admin member
+        admin members
         """
-        admin_data = {'first_name': 'admin',
-                      'last_name': 'last_name',
-                      'email': 'admin@email.org',
-                      'addr_street': 'addr_street',
-                      'addr_zipcode': 'addr_zipcode',
-                      'addr_location': 'addr_location',
-                      'phone': 'phone',
-                      'confirmed': True,
-                      }
-        self.admin = Member.objects.create(**admin_data)
+        self.admin = self.create_member('admin@email.org')
         self.admin.user.set_password("123456")
         self.admin.user.is_staff = True
         self.admin.user.is_superuser = True
         self.admin.user.save()
+        self.area_admin = self.create_member('areaadmin@email.org')
+        self.area_admin.user.set_password("123456")
+        self.area_admin.user.is_staff = True
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='is_area_admin'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_activityarea'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_assignment'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_jobtype'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_recuringjob'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_onetimejob'))
+        self.area_admin.user.save()
 
     def get_share_data(self, member):
         return {'member': member,
@@ -91,27 +110,29 @@ class JuntagricoTestCase(TestCase):
         shares
         """
         self.share_data = self.get_share_data(self.member)
-        Share.objects.create(**self.share_data)
+        self.share = Share.objects.create(**self.share_data)
 
     def set_up_area(self):
         """
         area
         """
         area_data = {'name': 'name',
-                     'coordinator': self.member}
+                     'coordinator': self.area_admin}
         area_data2 = {'name': 'name2',
-                      'coordinator': self.member,
+                      'coordinator': self.area_admin,
                       'hidden': True}
         self.area = ActivityArea.objects.create(**area_data)
         self.area2 = ActivityArea.objects.create(**area_data2)
+        self.member.areas.add(self.area)
+        self.member.save()
 
     def set_up_job(self):
         """
         job_type
         """
-        job_type_data = {'name': 'name',
+        job_type_data = {'name': 'nameot',
                          'activityarea': self.area,
-                         'duration': 2}
+                         'default_duration': 2}
         self.job_type = JobType.objects.create(**job_type_data)
         """
         job_extra
@@ -144,7 +165,7 @@ class JuntagricoTestCase(TestCase):
         time = timezone.now() + timezone.timedelta(hours=2)
         one_time_job_data = {'name': 'name',
                              'activityarea': self.area,
-                             'duration': 2,
+                             'default_duration': 2,
                              'slots': 1,
                              'time': time}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
@@ -154,7 +175,7 @@ class JuntagricoTestCase(TestCase):
         assignment_data = {'job': self.job2,
                            'member': self.member,
                            'amount': 1}
-        Assignment.objects.create(**assignment_data)
+        self.assignment = Assignment.objects.create(**assignment_data)
 
     def set_up_depots(self):
         """
@@ -218,15 +239,13 @@ class JuntagricoTestCase(TestCase):
         """
         sub_data = {'depot': self.depot,
                     'future_depot': None,
-                    'active': True,
-                    'activation_date': '2017-03-27',
+                    'activation_date': timezone.now().date(),
                     'deactivation_date': None,
                     'creation_date': '2017-03-27',
                     'start_date': '2018-01-01',
                     }
         sub_data2 = {'depot': self.depot,
                      'future_depot': None,
-                     'active': False,
                      'activation_date': None,
                      'deactivation_date': None,
                      'creation_date': '2017-03-27',
@@ -244,8 +263,7 @@ class JuntagricoTestCase(TestCase):
         self.member2.save()
         self.sub2.primary_member = self.member2
         self.sub2.save()
-        TSST.objects.create(subscription=self.sub, type=self.sub_type)
-        TFSST.objects.create(subscription=self.sub, type=self.sub_type)
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
 
     def set_up_extra_sub(self):
         '''
@@ -257,15 +275,26 @@ class JuntagricoTestCase(TestCase):
                           'description': 'desc',
                           'category': self.esub_cat}
         self.esub_type = ExtraSubscriptionType.objects.create(**esub_type_data)
+        esub_data = {'main_subscription': self.sub2,
+                     'type': self.esub_type}
+        self.esub = ExtraSubscription.objects.create(**esub_data)
+        esub_data['activation_date'] = timezone.now().date()
+        self.esub2 = ExtraSubscription.objects.create(**esub_data)
+
+    def set_up_mail_template(self):
+        mail_template_data = {'name': 'MailTemplate'}
+        self.mail_template = MailTemplate.objects.create(**mail_template_data)
 
     def assertGet(self, url, code=200, member=None):
         login_member = member or self.member
         self.client.force_login(login_member.user)
         response = self.client.get(url)
         self.assertEqual(response.status_code, code)
+        return response
 
     def assertPost(self, url, data=None, code=200, member=None):
         login_member = member or self.member
         self.client.force_login(login_member.user)
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, code)
+        return response

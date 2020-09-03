@@ -1,10 +1,15 @@
+from copy import deepcopy
+
 from juntagrico.config import Config
 
 
 class SessionObjectManager:
+    """ Handles loading and storing a session object in the session
+    """
     def __init__(self, request, key, data_type):
         self._request = request
         self._key = key
+        # load existing object from session or create a new one
         if key in request.session:
             self.data = request.session.get(key)
         else:
@@ -13,20 +18,27 @@ class SessionObjectManager:
 
     def store(self):
         # only store if key exists, otherwise session was flushed
-        if self._key in self._request.session and not self.data.cleared:
-            self._request.session[self._key] = self.data
+        if self._key in self._request.session:
+            if self.data.cleared:
+                del self._request.session[self._key]
+            else:
+                self._request.session[self._key] = self.data
 
 
 class SessionObject:
+    """ Base session object
+    """
     def __init__(self):
         self.cleared = False
 
     def clear(self):
-        self.cleared = True
         self.__init__()
+        self.cleared = True
 
 
 class CSSessionObject(SessionObject):
+    """ Session object that stores information of registration (subscription creation)
+    """
     def __init__(self):
         super().__init__()
         self._main_member = None
@@ -36,6 +48,22 @@ class CSSessionObject(SessionObject):
         self.depot = None
         self.start_date = None
         self.edit = False
+
+    def clear(self):
+        """ keep main member when clearing
+        that way, sending the signup post request twice, should still forward to the welcome page properly
+        """
+        main_member = self._main_member
+        super().clear()
+        self._main_member = main_member
+
+    def pop(self):
+        """ return copy of data and clear it.
+        :return: copy of data
+        """
+        data = deepcopy(self)
+        self.clear()
+        return data
 
     @property
     def main_member(self):
@@ -69,20 +97,20 @@ class CSSessionObject(SessionObject):
         return sum([getattr(co_member, 'new_shares', 0) for co_member in self.co_members])
 
     def subscription_size(self):
-        return sum([sub_type.size.units * amount for sub_type, amount in self.subscriptions.items()])
+        return sum([sub_type.size.units * (amount or 0) for sub_type, amount in self.subscriptions.items()])
 
     def required_shares(self):
-        return sum([sub_type.shares * amount for sub_type, amount in self.subscriptions.items()])
+        return sum([sub_type.shares * (amount or 0) for sub_type, amount in self.subscriptions.items()])
 
     def to_dict(self):
         build_dict = {k: getattr(self, k) for k in ['main_member', 'co_members', 'depot', 'start_date']}
-        build_dict['subscriptions'] = {k: v for k, v in self.subscriptions.items() if v > 0}
+        build_dict['subscriptions'] = {k: v for k, v in self.subscriptions.items() if v and v > 0}
         return build_dict
 
     def count_shares(self):
         shares = {
-            'existing_main_member': len(self.main_member.active_shares),
-            'existing_co_member': sum([len(co_member.active_shares) for co_member in self.co_members]),
+            'existing_main_member': len(self.main_member.usable_shares),
+            'existing_co_member': sum([len(co_member.usable_shares) for co_member in self.co_members]),
             'total_required': max(self.required_shares(), 1)
         }
         shares['remaining_required'] = max(0, shares['total_required'] - max(0, shares['existing_main_member'] + shares['existing_co_member']))
@@ -100,6 +128,7 @@ class CSSessionObject(SessionObject):
             and new_main_member + new_co_members >= shares['remaining_required']
 
     def next_page(self):
+        # identify next page, based on what information is still missing
         has_subs = self.subscription_size() > 0
         if not self.subscriptions:
             return 'cs-subscription'

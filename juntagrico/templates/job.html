@@ -115,13 +115,13 @@
         </div>
     </div>
     <br/>
-    {% if admin %}
+    {% if can_contact %}
         <div class="row">
             <div class="col-md-3">
                 {% trans "Kontaktieren" %}:
             </div>
             <div class="col-md-5">
-                <form id="email-sender" action="{% url 'mail' %}" method="POST">
+                <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="recipients" id="recipients" value="{{ emails }}"/>
                     <input type="hidden" name="recipients_count" id="recipients_count"value="{{ number_of_participants }}"/>
@@ -139,7 +139,7 @@
         </div>
         <div class="col-md-5">
             {% if number_of_participants == 0 and not job_fully_booked %}
-                {% trans "Noch niemand" %} :-(
+                {% trans "Noch niemand" %} 🥺
             {% else %}
                 <ul>
                     {% for participant, url, reachable, extras in participants_summary %}
@@ -166,7 +166,7 @@
                 {% trans "Ich trage mich ein" %}:
             </div>
             <div class="col-md-3">
-                <form action="" method="POST"onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
+                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}
                         <div>

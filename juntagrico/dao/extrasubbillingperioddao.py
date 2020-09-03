@@ -13,7 +13,7 @@ class ExtraSubBillingPeriodDao:
                 start_month__lte=month).filter(end_month__gte=month):
             start = period.get_actual_start()
             end = period.get_actual_end()
-            if start <= now <= end:
+            if start <= now.date() <= end:
                 return period
         return None
 

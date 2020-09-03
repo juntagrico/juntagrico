@@ -25,6 +25,15 @@ class JobDao:
         return otjidlist + rjidlist
 
     @staticmethod
+    def for_area_by_contact(member):
+        otjidlist = list(
+            OneTimeJob.objects.filter(activityarea__coordinator=member).values_list('id', flat=True))
+        rjidlist = list(
+            RecuringJob.objects.filter(type__activityarea__coordinator=member).values_list('id', flat=True))
+        alllist = otjidlist + rjidlist
+        return JobDao.jobs_by_ids(alllist)
+
+    @staticmethod
     def jobs_by_ids(jidlist):
         return Job.objects.filter(id__in=jidlist)
 
@@ -46,7 +55,7 @@ class JobDao:
 
     @staticmethod
     def get_jobs_for_current_day():
-        daystart = datetime.combine(date.today(), time.min, tzinfo=gdtz())
+        daystart = gdtz().localize(datetime.combine(date.today(), time.min))
         return Job.objects.filter(time__gte=daystart).order_by('time')
 
     @staticmethod
