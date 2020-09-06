@@ -39,16 +39,16 @@ def subscription(request, subscription_id=None):
     Details for an subscription of a member
     '''
     member = request.user.member
-    future_subscription = member.future_subscription is not None
-    can_order = member.future_subscription is None and (
-        member.subscription is None or member.subscription.cancellation_date is not None)
+    future_subscription = member.subscription_future is not None
+    can_order = member.subscription_future is None and (
+        member.subscription_current is None or member.subscription_current.cancellation_date is not None)
     renderdict = get_menu_dict(request)
     if subscription_id is None:
-        subscription = member.subscription
+        subscription = member.subscription_current
     else:
         subscription = get_object_or_404(Subscription, id=subscription_id)
         future_subscription = future_subscription and not(
-            subscription == member.future_subscription)
+            subscription == member.subscription_future)
     end_date = end_of_next_business_year()
 
     if subscription is not None:
@@ -61,8 +61,7 @@ def subscription(request, subscription_id=None):
         can_leave = member.is_cooperation_member and not share_error and not primary
         renderdict.update({
             'subscription': subscription,
-            'co_members': subscription.recipients.exclude(
-                email=member.email),
+            'co_members': subscription.co_members(member),
             'primary': subscription.primary_member.email == member.email,
             'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
@@ -325,6 +324,8 @@ def deactivate_subscription(request, subscription_id):
         part.deactivate(change_date)
     for part in subscription.future_parts.all():
         part.delete()
+    for sub_membership in subscription.subscriptionmembership_set.all():
+        sub_membership.member.leave_subscription(subscription)
     return return_to_previous_location(request)
 
 
@@ -383,17 +384,9 @@ def leave_subscription(request, subscription_id):
     if not can_leave:
         return redirect('sub-detail')
     if request.method == 'POST':
-        primary_member = None
-        if member.future_subscription is not None and member.future_subscription.id == subscription_id:
-            primary_member = member.future_subscription.primary_member
-            member.future_subscription = None
-        elif member.subscription is not None and member.subscription.id == subscription_id:
-            primary_member = member.subscription.primary_member
-            member.subscription = None
-            member.old_subscriptions.add(subscription)
-        member.save()
-        if primary_member:
-            membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
+        member.leave_subscription(subscription)
+        primary_member = subscription.primary_member
+        membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
         return redirect('home')
     renderdict = get_menu_dict(request)
     return render(request, 'leavesubscription.html', renderdict)
@@ -459,7 +452,7 @@ def order_shares(request):
             return redirect('{}?referer={}'.format(reverse('share-order-success'), referer))
     else:
         shareerror = False
-        if request.META.get('HTTP_REFERER')is not None:
+        if request.META.get('HTTP_REFERER') is not None:
             referer = request.META.get('HTTP_REFERER')
         else:
             referer = 'http://' + Config.adminportal_server_url()
@@ -473,7 +466,7 @@ def order_shares(request):
 
 @login_required
 def order_shares_success(request):
-    if request.GET.get('referer')is not None:
+    if request.GET.get('referer') is not None:
         referer = request.GET.get('referer')
     else:
         referer = 'http://' + Config.adminportal_server_url()

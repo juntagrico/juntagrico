@@ -10,7 +10,7 @@ def home_messages(request):
     member = request.user.member
     if member.confirmed is False:
         result.append(get_template('messages/not_confirmed.html').render())
-    if member.subscription is None and member.future_subscription is None:
+    if member.subscription_current is None and member.subscription_future is None:
         result.append(get_template('messages/no_subscription.html').render())
     if len(ShareDao.unpaid_shares(member)) > 0:
         render_dict = {
