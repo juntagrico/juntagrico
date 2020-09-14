@@ -22,7 +22,8 @@ from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, NicknameForm
+from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
+    NicknameForm
 from juntagrico.mailer import membernotification
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
@@ -41,14 +42,14 @@ def subscription(request, subscription_id=None):
     member = request.user.member
     future_subscription = member.subscription_future is not None
     can_order = member.subscription_future is None and (
-        member.subscription_current is None or member.subscription_current.cancellation_date is not None)
+            member.subscription_current is None or member.subscription_current.cancellation_date is not None)
     renderdict = get_menu_dict(request)
     if subscription_id is None:
         subscription = member.subscription_current
     else:
         subscription = get_object_or_404(Subscription, id=subscription_id)
-        future_subscription = future_subscription and not(
-            subscription == member.subscription_future)
+        future_subscription = future_subscription and not (
+                subscription == member.subscription_future)
     end_date = end_of_next_business_year()
 
     if subscription is not None:
@@ -460,9 +461,10 @@ def manage_shares(request):
     renderdict.update({
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required' : shares.count() - min(overflow_list)
+        'required': shares.count() - min(overflow_list)
     })
     return render(request, 'manage_shares.html', renderdict)
+
 
 @login_required
 def cancel_share(request, share_id):
@@ -470,7 +472,6 @@ def cancel_share(request, share_id):
     share.cancelled_date = timezone.now().date()
     share.save()
     return return_to_previous_location(request)
-
 
 
 @permission_required('juntagrico.is_operations_group')
