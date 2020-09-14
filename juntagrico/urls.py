@@ -68,8 +68,8 @@ urlpatterns = [
          name='extra-cancel'),
     path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
          name='part-cancel'),
-    path('my/order/share/', juntagrico_subscription.order_shares, name='share-order'),
-    path('my/order/share/success', juntagrico_subscription.order_shares_success, name='share-order-success'),
+    path('my/share/manage/', juntagrico_subscription.manage_shares, name='manage-shares'),  #
+    path('my/share/cancel/<int:share_id>/', juntagrico_subscription.cancel_share, name='share-cancel'),
     path('my/payout/share/<int:share_id>/', juntagrico_subscription.payout_share, name='share-payout'),
     path('my/create/subscription/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
     path('my/create/subscription/selectdepot/', juntagrico_cs.cs_select_depot, name='cs-depot'),

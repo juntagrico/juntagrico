@@ -45,8 +45,8 @@
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                 </div>
             </div>
@@ -96,8 +96,8 @@
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                     <br/>
                     <br/>
