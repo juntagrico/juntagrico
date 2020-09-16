@@ -64,6 +64,8 @@ Demo can be found here https://juntagrico-demo.herokuapp.com/
 
 .. wall of fame:
     1000 commits motu55 🎉🎉🎉🎉🎉🎉
+    100 commits pascalfree 🎉🎉🎉
+    200 commits olmaga 🎉🎉🎉
 
 
 
