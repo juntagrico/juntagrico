@@ -24,7 +24,7 @@ juntagrico
 .. image:: https://img.shields.io/pypi/status/juntagrico.svg
     :target: https://pypi.python.org/pypi/juntagrico
     
-.. image:: https://img.shields.io/pypi/dt/juntagrico.svg
+.. image:: https://img.shields.io/pypi/dm/juntagrico.svg
    :target: https://pypi.python.org/pypi/juntagrico/
 
 .. image:: https://img.shields.io/github/last-commit/juntagrico/juntagrico.svg
