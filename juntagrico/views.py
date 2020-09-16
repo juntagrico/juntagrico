@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -385,7 +386,7 @@ def contact_member(request, member_id, job_id):
         'member_id': member_id,
         'member_name': contact_member.first_name + ' ' + contact_member.last_name,
         'is_sent': is_sent,
-        'job_id': job_id
+        'back_url': request.META.get('HTTP_REFERER') or reverse('home')
     })
     return render(request, 'contact_member.html', renderdict)
 
