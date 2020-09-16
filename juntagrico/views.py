@@ -169,7 +169,7 @@ def job(request, job_id):
             name += _(' (mit einer weiteren Person)')
         elif participant.assignment_for_job > 2:
             name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
-        contact_url = '/my/contact/member/{}/{}/'.format(participant.id, job_id)
+        contact_url = reverse('contact-member', args=[participant.id])
         extras = []
         for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
             for extra in assignment.job_extras.all():
@@ -363,7 +363,7 @@ def contact(request):
 
 
 @login_required
-def contact_member(request, member_id, job_id):
+def contact_member(request, member_id):
     '''
     member contact form
     '''
@@ -378,10 +378,9 @@ def contact_member(request, member_id, job_id):
         formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
                                   request.POST.get('copy'), files)
         is_sent = True
-    job = JobDao.job_by_id(job_id)
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'admin': request.user.is_staff or job.type.activityarea.coordinator == member,
+        'admin': request.user.has_perm('juntagrico.is_operations_group') or request.user.has_perm('juntagrico.is_area_admin'),
         'usernameAndEmail': member.first_name + ' ' + member.last_name + '<' + member.email + '>',
         'member_id': member_id,
         'member_name': contact_member.first_name + ' ' + contact_member.last_name,
