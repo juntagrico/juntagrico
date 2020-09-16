@@ -23,11 +23,14 @@ juntagrico
 
 .. image:: https://img.shields.io/pypi/status/juntagrico.svg
     :target: https://pypi.python.org/pypi/juntagrico
+    
+.. image:: https://img.shields.io/pypi/dt/juntagrico.svg
+   :target: https://pypi.python.org/pypi/juntagrico/
 
 .. image:: https://img.shields.io/github/last-commit/juntagrico/juntagrico.svg
     :target: https://github.com/juntagrico/juntagrico
     
-.. image:: https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico.svg
+.. image:: https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico
     :target: https://github.com/juntagrico/juntagrico
 
 .. image:: https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=master
@@ -49,6 +52,18 @@ It provides the basic functionality like
 Detailed documentation how to install and configure juntagrico can be found here http://juntagrico.readthedocs.io
 
 Demo can be found here https://juntagrico-demo.herokuapp.com/
+
+.. image:: http://forthebadge.com/images/badges/made-with-python.svg
+   :target: https://www.python.org/
+
+.. image:: http://forthebadge.com/images/badges/built-with-love.svg
+   :target: https://forthebadge.com
+
+.. image:: http://forthebadge.com/images/badges/powered-by-black-magic.svg
+   :target: https://forthebadge.com
+
+.. image:: http://forthebadge.com/images/badges/works-on-my-machine.svg
+   :target: https://forthebadge.com
 
 .. wall of fame:
     1000 commits motu55 🎉🎉🎉🎉🎉🎉
