@@ -62,11 +62,6 @@ Demo can be found here https://juntagrico-demo.herokuapp.com/
 .. image:: http://forthebadge.com/images/badges/powered-by-black-magic.svg
    :target: https://forthebadge.com
 
-
-
-.. image:: http://forthebadge.com/images/badges/works-on-my-machine.svg
-   :target: https://forthebadge.com
-
 .. wall of fame:
     1000 commits motu55 🎉🎉🎉🎉🎉🎉
 
