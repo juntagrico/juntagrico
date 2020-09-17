@@ -370,9 +370,11 @@ def contact_member(request, member_id):
     member = request.user.member
     contact_member = get_object_or_404(Member, id=int(member_id))
     is_sent = False
+    back_url = request.META.get('HTTP_REFERER') or reverse('home')
 
     if request.method == 'POST':
         # send mail to member
+        back_url = request.POST.get('back_url')
         files = []
         append_attachements(request, files)
         formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
@@ -385,7 +387,7 @@ def contact_member(request, member_id):
         'member_id': member_id,
         'member_name': contact_member.first_name + ' ' + contact_member.last_name,
         'is_sent': is_sent,
-        'back_url': request.META.get('HTTP_REFERER') or reverse('home')
+        'back_url': back_url
     })
     return render(request, 'contact_member.html', renderdict)
 

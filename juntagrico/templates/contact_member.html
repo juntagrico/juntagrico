@@ -18,6 +18,7 @@
         <br/>
         <form action="{% url 'contact-member' member_id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+        <input name="back_url" type="hidden" value="{{ back_url }}">
             <div class="form-group row">
                 <label class="col-md-3">
                     {% trans "Absender" %}
