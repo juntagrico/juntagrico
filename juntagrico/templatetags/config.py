@@ -35,6 +35,6 @@ def cookie_consent(key):
 
 
 def get_config_classes():
-    configs = [Config,]
+    configs = [Config]
     configs.extend(addons_config.get_config_classes())
     return configs
