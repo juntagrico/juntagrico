@@ -29,7 +29,8 @@ VOCABULARY
         'member_type' : 'Mitglied',
         'member_type_pl' : 'Mitglieder',
         'depot' : 'Depot',
-        'depot_pl' : 'Depots'
+        'depot_pl' : 'Depots',
+        'package': 'Tasche',
     }
 
 ORGANISATION_NAME
@@ -230,6 +231,21 @@ STYLE_SHEET
   .. code-block:: python
 
     "/static/css/personal.css"
+
+CUSTOM_MENU
+-----------
+  If you want to use a custom admin or user menu entries you can define the corresponding templates here
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    {
+        'user': 'menu/custom_user_menu.html',
+        'admin': 'menu/custom_admin_menu.html',
+    }
 
 FAVICON
 -------

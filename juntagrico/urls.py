@@ -18,7 +18,7 @@ urlpatterns = [
     path('my/profile', juntagrico.profile, name='profile'),  #
     path('my/cancel/membership', juntagrico.cancel_membership, name='cancel-membership'),  #
     path('my/contact', juntagrico.contact, name='contact'),  #
-    path('my/contact/member/<int:member_id>/<int:job_id>/', juntagrico.contact_member, name='contact-member'),  #
+    path('my/contact/member/<int:member_id>/', juntagrico.contact_member, name='contact-member'),  #
     path('my/memberjobs', juntagrico.memberjobs, name='memberjobs'),  #
     path('my/depot/<int:depot_id>/', juntagrico.depot, name='depot'),  #
     path('my/deliveries', juntagrico.deliveries, name='deliveries'),  #
@@ -41,6 +41,8 @@ urlpatterns = [
          name='sub-change'),  #
     path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
          name='depot-change'),  #
+    path('my/subscription/change/nickname/<int:subscription_id>/', juntagrico_subscription.change_nickname,
+         name='nickname-change'),
     path('my/subscription/change/primary/<int:subscription_id>/', juntagrico_subscription.primary_change,
          name='primary-change'),  #
     path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),

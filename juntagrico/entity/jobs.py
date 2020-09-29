@@ -138,7 +138,7 @@ class Job(JuntagricoBasePoly):
     infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
     time = models.DateTimeField(_('Zeitpunkt'))
     multiplier = models.PositiveIntegerField(
-        _('{0}) vielfaches').format(Config.vocabulary('assignment')), default=1)
+        _('{0} vielfaches').format(Config.vocabulary('assignment')), default=1)
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)

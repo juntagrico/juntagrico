@@ -33,7 +33,8 @@ class Config:
             'member_type': _('Mitglied'),
             'member_type_pl': _('Mitglieder'),
             'depot': _('Depot'),
-            'depot_pl': _('Depots')
+            'depot_pl': _('Depots'),
+            'package': _('Tasche'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -125,6 +126,13 @@ class Config:
         }
     )
     style_sheet = _get_setting('STYLE_SHEET', '/static/css/personal.css')
+    custom_menu = _get_setting_with_key(
+        'CUSTOM_MENU',
+        {
+            'user': 'menu/custom_user_menu.html',
+            'admin': 'menu/custom_admin_menu.html',
+        }
+    )
     favicon = _get_setting('FAVICON', '/static/img/favicon.ico')
     bootstrap = _get_setting('BOOTSTRAP', '/static/external/bootstrap-4.3.1/css/bootstrap.min.css')
     images = _get_setting_with_key(

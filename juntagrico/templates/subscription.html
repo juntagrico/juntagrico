@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load subscription %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
@@ -56,7 +57,11 @@
                 {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.size_name|safe }}
+                {% if subscription.state == 'waiting' %}
+                {{ subscription.future_part_overview|overview|safe }}
+                {% else %}
+                {{ subscription.part_overview|overview|safe }}
+                {% endif %}
             </div>
         </div>
         <div class="row mb-3">
@@ -105,7 +110,7 @@
                                 {{ ln }}
                                 {% endblocktrans %}
                                 {% if not co_member.confirmed %}
-                                    ({% trans "nicht bestätigt" %})
+                                    ({% trans "E-Mail-Adresse nicht bestätigt" %})
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -148,9 +153,19 @@
                 {% endif %}
             </div>
         </div>
+        {% if subscription.nickname %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% vocabulary "depot" %}
+                {% blocktrans %}Name auf {{ v_depot }}-Liste{% endblocktrans %}
+            </div>
+            <div class="col-md-9">
+                {{ subscription.nickname_or_recipients_names }}
+            </div>
+        </div>
+        {% endif %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                {{ v_depot }}
             </div>
             <div class="col-md-9">
                 {{ subscription.depot.name }}
@@ -213,7 +228,7 @@
                     Die Änderung tritt voraussichtlich am {{ nes }} in Kraft
                     {% endblocktrans %})
                     <br/>
-                    {{ subscription.future_size_name|safe }}
+                    {{ subscription.future_part_overview|overview|safe }}
                 </div>
             </div>
         {% endif %}
