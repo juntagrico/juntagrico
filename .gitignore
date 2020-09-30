@@ -15,3 +15,5 @@ my_settings_local.py
 **/*.egg-info
 .coverage
 testsettings2.py
+*.bat
+

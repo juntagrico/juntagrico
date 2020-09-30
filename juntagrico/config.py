@@ -76,7 +76,6 @@ class Config:
     promoted_job_types = _get_setting('PROMOTED_JOB_TYPES', [])
     promomted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
-    billing = _get_setting('BILLING', False)
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
     business_year_cancelation_month = _get_setting('BUSINESS_YEAR_CANCELATION_MONTH', 12)
     membership_end_month = _get_setting('MEMBERSHIP_END_MONTH', 6)
@@ -127,6 +126,13 @@ class Config:
         }
     )
     style_sheet = _get_setting('STYLE_SHEET', '/static/css/personal.css')
+    custom_menu = _get_setting_with_key(
+        'CUSTOM_MENU',
+        {
+            'user': 'menu/custom_user_menu.html',
+            'admin': 'menu/custom_admin_menu.html',
+        }
+    )
     favicon = _get_setting('FAVICON', '/static/img/favicon.ico')
     bootstrap = _get_setting('BOOTSTRAP', '/static/external/bootstrap-4.3.1/css/bootstrap.min.css')
     images = _get_setting_with_key(

@@ -129,6 +129,11 @@ class AdminTests(JuntagricoTestCase):
     def testSubtypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
 
+    def testShareAdmin(self):
+        url = reverse('admin:juntagrico_share_changelist')
+        selected_items = [self.share.pk]
+        self.assertPost(url, data={'action': 'mark_paid', '_selected_action': selected_items}, member=self.admin, code=302)
+
     def testSubtypeAdminNoShares(self):
         with self.settings(ENABLE_SHARES=False):
             self.assertGet(reverse('admin:juntagrico_extrasubscriptiontype_change', args=(self.esub_type.pk,)),

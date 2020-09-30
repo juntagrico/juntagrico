@@ -74,15 +74,15 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
-        return self.parts.filter(q_activated & ~q_deactivated)
+        return self.parts.filter(q_activated() & ~q_deactivated())
 
     @property
     def future_parts(self):
-        return self.parts.filter(~q_cancelled & ~q_deactivated)
+        return self.parts.filter(~q_cancelled() & ~q_deactivated())
 
     @property
     def active_and_future_parts(self):
-        return self.parts.filter(~q_deactivated)
+        return self.parts.filter(~q_deactivated())
 
     @property
     def part_change_date(self):
@@ -100,7 +100,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated | (q_cancelled & ~q_deactivated)).count()
+        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivated())).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -197,11 +197,11 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.extra_subscription_set.filter(q_activated & ~q_deactivated)
+        return self.extra_subscription_set.filter(q_activated() & ~q_deactivated())
 
     @property
     def future_extra_subscriptions(self):
-        return self.extra_subscription_set.filter(~q_cancelled & ~q_deactivated)
+        return self.extra_subscription_set.filter(~q_cancelled() & ~q_deactivated())
 
     @property
     def extrasubscriptions_changed(self):
