@@ -54,7 +54,7 @@ class Command(BaseCommand):
 
         depot_dict = {
             'subscriptions': SubscriptionDao.all_active_subscritions(),
-            'products': SubscriptionProductDao.get_all(),
+            'products': SubscriptionProductDao.get_all_for_depot_list(),
             'extra_sub_categories': ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered(),
             'depots': DepotDao.all_depots_order_by_code(),
             'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in
