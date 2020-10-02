@@ -297,7 +297,7 @@ class SubscriptionPartBaseForm(Form):
 
     def _collect_type_fields(self):
         containers = []
-        for product in SubscriptionProductDao.get_all():
+        for product in SubscriptionProductDao.get_all_visible():
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
