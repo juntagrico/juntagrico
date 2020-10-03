@@ -40,7 +40,7 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
@@ -91,7 +91,7 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
