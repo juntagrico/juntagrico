@@ -7,6 +7,7 @@ from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
 from django.utils import timezone
 
+
 class Share(Billable):
     member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT)
     creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=timezone.now)
