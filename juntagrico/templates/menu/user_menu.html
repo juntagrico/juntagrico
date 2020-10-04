@@ -53,7 +53,9 @@
             {% trans "Kontakt" %}
         </a>
     </li>
-    {% include user_menus %}
+    {% for menu in user_menus %}
+        {% include menu %}
+    {% endfor %}
     <li class="separator">
     </li>
     <li class="nav-item main-menu-small">
