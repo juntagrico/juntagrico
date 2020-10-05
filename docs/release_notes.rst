@@ -3,7 +3,11 @@ Release Notes
 
 Dev
 ----
-Has no migrations
+Has  migrations
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Upgraded to django 3.1.x, there fore add 'django.template.context_processors.request' tot the TEMPLATES setting under 'context_processors'
 
 
 1.2.3
