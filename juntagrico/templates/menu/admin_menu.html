@@ -210,5 +210,7 @@
             </a>
         </li>
     {% endif %}
-    {% include admin_menus %}
+    {% for menu in admin_menus %}
+        {% include menu %}
+    {% endfor %}
 </ul>

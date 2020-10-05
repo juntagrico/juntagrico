@@ -3,12 +3,7 @@ Release Notes
 
 Dev
 ----
-Has  migrations
-
-Features & Improvements
-^^^^^^^^^^^^^^^^^^^^^^^
-* Upgraded to django 3.1.x, there fore add 'django.template.context_processors.request' tot the TEMPLATES setting under 'context_processors'
-* Introduced setting CUSTOM_MENU
+Has no migrations
 
 
 1.2.3
