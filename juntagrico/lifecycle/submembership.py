@@ -25,6 +25,6 @@ def check_sub_membership_consistency_ms(member, subscription):
     if subscription.state == 'active' and SubscriptionMembershipDao.get_other_active_for_member(member,
                                                                                                 subscription).count() > 0:
         raise ValidationError(
-            _('Diese/r/s {} hat bereits ein/e/n zukünftige/n/s {}').format(Config.vocabulary('member'),
+            _('Diese/r/s {} hat bereits ein/e/n {}').format(Config.vocabulary('member'),
                                                                            Config.vocabulary('subscription')),
             code='invalid')

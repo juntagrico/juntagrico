@@ -93,7 +93,7 @@ class Member(JuntagricoBaseModel):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         if sub_membership and sub_membership.leave_date:
             sub_membership.leave_date = None
-            sub_membership.saeve()
+            sub_membership.save()
         else:
             SubscriptionMembership.objects.create(member=self, subscription=subscription)
 

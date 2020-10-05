@@ -78,6 +78,27 @@ class SubscriptionTests(JuntagricoTestCase):
         self.sub.refresh_from_db()
         self.assertEqual(len(self.sub.recipients), 1)
 
+    def testJoin(self):
+        self.assertGet(reverse('add-member', args=[self.sub.pk]),member=self.member)
+        self.assertPost(reverse('add-member', args=[self.sub.pk]),member=self.member, data={'email': self.member4.email})
+
+    def testJoinLeaveRejoin(self):
+        post_data = {
+            'email': self.member4.email,
+            'first_name': self.member4.first_name,
+            'last_name': self.member4.last_name,
+            'addr_street': self.member4.addr_street,
+            'addr_zipcode': '1234',
+            'addr_location': self.member4.addr_location,
+            'phone': self.member4.phone
+        }
+        Share.objects.create(**self.get_share_data(self.member4))
+        self.assertPost(reverse('add-member', args=[self.sub.pk]),code=302, member=self.member, data=post_data)
+        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
+        self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
+        self.sub.refresh_from_db()
+        self.assertEqual(len(self.sub.recipients), 3)
+
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
         self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)

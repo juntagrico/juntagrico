@@ -8,7 +8,7 @@ import juntagrico.entity
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0026_auto_20200710_2250'),
+        ('juntagrico', '0027_auto_20200921_0817'),
     ]
 
     operations = [
