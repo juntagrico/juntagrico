@@ -23,7 +23,7 @@ class SubscriptionProduct(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
-
+        ordering = ['pk']
 
 class SubscriptionSize(JuntagricoBaseModel):
     '''
@@ -48,7 +48,7 @@ class SubscriptionSize(JuntagricoBaseModel):
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
         unique_together = ('name', 'product',)
         unique_together = ('units', 'product',)
-
+        ordering = ['pk']
 
 class SubscriptionType(JuntagricoBaseModel):
     '''
@@ -81,3 +81,4 @@ class SubscriptionType(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Typ').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Typen').format(Config.vocabulary('subscription'))
+        ordering = ['pk']
