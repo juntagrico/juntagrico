@@ -14,7 +14,7 @@ from juntagrico.admins.member_admin import MemberAdmin, MemberAdminWithShares
 from juntagrico.admins.one_time_job_admin import OneTimeJobAdmin
 from juntagrico.admins.share_admin import ShareAdmin
 from juntagrico.admins.subscription_admin import SubscriptionAdmin
-from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin, SubscriptionSizeAdmin
+from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin, SubscriptionSizeAdmin, SubscriptionProductAdmin
 from juntagrico.config import Config
 from juntagrico.entity.billing import ExtraSubBillingPeriod
 from juntagrico.entity.delivery import Delivery
@@ -38,6 +38,7 @@ admin.site.register(ExtraSubscriptionType, ExtraSubscriptionTypeAdmin)
 admin.site.register(ExtraSubscriptionCategory, BaseAdmin)
 admin.site.register(SubscriptionSize, SubscriptionSizeAdmin)
 admin.site.register(SubscriptionType, SubscriptionTypeAdmin)
+admin.site.register(SubscriptionProduct, SubscriptionProductAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Member, MemberAdminWithShares if Config.enable_shares() else MemberAdmin)
@@ -50,7 +51,6 @@ admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
 admin.site.register(ListMessage, ListMessageAdmin)
-admin.site.register(SubscriptionProduct, BaseAdmin)
 admin.site.register(ExtraSubBillingPeriod, BaseAdmin)
 if Config.enable_shares():
     admin.site.register(Share, ShareAdmin)

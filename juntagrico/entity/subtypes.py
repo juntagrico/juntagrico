@@ -12,6 +12,7 @@ class SubscriptionProduct(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
+    sort_order = models.PositiveIntegerField(default=0, blank=False, null=False)
 
     def __str__(self):
         return self.name
@@ -23,6 +24,7 @@ class SubscriptionProduct(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
+        ordering = ['sort_order']
 
 
 class SubscriptionSize(JuntagricoBaseModel):
@@ -39,6 +41,7 @@ class SubscriptionSize(JuntagricoBaseModel):
         _('Beschreibung'), max_length=1000, blank=True)
     product = models.ForeignKey('SubscriptionProduct', on_delete=models.PROTECT,
                                 related_name='sizes', verbose_name=_('Produkt'))
+    sort_order = models.PositiveIntegerField(default=0, blank=False, null=False)
 
     def __str__(self):
         return self.name
@@ -48,6 +51,7 @@ class SubscriptionSize(JuntagricoBaseModel):
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
         unique_together = ('name', 'product',)
         unique_together = ('units', 'product',)
+        ordering = ['sort_order']
 
 
 class SubscriptionType(JuntagricoBaseModel):
@@ -70,6 +74,7 @@ class SubscriptionType(JuntagricoBaseModel):
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
+    sort_order = models.PositiveIntegerField(default=0, blank=False, null=False)
 
     def __str__(self):
         return self.name + ' - ' + _('Grösse') + ': ' + self.size.name \
@@ -81,3 +86,4 @@ class SubscriptionType(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Typ').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Typen').format(Config.vocabulary('subscription'))
+        ordering = ['sort_order']
