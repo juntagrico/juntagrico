@@ -70,6 +70,7 @@ class Config:
     activity_area_info = _get_setting('ACTIVITY_AREA_INFO')
     enable_shares = _get_setting('ENABLE_SHARES', True)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
+    shares_extra_info = _get_setting('SHARES_EXTRA_INFO', '')
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')

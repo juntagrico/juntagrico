@@ -12,6 +12,7 @@
 {% block allcontent %}
     {% config "currency" as c_currency %}
     {% config "share_price" as c_share_price %}
+    {% config "shares_extra_info" as c_shares_extra_info %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% vocabulary "subscription" as v_subscription %}
@@ -56,6 +57,7 @@
                     deinen {{ v_co_member_pl }} auf.
                     {% endblocktrans %}
                 {% endif %}
+                {{ c_shares_extra_info }}
             </div>
         </div>
         <form action="" method="post">
