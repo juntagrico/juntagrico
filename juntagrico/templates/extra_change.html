@@ -37,7 +37,7 @@
                             <td>
                                 {% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
                                     <a href="{% url 'extra-cancel' extra.id sub_id %}"class="btn btn-success"
-                                       onclick="return confirm('{% trans "Möchtest du sicher dieses Zusatzabo verbindlich künden?" %}')">
+                                       onclick="return confirm('{% trans "Möchtest du sicher dieses Zusatz-Abo verbindlich künden?" %}')">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}
@@ -49,7 +49,7 @@
         </div>
     {% endif %}
     <div class="row mt-3 mb-3">
-        <b class="col-md-12">{% trans "Extra-Abos bestellen" %}</b>
+        <b class="col-md-12">{% trans "Zusatz-Abos bestellen" %}</b>
     </div>
     <form method="post">
         {% csrf_token %}
@@ -73,7 +73,7 @@
         </div>
         <div class="form-actions ">
             <button type="submit" class="btn btn-success">
-                {% trans "Extra-Abos bestellen" %}
+                {% trans "Zusatz-Abos bestellen" %}
             </button>
         </div>
     </form>
