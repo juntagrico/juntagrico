@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "no_menu_base.html" %}
 {% load i18n %}
 {% load config %}
 {% block all_page_title %}
@@ -22,7 +22,7 @@
         {% if shares.error %}
             <div class="alert alert-danger">
                 {% blocktrans trimmed %}
-                Du brauchst entweder mehr {{ v_share_pl }} für die von dir gewählte {{ v_subscription }}-Grösse
+                Du brauchst entweder mehr {{ v_share_pl }} für die von dir gewählten {{ v_subscription }}-Bestandteile
                 oder eine deiner Eingaben ist keine postitive Zahl.
                 {% endblocktrans %}
                 (x &#8713; &#8469;)
@@ -39,7 +39,7 @@
                 {% endblocktrans %}
                 {% if shares.total_required > 0 %}
                     {% blocktrans trimmed with shares.total_required as st %}
-                    Für die von dir ausgewählte {{ v_subscription }}-Grösse(n) brauchst du insgesamt {{ st }}
+                    Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ st }}
                     {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                     {% endblocktrans %}
                     <br/>
@@ -62,7 +62,7 @@
             {% csrf_token %}
             <div class="form-group row">
                 <label class="col-md-3 col-form-label">
-                    {% blocktrans %}Deine {{ v_share_pl }}{% endblocktrans %}
+                    {% blocktrans %}Neue {{ v_share_pl }}{% endblocktrans %}:
                 </label>
                 <div class="col-md-3">
                     <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:shares.total_required }}" min="{% if shares.existing_main_member == 0 %}1{% else %}0{% endif %}"/>
@@ -70,7 +70,7 @@
                 <label class="col-md-6 col-form-label">
                     {% if shares.existing_main_member == 0 %}
                         {% blocktrans trimmed %}
-                        Du brauchst als Haupt-Bezieher mindestens 1 {{ v_share }}.
+                        Du brauchst als HauptbezieherIn mindestens 1 {{ v_share }}.
                         {% endblocktrans %}
                     {% else %}
                         {% blocktrans trimmed with msc=member.active_shares.count%}

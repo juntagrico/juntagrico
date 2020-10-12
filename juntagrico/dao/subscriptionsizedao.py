@@ -1,29 +1,24 @@
-# -*- coding: utf-8 -*-
-import juntagrico
+from juntagrico.entity.subtypes import SubscriptionSize
 
 
 class SubscriptionSizeDao:
 
     @staticmethod
     def sizes_for_depot_list():
-        return juntagrico.models.SubscriptionSize.objects.filter(depot_list=True).order_by('units')
-
-    @staticmethod
-    def sizes_for_depot_list_by_product(product):
-        return juntagrico.models.SubscriptionSize.objects.filter(depot_list=True).filter(product=product).order_by('units')
+        return SubscriptionSize.objects.filter(depot_list=True).order_by('units')
 
     @staticmethod
     def all_sizes_ordered():
-        return juntagrico.models.SubscriptionSize.objects.order_by('product', 'units')
+        return SubscriptionSize.objects.order_by('product', 'units')
 
     @staticmethod
     def all_visible_sizes_ordered():
-        return juntagrico.models.SubscriptionSize.objects.filter(visible=True).order_by('units')
+        return SubscriptionSize.objects.filter(visible=True).order_by('units')
 
     @staticmethod
     def sizes_by_size(units):
-        return juntagrico.models.SubscriptionSize.objects.filter(units=units)
+        return SubscriptionSize.objects.filter(units=units)
 
     @staticmethod
     def sizes_by_name(name):
-        return juntagrico.models.SubscriptionSize.objects.filter(name=name)
+        return SubscriptionSize.objects.filter(name=name)

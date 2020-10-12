@@ -19,6 +19,9 @@
                 <th class="filter">
                     {% trans "Email" %}
                 </th>
+                <th class="filter">
+                    {% trans "Bestelldatum" %}
+                </th>
                 <th>
                 </th>
             </tr>
@@ -43,9 +46,16 @@
                         </form>
                     </td>
                     <td>
-                        <a href="{% url 'extra-activate' extrasubscription.id %}/"class="btn btn-success">
+                        {{ extrasubscription.creation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% if extrasubscription.activation_date %}
+                        {% trans "Wurde bereits aktiviert" %} {{ extrasubscription.activation_date }}
+                        {% else %}
+                        <a href="{% url 'extra-activate' extrasubscription.id %}"class="btn btn-success">
                             {% trans "aktivieren" %}
                         </a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

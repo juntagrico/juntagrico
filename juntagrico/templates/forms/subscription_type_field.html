@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load config %}
+{% load crispy_forms_field %}
+<div class="form-group row">
+    <div class="col-md-3">
+        {{ field }}
+    </div>
+    <label for="type{{ type.id }}" class="col-md-9">
+        {% if type.long_name.strip %}
+            <strong>{{ type.long_name }}</strong>
+            <br/>
+        {% endif %}
+        {% if type.description.strip %}
+            {{ type.description|linebreaksbr }}
+            <br/>
+        {% endif %}
+        {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+        {% config "enable_shares" as c_enable_shares %}
+        {% if c_enable_shares %}
+            <br/>
+            {% vocabulary "share_pl" %}: {{ type.shares }}
+        {% endif %}
+        <br/>
+        {% trans "Arbeitseinsätze" %}: {{ type.required_assignments }}
+        {% if hours_used %}
+            {% trans "Stunden" %}
+        {% endif %}
+    </label>
+</div>

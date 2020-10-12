@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "no_menu_base.html" %}
 {% load i18n %}
 {% load config %}
 {% load crispy_forms_tags %}
@@ -20,7 +20,7 @@
         <div class="row mb-4">
             <div class="col-md-12">
                 {% blocktrans trimmed %}
-                Du kannst weitere {{ v_subscription }}-Bezieher als {{ v_co_member }} hinzufügen. Fülle bitte die
+                Du kannst weitere {{ v_subscription }}-BezieherInnen als {{ v_co_member }} hinzufügen. Fülle bitte die
                 untenstehenden Felder aus
                 und klicke anschliessend auf "{{ v_co_member }} hinzufügen".
                 {% endblocktrans %}

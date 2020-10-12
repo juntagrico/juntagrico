@@ -1,0 +1,131 @@
+@font-face {
+    font-family: Symbola, "Symbola";
+    src: url(/code/static/fonts/Symbola.ttf);
+}
+
+@page {
+    size: A4;
+    @frame content_frame {
+        left: 50pt;
+        width: 512pt;
+        top: 45pt;
+        height: 710pt;
+/*        -pdf-frame-border: 1;    */    /* for debugging the layout */
+    }
+
+    @frame header_frame {
+        -pdf-frame-content:header_content;
+        left: 50pt;
+        width: 512pt;
+        top: 50pt;
+        height: 20pt;
+        text-align:center;
+    }
+
+    @frame footer_frame {
+        -pdf-frame-content:footer_content;
+        left: 50pt;
+        width: 512pt;
+        top: 760pt;
+        height: 90pt;
+        text-align:center;
+    }
+}
+
+body {
+    font-family: Symbola;
+}
+
+.page-break {
+    page-break-after: always;
+}
+
+.full-border {
+    border: 1px black solid;
+}
+
+.left-border {
+    border-left: 1px black solid;
+}
+
+.top-border {
+    border-top: 1px black solid;
+}
+
+.right-border {
+    border-right: 1px black solid;
+}
+
+.bottom-border {
+    border-bottom: 1px black solid;
+}
+
+th {
+    font-size: 14px;
+    vertical-align: top;
+    text-align: center;
+}
+
+td {
+    font-size: 14px;
+    line-height: 14px;
+    vertical-align: top;
+    text-align: center;
+}
+
+.vert-top {
+    vertical-align: top;
+}
+
+.vert-bottom {
+    vertical-align: bottom;
+}
+
+.horz-left {
+    text-align: left;
+}
+
+.horz-center {
+    text-align: center;
+}
+
+.namecol {
+    width:300px;
+}
+
+.checkboxcol {
+    width:50px;
+}
+
+.message {
+    width: 100%;
+    text-align: center;
+    font-size: 18pt;
+}
+
+.depot {
+    font-size: 24px;
+    margin: 0px;
+}
+
+.depotaddr {
+    font-size: 14px;
+    margin: 0px;
+}
+
+.fontsmall {
+    font-size:11px
+}
+
+.gendate {
+    text-align: right;
+}
+
+.proddescr {
+    font-size:11px
+}
+
+table {
+    table-layout: fixed;
+    margin-bottom:5px;
+}

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
 from django.utils import timezone
-from django.db.models import Q
 
 import juntagrico
 
@@ -9,14 +7,15 @@ class ExtraSubBillingPeriodDao:
 
     @staticmethod
     def get_current_period_per_type(type):
-        now = timezone.now().date()
+        now = timezone.now()
         month = now.month
         for period in juntagrico.entity.billing.ExtraSubBillingPeriod.objects.filter(type__id=type.id).filter(
                 start_month__lte=month).filter(end_month__gte=month):
             start = period.get_actual_start()
             end = period.get_actual_end()
-            if start <= now <= end:
+            if start <= now.date() <= end:
                 return period
+        return None
 
     def get_starting_for_date(date):
         day = date.day

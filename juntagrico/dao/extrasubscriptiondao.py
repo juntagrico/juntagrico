@@ -1,20 +1,28 @@
-# -*- coding: utf-8 -*-
-import juntagrico
+from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
 
 
 class ExtraSubscriptionDao:
 
     @staticmethod
     def all_extra_subs():
-        return juntagrico.models.ExtraSubscription.objects.all()
+        return ExtraSubscription.objects.all()
 
     @staticmethod
     def canceled_extra_subs():
-        return juntagrico.models.ExtraSubscription.objects.filter(active=True, canceled=True)
+        return ExtraSubscription.objects.filter(q_activated() & q_cancelled() & ~q_deactivated())
 
     @staticmethod
     def waiting_extra_subs():
-        return juntagrico.models.ExtraSubscription.objects.filter(active=False, deactivation_date=None)
+        return ExtraSubscription.objects.filter(~q_activated())
+
+    @staticmethod
+    def all_active_extrasubscritions():
+        return ExtraSubscription.objects.filter(q_activated() & ~q_deactivated())
+
+    @staticmethod
+    def future_extrasubscriptions():
+        return ExtraSubscription.objects.filter(~q_cancelled() & ~q_deactivated()).filter(deactivation_date=None)
 
     @staticmethod
     def extrasubscriptions_by_date(fromdate, tilldate):
@@ -23,6 +31,6 @@ class ExtraSubscriptionDao:
         all subscriptions except those that ended before or
         started after the date range.
         """
-        return juntagrico.models.ExtraSubscription.objects.\
+        return ExtraSubscription.objects.\
             exclude(deactivation_date__lt=fromdate).\
             exclude(activation_date__gt=tilldate)

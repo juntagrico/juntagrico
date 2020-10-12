@@ -81,9 +81,13 @@
                         {{ subscription.creation_date|date:"Y-m-d" }}
                     </td>
                     <td>
+                        {% if subscription.activation_date %}
+                        {% trans "Wurde bereits aktiviert" %} {{ subscription.activation_date }}
+                        {% else %}
                         <a href="{% url 'sub-activate' subscription.id %}"class="btn btn-success">
                             {% trans "aktivieren" %}
                         </a>
+                        {% endif %}
                     </td>
                     <td>
                         {{ subscription.notes }}

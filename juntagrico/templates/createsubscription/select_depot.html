@@ -1,6 +1,9 @@
-{% extends "base.html" %}
+{% extends "no_menu_base.html" %}
 {% load i18n %}
 {% load config %}
+{% block styles %}
+    <link rel="stylesheet" href="/static/external/leaflet/leaflet.css" />
+{% endblock %}
 {% block all_page_title %}
     {% vocabulary "depot" as v_depot %}
     <div class="page-title offset-md-2 col-md-8">
@@ -37,7 +40,7 @@
             <div id="depot_container" class="form-group row">
                 <div class="offset-md-3 col-md-9">
                     {% if requires_map %}
-                        <div id="map-canvas">
+                        <div style="height: 20rem" id="depot-map">
                         </div>
                     {% endif %}
                 </div>
@@ -57,12 +60,9 @@
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript">
-        var member_addr = '{{ member.addr_street }}+{{ member.addr_zipcode }}+{{ member.addr_location }}';
-        var destinations = [];
         var depots = [];
         {% for depot in depots %}
             {% if depot.has_geo %}
-                destinations.push("{{ depot.addr_street }}+{{ depot.addr_zipcode }}+{{ depot.addr_location }}");
                 depots.push(
                 {name: '{{ depot.name }}',
                 addr_street: '{{ depot.addr_street }}',
@@ -75,8 +75,7 @@
             {% endif %}
         {% endfor %}
     </script>
-    <script type="text/javascript"src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={% config "google_api_key" %}">
-    </script>
+    <script type="text/javascript" src="/static/external/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initCreateSubscription.js">
     </script>
 {% endblock %}

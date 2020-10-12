@@ -19,7 +19,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='juntagrico',
-    version='1.1.8',
+    version='1.2.3',
     packages=find_packages(),
     include_package_data=True,
     license='GNU Lesser General Public License v3 (LGPLv3)',
@@ -32,7 +32,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 2.0',
+        'Framework :: Django :: 3.0',
         'Intended Audience :: Developers',
         'Intended Audience :: Other Audience',
         'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
@@ -41,6 +41,7 @@ setup(
         # Replace these appropriately if you are stuck on Python 2.
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8 ',
         'Topic :: Internet :: WWW/HTTP :: Site Management',
     ],
     install_requires=get_requirements(os.path.join(ROOT_DIR, 'requirements.txt')),

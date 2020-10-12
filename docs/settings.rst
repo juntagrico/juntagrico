@@ -29,7 +29,8 @@ VOCABULARY
         'member_type' : 'Mitglied',
         'member_type_pl' : 'Mitglieder',
         'depot' : 'Depot',
-        'depot_pl' : 'Depots'
+        'depot_pl' : 'Depots',
+        'package': 'Tasche',
     }
 
 ORGANISATION_NAME
@@ -113,7 +114,6 @@ ORGANISATION_BANK_CONNECTION
   - BIC
   - IBAN
   - NAME
-  - ESR (if you enable billing)
 
   default value
 
@@ -122,8 +122,7 @@ ORGANISATION_BANK_CONNECTION
     {"PC" : "01-123-5",
         "IBAN" : "CH 00 12345 67890 12345 67890 10",
         "BIC" : "BIC12345XX",
-        "NAME" : "Juntagrico Bank",
-        "ESR" : "01-123-45"}
+        "NAME" : "Juntagrico Bank",}
 
 INFO_EMAIL
 ----------
@@ -402,18 +401,6 @@ DEPOT_LIST_GENERATION_DAYS
 
     [0,1,2,3,4,5,6]
 
-BILLING
--------
-  Enabling bill generation and management
-  
-  Type: Boolean
-
-  default value
-
-  .. code-block:: python
-
-    False
-
 BUSINESS_YEAR_START
 -------------------
   Defining the start of the business year
@@ -484,6 +471,32 @@ DEFAULT_MAILER
 
     'juntagrico.util.defaultmailer.Mailer'
 
+
+FROM_FILTER
+-----------
+  Consisting of a regular expression and a default replacement. If the regular expression does not match the default replacement is used, and the orogonal from is set as reply to
+
+  default value
+
+  .. code-block:: python
+    {
+        'filter_expression': '.*',
+        'replacement_from': ''
+    }
+COOKIE_CONSENT
+-----------
+  The text, confirm text, link text and url of the cookie consent
+
+  default value
+
+  .. code-block:: python
+
+    {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+     'confirm_text': _('einverstanden'),
+     'link_text': _('Hier findest du mehr zum Thema'),
+     'url': '/my/cookies'
+    }
+
 IMAGES
 ------
   Defining the different images for core and job assignments etc
@@ -525,19 +538,4 @@ EMAILS
         'n_sub': 'mails/new_subscription.txt',
         's_canceled': 'mails/subscription_canceled_mail.txt',
         'm_canceled': 'mails/membership_canceled_mail.txt',
-        'b_share': 'mails/bill_share.txt',
-        'b_sub': 'mails/bill_sub.txt',
-        'b_esub': 'mails/bill_extrasub.txt'
     }
-
-GOOGLE_API_KEY
---------------
-  The google api key to enable the maps in juntagrico
-  
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "GOOGLE_API_KEY"

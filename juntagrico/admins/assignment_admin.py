@@ -1,12 +1,10 @@
-from django.contrib import admin
-
 from juntagrico.admins import BaseAdmin
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.util.admin import formfield_for_coordinator
 
 
 class AssignmentAdmin(BaseAdmin):
-    list_display = ['__str__', 'member', 'job']
+    list_display = ['__str__', 'member', 'time', 'amount', 'job']
     search_fields = ['member__first_name', 'member__last_name']
     raw_id_fields = ['member', 'job']
 
@@ -19,7 +17,8 @@ class AssignmentAdmin(BaseAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,
+                                           db_field.name,
                                            'job',
                                            'juntagrico.is_area_admin',
-                                           JobDao.ids_for_area_by_contact)
+                                           JobDao.for_area_by_contact)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

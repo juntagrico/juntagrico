@@ -1,12 +1,9 @@
 from django import forms
 from django.contrib import admin
-from django.contrib.admin import widgets
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
 
-from juntagrico.config import Config
-from juntagrico.entity.subs import Subscription
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.subs import Subscription
+
 
 # This form exists to restrict primary user choice to users that have actually set the
 # current subscription as their subscription
@@ -17,12 +14,14 @@ class SubscriptionAdminForm(forms.ModelForm):
         model = Subscription
         fields = '__all__'
 
-    subscription_members = forms.ModelMultipleChoiceField(queryset=MemberDao.all_members(), required=False,
-                                                          widget=admin.widgets.FilteredSelectMultiple('Member', False))
+    subscription_members = forms.ModelMultipleChoiceField(
+        queryset=MemberDao.all_members(), required=False, widget=admin.widgets.FilteredSelectMultiple('Member', False),
+        label=Subscription.recipients_names.short_description)
 
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
-        self.fields['primary_member'].queryset = self.instance.recipients
+        if 'primary_member' in self.fields.keys():
+            self.fields['primary_member'].queryset = self.instance.recipients
         if self.instance.pk is None:
             self.fields['subscription_members'].queryset = MemberDao.members_for_create_subscription()
         elif self.instance.state == 'waiting':

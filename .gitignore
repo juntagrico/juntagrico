@@ -14,3 +14,6 @@ my_settings_local.py
 **/dist
 **/*.egg-info
 .coverage
+testsettings2.py
+*.bat
+

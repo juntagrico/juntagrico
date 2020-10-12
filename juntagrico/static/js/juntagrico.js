@@ -89,7 +89,7 @@ function default_data_table() {
         },
         "drawCallback": function (settings) {
             // do not like this but it works so far till i get around to find the correct api call
-            updateSendEmailButton($("#filter-table tr").length - 2);
+            updateSendEmailButton($("#filter-table tbody tr").length);
         },
         "language": {
             "search": "Suchen: "
@@ -112,5 +112,30 @@ function area_slider() {
         }
 
     })
+}
 
+function map_with_markers(depots){
+    markers = []
+    if(depots[0]) {
+        var map = L.map('depot-map').setView([depots[0].latitude, depots[0].longitude], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);
+
+        $.each(depots, function (i, depot) {
+            var marker = add_marker(depot, map)
+            markers.push(marker)
+        });
+        var group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds(),{padding:[100,100]});
+    }
+    return markers
+}
+
+function add_marker(depot, map){
+    var marker = L.marker([depot.latitude, depot.longitude]).addTo(map);
+    marker.bindPopup("<b>" + depot.name + "</b><br/>" +
+            depot.addr_street + "<br/>"
+            + depot.addr_zipcode + " " + depot.addr_location);
+    return marker
 }

@@ -1,6 +1,12 @@
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
-from juntagrico.models import *
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.member import Member
+from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
 
 
 class Command(BaseCommand):
@@ -44,22 +50,24 @@ class Command(BaseCommand):
                          'addr_location': 'Zürich', 'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
         depot1 = Depot.objects.create(**depot1_fields)
         depot2 = Depot.objects.create(**depot2_fields)
-        sub_1_fields = {'depot': depot1, 'future_depot': None, 'active': True,
+        sub_1_fields = {'depot': depot1, 'future_depot': None,
                         'activation_date': '2017-03-27', 'deactivation_date': None, 'creation_date': '2017-03-27',
-                        'start_date': '2018-01-01', 'primary_member': member_1}
+                        'start_date': '2018-01-01'}
         sub_2_fields = {'depot': depot2, 'future_depot': None,
-                        'active': True, 'activation_date': '2017-03-27', 'deactivation_date': None,
-                        'creation_date': '2017-03-27', 'start_date': '2018-01-01', 'primary_member': member_2}
+                        'activation_date': '2017-03-27', 'deactivation_date': None,
+                        'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
         subscription_1 = Subscription.objects.create(**sub_1_fields)
         member_1.subscription = subscription_1
         member_1.save()
+        subscription_1.primary_member = member_1
+        subscription_1.save()
         subscription_2 = Subscription.objects.create(**sub_2_fields)
         member_2.subscription = subscription_2
         member_2.save()
-        TSST.objects.create(subscription=subscription_1, type=subtype)
-        TSST.objects.create(subscription=subscription_2, type=subtype)
-        TFSST.objects.create(subscription=subscription_1, type=subtype)
-        TFSST.objects.create(subscription=subscription_2, type=subtype)
+        subscription_2.primary_member = member_2
+        subscription_2.save()
+        SubscriptionPart.objects.create(subscription=subscription_1, type=subtype)
+        SubscriptionPart.objects.create(subscription=subscription_2, type=subtype)
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
                         'hidden': False, 'coordinator': member_1, 'show_coordinator_phonenumber': False}
@@ -72,9 +80,9 @@ class Command(BaseCommand):
         area_2.members.set([member_1])
         area_2.save()
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
-                        'duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': 'auf dem Hof'}
         type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
-                        'duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': 'auf dem Hof'}
         type_1 = JobType.objects.create(**type1_fields)
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,

@@ -3,7 +3,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
-from juntagrico.entity.subs import SubscriptionSize
+from juntagrico.entity.subtypes import SubscriptionSize
 from juntagrico.util.temporal import weekday_short
 
 

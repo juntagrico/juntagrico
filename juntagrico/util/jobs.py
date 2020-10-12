@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 
 def get_status_image(percent=0):
-    status_number = min(100, int(25 * math.floor(float(percent)/25)))
+    status_number = min(100, int(25 * math.floor(float(percent) / 25)))
     result = 'status_' + str(status_number)
     return result
 
@@ -17,5 +17,5 @@ def get_status_image_text(percent=0):
         25: _('Angefangen'),
         0: _('Nix')
     }
-    status_number = min(100, int(25 * math.floor(float(percent)/25)))
+    status_number = min(100, int(25 * math.floor(float(percent) / 25)))
     return texts[status_number]
