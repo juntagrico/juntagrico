@@ -459,7 +459,7 @@ def order_shares(request):
             return redirect('{}?referer={}'.format(reverse('share-order-success'), referer))
     else:
         shareerror = False
-        if request.META.get('HTTP_REFERER')is not None:
+        if request.META.get('HTTP_REFERER') is not None:
             referer = request.META.get('HTTP_REFERER')
         else:
             referer = 'http://' + Config.adminportal_server_url()
@@ -473,7 +473,7 @@ def order_shares(request):
 
 @login_required
 def order_shares_success(request):
-    if request.GET.get('referer')is not None:
+    if request.GET.get('referer') is not None:
         referer = request.GET.get('referer')
     else:
         referer = 'http://' + Config.adminportal_server_url()
