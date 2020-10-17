@@ -2,10 +2,13 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.urls import reverse
 
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
 from juntagrico.entity.jobs import RecuringJob
+from juntagrico.entity.share import Share
+from juntagrico.admins.forms.admin_mark_share import MarkShareOptionsForm
 from test.util.test import JuntagricoTestCase
 
 
@@ -96,3 +99,40 @@ class AdminTests(JuntagricoTestCase):
         data['activation_date'] = now
         data['subscription_members'] = list(self.sub.recipients)
         state_part(self.sub, data, member, True, True)
+
+    def testShareActionMarkAs(self):
+        """
+        Testing mark_as action
+        App is juntagrico, model is Share
+        """
+        change_url = reverse("admin:juntagrico_share_changelist")
+        shares = [Share.objects.create(member_id=self.member.id),
+                  Share.objects.create(member_id=self.member.id)]
+        share_pks = [share.pk for share in shares]
+        test_fields = ['paid_date', 'issue_date', 'booking_date',
+                       'cancelled_date', 'termination_date', 'payback_date']
+        data = {'action': 'mark_share',
+                '_selected_action': share_pks}
+        self.client.force_login(self.admin.user)
+        response = self.client.post(change_url, data)
+        self.assertEqual(response.status_code, 200)
+
+        now = timezone.now().date()
+        form_data = {'target_field': 'paid_date',
+                     'date': now,
+                     'overwrite': False}
+        form = MarkShareOptionsForm(form_data)
+        self.assertTrue(form.is_valid())
+
+        for field in test_fields:
+            data = {'action': 'mark_share',
+                    '_selected_action': share_pks,
+                    'apply': True,
+                    'target_field': field,
+                    'date': now,
+                    'overwrite': True}
+            response = self.client.post(change_url, data, follow=True)
+            self.assertEqual(response.status_code, 200)
+            for share in shares:
+                share.refresh_from_db()
+                self.assertEqual(getattr(share, field), now)

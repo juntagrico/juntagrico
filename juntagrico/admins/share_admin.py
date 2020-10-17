@@ -30,8 +30,6 @@ class ShareAdmin(BaseAdmin):
                 queryset.update(**{target_field: date})
                 self.message_user(request, _('{} von {} {} bearbeitet').format(filter_count, input_count, Config.vocabulary('share_pl')))
                 return HttpResponseRedirect(request.get_full_path())
-        elif 'cancel' in request.POST:
-            return HttpResponseRedirect(request.get_full_path())
         else:
             form = MarkShareOptionsForm()
 
