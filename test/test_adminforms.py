@@ -100,9 +100,9 @@ class AdminTests(JuntagricoTestCase):
         data['subscription_members'] = list(self.sub.recipients)
         state_part(self.sub, data, member, True, True)
 
-    def testShareActionMarkAs(self):
+    def testShareActionMassEditShareDates(self):
         """
-        Testing mark_as action
+        Testing mass_edit_share_dates action
         App is juntagrico, model is Share
         """
         change_url = reverse("admin:juntagrico_share_changelist")

@@ -34,7 +34,7 @@ class ShareAdmin(BaseAdmin):
             form = EditShareDatesForm()
 
         return render(request,
-                      'admin/mark_share_intermediate.html',
+                      'admin/mass_edit_share_dates_intermediate.html',
                       context={
                           'shares': queryset,
                           'form': form,
