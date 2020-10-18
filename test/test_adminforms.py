@@ -8,7 +8,7 @@ from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.share import Share
-from juntagrico.admins.forms.admin_mark_share import MarkShareOptionsForm
+from juntagrico.admins.forms.admin_edit_share_dates import EditShareDatesForm
 from test.util.test import JuntagricoTestCase
 
 
@@ -111,7 +111,7 @@ class AdminTests(JuntagricoTestCase):
         share_pks = [share.pk for share in shares]
         test_fields = ['paid_date', 'issue_date', 'booking_date',
                        'cancelled_date', 'termination_date', 'payback_date']
-        data = {'action': 'mark_share',
+        data = {'action': 'mass_edit_share_dates',
                 '_selected_action': share_pks}
         self.client.force_login(self.admin.user)
         response = self.client.post(change_url, data)
@@ -121,11 +121,11 @@ class AdminTests(JuntagricoTestCase):
         form_data = {'target_field': 'paid_date',
                      'date': now,
                      'overwrite': False}
-        form = MarkShareOptionsForm(form_data)
+        form = EditShareDatesForm(form_data)
         self.assertTrue(form.is_valid())
 
         for field in test_fields:
-            data = {'action': 'mark_share',
+            data = {'action': 'mass_edit_share_dates',
                     '_selected_action': share_pks,
                     'apply': True,
                     'target_field': field,

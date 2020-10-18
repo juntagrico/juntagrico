@@ -5,7 +5,7 @@
 {% block content %}
     {% vocabulary "share" as v_share %}
     {% vocabulary "share_pl" as v_share_pl %}
-<h1>{% blocktrans %}{{ v_share_pl }} bearbeiten{% endblocktrans %}</h1>
+<h1>{% blocktrans %}Datum für {{ v_share_pl }} setzen{% endblocktrans %}</h1>
 <p>{% blocktrans %}Bist du sicher, dass du die ausgewählten {{ v_share_pl }} bearbeiten willst?{% endblocktrans %}</p>
 
 <h2>{% trans "Optionen" %}</h2>
@@ -26,7 +26,7 @@
         {% endfor %}
     </ul>
 
-    <input type="hidden" name="action" value="mark_share" />
+    <input type="hidden" name="action" value="mass_edit_share_dates" />
     <input type="submit" name="apply" value="{% trans "Anwenden" %}"/>
 </form>
 {% endblock %}

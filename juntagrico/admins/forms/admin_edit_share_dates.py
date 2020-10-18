@@ -3,7 +3,7 @@ from django.utils.translation import gettext as _
 from django.utils import timezone
 from django.contrib.admin.widgets import AdminDateWidget
 
-FIELD_CHOICES = [('paid_date', _('Bezahlt am')),
+field_choices = [('paid_date', _('Bezahlt am')),
                  ('issue_date', _('Ausgestellt am')),
                  ('booking_date', _('Eingebucht am')),
                  ('cancelled_date', _('Gekündigt am')),
@@ -11,7 +11,7 @@ FIELD_CHOICES = [('paid_date', _('Bezahlt am')),
                  ('payback_date', _('Zurückbezahlt am'))]
 
 
-class MarkShareOptionsForm(forms.Form):
-    target_field = forms.CharField(label='', widget=forms.Select(choices=FIELD_CHOICES))
+class EditShareDatesForm(forms.Form):
+    target_field = forms.CharField(label='', widget=forms.Select(choices=field_choices))
     date = forms.DateField(label='', widget=AdminDateWidget(), initial=timezone.now().date())
     overwrite = forms.BooleanField(label=_('Überschreiben?'), required=False)

@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 
 from juntagrico.admins import BaseAdmin
 from juntagrico.config import Config
-from juntagrico.admins.forms.admin_mark_share import MarkShareOptionsForm
+from juntagrico.admins.forms.admin_edit_share_dates import EditShareDatesForm
 
 
 class ShareAdmin(BaseAdmin):
@@ -14,11 +14,11 @@ class ShareAdmin(BaseAdmin):
     search_fields = ['id', 'member__email', 'member__first_name', 'member__last_name', 'number', 'paid_date',
                      'issue_date', 'booking_date', 'cancelled_date', 'termination_date', 'payback_date']
     raw_id_fields = ['member']
-    actions = ['mark_share']
+    actions = ['mass_edit_share_dates']
 
-    def mark_share(self, request, queryset):
+    def mass_edit_share_dates(self, request, queryset):
         if 'apply' in request.POST:
-            form = MarkShareOptionsForm(request.POST)
+            form = EditShareDatesForm(request.POST)
             if form.is_valid():
                 target_field = form.cleaned_data['target_field']
                 date = form.cleaned_data['date']
@@ -31,7 +31,7 @@ class ShareAdmin(BaseAdmin):
                 self.message_user(request, _('{} von {} {} bearbeitet').format(filter_count, input_count, Config.vocabulary('share_pl')))
                 return HttpResponseRedirect(request.get_full_path())
         else:
-            form = MarkShareOptionsForm()
+            form = EditShareDatesForm()
 
         return render(request,
                       'admin/mark_share_intermediate.html',
@@ -40,4 +40,4 @@ class ShareAdmin(BaseAdmin):
                           'form': form,
                       })
 
-    mark_share.short_description = _('Ausgewählte {} bearbeiten').format(Config.vocabulary('share_pl'))
+    mass_edit_share_dates.short_description = _('Datum für ausgewählte {} setzen').format(Config.vocabulary('share_pl'))
