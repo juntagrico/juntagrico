@@ -117,7 +117,7 @@ def cancel_sub(subscription, end_date, message):
 
 
 def cancel_extra_sub(extra):
-    if extra.deactivation_date is not None:
+    if extra.activation_date is not None:
         extra.cancel()
     elif extra.activation_date is None and extra.deactivation_date is None:
         extra.delete()
