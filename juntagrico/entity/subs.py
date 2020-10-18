@@ -94,7 +94,7 @@ class Subscription(Billable, SimpleStateModel):
     @property
     def size(self):
         sizes = {}
-        for part in self.active_parts.all():
+        for part in self.active_parts.all() or self.future_parts.all():
             sizes[part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
         return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
 
