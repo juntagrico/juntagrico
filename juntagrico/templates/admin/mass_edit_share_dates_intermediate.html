@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load config %}
+
+{% block content %}
+    {% vocabulary "share" as v_share %}
+    {% vocabulary "share_pl" as v_share_pl %}
+<h1>{% blocktrans %}Datum für {{ v_share_pl }} setzen{% endblocktrans %}</h1>
+<p>{% blocktrans %}Bist du sicher, dass du die ausgewählten {{ v_share_pl }} bearbeiten willst?{% endblocktrans %}</p>
+
+<h2>{% trans "Optionen" %}</h2>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h2>{% trans "Zusammenfassung" %}</h2>
+    <ul>
+        <li>{{ v_share_pl }}: {{ shares|length }}</li>
+    </ul>
+
+    <h2>{% trans "Objekte" %}</h2>
+    <ul>
+        {% for share in shares %}
+        <li>{{ v_share }}: <a href="{% url 'admin:juntagrico_share_change' share.id %}">{{ share }}</a></li>
+        <input type="hidden" name="_selected_action" value="{{ share.pk }}" />
+        {% endfor %}
+    </ul>
+
+    <input type="hidden" name="action" value="mass_edit_share_dates" />
+    <input type="submit" name="apply" value="{% trans "Anwenden" %}"/>
+</form>
+{% endblock %}
