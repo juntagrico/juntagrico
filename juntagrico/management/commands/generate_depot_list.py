@@ -7,9 +7,9 @@ from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategor
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.mailer import membernotification
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.temporal import weekdays
+from juntagrico.util.subs import activate_future_depots
 
 
 class Command(BaseCommand):
@@ -40,14 +40,7 @@ class Command(BaseCommand):
             return
 
         if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
-            for subscription in SubscriptionDao.subscritions_with_future_depots():
-                subscription.depot = subscription.future_depot
-                subscription.future_depot = None
-                subscription.save()
-                emails = []
-                for member in subscription.recipients:
-                    emails.append(member.email)
-                membernotification.depot_changed(emails, subscription.depot)
+            activate_future_depots()
 
         if options['force'] and not options['future']:
             print('future depots ignored, use --future to override')
