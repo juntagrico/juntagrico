@@ -39,6 +39,15 @@ def get_emails_by_permission(permission_code):
     return emails
 
 
+def skip_if_noone_with_perm(perm):
+    def skip_decorator(func):
+        def wrapper(*args, **kwargs):
+            if len(get_emails_by_permission(perm)) > 0:
+                return func(*args, **kwargs)
+        return wrapper
+    return skip_decorator
+
+
 def filter_whitelist_emails(to_emails):
     if settings.DEBUG:
         ok_mails = [x for x in to_emails if x in settings.WHITELIST_EMAILS]

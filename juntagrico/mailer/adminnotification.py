@@ -2,7 +2,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.mailer import EmailSender, organisation_subject, get_email_content, base_dict, \
-    get_emails_by_permission
+    get_emails_by_permission, skip_if_noone_with_perm
 
 """
 Admin notification emails
@@ -28,6 +28,7 @@ def member_left_activityarea(area, member):
     ).send_to(area.get_email())
 
 
+@skip_if_noone_with_perm('notified_on_subscription_creation')
 def subscription_created(subscription):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('subscription'))),
@@ -36,6 +37,7 @@ def subscription_created(subscription):
     ).send()
 
 
+@skip_if_noone_with_perm('notified_on_subscription_cancellation')
 def subscription_canceled(subscription, message):
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('subscription'))),
@@ -44,6 +46,7 @@ def subscription_canceled(subscription, message):
     ).send()
 
 
+@skip_if_noone_with_perm('notified_on_share_creation')
 def share_created(share):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
@@ -52,6 +55,7 @@ def share_created(share):
     ).send()
 
 
+@skip_if_noone_with_perm('notified_on_member_creation')
 def member_created(member):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
@@ -60,6 +64,7 @@ def member_created(member):
     ).send()
 
 
+@skip_if_noone_with_perm('notified_on_member_cancellation')
 def member_canceled(member, end_date, message):
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
