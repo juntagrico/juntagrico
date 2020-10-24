@@ -232,21 +232,6 @@ STYLE_SHEET
 
     "/static/css/personal.css"
 
-CUSTOM_MENU
------------
-  If you want to use a custom admin or user menu entries you can define the corresponding templates here
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    {
-        'user': 'menu/custom_user_menu.html',
-        'admin': 'menu/custom_admin_menu.html',
-    }
-
 FAVICON
 -------
   If you want to use a custom favicon this specifies the path for your favicon

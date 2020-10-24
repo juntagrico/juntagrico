@@ -1,4 +1,6 @@
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.mailer import membernotification
+from juntagrico.dao.subscriptiondao import SubscriptionDao
 
 
 def subscriptions_with_assignments(subscriptions):
@@ -19,3 +21,14 @@ def subscriptions_with_assignments(subscriptions):
             'core_assignments': core_assignments
         })
     return subscriptions_list
+
+
+def activate_future_depots():
+    for subscription in SubscriptionDao.subscritions_with_future_depots():
+        subscription.depot = subscription.future_depot
+        subscription.future_depot = None
+        subscription.save()
+        emails = []
+        for member in subscription.recipients:
+            emails.append(member.email)
+        membernotification.depot_changed(emails, subscription.depot)

@@ -1,8 +1,6 @@
 from django.utils.functional import LazyObject
 from django.utils.module_loading import autodiscover_modules
 
-from juntagrico.config import Config
-
 
 class AddonNotConfigured(Exception):
     pass
@@ -11,9 +9,9 @@ class AddonNotConfigured(Exception):
 class AddonsConfig:
 
     def __init__(self):
-        self._admin_menus = [Config.custom_menu('admin')]
+        self._admin_menus = []
         self._admin_subscription_menus = []
-        self._user_menus = [Config.custom_menu('user')]
+        self._user_menus = []
         self._sub_overview = []
         self._sub_change = []
         self._registry = {}
