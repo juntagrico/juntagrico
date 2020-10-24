@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='SubscriptionMembership',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('join_date', models.DateField(auto_now_add=True, verbose_name='Beitrittsdatum')),
+                ('join_date', models.DateField(blank=True, null=True, verbose_name='Beitrittsdatum')),
                 ('leave_date', models.DateField(blank=True, null=True, verbose_name='Austrittsdatum')),
                 ('member', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='juntagrico.Member')),
                 ('subscription', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='juntagrico.Subscription')),

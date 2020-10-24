@@ -76,13 +76,12 @@ class Member(JuntagricoBaseModel):
 
     @property
     def subscription_future(self):
-        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=True).first()
+        sub_membership = self.subscriptionmembership_set.filter(join_date__isnull=True).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=False,
-                                                                subscription__deactivation_date__isnull=True).first()
+        sub_membership = self.subscriptionmembership_set.filter(join_date__isnull=False, leave_date__isnull=True).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
@@ -95,13 +94,16 @@ class Member(JuntagricoBaseModel):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            SubscriptionMembership.objects.create(member=self, subscription=subscription)
+            join_date = timezone.now().date() if subscription.active else None
+            SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
     def leave_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        if sub_membership and sub_membership.leave_date is None:
+        if sub_membership and sub_membership.leave_date is None and sub_membership.join_date is not None:
             sub_membership.leave_date = timezone.now().date()
             sub_membership.save()
+        elif sub_membership and sub_membership.leave_date is None and sub_membership.join_date is not None:
+            sub_membership.delete()
 
     @property
     def in_subscription(self):
@@ -159,7 +161,7 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
-    join_date = models.DateField(_('Beitrittsdatum'), default=timezone.now, blank=True)
+    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True)
     leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
 
     class Meta:

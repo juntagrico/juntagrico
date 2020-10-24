@@ -47,4 +47,3 @@ class PropertyQuerySet(QuerySet):
         result = super()._clone()
         result.properties = self.properties.copy()
         return result
-

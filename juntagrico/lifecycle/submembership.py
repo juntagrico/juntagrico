@@ -26,5 +26,5 @@ def check_sub_membership_consistency_ms(member, subscription):
                                                                                                 subscription).count() > 0:
         raise ValidationError(
             _('Diese/r/s {} hat bereits ein/e/n {}').format(Config.vocabulary('member'),
-                                                                           Config.vocabulary('subscription')),
+                                                            Config.vocabulary('subscription')),
             code='invalid')

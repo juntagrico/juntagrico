@@ -109,13 +109,6 @@ def cancel_sub(subscription, end_date, message):
         subscription.delete()
 
 
-def cancel_extra_sub(extra):
-    if extra.deactivation_date is not None:
-        extra.cancel()
-    elif extra.activation_date is None and extra.deactivation_date is None:
-        extra.delete()
-
-
 def cancel_share(share, now, end_date):
     now = now or timezone.now().date()
     end_date = end_date or next_membership_end_date()

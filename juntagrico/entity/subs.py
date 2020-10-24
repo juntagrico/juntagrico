@@ -2,6 +2,7 @@ import datetime
 import time
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -162,8 +163,10 @@ class Subscription(Billable, SimpleStateModel):
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
     def co_members(self, member):
+        leave_date_null = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
         return [m.member for m in
-                self.subscriptionmembership_set.filter(leave_date__isnull=True).exclude(member__email=member.email).prefetch_related('member').all()]
+                self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).exclude(member__email=member.email).prefetch_related('member').all()]
 
     def nickname_or_recipients_names(self):
         if self.nickname:
@@ -183,7 +186,9 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return [m.member for m in self.subscriptionmembership_set.filter(leave_date__isnull=True).prefetch_related('member').all()]
+        leave_date_null = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
+        return [m.member for m in self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
