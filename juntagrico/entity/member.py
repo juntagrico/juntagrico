@@ -102,7 +102,7 @@ class Member(JuntagricoBaseModel):
         if sub_membership and sub_membership.leave_date is None and sub_membership.join_date is not None:
             sub_membership.leave_date = timezone.now().date()
             sub_membership.save()
-        elif sub_membership and sub_membership.leave_date is None and sub_membership.join_date is not None:
+        elif sub_membership and sub_membership.leave_date is None and sub_membership.join_date is None:
             sub_membership.delete()
 
     @property
