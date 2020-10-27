@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
+from django.utils.translation import gettext as _
 
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
@@ -166,7 +167,10 @@ def size_change(request, subscription_id):
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     parts_order_allowed = subscription.waiting or subscription.active
-    if request.method == 'POST' and parts_order_allowed:
+    if request.method == 'POST':
+        if not parts_order_allowed:
+            raise ValidationError(_('Für gekündigte {} können keine Bestandteile bestellt werden').
+                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected())
@@ -191,7 +195,10 @@ def extra_change(request, subscription_id):
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
     extra_order_allowed = subscription.waiting or subscription.active
-    if request.method == 'POST' and extra_order_allowed:
+    if request.method == 'POST':
+        if not extra_order_allowed:
+            raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
+                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         for type in ExtraSubscriptionTypeDao.all_visible_extra_types():
             value = int(request.POST.get('extra' + str(type.id)))
             if value > 0:
