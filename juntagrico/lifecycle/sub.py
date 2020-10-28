@@ -21,15 +21,15 @@ def sub_pre_save(sender, instance, **kwargs):
 
 
 def handle_sub_activated(sender, instance, **kwargs):
-    instance.activation_date = instance.activation_date or timezone.now().date()
-    change_date = instance.activation_date
-    for part in instance.future_parts.all():
-        part.activate(change_date)
     for member in instance.recipients:
         if member.subscription_current is not None:
             raise ValidationError(
                 _('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription')),
                 code='invalid')
+    instance.activation_date = instance.activation_date or timezone.now().date()
+    change_date = instance.activation_date
+    for part in instance.future_parts.all():
+        part.activate(change_date)
     for sub_membership in instance.subscriptionmembership_set.all():
         sub_membership.join_date = change_date
         sub_membership.save()
