@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
+from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -164,7 +165,11 @@ def size_change(request, subscription_id):
     change the size of a subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
+    parts_order_allowed = subscription.waiting or subscription.active
     if request.method == 'POST':
+        if not parts_order_allowed:
+            raise ValidationError(_('Für gekündigte {} können keine Bestandteile bestellt werden').
+                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected())
@@ -177,6 +182,7 @@ def size_change(request, subscription_id):
         'subscription': subscription,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
+        'parts_order_allowed': parts_order_allowed,
     })
     return render(request, 'size_change.html', renderdict)
 
@@ -187,7 +193,11 @@ def extra_change(request, subscription_id):
     change an extra subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
+    extra_order_allowed = subscription.waiting or subscription.active
     if request.method == 'POST':
+        if not extra_order_allowed:
+            raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
+                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         for type in ExtraSubscriptionTypeDao.all_visible_extra_types():
             value = int(request.POST.get('extra' + str(type.id)))
             if value > 0:
@@ -199,7 +209,8 @@ def extra_change(request, subscription_id):
     renderdict.update({
         'types': ExtraSubscriptionTypeDao.all_visible_extra_types(),
         'extras': subscription.extra_subscription_set.all(),
-        'sub_id': subscription_id
+        'sub_id': subscription_id,
+        'extra_order_allowed': extra_order_allowed,
     })
     return render(request, 'extra_change.html', renderdict)
 
