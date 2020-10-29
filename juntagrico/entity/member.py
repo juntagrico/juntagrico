@@ -78,25 +78,26 @@ class Member(JuntagricoBaseModel):
     @property
     def subscription_future(self):
         join_date_isnull = Q(join_date__isnull=True)
-        join_date_future = Q(join_date__gt= timezone.now().date())
+        join_date_future = Q(join_date__gt=timezone.now().date())
         sub_membership = self.subscriptionmembership_set.filter(join_date_isnull | join_date_future).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscription_current(self):
         join_date_notnull = Q(join_date__isnull=False)
-        join_date_present = Q(join_date__lte= timezone.now().date())
+        join_date_present = Q(join_date__lte=timezone.now().date())
         leave_date_isnull = Q(leave_date__isnull=True)
-        leave_date_future = Q(leave_date__gt= timezone.now().date())
-        sub_membership = self.subscriptionmembership_set.filter(join_date_notnull & join_date_present)\
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
+        sub_membership = self.subscriptionmembership_set.filter(join_date_notnull & join_date_present) \
             .filter(leave_date_isnull | leave_date_future).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscriptions_old(self):
         leave_date_notnull = Q(leave_date__isnull=False)
-        leave_date_present = Q(leave_date__lte= timezone.now().date())
-        return [sm.subscription for sm in self.subscriptionmembership_set.filter(leave_date_notnull & leave_date_present)]
+        leave_date_present = Q(leave_date__lte=timezone.now().date())
+        return [sm.subscription for sm in
+                self.subscriptionmembership_set.filter(leave_date_notnull & leave_date_present)]
 
     def join_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
@@ -169,7 +170,6 @@ class Member(JuntagricoBaseModel):
 
 
 class SubscriptionMembership(JuntagricoBaseModel):
-
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
     join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True)
