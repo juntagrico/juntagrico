@@ -2,6 +2,7 @@ import hashlib
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -76,17 +77,26 @@ class Member(JuntagricoBaseModel):
 
     @property
     def subscription_future(self):
-        sub_membership = self.subscriptionmembership_set.filter(join_date__isnull=True).first()
+        join_date_isnull = Q(join_date__isnull=True)
+        join_date_future = Q(join_date__gt= timezone.now().date())
+        sub_membership = self.subscriptionmembership_set.filter(join_date_isnull | join_date_future).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(join_date__isnull=False, leave_date__isnull=True).first()
+        join_date_notnull = Q(join_date__isnull=False)
+        join_date_present = Q(join_date__lte= timezone.now().date())
+        leave_date_isnull = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt= timezone.now().date())
+        sub_membership = self.subscriptionmembership_set.filter(join_date_notnull & join_date_present)\
+            .filter(leave_date_isnull | leave_date_future).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscriptions_old(self):
-        return [sm.subscription for sm in self.subscriptionmembership_set.filter(leave_date__isnull=False)]
+        leave_date_notnull = Q(leave_date__isnull=False)
+        leave_date_present = Q(leave_date__lte= timezone.now().date())
+        return [sm.subscription for sm in self.subscriptionmembership_set.filter(leave_date_notnull & leave_date_present)]
 
     def join_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
@@ -99,10 +109,11 @@ class Member(JuntagricoBaseModel):
 
     def leave_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        if sub_membership and sub_membership.leave_date is None and sub_membership.join_date is not None:
+        membership_present = sub_membership and sub_membership.leave_date is None
+        if membership_present and sub_membership.join_date is not None:
             sub_membership.leave_date = timezone.now().date()
             sub_membership.save()
-        elif sub_membership and sub_membership.leave_date is None and sub_membership.join_date is None:
+        elif membership_present and sub_membership.join_date is None:
             sub_membership.delete()
 
     @property
