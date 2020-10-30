@@ -2,6 +2,7 @@ import datetime
 import time
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -74,15 +75,15 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
-        return self.parts.filter(q_activated & ~q_deactivated)
+        return self.parts.filter(q_activated() & ~q_deactivated())
 
     @property
     def future_parts(self):
-        return self.parts.filter(~q_cancelled & ~q_deactivated)
+        return self.parts.filter(~q_cancelled() & ~q_deactivated())
 
     @property
     def active_and_future_parts(self):
-        return self.parts.filter(~q_deactivated)
+        return self.parts.filter(~q_deactivated())
 
     @property
     def part_change_date(self):
@@ -94,13 +95,13 @@ class Subscription(Billable, SimpleStateModel):
     @property
     def size(self):
         sizes = {}
-        for part in self.active_parts.all():
+        for part in self.active_parts.all() or self.future_parts.all():
             sizes[part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
         return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated | (q_cancelled & ~q_deactivated)).count()
+        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivated())).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -161,6 +162,12 @@ class Subscription(Billable, SimpleStateModel):
 
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
+    def co_members(self, member):
+        leave_date_null = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
+        return [m.member for m in
+                self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).exclude(member__email=member.email).prefetch_related('member').all()]
+
     def nickname_or_recipients_names(self):
         if self.nickname:
             return self.nickname + ' ({})'.format(self.primary_member_nullsave())
@@ -183,7 +190,9 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return [m.member for m in self.subscriptionmembership_set.filter(leave_date__isnull=True).prefetch_related('member').all()]
+        leave_date_null = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
+        return [m.member for m in self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
@@ -197,11 +206,11 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.extra_subscription_set.filter(q_activated & ~q_deactivated)
+        return self.extra_subscription_set.filter(q_activated() & ~q_deactivated())
 
     @property
     def future_extra_subscriptions(self):
-        return self.extra_subscription_set.filter(~q_cancelled & ~q_deactivated)
+        return self.extra_subscription_set.filter(~q_cancelled() & ~q_deactivated())
 
     @property
     def extrasubscriptions_changed(self):

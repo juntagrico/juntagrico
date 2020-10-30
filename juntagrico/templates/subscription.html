@@ -19,7 +19,7 @@
             {% trans "Du bist auf der Warteliste" %}
             <br/>
             <a href="{% url 'sub-detail-id' member.future_subscription.id %}">
-                {% trans "Mehr Infos dazu findest du hier" %}
+                {% trans "Mehr Infos und Optionen dazu findest du hier" %}
             </a>
         </div>
     {% elif can_order %}
@@ -40,7 +40,7 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
@@ -91,7 +91,7 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
@@ -110,7 +110,7 @@
                                 {{ ln }}
                                 {% endblocktrans %}
                                 {% if not co_member.confirmed %}
-                                    ({% trans "nicht bestätigt" %})
+                                    ({% trans "E-Mail-Adresse nicht bestätigt" %})
                                 {% endif %}
                             </li>
                         {% endfor %}

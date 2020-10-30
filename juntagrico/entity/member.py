@@ -2,6 +2,8 @@ import hashlib
 
 from django.contrib.auth.models import User
 from django.db import models
+
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -76,32 +78,45 @@ class Member(JuntagricoBaseModel):
 
     @property
     def subscription_future(self):
-        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=True).first()
+        join_date_isnull = Q(join_date__isnull=True)
+        join_date_future = Q(join_date__gt=timezone.now().date())
+        sub_membership = self.subscriptionmembership_set.filter(join_date_isnull | join_date_future).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=False,
-                                                                subscription__deactivation_date__isnull=True).first()
+        join_date_notnull = Q(join_date__isnull=False)
+        join_date_present = Q(join_date__lte=timezone.now().date())
+        leave_date_isnull = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
+        sub_membership = self.subscriptionmembership_set.filter(join_date_notnull & join_date_present) \
+            .filter(leave_date_isnull | leave_date_future).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscriptions_old(self):
-        return [sm.subscription for sm in self.subscriptionmembership_set.filter(leave_date__isnull=False)]
+        leave_date_notnull = Q(leave_date__isnull=False)
+        leave_date_present = Q(leave_date__lte=timezone.now().date())
+        return [sm.subscription for sm in
+                self.subscriptionmembership_set.filter(leave_date_notnull & leave_date_present)]
 
     def join_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         if sub_membership and sub_membership.leave_date:
             sub_membership.leave_date = None
-            sub_membership.saeve()
+            sub_membership.save()
         else:
-            SubscriptionMembership.objects.create(member=self, subscription=subscription)
+            join_date = timezone.now().date() if subscription.active else None
+            SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
     def leave_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        if sub_membership and sub_membership.leave_date is None:
+        membership_present = sub_membership and sub_membership.leave_date is None
+        if membership_present and sub_membership.join_date is not None:
             sub_membership.leave_date = timezone.now().date()
             sub_membership.save()
+        elif membership_present and sub_membership.join_date is None:
+            sub_membership.delete()
 
     @property
     def in_subscription(self):
@@ -110,8 +125,8 @@ class Member(JuntagricoBaseModel):
     @property
     def blocked(self):
         future = self.subscription_future is not None
-        current = self.subscription_current is None or not self.subscription_current.canceled
-        return future or not current
+        current = self.subscription_current is not None and not self.subscription_current.canceled
+        return future or current
 
     def get_name(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -156,10 +171,9 @@ class Member(JuntagricoBaseModel):
 
 
 class SubscriptionMembership(JuntagricoBaseModel):
-
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
-    join_date = models.DateField(_('Beitrittsdatum'), default=timezone.now, blank=True)
+    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True)
     leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
 
     class Meta:
