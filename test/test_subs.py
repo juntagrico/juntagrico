@@ -14,8 +14,8 @@ class SubscriptionTests(JuntagricoTestCase):
     def testSubActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()
-        self.assertIsNone(self.member2.future_subscription)
-        self.assertEqual(self.member2.subscription, self.sub2)
+        self.assertIsNone(self.member2.subscription_future)
+        self.assertEqual(self.member2.subscription_current, self.sub2)
 
     def testSubChange(self):
         self.assertGet(reverse('sub-change', args=[self.sub.pk]))
@@ -76,7 +76,29 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
-        self.assertEqual(self.sub.recipients.count(), 1)
+        self.assertEqual(len(self.sub.recipients), 1)
+
+    def testJoin(self):
+        self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
+        self.assertPost(reverse('add-member', args=[self.sub.pk]), member=self.member,
+                        data={'email': self.member4.email})
+
+    def testJoinLeaveRejoin(self):
+        post_data = {
+            'email': self.member4.email,
+            'first_name': self.member4.first_name,
+            'last_name': self.member4.last_name,
+            'addr_street': self.member4.addr_street,
+            'addr_zipcode': '1234',
+            'addr_location': self.member4.addr_location,
+            'phone': self.member4.phone
+        }
+        Share.objects.create(**self.get_share_data(self.member4))
+        self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
+        self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
+        self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
+        self.sub.refresh_from_db()
+        self.assertEqual(len(self.sub.recipients), 3)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
@@ -86,13 +108,13 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
-        self.assertEqual(self.member2.old_subscriptions.count(), 0)
+        self.assertEqual(len(self.member2.subscriptions_old), 0)
         self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
-        self.assertIsNone(self.member2.subscription)
-        self.assertEqual(self.member2.old_subscriptions.count(), 1)
+        self.assertIsNone(self.member2.subscription_current)
+        self.assertEqual(len(self.member2.subscriptions_old), 1)
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 200)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
