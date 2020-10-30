@@ -12,6 +12,14 @@ from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.util.users import make_username
 
 
+def q_joined_subscription():
+    return Q(join_date__isnull=False) & Q(join_date__lte=timezone.now().date())
+
+
+def q_left_subscription():
+    return Q(leave_date__isnull=False) & Q(leave_date__lte=timezone.now().date())
+
+
 class Member(JuntagricoBaseModel):
     '''
     Additional fields for Django's default user class.
@@ -77,27 +85,18 @@ class Member(JuntagricoBaseModel):
 
     @property
     def subscription_future(self):
-        join_date_isnull = Q(join_date__isnull=True)
-        join_date_future = Q(join_date__gt=timezone.now().date())
-        sub_membership = self.subscriptionmembership_set.filter(join_date_isnull | join_date_future).first()
+        sub_membership = self.subscriptionmembership_set.filter(~q_joined_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscription_current(self):
-        join_date_notnull = Q(join_date__isnull=False)
-        join_date_present = Q(join_date__lte=timezone.now().date())
-        leave_date_isnull = Q(leave_date__isnull=True)
-        leave_date_future = Q(leave_date__gt=timezone.now().date())
-        sub_membership = self.subscriptionmembership_set.filter(join_date_notnull & join_date_present) \
-            .filter(leave_date_isnull | leave_date_future).first()
+        sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscriptions_old(self):
-        leave_date_notnull = Q(leave_date__isnull=False)
-        leave_date_present = Q(leave_date__lte=timezone.now().date())
         return [sm.subscription for sm in
-                self.subscriptionmembership_set.filter(leave_date_notnull & leave_date_present)]
+                self.subscriptionmembership_set.filter(q_left_subscription())]
 
     def join_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
