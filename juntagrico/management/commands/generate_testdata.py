@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
@@ -51,19 +53,17 @@ class Command(BaseCommand):
         depot1 = Depot.objects.create(**depot1_fields)
         depot2 = Depot.objects.create(**depot2_fields)
         sub_1_fields = {'depot': depot1, 'future_depot': None,
-                        'activation_date': '2017-03-27', 'deactivation_date': None, 'creation_date': '2017-03-27',
+                        'activation_date': datetime.datetime.strptime('27/03/17', '%d/%m/%y').date(), 'deactivation_date': None, 'creation_date': '2017-03-27',
                         'start_date': '2018-01-01'}
         sub_2_fields = {'depot': depot2, 'future_depot': None,
-                        'activation_date': '2017-03-27', 'deactivation_date': None,
+                        'activation_date': datetime.datetime.strptime('27/03/17', '%d/%m/%y').date(), 'deactivation_date': None,
                         'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
         subscription_1 = Subscription.objects.create(**sub_1_fields)
-        member_1.subscription = subscription_1
-        member_1.save()
+        member_1.join_subscription(subscription_1)
         subscription_1.primary_member = member_1
         subscription_1.save()
         subscription_2 = Subscription.objects.create(**sub_2_fields)
-        member_2.subscription = subscription_2
-        member_2.save()
+        member_2.join_subscription(subscription_2)
         subscription_2.primary_member = member_2
         subscription_2.save()
         SubscriptionPart.objects.create(subscription=subscription_1, type=subtype)

@@ -297,11 +297,11 @@ class SubscriptionPartBaseForm(Form):
 
     def _collect_type_fields(self):
         containers = []
-        for product in SubscriptionProductDao.get_all_visible():
+        for product in SubscriptionProductDao.get_all_visible().order_by('pk'):
             product_container = CategoryContainer(instance=product)
-            for subscription_size in product.sizes.filter(visible=True):
+            for subscription_size in product.sizes.filter(visible=True).order_by('pk'):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
-                for subscription_type in subscription_size.types.filter(visible=True):
+                for subscription_type in subscription_size.types.filter(visible=True).order_by('pk'):
                     field_name = f'amount[{subscription_type.id}]'
                     self.fields[field_name] = IntegerField(label=subscription_type.name, min_value=0,
                                                            initial=self._get_initial(subscription_type))

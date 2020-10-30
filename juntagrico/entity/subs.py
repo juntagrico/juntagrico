@@ -2,6 +2,7 @@ import datetime
 import time
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -94,7 +95,7 @@ class Subscription(Billable, SimpleStateModel):
     @property
     def size(self):
         sizes = {}
-        for part in self.active_parts.all():
+        for part in self.active_parts.all() or self.future_parts.all():
             sizes[part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
         return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
 
@@ -161,6 +162,12 @@ class Subscription(Billable, SimpleStateModel):
 
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
+    def co_members(self, member):
+        leave_date_null = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
+        return [m.member for m in
+                self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).exclude(member__email=member.email).prefetch_related('member').all()]
+
     def nickname_or_recipients_names(self):
         if self.nickname:
             return self.nickname + ' ({})'.format(self.primary_member_nullsave())
@@ -171,7 +178,7 @@ class Subscription(Billable, SimpleStateModel):
     nickname_or_recipients_names.short_description = _('{}-Spitzname oder -BezieherInnen').format(Config.vocabulary('subscription'))
 
     def other_recipients(self):
-        return self.recipients.exclude(email=self.primary_member.email)
+        return self.co_members(self.primary_member)
 
     def other_recipients_names(self):
         members = self.other_recipients()
@@ -179,19 +186,13 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return self.recipients_all.filter(inactive=False)
+        leave_date_null = Q(leave_date__isnull=True)
+        leave_date_future = Q(leave_date__gt=timezone.now().date())
+        return [m.member for m in self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
-        return self.recipients_all_for_state(self.state)
-
-    def recipients_all_for_state(self, state):
-        if state == 'waiting':
-            return self.members_future.all()
-        elif state == 'inactive':
-            return self.members_old.all()
-        else:
-            return self.members.all()
+        return [m.member for m in self.subscriptionmembership_set.prefetch_related('member').all()]
 
     def primary_member_nullsave(self):
         member = self.primary_member
