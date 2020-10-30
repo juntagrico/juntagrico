@@ -90,14 +90,7 @@ def create_subscription(start_date, depot, subscription_types, member):
 
 
 def add_recipient_to_subscription(subscription, recipient):
-    if subscription.state == 'waiting':
-        recipients = subscription.members_future
-    elif subscription.state == 'inactive':
-        recipients = subscription.members_old
-    else:
-        recipients = subscription.members
-    recipients.add(recipient)
-    subscription.save()
+    recipient.join_subscription(subscription)
 
 
 def create_subscription_parts(subscription, selected_types):

@@ -202,7 +202,7 @@ class CSSummaryView(TemplateView):
         # handle new signup
         member = new_signup(cs_session.pop())
         # finish registration
-        if member.future_subscription is None:
+        if member.subscription_future is None:
             return redirect('welcome')
         return redirect('welcome-with-sub')
 
