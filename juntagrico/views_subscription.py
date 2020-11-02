@@ -449,12 +449,15 @@ def manage_shares(request):
     member = request.user.member
     shares = member.share_set.order_by('cancelled_date', '-paid_date')
     renderdict = get_menu_dict(request)
+
+    # calculate required shares backwards to account for shared subscriptions
     not_canceled_share_count = member.usable_shares_count
     overflow_list = [not_canceled_share_count]
     if member.subscription_future is not None:
         overflow_list.append(member.subscription_future.share_overflow)
     if member.subscription_current is not None:
         overflow_list.append(member.subscription_current.share_overflow)
+
     renderdict.update({
         'shares': shares.all(),
         'shareerror': shareerror,

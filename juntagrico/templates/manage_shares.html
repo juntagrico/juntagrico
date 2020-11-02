@@ -44,10 +44,10 @@
                                 {% elif forloop.counter <=  required %}
                                     {% blocktrans %}Diese/s/r {{ v_share }} wird in einem/r {{ v_subscription }} benötigt{% endblocktrans %}
                                 {% elif  share.cancelled_date is None and share.paid_date is None %}
-                                    {% blocktrans %}Diese/s/r {{ v_share }} wurde noch nocht als bezahlt verbucht{% endblocktrans %}
+                                    {% blocktrans %}Diese/s/r {{ v_share }} wurde noch nicht als bezahlt verbucht{% endblocktrans %}
                                 {% elif  share.cancelled_date is None and share.paid_date is not None %}
                                     <a href="{% url 'share-cancel' share.id %}"class="btn btn-success"
-                                       onclick="return confirm('{% blocktrans %} Möchtest du sicher diese/s/n {{ v_share_pl }}verbindlich künden? {% endblocktrans%}')">
+                                       onclick="return confirm('{% blocktrans %} Möchtest du sicher diese/s/n {{ v_share }} verbindlich kündigen? {% endblocktrans%}')">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}
