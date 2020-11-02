@@ -437,25 +437,28 @@ def change_nickname(request, subscription_id):
 def manage_shares(request):
     if request.method == 'POST':
         try:
-            shares = int(request.POST.get('shares'))
-            shareerror = shares < 1
+            ordered_shares = int(request.POST.get('shares'))
+            shareerror = ordered_shares < 1
         except ValueError:
             shareerror = True
         if not shareerror:
-            create_share(request.user.member, shares)
+            create_share(request.user.member, ordered_shares)
             return redirect(reverse('manage-shares'))
     else:
         shareerror = False
     member = request.user.member
-    shares = member.share_set
+    shares = member.share_set.order_by('cancelled_date', '-paid_date')
     renderdict = get_menu_dict(request)
-    overflow_list = [shares.count()]
-    overflow_list.append(member.subscription_future.share_overflow) if member.subscription_future is not None else 0
-    overflow_list.append(member.subscription_current.share_overflow) if member.subscription_current is not None else 0
+    not_canceled_share_count = member.usable_shares_count
+    overflow_list = [not_canceled_share_count]
+    if member.subscription_future is not None:
+        overflow_list.append(member.subscription_future.share_overflow)
+    if member.subscription_current is not None:
+        overflow_list.append(member.subscription_current.share_overflow)
     renderdict.update({
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required': shares.count() - min(overflow_list)
+        'required': not_canceled_share_count - min(overflow_list)
     })
     return render(request, 'manage_shares.html', renderdict)
 
