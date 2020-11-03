@@ -43,9 +43,9 @@ def get_menu_dict(request):
     next_jobs = JobDao.upcomming_jobs_for_member(member)
 
     required_assignments = 0
-    if member.subscription is not None:
+    if member.subscription_current is not None:
         partner_assignments = []
-        for subscription_member in member.subscription.recipients_all:
+        for subscription_member in member.subscription_current.recipients_all:
             if subscription_member == member:
                 continue
             partner_assignments.extend(
@@ -53,7 +53,7 @@ def get_menu_dict(request):
 
         userassignments = AssignmentDao.assignments_for_member_current_business_year(
             member)
-        required_assignments = member.subscription.required_assignments
+        required_assignments = member.subscription_current.required_assignments
     else:
         partner_assignments = []
         userassignments = []
@@ -87,7 +87,7 @@ def get_menu_dict(request):
         'area_admin': area_admin,
         'show_core': ActivityAreaDao.all_core_areas().count() > 0,
         'show_extras': JobExtraDao.all_job_extras().count() > 0,
-        'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription)) > 0,
+        'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0,
         'admin_menus': addons.config.get_admin_menus(),
         'admin_subscription_menus': addons.config.get_admin_subscription_menu(),
         'user_menus': addons.config.get_user_menus(),
@@ -331,7 +331,7 @@ def deliveries(request):
     '''
     renderdict = get_menu_dict(request)
     deliveries = DeliveryDao.deliveries_by_subscription(
-        request.user.member.subscription)
+        request.user.member.subscription_current)
     renderdict.update({
         'deliveries': deliveries,
         'menu': {'deliveries': 'active'},
@@ -448,8 +448,8 @@ def cancel_membership(request):
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
     asc = member.usable_shares_count
-    sub = member.subscription
-    f_sub = member.future_subscription
+    sub = member.subscription_current
+    f_sub = member.subscription_future
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
     current_active = sub is not None and sub.state == 'active' and sub.state == 'waiting'
     future = future_active and f_sub.share_overflow - asc < 0

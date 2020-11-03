@@ -370,7 +370,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Bestandteile!{}').format(
                 Config.vocabulary('share_pl'),
                 '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                    reverse('share-order'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
+                    reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
             ))
             raise ValidationError(share_error_message, code='share_error')
         # check that at least one subscription was selected

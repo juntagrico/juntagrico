@@ -51,6 +51,7 @@ class JuntagricoTestCase(TestCase):
         self.member = self.create_member('email1@email.org')
         self.member2 = self.create_member('email2@email.org')
         self.member3 = self.create_member('email3@email.org')
+        self.member4 = self.create_member('email4@email.org')
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
@@ -111,6 +112,9 @@ class JuntagricoTestCase(TestCase):
         """
         self.share_data = self.get_share_data(self.member)
         self.share = Share.objects.create(**self.share_data)
+
+        self.share_data4 = self.get_share_data(self.member4)
+        self.share4 = Share.objects.create(**self.share_data4)
 
     def set_up_area(self):
         """
@@ -253,14 +257,11 @@ class JuntagricoTestCase(TestCase):
                      }
         self.sub = Subscription.objects.create(**sub_data)
         self.sub2 = Subscription.objects.create(**sub_data2)
-        self.member.subscription = self.sub
-        self.member.save()
+        self.member.join_subscription(self.sub)
         self.sub.primary_member = self.member
         self.sub.save()
-        self.member3.subscription = self.sub
-        self.member3.save()
-        self.member2.future_subscription = self.sub2
-        self.member2.save()
+        self.member3.join_subscription(self.sub)
+        self.member2.join_subscription(self.sub2)
         self.sub2.primary_member = self.member2
         self.sub2.save()
         SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)

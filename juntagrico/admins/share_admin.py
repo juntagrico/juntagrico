@@ -1,11 +1,10 @@
-from django.utils import timezone
-from django.utils.translation import gettext as _
-from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
-from juntagrico.config import Config
 from juntagrico.admins.forms.admin_edit_share_dates import EditShareDatesForm
+from juntagrico.config import Config
 
 
 class ShareAdmin(BaseAdmin):
