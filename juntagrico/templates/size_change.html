@@ -43,7 +43,7 @@
                         <td>
                             {% if part.can_cancel %}
                                 <a href="{% url 'part-cancel' part.id subscription.id %}"class="btn btn-success"
-                                onclick="return confirm('{% trans "Möchtest du sicher diesen Bestandteil verbindlich künden?" %}')">
+                                onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
                                     {% trans "kündigen" %}
                                 </a>
                             {% elif part.subscription.active_and_future_parts.count == 1  and  part.cancellation_date is None %}
@@ -56,22 +56,26 @@
         </table>
     </div>
 
+{% if parts_order_allowed %}
     <div class="row mt-5 mb-3">
         <h4>{% trans "Bestandteile bestellen" %}</h4>
     </div>
 
     {% crispy form %}
 
-
-
-    <div class="row mt-5 mb-3">
-        <b>{% blocktrans %}{{ v_subscription }} künden{% endblocktrans %}</b>
+{% else %}
+    <div>
+        <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Bestandteile bestellt werden.{% endblocktrans %}</i>
     </div>
+{% endif %}
     {% if subscription.state != 'canceled' and subscription.state != 'inactive' %}
+    <div class="row mt-5 mb-3">
+        <b>{% blocktrans %}{{ v_subscription }} kündigen{% endblocktrans %}</b>
+    </div>
         <div class="row">
             <div class="col-md-12">
                 <a href="{% url 'sub-cancel' subscription.id %}" class="btn btn-danger">
-                    {% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                    {% blocktrans %}{{ v_subscription }} komplett kündigen{% endblocktrans %}
                 </a>
             </div>
         </div>

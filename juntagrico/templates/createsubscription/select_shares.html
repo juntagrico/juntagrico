@@ -62,7 +62,7 @@
             {% csrf_token %}
             <div class="form-group row">
                 <label class="col-md-3 col-form-label">
-                    {% blocktrans %}Deine {{ v_share_pl }}{% endblocktrans %}
+                    {% blocktrans %}Neue {{ v_share_pl }}{% endblocktrans %}:
                 </label>
                 <div class="col-md-3">
                     <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:shares.total_required }}" min="{% if shares.existing_main_member == 0 %}1{% else %}0{% endif %}"/>
