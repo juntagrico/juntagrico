@@ -9,9 +9,9 @@ from django.utils import timezone
 def attribute_copy(source, target):
     for field in target._meta.fields:
         if field.auto_created is False and \
-           field.editable is True and \
-           field.attname in source.__dict__ and \
-           field.attname in target.__dict__:
+                field.editable is True and \
+                field.attname in source.__dict__ and \
+                field.attname in target.__dict__:
             target.__dict__[field.attname] = source.__dict__[field.attname]
 
 

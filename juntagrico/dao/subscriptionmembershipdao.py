@@ -1,6 +1,3 @@
-from django.db.models import Q
-from django.utils import timezone
-
 from juntagrico.entity.member import SubscriptionMembership, q_joined_subscription, q_left_subscription
 
 

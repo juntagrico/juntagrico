@@ -50,6 +50,7 @@ class AdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',
+
                 'initial-start_date': '01.01.2021',
                 'notes': '',
                 'subscriptionmembership_set-TOTAL_FORMS': '1',
