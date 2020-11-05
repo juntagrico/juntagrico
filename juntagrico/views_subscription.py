@@ -434,42 +434,44 @@ def change_nickname(request, subscription_id):
 
 
 @login_required
-def order_shares(request):
+def manage_shares(request):
     if request.method == 'POST':
-        referer = request.POST.get('referer')
         try:
-            shares = int(request.POST.get('shares'))
-            shareerror = shares < 1
+            ordered_shares = int(request.POST.get('shares'))
+            shareerror = ordered_shares < 1
         except ValueError:
             shareerror = True
         if not shareerror:
-            create_share(request.user.member, shares)
-            return redirect('{}?referer={}'.format(reverse('share-order-success'), referer))
+            create_share(request.user.member, ordered_shares)
+            return redirect(reverse('manage-shares'))
     else:
         shareerror = False
-        if request.META.get('HTTP_REFERER') is not None:
-            referer = request.META.get('HTTP_REFERER')
-        else:
-            referer = 'http://' + Config.adminportal_server_url()
+    member = request.user.member
+    shares = member.share_set.order_by('cancelled_date', '-paid_date')
     renderdict = get_menu_dict(request)
+
+    # calculate required shares backwards to account for shared subscriptions
+    not_canceled_share_count = member.usable_shares_count
+    overflow_list = [not_canceled_share_count]
+    if member.subscription_future is not None:
+        overflow_list.append(member.subscription_future.share_overflow)
+    if member.subscription_current is not None:
+        overflow_list.append(member.subscription_current.share_overflow)
+
     renderdict.update({
-        'referer': referer,
-        'shareerror': shareerror
+        'shares': shares.all(),
+        'shareerror': shareerror,
+        'required': not_canceled_share_count - min(overflow_list)
     })
-    return render(request, 'order_share.html', renderdict)
+    return render(request, 'manage_shares.html', renderdict)
 
 
 @login_required
-def order_shares_success(request):
-    if request.GET.get('referer') is not None:
-        referer = request.GET.get('referer')
-    else:
-        referer = 'http://' + Config.adminportal_server_url()
-    renderdict = get_menu_dict(request)
-    renderdict.update({
-        'referer': referer
-    })
-    return render(request, 'order_share_success.html', renderdict)
+def cancel_share(request, share_id):
+    share = get_object_or_404(Share, id=share_id, member=request.user.member)
+    share.cancelled_date = timezone.now().date()
+    share.save()
+    return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.is_operations_group')
