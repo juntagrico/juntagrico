@@ -165,7 +165,7 @@ class Subscription(Billable, SimpleStateModel):
 
     def co_members(self, member):
         return [m.member for m in
-                self.subscriptionmembership_set.filter(-q_left_subscription()).exclude(member__email=member.email).prefetch_related('member').all()]
+                self.subscriptionmembership_set.filter(~q_left_subscription()).exclude(member__email=member.email).prefetch_related('member').all()]
 
     def nickname_or_recipients_names(self):
         if self.nickname:
@@ -185,7 +185,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return [m.member for m in self.subscriptionmembership_set.filter(-q_left_subscription()).prefetch_related('member').all()]
+        return [m.member for m in self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
