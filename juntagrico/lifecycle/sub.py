@@ -73,8 +73,8 @@ def check_sub_consistency(instance):
         raise ValidationError(
             _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
             code='invalid')
-    if instance.parts.count() > 0 and instance.active_and_future_parts.count() == 0:
+    if instance.parts.count() > 0 and instance.active_and_future_parts.count() == 0 and instance.cancellation_date is None:
         raise ValidationError(
-            _('Nicht gekünigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil').format(
+            _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil').format(
                 Config.vocabulary('subscription')),
             code='invalid')

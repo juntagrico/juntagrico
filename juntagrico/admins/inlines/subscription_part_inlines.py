@@ -24,7 +24,7 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
                 code='invalid')
         if future_parts_count == 0 and self.instance.cancellation_date is None:
             raise ValidationError(
-                _('Nicht gekünigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil').format(
+                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil').format(
                     Config.vocabulary('subscription')))
 
 

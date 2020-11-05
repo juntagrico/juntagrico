@@ -99,4 +99,4 @@ class SubAdminTests(JuntagricoTestCase):
                 'extra_subscription_set-__prefix__-cancellation_date': '',
                 'extra_subscription_set-__prefix__-deactivation_date': '',
                 'extra_subscription_set-__prefix__-type': '', }
-        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
+        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)

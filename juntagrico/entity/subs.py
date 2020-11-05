@@ -177,10 +177,6 @@ class Subscription(Billable, SimpleStateModel):
 
     nickname_or_recipients_names.short_description = _('{}-Spitzname oder -BezieherInnen').format(Config.vocabulary('subscription'))
 
-    def co_members(self, member):
-        return [m.member for m in
-                self.subscriptionmembership_set.filter(leave_date__isnull=True).exclude(member__email=member.email).prefetch_related('member').all()]
-
     def other_recipients(self):
         return self.co_members(self.primary_member)
 
@@ -254,7 +250,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @property
     def can_cancel(self):
-        return self.cancellation_date is None and self.subscription.active_and_future_parts.count() > 1
+        return self.cancellation_date is None and self.subscription.future_parts.count() > 1
 
     @notifiable
     class Meta:
