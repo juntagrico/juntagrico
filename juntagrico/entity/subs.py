@@ -11,6 +11,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.member import q_left_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
 from juntagrico.util.temporal import start_of_next_business_year
@@ -163,10 +164,8 @@ class Subscription(Billable, SimpleStateModel):
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
     def co_members(self, member):
-        leave_date_null = Q(leave_date__isnull=True)
-        leave_date_future = Q(leave_date__gt=timezone.now().date())
         return [m.member for m in
-                self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).exclude(member__email=member.email).prefetch_related('member').all()]
+                self.subscriptionmembership_set.filter(-q_left_subscription()).exclude(member__email=member.email).prefetch_related('member').all()]
 
     def nickname_or_recipients_names(self):
         if self.nickname:
@@ -186,9 +185,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        leave_date_null = Q(leave_date__isnull=True)
-        leave_date_future = Q(leave_date__gt=timezone.now().date())
-        return [m.member for m in self.subscriptionmembership_set.filter(leave_date_future | leave_date_null).prefetch_related('member').all()]
+        return [m.member for m in self.subscriptionmembership_set.filter(-q_left_subscription()).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
