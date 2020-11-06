@@ -108,7 +108,6 @@ class AdminTests(JuntagricoTestCase):
     def testMemberAdmin(self):
         def raw_id_url(url, name, subscription_id):
             return '{}?qs_name={}&sub_id={}'.format(url, name, str(subscription_id))
-
         self.assertGet(reverse('admin:juntagrico_member_change', args=(self.member.pk,)), member=self.admin)
         url = reverse('admin:juntagrico_member_changelist')
         self.assertGet(url, member=self.admin)
