@@ -9,19 +9,22 @@ from django.utils import timezone
 def attribute_copy(source, target):
     for field in target._meta.fields:
         if field.auto_created is False and \
-           field.editable is True and \
-           field.attname in source.__dict__ and \
-           field.attname in target.__dict__:
+                field.editable is True and \
+                field.attname in source.__dict__ and \
+                field.attname in target.__dict__:
             target.__dict__[field.attname] = source.__dict__[field.attname]
 
 
-q_activated = Q(activation_date__isnull=False, activation_date__lte=timezone.now().date())
+def q_activated():
+    return Q(activation_date__isnull=False, activation_date__lte=timezone.now().date())
 
 
-q_cancelled = Q(cancellation_date__isnull=False, cancellation_date__lte=timezone.now().date())
+def q_cancelled():
+    return Q(cancellation_date__isnull=False, cancellation_date__lte=timezone.now().date())
 
 
-q_deactivated = Q(deactivation_date__isnull=False, deactivation_date__lte=timezone.now().date())
+def q_deactivated():
+    return Q(deactivation_date__isnull=False, deactivation_date__lte=timezone.now().date())
 
 
 class PropertyQuerySet(QuerySet):

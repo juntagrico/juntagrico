@@ -6,8 +6,8 @@ class SubscriptionPartDao:
 
     @staticmethod
     def get_canceled_for_subscription(subscription):
-        return SubscriptionPart.objects.filter(subscription=subscription).filter(q_cancelled)
+        return SubscriptionPart.objects.filter(subscription=subscription).filter(q_cancelled())
 
     @staticmethod
     def get_waiting_for_subscription(subscription):
-        return SubscriptionPart.objects.filter(subscription=subscription).filter(~q_activated)
+        return SubscriptionPart.objects.filter(subscription=subscription).filter(~q_activated())

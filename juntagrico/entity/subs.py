@@ -2,6 +2,7 @@ import datetime
 import time
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -10,6 +11,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.member import q_left_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
 from juntagrico.util.temporal import start_of_next_business_year
@@ -74,15 +76,15 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
-        return self.parts.filter(q_activated & ~q_deactivated)
+        return self.parts.filter(q_activated() & ~q_deactivated())
 
     @property
     def future_parts(self):
-        return self.parts.filter(~q_cancelled & ~q_deactivated)
+        return self.parts.filter(~q_cancelled() & ~q_deactivated())
 
     @property
     def active_and_future_parts(self):
-        return self.parts.filter(~q_deactivated)
+        return self.parts.filter(~q_deactivated())
 
     @property
     def part_change_date(self):
@@ -94,13 +96,13 @@ class Subscription(Billable, SimpleStateModel):
     @property
     def size(self):
         sizes = {}
-        for part in self.active_parts.all():
+        for part in self.active_parts.all() or self.future_parts.all():
             sizes[part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
         return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated | (q_cancelled & ~q_deactivated)).count()
+        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivated())).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -163,7 +165,7 @@ class Subscription(Billable, SimpleStateModel):
 
     def co_members(self, member):
         return [m.member for m in
-                self.subscriptionmembership_set.filter(leave_date__isnull=True).exclude(member__email=member.email).prefetch_related('member').all()]
+                self.subscriptionmembership_set.filter(~q_left_subscription()).exclude(member__email=member.email).prefetch_related('member').all()]
 
     def nickname_or_recipients_names(self):
         if self.nickname:
@@ -183,7 +185,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return [m.member for m in self.subscriptionmembership_set.filter(leave_date__isnull=True).prefetch_related('member').all()]
+        return [m.member for m in self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
@@ -197,11 +199,11 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.extra_subscription_set.filter(q_activated & ~q_deactivated)
+        return self.extra_subscription_set.filter(q_activated() & ~q_deactivated())
 
     @property
     def future_extra_subscriptions(self):
-        return self.extra_subscription_set.filter(~q_cancelled & ~q_deactivated)
+        return self.extra_subscription_set.filter(~q_cancelled() & ~q_deactivated())
 
     @property
     def extrasubscriptions_changed(self):
@@ -245,8 +247,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @property
     def can_cancel(self):
-        # TODO
-        return True
+        return self.cancellation_date is None and self.subscription.future_parts.count() > 1
 
     @notifiable
     class Meta:

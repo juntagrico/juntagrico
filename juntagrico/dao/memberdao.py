@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.entity.member import Member
-
 from juntagrico.util.models import PropertyQuerySet, q_deactivated
 from juntagrico.util.models import q_cancelled
 from juntagrico.util.temporal import start_of_business_year

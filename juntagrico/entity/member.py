@@ -2,6 +2,7 @@ import hashlib
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -9,6 +10,14 @@ from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.util.users import make_username
+
+
+def q_joined_subscription():
+    return Q(join_date__isnull=False) & Q(join_date__lte=timezone.now().date())
+
+
+def q_left_subscription():
+    return Q(leave_date__isnull=False) & Q(leave_date__lte=timezone.now().date())
 
 
 class Member(JuntagricoBaseModel):
@@ -82,32 +91,36 @@ class Member(JuntagricoBaseModel):
 
     @property
     def subscription_future(self):
-        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=True).first()
+        sub_membership = self.subscriptionmembership_set.filter(~q_joined_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(subscription__activation_date__isnull=False,
-                                                                subscription__deactivation_date__isnull=True).first()
+        sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
 
     @property
     def subscriptions_old(self):
-        return [sm.subscription for sm in self.subscriptionmembership_set.filter(leave_date__isnull=False)]
+        return [sm.subscription for sm in
+                self.subscriptionmembership_set.filter(q_left_subscription())]
 
     def join_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         if sub_membership and sub_membership.leave_date:
             sub_membership.leave_date = None
-            sub_membership.saeve()
+            sub_membership.save()
         else:
-            SubscriptionMembership.objects.create(member=self, subscription=subscription)
+            join_date = timezone.now().date() if subscription.active else None
+            SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
     def leave_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        if sub_membership and sub_membership.leave_date is None:
+        membership_present = sub_membership and sub_membership.leave_date is None
+        if membership_present and sub_membership.join_date is not None:
             sub_membership.leave_date = timezone.now().date()
             sub_membership.save()
+        elif membership_present and sub_membership.join_date is None:
+            sub_membership.delete()
 
     @property
     def in_subscription(self):
@@ -116,8 +129,8 @@ class Member(JuntagricoBaseModel):
     @property
     def blocked(self):
         future = self.subscription_future is not None
-        current = self.subscription_current is None or not self.subscription_current.canceled
-        return future or not current
+        current = self.subscription_current is not None and not self.subscription_current.canceled
+        return future or current
 
     def get_name(self):
         return '%s %s' % (self.first_name, self.last_name)
@@ -162,10 +175,9 @@ class Member(JuntagricoBaseModel):
 
 
 class SubscriptionMembership(JuntagricoBaseModel):
-
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
-    join_date = models.DateField(_('Beitrittsdatum'), default=timezone.now, blank=True)
+    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True)
     leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
 
     class Meta:

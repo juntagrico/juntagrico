@@ -50,7 +50,7 @@ class AdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',
-                'initial-start_date': '2021-01-01',
+                'initial-start_date': '01.01.2021',
                 'notes': '',
                 'subscriptionmembership_set-TOTAL_FORMS': '1',
                 'subscriptionmembership_set-INITIAL_FORMS': '0',
@@ -59,14 +59,12 @@ class AdminTests(JuntagricoTestCase):
                 'subscriptionmembership_set-0-id': '',
                 'subscriptionmembership_set-0-subscription': '',
                 'subscriptionmembership_set-0-member': str(self.member4.id),
-                'subscriptionmembership_set-0-join_date': '17.08.2020',
-                'initial-subscriptionmembership_set-0-join_date': '2020-08-17+08%3A26%3A43%2B00%3A00',
+                'subscriptionmembership_set-0-join_date': '',
                 'subscriptionmembership_set-0-leave_date': '',
                 'subscriptionmembership_set-__prefix__-id': '',
                 'subscriptionmembership_set-__prefix__-subscription': '',
                 'subscriptionmembership_set-__prefix__-member': '',
-                'subscriptionmembership_set-__prefix__-join_date': '17.08.2020',
-                'initial-subscriptionmembership_set-__prefix__-join_date': '2020-08-17+08%3A26%3A43%2B00%3A00',
+                'subscriptionmembership_set-__prefix__-join_date': '',
                 'subscriptionmembership_set-__prefix__-leave_date': '',
                 'parts-TOTAL_FORMS': '1',
                 'parts-INITIAL_FORMS': '0',
@@ -93,8 +91,9 @@ class AdminTests(JuntagricoTestCase):
                 'extra_subscription_set-__prefix__-activation_date': '',
                 'extra_subscription_set-__prefix__-cancellation_date': '',
                 'extra_subscription_set-__prefix__-deactivation_date': '',
-                'extra_subscription_set-__prefix__-type': '', }
-        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
+                'extra_subscription_set-__prefix__-type': '',
+                '_save': 'Sichern'}
+        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
 
     def testAreaAdmin(self):
         self.assertGet(reverse('admin:juntagrico_activityarea_change', args=(self.area.pk,)), member=self.admin)
@@ -128,6 +127,12 @@ class AdminTests(JuntagricoTestCase):
 
     def testSubtypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
+
+    def testShareAdmin(self):
+        url = reverse('admin:juntagrico_share_changelist')
+        selected_items = [self.share.pk]
+        self.assertPost(url, data={'action': 'mark_paid', '_selected_action': selected_items}, member=self.admin,
+                        code=302)
 
     def testSubtypeAdminNoShares(self):
         with self.settings(ENABLE_SHARES=False):
