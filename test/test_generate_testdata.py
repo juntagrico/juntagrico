@@ -7,7 +7,7 @@ from test.util.test import JuntagricoTestCase
 
 class TestdataTests(JuntagricoTestCase):
 
-    def test_depot_list(self):
+    def test_generate_testdata(self):
         out = StringIO()
         call_command('generate_testdata', stdout=out)
         self.assertEqual(out.getvalue(), '')

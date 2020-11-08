@@ -2,6 +2,7 @@ import datetime
 import time
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -10,6 +11,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.member import q_left_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
 from juntagrico.util.temporal import start_of_next_business_year
@@ -94,7 +96,7 @@ class Subscription(Billable, SimpleStateModel):
     @property
     def size(self):
         sizes = {}
-        for part in self.active_parts.all():
+        for part in self.active_parts.all() or self.future_parts.all():
             sizes[part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
         return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
 
@@ -161,6 +163,10 @@ class Subscription(Billable, SimpleStateModel):
 
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
+    def co_members(self, member):
+        return [m.member for m in
+                self.subscriptionmembership_set.filter(~q_left_subscription()).exclude(member__email=member.email).prefetch_related('member').all()]
+
     def nickname_or_recipients_names(self):
         if self.nickname:
             return self.nickname + ' ({})'.format(self.primary_member_nullsave())
@@ -171,7 +177,7 @@ class Subscription(Billable, SimpleStateModel):
     nickname_or_recipients_names.short_description = _('{}-Spitzname oder -BezieherInnen').format(Config.vocabulary('subscription'))
 
     def other_recipients(self):
-        return self.recipients.exclude(email=self.primary_member.email)
+        return self.co_members(self.primary_member)
 
     def other_recipients_names(self):
         members = self.other_recipients()
@@ -179,19 +185,11 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return self.recipients_all.filter(inactive=False)
+        return [m.member for m in self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member').all()]
 
     @property
     def recipients_all(self):
-        return self.recipients_all_for_state(self.state)
-
-    def recipients_all_for_state(self, state):
-        if state == 'waiting':
-            return self.members_future.all()
-        elif state == 'inactive':
-            return self.members_old.all()
-        else:
-            return self.members.all()
+        return [m.member for m in self.subscriptionmembership_set.prefetch_related('member').all()]
 
     def primary_member_nullsave(self):
         member = self.primary_member
@@ -249,8 +247,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @property
     def can_cancel(self):
-        # TODO
-        return True
+        return self.cancellation_date is None and self.subscription.future_parts.count() > 1
 
     @notifiable
     class Meta:
