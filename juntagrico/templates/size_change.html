@@ -41,11 +41,16 @@
                             {{ part.state_text }}
                         </td>
                         <td>
-                            {% if part.active and part.can_cancel %}
+                            {% if part.can_cancel %}
                                 <a href="{% url 'part-cancel' part.id subscription.id %}"class="btn btn-success"
                                 onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
                                     {% trans "kündigen" %}
                                 </a>
+                            {% elif part.subscription.future_parts.count == 1  and  part.cancellation_date is None %}
+                                {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
+                                {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
+                                    <br/>{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                                {% endif %}
                             {% endif %}
                         </td>
                     </tr>

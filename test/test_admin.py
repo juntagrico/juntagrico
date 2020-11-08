@@ -50,6 +50,7 @@ class AdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',
+
                 'initial-start_date': '01.01.2021',
                 'notes': '',
                 'subscriptionmembership_set-TOTAL_FORMS': '1',
@@ -107,7 +108,6 @@ class AdminTests(JuntagricoTestCase):
     def testMemberAdmin(self):
         def raw_id_url(url, name, subscription_id):
             return '{}?qs_name={}&sub_id={}'.format(url, name, str(subscription_id))
-
         self.assertGet(reverse('admin:juntagrico_member_change', args=(self.member.pk,)), member=self.admin)
         url = reverse('admin:juntagrico_member_changelist')
         self.assertGet(url, member=self.admin)
