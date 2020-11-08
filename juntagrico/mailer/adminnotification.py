@@ -2,7 +2,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.mailer import EmailSender, organisation_subject, get_email_content, base_dict, \
-    get_emails_by_permission, skip_if_noone_with_perm
+    requires_someone_with_perm
 
 """
 Admin notification emails
@@ -28,46 +28,46 @@ def member_left_activityarea(area, member):
     ).send_to(area.get_email())
 
 
-@skip_if_noone_with_perm('notified_on_subscription_creation')
-def subscription_created(subscription):
+@requires_someone_with_perm('notified_on_subscription_creation')
+def subscription_created(subscription, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('subscription'))),
         get_email_content('n_sub', base_dict(locals())),
-        bcc=get_emails_by_permission('notified_on_subscription_creation')
+        bcc=kwargs['emails']
     ).send()
 
 
-@skip_if_noone_with_perm('notified_on_subscription_cancellation')
-def subscription_canceled(subscription, message):
+@requires_someone_with_perm('notified_on_subscription_cancellation')
+def subscription_canceled(subscription, message, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('subscription'))),
         get_email_content('s_canceled', base_dict(locals())),
-        bcc=get_emails_by_permission('notified_on_subscription_cancellation')
+        bcc=kwargs['emails']
     ).send()
 
 
-@skip_if_noone_with_perm('notified_on_share_creation')
-def share_created(share):
+@requires_someone_with_perm('notified_on_share_creation')
+def share_created(share, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
         get_email_content('a_share_created', base_dict(locals())),
-        bcc=get_emails_by_permission('notified_on_share_creation')
+        bcc=kwargs['emails']
     ).send()
 
 
-@skip_if_noone_with_perm('notified_on_member_creation')
-def member_created(member):
+@requires_someone_with_perm('notified_on_member_creation')
+def member_created(member, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
         get_email_content('a_member_created', base_dict(locals())),
-        bcc=get_emails_by_permission('notified_on_member_creation')
+        bcc=kwargs['emails']
     ).send()
 
 
-@skip_if_noone_with_perm('notified_on_member_cancellation')
-def member_canceled(member, end_date, message):
+@requires_someone_with_perm('notified_on_member_cancellation')
+def member_canceled(member, end_date, message, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
         get_email_content('m_canceled', base_dict(locals())),
-        bcc=get_emails_by_permission('notified_on_member_cancellation')
+        bcc=kwargs['emails']
     ).send()

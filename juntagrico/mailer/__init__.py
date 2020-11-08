@@ -39,10 +39,12 @@ def get_emails_by_permission(permission_code):
     return emails
 
 
-def skip_if_noone_with_perm(perm):
+def requires_someone_with_perm(perm):
     def skip_decorator(func):
         def wrapper(*args, **kwargs):
-            if len(get_emails_by_permission(perm)) > 0:
+            emails = get_emails_by_permission(perm)
+            if len(emails) > 0:
+                kwargs['emails'] = emails
                 return func(*args, **kwargs)
         return wrapper
     return skip_decorator
