@@ -83,7 +83,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_subscription():
-        return Member.objects.filter(subscriptionmembership__subscription__activation_date__isnull=False).exclude(
+        return Member.objects.filter(MemberDao.has_subscription).exclude(
             q_deactivated())
 
     @staticmethod
