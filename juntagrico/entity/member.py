@@ -13,11 +13,11 @@ from juntagrico.util.users import make_username
 
 
 def q_joined_subscription():
-    return Q(join_date__isnull=False) & Q(join_date__lte=timezone.now().date())
+    return Q(join_date__isnull=False, join_date__lte=timezone.now().date())
 
 
 def q_left_subscription():
-    return Q(leave_date__isnull=False) & Q(leave_date__lte=timezone.now().date())
+    return Q(leave_date__isnull=False, leave_date__lte=timezone.now().date())
 
 
 class Member(JuntagricoBaseModel):
