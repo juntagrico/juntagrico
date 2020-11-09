@@ -28,4 +28,14 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),
+        migrations.AddField(
+            model_name='share',
+            name='creation_date',
+            field=models.DateField(blank=True, null=True, verbose_name='Erzeugt am'),
+        ),
+        migrations.AlterField(
+            model_name='share',
+            name='creation_date',
+            field=models.DateField(blank=True, default=django.utils.timezone.now, null=True, verbose_name='Erzeugt am'),
+        ),
     ]
