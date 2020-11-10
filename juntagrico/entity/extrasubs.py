@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 from juntagrico.dao.extrasubbillingperioddao import ExtraSubBillingPeriodDao
 from juntagrico.entity import JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
+from juntagrico.lifecycle.extrasub import check_extra_sub_consistency
 
 
 class ExtraSubscriptionType(JuntagricoBaseModel):
@@ -68,6 +69,9 @@ class ExtraSubscription(Billable, SimpleStateModel):
         if period is not None:
             return timezone.now().date() <= period.get_actual_cancel()
         return True
+
+    def clean(self):
+        check_extra_sub_consistency(self)
 
     def __str__(self):
         return '%s %s' % (self.id, self.type.name)

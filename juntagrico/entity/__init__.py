@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -85,6 +86,21 @@ class SimpleStateModel(models.Model):
     @property
     def state_text(self):
         return SimpleStateModel.__state_text_dict.get(self.__state_code, _('Fehler!'))
+
+    def check_date_order(self):
+        now = timezone.now().date()
+        is_active = self.activation_date is not None
+        is_cancelled = self.cancellation_date is not None
+        is_deactivated = self.deactivation_date is not None
+        activation_date = self.activation_date or now
+        cancellation_date = self.cancellation_date or now
+        deactivation_date = self.deactivation_date or now
+        if(is_cancelled or is_deactivated) and not is_active:
+            raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='invalid')
+        if is_deactivated and not is_cancelled:
+            raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
+        if not (activation_date <= cancellation_date <= deactivation_date):
+            raise ValidationError(_('Daten Reihenfolge stimm nicht.'), code='invalid')
 
     class Meta:
         abstract = True

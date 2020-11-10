@@ -67,6 +67,7 @@ def check_sub_consistency(instance):
         raise ValidationError(
             _('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
             code='invalid')
+    instance.check_date_order()
     pm_sub = instance.primary_member in instance.recipients
     pm_form = instance._future_members and instance.primary_member in instance._future_members
     if instance.primary_member is not None and not (pm_sub or pm_form):
