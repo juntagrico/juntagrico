@@ -6,24 +6,57 @@ from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.entity.member import Member
-from juntagrico.util.models import PropertyQuerySet
+from juntagrico.util.models import PropertyQuerySet, q_deactivated
+from juntagrico.util.models import q_cancelled
 from juntagrico.util.temporal import start_of_business_year
 
 
 class MemberDao:
 
-    has_subscription = Q(subscriptionmembership__subscription__activation_date__isnull=False,
-                         subscriptionmembership__subscription__deactivation_date__isnull=True,
-                         subscriptionmembership__subscription__id__isnull=False)
+    @staticmethod
+    def q_joined_subscription():
+        return Q(subscriptionmembership__join_date__isnull=False,
+                 subscriptionmembership__join_date__lte=timezone.now().date())
 
-    has_cancelled_subscription = Q(subscriptionmembership__subscription__activation_date__isnull=False,
-                                   subscriptionmembership__subscription__cancellation_date__isnull=False,
-                                   subscriptionmembership__subscription__deactivation_date__isnull=True,
-                                   subscriptionmembership__subscription__id__isnull=False)
+    @staticmethod
+    def q_left_subscription():
+        return Q(subscriptionmembership__leave_date__isnull=False)
 
-    has_future_subscription = Q(subscriptionmembership__subscription__activation_date__isnull=True,
-                                subscriptionmembership__subscription__deactivation_date__isnull=True,
-                                subscriptionmembership__subscription__id__isnull=False)
+    @staticmethod
+    def q_subscription_active():
+        return Q(subscriptionmembership__subscription__activation_date__isnull=False,
+                 subscriptionmembership__subscription__activation_date__lte=timezone.now().date())
+
+    @staticmethod
+    def q_subscription_cancelled():
+        return Q(subscriptionmembership__subscription__cancellation_date__isnull=False,
+                 subscriptionmembership__subscription__cancellation_date__lte=timezone.now().date())
+
+    @staticmethod
+    def q_subscription_deactivated():
+        return Q(subscriptionmembership__subscription__deactivation_date__isnull=False)
+
+    @staticmethod
+    def has_subscription():
+        return Q(MemberDao.q_subscription_active(),
+                 ~MemberDao.q_subscription_cancelled(),
+                 ~MemberDao.q_subscription_deactivated(),
+                 MemberDao.q_joined_subscription(),
+                 ~MemberDao.q_left_subscription())
+
+    @staticmethod
+    def has_cancelled_subscription():
+        return Q(MemberDao.q_subscription_active(),
+                 MemberDao.q_subscription_cancelled(),
+                 ~MemberDao.q_subscription_deactivated(),
+                 MemberDao.q_joined_subscription(),
+                 ~MemberDao.q_left_subscription())
+
+    @staticmethod
+    def has_future_subscription():
+        return Q(~MemberDao.q_subscription_active(),
+                 ~MemberDao.q_subscription_cancelled(),
+                 ~MemberDao.q_subscription_deactivated())
 
     @staticmethod
     def all_members():
@@ -34,7 +67,7 @@ class MemberDao:
 
     @staticmethod
     def canceled_members():
-        return Member.objects.filter(canceled=True).exclude(inactive=True)
+        return Member.objects.filter(q_cancelled()).exclude(q_deactivated())
 
     @staticmethod
     def member_by_email(email):
@@ -54,7 +87,9 @@ class MemberDao:
 
     @staticmethod
     def members_for_subscription(subscription):
-        result = PropertyQuerySet.from_qs(Member.objects.filter((~MemberDao.has_subscription & ~MemberDao.has_future_subscription) | Q(subscriptionmembership__subscription=subscription)))
+        result = PropertyQuerySet.from_qs(Member.objects.filter(
+            (~MemberDao.has_subscription() & ~MemberDao.has_cancelled_subscription() & ~MemberDao.has_future_subscription()) | Q(
+                subscriptionmembership__subscription=subscription)))
         result.set_property('name', 's')
         result.set_property('subscription_id', str(subscription.pk))
         return result
@@ -62,7 +97,7 @@ class MemberDao:
     @staticmethod
     def members_for_future_subscription(subscription):
         result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription | MemberDao.has_cancelled_subscription) & ~MemberDao.has_future_subscription | Q(
+            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription() | Q(
                 subscriptionmembership__subscription=subscription)))
         result.set_property('name', 'fs')
         result.set_property('subscription_id', str(subscription.pk))
@@ -71,23 +106,23 @@ class MemberDao:
     @staticmethod
     def members_for_create_subscription():
         result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription | MemberDao.has_cancelled_subscription) & ~MemberDao.has_future_subscription))
+            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription()))
         result.set_property('name', 'cs')
         result.set_property('subscription_id', '')
         return result
 
     @staticmethod
     def members_for_email():
-        return Member.objects.exclude(inactive=True)
+        return Member.objects.exclude(q_deactivated())
 
     @staticmethod
     def members_for_email_with_subscription():
-        return Member.objects.filter(subscriptionmembership__subscription__activation_date__isnull=False).exclude(
-            inactive=True)
+        return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()).exclude(
+            q_deactivated())
 
     @staticmethod
     def members_for_email_with_shares():
-        return Member.objects.filter(share__isnull=False).exclude(inactive=True)
+        return Member.objects.filter(share__isnull=False).exclude(q_deactivated())
 
     @staticmethod
     def members_with_assignments_count():
@@ -95,16 +130,16 @@ class MemberDao:
 
     @staticmethod
     def active_members_with_assignments_count():
-        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(inactive=False))
+        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(~q_deactivated()))
 
     @staticmethod
     def members_with_assignments_count_for_depot(depot):
         return MemberDao.annotate_members_with_assignemnt_count(
-            Member.objects.filter(subscriptionmembership__subscription__depot=depot).filter(inactive=False))
+            Member.objects.filter(subscriptionmembership__subscription__depot=depot).filter(~q_deactivated()))
 
     @staticmethod
     def members_with_assignments_count_in_area(area):
-        return MemberDao.annotate_members_with_assignemnt_count(area.members.all().filter(inactive=False))
+        return MemberDao.annotate_members_with_assignemnt_count(area.members.all().filter(~q_deactivated()))
 
     @staticmethod
     def members_with_assignments_count_in_subscription(subscription):
