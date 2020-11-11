@@ -18,11 +18,13 @@ def sub_post_save(sender, instance, created, **kwargs):
 
 def sub_pre_save(sender, instance, **kwargs):
     with transaction.atomic():
-        check_sub_consistency(instance)
+        check_sub_reactivation(instance)
+        instance.check_date_order()
         handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
         if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
             sub_canceled.send(sender=sender, instance=instance)
         check_children_dates(instance)
+        check_sub_primary(instance)
 
 
 def handle_sub_activated(sender, instance, **kwargs):
@@ -68,11 +70,21 @@ def handle_sub_created(sender, instance, **kwargs):
 
 
 def check_sub_consistency(instance):
+    check_sub_reactivation(instance)
+    instance.check_date_order()
+    check_children_dates(instance)
+    check_sub_primary(instance)
+
+
+def check_sub_reactivation(instance):
     if instance._old['deactivation_date'] is not None and instance.deactivation_date is None:
         raise ValidationError(
             _('Deaktivierte {0} können nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
             code='invalid')
-    instance.check_date_order()
+
+
+
+def check_sub_primary(instance):
     pm_sub = instance.primary_member in instance.recipients
     pm_form = instance._future_members and instance.primary_member in instance._future_members
     if instance.primary_member is not None and not (pm_sub or pm_form):

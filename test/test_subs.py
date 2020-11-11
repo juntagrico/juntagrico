@@ -117,7 +117,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertFalse(self.sub2.active)
         self.assertIsNone(self.member2.subscription_current)
         self.assertEqual(len(self.member2.subscriptions_old), 1)
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 200)
+        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
 
