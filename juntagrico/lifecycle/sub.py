@@ -85,6 +85,7 @@ def check_sub_consistency(instance):
                 Config.vocabulary('subscription')),
             code='invalid')
 
+
 def check_children_dates(instance):
     try:
         for part in instance.parts.all():
@@ -92,9 +93,12 @@ def check_children_dates(instance):
         for extra in instance.extra_subscription_set.all():
             check_subpart_parent_dates(extra, instance)
     except ValidationError:
-        raise ValidationError(_('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'), code='invalid')
+        raise ValidationError(_(
+            'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'), code='invalid')
     try:
         for membership in instance.subscriptionmembership_set.all():
             check_submembership_parent_dates(membership)
     except ValidationError:
-        raise ValidationError(_('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitrits- oder Austrittsdatum'), code='invalid')
+        raise ValidationError(
+            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitrits- oder Austrittsdatum'),
+            code='invalid')

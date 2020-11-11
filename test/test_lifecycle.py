@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from test.util.test import JuntagricoTestCase
@@ -45,4 +44,3 @@ class ListTests(JuntagricoTestCase):
         self.assertIsNotNone(sub.deactivation_date)
         partone.refresh_from_db()
         self.assertIsNotNone(partone.deactivation_date)
-
