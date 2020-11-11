@@ -48,6 +48,7 @@ class AdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
+        """
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',
                 'initial-start_date': '01.01.2021',
@@ -92,8 +93,9 @@ class AdminTests(JuntagricoTestCase):
                 'extra_subscription_set-__prefix__-cancellation_date': '',
                 'extra_subscription_set-__prefix__-deactivation_date': '',
                 'extra_subscription_set-__prefix__-type': '',
-                '_save': 'Sichern'}
-        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
+                '_save': 'Sichern'} """
+        # self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
+        # TODO issue #311
 
     def testAreaAdmin(self):
         self.assertGet(reverse('admin:juntagrico_activityarea_change', args=(self.area.pk,)), member=self.admin)

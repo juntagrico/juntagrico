@@ -6,7 +6,6 @@ from juntagrico.config import Config
 from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
-from django.utils import timezone
 
 
 class Share(Billable):
