@@ -83,7 +83,6 @@ def check_sub_reactivation(instance):
             code='invalid')
 
 
-
 def check_sub_primary(instance):
     pm_sub = instance.primary_member in instance.recipients
     pm_form = instance._future_members and instance.primary_member in instance._future_members
