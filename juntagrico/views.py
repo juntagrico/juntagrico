@@ -432,13 +432,12 @@ def cancel_membership(request):
         end_date = next_membership_end_date()
         message = request.POST.get('message')
         member = request.user.member
-        member.canceled = True
         member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
             adminnotification.member_canceled(member, end_date, message)
         else:
-            member.inactive = True
+            member.deactivation_date = now
 
         member.save()
         for share in member.active_shares:
