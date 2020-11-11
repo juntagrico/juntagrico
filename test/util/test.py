@@ -278,7 +278,6 @@ class JuntagricoTestCase(TestCase):
         esub_data = {'main_subscription': self.sub2,
                      'type': self.esub_type}
         self.esub = ExtraSubscription.objects.create(**esub_data)
-        esub_data['activation_date'] = timezone.now().date()
         self.esub2 = ExtraSubscription.objects.create(**esub_data)
 
     def set_up_mail_template(self):

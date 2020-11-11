@@ -12,6 +12,7 @@ from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
+from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
 from juntagrico.util.temporal import start_of_next_business_year
 
@@ -247,6 +248,9 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     @property
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
+
+    def clean(self):
+        check_sub_part_consistency(self)
 
     @notifiable
     class Meta:

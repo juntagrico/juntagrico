@@ -1,8 +1,11 @@
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.lifecycle.submembership import check_submembership_parent_dates
+from juntagrico.lifecycle.subpart import check_subpart_parent_dates
 from juntagrico.mailer import adminnotification
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
 from juntagrico.util.lifecycle import handle_activated_deactivated, cancel_extra_sub
@@ -14,10 +17,12 @@ def sub_post_save(sender, instance, created, **kwargs):
 
 
 def sub_pre_save(sender, instance, **kwargs):
-    check_sub_consistency(instance)
-    handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
-    if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
-        sub_canceled.send(sender=sender, instance=instance)
+    with transaction.atomic():
+        check_sub_consistency(instance)
+        handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
+        if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
+            sub_canceled.send(sender=sender, instance=instance)
+        check_children_dates(instance)
 
 
 def handle_sub_activated(sender, instance, **kwargs):
@@ -65,8 +70,9 @@ def handle_sub_created(sender, instance, **kwargs):
 def check_sub_consistency(instance):
     if instance._old['deactivation_date'] is not None and instance.deactivation_date is None:
         raise ValidationError(
-            _('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
+            _('Deaktivierte {0} können nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
             code='invalid')
+    instance.check_date_order()
     pm_sub = instance.primary_member in instance.recipients
     pm_form = instance._future_members and instance.primary_member in instance._future_members
     if instance.primary_member is not None and not (pm_sub or pm_form):
@@ -77,4 +83,23 @@ def check_sub_consistency(instance):
         raise ValidationError(
             _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil').format(
                 Config.vocabulary('subscription')),
+            code='invalid')
+
+
+def check_children_dates(instance):
+    try:
+        for part in instance.parts.all():
+            check_subpart_parent_dates(part, instance)
+        for extra in instance.extra_subscription_set.all():
+            check_subpart_parent_dates(extra, instance)
+    except ValidationError:
+        raise ValidationError(
+            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'),
+            code='invalid')
+    try:
+        for membership in instance.subscriptionmembership_set.all():
+            check_submembership_parent_dates(membership)
+    except ValidationError:
+        raise ValidationError(
+            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum'),
             code='invalid')
