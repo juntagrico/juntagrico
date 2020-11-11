@@ -100,7 +100,7 @@ class SimpleStateModel(models.Model):
         if is_deactivated and not is_cancelled:
             raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
         if not (activation_date <= cancellation_date <= deactivation_date):
-            raise ValidationError(_('Daten Reihenfolge stimm nicht.'), code='invalid')
+            raise ValidationError(_('Daten Reihenfolge stimmt nicht.'), code='invalid')
 
     class Meta:
         abstract = True

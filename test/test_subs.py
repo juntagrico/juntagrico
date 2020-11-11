@@ -109,6 +109,7 @@ class SubscriptionTests(JuntagricoTestCase):
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.assertGet(reverse('extra-activate', args=[self.esub.pk]), 302)
+        self.assertGet(reverse('extra-activate', args=[self.esub2.pk]), 302)
         self.assertEqual(len(self.member2.subscriptions_old), 0)
         self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()
