@@ -13,6 +13,7 @@ Am {{ jt }}-{{ jet }} findet dein {{ c_organisation_name }}-Arbeitseinsatz "{{ j
 
 {% trans "Job" %}:             {{ job.type.description }}
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+{% trans "Ort" %}:             {{ job.type.location }}
 {% trans "Teilnehmer" %}:      {{ participants }}
 {% trans "Verantwortlich" %}:  {{ job.type.activityarea.coordinator }}: {{ job.type.activityarea.contact }}
 {% blocktrans trimmed %}
