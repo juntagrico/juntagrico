@@ -18,9 +18,9 @@ def check_subpart_parent_dates(instance, subscription):
     wrong_start = (p_activated and s_activated and subscription.activation_date > instance.activation_date) or (not s_activated and p_activated)
     wrong_end = (p_deactivated and s_deactivated and subscription.deactivation_date < instance.activation_date) or(s_deactivated and not p_deactivated)
     if wrong_start:
-        raise ValidationError(_('Aktivierungsdatum passt nicht zum übergeordneten Aktivierungsdatum'), code='invalid')
+        raise ValidationError(_('Aktivierungsdatum des Bestandteils passt nicht zum übergeordneten Aktivierungsdatum'), code='invalid')
     if wrong_end:
-        raise ValidationError(_('Deaktivierungsdatum passt nicht zum übergeordneten Deaktivierungsdatum'), code='invalid')
+        raise ValidationError(_('Deaktivierungsdatum des Bestandteils passt nicht zum übergeordneten Deaktivierungsdatum'), code='invalid')
 
 
 def sub_part_pre_save(sender, instance, **kwargs):

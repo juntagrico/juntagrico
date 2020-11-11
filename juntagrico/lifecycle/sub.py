@@ -70,7 +70,7 @@ def handle_sub_created(sender, instance, **kwargs):
 def check_sub_consistency(instance):
     if instance._old['deactivation_date'] is not None and instance.deactivation_date is None:
         raise ValidationError(
-            _('Deaktivierte {0} koennen nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
+            _('Deaktivierte {0} können nicht wieder aktiviert werden').format(Config.vocabulary('subscription_pl')),
             code='invalid')
     instance.check_date_order()
     pm_sub = instance.primary_member in instance.recipients
@@ -93,12 +93,13 @@ def check_children_dates(instance):
         for extra in instance.extra_subscription_set.all():
             check_subpart_parent_dates(extra, instance)
     except ValidationError:
-        raise ValidationError(_(
-            'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'), code='invalid')
+        raise ValidationError(
+            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'),
+            code='invalid')
     try:
         for membership in instance.subscriptionmembership_set.all():
             check_submembership_parent_dates(membership)
     except ValidationError:
         raise ValidationError(
-            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitrits- oder Austrittsdatum'),
+            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum'),
             code='invalid')
