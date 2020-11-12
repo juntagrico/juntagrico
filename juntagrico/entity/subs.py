@@ -2,6 +2,7 @@ import datetime
 import time
 
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -10,7 +11,7 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.member import q_left_subscription
+from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
@@ -185,11 +186,21 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients(self):
-        return [m.member for m in self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member').all()]
+        now = timezone.now().date()
+        member_queryset = self.memberships_for_state.filter(~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)).prefetch_related('member')
+        return [m.member for m in member_queryset.all()]
 
     @property
     def recipients_all(self):
-        return [m.member for m in self.subscriptionmembership_set.prefetch_related('member').all()]
+
+        return [m.member for m in self.memberships_for_state.prefetch_related('member').all()]
+
+    @property
+    def memberships_for_state(self):
+        if self.state == 'waiting' or self.state == 'inactive':
+            return self.subscriptionmembership_set
+        else:
+            return self.subscriptionmembership_set.filter(q_joined_subscription(), ~q_left_subscription())
 
     def primary_member_nullsave(self):
         member = self.primary_member
