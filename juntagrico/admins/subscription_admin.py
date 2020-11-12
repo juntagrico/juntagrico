@@ -13,9 +13,9 @@ class SubscriptionAdmin(BaseAdmin):
     readonly_fields = ('creation_date',)
     list_display = ['__str__', 'recipients_names',
                     'primary_member_nullsave', 'depot', 'text_state']
-    search_fields = ['members__user__username', 'members__first_name', 'members__last_name',
-                     'members_future__user__username', 'members_future__first_name', 'members_future__last_name',
-                     'members_old__user__username', 'members_old__first_name', 'members_old__last_name',
+    search_fields = ['subscriptionmembership__member__user__username',
+                     'subscriptionmembership__member__first_name',
+                     'subscriptionmembership__member__last_name',
                      'depot__name', 'nickname']
 
     inlines = [SubscriptionMembershipInline, SubscriptionPartInline, ExtraSubscriptionInline]
