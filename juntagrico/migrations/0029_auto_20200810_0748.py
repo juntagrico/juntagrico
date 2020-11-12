@@ -26,7 +26,6 @@ def migrate_memberships(apps, schema_editor):
             except Exception:
                 pass
         yesterday = timezone.now().date() - timedelta(days=1)
-        print(yesterday)
         for sub in member.old_subscriptions.all():
             try:
                 with transaction.atomic():
