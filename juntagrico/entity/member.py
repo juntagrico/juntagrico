@@ -48,7 +48,7 @@ class Member(JuntagricoBaseModel):
     reachable_by_email = models.BooleanField(
         _('Kontaktierbar von der Job Seite aus'), default=False)
     cancellation_date = models.DateField(
-        _('Kündigüngsdatum'), null=True, blank=True)
+        _('Kündigungsdatum'), null=True, blank=True)
     deactivation_date = models.DateField(
         _('Deaktivierungsdatum'), null=True, blank=True, help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
     end_date = models.DateField(

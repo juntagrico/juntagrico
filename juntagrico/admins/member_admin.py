@@ -63,12 +63,12 @@ class MemberAdmin(BaseAdmin):
 
     def subscription_link(self, obj):
         return self._get_single_link(obj.subscription_current, 'juntagrico_subscription_change') \
-            or _('Kein/e/n {}').format(Config.vocabulary('subscription'))
+            or _('Kein/e {}').format(Config.vocabulary('subscription'))
     subscription_link.short_description = Config.vocabulary('subscription')
 
     def future_subscription_link(self, obj):
         return self._get_single_link(obj.subscription_future, 'juntagrico_subscription_change') \
-            or _('Kein/e/n zukünftige/n/s {}').format(Config.vocabulary('subscription'))
+            or _('Kein/e zukünftige/r/s {}').format(Config.vocabulary('subscription'))
     future_subscription_link.short_description = _('Zukünftige/r/s {}').format(Config.vocabulary('subscription'))
 
     def old_subscription_link(self, obj):
