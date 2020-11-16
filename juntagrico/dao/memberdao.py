@@ -98,7 +98,7 @@ class MemberDao:
     def members_for_future_subscription(subscription):
         result = PropertyQuerySet.from_qs(Member.objects.filter(
             (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription() | Q(
-                subscriptionmembership__subscription=subscription)))
+                subscriptionmembership__subscription=subscription)).distinct())
         result.set_property('name', 'fs')
         result.set_property('subscription_id', str(subscription.pk))
         return result
