@@ -15,7 +15,7 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
             if form.instance.deactivation_date is None and not form.cleaned_data.get('DELETE', True):
                 required_shares += form.instance.type.shares
                 future_parts_count += 1 if form.instance.cancellation_date is None else 0
-        available_shares = sum([member.usable_shares_count for member in self.instance._future_members])
+        available_shares = sum([member.usable_shares_count for member in self.instance._future_members or []])
         if required_shares > available_shares:
             raise ValidationError(
                 _('Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}').format(Config.vocabulary('share_pl'),
