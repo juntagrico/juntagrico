@@ -10,6 +10,7 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
+from juntagrico.util.models import q_activated
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
 
 from juntagrico.config import Config
@@ -359,9 +360,9 @@ def cancel_subscription(request, subscription_id):
     if request.method == 'POST':
         for extra in subscription.extra_subscription_set.all():
             cancel_extra_sub(extra)
-        for part in subscription.active_parts.all():
+        for part in subscription.parts.filter(q_activated()).all():
             part.cancel()
-        for part in subscription.future_parts.all():
+        for part in subscription.parts.filter(~q_activated()).all():
             part.delete()
         cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
