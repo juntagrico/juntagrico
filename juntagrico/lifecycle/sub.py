@@ -9,6 +9,7 @@ from juntagrico.lifecycle.subpart import check_subpart_parent_dates
 from juntagrico.mailer import adminnotification
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
 from juntagrico.util.lifecycle import handle_activated_deactivated, cancel_extra_sub
+from juntagrico.util.models import q_activated
 
 
 def sub_post_save(sender, instance, created, **kwargs):
@@ -59,9 +60,9 @@ def handle_sub_canceled(sender, instance, **kwargs):
     instance.cancellation_date = instance.cancellation_date or timezone.now().date()
     for extra in instance.extra_subscription_set.all():
         cancel_extra_sub(extra)
-    for part in instance.active_parts.all():
+    for part in instance.parts.filter(q_activated()).all():
         part.cancel()
-    for part in instance.future_parts.all():
+    for part in instance.parts.filter(~q_activated()).all():
         part.delete()
 
 
