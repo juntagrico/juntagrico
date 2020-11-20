@@ -24,10 +24,15 @@ class SubscriptionMembershipInline(admin.TabularInline):
     model = SubscriptionMembership
     form = SubscriptionMembershipAdminForm
     formset = SubscriptionMembershipInlineFormset
-    fields = ['member', 'join_date', 'leave_date']
+    fields = ['member', 'join_date', 'leave_date', 'share_count']
+    readonly_fields = ['share_count']
     verbose_name = _('{} Mitgliedschaft').format(Config.vocabulary('subscription'))
     verbose_name_plural = _('{} Mitgliedschaften').format(Config.vocabulary('subscription'))
     extra = 0
+
+    def share_count(self, instance):
+        return instance.member.usable_shares_count
+    share_count.short_description = Config.vocabulary('share_pl')
 
     def get_formset(self, request, obj=None, **kwargs):
         self.parent_obj = obj
