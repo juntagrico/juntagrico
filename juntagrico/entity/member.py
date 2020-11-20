@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
+from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.util.users import make_username
 
 
@@ -179,6 +180,9 @@ class SubscriptionMembership(JuntagricoBaseModel):
     subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
     join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True)
     leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
+
+    def clean(self):
+        return check_sub_membership_consistency(self)
 
     class Meta:
         unique_together = ('member', 'subscription')
