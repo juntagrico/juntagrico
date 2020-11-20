@@ -14,7 +14,8 @@ def migrate_memberships(apps, schema_editor):
                 with transaction.atomic():
                     SubscriptionMembership.objects.create(member=member,
                                                           subscription=member.future_subscription,
-                                                          join_date=member.future_subscription.activation_date)
+                                                          join_date=member.future_subscription.activation_date,
+                                                          leave_date=member.future_subscription.deactivation_date)
             except Exception:
                 pass
         if member.subscription is not None:
@@ -22,7 +23,8 @@ def migrate_memberships(apps, schema_editor):
                 with transaction.atomic():
                     SubscriptionMembership.objects.create(member=member,
                                                           subscription=member.subscription,
-                                                          join_date=member.subscription.activation_date)
+                                                          join_date=member.subscription.activation_date,
+                                                          leave_date=member.subscription.deactivation_date)
             except Exception:
                 pass
         yesterday = timezone.now().date() - timedelta(days=1)
@@ -31,7 +33,7 @@ def migrate_memberships(apps, schema_editor):
                 with transaction.atomic():
                     SubscriptionMembership.objects.create(member=member,
                                                           subscription=sub,
-                                                          join_date=sub.creation_date,
+                                                          join_date=sub.activation_date,
                                                           leave_date=sub.deactivation_date or yesterday)
             except Exception:
                 pass
