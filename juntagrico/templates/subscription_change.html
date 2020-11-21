@@ -2,8 +2,9 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
+    {% vocabulary "subscription" as v_subscription %}
     <h3>
-        Abo ändern
+        {{ v_subscription }} ändern
     </h3>
 {% endblock %}
 {% block content %}
