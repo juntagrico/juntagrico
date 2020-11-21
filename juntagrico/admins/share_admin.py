@@ -29,6 +29,13 @@ class ShareAdmin(BaseAdmin):
                 if not overwrite:
                     queryset = queryset.filter(**{target_field: None})
                 filter_count = queryset.count()
+                # add note before setting date as queryset may be empty afterward due to applied filters
+                additional_note = form.cleaned_data['note']
+                if additional_note:
+                    for share in queryset:
+                        share.notes += ('\n' if share.notes else '') + additional_note
+                        share.save()
+                # update dates
                 queryset.update(**{target_field: date})
                 self.message_user(request, _('{} von {} {} bearbeitet').format(filter_count, input_count, Config.vocabulary('share_pl')))
                 return HttpResponseRedirect(request.get_full_path())

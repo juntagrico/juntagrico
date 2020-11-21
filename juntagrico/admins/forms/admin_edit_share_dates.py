@@ -15,3 +15,4 @@ class EditShareDatesForm(forms.Form):
     target_field = forms.CharField(label='', widget=forms.Select(choices=field_choices))
     date = forms.DateField(label='', widget=AdminDateWidget(), initial=timezone.now().date())
     overwrite = forms.BooleanField(label=_('Überschreiben?'), required=False)
+    note = forms.CharField(label=_('Notiz anfügen'), required=False)
