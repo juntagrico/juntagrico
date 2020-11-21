@@ -1,5 +1,6 @@
 from django.core import validators
 from django.db import models
+from django.db.models.functions import Coalesce, Concat
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -37,7 +38,8 @@ class Depot(JuntagricoBaseModel):
         return '%s %s' % (self.id, self.name)
 
     def active_subscriptions(self):
-        return self.subscription_set.filter(q_activated() & ~q_deactivated()).order_by('primary_member__first_name')
+        return self.subscription_set.filter(q_activated() & ~q_deactivated()).annotate(
+            o=Concat('nickname', 'primary_member__first_name', 'primary_member__last_name')).order_by('o')
 
     @property
     def has_geo(self):

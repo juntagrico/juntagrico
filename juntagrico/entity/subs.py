@@ -159,7 +159,7 @@ class Subscription(Billable, SimpleStateModel):
         return result
 
     def recipients_names(self):
-        members = self.recipients
+        members = sorted(self.recipients, key=lambda m: m != self.primary_member)
         return ', '.join(str(member) for member in members)
 
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
@@ -172,8 +172,7 @@ class Subscription(Billable, SimpleStateModel):
         if self.nickname:
             return self.nickname + ' ({})'.format(self.primary_member_nullsave())
         else:
-            members = self.recipients
-            return ', '.join(str(member) for member in members)
+            return self.recipients_names()
 
     nickname_or_recipients_names.short_description = _('{}-Spitzname oder -BezieherInnen').format(Config.vocabulary('subscription'))
 
