@@ -32,7 +32,8 @@ class Subscription(Billable, SimpleStateModel):
                                        on_delete=models.PROTECT,
                                        verbose_name=_('Haupt-{}-BezieherIn').format(Config.vocabulary('subscription')))
     nickname = models.CharField(_('Spitzname'), max_length=30, blank=True,
-                                help_text=_('Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste.'.format(Config.vocabulary('subscription'), Config.vocabulary('depot'))))
+                                help_text=_('Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste.'.format(
+                                    Config.vocabulary('subscription'), Config.vocabulary('depot'))))
     start_date = models.DateField(
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
     end_date = models.DateField(
@@ -159,47 +160,51 @@ class Subscription(Billable, SimpleStateModel):
         return result
 
     def recipients_names(self):
-        members = sorted(self.recipients, key=lambda m: m != self.primary_member)
+        members = self.recipients
         return ', '.join(str(member) for member in members)
 
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
     def co_members(self, member):
         return [m.member for m in
-                self.subscriptionmembership_set.filter(~q_left_subscription()).exclude(member__email=member.email).prefetch_related('member').all()]
+                self.recipients_qs.exclude(member__email=member.email).all()]
 
-    def nickname_or_recipients_names(self):
+    def recipients_display_name(self):
         if self.nickname:
-            return self.nickname + ' ({})'.format(self.primary_member_nullsave())
+            return ', '.join([self.primary_member_nullsave(), self.nickname])
         else:
-            return self.recipients_names()
-
-    nickname_or_recipients_names.short_description = _('{}-Spitzname oder -BezieherInnen').format(Config.vocabulary('subscription'))
+            return '{}, {}'.format(self.primary_member_nullsave(), self.other_recipients_names)
 
     def other_recipients(self):
         return self.co_members(self.primary_member)
 
+    @property
     def other_recipients_names(self):
         members = self.other_recipients()
         return ', '.join(str(member) for member in members)
 
     @property
-    def recipients(self):
+    def recipients_qs(self):
         now = timezone.now().date()
-        member_queryset = self.memberships_for_state.filter(~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)).prefetch_related('member')
-        return [m.member for m in member_queryset.all()]
+        return self.memberships_for_state.filter(
+            ~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)).order_by(
+            'member__first_name', 'member__last_name')
+
+    @property
+    def recipients(self):
+        return [m.member for m in self.recipients_qs.all()]
 
     @property
     def recipients_all(self):
-
-        return [m.member for m in self.memberships_for_state.prefetch_related('member').all()]
+        return [m.member for m in self.memberships_for_state.all()]
 
     @property
     def memberships_for_state(self):
         if self.state == 'waiting' or self.state == 'inactive':
-            return self.subscriptionmembership_set
+            return self.subscriptionmembership_set.prefetch_related('member')
         else:
-            return self.subscriptionmembership_set.filter(q_joined_subscription(), ~q_left_subscription())
+            return self.subscriptionmembership_set.filter(q_joined_subscription(),
+                                                          ~q_left_subscription()).prefetch_related('member')
 
     def primary_member_nullsave(self):
         member = self.primary_member
@@ -246,7 +251,8 @@ class Subscription(Billable, SimpleStateModel):
     class Meta:
         verbose_name = Config.vocabulary('subscription')
         verbose_name_plural = Config.vocabulary('subscription_pl')
-        permissions = (('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),)
+        permissions = (
+            ('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),)
 
 
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
