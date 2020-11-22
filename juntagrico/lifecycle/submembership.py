@@ -14,7 +14,7 @@ def check_submembership_dates(instance):
     has_joined = instance.join_date is not None
     has_left = instance.leave_date is not None
     join_date = instance.join_date or now
-    leave_date = instance.leave_date or now
+    leave_date = instance.leave_date or join_date  # allow future join dates
     if has_left and not has_joined:
         raise ValidationError(_('Bitte "Beitrittsdatum" ausfüllen'), code='invalid')
     if not (join_date <= leave_date):
