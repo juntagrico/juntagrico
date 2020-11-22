@@ -27,6 +27,10 @@ def q_deactivated():
     return Q(deactivation_date__isnull=False, deactivation_date__lte=timezone.now().date())
 
 
+def q_deactivation_planned():
+    return Q(deactivation_date__isnull=False)
+
+
 class PropertyQuerySet(QuerySet):
 
     def __init__(self, model, query, using, hints):
