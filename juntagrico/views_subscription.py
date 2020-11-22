@@ -310,15 +310,20 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return redirect('sub-detail-id', subscription_id=self.subscription.id)
 
 
+def error_page(request, error_message):
+    renderdict = get_menu_dict(request)
+    renderdict['error_message'] = error_message
+    return render(request, 'error.html', renderdict)
+
+
 @permission_required('juntagrico.is_operations_group')
 def activate_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
-    except ValidationError:
-        renderdict = get_menu_dict(request)
-        return render(request, 'activation_error.html', renderdict)
+    except ValidationError as e:
+        return error_page(request, e.message)
     return return_to_previous_location(request)
 
 
@@ -326,20 +331,26 @@ def activate_subscription(request, subscription_id):
 def deactivate_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     change_date = request.session.get('changedate', None)
-    subscription.deactivate(change_date)
+    try:
+        subscription.deactivate(change_date)
+    except ValidationError as e:
+        return error_page(request, e.message)
     return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.is_operations_group')
 def activate_future_types(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now().date()
-    for part in SubscriptionPartDao.get_canceled_for_subscription(subscription):
-        part.deactivation_date = now
-        part.save()
-    for part in SubscriptionPartDao.get_waiting_for_subscription(subscription):
-        part.activation_date = now
-        part.save()
+    changedate = request.session.get('changedate', timezone.now().date())
+    try:
+        for part in SubscriptionPartDao.get_canceled_for_subscription(subscription):
+            part.deactivation_date = changedate
+            part.save()
+        for part in SubscriptionPartDao.get_waiting_for_subscription(subscription):
+            part.activation_date = changedate
+            part.save()
+    except ValidationError as e:
+        return error_page(request, e.message)
     return return_to_previous_location(request)
 
 
