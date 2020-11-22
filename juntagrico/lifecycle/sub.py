@@ -53,7 +53,7 @@ def handle_sub_deactivated(sender, instance, **kwargs):
     for part in instance.future_parts.all():
         part.delete()
     for sub_membership in instance.subscriptionmembership_set.all():
-        sub_membership.member.leave_subscription(instance)
+        sub_membership.member.leave_subscription(instance, change_date)
 
 
 def handle_sub_canceled(sender, instance, **kwargs):

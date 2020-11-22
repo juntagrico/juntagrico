@@ -114,11 +114,12 @@ class Member(JuntagricoBaseModel):
             join_date = timezone.now().date() if subscription.active else None
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
-    def leave_subscription(self, subscription):
+    def leave_subscription(self, subscription, changedate=None):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         membership_present = sub_membership and sub_membership.leave_date is None
         if membership_present and sub_membership.join_date is not None:
-            sub_membership.leave_date = timezone.now().date()
+            changedate = changedate or timezone.now().date()
+            sub_membership.leave_date = changedate
             sub_membership.save()
         elif membership_present and sub_membership.join_date is None:
             sub_membership.delete()
