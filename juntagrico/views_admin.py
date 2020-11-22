@@ -431,7 +431,7 @@ def set_change_date(request):
     if request.method != 'POST':
         raise Http404
     raw_date = request.POST.get('date')
-    date = timezone.datetime.strptime(raw_date, '%m/%d/%Y')
+    date = timezone.datetime.strptime(raw_date, '%m/%d/%Y').date()
     request.session['changedate'] = date
     return return_to_previous_location(request)
 
