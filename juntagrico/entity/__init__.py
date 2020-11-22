@@ -93,14 +93,16 @@ class SimpleStateModel(models.Model):
         is_cancelled = self.cancellation_date is not None
         is_deactivated = self.deactivation_date is not None
         activation_date = self.activation_date or now
-        cancellation_date = self.cancellation_date or now
-        deactivation_date = self.deactivation_date or now
+        cancellation_date = self.cancellation_date or activation_date  #allow future activation date
+        deactivation_date = self.deactivation_date or cancellation_date
         if(is_cancelled or is_deactivated) and not is_active:
             raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='invalid')
         if is_deactivated and not is_cancelled:
             raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
+        if is_cancelled and cancellation_date > now:
+            raise ValidationError(_('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
         if not (activation_date <= cancellation_date <= deactivation_date):
-            raise ValidationError(_('Daten Reihenfolge stimmt nicht.'), code='invalid')
+            raise ValidationError(_('Datenreihenfolge stimmt nicht.'), code='invalid')
 
     class Meta:
         abstract = True
