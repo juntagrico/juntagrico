@@ -268,7 +268,7 @@ def get_mail_template(request, template_id):
 
 @permission_required('juntagrico.is_operations_group')
 def excel_export_members_filter(request):
-    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
