@@ -56,7 +56,8 @@ class Command(BaseCommand):
 
         print(get_email_content('co_welcome', base_dict({
             'co_member': co_member,
-            'password': 'password'
+            'password': 'password',
+            'sub': co_member.subscription_future or co_member.subscription_current
         })))
         print()
 
@@ -65,7 +66,8 @@ class Command(BaseCommand):
         print(get_email_content('co_added', base_dict({
             'co_member': co_member,
             'password': 'password',
-            'new_shares': '9'
+            'new_shares': '9',
+            'sub': co_member.subscription_future or co_member.subscription_current
         })))
         print()
 
