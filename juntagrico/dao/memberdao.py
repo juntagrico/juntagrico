@@ -56,7 +56,8 @@ class MemberDao:
     def has_future_subscription():
         return Q(~MemberDao.q_subscription_active(),
                  ~MemberDao.q_subscription_cancelled(),
-                 ~MemberDao.q_subscription_deactivated())
+                 ~MemberDao.q_subscription_deactivated(),
+                 subscriptionmembership__isnull=False)
 
     @staticmethod
     def all_members():
