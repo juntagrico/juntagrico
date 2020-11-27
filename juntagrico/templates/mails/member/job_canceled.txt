@@ -5,7 +5,7 @@
 {% config "organisation_name" as c_organisation_name %}
 
 {% blocktrans trimmed with jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
-Dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}"  um {{ jt }}-{{ jet }} wurde leider Abgesagt.
+Dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" um {{ jt }}-{{ jet }} wurde leider Abgesagt.
 {% endblocktrans %}
 
 {% trans "Details" %}:

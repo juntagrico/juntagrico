@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from juntagrico.config import Config
+from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.member import Member
@@ -20,9 +21,9 @@ class Command(BaseCommand):
         subscription = Subscription.objects.all()[0]
         shares = Share.objects.all()[:2]
         job = RecuringJob.objects.all()[0]
-        member = Member.objects.filter(subscription__isnull=False)[0]
-        member_wo_subs = Member.objects.filter(subscription__isnull=True)[0]
-        co_member = Member.objects.filter(subscription__isnull=False)[0]
+        member = Member.objects.filter(MemberDao.has_future_subscription())[0]
+        member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
+        co_member = Member.objects.filter(MemberDao.has_future_subscription())[1]
         depot = Depot.objects.all()[0]
 
         print('*** welcome  mit abo***')
