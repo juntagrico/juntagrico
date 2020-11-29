@@ -68,6 +68,13 @@
                             </a>
                         </li>
                     {% endif %}
+                    {% if operation_group %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sub-mgmt-inconsitencies' %}">
+                                {% blocktrans %}{{ v_subscription }} Inkonsitenzen{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
                     {% for menu in admin_subscription_menus %}
                         {% include menu %}
                     {% endfor %}
