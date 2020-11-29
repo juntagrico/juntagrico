@@ -441,6 +441,7 @@ def unset_change_date(request):
     request.session['changedate'] = None
     return return_to_previous_location(request)
 
+
 @permission_required('juntagrico.is_operations_group')
 def sub_inconsistencies(request):
     management_list = []
@@ -448,7 +449,7 @@ def sub_inconsistencies(request):
         try:
             sub.clean()
         except Exception as e:
-            management_list.append({'subscription':sub, 'error':e})
+            management_list.append({'subscription': sub, 'error': e})
     render_dict = get_menu_dict(request)
     render_dict.update({'change_date_disabled': True,
                         'email_form_disabled': True})
