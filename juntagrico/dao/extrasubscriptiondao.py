@@ -1,5 +1,5 @@
 from juntagrico.entity.extrasubs import ExtraSubscription
-from juntagrico.util.models import q_activated, q_cancelled, q_deactivated
+from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_isactive
 
 
 class ExtraSubscriptionDao:
@@ -18,7 +18,7 @@ class ExtraSubscriptionDao:
 
     @staticmethod
     def all_active_extrasubscritions():
-        return ExtraSubscription.objects.filter(q_activated() & ~q_deactivated())
+        return ExtraSubscription.objects.filter(q_isactive())
 
     @staticmethod
     def future_extrasubscriptions():

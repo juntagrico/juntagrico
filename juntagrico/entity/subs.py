@@ -14,7 +14,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
-from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned
+from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
 
 
@@ -78,7 +78,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
-        return self.parts.filter(q_activated() & ~q_deactivated())
+        return self.parts.filter(q_isactive())
 
     @property
     def future_parts(self):
@@ -214,7 +214,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.extra_subscription_set.filter(q_activated() & ~q_deactivated())
+        return self.extra_subscription_set.filter(q_isactive())
 
     @property
     def future_extra_subscriptions(self):
