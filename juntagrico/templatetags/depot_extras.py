@@ -59,7 +59,9 @@ def get_extra_subs_by_type(subscriptions, es_type):
     else:
         # case 2: queryset of subscriptions is passed
         es = ExtraSubscription.objects.filter(main_subscription__in=subscriptions)
-    return es.filter(type=es_type, activation_date__isnull=False, deactivation_date__isnull=True)
+    now = timezone.now().date()
+    return es.filter(type=es_type, activation_date__lte=now).\
+        filter(Q(deactivation_date__isnull=True) | Q(deactivation_date__gte=now))
 
 
 @register.filter
