@@ -73,7 +73,7 @@ if DEBUG is True:
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-LANGUAGE_CODE = 'de'
+LANGUAGE_CODE = 'de-CH'
 
 SITE_ID = 1
 
@@ -84,6 +84,11 @@ USE_I18N = True
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
 USE_L10N = True
+
+# Custom locale formats setting decimal point for de-CH
+FORMAT_MODULE_PATH = [
+    'juntagrico.formats',
+]
 
 DATE_INPUT_FORMATS = ['%d.%m.%Y', ]
 
