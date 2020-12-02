@@ -34,7 +34,7 @@ class MemberDao:
 
     @staticmethod
     def q_subscription_deactivated():
-        return Q(subscriptionmembership__subscription__deactivation_date__isnull=False)
+        return Q(subscriptionmembership__subscription__deactivation_date__lte=timezone.now().date())
 
     @staticmethod
     def has_subscription():
