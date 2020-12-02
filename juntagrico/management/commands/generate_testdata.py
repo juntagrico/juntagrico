@@ -66,8 +66,8 @@ class Command(BaseCommand):
         member_2.join_subscription(subscription_2)
         subscription_2.primary_member = member_2
         subscription_2.save()
-        SubscriptionPart.objects.create(subscription=subscription_1, type=subtype)
-        SubscriptionPart.objects.create(subscription=subscription_2, type=subtype)
+        SubscriptionPart.objects.create(subscription=subscription_1, type=subtype, activation_date=datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
+        SubscriptionPart.objects.create(subscription=subscription_2, type=subtype, activation_date=datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
                         'hidden': False, 'coordinator': member_1, 'show_coordinator_phonenumber': False}
