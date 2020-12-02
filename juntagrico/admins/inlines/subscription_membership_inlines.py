@@ -12,7 +12,11 @@ from juntagrico.entity.member import SubscriptionMembership
 
 class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
     def clean(self):
-        members = [form.instance.member for form in self.forms if not form.cleaned_data.get('DELETE', False)]
+        def consider_form(form):
+            return not form.cleaned_data.get('DELETE', False) \
+                   and (hasattr(form.instance, 'leave_date') and form.instance.leave_date is None) \
+                   and hasattr(form.instance, 'member')
+        members = [form.instance.member for form in self.forms if consider_form(form)]
         self.instance._future_members = set(members)
         if self.instance.primary_member not in members:
             self.instance.primary_member = members[0] if len(members) > 0 else None

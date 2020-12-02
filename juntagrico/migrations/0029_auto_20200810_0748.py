@@ -5,6 +5,14 @@ from django.db import migrations, transaction
 from django.utils import timezone
 
 
+def migrate_deactivation(apps, schema_editor):
+    Member = apps.get_model('juntagrico', 'Member')
+    for member in Member.objects.all():
+        if member.inactive:
+            member.deactivation_date = timezone.now().date()
+            member.save()
+
+
 def migrate_memberships(apps, schema_editor):
     Member = apps.get_model('juntagrico', 'Member')
     SubscriptionMembership = apps.get_model('juntagrico', 'SubscriptionMembership')
@@ -46,4 +54,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(migrate_memberships),
+        migrations.RunPython(migrate_deactivation),
     ]
