@@ -34,7 +34,8 @@ class MemberDao:
 
     @staticmethod
     def q_subscription_deactivated():
-        return Q(subscriptionmembership__subscription__deactivation_date__lte=timezone.now().date())
+        return Q(subscriptionmembership__subscription__deactivation_date__isnull=False,
+                 subscriptionmembership__subscription__deactivation_date__lte=timezone.now().date())
 
     @staticmethod
     def has_subscription():
@@ -90,7 +91,7 @@ class MemberDao:
     def members_for_subscription(subscription):
         result = PropertyQuerySet.from_qs(Member.objects.filter(
             (~MemberDao.has_subscription() & ~MemberDao.has_cancelled_subscription() & ~MemberDao.has_future_subscription()) | Q(
-                subscriptionmembership__subscription=subscription)))
+                subscriptionmembership__subscription=subscription)).distinct())
         result.set_property('name', 's')
         result.set_property('subscription_id', str(subscription.pk))
         return result
@@ -107,7 +108,7 @@ class MemberDao:
     @staticmethod
     def members_for_create_subscription():
         result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription()))
+            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription()).distinct())
         result.set_property('name', 'cs')
         result.set_property('subscription_id', '')
         return result
