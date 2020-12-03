@@ -185,9 +185,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients_qs(self):
-        now = timezone.now().date()
-        return self.memberships_for_state.filter(
-            ~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)).order_by(
+        return self.memberships_for_state.order_by(
             'member__first_name', 'member__last_name')
 
     @property
@@ -200,11 +198,15 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def memberships_for_state(self):
-        if self.state == 'waiting' or self.state == 'inactive':
+        now = timezone.now().date()
+        member_active = ~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)
+        if self.state == 'waiting':
+            return self.subscriptionmembership_set.prefetch_related('member').filter(member_active)
+        elif self.state == 'inactive':
             return self.subscriptionmembership_set.prefetch_related('member')
         else:
             return self.subscriptionmembership_set.filter(q_joined_subscription(),
-                                                          ~q_left_subscription()).prefetch_related('member')
+                                                          ~q_left_subscription(), member_active).prefetch_related('member')
 
     def primary_member_nullsave(self):
         member = self.primary_member
