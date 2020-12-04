@@ -15,31 +15,27 @@ class MemberDao:
 
     @staticmethod
     def q_joined_subscription():
-        return Q(subscriptionmembership__join_date__isnull=False,
-                 subscriptionmembership__join_date__lte=timezone.now().date())
+        return Q(subscriptionmembership__join_date__lte=timezone.now().date())
 
     @staticmethod
     def q_left_subscription():
-        return Q(subscriptionmembership__leave_date__isnull=False)
+        return Q(subscriptionmembership__leave_date__lte=timezone.now().date())
 
     @staticmethod
-    def q_subscription_active():
-        return Q(subscriptionmembership__subscription__activation_date__isnull=False,
-                 subscriptionmembership__subscription__activation_date__lte=timezone.now().date())
+    def q_subscription_activated():
+        return Q(subscriptionmembership__subscription__activation_date__lte=timezone.now().date())
 
     @staticmethod
     def q_subscription_cancelled():
-        return Q(subscriptionmembership__subscription__cancellation_date__isnull=False,
-                 subscriptionmembership__subscription__cancellation_date__lte=timezone.now().date())
+        return Q(subscriptionmembership__subscription__cancellation_date__lte=timezone.now().date())
 
     @staticmethod
     def q_subscription_deactivated():
-        return Q(subscriptionmembership__subscription__deactivation_date__isnull=False,
-                 subscriptionmembership__subscription__deactivation_date__lte=timezone.now().date())
+        return Q(subscriptionmembership__subscription__deactivation_date__lte=timezone.now().date())
 
     @staticmethod
     def has_subscription():
-        return Q(MemberDao.q_subscription_active(),
+        return Q(MemberDao.q_subscription_activated(),
                  ~MemberDao.q_subscription_cancelled(),
                  ~MemberDao.q_subscription_deactivated(),
                  MemberDao.q_joined_subscription(),
@@ -47,7 +43,7 @@ class MemberDao:
 
     @staticmethod
     def has_cancelled_subscription():
-        return Q(MemberDao.q_subscription_active(),
+        return Q(MemberDao.q_subscription_activated(),
                  MemberDao.q_subscription_cancelled(),
                  ~MemberDao.q_subscription_deactivated(),
                  MemberDao.q_joined_subscription(),
@@ -55,7 +51,7 @@ class MemberDao:
 
     @staticmethod
     def has_future_subscription():
-        return Q(~MemberDao.q_subscription_active(),
+        return Q(~MemberDao.q_subscription_activated(),
                  ~MemberDao.q_subscription_cancelled(),
                  ~MemberDao.q_subscription_deactivated(),
                  subscriptionmembership__isnull=False)
