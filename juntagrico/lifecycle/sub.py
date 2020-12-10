@@ -29,12 +29,16 @@ def sub_pre_save(sender, instance, **kwargs):
 
 
 def handle_sub_activated(sender, instance, **kwargs):
+    activation_date = instance.activation_date or timezone.now().date()
     for member in instance.recipients:
-        if member.subscription_current is not None:
+        current_sub = member.subscription_current is not None
+        sub_deactivated = current_sub and member.subscription_current.deactivation_date is not None
+        dates_do_not_overlap = current_sub and sub_deactivated and member.subscription_current.deactivation_date <= activation_date
+        if (current_sub and not sub_deactivated) or (current_sub and sub_deactivated and not dates_do_not_overlap):
             raise ValidationError(
                 _('Ein Bezüger hat noch ein/e/n aktive/n/s {0}').format(Config.vocabulary('subscription')),
                 code='invalid')
-    instance.activation_date = instance.activation_date or timezone.now().date()
+    instance.activation_date = activation_date
     change_date = instance.activation_date
     for part in instance.future_parts.all():
         part.activate(change_date)
@@ -106,7 +110,8 @@ def check_children_dates(instance):
             check_subpart_parent_dates(extra, instance)
     except ValidationError:
         raise ValidationError(
-            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'),
+            _(
+                'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'),
             code='invalid')
     try:
         for membership in instance.subscriptionmembership_set.all():
