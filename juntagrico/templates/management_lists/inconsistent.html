@@ -2,9 +2,9 @@
 {% load i18n %}
 {% load config %}
 {% block page_title %}
-    {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
     <h3>
-        {% blocktrans %}Inkonsistente{{ v_subscription }}{% endblocktrans %}
+        {% blocktrans %}Inkonsistente {{ v_subscription_pl }}{% endblocktrans %}
     </h3>
 {% endblock %}
 {% block list %}
