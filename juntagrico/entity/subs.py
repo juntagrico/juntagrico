@@ -15,7 +15,8 @@ from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
-from juntagrico.util.temporal import start_of_next_business_year
+from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, \
+    calculate_remaining_days_percentage
 
 
 class Subscription(Billable, SimpleStateModel):
@@ -124,6 +125,8 @@ class Subscription(Billable, SimpleStateModel):
         result = 0
         for part in self.active_parts.all():
             result += part.type.required_assignments
+        if self.activation_date > start_of_business_year():
+            result = round(result * calculate_remaining_days_percentage(self.activation_date))
         return result
 
     @property
@@ -131,6 +134,8 @@ class Subscription(Billable, SimpleStateModel):
         result = 0
         for part in self.active_parts.all():
             result += part.type.required_core_assignments
+        if self.activation_date > start_of_business_year():
+            result = round(result * calculate_remaining_days_percentage(self.activation_date))
         return result
 
     @property
