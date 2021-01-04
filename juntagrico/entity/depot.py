@@ -29,6 +29,8 @@ class Depot(JuntagricoBaseModel):
     addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
+    visible = models.BooleanField(_('Sichtbar'), default=True)
 
     overview_cache = None
     subscription_cache = None
