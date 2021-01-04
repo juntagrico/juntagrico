@@ -125,7 +125,7 @@ class Subscription(Billable, SimpleStateModel):
         result = 0
         for part in self.active_parts.all():
             result += part.type.required_assignments
-        if self.activation_date > start_of_business_year():
+        if self.activation_date is not None and self.activation_date > start_of_business_year():
             result = round(result * calculate_remaining_days_percentage(self.activation_date))
         return result
 
@@ -134,7 +134,7 @@ class Subscription(Billable, SimpleStateModel):
         result = 0
         for part in self.active_parts.all():
             result += part.type.required_core_assignments
-        if self.activation_date > start_of_business_year():
+        if self.activation_date is not None and self.activation_date > start_of_business_year():
             result = round(result * calculate_remaining_days_percentage(self.activation_date))
         return result
 
