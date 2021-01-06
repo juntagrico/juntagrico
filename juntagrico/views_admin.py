@@ -149,7 +149,7 @@ def filters(request):
 
 @permission_required('juntagrico.is_depot_admin')
 def filters_depot(request, depot_id):
-    depot = get_object_or_404(Depot, id=int(depot_id))
+    depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
     members = MemberDao.members_with_assignments_count_for_depot(depot)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
@@ -162,7 +162,7 @@ def filters_depot(request, depot_id):
 
 @permission_required('juntagrico.is_area_admin')
 def filters_area(request, area_id):
-    area = get_object_or_404(ActivityArea, id=int(area_id))
+    area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
     members = MemberDao.members_with_assignments_count_in_area(area)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
