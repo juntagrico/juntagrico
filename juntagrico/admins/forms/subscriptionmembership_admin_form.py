@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.admin import widgets, site
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency_ms
 
@@ -28,5 +31,6 @@ class SubscriptionMembershipAdminForm(forms.ModelForm):
                                                          admin_site=site, field=self.fields['member'])
 
     def clean(self):
-        check_sub_membership_consistency_ms(self.cleaned_data['member'], self.cleaned_data['subscription'])
+        if 'member' in self.cleaned_data:
+            check_sub_membership_consistency_ms(self.cleaned_data['member'], self.cleaned_data['subscription'])
         return forms.ModelForm.clean(self)
