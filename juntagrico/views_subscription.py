@@ -10,6 +10,7 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 from django.utils.translation import gettext as _
 
+
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
