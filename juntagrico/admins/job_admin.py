@@ -8,7 +8,7 @@ from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.entity.jobs import RecuringJob
+from juntagrico.entity.jobs import RecuringJob, JobType
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
 
 
@@ -77,8 +77,14 @@ class JobAdmin(BaseAdmin):
                                                'juntagrico.is_area_admin',
                                                JobTypeDao.visible_types_by_coordinator,
                                                **kwargs)
+            # show jobtype even if invisible to be able to edit and save this job with the same type
+            # HACK: get instance via url argument
+            instance_pk = request.resolver_match.kwargs.get('object_id')
+            if instance_pk is not None:
+                kwargs['queryset'] |= JobType.objects.filter(recuringjob__pk=instance_pk)
+                kwargs['queryset'] = kwargs['queryset'].distinct()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context_for_past_jobs(request, RecuringJob, object_id, extra_context)
         return super().change_view(request, object_id, extra_context=extra_context)

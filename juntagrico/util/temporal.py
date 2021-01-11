@@ -131,6 +131,10 @@ def calculate_last_offset(day, month, offset):
     return datetime.date(year, month, day)
 
 
+def calculate_remaining_days_percentage(date):
+    return (end_of_business_year()-date).days/(end_of_business_year()-start_of_business_year()).days
+
+
 month_choices = ((1, _('Januar')),
                  (2, _('Februar')),
                  (3, _('März')),

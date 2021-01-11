@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load subscription %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
@@ -17,8 +18,8 @@
         <div class="alert alert-success">
             {% trans "Du bist auf der Warteliste" %}
             <br/>
-            <a href="{% url 'sub-detail-id' member.future_subscription.id %}">
-                {% trans "Mehr Infos dazu findest du hier" %}
+            <a href="{% url 'sub-detail-id' member.subscription_future.id %}">
+                {% trans "Mehr Infos und Optionen dazu findest du hier" %}
             </a>
         </div>
     {% elif can_order %}
@@ -39,13 +40,13 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                 </div>
             </div>
@@ -56,7 +57,11 @@
                 {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.size_name|safe }}
+                {% if subscription.state == 'waiting' %}
+                {{ subscription.future_part_overview|overview|safe }}
+                {% else %}
+                {{ subscription.part_overview|overview|safe }}
+                {% endif %}
             </div>
         </div>
         <div class="row mb-3">
@@ -86,13 +91,13 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                     <br/>
                     <br/>
@@ -105,7 +110,7 @@
                                 {{ ln }}
                                 {% endblocktrans %}
                                 {% if not co_member.confirmed %}
-                                    ({% trans "nicht bestätigt" %})
+                                    ({% trans "E-Mail-Adresse nicht bestätigt" %})
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -148,9 +153,19 @@
                 {% endif %}
             </div>
         </div>
+        {% if subscription.nickname %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% vocabulary "depot" %}
+                {% blocktrans %}Name auf {{ v_depot }}-Liste{% endblocktrans %}
+            </div>
+            <div class="col-md-9">
+                {{ subscription.recipients_display_name }}
+            </div>
+        </div>
+        {% endif %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                {{ v_depot }}
             </div>
             <div class="col-md-9">
                 {{ subscription.depot.name }}
@@ -213,7 +228,7 @@
                     Die Änderung tritt voraussichtlich am {{ nes }} in Kraft
                     {% endblocktrans %})
                     <br/>
-                    {{ subscription.future_size_name|safe }}
+                    {{ subscription.future_part_overview|overview|safe }}
                 </div>
             </div>
         {% endif %}

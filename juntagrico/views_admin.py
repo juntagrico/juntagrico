@@ -149,7 +149,7 @@ def filters(request):
 
 @permission_required('juntagrico.is_depot_admin')
 def filters_depot(request, depot_id):
-    depot = get_object_or_404(Depot, id=int(depot_id))
+    depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
     members = MemberDao.members_with_assignments_count_for_depot(depot)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
@@ -162,7 +162,7 @@ def filters_depot(request, depot_id):
 
 @permission_required('juntagrico.is_area_admin')
 def filters_area(request, area_id):
-    area = get_object_or_404(ActivityArea, id=int(area_id))
+    area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
     members = MemberDao.members_with_assignments_count_in_area(area)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
@@ -268,7 +268,7 @@ def get_mail_template(request, template_id):
 
 @permission_required('juntagrico.is_operations_group')
 def excel_export_members_filter(request):
-    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
@@ -294,8 +294,8 @@ def excel_export_members_filter(request):
             member.all_areas = str(_('-Kein Tätigkeitsbereich-'))
 
         member.depot_name = str(_('Kein Depot definiert'))
-        if member.subscription is not None:
-            member.depot_name = member.subscription.depot.name
+        if member.subscription_current is not None:
+            member.depot_name = member.subscription_current.depot.name
         looco_full_name = member.first_name + ' ' + member.last_name
         worksheet_s.write_string(row, 0, looco_full_name)
         worksheet_s.write(row, 1, member.assignment_count)
@@ -328,7 +328,7 @@ def excel_export_members(request):
         'mobile_phone',
         'confirmed',
         'reachable_by_email',
-        'inactive',
+        'deactivation_date',
     ]
     return generate_excel(fields, Member)
 
@@ -421,7 +421,7 @@ def member_canceledlist(request):
 @permission_required('juntagrico.is_operations_group')
 def deactivate_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-    member.inactive = True
+    member.deactivation_date = timezone.now().date()
     member.save()
     return return_to_previous_location(request)
 
@@ -431,7 +431,7 @@ def set_change_date(request):
     if request.method != 'POST':
         raise Http404
     raw_date = request.POST.get('date')
-    date = timezone.datetime.strptime(raw_date, '%m/%d/%Y')
+    date = timezone.datetime.strptime(raw_date, '%m/%d/%Y').date()
     request.session['changedate'] = date
     return return_to_previous_location(request)
 
@@ -440,3 +440,18 @@ def set_change_date(request):
 def unset_change_date(request):
     request.session['changedate'] = None
     return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.is_operations_group')
+def sub_inconsistencies(request):
+    management_list = []
+    for sub in SubscriptionDao.all_subscritions():
+        try:
+            sub.clean()
+        except Exception as e:
+            management_list.append({'subscription': sub, 'error': e})
+    render_dict = get_menu_dict(request)
+    render_dict.update({'change_date_disabled': True,
+                        'email_form_disabled': True})
+    return subscription_management_list(management_list, render_dict,
+                                        'management_lists/inconsistent.html', request)

@@ -1,10 +1,12 @@
 from django import template
-from django.db.models import Sum, Model
+from django.utils import timezone
+from django.db.models import Sum, Model, Q
 from django.db.models.query import QuerySet
 
 from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.util.models import q_isactive
 
 register = template.Library()
 
@@ -44,7 +46,8 @@ def get_types_by_size(subscriptions, size):
         parts = subscriptions.active_parts
     else:
         # case 2: queryset of subscriptions is passed
-        parts = SubscriptionPart.objects.filter(subscription__in=subscriptions, activation_date__isnull=False, deactivation_date__isnull=True)
+        now = timezone.now().date()
+        parts = SubscriptionPart.objects.filter(subscription__in=subscriptions).filter(q_isactive())
     return parts.filter(type__size=size)
 
 
@@ -56,7 +59,7 @@ def get_extra_subs_by_type(subscriptions, es_type):
     else:
         # case 2: queryset of subscriptions is passed
         es = ExtraSubscription.objects.filter(main_subscription__in=subscriptions)
-    return es.filter(type=es_type, activation_date__isnull=False, deactivation_date__isnull=True)
+    return es.filter(type=es_type).filter(q_isactive())
 
 
 @register.filter

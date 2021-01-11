@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <h3>
+        {% blocktrans %}{{ v_share_pl }} Verwalten{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    {% vocabulary "share" as v_share %}
+    {% vocabulary "subscription" as v_subscription %}
+    <b>{% trans "Übersicht" %}</b>
+    {% if shares|length == 0 %}
+        {% blocktrans %}Du hast noch keine {{ v_share_pl }}{% endblocktrans %}
+    {% else %}
+        <div>
+            <table id="filter-table" class="table" style="display: table;">
+                <thead>
+                    <tr>
+                        <th>
+                            {% trans "Nummer" %}
+                        </th>
+                        <th>
+                            {% trans "Status" %}
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for share in shares %}
+                        <tr>
+                            <td>
+                                {{ share.identifier }}
+                            </td>
+                            <td>
+                                {{ share.state_text }}
+                            </td>
+                            <td>
+                                {% if forloop.first %}
+                                    {% blocktrans %}Du brauchst mindestens 1 {{ v_share }}{% endblocktrans %}
+                                {% elif forloop.counter <=  required %}
+                                    {% blocktrans %}Diese/s/r {{ v_share }} wird in einem/r {{ v_subscription }} benötigt{% endblocktrans %}
+                                {% elif  share.cancelled_date is None and share.paid_date is None %}
+                                    {% blocktrans %}Diese/s/r {{ v_share }} wurde noch nicht als bezahlt verbucht{% endblocktrans %}
+                                {% elif  share.cancelled_date is None and share.paid_date is not None %}
+                                    <a href="{% url 'share-cancel' share.id %}"class="btn btn-success"
+                                       onclick="return confirm('{% blocktrans %} Möchtest du sicher diese/s/n {{ v_share }} verbindlich kündigen? {% endblocktrans%}')">
+                                        {% trans "kündigen" %}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    <div class="row mt-3 mb-3">
+        <b class="col-md-12">{% blocktrans %}{{ v_share_pl }} bestellen{% endblocktrans %}</b>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group row">
+            <label class="col-md-3 col-form-label">
+                {{ v_share_pl }}
+            </label>
+            <div class="col-md-3">
+                <input type="number" name="shares" class="form-control" value="0" min="0"/>
+            </div>
+            <div class="col-md-6">
+                {% if shareerror %}
+                    <div class="alert alert-danger">
+                        {% trans "Deine Eingabe ist ungültig" %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="form-actions ">
+            <button type="submit" class="btn btn-success">
+                {% blocktrans %}{{ v_share_pl }} bestellen{% endblocktrans %}
+            </button>
+        </div>
+    </form>
+    <script>
+    </script>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
+    </script>
+    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js">
+    </script>
+{% endblock %}

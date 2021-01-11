@@ -1,9 +1,45 @@
 Release Notes
 =============
 
-Dev
-----
-Has no migrations
+1.3.0
+-----
+Has  migrations
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+   * Share management: Overview of shares & cancellation of individual shares
+   * Subscription management: Option to leave a subscription
+   * Show membership state on membership page
+   * Set nickname for subscription as shown on depot list
+   * More readable listing of subscription parts
+   * Include location in job reminder email
+* Admin Features:
+   * History of subscription memberships & scheduling of future changes of subscription recipients
+   * Shares now store the creation date
+   * Filter members by permissions
+   * Batch editing of dates in shares
+   * Also copy unlimited places in job copying
+   * Show content of future subscriptions in name
+   * Check all timestamps for consistent order
+* Improvements in depot list:
+   * Layout optimization
+   * Added vocabulary for "package" in depot list
+* Developer Features:
+   * Upgraded to django 3.1.x, therefore add 'django.template.context_processors.request' to the TEMPLATES setting under 'context_processors'
+   * Added permissions for admin notifications on subscription part change
+   * Removed job_id argument from contact-member view
+
+Fixes
+^^^^^
+* Fixes in cancellation of extra subscriptions
+* Hide unused products in subscription order form
+* Fixed share count in subscription overview
+* Fixed issue in job copying
+* Fixed notification emails with no recipients
+* Assert that active subscriptions have at least 1 active part
+* Fix in cancellation of subscription parts
+* Minor bugfixes and fixed typos
 
 
 1.2.3
