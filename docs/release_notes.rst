@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+1.3.1
+-----
+Has no migrations
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Developer Features:
+   * Upgraded requirements
+
+
 1.3.0
 -----
 Has  migrations
