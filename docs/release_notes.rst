@@ -9,6 +9,7 @@ Fixes
 ^^^^^
 * Fix subscription count and depot display in member filter list
 * Fix saving subscriptions with limited permissions
+* Fix error when adding existing co-members with active subscriptions
 
 
 1.3.1
