@@ -12,7 +12,8 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
         required_shares = 0
         future_parts_count = 0
         for form in self.forms:
-            if form.instance.deactivation_date is None and not form.cleaned_data.get('DELETE', False):
+            if form.instance.deactivation_date is None and not form.cleaned_data.get('DELETE', False) \
+                    and form.cleaned_data.get('type') is not None:
                 required_shares += form.instance.type.shares
                 future_parts_count += 1 if form.instance.cancellation_date is None else 0
         available_shares = sum([member.usable_shares_count for member in self.instance.future_members])
