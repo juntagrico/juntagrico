@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix subscription count and depot display in member filter list
+* Fix saving subscriptions with limited permissions
 
 
 1.3.1
