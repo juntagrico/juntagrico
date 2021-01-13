@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+1.3.2
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix subscription count and depot display in member filter list
+
+
 1.3.1
 -----
 Has no migrations
