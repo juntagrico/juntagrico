@@ -448,6 +448,10 @@ def sub_inconsistencies(request):
     for sub in SubscriptionDao.all_subscritions():
         try:
             sub.clean()
+            for part in sub.parts.all():
+                part.clean()
+            for member in sub.subscriptionmembership_set.all():
+                member.clean()
         except Exception as e:
             management_list.append({'subscription': sub, 'error': e})
     render_dict = get_menu_dict(request)

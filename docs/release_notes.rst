@@ -14,6 +14,7 @@ Fixes
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * WHITELIST_EMAILS supports now regular expressions and is now documented
+* Deeper subscription inconsistency checks
 
 1.3.1
 -----
