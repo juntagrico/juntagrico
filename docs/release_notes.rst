@@ -11,6 +11,9 @@ Fixes
 * Fix saving subscriptions with limited permissions
 * Fix error when adding existing co-members with active subscriptions
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* WHITELIST_EMAILS supports now regular expressions and is now documented
 
 1.3.1
 -----
