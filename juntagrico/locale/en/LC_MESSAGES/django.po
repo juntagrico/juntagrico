@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-11 19:12+0100\n"
+"POT-Creation-Date: 2021-01-15 08:11+0100\n"
 "PO-Revision-Date: 2020-02-03 11:42+0000\n"
 "Last-Translator: Weblate Admin <weblate@example.com>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -134,12 +134,12 @@ msgstr "Cancel membership"
 msgid "{} Mitgliedschaften"
 msgstr "Cancel membership"
 
-#: .\juntagrico\admins\inlines\subscription_part_inlines.py:21
+#: .\juntagrico\admins\inlines\subscription_part_inlines.py:22
 #, python-brace-format
 msgid "Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}"
 msgstr "Not enough {0} available. Avaulable {1}. Required {2}"
 
-#: .\juntagrico\admins\inlines\subscription_part_inlines.py:27
+#: .\juntagrico\admins\inlines\subscription_part_inlines.py:28
 #: .\juntagrico\lifecycle\sub.py:100
 #, python-brace-format
 msgid ""
@@ -147,13 +147,13 @@ msgid ""
 "Bestandteil"
 msgstr ""
 
-#: .\juntagrico\admins\inlines\subscription_part_inlines.py:34
-#: .\juntagrico\entity\subs.py:280
+#: .\juntagrico\admins\inlines\subscription_part_inlines.py:35
+#: .\juntagrico\entity\subs.py:286
 msgid "{} Bestandteil"
 msgstr ""
 
-#: .\juntagrico\admins\inlines\subscription_part_inlines.py:35
-#: .\juntagrico\entity\subs.py:281
+#: .\juntagrico\admins\inlines\subscription_part_inlines.py:36
+#: .\juntagrico\entity\subs.py:287
 msgid "{} Bestandteile"
 msgstr ""
 
@@ -300,8 +300,6 @@ msgid "Anteilscheine"
 msgstr "Shares"
 
 #: .\juntagrico\config.py:28 .\juntagrico\templates\extra_change.html:20
-#: .\juntagrico\templates\members.html:54
-#: .\juntagrico\templates\members.html:87
 msgid "Abo"
 msgstr "Subscription"
 
@@ -921,7 +919,7 @@ msgstr "Notes"
 msgid "Notizen für Administration. Nicht sichtbar für {}"
 msgstr ""
 
-#: .\juntagrico\entity\member.py:176 .\juntagrico\entity\subs.py:262
+#: .\juntagrico\entity\member.py:176 .\juntagrico\entity\subs.py:268
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
 msgstr "User can filter {0}"
@@ -1023,18 +1021,18 @@ msgstr "Desired start date"
 msgid "Gewünschtes Enddatum"
 msgstr "Desired end date"
 
-#: .\juntagrico\entity\subs.py:48
+#: .\juntagrico\entity\subs.py:47
 #, fuzzy, python-brace-format
 #| msgid "Abo ({0}) {0}"
 msgid "Abo ({1}) {0}"
 msgstr "Subscription ({0}) {0}"
 
-#: .\juntagrico\entity\subs.py:52
+#: .\juntagrico\entity\subs.py:51
 #, python-brace-format
 msgid " Einheiten {0}"
 msgstr "Units {0}"
 
-#: .\juntagrico\entity\subs.py:269 .\juntagrico\entity\subtypes.py:82
+#: .\juntagrico\entity\subs.py:275 .\juntagrico\entity\subtypes.py:82
 #, python-brace-format
 msgid "{0}-Typ"
 msgstr "{0} type"
@@ -3086,26 +3084,26 @@ msgstr "The modification date is set to {{change_date}}."
 #: .\juntagrico\templates\management_lists\man_list_base.html:52
 #: .\juntagrico\templates\management_lists\man_list_base.html:70
 #: .\juntagrico\templates\members.html:19
-#: .\juntagrico\templates\members.html:154
+#: .\juntagrico\templates\members.html:158
 #: .\juntagrico\templates\subscriptions.html:19
 #: .\juntagrico\templates\subscriptions.html:150
 msgid "Email senden"
 msgstr "Send e-mail"
 
 #: .\juntagrico\templates\management_lists\man_list_base.html:71
-#: .\juntagrico\templates\members.html:155
+#: .\juntagrico\templates\members.html:159
 #: .\juntagrico\templates\subscriptions.html:151
 msgid "senden"
 msgstr "send"
 
 #: .\juntagrico\templates\management_lists\man_list_base.html:72
-#: .\juntagrico\templates\members.html:156
+#: .\juntagrico\templates\members.html:160
 #: .\juntagrico\templates\subscriptions.html:152
 msgid "Email an diesen"
 msgstr "Email to this"
 
 #: .\juntagrico\templates\management_lists\man_list_base.html:73
-#: .\juntagrico\templates\members.html:157
+#: .\juntagrico\templates\members.html:161
 #: .\juntagrico\templates\subscriptions.html:153
 msgid "Email an diese"
 msgstr "Email to this"
