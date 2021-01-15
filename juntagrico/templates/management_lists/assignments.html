@@ -1,0 +1,74 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    <h3>
+        {% vocabulary "assignment_pl" %}
+    </h3>
+{% endblock %}
+{% block list %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th >
+                    {% vocabulary "subscription" %}
+                </th>
+                 <th >
+                    {% vocabulary "assignment_pl" %}
+                </th>
+                 <th >
+                    {% blocktrans %}{{ v_assignment_pl }} benötigt{% endblocktrans %}
+                </th>
+                {% if show_core %}
+                        <th>
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
+                        </th>
+                        <th>
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich benötigt{% endblocktrans %}
+                        </th>
+                 {% endif %}
+                <th >
+                    {% trans "Emails" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in management_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.subscription.id %}">
+                            {{ subscription.subscription.overview }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ subscription.assignments|floatformat }}
+                    </td>
+                    <td>
+                        {{ subscription.subscription.required_assignments }}
+                    </td>
+                    {% if show_core %}
+                        <th>
+                            {{ subscription.core_assignments|floatformat }}
+                        </th>
+                        <th>
+                            {{ subscription.subscription.required_core_assignments }}
+                        </th>
+                    {% endif %}
+                    <td class="email">
+                            {% for recipient in subscription.subscription.recipients %}
+                                {{ recipient.email }}
+                                {% if not forloop.last %}
+                                    ,
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script type='text/javascript'>
+        var search_builder_enabled=true;
+        var search_builder_columns=[1,2,3,4];
+    </script>
+{% endblock %}

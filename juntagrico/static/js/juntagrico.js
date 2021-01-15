@@ -80,6 +80,12 @@ function email_submit() {
 }
 
 function default_data_table() {
+    var dom_text = '';
+    var sb_columns = true;
+    if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
+        dom_text = 'Q';
+        sb_columns = search_builder_columns;
+    }
     var table = $("#filter-table").DataTable({
         "paging": false,
         "info": false,
@@ -92,8 +98,15 @@ function default_data_table() {
             updateSendEmailButton($("#filter-table tbody tr").length);
         },
         "language": {
-            "search": "Suchen: "
-        }
+            "search": "Suchen: ",
+            searchBuilder: {
+                title: ''
+            }
+        },
+        searchBuilder: {
+        columns: sb_columns
+            },
+        dom : dom_text
     });
     return table;
 }

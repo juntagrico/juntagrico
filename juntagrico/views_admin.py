@@ -459,3 +459,12 @@ def sub_inconsistencies(request):
                         'email_form_disabled': True})
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/inconsistent.html', request)
+
+
+@permission_required('juntagrico.is_operations_group')
+def assignments(request):
+    management_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
+    render_dict = get_menu_dict(request)
+    render_dict.update({'change_date_disabled': True,})
+    return subscription_management_list(management_list, render_dict,
+                                        'management_lists/assignments.html', request)

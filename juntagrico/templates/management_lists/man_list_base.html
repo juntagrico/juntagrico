@@ -40,7 +40,7 @@
         {% endif %}
     {% endif %}
     {% if not email_form_disabled %}
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-md-12">
             <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
                 {% csrf_token %}

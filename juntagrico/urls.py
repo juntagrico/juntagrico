@@ -99,6 +99,7 @@ urlpatterns = [
     path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),  #
     path('my/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
          name='filter-subs-depot'),  #
+    path('my/assignments', juntagrico_admin.assignments, name='filter-assignments'),
     path('my/future', juntagrico_admin.future, name='future'),  #
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),  #
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #

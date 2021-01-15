@@ -5,6 +5,7 @@
 {% vocabulary "subscription_pl" as v_subscription_pl %}
 {% vocabulary "share_pl" as v_share_pl %}
 {% vocabulary "member_pl" as v_member_pl %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
 <hr/>
 <h5>
     {% trans "Administration" %}
@@ -95,6 +96,26 @@
                         <li class="nav-item">
                             <a class="nav-link"href="{% url 'member-mgmt-canceledlist' %}">
                                  {% blocktrans %}{{ v_member_pl }} Kündigungsliste{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </li>
+    {% endif %}
+    {% if operation_group%}
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#assman">
+                {% blocktrans %}{{ v_assignment_pl }} Management{% endblocktrans %}
+                <i class="fas fa-angle-right">
+                </i>
+            </a>
+            <div class="collapse" id="assman">
+                <ul class="nav flex-column subadmin-menu">
+                    {% if operation_group%}
+                        <li class="nav-item">
+                            <a class="nav-link"href="{% url 'filter-assignments' %}">
+                                 {% blocktrans %}{{v_assignment_pl }} Übersicht{% endblocktrans %}
                             </a>
                         </li>
                     {% endif %}
