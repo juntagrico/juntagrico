@@ -7,6 +7,15 @@ Has no migrations
 
 Fixes
 ^^^^^
+* Fix in depot list amount overview
+
+
+1.3.2
+-----
+Has no migrations
+
+Fixes
+^^^^^
 * Fix subscription count and depot display in member filter list
 * Fix saving subscriptions with limited permissions
 * Fix error when adding existing co-members with active subscriptions
