@@ -175,11 +175,9 @@ def filters_area(request, area_id):
 
 @permission_required('juntagrico.can_filter_subscriptions')
 def subscriptions(request):
-    subscriptions_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
-
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'subscriptions': subscriptions_list
+        'subscriptions': SubscriptionDao.all_active_subscritions()
     })
 
     return render(request, 'subscriptions.html', renderdict)
@@ -188,11 +186,10 @@ def subscriptions(request):
 @permission_required('juntagrico.is_depot_admin')
 def filter_subscriptions_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
-    subscriptions_list = subscriptions_with_assignments(SubscriptionDao.active_subscritions_by_depot(depot))
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'subscriptions': subscriptions_list
+        'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot)
     })
 
     return render(request, 'subscriptions.html', renderdict)
@@ -465,6 +462,6 @@ def sub_inconsistencies(request):
 def assignments(request):
     management_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
     render_dict = get_menu_dict(request)
-    render_dict.update({'change_date_disabled': True,})
+    render_dict.update({'change_date_disabled': True})
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)

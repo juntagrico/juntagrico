@@ -125,4 +125,8 @@ urlpatterns = [
 
     # iso20022
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
+
+    # js
+    path('my/js/i18n', juntagrico.i18njs, name='js-i18n'),  #
+
 ]

@@ -1,13 +1,18 @@
 Release Notes
 =============
 
-1.3.2
+1.3.3
 -----
 Has no migrations
 
 Fixes
 ^^^^^
 * Fix in depot list amount overview
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* extracted assignement overviews into separate management list
+* introduced search builder in new assignment management list
 
 
 1.3.2

@@ -98,15 +98,13 @@ function default_data_table() {
             updateSendEmailButton($("#filter-table tbody tr").length);
         },
         "language": {
-            "search": "Suchen: ",
-            searchBuilder: {
-                title: ''
-            }
+            "search": search_field,
+            searchBuilder: sb_lang
         },
         searchBuilder: {
         columns: sb_columns
             },
-        dom : dom_text
+        dom : dom_text,
     });
     return table;
 }

@@ -20,12 +20,18 @@
                  <th >
                     {% blocktrans %}{{ v_assignment_pl }} benötigt{% endblocktrans %}
                 </th>
+                 <th >
+                    {% blocktrans %}{{ v_assignment_pl }} status{% endblocktrans %}
+                </th>
                 {% if show_core %}
                         <th>
                             {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
                         </th>
                         <th>
                             {% blocktrans %}{{ v_assignment_pl }} Kernbereich benötigt{% endblocktrans %}
+                        </th>
+                        <th>
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich status{% endblocktrans %}
                         </th>
                  {% endif %}
                 <th >
@@ -47,12 +53,18 @@
                     <td>
                         {{ subscription.subscription.required_assignments }}
                     </td>
+                    <td>
+                        {{ subscription.assignments_progress|floatformat }}%
+                    </td>
                     {% if show_core %}
                         <th>
                             {{ subscription.core_assignments|floatformat }}
                         </th>
                         <th>
                             {{ subscription.subscription.required_core_assignments }}
+                        </th>
+                        <th>
+                            {{ subscription.core_assignments_progress|floatformat }}%
                         </th>
                     {% endif %}
                     <td class="email">
@@ -69,6 +81,10 @@
     </table>
     <script type='text/javascript'>
         var search_builder_enabled=true;
-        var search_builder_columns=[1,2,3,4];
+        {% if show_core %}
+            var search_builder_columns=[1,2,3,4,5,6];
+        {% else %}
+            var search_builder_columns=[1,2,3];
+        {% endif %}
     </script>
 {% endblock %}

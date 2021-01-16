@@ -5,7 +5,7 @@
 {% block page_title %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
     <h3>
-        {% blocktrans %}Alle {{ v_subscription_pl }} im Überblick{% endblocktrans %}
+        {% blocktrans %}Alle aktiven {{ v_subscription_pl }} im Überblick{% endblocktrans %}
     </h3>
 {% endblock %}
 {% block content %}
@@ -37,17 +37,6 @@
                         {% trans "Inhalt" %}
                     </th>
                     <th>
-                        {% vocabulary "assignment_pl" %}
-                    </th>
-                    {% if show_core %}
-                        <th>
-                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
-                        </th>
-                    {% endif %}
-                    <th>
-                        {% trans "Aktiv" %}
-                    </th>
-                    <th>
                         {% trans "Aktivierungsdatum" %}
                     </th>
                     <th>
@@ -70,17 +59,6 @@
                         {% trans "Inhalt" %}
                     </th>
                     <th>
-                        {% vocabulary "assignment_pl" %}
-                    </th>
-                    {% if show_core %}
-                        <th>
-                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
-                        </th>
-                    {% endif %}
-                    <th>
-                        {% trans "Aktiv" %}
-                    </th>
-                    <th>
                         {% trans "Aktivierungsdatum" %}
                     </th>
                     <th>
@@ -93,46 +71,27 @@
                     <tr>
                         <td>
                             {% if operation_group %}
-                                <a href="/impersonate/{{ subscription.subscription.primary_member.user.id }}"target="__blank">
+                                <a href="/impersonate/{{ subscription.primary_member.user.id }}"target="__blank">
                                 {% endif %}
-                                {{ subscription.subscription.primary_member.first_name }} {{ subscription.subscription.primary_member.last_name }}
+                                {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
                                 {% if operation_group %}
                                 </a>
                             {% endif %}
                         </td>
                         <td>
-                            {{ subscription.subscription.recipients_names }}
+                            {{ subscription.recipients_names }}
                         </td>
                         <td>
-                            {{ subscription.subscription.depot.name }}
+                            {{ subscription.depot.name }}
                         </td>
                         <td>
-                            {{ subscription.subscription.overview }}
+                            {{ subscription.overview }}
                         </td>
                         <td>
-                            N%-{% if subscription.assignments >= 1 and subscription.assignments < 10 %}0{% endif %}{{ subscription.assignments|floatformat }}
-                            (von {{ subscription.subscription.required_assignments }})
-                        </td>
-                        {% if show_core %}
-                            <td>
-                                C%-{% if subscription.core_assignments >= 1 and subscription.core_assignments < 10 %}0{% endif %}{{ subscription.core_assignments|floatformat }}
-                                (von {{ subscription.subscription.required_core_assignments }})
-                            </td>
-                        {% endif %}
-                        <td>
-                            {% if subscription.subscription.active %}
-                                <img src="{% images "single_full" %}"/>
-                                {% trans "Aktiv" %}
-                            {% else %}
-                                <img src="{% images "single_empty" %}"/>
-                                {% trans "Wartend" %}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ subscription.subscription.activation_date|date:"Y-m-d" }}
+                            {{ subscription.activation_date|date:"Y-m-d" }}
                         </td>
                         <td class="email">
-                            {% for recipient in subscription.subscription.recipients %}
+                            {% for recipient in subscription.recipients %}
                                 {{ recipient.email }}
                                 {% if not forloop.last %}
                                     ,
