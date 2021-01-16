@@ -79,13 +79,26 @@ function email_submit() {
     });
 }
 
-function default_data_table() {
-    var dom_text = '';
+function get_sb_config() {
     var sb_columns = true;
     if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
-        dom_text = 'Q';
         sb_columns = search_builder_columns;
     }
+    return {
+        columns: sb_columns
+    };
+}
+
+function get_dom(){
+    var dom_text = '';
+    if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
+        dom_text = 'Q';
+    }
+    return dom_text;
+}
+
+function default_data_table() {
+
     var table = $("#filter-table").DataTable({
         "paging": false,
         "info": false,
@@ -101,10 +114,8 @@ function default_data_table() {
             "search": search_field,
             searchBuilder: sb_lang
         },
-        searchBuilder: {
-        columns: sb_columns
-            },
-        dom : dom_text,
+        searchBuilder: get_sb_config(),
+        dom : get_dom(),
     });
     return table;
 }
