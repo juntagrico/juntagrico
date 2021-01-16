@@ -71,7 +71,7 @@ function move_email_button() {
             var txt = $(".email", this).text().trim();
             if (txt.length > 0)
                 for(var email of txt.split(",")){
-                    emails.push(email);
+                    emails.push(email.trim());
                 }
         });
     return emails;
