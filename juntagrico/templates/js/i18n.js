@@ -8,7 +8,7 @@ var member_string = "{% vocabulary "member" %}";
 var members_string = "{% vocabulary "member_pl" %}";
 var search_field = "{% trans "Suchen: " %}";
 var sb_lang = {
-       "add":"{% trans "Bedingung hinzufügen" %}",
+       "add":"{% trans "Suchkriterium hinzufügen" %}",
         "clearAll":"{% trans "Leeren" %}",
         "condition":"{% trans "Bedingung" %}",
         "conditions": {
@@ -57,8 +57,8 @@ var sb_lang = {
         "data":"{% trans "Feld" %}",
         "deleteTitle":"{% trans "Filterregel entfernen" %}",
         "leftTitle":"{% trans "Äußere Kriterien" %}",
-        "logicAnd":"{% trans "UND" %}",
-        "logicOr":"{% trans "ODER" %}",
+        "logicAnd":"{% trans "und" %}",
+        "logicOr":"{% trans "oder" %}",
         "rightTitle":"{% trans "Innere Kriterien" %}",
         "title": "",
         "value":"{% trans "Wert" %}"
