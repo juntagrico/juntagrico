@@ -217,6 +217,7 @@ def areas(request):
     '''
     member = request.user.member
     my_areas = []
+    last_was_core = True
     for area in ActivityAreaDao.all_visible_areas_ordered():
         my_areas.append({
             'name': area.name,
@@ -224,8 +225,10 @@ def areas(request):
             'id': area.id,
             'core': area.core,
             'coordinator': area.coordinator,
-            'email': area.email
+            'email': area.email,
+            'first_non_core': not area.core and last_was_core
         })
+        last_was_core = area.core
 
     renderdict = get_menu_dict(request)
     renderdict.update({
