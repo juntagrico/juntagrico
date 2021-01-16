@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix in depot list amount overview
+* Fix incorrect display of email count in subscription filters
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^

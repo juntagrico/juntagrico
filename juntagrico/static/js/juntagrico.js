@@ -65,14 +65,21 @@ function move_email_button() {
     $("form#email-sender").appendTo("#filter_header div:first-child");
 }
 
-function email_submit() {
-    $("form#email-sender").submit(function (event) {
-        var emails = [];
-        $("#filter-table").find("tr").each(function () {
+ function fetch_emails() {
+    var emails = []
+     $("#filter-table").find("tr").each(function () {
             var txt = $(".email", this).text().trim();
             if (txt.length > 0)
-                emails.push(txt);
+                for(var email of txt.split(",")){
+                    emails.push(email);
+                }
         });
+    return emails;
+ }
+ function email_submit() {
+    $("form#email-sender").submit(function (event) {
+        var emails = fetch_emails();
+
         $("#recipients").val(emails.join("\n"));
         $("#recipients_count").val(emails.length);
         return;
@@ -108,7 +115,7 @@ function default_data_table() {
         },
         "drawCallback": function (settings) {
             // do not like this but it works so far till i get around to find the correct api call
-            updateSendEmailButton($("#filter-table tbody tr").length);
+            updateSendEmailButton(fetch_emails().length);
         },
         "language": {
             "search": search_field,
