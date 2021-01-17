@@ -1,13 +1,17 @@
 Release Notes
 =============
 
-1.3.2
+1.3.3
 -----
 Has no migrations
 
 Fixes
 ^^^^^
 * Fix in depot list amount overview
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Introduces subscription excel export
 
 
 1.3.2
