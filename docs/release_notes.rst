@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix in depot list amount overview
+* rollback of xhtml2pdf version since it is not compatible with alpine linux
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
