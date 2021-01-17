@@ -17,5 +17,5 @@ class ExportTests(JuntagricoTestCase):
     def testSharesExport(self):
         self.assertGet(reverse('export-shares'))
 
-    def testSharesExport(self):
+    def testSubExport(self):
         self.assertGet(reverse('export-subscriptions'))

@@ -14,8 +14,8 @@ class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
     def clean(self):
         def consider_form(form):
             return not form.cleaned_data.get('DELETE', False) \
-                   and (hasattr(form.instance, 'leave_date') and form.instance.leave_date is None) \
-                   and hasattr(form.instance, 'member')
+                and (hasattr(form.instance, 'leave_date') and form.instance.leave_date is None) \
+                and hasattr(form.instance, 'member')
         if not self.instance.inactive:
             members = [form.instance.member for form in self.forms if consider_form(form)]
         else:

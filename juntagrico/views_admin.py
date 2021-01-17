@@ -313,6 +313,7 @@ def excel_export_members_filter(request):
     response.write(xlsx_data)
     return response
 
+
 @permission_required('juntagrico.is_operations_group')
 def excel_export_subscriptions(request):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
