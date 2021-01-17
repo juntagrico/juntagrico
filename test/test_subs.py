@@ -64,7 +64,7 @@ class SubscriptionTests(JuntagricoTestCase):
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
             self.assertEqual(self.sub.future_parts.count(), 1)
             Share.objects.create(**self.share_data)
-            self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
+            self.assertGet(reverse('part-cancel', args=[self.sub.pk, self.sub.parts.all()[0].id]), code=302)
             self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)

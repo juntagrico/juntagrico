@@ -13,7 +13,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.client.force_login(self.member.user)
         user = auth.get_user(self.client)
         assert user.is_authenticated
-        self.client.get('/my/signup/')
+        self.client.get(reverse('signup'))
         self.assertEqual(str(auth.get_user(self.client)), 'AnonymousUser')
 
     def testRedirect(self):
