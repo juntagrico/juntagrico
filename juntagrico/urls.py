@@ -9,121 +9,140 @@ from juntagrico import views_subscription as juntagrico_subscription
 
 urlpatterns = [
     # general juntagrico stuff
-    path('my/home', juntagrico.home, name='home'),  #
-    path('my/password', juntagrico.change_password, name='password'),  #
-    path('my/newpassword', juntagrico.new_password, name='new-password'),  #
-    path('my/jobs', juntagrico.jobs, name='jobs'),  #
-    path('my/jobs/all', juntagrico.all_jobs, name='jobs-all'),  #
-    path('my/jobs/<int:job_id>/', juntagrico.job, name='job'),  #
-    path('my/profile', juntagrico.profile, name='profile'),  #
-    path('my/cancel/membership', juntagrico.cancel_membership, name='cancel-membership'),  #
-    path('my/contact', juntagrico.contact, name='contact'),  #
-    path('my/contact/member/<int:member_id>/', juntagrico.contact_member, name='contact-member'),  #
-    path('my/memberjobs', juntagrico.memberjobs, name='memberjobs'),  #
-    path('my/depot/<int:depot_id>/', juntagrico.depot, name='depot'),  #
-    path('my/deliveries', juntagrico.deliveries, name='deliveries'),  #
-    path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),  #
-    path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),  #
-    path('my/cookies', juntagrico.cookies, name='cookies'),  #
+    path('home/', juntagrico.home, name='home'),  #
+    path('my/password/', juntagrico.change_password, name='password'),  #
+    path('my/password/restore', juntagrico.new_password, name='new-password'),  #
+
+    path('jobs/', juntagrico.jobs, name='jobs'),  #
+    path('jobs/all/', juntagrico.all_jobs, name='jobs-all'),  #
+    path('job/<int:job_id>/', juntagrico.job, name='job'),  #
+
+    path('my/membership/', juntagrico.profile, name='profile'),  #
+    path('my/membership/cancel/', juntagrico.cancel_membership, name='cancel-membership'),  #
+
+    path('contact/', juntagrico.contact, name='contact'),  #
+    path('contact/member/<int:member_id>/', juntagrico.contact_member, name='contact-member'),  #
+
+    path('my/assignments/', juntagrico.memberjobs, name='memberjobs'),  #
+
+    path('depot/<int:depot_id>/', juntagrico.depot, name='depot'),  #
+    path('deliveries/', juntagrico.deliveries, name='deliveries'),  #
+
+    path('my/confirm/email/', juntagrico.send_confirm, name='send-confirm'),  #
+    path('my/share/unpaid/', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),  #
+
+    path('cookies/', juntagrico.cookies, name='cookies'),  #
     path('logout/', juntagrico.logout_view, name='logout'),  #
     path('accounts/login/', LoginView.as_view(), name='login'),
 
     # area stuff
-    path('my/areas', juntagrico.areas, name='areas'),  #
-    path('my/area/<int:area_id>/', juntagrico.show_area, name='area'),  #
-    path('my/area/<int:area_id>/join', juntagrico.area_join, name='area-join'),  #
-    path('my/area/<int:area_id>/leave', juntagrico.area_leave, name='area-leave'),  #
+    path('areas/', juntagrico.areas, name='areas'),  #
+    path('area/<int:area_id>/', juntagrico.show_area, name='area'),  #
+    path('area/<int:area_id>/join/', juntagrico.area_join, name='area-join'),  #
+    path('area/<int:area_id>/leave/', juntagrico.area_leave, name='area-leave'),  #
 
     # subscription related juntagrico stuff
-    path('my/subscription/detail/', juntagrico_subscription.subscription, name='sub-detail'),  #
-    path('my/subscription/detail/<int:subscription_id>/', juntagrico_subscription.subscription, name='sub-detail-id'),  #
-    path('my/subscription/change/overview/<int:subscription_id>/', juntagrico_subscription.subscription_change,
+    path('my/subscription/', juntagrico_subscription.subscription, name='sub-detail'),  #
+    path('my/subscription/<int:subscription_id>/', juntagrico_subscription.subscription, name='sub-detail-id'),  #
+    path('my/subscription/<int:subscription_id>/change/', juntagrico_subscription.subscription_change,
          name='sub-change'),  #
-    path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
+    path('my/subscription/<int:subscription_id>/change/depot/', juntagrico_subscription.depot_change,
          name='depot-change'),  #
-    path('my/subscription/change/nickname/<int:subscription_id>/', juntagrico_subscription.change_nickname,
+    path('my/subscription/<int:subscription_id>/change/nickname/', juntagrico_subscription.change_nickname,
          name='nickname-change'),
-    path('my/subscription/change/primary/<int:subscription_id>/', juntagrico_subscription.primary_change,
+    path('my/subscription/<int:subscription_id>/change/primary/', juntagrico_subscription.primary_change,
          name='primary-change'),  #
-    path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),
+    path('my/subscription/<int:subscription_id>/change/parts/', juntagrico_subscription.size_change, name='size-change'),
     #
-    path('my/subscription/change/extra/<int:subscription_id>/', juntagrico_subscription.extra_change,
+    path('my/subscription/<int:subscription_id>/change/extra/', juntagrico_subscription.extra_change,
          name='extra-change'),
-    path('my/signup/', juntagrico_subscription.SignupView.as_view(), name='signup'),
-    path('my/cosubmember/<int:subscription_id>/', juntagrico_subscription.AddCoMemberView.as_view(), name='add-member'),
-    path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
-    path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
+
+    path('signup/', juntagrico_subscription.SignupView.as_view(), name='signup'),
+    path('my/subscription/<int:subscription_id>/comember/add/', juntagrico_subscription.AddCoMemberView.as_view(), name='add-member'),
+    path('my/subscription/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
+
+    path('manage/subscription/<int:subscription_id>/activate/', juntagrico_subscription.activate_subscription,
          name='sub-activate'),  #
-    path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
+    path('manage/subscription/<int:subscription_id>/deactivate/', juntagrico_subscription.deactivate_subscription,
          name='sub-deactivate'),  #
-    path('my/subscription/cancel/<int:subscription_id>/', juntagrico_subscription.cancel_subscription,
+
+    path('my/subscription/<int:subscription_id>/cancel/', juntagrico_subscription.cancel_subscription,
          name='sub-cancel'),
-    path('my/subscription/leave/<int:subscription_id>/', juntagrico_subscription.leave_subscription,
+    path('my/subscription/<int:subscription_id>/leave/', juntagrico_subscription.leave_subscription,
          name='sub-leave'),  #
-    path('my/type/change/<int:subscription_id>/', juntagrico_subscription.activate_future_types,
+
+    path('manage/subscription/<int:subscription_id>/parts/apply/', juntagrico_subscription.activate_future_types,
          name='activate-future-types'),
-    path('my/extra/activate/<int:extra_id>/', juntagrico_subscription.activate_extra, name='extra-activate'),
-    path('my/extra/deactivate/<int:extra_id>/', juntagrico_subscription.deactivate_extra, name='extra-deactivate'),
-    path('my/extra/cancel/<int:extra_id>/<int:subscription_id>/', juntagrico_subscription.cancel_extra,
+    path('manage/subscription/extra/<int:extra_id>/activate/', juntagrico_subscription.activate_extra, name='extra-activate'),
+    path('manage/subscription/extra/<int:extra_id>/deactivate/', juntagrico_subscription.deactivate_extra, name='extra-deactivate'),
+
+    path('my/subscription/<int:subscription_id>/extra/<int:extra_id>/cancel/', juntagrico_subscription.cancel_extra,
          name='extra-cancel'),
-    path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
+    path('my/subscription/<int:subscription_id>/part/<int:part_id>/cancel/', juntagrico_subscription.cancel_part,
          name='part-cancel'),
     path('my/share/manage/', juntagrico_subscription.manage_shares, name='manage-shares'),  #
-    path('my/share/cancel/<int:share_id>/', juntagrico_subscription.cancel_share, name='share-cancel'),
-    path('my/payout/share/<int:share_id>/', juntagrico_subscription.payout_share, name='share-payout'),
-    path('my/create/subscription/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
-    path('my/create/subscription/selectdepot/', juntagrico_cs.cs_select_depot, name='cs-depot'),
-    path('my/create/subscription/start/', juntagrico_cs.cs_select_start_date, name='cs-start'),
-    path('my/create/subscription/addmembers/', juntagrico_cs.CSAddMemberView.as_view(), name='cs-co-members'),
-    path('my/create/subscription/shares/', juntagrico_cs.CSSelectSharesView.as_view(), name='cs-shares'),
-    path('my/create/subscription/summary/', juntagrico_cs.CSSummaryView.as_view(), name='cs-summary'),
-    path('my/create/subscription/cancel/', juntagrico_cs.cs_cancel, name='cs-cancel'),
-    path('my/welcome/', juntagrico_cs.cs_welcome, name='welcome'),
-    path('my/welcome/with_sub', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
+    path('my/share/<int:share_id>/cancel/', juntagrico_subscription.cancel_share, name='share-cancel'),
+
+    path('manage/share/<int:share_id>/payout/', juntagrico_subscription.payout_share, name='share-payout'),
+
+    path('create/subscription/parts/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
+    path('create/subscription/selectdepot/', juntagrico_cs.cs_select_depot, name='cs-depot'),
+    path('create/subscription/startdate/', juntagrico_cs.cs_select_start_date, name='cs-start'),
+    path('create/subscription/addmembers/', juntagrico_cs.CSAddMemberView.as_view(), name='cs-co-members'),
+    path('create/subscription/shares/', juntagrico_cs.CSSelectSharesView.as_view(), name='cs-shares'),
+    path('create/subscription/summary/', juntagrico_cs.CSSummaryView.as_view(), name='cs-summary'),
+    path('create/subscription/cancel/', juntagrico_cs.cs_cancel, name='cs-cancel'),
+    path('welcome/', juntagrico_cs.cs_welcome, name='welcome'),
+    path('welcome/with_sub/', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
 
     # admin related juntagrico stuff
-    path('my/changedate', juntagrico_admin.set_change_date, name='changedate-set'),  #
-    path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),  #
-    path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),  #
-    path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),  #
-    path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),  #
-    path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),  #
-    path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),  #
-    path('my/mails', juntagrico_admin.mails, name='mail'),  #
-    path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),  #
-    path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),  #
-    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),  #
-    path('my/filters', juntagrico_admin.filters, name='filters'),  #
-    path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),  #
-    path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),  #
-    path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),  #
-    path('my/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
+    path('manage/changedate/set/', juntagrico_admin.set_change_date, name='changedate-set'),  #
+    path('manage/changedate/stop/', juntagrico_admin.unset_change_date, name='changedate-unset'),  #
+
+    path('mails/send/depot/', juntagrico_admin.send_email_depot, name='mail-depot-send'),  #
+    path('mails/send/area/', juntagrico_admin.send_email_area, name='mail-area-send'),  #
+    path('mails/send/job/', juntagrico_admin.send_email_job, name='mail-job-send'),  #
+    path('mails/send/', juntagrico_admin.send_email, name='mail-send'),  #
+    path('mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),  #
+    path('mails', juntagrico_admin.mails, name='mail'),  #
+    path('mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),  #
+    path('mails/area', juntagrico_admin.mails_area, name='mail-area'),  #
+    path('mails/job', juntagrico_admin.mails_job, name='mail-job'),  #
+
+    path('filter/members/', juntagrico_admin.filters, name='filters'),  #
+    path('filter/members/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),  #
+    path('filter/members/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),  #
+    path('filter/subscriptions/', juntagrico_admin.subscriptions, name='filter-subs'),  #
+    path('filter/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
          name='filter-subs-depot'),  #
-    path('my/future', juntagrico_admin.future, name='future'),  #
-    path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),  #
-    path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #
-    path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),  #
-    path('my/typechangedlist', juntagrico_admin.typechangelist, name='sub-mgmt-changelist'),  #
-    path('my/sub/inconsistencies', juntagrico_admin.sub_inconsistencies, name='sub-mgmt-inconsistencies'),
-    path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),  #
-    path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
-    path('my/share/canceledlist', juntagrico_admin.share_canceledlist, name='share-mgmt-canceledlist'),  #
-    path('my/member/canceledlist', juntagrico_admin.member_canceledlist, name='member-mgmt-canceledlist'),
-    path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
+
+    path('manage/subscriptions/future', juntagrico_admin.future, name='future'),  #
+
+    path('mails/template/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),  #
+
+    path('manage/subscriptions/waiting/', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #
+    path('manage/subscriptions/canceled/', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),  #
+    path('manage/subscriptions/parts/', juntagrico_admin.typechangelist, name='sub-mgmt-changelist'),  #
+    path('manage/subscriptions/inconsistencies/', juntagrico_admin.sub_inconsistencies, name='sub-mgmt-inconsistencies'),
+    path('manage/subscriptions/extra/waiting/', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),  #
+    path('manage/subscriptions/extra/canceled/', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
+    path('manage/shares/canceled/', juntagrico_admin.share_canceledlist, name='share-mgmt-canceledlist'),  #
+    path('manage/member/canceled/', juntagrico_admin.member_canceledlist, name='member-mgmt-canceledlist'),
+    path('manage/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
 
     # lists
-    path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),  #
-    path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),  #
-    path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),  #
+    path('list/depot/', juntagrico_admin.depotlist, name='lists-depotlist'),  #
+    path('list/depotoverview/', juntagrico_admin.depot_overview, name='lists-depot-overview'),  #
+    path('list/amountoverview/', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),  #
 
     # exports
-    path('my/export', juntagrico_admin.export, name='export'),  #
-    path('my/export/membersfilter', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),  #
-    path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),  #
-    path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),  #
-    path('my/export/subscriptions', juntagrico_admin.excel_export_subscriptions, name='export-subscriptions'),  #
+    path('export/', juntagrico_admin.export, name='export'),  #
+    path('export/members/filter/', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),  #
+    path('export/members/', juntagrico_admin.excel_export_members, name='export-members'),  #
+    path('export/shares/', juntagrico_admin.excel_export_shares, name='export-shares'),  #
+    path('export/subscriptions/', juntagrico_admin.excel_export_subscriptions, name='export-subscriptions'),  #
 
 
     # iso20022
-    path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
+    path('api/share/iso20022/pain001/', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
 ]
