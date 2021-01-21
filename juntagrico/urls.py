@@ -122,6 +122,8 @@ urlpatterns = [
     path('my/export/membersfilter', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),  #
     path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),  #
     path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),  #
+    path('my/export/subscriptions', juntagrico_admin.excel_export_subscriptions, name='export-subscriptions'),  #
+
 
     # iso20022
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
