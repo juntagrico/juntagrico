@@ -147,6 +147,7 @@ def filters_active(request):
     })
     return render(request, 'members.html', renderdict)
 
+
 @permission_required('juntagrico.can_filter_members')
 def filters(request):
     members = MemberDao.all_members()
