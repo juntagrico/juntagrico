@@ -1,6 +1,18 @@
 Release Notes
 =============
 
+1.3.4
+-----
+Has no migrations
+
+* Fix incorrect display of email count in subscription filters
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* assignment counts include now planned assignments
+* extracted assignement overviews into separate management list
+* introduced search builder in new assignment management list
+
 1.3.3
 -----
 Has no migrations
@@ -8,12 +20,12 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix in depot list amount overview
-* Fix incorrect display of email count in subscription filters
+* rollback of xhtml2pdf version since it is not compatible with alpine linux
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
-* extracted assignement overviews into separate management list
-* introduced search builder in new assignment management list
+* Introduces subscription excel export
+
 
 
 1.3.2

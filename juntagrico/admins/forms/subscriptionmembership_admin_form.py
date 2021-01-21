@@ -1,9 +1,6 @@
 from django import forms
 from django.contrib.admin import widgets, site
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _
 
-from juntagrico.config import Config
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency_ms
 

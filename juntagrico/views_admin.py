@@ -293,8 +293,8 @@ def excel_export_members_filter(request):
         member.depot_name = str(_('Kein Depot definiert'))
         if member.subscription_current is not None:
             member.depot_name = member.subscription_current.depot.name
-        looco_full_name = member.first_name + ' ' + member.last_name
-        worksheet_s.write_string(row, 0, looco_full_name)
+        full_name = member.first_name + ' ' + member.last_name
+        worksheet_s.write_string(row, 0, full_name)
         worksheet_s.write(row, 1, member.assignment_count)
         worksheet_s.write(row, 2, member.core_assignment_count)
         worksheet_s.write_string(row, 3, member.all_areas)
@@ -303,6 +303,57 @@ def excel_export_members_filter(request):
         worksheet_s.write_string(row, 6, member.phone)
         if member.mobile_phone is not None:
             worksheet_s.write_string(row, 7, member.mobile_phone)
+        row += 1
+
+    workbook.close()
+    xlsx_data = output.getvalue()
+    response.write(xlsx_data)
+    return response
+
+
+@permission_required('juntagrico.is_operations_group')
+def excel_export_subscriptions(request):
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
+    output = BytesIO()
+    workbook = Workbook(output)
+    worksheet_s = workbook.add_worksheet(Config.vocabulary('subscription_pl'))
+
+    worksheet_s.write_string(0, 0, str(_('Übersicht')))
+    worksheet_s.write_string(0, 1, str(_('HauptbezieherIn')))
+    worksheet_s.write_string(0, 2, str(_('HauptbezieherInEmail')))
+    worksheet_s.write_string(0, 3, str(_('HauptbezieherInTelefon')))
+    worksheet_s.write_string(0, 4, str(_('HauptbezieherInMobile')))
+    worksheet_s.write_string(0, 5, str(_('Weitere BezieherInnen')))
+    worksheet_s.write_string(0, 6, str(_('Status')))
+    worksheet_s.write_string(0, 7, str(_('Depot')))
+    worksheet_s.write_string(0, 8, str(Config.vocabulary('assignment')))
+    worksheet_s.write_string(0, 9, str(_('{} soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 10, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 11, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 12, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 14, str(_('Preis')))
+
+    subs = subscriptions_with_assignments(SubscriptionDao.all_subscritions())
+
+    row = 1
+    for sub in subs:
+        worksheet_s.write_string(row, 0, sub['subscription'].overview)
+        worksheet_s.write_string(row, 1, sub['subscription'].primary_member.get_name())
+        worksheet_s.write_string(row, 2, sub['subscription'].primary_member.email)
+        worksheet_s.write_string(row, 3, sub['subscription'].primary_member.phone or '')
+        worksheet_s.write_string(row, 4, sub['subscription'].primary_member.mobile_phone or '')
+        worksheet_s.write_string(row, 5, sub['subscription'].other_recipients_names)
+        worksheet_s.write_string(row, 6, sub['subscription'].state_text)
+        worksheet_s.write_string(row, 7, sub['subscription'].depot.name)
+        worksheet_s.write(row, 8, sub.get('assignments'))
+        worksheet_s.write(row, 9, sub['subscription'].required_assignments)
+        worksheet_s.write(row, 10, sub.get('assignments_progress'))
+        worksheet_s.write(row, 11, sub.get('core_assignments'))
+        worksheet_s.write(row, 12, sub['subscription'].required_core_assignments)
+        worksheet_s.write(row, 13, sub.get('core_assignments_progress'))
+        worksheet_s.write(row, 14, sub['subscription'].price)
         row += 1
 
     workbook.close()

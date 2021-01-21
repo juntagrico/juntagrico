@@ -1,6 +1,5 @@
 from django import template
-from django.utils import timezone
-from django.db.models import Sum, Model, Q
+from django.db.models import Sum, Model
 from django.db.models.query import QuerySet
 
 from juntagrico.entity.extrasubs import ExtraSubscription
@@ -46,7 +45,6 @@ def get_types_by_size(subscriptions, size):
         parts = subscriptions.active_parts
     else:
         # case 2: queryset of subscriptions is passed
-        now = timezone.now().date()
         parts = SubscriptionPart.objects.filter(subscription__in=subscriptions).filter(q_isactive())
     return parts.filter(type__size=size)
 

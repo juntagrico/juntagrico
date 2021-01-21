@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-15 08:11+0100\n"
+"POT-Creation-Date: 2021-01-17 19:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -202,7 +202,7 @@ msgstr ""
 #: .\juntagrico\templates\size_change.html:28
 #: .\juntagrico\templates\snippets\snippet_jobs.html:20
 #: .\juntagrico\templates\snippets\snippet_jobs.html:51
-#: .\juntagrico\templates\subscription.html:69
+#: .\juntagrico\templates\subscription.html:69 .\juntagrico\views_admin.py:331
 msgid "Status"
 msgstr "Stato"
 
@@ -320,7 +320,7 @@ msgstr "Contributo operativo"
 
 #: .\juntagrico\config.py:35
 #: .\juntagrico\templates\createsubscription\summary.html:49
-#: .\juntagrico\views_admin.py:282
+#: .\juntagrico\views_admin.py:282 .\juntagrico\views_admin.py:332
 msgid "Depot"
 msgstr "Deposito"
 
@@ -431,6 +431,7 @@ msgid "Verrechenbare Einheiten"
 msgstr "Unità fatturabili"
 
 #: .\juntagrico\entity\billing.py:25 .\juntagrico\entity\subtypes.py:67
+#: .\juntagrico\views_admin.py:339
 msgid "Preis"
 msgstr "Prezzo"
 
@@ -2134,12 +2135,12 @@ msgstr ""
 msgid "Exporte"
 msgstr "Esportazioni"
 
-#: .\juntagrico\templates\export.html:19 .\juntagrico\templates\export.html:29
-#: .\juntagrico\templates\export.html:39
+#: .\juntagrico\templates\export.html:20 .\juntagrico\templates\export.html:30
+#: .\juntagrico\templates\export.html:40 .\juntagrico\templates\export.html:50
 msgid "exportieren"
 msgstr "export"
 
-#: .\juntagrico\templates\export.html:25
+#: .\juntagrico\templates\export.html:26
 #, python-format
 msgid "%(v_member_pl)s mit %(v_assignment_pl)s und Tätigketsbereichen"
 msgstr ""
@@ -2204,6 +2205,7 @@ msgstr "Non avete ancora abbonamenti aggiuntivi"
 #: .\juntagrico\templates\manage_shares.html:14
 #: .\juntagrico\templates\menu\admin_menu.html:205
 #: .\juntagrico\templates\widgets\assignements.html:7
+#: .\juntagrico\views_admin.py:325
 msgid "Übersicht"
 msgstr "Panoramica"
 
@@ -4027,6 +4029,62 @@ msgstr "-Nessun campo di attività-"
 #: .\juntagrico\views_admin.py:296
 msgid "Kein Depot definiert"
 msgstr "Nessun deposito definito"
+
+#: .\juntagrico\views_admin.py:326
+#, fuzzy
+#| msgid "Hauptbezieher"
+msgid "HauptbezieherIn"
+msgstr "Destinatario principale"
+
+#: .\juntagrico\views_admin.py:327
+#, fuzzy
+#| msgid "Hauptbezieher"
+msgid "HauptbezieherInEmail"
+msgstr "Destinatario principale"
+
+#: .\juntagrico\views_admin.py:328
+#, fuzzy
+#| msgid "Hauptbezieher"
+msgid "HauptbezieherInTelefon"
+msgstr "Destinatario principale"
+
+#: .\juntagrico\views_admin.py:329
+#, fuzzy
+#| msgid "Hauptbezieher"
+msgid "HauptbezieherInMobile"
+msgstr "Destinatario principale"
+
+#: .\juntagrico\views_admin.py:330
+#, fuzzy
+#| msgid "Weitere Bezieher"
+msgid "Weitere BezieherInnen"
+msgstr "Altri destinatari"
+
+#: .\juntagrico\views_admin.py:334
+msgid "{} soll"
+msgstr ""
+
+#: .\juntagrico\views_admin.py:335
+msgid "{} status(%)"
+msgstr ""
+
+#: .\juntagrico\views_admin.py:336
+#, fuzzy
+#| msgid "Kernbereich"
+msgid "{} Kernbereich"
+msgstr "Area centrale"
+
+#: .\juntagrico\views_admin.py:337
+#, fuzzy
+#| msgid "Kernbereiche "
+msgid "{} Kernbereich soll"
+msgstr "Aree principali"
+
+#: .\juntagrico\views_admin.py:338
+#, fuzzy
+#| msgid "Kernbereich Partner"
+msgid "{} Kernbereich status(%)"
+msgstr "Area centrale Partner"
 
 #: .\juntagrico\views_subscription.py:171
 msgid "Für gekündigte {} können keine Bestandteile bestellt werden"
