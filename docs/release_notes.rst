@@ -5,7 +5,10 @@ Release Notes
 -----
 Has no migrations
 
+Fixes
+^^^^^
 * Fix incorrect display of email count in subscription filters
+* Member filter for depots only displays members with active subscription
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
