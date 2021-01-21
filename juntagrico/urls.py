@@ -93,6 +93,7 @@ urlpatterns = [
     path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),  #
     path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),  #
     path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),  #
+    path('my/filters/active', juntagrico_admin.filters_active, name='filters-active'),  #
     path('my/filters', juntagrico_admin.filters, name='filters'),  #
     path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),  #
     path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),  #

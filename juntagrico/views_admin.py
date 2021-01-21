@@ -138,11 +138,22 @@ def my_mails_intern(request, mail_url, error_message=None):
 
 
 @permission_required('juntagrico.can_filter_members')
-def filters(request):
-    members = MemberDao.active_members_with_assignments_count()
+def filters_active(request):
+    members = MemberDao.active_members()
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'members': members
+        'members': members,
+        'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
+    })
+    return render(request, 'members.html', renderdict)
+
+@permission_required('juntagrico.can_filter_members')
+def filters(request):
+    members = MemberDao.all_members()
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'members': members,
+        'title': _('Alle {}').format(Config.vocabulary('member_pl'))
     })
     return render(request, 'members.html', renderdict)
 
@@ -150,12 +161,13 @@ def filters(request):
 @permission_required('juntagrico.is_depot_admin')
 def filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
-    members = MemberDao.members_with_assignments_count_for_depot(depot)
+    members = MemberDao.member_with_active_subscription_for_depot(depot)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'mail_url': 'mail-depot'
+        'mail_url': 'mail-depot',
+        'title': _('Alle aktive {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
     })
     return render(request, 'members.html', renderdict)
 
@@ -163,12 +175,13 @@ def filters_depot(request, depot_id):
 @permission_required('juntagrico.is_area_admin')
 def filters_area(request, area_id):
     area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
-    members = MemberDao.members_with_assignments_count_in_area(area)
+    members = MemberDao.members_in_area(area)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'mail_url': 'mail-area'
+        'mail_url': 'mail-area',
+        'title': _('Alle aktive {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
     })
     return render(request, 'members.html', renderdict)
 

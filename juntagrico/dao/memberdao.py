@@ -139,18 +139,12 @@ class MemberDao:
         return MemberDao.annotate_members_with_assignemnt_count(Member.objects.all())
 
     @staticmethod
-    def active_members_with_assignments_count():
-        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(~q_deactivated()))
+    def active_members():
+        return Member.objects.filter(~q_deactivated())
 
     @staticmethod
-    def members_with_assignments_count_for_depot(depot):
-        return MemberDao.annotate_members_with_assignemnt_count(
-            MemberDao.member_with_active_subscription_for_depot(depot)
-                )
-
-    @staticmethod
-    def members_with_assignments_count_in_area(area):
-        return MemberDao.annotate_members_with_assignemnt_count(area.members.all().filter(~q_deactivated()))
+    def members_in_area(area):
+        return area.members.all().filter(~q_deactivated())
 
     @staticmethod
     def members_with_assignments_count_in_subscription(subscription):
