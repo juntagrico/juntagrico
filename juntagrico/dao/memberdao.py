@@ -153,10 +153,11 @@ class MemberDao:
         now = timezone.now()
         start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
         return members.annotate(assignment_count=Sum(
-            Case(When(assignment__job__time__gte=start, assignment__job__time__lt=now,
+            Case(When(assignment__job__time__gte=start,
                       then='assignment__amount')))).annotate(
             core_assignment_count=Sum(Case(
-                When(assignment__job__time__gte=start, assignment__job__time__lt=now, assignment__core_cache=True,
+                When(assignment__job__time__gte=start,
+                     assignment__core_cache=True,
                      then='assignment__amount'))))
 
     @staticmethod
