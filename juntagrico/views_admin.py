@@ -168,7 +168,7 @@ def filters_depot(request, depot_id):
     renderdict.update({
         'members': members,
         'mail_url': 'mail-depot',
-        'title': _('Alle aktive {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
+        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
     })
     return render(request, 'members.html', renderdict)
 
@@ -182,7 +182,7 @@ def filters_area(request, area_id):
     renderdict.update({
         'members': members,
         'mail_url': 'mail-area',
-        'title': _('Alle aktive {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
+        'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
     })
     return render(request, 'members.html', renderdict)
 
@@ -191,7 +191,8 @@ def filters_area(request, area_id):
 def subscriptions(request):
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'subscriptions': SubscriptionDao.all_active_subscritions()
+        'subscriptions': SubscriptionDao.all_active_subscritions(),
+        'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
     })
 
     return render(request, 'subscriptions.html', renderdict)
@@ -203,7 +204,8 @@ def filter_subscriptions_depot(request, depot_id):
 
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot)
+        'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
+        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
     })
 
     return render(request, 'subscriptions.html', renderdict)

@@ -1,9 +1,9 @@
 {% load i18n %}
 {% load config %}
-var email_string = "{% trans "Email senden" %}";
+var email_string = "{% trans "E-Mail senden" %}";
 var send_string = "{% trans "senden" %}";
-var email_single_string = "{% trans "Email an diesen" %}";
-var email_multi_string = "{% trans "Email an diese" %}";
+var email_single_string = "{% trans "E-Mail an dieses" %}";
+var email_multi_string = "{% trans "E-Mail an diese" %}";
 var member_string = "{% vocabulary "member" %}";
 var members_string = "{% vocabulary "member_pl" %}";
 var search_field = "{% trans "Suchen: " %}";
