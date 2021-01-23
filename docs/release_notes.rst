@@ -17,6 +17,7 @@ Features & Improvements
 * introduced search builder in new assignment management list
 * moved general filters in corresponding management section in admin menu
 * filter for all members and for active members
+* streamlined the admin menu
 
 
 1.3.3
