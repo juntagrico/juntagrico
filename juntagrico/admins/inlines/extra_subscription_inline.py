@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from juntagrico.entity.extrasubs import ExtraSubscription
+from juntagrico.entity.subs import SubscriptionPart
 
 
 class ExtraSubscriptionInline(admin.TabularInline):
-    model = ExtraSubscription
-    fk_name = 'main_subscription'
+    model = SubscriptionPart
+    fk_name = 'subscription'
 
     def get_extra(self, request, obj=None, **kwargs):
         return 0

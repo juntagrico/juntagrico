@@ -302,6 +302,10 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
 
+    @property
+    def is_extra(self):
+        return self.type.size.product.is_extra
+
     def clean(self):
         check_sub_part_consistency(self)
 

@@ -15,12 +15,12 @@ class Billable(JuntagricoBasePoly):
         verbose_name_plural = _('Verrechenbare Einheiten')
 
 
-class ExtraSubBillingPeriod(JuntagricoBaseModel):
+class BillingPeriod(JuntagricoBaseModel):
     '''
     Billing Period for Extra subscriptions for which a bill has to be issued
     '''
 
-    type = models.ForeignKey('ExtraSubscriptionType', related_name='periods', null=False, blank=False,
+    product = models.ForeignKey('SubscriptionProduct', related_name='periods', null=True, blank=False,
                              on_delete=models.PROTECT)
     price = models.DecimalField(_('Preis'), max_digits=10, decimal_places=2)
     start_day = models.PositiveIntegerField(_('Start Tag'))
@@ -57,5 +57,5 @@ class ExtraSubBillingPeriod(JuntagricoBaseModel):
                                                self.end_month)
 
     class Meta:
-        verbose_name = _('Verechnungsperdiode Zusatzabos')
-        verbose_name_plural = _('Verechnungsperdioden Zusatzabos')
+        verbose_name = _('Verechnungsperdiode')
+        verbose_name_plural = _('Verechnungsperdioden')

@@ -10,12 +10,11 @@ from django.utils.translation import gettext as _
 from xlsxwriter import Workbook
 
 from juntagrico.config import Config
-from juntagrico.dao.extrasubscriptiondao import ExtraSubscriptionDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
@@ -245,24 +244,18 @@ def future(request):
             'future': 0,
             'now': 0
         }
-    for extra_subscription in ExtraSubscriptionTypeDao.all_extra_types():
-        extra_lines[extra_subscription.name] = {
-            'name': extra_subscription.name,
-            'future': 0,
-            'now': 0
-        }
     for subscription in SubscriptionDao.all_active_subscritions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
                 subscription_size)
-    for users_subscription in ExtraSubscriptionDao.all_active_extrasubscritions():
+    for users_subscription in SubscriptionPartDao.all_active_extrasubscritions():
         extra_lines[users_subscription.type.name]['now'] += 1
 
     for subscription in SubscriptionDao.future_subscriptions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
                 subscription_size)
-    for users_subscription in ExtraSubscriptionDao.future_extrasubscriptions():
+    for users_subscription in SubscriptionPartDao.future_extrasubscriptions():
         extra_lines[users_subscription.type.name]['future'] += 1
 
     renderdict.update({
@@ -471,7 +464,7 @@ def typechangelist(request):
 def extra_waitinglist(request):
     render_dict = get_menu_dict(request)
     render_dict.update(get_changedate(request))
-    return subscription_management_list(ExtraSubscriptionDao.waiting_extra_subs(), render_dict,
+    return subscription_management_list(SubscriptionPartDao.waiting_extra_subs(), render_dict,
                                         'management_lists/extra_waitinglist.html', request)
 
 
@@ -479,7 +472,7 @@ def extra_waitinglist(request):
 def extra_canceledlist(request):
     render_dict = get_menu_dict(request)
     render_dict.update(get_changedate(request))
-    return subscription_management_list(ExtraSubscriptionDao.canceled_extra_subs(), render_dict,
+    return subscription_management_list(SubscriptionPartDao.canceled_extra_subs(), render_dict,
                                         'management_lists/extra_canceledlist.html', request)
 
 

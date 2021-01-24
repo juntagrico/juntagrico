@@ -27,18 +27,18 @@
             {% for extrasubscription in management_list %}
                 <tr>
                     <td>
-                        {{ extrasubscription.type.name }}
+                        {{ extrasubscription.type.size.name }}
                     </td>
                     <td>
-                        {{ extrasubscription.main_subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}
+                        {{ extrasubscription.subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}
                     </td>
                     <td>
                         <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="{% url 'mail' %}">
                             {% csrf_token %}
-                            <input type="hidden" name="recipients"value="{{ extrasubscription.main_subscription.primary_member.email }}"/>
+                            <input type="hidden" name="recipients"value="{{ extrasubscription.subscription.primary_member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
                             <a href="#"onclick="$('#extrasubscription{{ extrasubscription.id }}').submit();" class="email">
-                                {{ extrasubscription.main_subscription.primary_member.email }}
+                                {{ extrasubscription.subscription.primary_member.email }}
                             </a>
                         </form>
                     </td>

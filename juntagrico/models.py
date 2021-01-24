@@ -3,7 +3,6 @@ from django.db.models import signals
 from django.utils.translation import gettext as _
 
 import juntagrico
-from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.jobs import Assignment, OneTimeJob, RecuringJob, Job
 from juntagrico.entity.member import Member, SubscriptionMembership
 from juntagrico.entity.share import Share
@@ -56,10 +55,6 @@ juntagrico.signals.sub_created.connect(handle_sub_created, sender=Subscription)
 juntagrico.signals.sub_activated.connect(handle_sub_activated, sender=Subscription)
 juntagrico.signals.sub_deactivated.connect(handle_sub_deactivated, sender=Subscription)
 juntagrico.signals.sub_canceled.connect(handle_sub_canceled, sender=Subscription)
-''' extra subscription handling'''
-signals.pre_save.connect(extra_sub_pre_save, sender=ExtraSubscription)
-juntagrico.signals.extra_sub_activated.connect(handle_simple_activated, sender=ExtraSubscription)
-juntagrico.signals.extra_sub_deactivated.connect(handle_simple_deactivated, sender=ExtraSubscription)
 ''' subscription part handling'''
 signals.pre_save.connect(sub_part_pre_save, sender=SubscriptionPart)
 juntagrico.signals.extra_sub_activated.connect(handle_simple_activated, sender=SubscriptionPart)
