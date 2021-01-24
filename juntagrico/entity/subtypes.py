@@ -12,6 +12,7 @@ class SubscriptionProduct(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
+    is_extra = models.BooleanField(_('Ist Zusatzabo Produkt'), default=False)
 
     def __str__(self):
         return self.name

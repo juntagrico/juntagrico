@@ -17,7 +17,6 @@ from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -202,8 +201,8 @@ def extra_change(request, subscription_id):
             value = int(request.POST.get('extra' + str(type.id)))
             if value > 0:
                 for x in range(value):
-                    ExtraSubscription.objects.create(
-                        main_subscription=subscription, type=type)
+                    SubscriptionPart.objects.create(
+                        subscription=subscription, type=type)
         return redirect('extra-change', subscription_id=subscription.id)
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -400,7 +399,7 @@ def leave_subscription(request, subscription_id):
 
 @permission_required('juntagrico.is_operations_group')
 def activate_extra(request, extra_id):
-    extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    extra = get_object_or_404(SubscriptionPart, id=extra_id)
     change_date = request.session.get('changedate', None)
     if extra.activation_date is None and extra.deactivation_date is None:
         extra.activate(change_date)
@@ -409,7 +408,7 @@ def activate_extra(request, extra_id):
 
 @permission_required('juntagrico.is_operations_group')
 def deactivate_extra(request, extra_id):
-    extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    extra = get_object_or_404(SubscriptionPart, id=extra_id)
     change_date = request.session.get('changedate', None)
     if extra.activation_date is not None:
         extra.deactivate(change_date)
@@ -418,7 +417,7 @@ def deactivate_extra(request, extra_id):
 
 @primary_member_of_subscription
 def cancel_extra(request, extra_id, subscription_id):
-    extra = get_object_or_404(ExtraSubscription, main_subscription__id=subscription_id, id=extra_id)
+    extra = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=extra_id)
     if extra.activation_date is None:
         extra.delete()
     else:
