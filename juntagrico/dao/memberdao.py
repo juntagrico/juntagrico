@@ -128,21 +128,23 @@ class MemberDao:
         return Member.objects.filter(share__isnull=False).exclude(q_deactivated())
 
     @staticmethod
+    def member_with_active_subscription_for_depot(depot):
+        return Member.objects.filter(MemberDao.q_subscription_activated())\
+            .filter(~MemberDao.q_subscription_deactivated())\
+            .filter(subscriptionmembership__subscription__depot=depot)\
+            .filter(~q_deactivated())
+
+    @staticmethod
     def members_with_assignments_count():
         return MemberDao.annotate_members_with_assignemnt_count(Member.objects.all())
 
     @staticmethod
-    def active_members_with_assignments_count():
-        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.filter(~q_deactivated()))
+    def active_members():
+        return Member.objects.filter(~q_deactivated())
 
     @staticmethod
-    def members_with_assignments_count_for_depot(depot):
-        return MemberDao.annotate_members_with_assignemnt_count(
-            Member.objects.filter(subscriptionmembership__subscription__depot=depot).filter(~q_deactivated()))
-
-    @staticmethod
-    def members_with_assignments_count_in_area(area):
-        return MemberDao.annotate_members_with_assignemnt_count(area.members.all().filter(~q_deactivated()))
+    def members_in_area(area):
+        return area.members.all().filter(~q_deactivated())
 
     @staticmethod
     def members_with_assignments_count_in_subscription(subscription):
@@ -153,10 +155,11 @@ class MemberDao:
         now = timezone.now()
         start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
         return members.annotate(assignment_count=Sum(
-            Case(When(assignment__job__time__gte=start, assignment__job__time__lt=now,
+            Case(When(assignment__job__time__gte=start,
                       then='assignment__amount')))).annotate(
             core_assignment_count=Sum(Case(
-                When(assignment__job__time__gte=start, assignment__job__time__lt=now, assignment__core_cache=True,
+                When(assignment__job__time__gte=start,
+                     assignment__core_cache=True,
                      then='assignment__amount'))))
 
     @staticmethod

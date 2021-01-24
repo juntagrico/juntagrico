@@ -1,6 +1,25 @@
 Release Notes
 =============
 
+1.3.4
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix incorrect display of email count in subscription filters
+* Member filter for depots only displays members with active subscription
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* assignment counts include now planned assignments
+* extracted assignement overviews into separate management list
+* introduced search builder in new assignment management list
+* moved general filters in corresponding management section in admin menu
+* filter for all members and for active members
+* streamlined the admin menu
+
+
 1.3.3
 -----
 Has no migrations
@@ -13,6 +32,7 @@ Fixes
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Introduces subscription excel export
+
 
 
 1.3.2

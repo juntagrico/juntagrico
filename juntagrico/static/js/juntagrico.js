@@ -65,21 +65,47 @@ function move_email_button() {
     $("form#email-sender").appendTo("#filter_header div:first-child");
 }
 
-function email_submit() {
-    $("form#email-sender").submit(function (event) {
-        var emails = [];
-        $("#filter-table").find("tr").each(function () {
+ function fetch_emails() {
+    var emails = []
+     $("#filter-table").find("tr").each(function () {
             var txt = $(".email", this).text().trim();
             if (txt.length > 0)
-                emails.push(txt);
+                for(var email of txt.split(",")){
+                    emails.push(email.trim());
+                }
         });
+    return emails;
+ }
+ function email_submit() {
+    $("form#email-sender").submit(function (event) {
+        var emails = fetch_emails();
+
         $("#recipients").val(emails.join("\n"));
         $("#recipients_count").val(emails.length);
         return;
     });
 }
 
+function get_sb_config() {
+    var sb_columns = true;
+    if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
+        sb_columns = search_builder_columns;
+    }
+    return {
+        columns: sb_columns
+    };
+}
+
+function get_dom(){
+    var dom_text = '';
+    if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
+        dom_text = 'Q';
+    }
+    return dom_text;
+}
+
 function default_data_table() {
+
     var table = $("#filter-table").DataTable({
         "paging": false,
         "info": false,
@@ -89,11 +115,14 @@ function default_data_table() {
         },
         "drawCallback": function (settings) {
             // do not like this but it works so far till i get around to find the correct api call
-            updateSendEmailButton($("#filter-table tbody tr").length);
+            updateSendEmailButton(fetch_emails().length);
         },
         "language": {
-            "search": "Suchen: "
-        }
+            "search": search_field,
+            searchBuilder: sb_lang
+        },
+        searchBuilder: get_sb_config(),
+        dom : get_dom(),
     });
     return table;
 }
