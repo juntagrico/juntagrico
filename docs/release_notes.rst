@@ -13,7 +13,7 @@ Fixes
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * assignment counts include now planned assignments
-* extracted assignement overviews into separate management list
+* extracted assignment overviews into separate management list
 * introduced search builder in new assignment management list
 * moved general filters in corresponding management section in admin menu
 * filter for all members and for active members
