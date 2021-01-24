@@ -23,7 +23,7 @@
                  <th >
                     {% blocktrans %}{{ v_assignment_pl }} status{% endblocktrans %}
                 </th>
-                {% if show_core %}
+                {% if show_core and requires_core %}
                         <th>
                             {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
                         </th>
@@ -56,7 +56,7 @@
                     <td>
                         {{ subscription.assignments_progress|floatformat }}%
                     </td>
-                    {% if show_core %}
+                    {% if show_core and requires_core %}
                         <th>
                             {{ subscription.core_assignments|floatformat }}
                         </th>
