@@ -97,9 +97,9 @@ function get_sb_config() {
 }
 
 function get_dom(){
-    var dom_text = '';
+    var dom_text = 'lfrtip';
     if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
-        dom_text = 'Q';
+        dom_text = 'Qlfrtip';
     }
     return dom_text;
 }
