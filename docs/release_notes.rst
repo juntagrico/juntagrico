@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix for MIME-Type picky browser
+* Fix datatables dom
 
 1.3.4
 -----

@@ -99,7 +99,7 @@ function get_sb_config() {
 function get_dom(){
     var dom_text = 'lfrtip';
     if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
-        dom_text = 'Qlfrtip';
+        dom_text = 'Q';
     }
     return dom_text;
 }
