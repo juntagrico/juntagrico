@@ -533,4 +533,4 @@ def cookies(request):
 
 
 def i18njs(request):
-    return render(request, 'js/i18n.js', {})
+    return render(request, 'js/i18n.js', {}, content_type='application/javascript')

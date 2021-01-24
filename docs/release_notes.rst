@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+1.3.5
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix for MIME-Type picky browser
+
 1.3.4
 -----
 Has no migrations
