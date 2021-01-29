@@ -9,6 +9,7 @@ Fixes
 ^^^^^
 * Assignments overviews only consider current business year
 * Fix in export subscription
+* Fix that users with filter permission can actually see the filters
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^

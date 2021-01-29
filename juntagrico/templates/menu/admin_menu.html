@@ -20,7 +20,7 @@
             </a>
         </li>
     {% endif %}
-    {% if operation_group %}
+    {% if operation_group or can_filter_subscriptions%}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#subman">
                 {% blocktrans %}{{ v_subscription_pl }}{% endblocktrans %}
@@ -105,7 +105,7 @@
             </div>
         </li>
     {% endif %}
-    {% if operation_group%}
+    {% if operation_group or can_filter_members %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#memberman">
                 {% blocktrans %}{{ v_member_pl }}{% endblocktrans %}
@@ -114,19 +114,19 @@
             </a>
             <div class="collapse" id="memberman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if operation_group%}
-                        {% if can_filter_members%}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'filters-active' %}">
-                                    {% blocktrans %}Aktive{% endblocktrans %}
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'filters' %}">
-                                    {% blocktrans %}Alle{% endblocktrans %}
-                                </a>
-                            </li>
-                        {% endif %}
+                    {% if can_filter_members%}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'filters-active' %}">
+                                {% blocktrans %}Aktive{% endblocktrans %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'filters' %}">
+                                {% blocktrans %}Alle{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if operation_group %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'member-mgmt-canceledlist' %}">
                                  {% blocktrans %}Kündigungsliste{% endblocktrans %}
