@@ -129,10 +129,9 @@ class MemberDao:
 
     @staticmethod
     def member_with_active_subscription_for_depot(depot):
-        return Member.objects.filter(MemberDao.q_subscription_activated())\
-            .filter(~MemberDao.q_subscription_deactivated())\
+        return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_cancelled_subscription())\
             .filter(subscriptionmembership__subscription__depot=depot)\
-            .filter(~q_deactivated())
+            .exclude(q_deactivated()).distinct()
 
     @staticmethod
     def members_with_assignments_count():

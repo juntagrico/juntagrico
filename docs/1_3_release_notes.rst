@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Add mail button for depot admins
+* Fixed query for depot admin member filter
 
 1.3.6
 -----
