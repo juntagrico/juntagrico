@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+1.3.6
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Assignments overviews only consider current business year
+
 1.3.5
 -----
 Has no migrations

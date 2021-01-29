@@ -8,7 +8,7 @@ from django.utils.timezone import get_default_timezone as gdtz
 from juntagrico.entity.member import Member
 from juntagrico.util.models import PropertyQuerySet, q_deactivated
 from juntagrico.util.models import q_cancelled
-from juntagrico.util.temporal import start_of_business_year
+from juntagrico.util.temporal import start_of_business_year, end_of_business_year
 
 
 class MemberDao:
@@ -153,11 +153,14 @@ class MemberDao:
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
         start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
+        end = gdtz().localize(datetime.combine(end_of_business_year(), time.max))
         return members.annotate(assignment_count=Sum(
             Case(When(assignment__job__time__gte=start,
+                      assignment__job__time__lt=end,
                       then='assignment__amount')))).annotate(
             core_assignment_count=Sum(Case(
                 When(assignment__job__time__gte=start,
+                     assignment__job__time__lt=end,
                      assignment__core_cache=True,
                      then='assignment__amount'))))
 
