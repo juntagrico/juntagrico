@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-24 13:48+0100\n"
+"POT-Creation-Date: 2021-01-29 10:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2167,7 +2167,7 @@ msgid "Total"
 msgstr "Total"
 
 #: .\juntagrico\templates\exports\amount_overview.html:62
-#: .\juntagrico\templates\menu\admin_menu.html:126
+#: .\juntagrico\templates\menu\admin_menu.html:125
 msgid "Alle"
 msgstr "Todos"
 
@@ -3315,7 +3315,7 @@ msgid "%(v_subscription_pl)s"
 msgstr "Ninguno %(v_subscription_pl)s"
 
 #: .\juntagrico\templates\menu\admin_menu.html:35
-#: .\juntagrico\templates\menu\admin_menu.html:121
+#: .\juntagrico\templates\menu\admin_menu.html:120
 #, fuzzy
 #| msgid "Aktiv"
 msgid "Aktive"
@@ -4268,6 +4268,10 @@ msgstr "Áreas principales"
 #| msgid "Kernbereich Partner"
 msgid "{} Kernbereich status(%)"
 msgstr "Área principal Socio"
+
+#: .\juntagrico\views_admin.py:534
+msgid "Haubtbezieher ist nicht gesetzt"
+msgstr ""
 
 #: .\juntagrico\views_subscription.py:171
 msgid "Für gekündigte {} können keine Bestandteile bestellt werden"
