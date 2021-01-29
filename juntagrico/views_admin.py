@@ -201,8 +201,8 @@ def subscriptions(request):
 @permission_required('juntagrico.is_depot_admin')
 def filter_subscriptions_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
-
     renderdict = get_menu_dict(request)
+    renderdict['can_send_mails'] = True
     renderdict.update({
         'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)

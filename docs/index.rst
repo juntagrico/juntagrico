@@ -19,3 +19,5 @@ It provides the basic functionality like
    settings.rst
    theming.rst
    release_notes.rst
+   1_2_release_notes.rst
+   1_1_release_notes.rst
