@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Assignments overviews only consider current business year
+* Fix in export subscription
 
 1.3.5
 -----

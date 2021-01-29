@@ -355,11 +355,23 @@ def excel_export_subscriptions(request):
 
     row = 1
     for sub in subs:
+        primary_member = sub['subscription'].primary_member
+        if primary_member is not None:
+            name = primary_member.get_name()
+            email = primary_member.email
+            phone = primary_member.phone or ''
+            mobile = primary_member.mobile_phone or ''
+        else:
+            name = ''
+            email = ''
+            phone = ''
+            mobile = ''
+
         worksheet_s.write_string(row, 0, sub['subscription'].overview)
-        worksheet_s.write_string(row, 1, sub['subscription'].primary_member.get_name())
-        worksheet_s.write_string(row, 2, sub['subscription'].primary_member.email)
-        worksheet_s.write_string(row, 3, sub['subscription'].primary_member.phone or '')
-        worksheet_s.write_string(row, 4, sub['subscription'].primary_member.mobile_phone or '')
+        worksheet_s.write_string(row, 1, name)
+        worksheet_s.write_string(row, 2, email)
+        worksheet_s.write_string(row, 3, phone)
+        worksheet_s.write_string(row, 4, mobile)
         worksheet_s.write_string(row, 5, sub['subscription'].other_recipients_names)
         worksheet_s.write_string(row, 6, sub['subscription'].state_text)
         worksheet_s.write_string(row, 7, sub['subscription'].depot.name)
