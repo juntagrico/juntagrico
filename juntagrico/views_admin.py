@@ -530,6 +530,8 @@ def sub_inconsistencies(request):
                 member.clean()
         except Exception as e:
             management_list.append({'subscription': sub, 'error': e})
+        if sub.primary_member is None:
+            management_list.append({'subscription': sub, 'error': _('Haubtbezieher ist nicht gesetzt')})
     render_dict = get_menu_dict(request)
     render_dict.update({'change_date_disabled': True,
                         'email_form_disabled': True})

@@ -10,6 +10,10 @@ Fixes
 * Assignments overviews only consider current business year
 * Fix in export subscription
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Inconsistencies include missing primary member as error
+
 1.3.5
 -----
 Has no migrations
