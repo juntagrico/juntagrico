@@ -29,6 +29,7 @@ class Depot(JuntagricoBaseModel):
     addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     overview_cache = None
     subscription_cache = None
@@ -58,4 +59,5 @@ class Depot(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('depot')
         verbose_name_plural = Config.vocabulary('depot_pl')
+        ordering = ['sort_order']
         permissions = (('is_depot_admin', _('Benutzer ist Depot Admin')),)

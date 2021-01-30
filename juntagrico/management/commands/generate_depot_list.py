@@ -49,7 +49,7 @@ class Command(BaseCommand):
             'subscriptions': SubscriptionDao.all_active_subscritions(),
             'products': SubscriptionProductDao.get_all_for_depot_list(),
             'extra_sub_categories': ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered(),
-            'depots': DepotDao.all_depots_order_by_code(),
+            'depots': DepotDao.all_depots_ordered(),
             'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in
                          DepotDao.distinct_weekdays()},
             'messages': ListMessageDao.all_active()
