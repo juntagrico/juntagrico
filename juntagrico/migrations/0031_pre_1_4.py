@@ -25,4 +25,73 @@ class Migration(migrations.Migration):
             name='visible',
             field=models.BooleanField(default=True, verbose_name='Sichtbar'),
         ),
+        migrations.AlterField(
+            model_name='depot',
+            name='code',
+            field=models.CharField(default='', max_length=100, unique=False, null=True),
+            preserve_default=False,
+        ),
+        migrations.AlterModelOptions(
+            name='activityarea',
+            options={'ordering': ['sort_order'], 'permissions': (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),), 'verbose_name': 'Tätigkeitsbereich', 'verbose_name_plural': 'Tätigkeitsbereiche'},
+        ),
+        migrations.AlterModelOptions(
+            name='depot',
+            options={'ordering': ['sort_order'], 'permissions': (('is_depot_admin', 'Benutzer ist Depot Admin'),), 'verbose_name': 'Depot', 'verbose_name_plural': 'Depots'},
+        ),
+        migrations.AlterModelOptions(
+            name='extrasubscriptioncategory',
+            options={'ordering': ['sort_order'], 'verbose_name': 'Zusatz-Abo-Kategorie', 'verbose_name_plural': 'Zusatz-Abo-Kategorien'},
+        ),
+        migrations.AlterModelOptions(
+            name='extrasubscriptiontype',
+            options={'ordering': ['sort_order'], 'verbose_name': 'Zusatz-Abo-Typ', 'verbose_name_plural': 'Zusatz-Abo-Typen'},
+        ),
+        migrations.AlterModelOptions(
+            name='listmessage',
+            options={'ordering': ['sort_order'], 'verbose_name': 'Depot Listen Nachricht', 'verbose_name_plural': 'Depot Listen Nachrichten'},
+        ),
+        migrations.AlterModelOptions(
+            name='subscriptionproduct',
+            options={'ordering': ['sort_order'], 'verbose_name': 'Abo-Produkt', 'verbose_name_plural': 'Abo-Produkt'},
+        ),
+        migrations.AlterModelOptions(
+            name='subscriptiontype',
+            options={'ordering': ['sort_order'], 'verbose_name': 'Abo-Typ', 'verbose_name_plural': 'Abo-Typen'},
+        ),
+        migrations.AddField(
+            model_name='depot',
+            name='sort_order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
+        ),
+        migrations.AddField(
+            model_name='activityarea',
+            name='sort_order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
+        ),
+        migrations.AddField(
+            model_name='subscriptionproduct',
+            name='sort_order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
+        ),
+        migrations.AddField(
+            model_name='subscriptiontype',
+            name='sort_order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
+        ),
+        migrations.AlterField(
+            model_name='extrasubscriptioncategory',
+            name='sort_order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
+        ),
+        migrations.AlterField(
+            model_name='extrasubscriptiontype',
+            name='sort_order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
+        ),
+        migrations.AlterField(
+            model_name='listmessage',
+            name='sort_order',
+            field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
+        ),
     ]

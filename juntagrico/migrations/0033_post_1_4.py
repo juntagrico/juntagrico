@@ -15,4 +15,8 @@ class Migration(migrations.Migration):
             name='user',
             field=models.OneToOneField(on_delete=models.deletion.CASCADE, related_name='member', to='auth.user'),
         ),
+        migrations.RemoveField(
+            model_name='depot',
+            name='code',
+        ),
     ]
