@@ -16,9 +16,9 @@
 {% blocktrans %}Wir freuen uns, dich bei {{ v_d_enriched_organisation }} zu begrüssen.{% endblocktrans %}
 
 {% if c_enable_shares %}
-{% blocktrans with pm=co_member.subscription.primary_member shares=co_member.usable_shares_count %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt und für dich {{ shares }} {{ v_share_pl }} bestellt.{% endblocktrans %}
+{% blocktrans with pm=sub.primary_member shares=co_member.usable_shares_count %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt und für dich {{ shares }} {{ v_share_pl }} bestellt.{% endblocktrans %}
 {% else %}
-{% blocktrans with pm=co_member.subscription.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
+{% blocktrans with pm=sub.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
 {% endif %}
 
 {% blocktrans %}Um dich auf {{serverurl}} einloggen zu können benutze folgende Daten{% endblocktrans %}:

@@ -3,14 +3,15 @@
 {% load config %}
 {% block page_title %}
     <h3>
-        {% trans "Zusatz-Abos ändern" %}
+        {% trans "Zusatzabos ändern" %}
     </h3>
 {% endblock %}
 {% block content %}
-    <b>{% trans "Übersicht" %}</b>
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
     {% if extras|length == 0 %}
-        {% trans "Du hast noch keine Zusatz-Abos" %}
+        {% trans "Du hast noch keine Zusatzabos" %}
     {% else %}
+    <b>{% trans "Übersicht" %}</b>
         <div>
             <table id="filter-table" class="table" style="display: table;">
                 <thead>
@@ -37,7 +38,7 @@
                             <td>
                                 {% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
                                     <a href="{% url 'extra-cancel' extra.id sub_id %}"class="btn btn-success"
-                                       onclick="return confirm('{% trans "Möchtest du sicher dieses Zusatzabo verbindlich künden?" %}')">
+                                       onclick="return confirm('{% trans "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?" %}')">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}
@@ -48,8 +49,9 @@
             </table>
         </div>
     {% endif %}
+{% if extra_order_allowed %}
     <div class="row mt-3 mb-3">
-        <b class="col-md-12">{% trans "Extra-Abos bestellen" %}</b>
+        <b class="col-md-12">{% trans "Zusatzabos bestellen" %}</b>
     </div>
     <form method="post">
         {% csrf_token %}
@@ -73,10 +75,15 @@
         </div>
         <div class="form-actions ">
             <button type="submit" class="btn btn-success">
-                {% trans "Extra-Abos bestellen" %}
+                {% trans "Zusatzabos bestellen" %}
             </button>
         </div>
     </form>
+{% else %}
+    <div>
+        <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Zusatzabos bestellt werden.{% endblocktrans %}</i>
+    </div>
+{% endif %}
     <script>
     </script>
 {% endblock %}

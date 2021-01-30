@@ -5,6 +5,7 @@ from django.db.models.query import QuerySet
 from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.util.models import q_isactive
 
 register = template.Library()
 
@@ -30,11 +31,11 @@ def count_units(subs_or_types):
     elif isinstance(subs_or_types, QuerySet):
         if subs_or_types.model is Subscription:
             # case 2: sum each unit of each subscription type
-            units = {'units': str(sum([int(sub.active_parts.aggregate(units=Sum('type__size__units'))['units'] or 0) for sub in subs_or_types.all()]))}
+            units = {'units': str(sum([float(sub.active_parts.aggregate(units=Sum('type__size__units'))['units'] or 0) for sub in subs_or_types.all()]))}
         elif subs_or_types.model is SubscriptionType:
             # case 3: queryset of types is passed
             units = subs_or_types.aggregate(units=Sum('size__units'))
-    return int(units['units'] or 0)
+    return float(units['units'] or 0)
 
 
 @register.filter
@@ -44,7 +45,7 @@ def get_types_by_size(subscriptions, size):
         parts = subscriptions.active_parts
     else:
         # case 2: queryset of subscriptions is passed
-        parts = SubscriptionPart.objects.filter(subscription__in=subscriptions, activation_date__isnull=False, deactivation_date__isnull=True)
+        parts = SubscriptionPart.objects.filter(subscription__in=subscriptions).filter(q_isactive())
     return parts.filter(type__size=size)
 
 
@@ -56,7 +57,7 @@ def get_extra_subs_by_type(subscriptions, es_type):
     else:
         # case 2: queryset of subscriptions is passed
         es = ExtraSubscription.objects.filter(main_subscription__in=subscriptions)
-    return es.filter(type=es_type, activation_date__isnull=False, deactivation_date__isnull=True)
+    return es.filter(type=es_type).filter(q_isactive())
 
 
 @register.filter

@@ -13,7 +13,7 @@
         {% trans "Vorschau" %}:
         <br/>
         {% if subscription.nickname %}
-        {{ subscription.nickname_or_recipients_names }}
+        {{ subscription.recipients_display_name }}
         {% else %}
         <i>{% trans "Kein Spitzname gewählt. Alle Namen werden angezeigt." %}</i>
         {% endif %}

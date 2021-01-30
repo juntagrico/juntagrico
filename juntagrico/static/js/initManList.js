@@ -1,5 +1,8 @@
 /*global define*/
 define([], function () {
+
+
+
     $("#filter-table thead th.filter").each(function () {
         var title = $(this).text();
         $(this).append("<input type='text' placeholder='' style='width: 100%;' class='form-control input-sm' />");

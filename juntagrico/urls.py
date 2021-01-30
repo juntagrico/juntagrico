@@ -68,8 +68,8 @@ urlpatterns = [
          name='extra-cancel'),
     path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
          name='part-cancel'),
-    path('my/order/share/', juntagrico_subscription.order_shares, name='share-order'),
-    path('my/order/share/success', juntagrico_subscription.order_shares_success, name='share-order-success'),
+    path('my/share/manage/', juntagrico_subscription.manage_shares, name='manage-shares'),  #
+    path('my/share/cancel/<int:share_id>/', juntagrico_subscription.cancel_share, name='share-cancel'),
     path('my/payout/share/<int:share_id>/', juntagrico_subscription.payout_share, name='share-payout'),
     path('my/create/subscription/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
     path('my/create/subscription/selectdepot/', juntagrico_cs.cs_select_depot, name='cs-depot'),
@@ -92,20 +92,23 @@ urlpatterns = [
     path('my/mails', juntagrico_admin.mails, name='mail'),  #
     path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),  #
     path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),  #
-    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'), #
+    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),  #
+    path('my/filters/active', juntagrico_admin.filters_active, name='filters-active'),  #
     path('my/filters', juntagrico_admin.filters, name='filters'),  #
     path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),  #
     path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),  #
     path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),  #
     path('my/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
          name='filter-subs-depot'),  #
+    path('my/assignments', juntagrico_admin.assignments, name='filter-assignments'),
     path('my/future', juntagrico_admin.future, name='future'),  #
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),  #
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),  #
     path('my/typechangedlist', juntagrico_admin.typechangelist, name='sub-mgmt-changelist'),  #
+    path('my/sub/inconsistencies', juntagrico_admin.sub_inconsistencies, name='sub-mgmt-inconsistencies'),
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),  #
-    path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),  #
+    path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
     path('my/share/canceledlist', juntagrico_admin.share_canceledlist, name='share-mgmt-canceledlist'),  #
     path('my/member/canceledlist', juntagrico_admin.member_canceledlist, name='member-mgmt-canceledlist'),
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
@@ -120,7 +123,13 @@ urlpatterns = [
     path('my/export/membersfilter', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),  #
     path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),  #
     path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),  #
+    path('my/export/subscriptions', juntagrico_admin.excel_export_subscriptions, name='export-subscriptions'),  #
+
 
     # iso20022
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
+
+    # js
+    path('my/js/i18n', juntagrico.i18njs, name='js-i18n'),  #
+
 ]

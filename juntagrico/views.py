@@ -17,6 +17,7 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
@@ -43,9 +44,9 @@ def get_menu_dict(request):
     next_jobs = JobDao.upcomming_jobs_for_member(member)
 
     required_assignments = 0
-    if member.subscription is not None:
+    if member.subscription_current is not None:
         partner_assignments = []
-        for subscription_member in member.subscription.recipients_all:
+        for subscription_member in member.subscription_current.recipients_all:
             if subscription_member == member:
                 continue
             partner_assignments.extend(
@@ -53,7 +54,7 @@ def get_menu_dict(request):
 
         userassignments = AssignmentDao.assignments_for_member_current_business_year(
             member)
-        required_assignments = member.subscription.required_assignments
+        required_assignments = member.subscription_current.required_assignments
     else:
         partner_assignments = []
         userassignments = []
@@ -86,8 +87,9 @@ def get_menu_dict(request):
         'depot_admin': depot_admin,
         'area_admin': area_admin,
         'show_core': ActivityAreaDao.all_core_areas().count() > 0,
+        'requires_core': SubscriptionTypeDao.get_with_core().count() > 0,
         'show_extras': JobExtraDao.all_job_extras().count() > 0,
-        'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription)) > 0,
+        'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0,
         'admin_menus': addons.config.get_admin_menus(),
         'admin_subscription_menus': addons.config.get_admin_subscription_menu(),
         'user_menus': addons.config.get_user_menus(),
@@ -216,15 +218,18 @@ def areas(request):
     '''
     member = request.user.member
     my_areas = []
-    for area in ActivityAreaDao.all_visible_areas():
+    last_was_core = True
+    for area in ActivityAreaDao.all_visible_areas_ordered():
         my_areas.append({
             'name': area.name,
             'checked': member in area.members.all(),
             'id': area.id,
             'core': area.core,
             'coordinator': area.coordinator,
-            'email': area.email
+            'email': area.email,
+            'first_non_core': not area.core and last_was_core
         })
+        last_was_core = area.core
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -331,7 +336,7 @@ def deliveries(request):
     '''
     renderdict = get_menu_dict(request)
     deliveries = DeliveryDao.deliveries_by_subscription(
-        request.user.member.subscription)
+        request.user.member.subscription_current)
     renderdict.update({
         'deliveries': deliveries,
         'menu': {'deliveries': 'active'},
@@ -432,13 +437,12 @@ def cancel_membership(request):
         end_date = next_membership_end_date()
         message = request.POST.get('message')
         member = request.user.member
-        member.canceled = True
         member.end_date = end_date
         member.cancelation_date = now
         if member.is_cooperation_member:
             adminnotification.member_canceled(member, end_date, message)
         else:
-            member.inactive = True
+            member.deactivation_date = now
 
         member.save()
         for share in member.active_shares:
@@ -448,8 +452,8 @@ def cancel_membership(request):
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
     asc = member.usable_shares_count
-    sub = member.subscription
-    f_sub = member.future_subscription
+    sub = member.subscription_current
+    f_sub = member.subscription_future
     future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
     current_active = sub is not None and sub.state == 'active' and sub.state == 'waiting'
     future = future_active and f_sub.share_overflow - asc < 0
@@ -526,3 +530,7 @@ def logout_view(request):
 
 def cookies(request):
     return render(request, 'cookie.html', {})
+
+
+def i18njs(request):
+    return render(request, 'js/i18n.js', {}, content_type='application/javascript')

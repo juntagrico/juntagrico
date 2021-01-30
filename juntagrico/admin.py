@@ -23,7 +23,7 @@ from juntagrico.entity.extrasubs import ExtraSubscription, ExtraSubscriptionType
 from juntagrico.entity.jobs import Assignment, ActivityArea, JobExtra, JobExtraType, JobType, RecuringJob, OneTimeJob
 from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.mailing import MailTemplate
-from juntagrico.entity.member import Member
+from juntagrico.entity.member import Member, SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionSize, SubscriptionType, SubscriptionProduct
@@ -42,6 +42,7 @@ admin.site.register(SubscriptionProduct, SubscriptionProductAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Member, MemberAdminWithShares if Config.enable_shares() else MemberAdmin)
+admin.site.register(SubscriptionMembership, BaseAdmin)
 admin.site.register(ActivityArea, AreaAdmin)
 admin.site.register(MailTemplate)
 admin.site.register(Delivery, DeliveryAdmin)

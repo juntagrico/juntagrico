@@ -1,0 +1,37 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load config %}
+{% block page_title %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
+    <h3>
+        {% blocktrans %}Inkonsistente {{ v_subscription_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block list %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+                <th class="filter">
+                    {% trans "Fehler" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for element in management_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:juntagrico_subscription_change' element.subscription.id %}">
+                            {{ element.subscription.overview }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ element.error }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

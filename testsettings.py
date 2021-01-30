@@ -74,7 +74,7 @@ if DEBUG is True:
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-LANGUAGE_CODE = 'de'
+LANGUAGE_CODE = 'de-CH'
 
 SITE_ID = 1
 

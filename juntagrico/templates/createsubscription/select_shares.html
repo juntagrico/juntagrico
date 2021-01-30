@@ -34,8 +34,8 @@
                 {% blocktrans trimmed %}
                 Um {{ v_member_type }} bei {{ v_d_enriched_organisation }} zu werden, musst du mindestens
                 1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
-                Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }} zurück
-                erstattet.
+                Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }}
+                zurückerstattet.
                 {% endblocktrans %}
                 {% if shares.total_required > 0 %}
                     {% blocktrans trimmed with shares.total_required as st %}
@@ -62,7 +62,7 @@
             {% csrf_token %}
             <div class="form-group row">
                 <label class="col-md-3 col-form-label">
-                    {% blocktrans %}Deine {{ v_share_pl }}{% endblocktrans %}
+                    {% blocktrans %}Neue {{ v_share_pl }}{% endblocktrans %}:
                 </label>
                 <div class="col-md-3">
                     <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:shares.total_required }}" min="{% if shares.existing_main_member == 0 %}1{% else %}0{% endif %}"/>

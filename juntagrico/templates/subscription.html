@@ -18,8 +18,8 @@
         <div class="alert alert-success">
             {% trans "Du bist auf der Warteliste" %}
             <br/>
-            <a href="{% url 'sub-detail-id' member.future_subscription.id %}">
-                {% trans "Mehr Infos dazu findest du hier" %}
+            <a href="{% url 'sub-detail-id' member.subscription_future.id %}">
+                {% trans "Mehr Infos und Optionen dazu findest du hier" %}
             </a>
         </div>
     {% elif can_order %}
@@ -45,8 +45,8 @@
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                 </div>
             </div>
@@ -96,8 +96,8 @@
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                     <br/>
                     <br/>
@@ -159,7 +159,7 @@
                 {% blocktrans %}Name auf {{ v_depot }}-Liste{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.nickname_or_recipients_names }}
+                {{ subscription.recipients_display_name }}
             </div>
         </div>
         {% endif %}

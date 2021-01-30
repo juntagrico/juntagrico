@@ -539,3 +539,12 @@ EMAILS
         's_canceled': 'mails/subscription_canceled_mail.txt',
         'm_canceled': 'mails/membership_canceled_mail.txt',
     }
+WHITELIST_EMAILS
+----------------
+  List of regular expression to determine which email addresses should receive emails while DEBUG mode is enabled
+
+  default value
+
+  .. code-block:: python
+
+    []

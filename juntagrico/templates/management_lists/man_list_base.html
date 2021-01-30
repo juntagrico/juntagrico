@@ -40,7 +40,7 @@
         {% endif %}
     {% endif %}
     {% if not email_form_disabled %}
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-md-12">
             <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
                 {% csrf_token %}
@@ -66,14 +66,6 @@
     </div>
     <br/>
     <br/>
-    <script>
-        var email_string = "{% trans "Email senden" %}";
-        var send_string = "{% trans "senden" %}";
-        var email_single_string = "{% trans "Email an diesen" %}";
-        var email_multi_string = "{% trans "Email an diese" %}"
-        var member_string = "{% vocabulary "member" %}";
-        var members_string = "{% vocabulary "member_pl" %}";
-    </script>
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript" src="/static/external/datatables.min.js">
