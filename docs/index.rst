@@ -18,4 +18,6 @@ It provides the basic functionality like
    instalation.rst
    settings.rst
    theming.rst
-   release_notes.rst
+   1_3_release_notes.rst
+   1_2_release_notes.rst
+   1_1_release_notes.rst

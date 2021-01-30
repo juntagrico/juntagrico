@@ -22,14 +22,15 @@ class SubscriptionAdmin(BaseAdmin):
     add_inlines = [SubscriptionMembershipInline, SubscriptionPartInline, ExtraSubscriptionInline]
     fieldsets = [
         (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'nickname']}),
-        (_('Depot'), {'fields': ['depot', 'future_depot']}),
+        (Config.vocabulary('depot'), {'fields': ['depot', 'future_depot']}),
         (_('Status'), {'fields': ['creation_date', 'start_date', 'activation_date',
                                   'cancellation_date', 'end_date', 'deactivation_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]
     add_fieldsets = [
         (Config.vocabulary('depot'), {'fields': ['depot']}),
-        (_('Status'), {'fields': ['start_date']}),
+        (_('Status'), {'fields': ['creation_date', 'start_date', 'activation_date',
+                                  'cancellation_date', 'end_date', 'deactivation_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]
 

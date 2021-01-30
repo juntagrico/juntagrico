@@ -49,7 +49,7 @@
                             {% elif part.subscription.future_parts.count == 1  and  part.cancellation_date is None %}
                                 {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
                                 {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
-                                    <br/>{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}
+                                    <br/><a href="{% url 'sub-cancel' subscription.id %}">{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}</a>
                                 {% endif %}
                             {% endif %}
                         </td>

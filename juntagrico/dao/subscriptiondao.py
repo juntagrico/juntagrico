@@ -10,7 +10,7 @@ class SubscriptionDao:
 
     @staticmethod
     def active_subscritions_by_depot(depot):
-        return Subscription.objects.filter(depot=depot).filter(q_activated())
+        return Subscription.objects.filter(depot=depot).filter(q_isactive())
 
     @staticmethod
     def subscritions_with_future_depots():

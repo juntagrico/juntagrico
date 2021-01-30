@@ -35,11 +35,6 @@ class Migration(migrations.Migration):
             model_name='member',
             name='subscription',
         ),
-        migrations.AddField(
-            model_name='member',
-            name='deactivation_date',
-            field=models.DateField(blank=True, help_text='Sperrt Login und entfernt von E-Mail-Listen', null=True, verbose_name='Deaktivierungsdatum'),
-        ),
         migrations.AlterField(
             model_name='member',
             name='end_date',

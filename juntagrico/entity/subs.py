@@ -42,7 +42,6 @@ class Subscription(Billable, SimpleStateModel):
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
-    _future_members = None
 
     def __str__(self):
         return _('Abo ({1}) {0}').format(self.overview, self.id)
@@ -125,7 +124,7 @@ class Subscription(Billable, SimpleStateModel):
         result = 0
         for part in self.active_parts.all():
             result += part.type.required_assignments
-        if self.activation_date > start_of_business_year():
+        if self.activation_date is not None and self.activation_date > start_of_business_year():
             result = round(result * calculate_remaining_days_percentage(self.activation_date))
         return result
 
@@ -134,7 +133,7 @@ class Subscription(Billable, SimpleStateModel):
         result = 0
         for part in self.active_parts.all():
             result += part.type.required_core_assignments
-        if self.activation_date > start_of_business_year():
+        if self.activation_date is not None and self.activation_date > start_of_business_year():
             result = round(result * calculate_remaining_days_percentage(self.activation_date))
         return result
 
@@ -200,6 +199,13 @@ class Subscription(Billable, SimpleStateModel):
     @property
     def recipients_all(self):
         return [m.member for m in self.memberships_for_state.all()]
+
+    @property
+    def future_members(self):
+        if getattr(self, 'override_future_members', False):
+            return self.override_future_members
+        qs = self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member')
+        return set([m.member for m in qs])
 
     @property
     def memberships_for_state(self):

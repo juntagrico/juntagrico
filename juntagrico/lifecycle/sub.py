@@ -90,7 +90,7 @@ def check_sub_reactivation(instance):
 
 def check_sub_primary(instance):
     pm_sub = instance.primary_member in instance.recipients
-    pm_form = instance._future_members and instance.primary_member in instance._future_members
+    pm_form = instance.future_members and instance.primary_member in instance.future_members
     if instance.primary_member is not None and not (pm_sub or pm_form):
         raise ValidationError(
             _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),

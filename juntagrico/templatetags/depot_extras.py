@@ -1,6 +1,5 @@
 from django import template
-from django.utils import timezone
-from django.db.models import Sum, Model, Q
+from django.db.models import Sum, Model
 from django.db.models.query import QuerySet
 
 from juntagrico.entity.extrasubs import ExtraSubscription
@@ -32,11 +31,11 @@ def count_units(subs_or_types):
     elif isinstance(subs_or_types, QuerySet):
         if subs_or_types.model is Subscription:
             # case 2: sum each unit of each subscription type
-            units = {'units': str(sum([int(sub.active_parts.aggregate(units=Sum('type__size__units'))['units'] or 0) for sub in subs_or_types.all()]))}
+            units = {'units': str(sum([float(sub.active_parts.aggregate(units=Sum('type__size__units'))['units'] or 0) for sub in subs_or_types.all()]))}
         elif subs_or_types.model is SubscriptionType:
             # case 3: queryset of types is passed
             units = subs_or_types.aggregate(units=Sum('size__units'))
-    return int(units['units'] or 0)
+    return float(units['units'] or 0)
 
 
 @register.filter
@@ -46,7 +45,6 @@ def get_types_by_size(subscriptions, size):
         parts = subscriptions.active_parts
     else:
         # case 2: queryset of subscriptions is passed
-        now = timezone.now().date()
         parts = SubscriptionPart.objects.filter(subscription__in=subscriptions).filter(q_isactive())
     return parts.filter(type__size=size)
 
