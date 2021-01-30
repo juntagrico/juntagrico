@@ -12,8 +12,6 @@ class Depot(JuntagricoBaseModel):
     '''
     Location where stuff is picked up.
     '''
-    code = models.CharField(_('Sortier-Code'), max_length=100,
-                            validators=[validators.validate_slug], unique=True)
     name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)

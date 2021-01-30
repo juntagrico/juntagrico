@@ -41,7 +41,6 @@ class SubscriptionSize(JuntagricoBaseModel):
         _('Beschreibung'), max_length=1000, blank=True)
     product = models.ForeignKey('SubscriptionProduct', on_delete=models.PROTECT,
                                 related_name='sizes', verbose_name=_('Produkt'))
-    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     def __str__(self):
         return self.name
@@ -51,7 +50,6 @@ class SubscriptionSize(JuntagricoBaseModel):
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
         unique_together = ('name', 'product',)
         unique_together = ('units', 'product',)
-        ordering = ['sort_order']
 
 
 class SubscriptionType(JuntagricoBaseModel):

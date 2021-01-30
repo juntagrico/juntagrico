@@ -6,7 +6,7 @@ from juntagrico.admins.assignment_admin import AssignmentAdmin
 from juntagrico.admins.delivery_admin import DeliveryAdmin
 from juntagrico.admins.depot_admin import DepotAdmin
 from juntagrico.admins.extra_subscription_admin import ExtraSubscriptionAdmin
-from juntagrico.admins.extra_subscription_type_admin import ExtraSubscriptionTypeAdmin
+from juntagrico.admins.extra_subscription_type_admin import ExtraSubscriptionTypeAdmin, ExtraSubscriptionCategoryAdmin
 from juntagrico.admins.job_admin import JobAdmin
 from juntagrico.admins.job_type_admin import JobTypeAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
@@ -35,7 +35,7 @@ addons.load_addons()
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(ExtraSubscription, ExtraSubscriptionAdmin)
 admin.site.register(ExtraSubscriptionType, ExtraSubscriptionTypeAdmin)
-admin.site.register(ExtraSubscriptionCategory, BaseAdmin)
+admin.site.register(ExtraSubscriptionCategory, ExtraSubscriptionCategoryAdmin)
 admin.site.register(SubscriptionSize, SubscriptionSizeAdmin)
 admin.site.register(SubscriptionType, SubscriptionTypeAdmin)
 admin.site.register(SubscriptionProduct, SubscriptionProductAdmin)

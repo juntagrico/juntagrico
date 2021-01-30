@@ -17,7 +17,7 @@ if Config.enable_shares():
     SubscriptionTypeAdmin.list_display.insert(2, 'shares')
 
 
-class SubscriptionSizeAdmin(SortableAdminMixin, BaseAdmin):
+class SubscriptionSizeAdmin(BaseAdmin):
     list_display = ['__str__', 'units', 'product', 'visible', 'depot_list']
 
 
