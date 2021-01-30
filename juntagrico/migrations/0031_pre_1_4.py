@@ -15,4 +15,14 @@ class Migration(migrations.Migration):
             name='cancellation_date',
             field=models.DateField(blank=True, null=True, verbose_name='Kündigungsdatum'),
         ),
+        migrations.AddField(
+            model_name='depot',
+            name='depot_list',
+            field=models.BooleanField(default=True, verbose_name='Sichtbar auf Depotliste'),
+        ),
+        migrations.AddField(
+            model_name='depot',
+            name='visible',
+            field=models.BooleanField(default=True, verbose_name='Sichtbar'),
+        ),
     ]
