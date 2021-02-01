@@ -97,12 +97,16 @@ def check_sub_primary(instance):
             code='invalid')
     if instance.parts.count() > 0 and instance.future_parts.count() == 0 and instance.cancellation_date is None:
         raise ValidationError(
-            _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil').format(
+            _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
+              ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
                 Config.vocabulary('subscription')),
             code='invalid')
 
 
 def check_children_dates(instance):
+    reactivation_info = ' Um die Aktivierung rückgängig zu machen oder in die Zukunft zu legen, ändere (bzw. leere) und speichere die Daten in dieser Reihenfolge:' \
+                        ' 1. Aktivierungsdaten der Bestandteile & Beitrittsdaten,' \
+                        ' 2. Aktivierungsdatum vom {0}'.format(Config.vocabulary('subscription'))
     try:
         for part in instance.parts.all():
             check_subpart_parent_dates(part, instance)
@@ -111,12 +115,12 @@ def check_children_dates(instance):
     except ValidationError:
         raise ValidationError(
             _(
-                'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum'),
+                'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum.' + reactivation_info),
             code='invalid')
     try:
         for membership in instance.subscriptionmembership_set.all():
             check_submembership_parent_dates(membership)
     except ValidationError:
         raise ValidationError(
-            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum'),
+            _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum.' + reactivation_info),
             code='invalid')
