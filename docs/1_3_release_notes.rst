@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+1.3.8
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix in member cancellation
+
 1.3.7
 -----
 Has no migrations
