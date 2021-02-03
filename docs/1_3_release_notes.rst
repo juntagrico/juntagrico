@@ -12,6 +12,10 @@ Fixes
 * Fix mail button in subscriptions for depot
 * Fix mail result page for area and depot admins
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Added hint on subscription date change workflow
+
 1.3.7
 -----
 Has no migrations
