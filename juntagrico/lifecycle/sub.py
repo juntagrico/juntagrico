@@ -104,9 +104,9 @@ def check_sub_primary(instance):
 
 
 def check_children_dates(instance):
-    reactivation_info = ' Um die Aktivierung rückgängig zu machen oder in die Zukunft zu legen, ändere (bzw. leere) und speichere die Daten in dieser Reihenfolge:' \
-                        ' 1. Aktivierungsdaten der Bestandteile & Beitrittsdaten,' \
-                        ' 2. Aktivierungsdatum vom {0}'.format(Config.vocabulary('subscription'))
+    reactivation_info = _(' Um die Aktivierung rückgängig zu machen oder in die Zukunft zu legen, ändere (bzw. leere) und speichere die Daten in dieser Reihenfolge:'
+                          ' 1. Aktivierungsdaten der Bestandteile & Beitrittsdaten,'
+                          ' 2. Aktivierungsdatum vom {0}').format(Config.vocabulary('subscription'))
     try:
         for part in instance.parts.all():
             check_subpart_parent_dates(part, instance)
