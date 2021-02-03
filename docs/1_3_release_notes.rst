@@ -8,6 +8,9 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix in member cancellation
+* Fix query for members in depot
+* Fix mail button in subscriptions for depot
+* Fix mail result page for area and depot admins
 
 1.3.7
 -----

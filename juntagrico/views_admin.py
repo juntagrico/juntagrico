@@ -88,7 +88,9 @@ def send_email_intern(request):
     return redirect('mail-result', numsent=sent)
 
 
-@permission_required('juntagrico.can_send_mails')
+@any_permission_required('juntagrico.can_send_mails',
+                         'juntagrico.is_depot_admin',
+                         'juntagrico.is_area_admin')
 def send_email_result(request, numsent):
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -205,6 +207,7 @@ def filter_subscriptions_depot(request, depot_id):
     renderdict['can_send_mails'] = True
     renderdict.update({
         'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
+        'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
     })
 
