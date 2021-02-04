@@ -130,7 +130,7 @@ class MemberDao:
     @staticmethod
     def member_with_active_subscription_for_depot(depot):
         return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_cancelled_subscription(),
-                                     subscriptionmembership__subscription__depot=depot )\
+                                     subscriptionmembership__subscription__depot=depot)\
             .exclude(q_deactivated())
 
     @staticmethod
