@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+1.3.9
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix in user name generation
+
 1.3.8
 -----
 Has no migrations

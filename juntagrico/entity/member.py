@@ -157,8 +157,7 @@ class Member(JuntagricoBaseModel):
         Callback to create corresponding user when new member is created.
         '''
         if created and instance.user is None:
-            username = make_username(
-                instance.first_name, instance.last_name, instance.email)
+            username = make_username(instance.first_name, instance.last_name)
             user = User(username=username)
             user.save()
             user = User.objects.get(username=username)
