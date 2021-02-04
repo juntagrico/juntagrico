@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix in user name generation
+* Fix in members joining a new subscription
 
 1.3.8
 -----
