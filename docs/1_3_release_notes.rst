@@ -12,6 +12,7 @@ Fixes
 * Fix mail button in subscriptions for depot
 * Fix mail result page for area and depot admins
 * Fix admin menu for depot and area admins
+* Check if change date format is valid
 
 1.3.7
 -----
