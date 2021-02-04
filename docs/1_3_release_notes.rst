@@ -14,6 +14,10 @@ Fixes
 * Fix admin menu for depot and area admins
 * Check if change date format is valid
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Added hint on subscription date change workflow
+
 1.3.7
 -----
 Has no migrations
