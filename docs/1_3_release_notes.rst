@@ -10,6 +10,10 @@ Fixes
 * Fix in user name generation
 * Fix in members joining a new subscription
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Added delivery copy action
+
 1.3.8
 -----
 Has no migrations
