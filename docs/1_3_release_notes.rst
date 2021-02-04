@@ -11,6 +11,7 @@ Fixes
 * Fix query for members in depot
 * Fix mail button in subscriptions for depot
 * Fix mail result page for area and depot admins
+* Check if change date format is valid
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^

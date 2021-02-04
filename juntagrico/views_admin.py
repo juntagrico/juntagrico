@@ -31,6 +31,7 @@ from juntagrico.util.subs import subscriptions_with_assignments
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
 from juntagrico.views import get_menu_dict
+from juntagrico.views_subscription import error_page
 
 
 @permission_required('juntagrico.can_send_mails')
@@ -510,8 +511,11 @@ def set_change_date(request):
     if request.method != 'POST':
         raise Http404
     raw_date = request.POST.get('date')
-    date = timezone.datetime.strptime(raw_date, '%m/%d/%Y').date()
-    request.session['changedate'] = date
+    try:
+        date = timezone.datetime.strptime(raw_date, '%m/%d/%Y').date()
+        request.session['changedate'] = date
+    except ValueError:
+        return error_page(request, _('Bitte gib ein Datum im Format MM/TT/JJJJ ein.'))
     return return_to_previous_location(request)
 
 
