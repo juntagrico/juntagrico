@@ -81,7 +81,6 @@ def get_menu_dict(request):
         'next_jobs': next_jobs,
         'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
         'can_filter_subscriptions': request.user.has_perm('juntagrico.can_filter_subscriptions'),
-        'can_send_mails': request.user.has_perm('juntagrico.can_send_mails'),
         'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
         'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         'depot_admin': depot_admin,
