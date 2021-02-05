@@ -24,7 +24,11 @@
             </div>
             {% if form.errors %}
                 <div class="offset-md-3 col-md-6 alert alert-danger">
-                    {% trans "Sorry, das ist kein gültiges Login" %}
+                    {% for fekey, fevalue in form.errors.items %}
+                        {% for ferror in fevalue %}
+                            {{ ferror|safe }}
+                        {% endfor %}
+                    {% endfor %}
                 </div>
             {% endif %}
             <div class="form-group row">
