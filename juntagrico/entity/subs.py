@@ -48,7 +48,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def overview(self):
-        namelist = [_(' Einheiten {0}').format(self.size)]
+        namelist = [self.size]
         namelist.extend(
             extra.type.name for extra in self.extra_subscriptions.all())
         return '%s' % (' + '.join(namelist))
@@ -99,8 +99,8 @@ class Subscription(Billable, SimpleStateModel):
     def size(self):
         sizes = {}
         for part in self.active_parts.all() or self.future_parts.all():
-            sizes[part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
-        return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
+            sizes[part.type.name + ' (' + part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
+        return ', '.join([key + ':' + str(value) + ')' for key, value in sizes.items()])
 
     @property
     def types_changed(self):
