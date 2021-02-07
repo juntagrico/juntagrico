@@ -1,4 +1,3 @@
-from django.contrib.auth.views import LoginView
 from django.urls import path
 
 from juntagrico import views as juntagrico
@@ -6,6 +5,7 @@ from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
+from juntagrico.util.auth import JuntagricoLoginView
 
 urlpatterns = [
     # general juntagrico stuff
@@ -26,7 +26,7 @@ urlpatterns = [
     path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),  #
     path('my/cookies', juntagrico.cookies, name='cookies'),  #
     path('logout/', juntagrico.logout_view, name='logout'),  #
-    path('accounts/login/', LoginView.as_view(), name='login'),
+    path('accounts/login/', JuntagricoLoginView.as_view(), name='login'),
 
     # area stuff
     path('my/areas', juntagrico.areas, name='areas'),  #

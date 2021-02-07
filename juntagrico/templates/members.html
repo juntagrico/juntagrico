@@ -14,7 +14,7 @@
         {% csrf_token %}
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden"name="recipients_count"id="recipients_count"/>
-        {% if can_send_mails %}
+        {% if can_send_mails or perms.juntagrico.can_send_mails %}
             <button type="submit" class="btn btn-success" id="send-email">
                 {% trans "E-Mail senden" %}
             </button>

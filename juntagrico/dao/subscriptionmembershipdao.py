@@ -10,9 +10,9 @@ class SubscriptionMembershipDao:
             .filter(member=member)
 
     @staticmethod
-    def get_other_active_for_member(member, subscription):
+    def get_other_active_for_member(member, subscription, asof=None):
         return SubscriptionMembership.objects.exclude(subscription=subscription) \
-            .filter(q_joined_subscription() & ~q_left_subscription()) \
+            .filter(q_joined_subscription() & ~q_left_subscription(asof)) \
             .filter(member=member)
 
     @staticmethod

@@ -2,7 +2,9 @@ import datetime
 
 from django.core.exceptions import ValidationError
 
+from juntagrico.admins.forms.delivery_copy_form import DeliveryCopyForm
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
+from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.jobs import RecuringJob
 from test.util.test import JuntagricoTestCase
 
@@ -49,3 +51,16 @@ class AdminTests(JuntagricoTestCase):
         form.full_clean()
         form.save()
         self.assertEqual(RecuringJob.objects.all().count(), initial_count + 2)
+
+    def testDeliveryCopyForm(self):
+        initial_count = Delivery.objects.all().count()
+        data = {'subscription_size': self.sub_size.pk,
+                'delivery_date': '26.07.2020',
+                }
+        form = DeliveryCopyForm(instance=self.delivery1, data=data)
+        form.full_clean()
+        form.clean()
+        form.save_m2m()
+        form.save()
+        self.assertEqual(Delivery.objects.all().count(), initial_count + 1)
+

@@ -1,6 +1,37 @@
 Release Notes
 =============
 
+1.3.9
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix in user name generation
+* Fix in members joining a new subscription
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Added delivery copy action
+* Deactivated members see mor meaningfull error message when trying to log in
+
+1.3.8
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix in member cancellation
+* Fix query for members in depot
+* Fix mail button in subscriptions for depot
+* Fix mail result page for area and depot admins
+* Fix admin menu for depot and area admins
+* Check if change date format is valid
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Added hint on subscription date change workflow
+
 1.3.7
 -----
 Has no migrations
