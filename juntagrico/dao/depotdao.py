@@ -12,6 +12,14 @@ class DepotDao:
         return Depot.objects.all()
 
     @staticmethod
+    def all_visible_depots():
+        return Depot.objects.all().filter(visible=True)
+
+    @staticmethod
+    def all_depots_for_list_order_by_code():
+        return Depot.objects.all().filter(depot_list=True).order_by('code')
+
+    @staticmethod
     def depots_for_contact(member):
         return Depot.objects.filter(contact=member)
 
@@ -20,5 +28,5 @@ class DepotDao:
         return Depot.objects.all().filter(id=identifier)[0]
 
     @staticmethod
-    def distinct_weekdays():
-        return Depot.objects.all().order_by('weekday').values('weekday').distinct()
+    def distinct_weekdays_for_depot_list():
+        return Depot.objects.all().filter(depot_list=True).order_by('weekday').values('weekday').distinct()
