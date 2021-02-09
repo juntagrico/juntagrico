@@ -78,7 +78,7 @@ class Command(BaseCommand):
             'addr_zipcode': props['plz'],
             'addr_location': props['ort'],
         })
-        depot, _ = Depot.objects.update_or_create(code=depot_dict['code'], defaults=depot_dict)
+        depot, _ = Depot.objects.update_or_create(**depot_dict)
         return depot
 
     def generate_subscription(self, main_member, co_member, depot, type):
