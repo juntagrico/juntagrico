@@ -160,7 +160,7 @@ class Member(JuntagricoBaseModel):
         '''
         if getattr(instance, 'user', None) is None:
             username = make_username(
-                instance.first_name, instance.last_name, instance.email)
+                instance.first_name, instance.last_name)
             user, created = User.objects.get_or_create(username=username)
             instance.user = user
 
