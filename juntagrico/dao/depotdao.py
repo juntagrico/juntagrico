@@ -16,8 +16,8 @@ class DepotDao:
         return Depot.objects.all().filter(visible=True)
 
     @staticmethod
-    def all_depots_for_list_order_by_code():
-        return Depot.objects.all().filter(depot_list=True).order_by('code')
+    def all_depots_for_list():
+        return Depot.objects.all().filter(depot_list=True)
 
     @staticmethod
     def depots_for_contact(member):
