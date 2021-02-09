@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-04 08:00+0100\n"
+"POT-Creation-Date: 2021-02-09 18:01+0100\n"
 "PO-Revision-Date: 2020-02-03 11:42+0000\n"
 "Last-Translator: Weblate Admin <weblate@example.com>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -18,6 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 3.10.3\n"
+
+#: .\juntagrico\admins\delivery_admin.py:22
+#, fuzzy
+#| msgid "Genau 1 Job auswählen!"
+msgid "Genau 1 Lieferung auswählen!"
+msgstr "Select exactly 1 job!"
+
+#: .\juntagrico\admins\delivery_admin.py:28
+#, fuzzy
+#| msgid "Lieferungen"
+msgid "Lieferung kopieren..."
+msgstr "Deliveries"
 
 #: .\juntagrico\admins\filters.py:15
 msgid "Nächste 30 Tage"
@@ -88,7 +100,7 @@ msgid "Anfangsdatum"
 msgstr "Start date"
 
 #: .\juntagrico\admins\forms\job_copy_form.py:26
-#: .\juntagrico\entity\member.py:56
+#: .\juntagrico\entity\member.py:58
 #: .\juntagrico\templates\management_lists\canceledlist.html:17
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:21
 #: .\juntagrico\templates\management_lists\share_canceledlist.html:40
@@ -204,7 +216,7 @@ msgstr ""
 #: .\juntagrico\templates\size_change.html:28
 #: .\juntagrico\templates\snippets\snippet_jobs.html:20
 #: .\juntagrico\templates\snippets\snippet_jobs.html:51
-#: .\juntagrico\templates\subscription.html:69 .\juntagrico\views_admin.py:348
+#: .\juntagrico\templates\subscription.html:69 .\juntagrico\views_admin.py:349
 msgid "Status"
 msgstr "Status"
 
@@ -323,7 +335,7 @@ msgstr "Operation contribution"
 
 #: .\juntagrico\config.py:35
 #: .\juntagrico\templates\createsubscription\summary.html:49
-#: .\juntagrico\views_admin.py:299 .\juntagrico\views_admin.py:349
+#: .\juntagrico\views_admin.py:300 .\juntagrico\views_admin.py:350
 msgid "Depot"
 msgstr "Depot"
 
@@ -376,13 +388,13 @@ msgstr "Creation date"
 msgid "Aktivierungsdatum"
 msgstr "Activation date"
 
-#: .\juntagrico\entity\__init__.py:39 .\juntagrico\entity\member.py:52
+#: .\juntagrico\entity\__init__.py:39 .\juntagrico\entity\member.py:54
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:18
 #: .\juntagrico\templates\management_lists\share_canceledlist.html:37
 msgid "Kündigungsdatum"
 msgstr "Cancelation date"
 
-#: .\juntagrico\entity\__init__.py:40 .\juntagrico\entity\member.py:54
+#: .\juntagrico\entity\__init__.py:40 .\juntagrico\entity\member.py:56
 #, fuzzy
 #| msgid "Deaktivierungssdatum"
 msgid "Deaktivierungsdatum"
@@ -435,7 +447,7 @@ msgid "Verrechenbare Einheiten"
 msgstr "Billable units"
 
 #: .\juntagrico\entity\billing.py:25 .\juntagrico\entity\subtypes.py:67
-#: .\juntagrico\views_admin.py:356
+#: .\juntagrico\views_admin.py:357
 msgid "Preis"
 msgstr "Price"
 
@@ -503,7 +515,7 @@ msgstr "Deliveries"
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:15
 #: .\juntagrico\templates\management_lists\share_canceledlist.html:34
 #: .\juntagrico\templates\members.html:28
-#: .\juntagrico\templates\members.html:53 .\juntagrico\views_admin.py:294
+#: .\juntagrico\templates\members.html:53 .\juntagrico\views_admin.py:295
 msgid "Name"
 msgstr "Name"
 
@@ -551,15 +563,15 @@ msgstr "Latitude"
 msgid "Longitude"
 msgstr "Longitude"
 
-#: .\juntagrico\entity\depot.py:25 .\juntagrico\entity\member.py:38
+#: .\juntagrico\entity\depot.py:25 .\juntagrico\entity\member.py:40
 msgid "Strasse"
 msgstr "Street"
 
-#: .\juntagrico\entity\depot.py:27 .\juntagrico\entity\member.py:39
+#: .\juntagrico\entity\depot.py:27 .\juntagrico\entity\member.py:41
 msgid "PLZ"
 msgstr "Postcode"
 
-#: .\juntagrico\entity\depot.py:29 .\juntagrico\entity\member.py:40
+#: .\juntagrico\entity\depot.py:29 .\juntagrico\entity\member.py:42
 #: .\juntagrico\templates\job.html:97
 #: .\juntagrico\templates\mails\member\depot_changed.txt:14
 #: .\juntagrico\templates\mails\member\job_canceled.txt:15
@@ -638,7 +650,7 @@ msgstr "Extra subscriptions"
 #: .\juntagrico\entity\jobs.py:19 .\juntagrico\entity\jobs.py:279
 #: .\juntagrico\templates\snippets\snippet_jobs.html:37
 #: .\juntagrico\templates\widgets\assignements.html:12
-#: .\juntagrico\views_admin.py:297
+#: .\juntagrico\views_admin.py:298
 msgid "Kernbereich"
 msgstr "Core area"
 
@@ -867,48 +879,48 @@ msgstr "MailTemplates"
 msgid "Benutzer kann Templates laden"
 msgstr "User can load templates"
 
-#: .\juntagrico\entity\member.py:34
+#: .\juntagrico\entity\member.py:36
 msgid "Vorname"
 msgstr "First name"
 
-#: .\juntagrico\entity\member.py:35
+#: .\juntagrico\entity\member.py:37
 msgid "Nachname"
 msgstr "Surname"
 
-#: .\juntagrico\entity\member.py:41
+#: .\juntagrico\entity\member.py:43
 msgid "Geburtsdatum"
 msgstr "Date of birth"
 
-#: .\juntagrico\entity\member.py:42
+#: .\juntagrico\entity\member.py:44
 msgid "Telefonnr"
 msgstr "Phone number"
 
-#: .\juntagrico\entity\member.py:44 .\juntagrico\templates\members.html:43
-#: .\juntagrico\templates\members.html:68 .\juntagrico\views_admin.py:302
+#: .\juntagrico\entity\member.py:46 .\juntagrico\templates\members.html:43
+#: .\juntagrico\templates\members.html:68 .\juntagrico\views_admin.py:303
 msgid "Mobile"
 msgstr "Mobile"
 
-#: .\juntagrico\entity\member.py:48
+#: .\juntagrico\entity\member.py:50
 #, fuzzy
 #| msgid "E-Mail Adresse"
 msgid "E-Mail-Adresse bestätigt"
 msgstr "E-mail address"
 
-#: .\juntagrico\entity\member.py:50
+#: .\juntagrico\entity\member.py:52
 msgid "Kontaktierbar von der Job Seite aus"
 msgstr "Contactable from the job page"
 
-#: .\juntagrico\entity\member.py:54
+#: .\juntagrico\entity\member.py:56
 msgid "Sperrt Login und entfernt von E-Mail-Listen"
 msgstr ""
 
-#: .\juntagrico\entity\member.py:56
+#: .\juntagrico\entity\member.py:58
 msgid ""
 "Voraususchtliches Datum an dem die Mitgliedschaft enden wird. Hat keinen "
 "Effekt im System"
 msgstr ""
 
-#: .\juntagrico\entity\member.py:58 .\juntagrico\entity\share.py:26
+#: .\juntagrico\entity\member.py:60 .\juntagrico\entity\share.py:26
 #: .\juntagrico\entity\subs.py:43
 #: .\juntagrico\templates\management_lists\canceledlist.html:28
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:35
@@ -917,35 +929,35 @@ msgstr ""
 msgid "Notizen"
 msgstr "Notes"
 
-#: .\juntagrico\entity\member.py:59 .\juntagrico\entity\share.py:27
+#: .\juntagrico\entity\member.py:61 .\juntagrico\entity\share.py:27
 #: .\juntagrico\entity\subs.py:44
 msgid "Notizen für Administration. Nicht sichtbar für {}"
 msgstr ""
 
-#: .\juntagrico\entity\member.py:176 .\juntagrico\entity\subs.py:268
+#: .\juntagrico\entity\member.py:177 .\juntagrico\entity\subs.py:268
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
 msgstr "User can filter {0}"
 
-#: .\juntagrico\entity\member.py:182
+#: .\juntagrico\entity\member.py:183
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Beitrittsdatum"
 msgstr "Date of birth"
 
-#: .\juntagrico\entity\member.py:183
+#: .\juntagrico\entity\member.py:184
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Austrittsdatum"
 msgstr "Date of birth"
 
-#: .\juntagrico\entity\member.py:190
+#: .\juntagrico\entity\member.py:191
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaft"
 msgstr "Cancel membership"
 
-#: .\juntagrico\entity\member.py:191
+#: .\juntagrico\entity\member.py:192
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaften"
@@ -1164,7 +1176,7 @@ msgstr "Change personal data"
 msgid "IBAN ist nicht gültig"
 msgstr "IBAN is not valid"
 
-#: .\juntagrico\forms.py:141 .\juntagrico\templates\registration\login.html:33
+#: .\juntagrico\forms.py:141 .\juntagrico\templates\registration\login.html:37
 msgid "Anmelden"
 msgstr "Log In"
 
@@ -2052,7 +2064,7 @@ msgstr "Personal data"
 #: .\juntagrico\templates\createsubscription\summary.html:30
 #: .\juntagrico\templates\createsubscription\summary.html:67
 #: .\juntagrico\templates\members.html:40
-#: .\juntagrico\templates\members.html:65 .\juntagrico\views_admin.py:301
+#: .\juntagrico\templates\members.html:65 .\juntagrico\views_admin.py:302
 msgid "Telefon"
 msgstr "Phone"
 
@@ -2233,7 +2245,7 @@ msgstr "You have no extra subscriptions"
 #: .\juntagrico\templates\menu\admin_menu.html:152
 #: .\juntagrico\templates\menu\admin_menu.html:258
 #: .\juntagrico\templates\widgets\assignements.html:7
-#: .\juntagrico\views_admin.py:342
+#: .\juntagrico\views_admin.py:343
 msgid "Übersicht"
 msgstr "Overview"
 
@@ -2865,7 +2877,7 @@ msgstr "To be able to log in to %(serverurl)s you used the following data"
 #: .\juntagrico\templates\members.html:62
 #: .\juntagrico\templates\newpassword.html:18
 #: .\juntagrico\templates\registration\login.html:11
-#: .\juntagrico\views_admin.py:300
+#: .\juntagrico\views_admin.py:301
 msgid "Email"
 msgstr "E-mail"
 
@@ -3644,15 +3656,11 @@ msgstr "Your %(v_member_type)s ship is terminated."
 msgid "Deine %(v_member_type)sschaft ist aktiv."
 msgstr "Your %(v_member_type)s ship is terminated."
 
-#: .\juntagrico\templates\registration\login.html:27
-msgid "Sorry, das ist kein gültiges Login"
-msgstr "Sorry, that's not a valid login"
-
-#: .\juntagrico\templates\registration\login.html:40
+#: .\juntagrico\templates\registration\login.html:44
 msgid "Neues Passwort anfordern"
 msgstr "Request new password"
 
-#: .\juntagrico\templates\registration\login.html:48
+#: .\juntagrico\templates\registration\login.html:52
 msgid "Registrieren und mitmachen!"
 msgstr "Register and join!"
 
@@ -4065,14 +4073,14 @@ msgid "Welchen Teil möchtest du ändern?"
 msgstr "Which part do you want to change?"
 
 #: .\juntagrico\templates\subscriptions.html:28
-#: .\juntagrico\templates\subscriptions.html:50 .\juntagrico\views_admin.py:343
+#: .\juntagrico\templates\subscriptions.html:50 .\juntagrico\views_admin.py:344
 #, fuzzy
 #| msgid "Hauptbezieher"
 msgid "HauptbezieherIn"
 msgstr "Main recipient"
 
 #: .\juntagrico\templates\subscriptions.html:31
-#: .\juntagrico\templates\subscriptions.html:53 .\juntagrico\views_admin.py:347
+#: .\juntagrico\templates\subscriptions.html:53 .\juntagrico\views_admin.py:348
 #, fuzzy
 #| msgid "Weitere Bezieher"
 msgid "Weitere BezieherInnen"
@@ -4145,6 +4153,15 @@ msgstr "Next Jobs"
 #| msgid "Noch für keine Einsätzte angemeldet"
 msgid "Noch für keine Einsätze angemeldet"
 msgstr "Not registered for any jobs"
+
+#: .\juntagrico\util\auth.py:31
+msgid "Sorry, das ist kein gültiges Login"
+msgstr "Sorry, that's not a valid login"
+
+#: .\juntagrico\util\auth.py:32
+msgid ""
+"Deine Mitgliedschaft ist deaktiviert. Bei Fragen melde dich bitte bei {}"
+msgstr ""
 
 #: .\juntagrico\util\ical.py:40 .\juntagrico\util\ical.py:54
 msgid "Einsatz"
@@ -4271,95 +4288,95 @@ msgstr "(with another person)"
 msgid " (mit {} weiteren Personen)"
 msgstr "(with {} other people)"
 
-#: .\juntagrico\views_admin.py:149
+#: .\juntagrico\views_admin.py:150
 #, fuzzy
 #| msgid "Kein/e/n {0}"
 msgid "Alle aktiven {}"
 msgstr "No {0}"
 
-#: .\juntagrico\views_admin.py:160
+#: .\juntagrico\views_admin.py:161
 #, fuzzy
 #| msgid "Alte {0}"
 msgid "Alle {}"
 msgstr "Old {0}"
 
-#: .\juntagrico\views_admin.py:174 .\juntagrico\views_admin.py:212
+#: .\juntagrico\views_admin.py:175 .\juntagrico\views_admin.py:213
 msgid "Alle aktiven {} im {} {}"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:188
+#: .\juntagrico\views_admin.py:189
 #, fuzzy
 #| msgid "Neues Mitglied im Taetigkeitsbereich {0}"
 msgid "Alle aktiven {} im Tätigkeitsbereich {}"
 msgstr "New member in activity area {0}"
 
-#: .\juntagrico\views_admin.py:198
+#: .\juntagrico\views_admin.py:199
 #, fuzzy
 #| msgid "Alle Lieferungen im Überblick"
 msgid "Alle aktiven {} im Überblick"
 msgstr "Overview of all delivieries"
 
-#: .\juntagrico\views_admin.py:298
+#: .\juntagrico\views_admin.py:299
 msgid "Taetigkeitsbereiche"
 msgstr "Activity areas"
 
-#: .\juntagrico\views_admin.py:311
+#: .\juntagrico\views_admin.py:312
 msgid "-Kein Tätigkeitsbereich-"
 msgstr "- No activity area -"
 
-#: .\juntagrico\views_admin.py:313
+#: .\juntagrico\views_admin.py:314
 msgid "Kein Depot definiert"
 msgstr "No depot defined"
 
-#: .\juntagrico\views_admin.py:344
+#: .\juntagrico\views_admin.py:345
 #, fuzzy
 #| msgid "Hauptbezieher"
 msgid "HauptbezieherInEmail"
 msgstr "Main recipient"
 
-#: .\juntagrico\views_admin.py:345
+#: .\juntagrico\views_admin.py:346
 #, fuzzy
 #| msgid "Hauptbezieher"
 msgid "HauptbezieherInTelefon"
 msgstr "Main recipient"
 
-#: .\juntagrico\views_admin.py:346
+#: .\juntagrico\views_admin.py:347
 #, fuzzy
 #| msgid "Hauptbezieher"
 msgid "HauptbezieherInMobile"
 msgstr "Main recipient"
 
-#: .\juntagrico\views_admin.py:351
+#: .\juntagrico\views_admin.py:352
 msgid "{} soll"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:352
+#: .\juntagrico\views_admin.py:353
 msgid "{} status(%)"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:353
+#: .\juntagrico\views_admin.py:354
 #, fuzzy
 #| msgid "Kernbereich"
 msgid "{} Kernbereich"
 msgstr "Core area"
 
-#: .\juntagrico\views_admin.py:354
+#: .\juntagrico\views_admin.py:355
 #, fuzzy
 #| msgid "Kernbereiche "
 msgid "{} Kernbereich soll"
 msgstr "core areas "
 
-#: .\juntagrico\views_admin.py:355
+#: .\juntagrico\views_admin.py:356
 #, fuzzy
 #| msgid "Kernbereich Partner"
 msgid "{} Kernbereich status(%)"
 msgstr "Partners core area"
 
-#: .\juntagrico\views_admin.py:518
+#: .\juntagrico\views_admin.py:519
 msgid "Bitte gib ein Datum im Format MM/TT/JJJJ ein."
 msgstr ""
 
-#: .\juntagrico\views_admin.py:541
+#: .\juntagrico\views_admin.py:542
 msgid "Haubtbezieher ist nicht gesetzt"
 msgstr ""
 
