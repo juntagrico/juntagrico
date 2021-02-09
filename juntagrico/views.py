@@ -17,6 +17,7 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
@@ -86,6 +87,7 @@ def get_menu_dict(request):
         'depot_admin': depot_admin,
         'area_admin': area_admin,
         'show_core': ActivityAreaDao.all_core_areas().count() > 0,
+        'requires_core': SubscriptionTypeDao.get_with_core().count() > 0,
         'show_extras': JobExtraDao.all_job_extras().count() > 0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0,
         'admin_menus': addons.config.get_admin_menus(),
@@ -216,6 +218,7 @@ def areas(request):
     '''
     member = request.user.member
     my_areas = []
+    last_was_core = True
     for area in ActivityAreaDao.all_visible_areas_ordered():
         my_areas.append({
             'name': area.name,
@@ -223,8 +226,10 @@ def areas(request):
             'id': area.id,
             'core': area.core,
             'coordinator': area.coordinator,
-            'email': area.email
+            'email': area.email,
+            'first_non_core': not area.core and last_was_core
         })
+        last_was_core = area.core
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -525,3 +530,7 @@ def logout_view(request):
 
 def cookies(request):
     return render(request, 'cookie.html', {})
+
+
+def i18njs(request):
+    return render(request, 'js/i18n.js', {}, content_type='application/javascript')

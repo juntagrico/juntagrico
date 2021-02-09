@@ -104,7 +104,7 @@ class Command(BaseCommand):
             Share.objects.create(**share_dict)
 
     def generate_depot(self, props, member, i, coordinates):
-        depot_dict = {'code': 'D' + str(i), 'name': props['betriebsname'], 'weekday': 2, 'latitude': str(coordinates[1]),
+        depot_dict = {'name': props['betriebsname'], 'weekday': 2, 'latitude': str(coordinates[1]),
                       'longitude': str(coordinates[0]), 'addr_street': props['strasselang'] + ' ' + props['hnr'], 'addr_zipcode': props['plz'],
                       'addr_location': props['ort'], 'description': 'Hinter dem Restaurant ' + props['betriebsname'], 'contact': member}
         depot = Depot.objects.create(**depot_dict)

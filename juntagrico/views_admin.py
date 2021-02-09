@@ -138,11 +138,23 @@ def my_mails_intern(request, mail_url, error_message=None):
 
 
 @permission_required('juntagrico.can_filter_members')
-def filters(request):
-    members = MemberDao.active_members_with_assignments_count()
+def filters_active(request):
+    members = MemberDao.active_members()
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'members': members
+        'members': members,
+        'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
+    })
+    return render(request, 'members.html', renderdict)
+
+
+@permission_required('juntagrico.can_filter_members')
+def filters(request):
+    members = MemberDao.all_members()
+    renderdict = get_menu_dict(request)
+    renderdict.update({
+        'members': members,
+        'title': _('Alle {}').format(Config.vocabulary('member_pl'))
     })
     return render(request, 'members.html', renderdict)
 
@@ -150,12 +162,13 @@ def filters(request):
 @permission_required('juntagrico.is_depot_admin')
 def filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
-    members = MemberDao.members_with_assignments_count_for_depot(depot)
+    members = MemberDao.member_with_active_subscription_for_depot(depot)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'mail_url': 'mail-depot'
+        'mail_url': 'mail-depot',
+        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
     })
     return render(request, 'members.html', renderdict)
 
@@ -163,23 +176,23 @@ def filters_depot(request, depot_id):
 @permission_required('juntagrico.is_area_admin')
 def filters_area(request, area_id):
     area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
-    members = MemberDao.members_with_assignments_count_in_area(area)
+    members = MemberDao.members_in_area(area)
     renderdict = get_menu_dict(request)
     renderdict['can_send_mails'] = True
     renderdict.update({
         'members': members,
-        'mail_url': 'mail-area'
+        'mail_url': 'mail-area',
+        'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
     })
     return render(request, 'members.html', renderdict)
 
 
 @permission_required('juntagrico.can_filter_subscriptions')
 def subscriptions(request):
-    subscriptions_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
-
     renderdict = get_menu_dict(request)
     renderdict.update({
-        'subscriptions': subscriptions_list
+        'subscriptions': SubscriptionDao.all_active_subscritions(),
+        'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
     })
 
     return render(request, 'subscriptions.html', renderdict)
@@ -188,11 +201,11 @@ def subscriptions(request):
 @permission_required('juntagrico.is_depot_admin')
 def filter_subscriptions_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
-    subscriptions_list = subscriptions_with_assignments(SubscriptionDao.active_subscritions_by_depot(depot))
-
     renderdict = get_menu_dict(request)
+    renderdict['can_send_mails'] = True
     renderdict.update({
-        'subscriptions': subscriptions_list
+        'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
+        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
     })
 
     return render(request, 'subscriptions.html', renderdict)
@@ -342,11 +355,23 @@ def excel_export_subscriptions(request):
 
     row = 1
     for sub in subs:
+        primary_member = sub['subscription'].primary_member
+        if primary_member is not None:
+            name = primary_member.get_name()
+            email = primary_member.email
+            phone = primary_member.phone or ''
+            mobile = primary_member.mobile_phone or ''
+        else:
+            name = ''
+            email = ''
+            phone = ''
+            mobile = ''
+
         worksheet_s.write_string(row, 0, sub['subscription'].overview)
-        worksheet_s.write_string(row, 1, sub['subscription'].primary_member.get_name())
-        worksheet_s.write_string(row, 2, sub['subscription'].primary_member.email)
-        worksheet_s.write_string(row, 3, sub['subscription'].primary_member.phone or '')
-        worksheet_s.write_string(row, 4, sub['subscription'].primary_member.mobile_phone or '')
+        worksheet_s.write_string(row, 1, name)
+        worksheet_s.write_string(row, 2, email)
+        worksheet_s.write_string(row, 3, phone)
+        worksheet_s.write_string(row, 4, mobile)
         worksheet_s.write_string(row, 5, sub['subscription'].other_recipients_names)
         worksheet_s.write_string(row, 6, sub['subscription'].state_text)
         worksheet_s.write_string(row, 7, sub['subscription'].depot.name)
@@ -505,8 +530,19 @@ def sub_inconsistencies(request):
                 member.clean()
         except Exception as e:
             management_list.append({'subscription': sub, 'error': e})
+        if sub.primary_member is None:
+            management_list.append({'subscription': sub, 'error': _('Haubtbezieher ist nicht gesetzt')})
     render_dict = get_menu_dict(request)
     render_dict.update({'change_date_disabled': True,
                         'email_form_disabled': True})
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/inconsistent.html', request)
+
+
+@permission_required('juntagrico.is_operations_group')
+def assignments(request):
+    management_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
+    render_dict = get_menu_dict(request)
+    render_dict.update({'change_date_disabled': True})
+    return subscription_management_list(management_list, render_dict,
+                                        'management_lists/assignments.html', request)
