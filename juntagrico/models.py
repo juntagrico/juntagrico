@@ -35,7 +35,7 @@ class SpecialRoles(models.Model):
 
 
 ''' non lifecycle related signals '''
-signals.post_save.connect(Member.create, sender=Member)
+signals.pre_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)
 signals.pre_save.connect(Assignment.pre_save, sender=Assignment)
 ''' lifecycle signal handling'''
