@@ -26,6 +26,7 @@ Additional to juntagrico the following apps have to installed into django:
         'django.contrib.admin',
         'juntagrico',
         'impersonate',
+        'adminsortable2',
     ]
     
 The following authentication settings are required

@@ -187,13 +187,11 @@ class JuntagricoTestCase(TestCase):
         depots
         """
         depot_data = {
-            'code': 'c1',
             'name': 'depot',
             'contact': self.member,
             'weekday': 1}
         self.depot = Depot.objects.create(**depot_data)
         depot_data = {
-            'code': 'c2',
             'name': 'depot2',
             'contact': self.member,
             'weekday': 1}

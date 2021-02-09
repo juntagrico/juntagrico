@@ -62,7 +62,6 @@ class Command(BaseCommand):
 
     def generate_depot(self, props, member, i):
         depot_dict = {
-            'code': 'D' + str(i),
             'contact': member,
             'description': fake.random_element(elements=[
                 'Hinter dem Restaurant'
