@@ -2,6 +2,7 @@ from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
+from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType, ExtraSubscription
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
@@ -26,6 +27,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_sub()
         self.set_up_extra_sub()
         self.set_up_mail_template()
+        self.set_up_deliveries()
 
     @staticmethod
     def create_member(email):
@@ -283,6 +285,14 @@ class JuntagricoTestCase(TestCase):
     def set_up_mail_template(self):
         mail_template_data = {'name': 'MailTemplate'}
         self.mail_template = MailTemplate.objects.create(**mail_template_data)
+
+    def set_up_deliveries(self):
+        delivery_data = {'delivery_date': '2017-03-27',
+                         'subscription_size': self.sub_size}
+        self.delivery1 = Delivery.objects.create(**delivery_data)
+        delivery_data['delivery_date']='2017-03-28'
+        self.delivery2 = Delivery.objects.create(**delivery_data)
+        DeliveryItem.objects.create(delivery=self.delivery1)
 
     def assertGet(self, url, code=200, member=None):
         login_member = member or self.member

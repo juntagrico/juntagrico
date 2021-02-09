@@ -29,5 +29,5 @@ class SubscriptionMembershipAdminForm(forms.ModelForm):
 
     def clean(self):
         if 'member' in self.cleaned_data:
-            check_sub_membership_consistency_ms(self.cleaned_data['member'], self.cleaned_data['subscription'])
+            check_sub_membership_consistency_ms(self.cleaned_data['member'], self.cleaned_data['subscription'], self.cleaned_data['join_date'])
         return forms.ModelForm.clean(self)

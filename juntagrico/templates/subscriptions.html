@@ -5,7 +5,7 @@
 {% block page_title %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
     <h3>
-        {% blocktrans %}Alle {{ v_subscription_pl }} im Überblick{% endblocktrans %}
+        {{ title }}
     </h3>
 {% endblock %}
 {% block content %}
@@ -14,9 +14,9 @@
         {% csrf_token %}
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden"name="recipients_count"id="recipients_count"/>
-        {% if can_send_mails %}
+        {% if can_send_mails or perms.juntagrico.can_send_mails %}
             <button type="submit" class="btn btn-success" id="send-email">
-                {% trans "Email senden" %}
+                {% trans "E-Mail senden" %}
             </button>
         {% endif %}
     </form>
@@ -25,10 +25,10 @@
             <thead>
                 <tr>
                     <th>
-                        {% trans "Hauptbezieher" %}
+                        {% trans "HauptbezieherIn" %}
                     </th>
                     <th>
-                        {% trans "Weitere Bezieher" %}
+                        {% trans "Weitere BezieherInnen" %}
                     </th>
                     <th>
                         {% vocabulary "depot" %}
@@ -37,31 +37,20 @@
                         {% trans "Inhalt" %}
                     </th>
                     <th>
-                        {% vocabulary "assignment_pl" %}
-                    </th>
-                    {% if show_core %}
-                        <th>
-                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
-                        </th>
-                    {% endif %}
-                    <th>
-                        {% trans "Aktiv" %}
-                    </th>
-                    <th>
                         {% trans "Aktivierungsdatum" %}
                     </th>
                     <th>
-                        {% trans "Emails" %}
+                        {% trans "E-Mails" %}
                     </th>
                 </tr>
             </thead>
             <tfoot>
                 <tr>
                     <th>
-                        {% trans "Hauptbezieher" %}
+                        {% trans "HauptbezieherIn" %}
                     </th>
                     <th>
-                        {% trans "Weitere Bezieher" %}
+                        {% trans "Weitere BezieherInnen" %}
                     </th>
                     <th>
                         {% vocabulary "depot" %}
@@ -70,21 +59,10 @@
                         {% trans "Inhalt" %}
                     </th>
                     <th>
-                        {% vocabulary "assignment_pl" %}
-                    </th>
-                    {% if show_core %}
-                        <th>
-                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
-                        </th>
-                    {% endif %}
-                    <th>
-                        {% trans "Aktiv" %}
-                    </th>
-                    <th>
                         {% trans "Aktivierungsdatum" %}
                     </th>
                     <th>
-                        {% trans "Emails" %}
+                        {% trans "E-Mails" %}
                     </th>
                 </tr>
             </tfoot>
@@ -93,46 +71,27 @@
                     <tr>
                         <td>
                             {% if operation_group %}
-                                <a href="/impersonate/{{ subscription.subscription.primary_member.user.id }}"target="__blank">
+                                <a href="/impersonate/{{ subscription.primary_member.user.id }}"target="__blank">
                                 {% endif %}
-                                {{ subscription.subscription.primary_member.first_name }} {{ subscription.subscription.primary_member.last_name }}
+                                {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
                                 {% if operation_group %}
                                 </a>
                             {% endif %}
                         </td>
                         <td>
-                            {{ subscription.subscription.recipients_names }}
+                            {{ subscription.other_recipients_names }}
                         </td>
                         <td>
-                            {{ subscription.subscription.depot.name }}
+                            {{ subscription.depot.name }}
                         </td>
                         <td>
-                            {{ subscription.subscription.overview }}
+                            {{ subscription.overview }}
                         </td>
                         <td>
-                            N%-{% if subscription.assignments >= 1 and subscription.assignments < 10 %}0{% endif %}{{ subscription.assignments|floatformat }}
-                            (von {{ subscription.subscription.required_assignments }})
-                        </td>
-                        {% if show_core %}
-                            <td>
-                                C%-{% if subscription.core_assignments >= 1 and subscription.core_assignments < 10 %}0{% endif %}{{ subscription.core_assignments|floatformat }}
-                                (von {{ subscription.subscription.required_core_assignments }})
-                            </td>
-                        {% endif %}
-                        <td>
-                            {% if subscription.subscription.active %}
-                                <img src="{% images "single_full" %}"/>
-                                {% trans "Aktiv" %}
-                            {% else %}
-                                <img src="{% images "single_empty" %}"/>
-                                {% trans "Wartend" %}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ subscription.subscription.activation_date|date:"Y-m-d" }}
+                            {{ subscription.activation_date|date:"Y-m-d" }}
                         </td>
                         <td class="email">
-                            {% for recipient in subscription.subscription.recipients %}
+                            {% for recipient in subscription.recipients %}
                                 {{ recipient.email }}
                                 {% if not forloop.last %}
                                     ,
@@ -146,14 +105,6 @@
     </div>
     <br/>
     <br/>
-    <script>
-        var email_string = "{% trans "Email senden" %}";
-        var send_string = "{% trans "senden" %}";
-        var email_single_string = "{% trans "Email an diesen" %}";
-        var email_multi_string = "{% trans "Email an diese" %}"
-        var member_string = "{% vocabulary "member" %}";
-        var members_string = "{% vocabulary "member_pl" %}";
-    </script>
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript" src="/static/external/datatables.min.js">

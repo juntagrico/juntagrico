@@ -17,6 +17,7 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.dao.memberdao import MemberDao
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
@@ -80,12 +81,12 @@ def get_menu_dict(request):
         'next_jobs': next_jobs,
         'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
         'can_filter_subscriptions': request.user.has_perm('juntagrico.can_filter_subscriptions'),
-        'can_send_mails': request.user.has_perm('juntagrico.can_send_mails'),
         'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
         'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
         'depot_admin': depot_admin,
         'area_admin': area_admin,
         'show_core': ActivityAreaDao.all_core_areas().count() > 0,
+        'requires_core': SubscriptionTypeDao.get_with_core().count() > 0,
         'show_extras': JobExtraDao.all_job_extras().count() > 0,
         'show_deliveries': len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0,
         'admin_menus': addons.config.get_admin_menus(),
@@ -216,6 +217,7 @@ def areas(request):
     '''
     member = request.user.member
     my_areas = []
+    last_was_core = True
     for area in ActivityAreaDao.all_visible_areas_ordered():
         my_areas.append({
             'name': area.name,
@@ -223,8 +225,10 @@ def areas(request):
             'id': area.id,
             'core': area.core,
             'coordinator': area.coordinator,
-            'email': area.email
+            'email': area.email,
+            'first_non_core': not area.core and last_was_core
         })
+        last_was_core = area.core
 
     renderdict = get_menu_dict(request)
     renderdict.update({
@@ -438,7 +442,6 @@ def cancel_membership(request):
             adminnotification.member_canceled(member, end_date, message)
         else:
             member.deactivation_date = now
-
         member.save()
         for share in member.active_shares:
             cancel_share(share, now, end_date)
@@ -449,13 +452,12 @@ def cancel_membership(request):
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future
-    future_active = f_sub is not None and f_sub.state == 'active' and f_sub.state == 'waiting'
-    current_active = sub is not None and sub.state == 'active' and sub.state == 'waiting'
+    future_active = f_sub is not None and (f_sub.state == 'active' or f_sub.state == 'waiting')
+    current_active = sub is not None and (sub.state == 'active' or sub.state == 'waiting')
     future = future_active and f_sub.share_overflow - asc < 0
     current = current_active and sub.share_overflow - asc < 0
     share_error = future or current
-    can_cancel = not coop_member or (not missing_iban and not share_error)
-
+    can_cancel = ((not missing_iban and not share_error) or not coop_member) and not future_active and not current_active
     renderdict = get_menu_dict(request)
     renderdict.update({
         'coop_member': coop_member,
@@ -525,3 +527,7 @@ def logout_view(request):
 
 def cookies(request):
     return render(request, 'cookie.html', {})
+
+
+def i18njs(request):
+    return render(request, 'js/i18n.js', {}, content_type='application/javascript')

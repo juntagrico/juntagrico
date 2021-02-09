@@ -5,7 +5,7 @@
 {% block page_title %}
     {% vocabulary "member_pl" as v_member_pl %}
     <h3>
-        {% blocktrans %}Alle {{ v_member_pl }} im Überblick{% endblocktrans %}
+        {{ title }}
     </h3>
 {% endblock %}
 {% block content %}
@@ -14,9 +14,9 @@
         {% csrf_token %}
         <input type="hidden" name="recipients" id="recipients"/>
         <input type="hidden"name="recipients_count"id="recipients_count"/>
-        {% if can_send_mails %}
+        {% if can_send_mails or perms.juntagrico.can_send_mails %}
             <button type="submit" class="btn btn-success" id="send-email">
-                {% trans "Email senden" %}
+                {% trans "E-Mail senden" %}
             </button>
         {% endif %}
     </form>
@@ -28,15 +28,7 @@
                         {% trans "Name" %}
                     </th>
                     <th>
-                        {% vocabulary "assignment_pl" %}
-                    </th>
-                    {% if show_core %}
-                        <th>
-                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
-                        </th>
-                    {% endif %}
-                    <th>
-                        {% trans "Taetigkeitsbereiche" %}
+                        {% trans "Tätigkeitsbereiche" %}
                     </th>
                     <th>
                         {% vocabulary "depot" %}
@@ -61,15 +53,7 @@
                         {% trans "Name" %}
                     </th>
                     <th>
-                        {% vocabulary "assignment_pl" %}
-                    </th>
-                    {% if show_core %}
-                        <th>
-                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
-                        </th>
-                    {% endif %}
-                    <th>
-                        {% trans "Taetigkeitsbereiche" %}
+                        {% trans "Tätigkeitsbereiche" %}
                     </th>
                     <th>
                         {% vocabulary "depot" %}
@@ -100,23 +84,6 @@
                                 </a>
                             {% endif %}
                         </td>
-                        <td>
-                            {% if member.assignment_count %}
-                            N%-{% if member.assignment_count >= 1 and member.assignment_count < 10 %}0{% endif %}{{ member.assignment_count|floatformat }}
-                            {% else %}
-                            N%-0
-                            {% endif %}
-
-                        </td>
-                        {% if show_core %}
-                            <td>
-                            {% if member.core_assignment_count %}
-                            C%-{% if member.core_assignment_count >= 1 and member.core_assignment_count < 10 %}0{% endif %}{{ member.core_assignment_count|floatformat }}
-                            {% else %}
-                            C%-0
-                            {% endif %}
-                            </td>
-                        {% endif %}
                         <td>
                             {% for area in member.areas.all %}
                                 {{ area.name }},
@@ -154,14 +121,6 @@
     </div>
     <br/>
     <br/>
-    <script>
-        var email_string = "{% trans "Email senden" %}";
-        var send_string = "{% trans "senden" %}";
-        var email_single_string = "{% trans "Email an diesen" %}";
-        var email_multi_string = "{% trans "Email an diese" %}"
-        var member_string = "{% vocabulary "member" %}";
-        var members_string = "{% vocabulary "member_pl" %}";
-    </script>
 {% endblock %}
 {% block scripts %}
     <script type="text/javascript" src="/static/external/datatables.min.js">

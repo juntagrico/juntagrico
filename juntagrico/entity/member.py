@@ -17,7 +17,9 @@ def q_joined_subscription():
     return Q(join_date__isnull=False, join_date__lte=timezone.now().date())
 
 
-def q_left_subscription():
+def q_left_subscription(asof=None):
+    if asof is not None:
+        return Q(leave_date__isnull=False, leave_date__lte=asof)
     return Q(leave_date__isnull=False, leave_date__lte=timezone.now().date())
 
 
@@ -157,8 +159,7 @@ class Member(JuntagricoBaseModel):
         Callback to create corresponding user when new member is created.
         '''
         if created and instance.user is None:
-            username = make_username(
-                instance.first_name, instance.last_name, instance.email)
+            username = make_username(instance.first_name, instance.last_name)
             user = User(username=username)
             user.save()
             user = User.objects.get(username=username)
