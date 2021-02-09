@@ -24,6 +24,7 @@ from juntagrico.entity.share import Share
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location
+from juntagrico.util.models import q_cancelled
 from juntagrico.view_decorators import any_permission_required
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
@@ -459,7 +460,7 @@ def typechangelist(request):
     render_dict = get_menu_dict(request)
     render_dict.update(get_changedate(request))
     changedlist = []
-    subscriptions_list = SubscriptionDao.all_active_subscritions()
+    subscriptions_list = SubscriptionDao.all_active_subscritions().filter(~q_cancelled())
     for subscription in subscriptions_list:
         if subscription.types_changed > 0:
             changedlist.append(subscription)

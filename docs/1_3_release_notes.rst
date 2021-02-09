@@ -9,11 +9,12 @@ Fixes
 ^^^^^
 * Fix in user name generation
 * Fix in members joining a new subscription
+* Fix cancelled subscription will no longer show up on type changes list
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Added delivery copy action
-* Deactivated members see mor meaningfull error message when trying to log in
+* Deactivated members see more meaningfull error message when trying to log in
 
 1.3.8
 -----
