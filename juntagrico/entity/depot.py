@@ -31,7 +31,6 @@ class Depot(JuntagricoBaseModel):
     visible = models.BooleanField(_('Sichtbar'), default=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
-
     overview_cache = None
     subscription_cache = None
 
@@ -39,7 +38,8 @@ class Depot(JuntagricoBaseModel):
         return '%s %s' % (self.id, self.name)
 
     def active_subscriptions(self):
-        return self.subscription_set.filter(q_isactive()).order_by('primary_member__first_name', 'primary_member__last_name')
+        return self.subscription_set.filter(q_isactive()).order_by('primary_member__first_name',
+                                                                   'primary_member__last_name')
 
     @property
     def has_geo(self):
