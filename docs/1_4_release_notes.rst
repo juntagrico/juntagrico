@@ -12,6 +12,7 @@ Features & Improvements
 * Admin Features:
     * Added possibility to hide depots from depot list
     * Added sorting in the data administration for depot, area, extrasubscription type and category, list messages as well as subscription type and product
+    * New setting SUB_OVERVIEW_FORMAT for the formatting of the subscription overview
 
 * Developer Features:
 

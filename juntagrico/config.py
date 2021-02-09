@@ -11,6 +11,7 @@ def _get_setting_with_key(setting_key, default):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
         return (default() if callable(default) else default)[key]
+
     return inner
 
 
@@ -86,6 +87,13 @@ class Config:
             'confirm_text': _('einverstanden'),
             'link_text': _('Hier findest du mehr zum Thema'),
             'url': '/my/cookies'
+        }
+    )
+    sub_overview_format = _get_setting_with_key(
+        'SUB_OVERVIEW_FORMAT',
+        lambda: {
+            'delimiter': '|',
+            'format': '{product}:{size}:{type}={amount}'
         }
     )
 
