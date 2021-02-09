@@ -8,8 +8,8 @@ class DepotDao:
         return Depot.objects.all()
 
     @staticmethod
-    def all_depots_order_by_code():
-        return Depot.objects.all().order_by('code')
+    def all_depots_ordered():
+        return Depot.objects.all()
 
     @staticmethod
     def all_visible_depots():

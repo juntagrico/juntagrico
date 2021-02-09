@@ -44,10 +44,10 @@ class Command(BaseCommand):
                           'visible': True, 'required_assignments': 10, 'price': 1000,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
         subtype = SubscriptionType.objects.create(**subtype_fields)
-        depot1_fields = {'code': 'D1', 'name': 'Toblerplatz', 'weekday': 2, 'latitude': '47.379308',
+        depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'latitude': '47.379308',
                          'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
                          'addr_location': 'Zürich', 'description': 'Hinter dem Migros', 'contact': member_2}
-        depot2_fields = {'code': 'D2', 'name': 'Siemens', 'weekday': 4, 'latitude': '47.379173',
+        depot2_fields = {'name': 'Siemens', 'weekday': 4, 'latitude': '47.379173',
                          'longitude': '8.495392', 'addr_street': 'Albisriederstrasse 207', 'addr_zipcode': '8047',
                          'addr_location': 'Zürich', 'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
         depot1 = Depot.objects.create(**depot1_fields)

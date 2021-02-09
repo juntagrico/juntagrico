@@ -1,8 +1,9 @@
 from juntagrico.admins import BaseAdmin
 from juntagrico.config import Config
+from adminsortable2.admin import SortableAdminMixin
 
 
-class SubscriptionTypeAdmin(BaseAdmin):
+class SubscriptionTypeAdmin(SortableAdminMixin, BaseAdmin):
     list_display = ['__str__', 'price', 'required_assignments',
                     'required_core_assignments', 'visible', 'trial']
 
@@ -18,3 +19,7 @@ if Config.enable_shares():
 
 class SubscriptionSizeAdmin(BaseAdmin):
     list_display = ['__str__', 'units', 'product', 'visible', 'depot_list']
+
+
+class SubscriptionProductAdmin(SortableAdminMixin, BaseAdmin):
+    pass
