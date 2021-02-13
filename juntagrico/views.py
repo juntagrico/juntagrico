@@ -526,7 +526,7 @@ def logout_view(request):
 
 
 def cookies(request):
-    return render(request, 'cookie.html', {})
+    return render(request, 'cookie.html', get_page_dict(request))
 
 
 def i18njs(request):

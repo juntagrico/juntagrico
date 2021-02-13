@@ -10,6 +10,7 @@ from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCo
 from juntagrico.util import temporal
 from juntagrico.view_decorators import create_subscription_session
 from juntagrico.util.management import new_signup
+from juntagrico.views import get_page_dict
 
 
 @create_subscription_session
@@ -22,11 +23,12 @@ def cs_select_subscription(request, cs_session):
     else:
         form = SubscriptionPartSelectForm(cs_session.subscriptions)
 
-    render_dict = {
+    render_dict = get_page_dict(request)
+    render_dict.update({
         'form': form,
         'subscription_selected': sum(form.get_selected().values()) > 0,
         'hours_used': Config.assignment_unit() == 'HOURS',
-    }
+    })
     return render(request, 'createsubscription/select_subscription.html', render_dict)
 
 
@@ -38,12 +40,13 @@ def cs_select_depot(request, cs_session):
 
     depots = DepotDao.all_depots()
     requires_map = any(depot.has_geo for depot in depots)
-    render_dict = {
+    render_dict = get_page_dict(request)
+    render_dict.update({
         'member': cs_session.main_member,
         'depots': depots,
         'selected': cs_session.depot,
         'requires_map': requires_map,
-    }
+    })
     return render(request, 'createsubscription/select_depot.html', render_dict)
 
 
@@ -57,10 +60,11 @@ def cs_select_start_date(request, cs_session):
         if subscription_form.is_valid():
             cs_session.start_date = subscription_form.cleaned_data['start_date']
             return redirect(cs_session.next_page())
-    render_dict = {
+    render_dict = get_page_dict(request)
+    render_dict.update({
         'start_date': temporal.start_of_next_business_year(),
         'subscriptionform': subscription_form,
-    }
+    })
     return render(request, 'createsubscription/select_start_date.html', render_dict)
 
 
@@ -85,6 +89,7 @@ class CSAddMemberView(FormView, ModelFormMixin):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
+            **get_page_dict(self.request),
             co_members=self.cs_session.co_members if not self.edit else [],
             **kwargs
         )
@@ -154,12 +159,16 @@ class CSSelectSharesView(TemplateView):
         super().__init__()
         self.cs_session = None
 
-    def get_context_data(self, shares):
-        return {
-            'shares': shares,
-            'member': self.cs_session.main_member,
-            'co_members': self.cs_session.co_members
-        }
+    def get_context_data(self, shares, **kwargs):
+        return super().get_context_data(
+            **get_page_dict(self.request),
+            **{
+                'shares': shares,
+                'member': self.cs_session.main_member,
+                'co_members': self.cs_session.co_members
+            },
+            **kwargs
+        )
 
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
@@ -189,7 +198,11 @@ class CSSummaryView(TemplateView):
     template_name = 'createsubscription/summary.html'
 
     def get_context_data(self, cs_session, **kwargs):
-        return cs_session.to_dict()
+        return super().get_context_data(
+            **get_page_dict(self.request),
+            **cs_session.to_dict(),
+            **kwargs
+        )
 
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
@@ -208,7 +221,11 @@ class CSSummaryView(TemplateView):
 
 
 def cs_welcome(request, with_sub=False):
-    return render(request, 'welcome.html', {'no_subscription': not with_sub})
+    render_dict = get_page_dict(request)
+    render_dict.update({
+        'no_subscription': not with_sub
+    })
+    return render(request, 'welcome.html', render_dict)
 
 
 @create_subscription_session
