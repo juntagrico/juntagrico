@@ -276,6 +276,12 @@ class AddCoMemberView(FormView, ModelFormMixin):
         self.object = None
         self.subscription = None
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(
+            **get_page_dict(self.request),
+            **kwargs
+        )
+
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
         form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]

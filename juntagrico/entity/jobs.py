@@ -223,6 +223,18 @@ class Job(JuntagricoBasePoly):
     def per_member_extras(self):
         return self.type.job_extras_set.filter(per_member=True)
 
+    @property
+    def participants(self):
+        return [a.member for a in self.assignment_set.all().prefetch_related('member') if a.member]
+
+    @property
+    def participant_names(self):
+        return ", ".join([str(m) for m in self.participants])
+
+    @property
+    def participant_emails(self):
+        return [m.email for m in self.participants]
+
     def clean(self):
         check_job_consistency(self)
 
