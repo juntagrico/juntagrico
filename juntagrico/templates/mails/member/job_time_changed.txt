@@ -13,7 +13,7 @@ Dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" findet neu um {{ jt }}
 
 {% trans "Job" %}:             {{ job.type.description }}
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-{% trans "Teilnehmer" %}:        {{ participants }}
+{% trans "Teilnehmer" %}:      {{ job.participant_names }}
 {% trans "Ort" %}:             {{ job.type.location }}
 
 {% blocktrans trimmed %}

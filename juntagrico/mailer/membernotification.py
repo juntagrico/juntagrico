@@ -71,7 +71,7 @@ def job_signup(email, job):
     ).attach_ics(generate_ical_for_job(job)).start_thread(job).send_to(email)
 
 
-def job_reminder(emails, job, participants):
+def job_reminder(emails, job):
     contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
     EmailSender.get_sender(
         organisation_subject(_('Einsatz-Erinnerung')),
