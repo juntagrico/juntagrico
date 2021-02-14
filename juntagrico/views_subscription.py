@@ -43,7 +43,7 @@ def subscription(request, subscription_id=None):
     future_subscription = member.subscription_future is not None
     can_order = member.subscription_future is None and (
         member.subscription_current is None or member.subscription_current.cancellation_date is not None)
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'subscription')
     if subscription_id is None:
         subscription = member.subscription_current
     else:
@@ -78,7 +78,6 @@ def subscription(request, subscription_id=None):
         'member': request.user.member,
         'shares': request.user.member.active_shares.count(),
         'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
-        'menu': {'subscription': 'active'},
     })
     return render(request, 'subscription.html', renderdict)
 

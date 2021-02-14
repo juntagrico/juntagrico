@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -39,7 +41,7 @@ def get_page_dict(request):
     }
 
 
-def get_menu_dict(request):
+def get_menu_dict(request, active=None):
     member = request.user.member
     next_jobs = JobDao.upcomming_jobs_for_member(member)
 
@@ -93,8 +95,10 @@ def get_menu_dict(request):
         'admin_subscription_menus': addons.config.get_admin_subscription_menu(),
         'user_menus': addons.config.get_user_menus(),
         'messages': [],
-
+        'menu': defaultdict(lambda: '')
     })
+    if active:
+        menu_dict['menu'][active] = 'active'
     return menu_dict
 
 
@@ -230,10 +234,9 @@ def areas(request):
         })
         last_was_core = area.core
 
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'area')
     renderdict.update({
-        'areas': my_areas,
-        'menu': {'area': 'active'},
+        'areas': my_areas
     })
     return render(request, 'areas.html', renderdict)
 
@@ -245,10 +248,9 @@ def memberjobs(request):
     '''
     member = request.user.member
     allassignments = AssignmentDao.assignments_for_member(member)
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'jobs')
     renderdict.update({
-        'assignments': allassignments,
-        'menu': {'jobs': 'active'},
+        'assignments': allassignments
     })
     return render(request, 'memberjobs.html', renderdict)
 
@@ -301,13 +303,12 @@ def jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'jobs')
 
     jobs = JobDao.get_jobs_for_current_day()
     renderdict.update({
         'jobs': jobs,
-        'show_all': True,
-        'menu': {'jobs': 'active'},
+        'show_all': True
     })
 
     return render(request, 'jobs.html', renderdict)
@@ -318,11 +319,10 @@ def all_jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'jobs')
     jobs = JobDao.jobs_ordered_by_time()
     renderdict.update({
-        'jobs': jobs,
-        'menu': {'jobs': 'active'},
+        'jobs': jobs
     })
 
     return render(request, 'jobs.html', renderdict)
@@ -333,12 +333,11 @@ def deliveries(request):
     '''
     All deliveries to be sorted etc.
     '''
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'deliveries')
     deliveries = DeliveryDao.deliveries_by_subscription(
         request.user.member.subscription_current)
     renderdict.update({
-        'deliveries': deliveries,
-        'menu': {'deliveries': 'active'},
+        'deliveries': deliveries
     })
 
     return render(request, 'deliveries.html', renderdict)
@@ -357,11 +356,10 @@ def contact(request):
         formemails.contact(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
         is_sent = True
 
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'contact')
     renderdict.update({
         'usernameAndEmail': member.first_name + ' ' + member.last_name + ' <' + member.email + '>',
-        'is_sent': is_sent,
-        'menu': {'contact': 'active'},
+        'is_sent': is_sent
     })
     return render(request, 'contact.html', renderdict)
 
@@ -418,12 +416,11 @@ def profile(request):
             success = True
     else:
         memberform = MemberProfileForm(instance=member)
-    renderdict = get_menu_dict(request)
+    renderdict = get_menu_dict(request, 'personalInfo')
     renderdict.update({
         'memberform': memberform,
         'success': success,
-        'member': member,
-        'menu': {'personalInfo': 'active'},
+        'member': member
     })
     return render(request, 'profile.html', renderdict)
 
