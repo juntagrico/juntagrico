@@ -76,7 +76,6 @@ def subscription(request, subscription_id=None):
         'member': request.user.member,
         'shares': request.user.member.active_shares.count(),
         'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
-        'menu': {'subscription': 'active'},
     })
     return render(request, 'subscription.html', renderdict)
 

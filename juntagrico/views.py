@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -161,7 +163,6 @@ def areas(request):
             'first_non_core': not area.core and last_was_core
         })
         last_was_core = area.core
-
     renderdict = {
         'areas': my_areas,
     }
@@ -235,7 +236,6 @@ def jobs(request):
         'jobs': jobs,
         'show_all': True,
     }
-
     return render(request, 'jobs.html', renderdict)
 
 
@@ -264,7 +264,6 @@ def deliveries(request):
     renderdict = {
         'deliveries': deliveries
     }
-
     return render(request, 'deliveries.html', renderdict)
 
 
@@ -281,7 +280,6 @@ def contact(request):
         # send mail to organisation
         formemails.contact(request.POST.get('subject'), request.POST.get('message'), member, request.POST.get('copy'))
         is_sent = True
-
     renderdict = {
         'usernameAndEmail': member.first_name + ' ' + member.last_name + ' <' + member.email + '>',
         'is_sent': is_sent
