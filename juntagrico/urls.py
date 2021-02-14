@@ -1,4 +1,3 @@
-from django.contrib.auth.views import LoginView
 from django.urls import path
 
 from juntagrico import views as juntagrico
@@ -6,6 +5,7 @@ from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
+from juntagrico.util.auth import JuntagricoLoginView
 
 urlpatterns = [
     # general juntagrico stuff
@@ -26,7 +26,7 @@ urlpatterns = [
     path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),  #
     path('my/cookies', juntagrico.cookies, name='cookies'),  #
     path('logout/', juntagrico.logout_view, name='logout'),  #
-    path('accounts/login/', LoginView.as_view(), name='login'),
+    path('accounts/login/', JuntagricoLoginView.as_view(), name='login'),
 
     # area stuff
     path('my/areas', juntagrico.areas, name='areas'),  #
@@ -93,12 +93,14 @@ urlpatterns = [
     path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),  #
     path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),  #
     path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),  #
+    path('my/filters/active', juntagrico_admin.filters_active, name='filters-active'),  #
     path('my/filters', juntagrico_admin.filters, name='filters'),  #
     path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),  #
     path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),  #
     path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),  #
     path('my/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
          name='filter-subs-depot'),  #
+    path('my/assignments', juntagrico_admin.assignments, name='filter-assignments'),
     path('my/future', juntagrico_admin.future, name='future'),  #
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),  #
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),  #
@@ -126,4 +128,8 @@ urlpatterns = [
 
     # iso20022
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),  #
+
+    # js
+    path('my/js/i18n', juntagrico.i18njs, name='js-i18n'),  #
+
 ]

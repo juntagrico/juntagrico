@@ -43,12 +43,12 @@ def check_sub_membership_consistency(instance):
         member = instance.member
     except AttributeError:
         raise ValidationError(
-            _('Kein/e/n gülltige/n/s {} angegeben').format(Config.vocabulary('member')),
+            _('Kein/e/n gültige/n/s {} angegeben').format(Config.vocabulary('member')),
             code='invalid')
-    check_sub_membership_consistency_ms(member, subscription)
+    check_sub_membership_consistency_ms(member, subscription, instance.join_date)
 
 
-def check_sub_membership_consistency_ms(member, subscription):
+def check_sub_membership_consistency_ms(member, subscription, asof):
     from juntagrico.dao.subscriptionmembershipdao import SubscriptionMembershipDao
     if subscription.state == 'waiting' and SubscriptionMembershipDao.get_other_waiting_for_member(member,
                                                                                                   subscription).count() > 0:
@@ -57,7 +57,7 @@ def check_sub_membership_consistency_ms(member, subscription):
                                                                            Config.vocabulary('subscription')),
             code='invalid')
     if subscription.state == 'active' and SubscriptionMembershipDao.get_other_active_for_member(member,
-                                                                                                subscription).count() > 0:
+                                                                                                subscription, asof).count() > 0:
         raise ValidationError(
             _('Diese/r/s {} hat bereits ein/e/n {}').format(Config.vocabulary('member'),
                                                             Config.vocabulary('subscription')),

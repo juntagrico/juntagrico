@@ -13,9 +13,8 @@ class ExtraSubscriptionTypeDao:
 
     @staticmethod
     def extra_types_by_category_ordered(category):
-        return ExtraSubscriptionType.objects.all().filter(category=category).order_by('sort_order')
+        return ExtraSubscriptionType.objects.all().filter(category=category)
 
     @staticmethod
     def extra_types_by_category_for_depot_list_ordered(category):
-        return ExtraSubscriptionType.objects.all().filter(category=category).\
-            filter(depot_list=True).order_by('sort_order')
+        return ExtraSubscriptionType.objects.all().filter(category=category).filter(depot_list=True)

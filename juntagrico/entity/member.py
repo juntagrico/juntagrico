@@ -17,7 +17,9 @@ def q_joined_subscription():
     return Q(join_date__isnull=False, join_date__lte=timezone.now().date())
 
 
-def q_left_subscription():
+def q_left_subscription(asof=None):
+    if asof is not None:
+        return Q(leave_date__isnull=False, leave_date__lte=asof)
     return Q(leave_date__isnull=False, leave_date__lte=timezone.now().date())
 
 
@@ -29,7 +31,7 @@ class Member(JuntagricoBaseModel):
     # user class is only used for logins, permissions, and other builtin django stuff
     # all user information should be stored in the Member model
     user = models.OneToOneField(
-        User, related_name='member', null=True, blank=True, on_delete=models.CASCADE)
+        User, related_name='member', on_delete=models.CASCADE)
 
     first_name = models.CharField(_('Vorname'), max_length=30)
     last_name = models.CharField(_('Nachname'), max_length=30)
@@ -152,18 +154,15 @@ class Member(JuntagricoBaseModel):
         check_member_consistency(self)
 
     @classmethod
-    def create(cls, sender, instance, created, **kwds):
+    def create(cls, sender, instance, **kwds):
         '''
         Callback to create corresponding user when new member is created.
         '''
-        if created and instance.user is None:
+        if getattr(instance, 'user', None) is None:
             username = make_username(
-                instance.first_name, instance.last_name, instance.email)
-            user = User(username=username)
-            user.save()
-            user = User.objects.get(username=username)
+                instance.first_name, instance.last_name)
+            user, created = User.objects.get_or_create(username=username)
             instance.user = user
-            instance.save()
 
     @classmethod
     def post_delete(cls, sender, instance, **kwds):
