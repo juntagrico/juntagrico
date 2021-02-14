@@ -1,5 +1,12 @@
 {% load i18n %}
+{% load common %}
 {% load config %}
+{% load menu %}
+{% has_extra_subscriptions as b_has_extra_subscriptions %}
+{% depot_admin request as qs_depot_admin %}
+{% area_admin request as qs_area_admin %}
+{% admin_menus as l_admin_menus %}
+{% admin_subscription_menus as l_admin_subscription_menus %}
 {% config "enable_shares" as c_enable_shares %}
 {% vocabulary "subscription" as v_subscription %}
 {% vocabulary "subscription_pl" as v_subscription_pl %}
@@ -63,14 +70,14 @@
                             </a>
                         </li>
                     {% endif %}
-                    {% for menu in admin_subscription_menus %}
+                    {% for menu in l_admin_subscription_menus %}
                         {% include menu %}
                     {% endfor %}
                 </ul>
             </div>
         </li>
     {% endif %}
-    {% if perms.juntagrico.is_operations_group and has_extra_subscriptions %}
+    {% if perms.juntagrico.is_operations_group and b_has_extra_subscriptions %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#extrasubman">
                 {% blocktrans %}Zusatzabos{% endblocktrans %}
@@ -161,7 +168,7 @@
             </div>
         </li>
     {% endif %}
-    {% if depot_admin|length > 0 %}
+    {% if qs_depot_admin|length > 0 %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#depotman">
                 {% blocktrans %}{{ v_depot_pl }}{% endblocktrans %}
@@ -170,7 +177,7 @@
             </a>
             <div class="collapse" id="depotman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% for depot in depot_admin %}
+                    {% for depot in qs_depot_admin %}
                         <li class="nav-item inline">
                             <a class="nav-link inline" href="{%  url 'filter-depot' depot.id %}">
                                 {% vocabulary "member_pl" %}
@@ -185,7 +192,7 @@
             </div>
         </li>
     {% endif %}
-    {% if area_admin|length > 0 %}
+    {% if qs_area_admin|length > 0 %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#areaman">
                 {% trans "Tätigkeitsbereiche" %}
@@ -194,7 +201,7 @@
             </a>
             <div class="collapse" id="areaman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% for area in area_admin %}
+                    {% for area in qs_area_admin %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'filter-area' area.id %}">
                                 {% vocabulary "member_pl" %} {% trans "in" %} {{ area.name }}
@@ -245,7 +252,7 @@
             </a>
         </li>
     {% endif %}
-    {% for menu in admin_menus %}
+    {% for menu in l_admin_menus %}
         {% include menu %}
     {% endfor %}
 </ul>

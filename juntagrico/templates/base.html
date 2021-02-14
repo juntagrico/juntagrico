@@ -1,5 +1,10 @@
 {% load i18n %}
+{% load common %}
 {% load config %}
+{% depot_admin request as qs_depot_admin %}
+{% area_admin request as qs_area_admin %}
+{% messages request as l_messages %}
+
 <!DOCTYPE html>
 <html lang="de">
     <head>
@@ -21,7 +26,7 @@
         <link href="/static/css/slider.css" rel="stylesheet"/>
         <link href="{% config "style_sheet" %}" rel="stylesheet"/>
     </head>
-    <body id="{{ view_name }}" class="{% block body_extra_classes %}{% endblock %}">
+    <body id="{{ request|view_name }}" class="{% block body_extra_classes %}{% endblock %}">
         <div class="page-container container">
             <div class="bordertop">
             </div>
@@ -43,7 +48,7 @@
 
                       <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             {% include "menu/user_menu.html" %}
-                            {% if depot_admin|length > 0 or area_admin|length > 0 or perms.juntagrico.is_operations_group %}
+                            {% if gs_depot_admin|length > 0 or qs_area_admin|length > 0 or perms.juntagrico.is_operations_group %}
                                 {% include "menu/admin_menu.html" %}
                             {% endif %}
                       </div>
@@ -58,11 +63,11 @@
                     </a>
                 </div>
             </div>
-            {% if user.is_impersonate %}
+            {% if request.user.is_impersonate %}
                 <div class="impersonate-row row">
                     <div class="col-md-12">
                         <div class="alert alert-warning">
-                            {% blocktrans trimmed with fn=user.member.first_name ln=user.member.last_name %}
+                            {% blocktrans trimmed with fn=request.user.member.first_name ln=request.user.member.last_name %}
                             Du imitierst derzeit den Benutzer “{{ fn }} {{ ln }}”.
                             {% endblocktrans %}
                             <a href="/impersonate/stop">
@@ -87,7 +92,7 @@
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
                         {% include "menu/user_menu.html" %}
-                        {% if depot_admin|length > 0 or area_admin|length > 0 or perms.juntagrico.is_operations_group %}
+                        {% if qs_depot_admin|length > 0 or qs_area_admin|length > 0 or perms.juntagrico.is_operations_group %}
                             {% include "menu/admin_menu.html" %}
                         {% endif %}
                         {% include "widgets/assignements.html" %}
@@ -96,7 +101,7 @@
                     <div class="content-container col-md-9 col-sm-12">
                         <div class="messages row">
                             <div class="col-md-12">
-                                {% for message in messages %}
+                                {% for message in l_messages %}
                                     {{ message }}
                                 {% endfor %}
                             </div>

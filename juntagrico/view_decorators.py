@@ -24,6 +24,16 @@ def primary_member_of_subscription(view):
     return wrapper
 
 
+def highlighted_menu(menu):
+    def view_wrappe(view):
+        @wraps(view)
+        def wrapper(request, *args, **kwargs):
+            request.active_menu = menu
+            return view(request, *args, **kwargs)
+        return wrapper
+    return view_wrappe
+
+
 def create_subscription_session(view):
     """ wrapper for views that are part of the registration procedure
     the registration information is passed to the view as the second argument and changes to it are stored in the

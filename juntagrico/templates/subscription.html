@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load common %}
 {% load subscription %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
@@ -9,6 +10,7 @@
     </h3>
 {% endblock %}
 {% block content %}
+    {% has_extra_subscriptions as b_has_extra_subscriptions %}
     {% config "enable_shares" as c_enable_shares %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -174,7 +176,7 @@
                 </a>
             </div>
         </div>
-        {% if has_extra_subscriptions %}
+        {% if b_has_extra_subscriptions %}
             <div class="row mb-3">
                 <div class="col-md-3">
                     {% trans "Zusatzabos" %}
