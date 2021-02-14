@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+1.3.10
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix participants list in job emails
+* Added view_name as id of the body element where it was missing
+
+
 1.3.9
 -----
 Has no migrations
