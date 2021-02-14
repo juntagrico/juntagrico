@@ -43,7 +43,7 @@
 
                       <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             {% include "menu/user_menu.html" %}
-                            {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
+                            {% if depot_admin|length > 0 or area_admin|length > 0 or perms.juntagrico.is_operations_group %}
                                 {% include "menu/admin_menu.html" %}
                             {% endif %}
                       </div>
@@ -87,7 +87,7 @@
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
                         {% include "menu/user_menu.html" %}
-                        {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
+                        {% if depot_admin|length > 0 or area_admin|length > 0 or perms.juntagrico.is_operations_group %}
                             {% include "menu/admin_menu.html" %}
                         {% endif %}
                         {% include "widgets/assignements.html" %}

@@ -43,7 +43,6 @@ def get_page_dict(request):
 
 def get_menu_dict(request, active=None):
     member = request.user.member
-    next_jobs = JobDao.upcomming_jobs_for_member(member)
 
     required_assignments = 0
     if member.subscription_current is not None:
@@ -70,8 +69,6 @@ def get_menu_dict(request, active=None):
     assignmentsrange = list(range(
         0, max(required_assignments, userassignments_total + partner_assignments_total)))
 
-    depot_admin = DepotDao.depots_for_contact(request.user.member)
-    area_admin = ActivityAreaDao.areas_by_coordinator(request.user.member)
     menu_dict = get_page_dict(request)
     menu_dict.update({
         'user': request.user,
@@ -80,13 +77,10 @@ def get_menu_dict(request, active=None):
         'userassignemnts_core_bound': userassignemnts_core,
         'partner_assignments_bound': userassignments_total + partner_assignments_total,
         'partner_assignments_core_bound': userassignments_total + partner_assignments_core,
-        'next_jobs': next_jobs,
-        'can_filter_members': request.user.has_perm('juntagrico.can_filter_members'),
-        'can_filter_subscriptions': request.user.has_perm('juntagrico.can_filter_subscriptions'),
-        'operation_group': request.user.has_perm('juntagrico.is_operations_group'),
+        'next_jobs': JobDao.upcomming_jobs_for_member(member),
         'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
-        'depot_admin': depot_admin,
-        'area_admin': area_admin,
+        'depot_admin': DepotDao.depots_for_contact(request.user.member),
+        'area_admin': ActivityAreaDao.areas_by_coordinator(request.user.member),
         'show_core': ActivityAreaDao.all_core_areas().count() > 0,
         'requires_core': SubscriptionTypeDao.get_with_core().count() > 0,
         'show_extras': JobExtraDao.all_job_extras().count() > 0,

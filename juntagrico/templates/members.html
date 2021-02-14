@@ -76,11 +76,11 @@
                 {% for member in members %}
                     <tr>
                         <td>
-                            {% if operation_group %}
+                            {% if perms.juntagrico.is_operations_group %}
                                 <a href="/impersonate/{{ member.user.id }}" target="__blank">
                                 {% endif %}
                                 {{ member.first_name }} {{ member.last_name }}
-                                {% if operation_group %}
+                                {% if perms.juntagrico.is_operations_group %}
                                 </a>
                             {% endif %}
                         </td>
