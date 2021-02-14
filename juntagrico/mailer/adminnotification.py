@@ -71,3 +71,12 @@ def member_canceled(member, end_date, message, **kwargs):
         get_email_content('m_canceled', base_dict(locals())),
         bcc=kwargs['emails']
     ).send()
+
+
+@requires_someone_with_perm('list_notification')
+def list_generated(**kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('Neue {}-Liste erstellt').format(Config.vocabulary('depot'))),
+        get_email_content('a_list_generated', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()

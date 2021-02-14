@@ -31,7 +31,8 @@ class SpecialRoles(models.Model):
         permissions = (('is_operations_group', _('Benutzer ist in der BG')),
                        ('is_book_keeper', _('Benutzer ist Buchhalter')),
                        ('can_send_mails', _('Benutzer kann im System Emails versenden')),
-                       ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),)
+                       ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),
+                       ('list_notification', _('Benutzer wird bei Listenerstellung informiert')),)
 
 
 ''' non lifecycle related signals '''

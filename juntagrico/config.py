@@ -130,6 +130,7 @@ class Config:
             's_canceled': 'mails/admin/subscription_canceled.txt',
             'a_share_created': 'mails/admin/share_created.txt',
             'a_member_created': 'mails/admin/member_created.txt',
+            'a_list_generated': 'mails/admin/list_generated.txt',
             'm_canceled': 'mails/admin/member_canceled.txt',
         }
     )

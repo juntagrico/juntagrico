@@ -94,4 +94,12 @@ class Migration(migrations.Migration):
             name='sort_order',
             field=models.PositiveIntegerField(default=0, verbose_name='Reihenfolge'),
         ),
+        migrations.AlterModelOptions(
+            name='specialroles',
+            options={'permissions': (
+            ('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'),
+            ('can_send_mails', 'Benutzer kann im System Emails versenden'),
+            ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),
+            ('list_notification', 'Benutzer wird bei Listenerstellung informiert'))},
+        ),
     ]
