@@ -70,11 +70,11 @@
                 {% for subscription in subscriptions %}
                     <tr>
                         <td>
-                            {% if operation_group %}
+                            {% if perms.juntagrico.is_operations_group %}
                                 <a href="/impersonate/{{ subscription.primary_member.user.id }}"target="__blank">
                                 {% endif %}
                                 {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
-                                {% if operation_group %}
+                                {% if perms.juntagrico.is_operations_group %}
                                 </a>
                             {% endif %}
                         </td>

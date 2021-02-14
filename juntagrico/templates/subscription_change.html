@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load config %}
+{% load common %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
@@ -8,6 +9,7 @@
     </h3>
 {% endblock %}
 {% block content %}
+    {% has_extra_subscriptions as b_has_extra_subscriptions %}
     {% vocabulary "subscription" as v_subscription %}
     {% trans "Welchen Teil möchtest du ändern?" %}
     {% include "snippets/snippet_subscription_change_depot.html" %}
@@ -16,7 +18,7 @@
     {% for sub_change_addon in sub_change_addons %}
         {% include sub_change_addon %}
     {% endfor %}
-{% if has_extra_subscriptions %}
+{% if b_has_extra_subscriptions %}
     {% include "snippets/snippet_subscription_change_extra_sub.html" %}
 {% endif %}
 {% include "snippets/snippet_subscription_change_main_member.html" %}

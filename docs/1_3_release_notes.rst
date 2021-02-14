@@ -10,6 +10,11 @@ Fixes
 * Fix participants list in job emails
 * Added view_name as id of the body element where it was missing
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Developer Features:
+    * Menu dict method eliminated for easier view creation and performance improvements
+
 
 1.3.9
 -----
