@@ -73,10 +73,10 @@ def member_canceled(member, end_date, message, **kwargs):
     ).send()
 
 
-@requires_someone_with_perm('list_notification')
-def list_generated(**kwargs):
+@requires_someone_with_perm('depot_list_notification')
+def depot_list_generated(**kwargs):
     EmailSender.get_sender(
-        organisation_subject(_('Neue {}-Liste erstellt').format(Config.vocabulary('depot'))),
-        get_email_content('a_list_generated', base_dict(locals())),
+        organisation_subject(_('Neue {}-Liste generiert').format(Config.vocabulary('depot'))),
+        get_email_content('a_depot_list_generated', base_dict(locals())),
         bcc=kwargs['emails']
     ).send()

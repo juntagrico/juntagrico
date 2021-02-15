@@ -64,4 +64,4 @@ class Command(BaseCommand):
         render_to_pdf_storage('exports/amount_overview.html',
                               depot_dict, 'amount_overview.pdf')
 
-        adminnotification.list_generated()
+        adminnotification.depot_list_generated()

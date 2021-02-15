@@ -100,6 +100,6 @@ class Migration(migrations.Migration):
             ('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'),
             ('can_send_mails', 'Benutzer kann im System Emails versenden'),
             ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),
-            ('list_notification', 'Benutzer wird bei Listenerstellung informiert'))},
+            ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'))},
         ),
     ]
