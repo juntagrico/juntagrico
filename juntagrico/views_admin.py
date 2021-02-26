@@ -143,7 +143,7 @@ def my_mails_intern(request, mail_url, error_message=None):
 
 @permission_required('juntagrico.can_filter_members')
 def filters_active(request):
-    members = MemberDao.active_members()
+    members = MemberDao.active_members_filtering()
     renderdict = get_menu_dict(request)
     renderdict.update({
         'members': members,

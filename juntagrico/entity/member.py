@@ -99,7 +99,8 @@ class Member(JuntagricoBaseModel):
 
     @property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
+        sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription())\
+            .select_related('subscription').first()
         return getattr(sub_membership, 'subscription', None)
 
     @property

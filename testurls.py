@@ -13,8 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+import debug_toolbar
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path
+
 import juntagrico
 
 urlpatterns = [
@@ -24,4 +27,5 @@ urlpatterns = [
 
     url(r'^', include('juntagrico.urls')),
     url(r'^$', juntagrico.views.home),
+    path('__debug__/', include(debug_toolbar.urls)),
 ]

@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'impersonate',
     'juntagrico',
     'crispy_forms',
+    'debug_toolbar'
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -45,6 +46,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
@@ -90,10 +92,12 @@ DATE_INPUT_FORMATS = ['%d.%m.%Y', ]
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+INTERNAL_IPS = [
+    # ...
+    '127.0.0.1',
+    # ...
+]
 
-class InvalidTemplateVariable(str):
-    def __mod__(self, other):
-        raise NameError(f"In template, undefined variable or unknown value for: '{other}'")
 
 
 TEMPLATES = [
@@ -116,7 +120,6 @@ TEMPLATES = [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader'
             ],
-            'string_if_invalid': InvalidTemplateVariable("%s"),
             'debug': True
         },
     },

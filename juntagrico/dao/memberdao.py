@@ -142,6 +142,10 @@ class MemberDao:
         return Member.objects.filter(~q_deactivated())
 
     @staticmethod
+    def active_members_filtering():
+        return Member.objects.filter(~q_deactivated())
+
+    @staticmethod
     def members_in_area(area):
         return area.members.all().filter(~q_deactivated())
 

@@ -78,7 +78,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def active_parts(self):
-        return self.parts.filter(q_isactive())
+        return self.parts.filter(q_isactive()).select_related('type', 'type__size', 'type__size__product')
 
     @property
     def future_parts(self):
