@@ -220,6 +220,11 @@ a.inline {
     color: #999999;
 }
 
+/* assignment widget */
+.partner-assignments {
+    opacity:0.5;
+}
+
 /* next jobs widget menu stuff checked */
 .jobs-widget .next-jobs {
     margin-top: 5px;
