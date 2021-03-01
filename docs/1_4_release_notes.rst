@@ -15,6 +15,7 @@ Features & Improvements
     * New setting SUB_OVERVIEW_FORMAT for the formatting of the subscription overview
 
 * Developer Features:
+    * Menu dict method eliminated for easier view creation and performance improvements
 
 Fixes
 ^^^^^
