@@ -288,7 +288,7 @@ class JuntagricoTestCase(TestCase):
         delivery_data = {'delivery_date': '2017-03-27',
                          'subscription_size': self.sub_size}
         self.delivery1 = Delivery.objects.create(**delivery_data)
-        delivery_data['delivery_date']='2017-03-28'
+        delivery_data['delivery_date'] = '2017-03-28'
         self.delivery2 = Delivery.objects.create(**delivery_data)
         DeliveryItem.objects.create(delivery=self.delivery1)
 

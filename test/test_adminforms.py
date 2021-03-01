@@ -63,4 +63,3 @@ class AdminTests(JuntagricoTestCase):
         form.save_m2m()
         form.save()
         self.assertEqual(Delivery.objects.all().count(), initial_count + 1)
-

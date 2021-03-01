@@ -1,6 +1,16 @@
 1.3 Release Notes
 =================
 
+1.3.10
+-----
+Has no migrations
+
+Fixes
+^^^^^
+* Fix participants list in job emails
+* Added view_name as id of the body element where it was missing
+
+
 1.3.9
 -----
 Has no migrations
@@ -9,11 +19,12 @@ Fixes
 ^^^^^
 * Fix in user name generation
 * Fix in members joining a new subscription
+* Fix cancelled subscription will no longer show up on type changes list
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Added delivery copy action
-* Deactivated members see mor meaningfull error message when trying to log in
+* Deactivated members see more meaningfull error message when trying to log in
 
 1.3.8
 -----

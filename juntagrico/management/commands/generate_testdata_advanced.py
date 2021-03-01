@@ -1,25 +1,15 @@
-﻿import json
-import ssl
-import sys
-import time as mytime
-import urllib.error
-import urllib.parse
-import urllib.request
+﻿import math
 
-import math
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.utils.text import slugify
 from faker import Faker
 
-from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
-
 
 fake = Faker()
 
@@ -91,11 +81,11 @@ class Command(BaseCommand):
         subscription = Subscription.objects.create(**sub_dict)
         subscription.primary_member = main_member
         subscription.subscriptionmembership_set.create(
-                member=main_member,
-                join_date=sub_dict['creation_date'])
+            member=main_member,
+            join_date=sub_dict['creation_date'])
         subscription.subscriptionmembership_set.create(
-                member=co_member,
-                join_date=sub_dict['creation_date'])
+            member=co_member,
+            join_date=sub_dict['creation_date'])
         subscription.save()
         self.members.append(main_member)
         self.members.append(co_member)
@@ -153,8 +143,8 @@ class Command(BaseCommand):
             'size': size
         }
         type, _ = SubscriptionType.objects.get_or_create(
-                name=subtype_fields['name'],
-                defaults=subtype_fields
+            name=subtype_fields['name'],
+            defaults=subtype_fields
         )
 
         for i in range(0, options['depots']):
@@ -176,8 +166,8 @@ class Command(BaseCommand):
         area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
                         'hidden': False, 'coordinator': self.members[1], 'show_coordinator_phonenumber': False}
         area_1, _ = ActivityArea.objects.get_or_create(
-                name=area1_fields['name'],
-                defaults=area1_fields
+            name=area1_fields['name'],
+            defaults=area1_fields
         )
         if len(self.members) > 2:
             area_1.members.set(self.members[2:int((len(self.members)) / 2)])
@@ -185,8 +175,8 @@ class Command(BaseCommand):
             area_1.members.set(self.members)
         area_1.save()
         area_2, _ = ActivityArea.objects.get_or_create(
-                name=area2_fields['name'],
-                defaults=area2_fields
+            name=area2_fields['name'],
+            defaults=area2_fields
         )
         if len(self.members) > 2:
             area_2.members.set(self.members[int(
