@@ -116,7 +116,8 @@ def depot_change(request, subscription_id):
                 Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
-    depots = DepotDao.all_depots()
+    renderdict = get_menu_dict(request)
+    depots = DepotDao.all_visible_depots()
     requires_map = False
     for depot in depots:
         requires_map = requires_map or depot.has_geo

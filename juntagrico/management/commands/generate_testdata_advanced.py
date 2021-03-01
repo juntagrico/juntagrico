@@ -52,7 +52,6 @@ class Command(BaseCommand):
 
     def generate_depot(self, props, member, i):
         depot_dict = {
-            'code': 'D' + str(i),
             'contact': member,
             'description': fake.random_element(elements=[
                 'Hinter dem Restaurant'
@@ -69,7 +68,7 @@ class Command(BaseCommand):
             'addr_zipcode': props['plz'],
             'addr_location': props['ort'],
         })
-        depot, _ = Depot.objects.update_or_create(code=depot_dict['code'], defaults=depot_dict)
+        depot, _ = Depot.objects.update_or_create(**depot_dict)
         return depot
 
     def generate_subscription(self, main_member, co_member, depot, type):

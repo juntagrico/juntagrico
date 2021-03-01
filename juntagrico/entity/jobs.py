@@ -12,7 +12,6 @@ from juntagrico.util.temporal import weekday_short
 
 
 class ActivityArea(JuntagricoBaseModel):
-
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, default='')
@@ -27,6 +26,7 @@ class ActivityArea(JuntagricoBaseModel):
         _('Telefonnummer von KoordinatorIn anzeigen'), default=False)
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     def __str__(self):
         return '%s' % self.name
@@ -48,6 +48,7 @@ class ActivityArea(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
         verbose_name_plural = _('Tätigkeitsbereiche')
+        ordering = ['sort_order']
         permissions = (
             ('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
 

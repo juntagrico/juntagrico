@@ -484,7 +484,7 @@ FROM_FILTER
         'replacement_from': ''
     }
 COOKIE_CONSENT
------------
+--------------
   The text, confirm text, link text and url of the cookie consent
 
   default value
@@ -496,6 +496,20 @@ COOKIE_CONSENT
      'link_text': _('Hier findest du mehr zum Thema'),
      'url': '/my/cookies'
     }
+
+SUB_OVERVIEW_FORMAT
+-------------------
+  Template and delimiter for the formating of the subscription overview.
+
+  default value
+
+  .. code-block:: python
+
+    {'delimiter': '|',
+     'format': '{product}:{size}:{type}={amount}'
+    }
+
+
 
 IMAGES
 ------
