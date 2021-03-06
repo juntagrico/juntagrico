@@ -74,6 +74,25 @@ class Member(JuntagricoBaseModel):
         """
         return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
 
+    def active_shares_for_date(self, date=timezone.now):
+        return self.share_set.filter(paid_date__lte=date).filter(Q(payback_date__isnull=True) | Q(payback_date__gte=date))
+
+    @property
+    def active_share_years(self):
+        """ :return: list of years spanning member's first to last active share
+        """
+        shares = self.share_set.all()
+        if shares:
+            first_share = shares.order_by('paid_date')[0]
+            last_share = shares.order_by('payback_date')[0]
+            if last_share.payback_date:  # if all shares have a payback_date, resort and take the latest
+                last_share = shares.order_by('-payback_date')[0]
+            first_share_date = first_share.paid_date or timezone.now()
+            last_share_date = last_share.payback_date or max(first_share_date, timezone.now().date())
+            return list(range(first_share_date.year, last_share_date.year + 1))
+        else:
+            return []
+
     @property
     def active_shares_count(self):
         return self.active_shares.count()

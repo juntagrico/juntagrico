@@ -32,6 +32,8 @@ from juntagrico.util.temporal import end_of_next_business_year, next_cancelation
     cancelation_date
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
 from juntagrico.views import get_menu_dict, get_page_dict
+from juntagrico.util.pdf import render_to_pdf_http
+from datetime import date
 
 
 @login_required
@@ -473,13 +475,39 @@ def manage_shares(request):
         overflow_list.append(member.subscription_future.share_overflow)
     if member.subscription_current is not None:
         overflow_list.append(member.subscription_current.share_overflow)
-
+    active_share_years = member.active_share_years
+    if active_share_years:
+        active_share_years.remove(timezone.now().year)
     renderdict.update({
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required': not_canceled_share_count - min(overflow_list)
+        'required': not_canceled_share_count - min(overflow_list),
+        'certificate_years': active_share_years,
     })
     return render(request, 'manage_shares.html', renderdict)
+
+
+@login_required
+def share_certificate(request):
+    if not Config.enable_share_certificates():
+        raise Http404('Page not found')
+    year = int(request.GET['year'])
+    member = request.user.member
+    active_share_years = member.active_share_years
+    if year >= timezone.now().year or year not in active_share_years:
+        raise Http404('Page not found')
+    shares_date = date(year, 12, 31)
+    shares = member.active_shares_for_date(date=shares_date)
+    shares_amount = shares.count()
+    shares_total = shares_amount * float(Config.share_price())
+    renderdict = {
+        'member': member,
+        'cert_date': timezone.now().date(),
+        'shares_date': shares_date,
+        'shares_amount': shares_amount,
+        'shares_total': shares_total,
+    }
+    return render_to_pdf_http('exports/share_certificate.html', renderdict, _('Bescheinigung') + str(year) + '.pdf')
 
 
 @login_required
