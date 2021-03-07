@@ -81,7 +81,7 @@ class Member(JuntagricoBaseModel):
     def active_share_years(self):
         """ :return: list of years spanning member's first to last active share
         """
-        shares = self.share_set.all()
+        shares = self.share_set.filter(paid_date__isnull=False)
         if shares:
             first_share = shares.order_by('paid_date')[0]
             last_share = shares.order_by('payback_date')[0]
