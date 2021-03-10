@@ -489,13 +489,11 @@ def manage_shares(request):
 
 @login_required
 def share_certificate(request):
-    if not Config.enable_share_certificates():
-        raise Http404('Page not found')
     year = int(request.GET['year'])
     member = request.user.member
     active_share_years = member.active_share_years
     if year >= timezone.now().year or year not in active_share_years:
-        raise Http404('Page not found')
+        return error_page(request, _('{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden.').format(Config.vocabulary('share')))
     shares_date = date(year, 12, 31)
     shares = member.active_shares_for_date(date=shares_date)
     shares_amount = shares.count()

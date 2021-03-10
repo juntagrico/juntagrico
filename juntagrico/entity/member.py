@@ -11,6 +11,7 @@ from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.util.users import make_username
+from datetime import date
 
 
 def q_joined_subscription():
@@ -79,19 +80,23 @@ class Member(JuntagricoBaseModel):
 
     @property
     def active_share_years(self):
-        """ :return: list of years spanning member's first to last active share
+        """ :return: list of years spanning member's first to last active share in the past
         """
-        shares = self.share_set.filter(paid_date__isnull=False)
+        shares = self.share_set.filter(paid_date__isnull=False).order_by('paid_date')
+        years = []
         if shares:
-            first_share = shares.order_by('paid_date')[0]
-            last_share = shares.order_by('payback_date')[0]
-            if last_share.payback_date:  # if all shares have a payback_date, resort and take the latest
-                last_share = shares.order_by('-payback_date')[0]
-            first_share_date = first_share.paid_date or timezone.now()
-            last_share_date = last_share.payback_date or max(first_share_date, timezone.now().date())
-            return list(range(first_share_date.year, last_share_date.year + 1))
-        else:
-            return []
+            first_share_date = timezone.now().date()
+            last_share_date = date.min
+            for share in shares:
+                first_share_date = min(first_share_date, share.paid_date)
+                if share.payback_date:
+                    last_share_date = max(last_share_date, share.payback_date)
+                else:
+                    last_share_date = timezone.now().date()
+                last_share_date = max(last_share_date, first_share_date)
+            years = list(range(first_share_date.year, last_share_date.year + 1))
+            years = [y for y in years if y <= timezone.now().year]
+        return years
 
     @property
     def active_shares_count(self):
