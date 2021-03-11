@@ -3,7 +3,7 @@ Installation
 
 Basic Installation
 ------------------
-Install juntagrico with :command:`pip`::
+Install juntagrico with :command:`pip`:
 
     $ pip install juntagrico
 
