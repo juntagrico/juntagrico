@@ -171,6 +171,12 @@ div.all-page-title.row {
     font-size: 14px;
 }
 
+.version {
+    margin-top: 6px;
+    font-size: 12px;
+    display: block;
+}
+
 ul.subadmin-menu {
     padding-left: 7px;
 }

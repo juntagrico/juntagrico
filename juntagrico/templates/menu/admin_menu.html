@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load config %}
+{% load common %}
 {% config "enable_shares" as c_enable_shares %}
 {% vocabulary "subscription" as v_subscription %}
 {% vocabulary "subscription_pl" as v_subscription_pl %}
@@ -273,4 +274,7 @@
     {% for menu in admin_menus %}
         {% include menu %}
     {% endfor %}
+    <li class="nav-item">
+            <span class="version"> {% trans "Version: " %}{% get_version %}</span>
+    </li>
 </ul>
