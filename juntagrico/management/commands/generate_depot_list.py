@@ -10,6 +10,7 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.temporal import weekdays
 from juntagrico.util.subs import activate_future_depots
+from juntagrico.mailer import adminnotification
 
 
 class Command(BaseCommand):
@@ -62,3 +63,5 @@ class Command(BaseCommand):
                               depot_dict, 'depot_overview.pdf')
         render_to_pdf_storage('exports/amount_overview.html',
                               depot_dict, 'amount_overview.pdf')
+
+        adminnotification.depot_list_generated()

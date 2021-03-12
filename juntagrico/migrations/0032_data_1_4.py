@@ -14,6 +14,10 @@ def fix_user_field(apps, schema_editor):
             m.save()
 
 
+def fix_user_field_reverse(apps, schema_editor):
+    pass
+
+
 def assign_sort_order(apps, entity, order_key):
     entity_class = apps.get_model('juntagrico', entity)
     for idx, item in enumerate(entity_class.objects.all().order_by(order_key)):
@@ -68,7 +72,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(fix_user_field),
+        migrations.RunPython(fix_user_field, fix_user_field_reverse),
         migrations.RunPython(depot_code_to_sort_order, sort_order_to_depot_code),
         migrations.RunPython(activityarea_sort_order, sort_order_pass),
         migrations.RunPython(subscriptionproduct_sort_order, sort_order_pass),
