@@ -15,10 +15,9 @@
         size: A4;
         @frame content_frame {
             left: 50pt;
-            width: 512pt;
-            top: 45pt;
-            height: 710pt;
-    /*        -pdf-frame-border: 1;    */    /* for debugging the layout */
+            width: 500pt;
+            top: 50pt;
+            height: 750pt;
         }
 
         @frame header_frame {
@@ -45,14 +44,16 @@
      }
 
     table {
-        width: 200px;
+        align: center;
         text-align: left;
-        margin-left: auto;
-        margin-right: auto;
     }
 
     td, th {
         text-align: left;
+    }
+
+    .text-right {
+        text-align: right;
     }
 
     .member {
@@ -78,7 +79,6 @@
     {% vocabulary "subscription" as v_subscription %}
     {% config "organisation_address" as organisation_address %}
     {% config "currency" as currency %}
-    {% config "share_price" as share_price %}
 <p class="org_address">
 {{ organisation_address.name }}<br>
 {% if organisation_address.extra %}
@@ -108,15 +108,24 @@
   <tr>
     <th>{% trans "Datum" %}</th>
     <th>{% trans "Anzahl" %}</th>
-    <th>{% trans "Einzelwert" %}</th>
-    <th>{% trans "Gesamt" %}</th>
+    <th>{% trans "Wert" %}</th>
+    <th class="text-right">{% trans "Gesamt" %}</th>
   </tr>
-  <tr>
-    <td>{{ shares_date|date:"SHORT_DATE_FORMAT" }}</td>
-    <td>{{ shares_amount|floatformat }}</td>
-    <td>{{ share_price|floatformat:2 }} {{ currency }}</td>
-    <td>{{ shares_total|floatformat:2 }} {{ currency }}</td>
-  </tr>
+    {% for share in shares %}
+      <tr>
+        <td>{{ shares_date|date:"SHORT_DATE_FORMAT" }}</td>
+        <td>{{ share.count|floatformat }}</td>
+        <td>{{ share.value|floatformat:2 }} {{ currency }}</td>
+        <td class="text-right">{{ share.total|floatformat:2 }} {{ currency }}</td>
+      </tr>
+    {% endfor %}
+    <tr></tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td class="text-right"><b>Total:</b></td>
+        <td class="text-right">{{ shares_total|floatformat:2 }} {{ currency }}</td>
+      </tr>
 </table>
 <p>
     {% blocktrans %}Eine Verzinsung findet nicht statt.{% endblocktrans %}

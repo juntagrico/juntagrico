@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 from django.utils.translation import gettext as _
+from django.db.models import Count, Sum
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -495,14 +496,15 @@ def share_certificate(request):
     if year >= timezone.now().year or year not in active_share_years:
         return error_page(request, _('{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden.').format(Config.vocabulary('share')))
     shares_date = date(year, 12, 31)
-    shares = member.active_shares_for_date(date=shares_date)
-    shares_amount = shares.count()
-    shares_total = shares_amount * float(Config.share_price())
+    shares = member.active_shares_for_date(date=shares_date).values('value').annotate(count=Count('value')).annotate(total=Sum('value')).order_by('value')
+    shares_total = 0
+    for share in shares:
+        shares_total = shares_total + share['total']
     renderdict = {
         'member': member,
         'cert_date': timezone.now().date(),
         'shares_date': shares_date,
-        'shares_amount': shares_amount,
+        'shares': shares,
         'shares_total': shares_total,
     }
     return render_to_pdf_http('exports/share_certificate.html', renderdict, _('Bescheinigung') + str(year) + '.pdf')

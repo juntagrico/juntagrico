@@ -10,6 +10,7 @@ from juntagrico.lifecycle.share import check_share_consistency
 
 class Share(Billable):
     member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT)
+    value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, default=float(Config.share_price()))
     creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=timezone.now)
     paid_date = models.DateField(_('Bezahlt am'), null=True, blank=True)
     issue_date = models.DateField(_('Ausgestellt am'), null=True, blank=True)
