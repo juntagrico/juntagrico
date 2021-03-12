@@ -11,6 +11,7 @@ def _get_setting_with_key(setting_key, default):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
         return (default() if callable(default) else default)[key]
+
     return inner
 
 
@@ -88,6 +89,13 @@ class Config:
             'url': '/my/cookies'
         }
     )
+    sub_overview_format = _get_setting_with_key(
+        'SUB_OVERVIEW_FORMAT',
+        lambda: {
+            'delimiter': '|',
+            'format': '{product}:{size}:{type}={amount}'
+        }
+    )
 
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
@@ -122,6 +130,7 @@ class Config:
             's_canceled': 'mails/admin/subscription_canceled.txt',
             'a_share_created': 'mails/admin/share_created.txt',
             'a_member_created': 'mails/admin/member_created.txt',
+            'a_depot_list_generated': 'mails/admin/depot_list_generated.txt',
             'm_canceled': 'mails/admin/member_canceled.txt',
         }
     )

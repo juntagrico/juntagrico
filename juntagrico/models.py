@@ -19,6 +19,7 @@ from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_s
 from juntagrico.lifecycle.submembership import sub_membership_pre_save
 from juntagrico.lifecycle.subpart import sub_part_pre_save
 from juntagrico.util.signals import register_entities_for_post_init_and_save
+from juntagrico.config import Config
 
 
 class SpecialRoles(models.Model):
@@ -31,11 +32,12 @@ class SpecialRoles(models.Model):
         permissions = (('is_operations_group', _('Benutzer ist in der BG')),
                        ('is_book_keeper', _('Benutzer ist Buchhalter')),
                        ('can_send_mails', _('Benutzer kann im System Emails versenden')),
-                       ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),)
+                       ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),
+                       ('depot_list_notification', _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),)
 
 
 ''' non lifecycle related signals '''
-signals.post_save.connect(Member.create, sender=Member)
+signals.pre_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)
 signals.pre_save.connect(Assignment.pre_save, sender=Assignment)
 ''' lifecycle signal handling'''

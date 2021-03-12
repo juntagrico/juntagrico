@@ -10,6 +10,7 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.temporal import weekdays
 from juntagrico.util.subs import activate_future_depots
+from juntagrico.mailer import adminnotification
 
 
 class Command(BaseCommand):
@@ -49,9 +50,10 @@ class Command(BaseCommand):
             'subscriptions': SubscriptionDao.all_active_subscritions(),
             'products': SubscriptionProductDao.get_all_for_depot_list(),
             'extra_sub_categories': ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered(),
-            'depots': DepotDao.all_depots_order_by_code(),
+            'depots': DepotDao.all_depots_for_list(),
+
             'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in
-                         DepotDao.distinct_weekdays()},
+                         DepotDao.distinct_weekdays_for_depot_list()},
             'messages': ListMessageDao.all_active()
         }
 
@@ -61,3 +63,5 @@ class Command(BaseCommand):
                               depot_dict, 'depot_overview.pdf')
         render_to_pdf_storage('exports/amount_overview.html',
                               depot_dict, 'amount_overview.pdf')
+
+        adminnotification.depot_list_generated()

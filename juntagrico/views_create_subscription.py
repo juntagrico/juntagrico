@@ -38,7 +38,7 @@ def cs_select_depot(request, cs_session):
         cs_session.depot = DepotDao.depot_by_id(request.POST.get('depot'))
         return redirect(cs_session.next_page())
 
-    depots = DepotDao.all_depots()
+    depots = DepotDao.all_visible_depots()
     requires_map = any(depot.has_geo for depot in depots)
     render_dict = get_page_dict(request)
     render_dict.update({

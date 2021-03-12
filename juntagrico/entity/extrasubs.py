@@ -16,7 +16,7 @@ class ExtraSubscriptionType(JuntagricoBaseModel):
     size = models.CharField(_('Groesse (gross,4, ...)'),
                             max_length=100, default='')
     description = models.TextField(_('Beschreibung'), max_length=1000)
-    sort_order = models.FloatField(_('Groesse zum Sortieren'), default=1.0)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
     category = models.ForeignKey('ExtraSubscriptionCategory', related_name='types', null=True, blank=True,
@@ -28,6 +28,7 @@ class ExtraSubscriptionType(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('Zusatz-Abo-Typ')
         verbose_name_plural = _('Zusatz-Abo-Typen')
+        ordering = ['sort_order']
 
 
 class ExtraSubscriptionCategory(JuntagricoBaseModel):
@@ -37,7 +38,7 @@ class ExtraSubscriptionCategory(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
-    sort_order = models.FloatField(_('Nummer zum Sortieren'), default=1.0)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
 
@@ -46,11 +47,12 @@ class ExtraSubscriptionCategory(JuntagricoBaseModel):
 
     @property
     def types_for_depot_list(self):
-        return self.types.filter(depot_list=True).order_by('sort_order') if self.depot_list else []
+        return self.types.filter(depot_list=True) if self.depot_list else []
 
     class Meta:
         verbose_name = _('Zusatz-Abo-Kategorie')
         verbose_name_plural = _('Zusatz-Abo-Kategorien')
+        ordering = ['sort_order']
 
 
 class ExtraSubscription(Billable, SimpleStateModel):

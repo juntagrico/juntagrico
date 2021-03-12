@@ -48,10 +48,8 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def overview(self):
-        namelist = [_(' Einheiten {0}').format(self.size)]
-        namelist.extend(
-            extra.type.name for extra in self.extra_subscriptions.all())
-        return '%s' % (' + '.join(namelist))
+        namelist = [self.size, self.extra_size]
+        return Config.sub_overview_format('delimiter').join(filter(None, namelist))
 
     @staticmethod
     def get_part_overview(parts):
@@ -97,10 +95,36 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def size(self):
+        delimiter = Config.sub_overview_format('delimiter');
+        sformat = Config.sub_overview_format('format')
         sizes = {}
         for part in self.active_parts.all() or self.future_parts.all():
-            sizes[part.type.size.product.name] = part.type.size.units + sizes.get(part.type.size.product.name, 0)
-        return ', '.join([key + ':' + str(value) for key, value in sizes.items()])
+            sizes[part.type] = part.type.size.units + sizes.get(part.type, 0)
+        return delimiter.join(
+            [sformat.format(
+                product=key.size.product.name,
+                size=key.size.name,
+                type=key.name,
+                amount=value,
+            ) for key, value in sizes.items()]
+        )
+
+
+    @property
+    def extra_size(self):
+        delimiter = Config.sub_overview_format('delimiter');
+        sformat = Config.sub_overview_format('format')
+        sizes = {}
+        for esub in self.extra_subscriptions.all() or self.future_extra_subscriptions.all():
+            sizes[esub.type] = 1 + sizes.get(esub.type, 0)
+        return delimiter.join(
+            [sformat.format(
+                product='',
+                size=key.category.name,
+                type=key.size,
+                amount=value,
+            ) for key, value in sizes.items()]
+        )
 
     @property
     def types_changed(self):

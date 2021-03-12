@@ -12,8 +12,6 @@ class Depot(JuntagricoBaseModel):
     '''
     Location where stuff is picked up.
     '''
-    code = models.CharField(_('Sortier-Code'), max_length=100,
-                            validators=[validators.validate_slug], unique=True)
     name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)
@@ -29,6 +27,9 @@ class Depot(JuntagricoBaseModel):
     addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
+    visible = models.BooleanField(_('Sichtbar'), default=True)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     overview_cache = None
     subscription_cache = None
@@ -37,7 +38,8 @@ class Depot(JuntagricoBaseModel):
         return '%s %s' % (self.id, self.name)
 
     def active_subscriptions(self):
-        return self.subscription_set.filter(q_isactive()).order_by('primary_member__first_name', 'primary_member__last_name')
+        return self.subscription_set.filter(q_isactive()).order_by('primary_member__first_name',
+                                                                   'primary_member__last_name')
 
     @property
     def has_geo(self):
@@ -58,4 +60,5 @@ class Depot(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('depot')
         verbose_name_plural = Config.vocabulary('depot_pl')
+        ordering = ['sort_order']
         permissions = (('is_depot_admin', _('Benutzer ist Depot Admin')),)
