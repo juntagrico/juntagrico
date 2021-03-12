@@ -20,3 +20,4 @@ Features & Improvements
 Fixes
 ^^^^^
 * Fix in member user relation to prevent members without an user
+* Fix JobExtra(Type) labels in admin
