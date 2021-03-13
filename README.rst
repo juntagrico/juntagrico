@@ -51,7 +51,7 @@ It provides the basic functionality like
 
 Detailed documentation how to install and configure juntagrico can be found here http://juntagrico.readthedocs.io
 
-Demo can be found here https://juntagrico-demo.herokuapp.com/
+Demo can be found here https://juntagrico-demo.herokuapp.com/ The username is "admin" and the password is "admin" too. Please do not change the password!
 
 .. image:: http://forthebadge.com/images/badges/made-with-python.svg
    :target: https://www.python.org/

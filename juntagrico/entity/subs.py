@@ -194,8 +194,10 @@ class Subscription(Billable, SimpleStateModel):
     recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
     def co_members(self, member):
-        return [m.member for m in
-                self.recipients_qs.exclude(member__email=member.email).all()]
+        qs = self.recipients_qs
+        if member is not None:
+            qs = qs.exclude(member__email=member.email)
+        return [m.member for m in qs.all()]
 
     def recipients_display_name(self):
         if self.nickname:

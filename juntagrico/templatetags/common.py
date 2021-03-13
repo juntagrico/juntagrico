@@ -6,6 +6,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico import version
 
 register = template.Library()
 
@@ -72,3 +73,8 @@ def area_admin(request):
     if hasattr(request.user, 'member'):
         return ActivityAreaDao.areas_by_coordinator(request.user.member)
     return []
+
+
+@register.simple_tag
+def get_version():
+    return version

@@ -255,4 +255,7 @@
     {% for menu in l_admin_menus %}
         {% include menu %}
     {% endfor %}
+    <li class="nav-item">
+            <span class="version"> {% trans "Version: " %}{% get_version %}</span>
+    </li>
 </ul>
