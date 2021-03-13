@@ -16,6 +16,7 @@ Features & Improvements
     * Added special role for notification on depot list generation
 
 * Developer Features:
+    * Menu dict method eliminated for easier view creation and performance improvements
 
 Fixes
 ^^^^^

@@ -1,14 +1,16 @@
 {% load i18n %}
 {% load config %}
+{% load widgets %}
+{% next_jobs request as qs_next_jobs %}
 <hr/>
 <div class="jobs-widget">
     {% block next_jobs %}
         <h5>
             {% trans "Nächste Einsätze" %}
         </h5>
-        {% if next_jobs|length > 0 %}
+        {% if qs_next_jobs|length > 0 %}
             <ul class="unstyled next-jobs">
-                {% for job in next_jobs %}
+                {% for job in qs_next_jobs %}
                     <li>
                         <a href="{% url 'job' job.id %}" {% if job.canceled %}class="canceled"{% endif %}>
                             {{ job.type.get_name }}

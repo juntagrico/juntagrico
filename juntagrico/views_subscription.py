@@ -6,9 +6,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
-from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -31,7 +31,6 @@ from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
-from juntagrico.views import get_menu_dict, get_page_dict
 
 
 @login_required
@@ -43,7 +42,6 @@ def subscription(request, subscription_id=None):
     future_subscription = member.subscription_future is not None
     can_order = member.subscription_future is None and (
         member.subscription_current is None or member.subscription_current.cancellation_date is not None)
-    renderdict = get_menu_dict(request, 'subscription')
     if subscription_id is None:
         subscription = member.subscription_current
     else:
@@ -51,7 +49,7 @@ def subscription(request, subscription_id=None):
         future_subscription = future_subscription and not(
             subscription == member.subscription_future)
     end_date = end_of_next_business_year()
-
+    renderdict = {}
     if subscription is not None:
         cancellation_date = subscription.cancellation_date
         if cancellation_date is not None and cancellation_date <= next_cancelation_date():
@@ -90,8 +88,7 @@ def subscription_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     now = timezone.now().date()
     can_change = not (temporal.cancelation_date() <= now < temporal.start_of_next_business_year())
-    renderdict = get_menu_dict(request)
-    renderdict.update({
+    renderdict = {
         'subscription': subscription,
         'member': request.user.member,
         'change_size': can_change,
@@ -99,7 +96,7 @@ def subscription_change(request, subscription_id):
         'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year(),
         'sub_change_addons': addons.config.get_sub_changes(),
-    })
+    }
     return render(request, 'subscription_change.html', renderdict)
 
 
@@ -119,18 +116,17 @@ def depot_change(request, subscription_id):
                 Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
-    renderdict = get_menu_dict(request)
     depots = DepotDao.all_visible_depots()
     requires_map = False
     for depot in depots:
         requires_map = requires_map or depot.has_geo
-    renderdict.update({
+    renderdict = {
         'subscription': subscription,
         'saved': saved,
         'member': request.user.member,
         'depots': depots,
         'requires_map': requires_map,
-    })
+    }
     return render(request, 'depot_change.html', renderdict)
 
 
@@ -145,16 +141,15 @@ def primary_change(request, subscription_id):
         subscription.primary_member = new_primary
         subscription.save()
         return redirect('sub-detail-id', subscription_id=subscription.id)
-    renderdict = get_menu_dict(request)
     if Config.enable_shares():
         co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
     else:
         co_members = subscription.other_recipients()
-    renderdict.update({
+    renderdict = {
         'subscription': subscription,
         'co_members': co_members,
         'has_comembers': len(co_members) > 0
-    })
+    }
     return render(request, 'pm_change.html', renderdict)
 
 
@@ -175,14 +170,13 @@ def size_change(request, subscription_id):
             return return_to_previous_location(request)
     else:
         form = SubscriptionPartOrderForm()
-    renderdict = get_menu_dict(request)
-    renderdict.update({
+    renderdict = {
         'form': form,
         'subscription': subscription,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'parts_order_allowed': parts_order_allowed,
-    })
+    }
     return render(request, 'size_change.html', renderdict)
 
 
@@ -204,13 +198,12 @@ def extra_change(request, subscription_id):
                     ExtraSubscription.objects.create(
                         main_subscription=subscription, type=type)
         return redirect('extra-change', subscription_id=subscription.id)
-    renderdict = get_menu_dict(request)
-    renderdict.update({
+    renderdict = {
         'types': ExtraSubscriptionTypeDao.all_visible_extra_types(),
         'extras': subscription.extra_subscription_set.all(),
         'sub_id': subscription_id,
         'extra_order_allowed': extra_order_allowed,
-    })
+    }
     return render(request, 'extra_change.html', renderdict)
 
 
@@ -227,7 +220,7 @@ class SignupView(FormView, ModelFormMixin):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
-            **get_page_dict(self.request),
+            **{},
             menu={'join': 'active'},
             **kwargs
         )
@@ -277,7 +270,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
-            **get_page_dict(self.request),
+            **{},
             **kwargs
         )
 
@@ -316,8 +309,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
 
 def error_page(request, error_message):
-    renderdict = get_menu_dict(request)
-    renderdict['error_message'] = error_message
+    renderdict = {'error_message': error_message}
     return render(request, 'error.html', renderdict)
 
 
@@ -377,10 +369,9 @@ def cancel_subscription(request, subscription_id):
     if request.method == 'POST':
         cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
-    renderdict = get_menu_dict(request)
-    renderdict.update({
+    renderdict = {
         'end_date': end_date,
-    })
+    }
     return render(request, 'cancelsubscription.html', renderdict)
 
 
@@ -399,8 +390,7 @@ def leave_subscription(request, subscription_id):
         primary_member = subscription.primary_member
         membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
         return redirect('home')
-    renderdict = get_menu_dict(request)
-    return render(request, 'leavesubscription.html', renderdict)
+    return render(request, 'leavesubscription.html', {})
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -442,10 +432,9 @@ def change_nickname(request, subscription_id):
             return redirect('sub-detail-id', subscription_id=subscription_id)
     else:
         form = NicknameForm()
-    renderdict = get_menu_dict(request)
-    renderdict.update({
+    renderdict = {
         'form': form,
-    })
+    }
     return render(request, 'change_nickname.html', renderdict)
 
 
@@ -464,7 +453,6 @@ def manage_shares(request):
         shareerror = False
     member = request.user.member
     shares = member.share_set.order_by('cancelled_date', '-paid_date')
-    renderdict = get_menu_dict(request)
 
     # calculate required shares backwards to account for shared subscriptions
     not_canceled_share_count = member.usable_shares_count
@@ -474,11 +462,11 @@ def manage_shares(request):
     if member.subscription_current is not None:
         overflow_list.append(member.subscription_current.share_overflow)
 
-    renderdict.update({
+    renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
         'required': not_canceled_share_count - min(overflow_list)
-    })
+    }
     return render(request, 'manage_shares.html', renderdict)
 
 
