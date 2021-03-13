@@ -8,6 +8,7 @@ Has no migrations
 Fixes
 ^^^^^
 * Fix bug in share order form evaluation
+* Fix signup to job with infinite slots
 
 
 1.3.10
