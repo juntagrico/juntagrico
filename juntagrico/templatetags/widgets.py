@@ -14,32 +14,36 @@ def next_jobs(request):
 @register.simple_tag
 def assignment_data(request):
     member = request.user.member
-    required_assignments = 0
-    userassignments = AssignmentDao.assignments_for_member_current_business_year(
-        member)
-    if member.subscription_current is not None:
-        partner_assignments = []
-        for subscription_member in member.subscription_current.recipients_all:
-            if subscription_member == member:
-                continue
-            partner_assignments.extend(
-                AssignmentDao.assignments_for_member_current_business_year(subscription_member))
-        required_assignments = member.subscription_current.required_assignments
-    else:
-        partner_assignments = []
+    if member.subscription_current is None:
+        return None
 
-    userassignments_total = int(sum(a.amount for a in userassignments))
-    userassignemnts_core = int(
-        sum(a.amount for a in userassignments if a.is_core()))
-    partner_assignments_total = int(sum(a.amount for a in partner_assignments))
-    partner_assignments_core = int(
-        sum(a.amount for a in partner_assignments if a.is_core()))
-    assignmentsrange = list(range(
-        0, max(required_assignments, userassignments_total + partner_assignments_total)))
-    return {
-        'assignmentsrange': assignmentsrange,
-        'userassignments_bound': userassignments_total,
-        'userassignemnts_core_bound': userassignemnts_core,
-        'partner_assignments_bound': userassignments_total + partner_assignments_total,
-        'partner_assignments_core_bound': userassignments_total + partner_assignments_core
+    # collect assignments
+    member_assignments = AssignmentDao.assignments_for_member_current_business_year(member)
+    partner_assignments = []
+    for subscription_member in member.subscription_current.co_members(member):
+        partner_assignments.extend(
+            AssignmentDao.assignments_for_member_current_business_year(subscription_member)
+        )
+
+    # count assignments
+    assignments = {
+        'member_core': int(sum(a.amount for a in member_assignments if a.is_core())),
+        'member': int(sum(a.amount for a in member_assignments)),
+        'partner_core': int(sum(a.amount for a in partner_assignments if a.is_core())),
+        'partner': int(sum(a.amount for a in partner_assignments)),
     }
+
+    # calculate remaining assignments
+    remaining = member.subscription_current.required_assignments -\
+        assignments['member'] - assignments['partner']
+    remaining_core = member.subscription_current.required_core_assignments -\
+        assignments['member_core'] - assignments['partner_core']
+
+    # for displaying
+    total = assignments['member'] + assignments['partner'] + max(remaining, remaining_core)
+    assignments.update({
+        'partner_core_bound': assignments['member'] + assignments['partner_core'],
+        'partner_bound': assignments['member'] + assignments['partner'],
+        'total': list(range(total)),
+    })
+    return assignments
