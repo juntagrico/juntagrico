@@ -5,6 +5,10 @@ Release Notes
 -----
 Has no migrations
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Include multiplier in job copy form
+
 Fixes
 ^^^^^
 * Fix bug in share order form evaluation
