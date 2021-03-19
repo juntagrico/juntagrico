@@ -30,6 +30,7 @@ jobs:
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r requirements-dev.txt
     - name: install CodeClimate reporter
+      if: ${{ github.event_name == 'push'}}
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
@@ -39,6 +40,7 @@ jobs:
         django-admin.py makemigrations --noinput
         coverage run -m manage test
     - name: publish code coverage
+      if: ${{ github.event_name == 'push'}}
       run: |
         coverage report
         coverage xml
@@ -51,21 +53,7 @@ jobs:
       run: |
         flake8 --count --ignore E501 juntagrico
         flake8 --count --ignore E501 test
-    - name: Notify slack success
-      if: success()
+    - name: Slack notification
       env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-      uses: voxmedia/github-action-slack-notify-build@v1
-      with:
-        channel: travis
-        status: SUCCESS
-        color: good
-    - name: Notify slack fail
-      if: failure()
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_NOTIFICATIONS_BOT_TOKEN }}
-      uses: voxmedia/github-action-slack-notify-build@v1
-      with:
-        channel: travis
-        status: FAILED
-        color: danger
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      uses: Ilshidur/action-slack@2.0.2
