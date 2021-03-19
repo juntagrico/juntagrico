@@ -33,6 +33,7 @@ jobs:
       run: |
         django-admin.py makemigrations --noinput
         coverage run -m manage test
+        echo ${{ secrets.CODECOV_TOKEN }}
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
