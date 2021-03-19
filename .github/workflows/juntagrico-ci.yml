@@ -43,6 +43,6 @@ jobs:
         coverage report
         coverage xml
         ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
-       ./cc-test-reporter upload-coverage -i coverageupload
+        ./cc-test-reporter upload-coverage -i coverageupload
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
