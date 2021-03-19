@@ -57,3 +57,5 @@ jobs:
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       uses: Ilshidur/action-slack@2.0.2
+      with:
+        args: 'A new commit has been pushed.'
