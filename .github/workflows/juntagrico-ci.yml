@@ -54,6 +54,7 @@ jobs:
         flake8 --count --ignore E501 juntagrico
         flake8 --count --ignore E501 test
     - name: Slack notification
+      if: always()
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       uses: Ilshidur/action-slack@2.1.0
