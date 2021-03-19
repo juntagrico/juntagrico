@@ -63,6 +63,9 @@ class JobExtraType(JuntagricoBaseModel):
     display_full = models.CharField(
         _('Icon für Extra'), max_length=1000, blank=False, null=False)
 
+    def __str__(self):
+        return '%s %s' % (self.id, self.name)
+
     class Meta:
         verbose_name = _('JobExtraTyp')
         verbose_name_plural = _('JobExtraTypen')
@@ -90,6 +93,10 @@ class JobExtra(JuntagricoBaseModel):
         if self.recuring_type is not None:
             return self.recuring_type
         return self.onetime_type
+
+    def __str__(self):
+        target = self.recuring_type or self.onetime_type
+        return '%s:%s' % (self.extra_type, target)
 
     class Meta:
         verbose_name = _('JobExtra')

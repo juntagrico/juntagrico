@@ -18,7 +18,10 @@ Features & Improvements
     * Added value field for shares
 
 * Developer Features:
+    * Menu dict method eliminated for easier view creation and performance improvements
 
 Fixes
 ^^^^^
 * Fix in member user relation to prevent members without an user
+* Fix JobExtra(Type) labels in admin
+* Take remaining core assignments into account in assignment widget

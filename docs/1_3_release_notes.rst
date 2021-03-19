@@ -9,6 +9,8 @@ Fixes
 ^^^^^
 * Fix participants list in job emails
 * Added view_name as id of the body element where it was missing
+* Subscriptions co recipients are now nullsave
+*installed juntagrico version is shown at the bottom of the admin menu
 
 
 1.3.9
