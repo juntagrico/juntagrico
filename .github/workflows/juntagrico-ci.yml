@@ -56,6 +56,6 @@ jobs:
     - name: Slack notification
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      uses: Ilshidur/action-slack@2.0.2
+      uses: Ilshidur/action-slack@2.1.0
       with:
-        args: 'A new commit has been pushed.'
+        args: 'A new commit<{{GITHUB_SERVER_URL}}/{{GITHUB_REPOSITORY}}/commit/{{GITHUB_SHA}}> has been pushed.'
