@@ -33,6 +33,7 @@ jobs:
       run: |
         django-admin.py makemigrations --noinput
         coverage run -m manage test
-    - uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+    - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v2.7.5
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
