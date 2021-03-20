@@ -471,10 +471,10 @@ def manage_shares(request):
     active_share_years = member.active_share_years
     if active_share_years:
         active_share_years.remove(timezone.now().year)
-   renderdict = {
+    renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required': not_canceled_share_count - min(overflow_list)
+        'required': not_canceled_share_count - min(overflow_list),
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)

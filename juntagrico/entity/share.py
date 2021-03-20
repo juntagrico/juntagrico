@@ -8,9 +8,13 @@ from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
 
 
+def share_value_default():
+    return float(Config.share_price())
+
+
 class Share(Billable):
     member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT)
-    value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, default=float(Config.share_price()))
+    value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, default=share_value_default)
     creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=timezone.now)
     paid_date = models.DateField(_('Bezahlt am'), null=True, blank=True)
     issue_date = models.DateField(_('Ausgestellt am'), null=True, blank=True)
