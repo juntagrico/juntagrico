@@ -95,7 +95,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def size(self):
-        delimiter = Config.sub_overview_format('delimiter');
+        delimiter = Config.sub_overview_format('delimiter')
         sformat = Config.sub_overview_format('format')
         sizes = {}
         for part in self.active_parts.all() or self.future_parts.all():
@@ -109,10 +109,9 @@ class Subscription(Billable, SimpleStateModel):
             ) for key, value in sizes.items()]
         )
 
-
     @property
     def extra_size(self):
-        delimiter = Config.sub_overview_format('delimiter');
+        delimiter = Config.sub_overview_format('delimiter')
         sformat = Config.sub_overview_format('format')
         sizes = {}
         for esub in self.extra_subscriptions.all() or self.future_extra_subscriptions.all():

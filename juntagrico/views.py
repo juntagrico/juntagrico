@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -67,29 +65,31 @@ def job(request, job_id):
     job_canceled = job.canceled
     can_subscribe = job.infinite_slots or not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
 
-    if request.method == 'POST' and can_subscribe and 0 < int(request.POST.get('jobs')) <= job.free_slots:
+    if request.method == 'POST' and can_subscribe:
         num = int(request.POST.get('jobs'))
-        # adding participants
-        amount = 1
-        if Config.assignment_unit() == 'ENTITY':
-            amount = job.multiplier
-        elif Config.assignment_unit() == 'HOURS':
-            amount = job.multiplier * job.duration
-        for i in range(num):
-            assignment = Assignment.objects.create(
-                member=member, job=job, amount=amount)
-        for extra in job.type.job_extras_set.all():
-            if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
-                assignment.job_extras.add(extra)
-        assignment.save()
-        membernotification.job_signup(member.email, job)
-        # redirect to same page such that refresh in the browser or back
-        # button does not trigger a resubmission of the form
-        return redirect('job', job_id=job_id)
-    elif request.method == 'POST':
+        if 0 < num and (job.free_slots >= num or job.infinite_slots):
+            # adding participants
+            amount = 1
+            if Config.assignment_unit() == 'ENTITY':
+                amount = job.multiplier
+            elif Config.assignment_unit() == 'HOURS':
+                amount = job.multiplier * job.duration
+            for i in range(num):
+                assignment = Assignment.objects.create(
+                    member=member, job=job, amount=amount)
+            for extra in job.type.job_extras_set.all():
+                if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
+                    assignment.job_extras.add(extra)
+            assignment.save()
+            membernotification.job_signup(member.email, job)
+            # redirect to same page such that refresh in the browser or back
+            # button does not trigger a resubmission of the form
+            return redirect('job', job_id=job_id)
+    if request.method == 'POST':
         messages = getattr(request, 'member_messages', []) or []
         messages.extend(error_message(request))
         request.member_messages = messages
+
 
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
