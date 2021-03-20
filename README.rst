@@ -3,9 +3,6 @@ juntagrico
 
 .. image:: https://github.com/juntagrico/juntagrico/actions/workflows/juntagrico-ci.yml/badge.svg?branch=main&event=push
     :target: https://github.com/juntagrico/juntagrico/actions/workflows/juntagrico-ci.yml
-
-.. image:: https://travis-ci.com/juntagrico/juntagrico.svg?branch=master
-    :target: https://travis-ci.com/juntagrico/juntagrico
    
 .. image:: https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/maintainability
    :target: https://codeclimate.com/github/juntagrico/juntagrico/maintainability
