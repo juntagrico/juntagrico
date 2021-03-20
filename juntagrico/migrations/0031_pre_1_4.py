@@ -3,6 +3,7 @@
 from django.db import migrations, models
 import juntagrico.entity.share
 
+
 class Migration(migrations.Migration):
 
     dependencies = [

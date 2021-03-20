@@ -37,7 +37,6 @@ from juntagrico.util.pdf import render_to_pdf_http
 from datetime import date
 
 
-
 @login_required
 def subscription(request, subscription_id=None):
     '''
