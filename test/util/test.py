@@ -164,6 +164,11 @@ class JuntagricoTestCase(TestCase):
         self.job3 = RecuringJob.objects.create(**job_data)
         self.job4 = RecuringJob.objects.create(**job_data2)
         self.job5 = RecuringJob.objects.create(**job_data)
+        self.infinite_job = RecuringJob.objects.create(**{
+            'infinite_slots': True,
+            'time': time,
+            'type': self.job_type
+        })
         """
         one time jobs
         """
