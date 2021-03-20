@@ -9,7 +9,6 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
-from django.utils.translation import gettext as _
 from django.db.models import Count, Sum
 
 
