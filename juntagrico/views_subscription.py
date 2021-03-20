@@ -34,7 +34,6 @@ from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
-from juntagrico.views import get_menu_dict, get_page_dict
 from juntagrico.util.pdf import render_to_pdf_http
 from datetime import date
 
