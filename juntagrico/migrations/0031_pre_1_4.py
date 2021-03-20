@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('juntagrico', '0030_auto_20201112_0812'),
     ]
@@ -33,23 +32,29 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='activityarea',
-            options={'ordering': ['sort_order'], 'permissions': (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),), 'verbose_name': 'Tätigkeitsbereich', 'verbose_name_plural': 'Tätigkeitsbereiche'},
+            options={'ordering': ['sort_order'],
+                     'permissions': (('is_area_admin', 'Benutzer ist TätigkeitsbereichskoordinatorIn'),),
+                     'verbose_name': 'Tätigkeitsbereich', 'verbose_name_plural': 'Tätigkeitsbereiche'},
         ),
         migrations.AlterModelOptions(
             name='depot',
-            options={'ordering': ['sort_order'], 'permissions': (('is_depot_admin', 'Benutzer ist Depot Admin'),), 'verbose_name': 'Depot', 'verbose_name_plural': 'Depots'},
+            options={'ordering': ['sort_order'], 'permissions': (('is_depot_admin', 'Benutzer ist Depot Admin'),),
+                     'verbose_name': 'Depot', 'verbose_name_plural': 'Depots'},
         ),
         migrations.AlterModelOptions(
             name='extrasubscriptioncategory',
-            options={'ordering': ['sort_order'], 'verbose_name': 'Zusatz-Abo-Kategorie', 'verbose_name_plural': 'Zusatz-Abo-Kategorien'},
+            options={'ordering': ['sort_order'], 'verbose_name': 'Zusatz-Abo-Kategorie',
+                     'verbose_name_plural': 'Zusatz-Abo-Kategorien'},
         ),
         migrations.AlterModelOptions(
             name='extrasubscriptiontype',
-            options={'ordering': ['sort_order'], 'verbose_name': 'Zusatz-Abo-Typ', 'verbose_name_plural': 'Zusatz-Abo-Typen'},
+            options={'ordering': ['sort_order'], 'verbose_name': 'Zusatz-Abo-Typ',
+                     'verbose_name_plural': 'Zusatz-Abo-Typen'},
         ),
         migrations.AlterModelOptions(
             name='listmessage',
-            options={'ordering': ['sort_order'], 'verbose_name': 'Depot Listen Nachricht', 'verbose_name_plural': 'Depot Listen Nachrichten'},
+            options={'ordering': ['sort_order'], 'verbose_name': 'Depot Listen Nachricht',
+                     'verbose_name_plural': 'Depot Listen Nachrichten'},
         ),
         migrations.AlterModelOptions(
             name='subscriptionproduct',
@@ -97,9 +102,9 @@ class Migration(migrations.Migration):
         migrations.AlterModelOptions(
             name='specialroles',
             options={'permissions': (
-            ('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'),
-            ('can_send_mails', 'Benutzer kann im System Emails versenden'),
-            ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),
-            ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'))},
+                ('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'),
+                ('can_send_mails', 'Benutzer kann im System Emails versenden'),
+                ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'),
+                ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'))},
         ),
     ]
