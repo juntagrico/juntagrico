@@ -53,10 +53,18 @@ jobs:
       run: |
         flake8 --count --ignore E501 juntagrico
         flake8 --count --ignore E501 test
-    - name: Slack notification
-      if: always()
+    - name: Slack notification push
+      if: ${{ github.event_name == 'push' && always()}}
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       uses: Ilshidur/action-slack@2.1.0
       with:
         args: 'A new <{{GITHUB_SERVER_URL}}/{{GITHUB_REPOSITORY}}/commit/{{GITHUB_SHA}}|commit> has been pushed by {{GITHUB_ACTOR}}.'
+    - name: Slack notification pullrequest
+      if: ${{ github.event_name == 'pull_request' && always()}}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        PULL_ID: ${{ github.event.number }}
+      uses: Ilshidur/action-slack@2.1.0
+      with:
+        args: 'A new build of <{{GITHUB_SERVER_URL}}/{{GITHUB_REPOSITORY}}/pull/{{PULL_ID}}|pr> has been triggered by {{GITHUB_ACTOR}}.'
