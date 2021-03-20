@@ -173,9 +173,9 @@ class CSSelectSharesView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # read form
-        self.cs_session.main_member.new_shares = int(request.POST.get('shares_mainmember', 0))
+        self.cs_session.main_member.new_shares = int(request.POST.get('shares_mainmember', 0) or 0)
         for co_member in self.cs_session.co_members:
-            co_member.new_shares = int(request.POST.get(co_member.email, 0))
+            co_member.new_shares = int(request.POST.get(co_member.email, 0) or 0)
         # evaluate
         shares = self.cs_session.count_shares()
         if self.cs_session.evaluate_ordered_shares(shares):
