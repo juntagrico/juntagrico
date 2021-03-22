@@ -11,7 +11,7 @@ juntagrico
 [![image](https://img.shields.io/pypi/dm/juntagrico.svg)](https://pypi.python.org/pypi/juntagrico/)
 [![image](https://img.shields.io/github/last-commit/juntagrico/juntagrico.svg)](https://github.com/juntagrico/juntagrico)
 [![image](https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico)](https://github.com/juntagrico/juntagrico)
-[![image](https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=master)](https://requires.io/github/juntagrico/juntagrico/requirements/?branch=master)
+[![Requirements Status](https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=main)](https://requires.io/github/juntagrico/juntagrico/requirements/?branch=main)
 
 **the easy solution for cooperative vegetable growers**
 
@@ -36,4 +36,3 @@ change the password!
 [![image](http://forthebadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![image](http://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![image](http://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)
-[![Requirements Status](https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=main)](https://requires.io/github/juntagrico/juntagrico/requirements/?branch=main)
