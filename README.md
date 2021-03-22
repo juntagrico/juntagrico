@@ -36,3 +36,4 @@ change the password!
 [![image](http://forthebadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![image](http://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![image](http://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)
+[![Requirements Status](https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=main)](https://requires.io/github/juntagrico/juntagrico/requirements/?branch=main)
