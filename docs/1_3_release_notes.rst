@@ -8,6 +8,7 @@ Has no migrations
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Include multiplier in job copy form
+* See versions of installed juntagrico apps when clicking on version in the admin menu
 
 Fixes
 ^^^^^

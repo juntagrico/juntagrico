@@ -274,7 +274,11 @@
     {% for menu in admin_menus %}
         {% include menu %}
     {% endfor %}
-    <li class="nav-item">
-            <span class="version"> {% trans "Version: " %}{% get_version %}</span>
-    </li>
+    {% if operation_group %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'versions' %}">
+                {% trans "Version: " %}{% get_version %}
+            </a>
+        </li>
+    {% endif %}
 </ul>
