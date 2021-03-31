@@ -1,15 +1,6 @@
 Release Notes
 =============
 
-1.3.12
-------
-Fixes
-^^^^^
-* Fix for primary member on sub with future deactivation date
-* Fix in ical for local start times
-* Exclude unused model fields in admin
-
-
 1.3.11
 ------
 Features & Improvements
@@ -21,6 +12,9 @@ Fixes
 ^^^^^
 * Fix bug in share order form evaluation
 * Fix signup to job with infinite slots
+* Fix for primary member on sub with future deactivation date
+* Fix in ical for local start times
+* Exclude unused model fields in admin
 
 
 1.3.10
