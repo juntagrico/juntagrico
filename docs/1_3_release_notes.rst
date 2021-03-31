@@ -7,6 +7,7 @@ Fixes
 ^^^^^
 * Fix for primary member on sub with future deactivation date
 * Fix in ical for local start times
+* Exclude unused model fields in admin
 
 
 1.3.11
