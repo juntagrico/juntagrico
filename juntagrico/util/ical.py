@@ -2,6 +2,7 @@ import re
 from collections import namedtuple
 
 from django.utils import timezone
+from django.utils.timezone import is_aware, localtime
 from django.utils.translation import gettext as _
 from ics import Calendar, Event
 from ics.parse import ContentLine
@@ -41,7 +42,10 @@ def generate_ical_for_job(job):
     e.location = job.type.location
     e.description = job.type.description
     # Using FORM 2: https://tools.ietf.org/html/rfc5545#section-3.3.5
-    e.begin = job.start_time()
+    start_time=job.start_time()
+    if is_aware(start_time):
+        last_beat = localtime(start_time)
+    e.begin = start_time
     e.duration = {'hours': job.duration}
     e.extra.append(ContentLine(name=f"ORGANIZER;CN={Config.organisation_name()}",
                                value=f"mailto:{job.type.activityarea.get_email()}"))
