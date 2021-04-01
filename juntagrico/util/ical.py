@@ -2,7 +2,6 @@ import re
 from collections import namedtuple
 
 from django.utils import timezone
-from django.utils.timezone import is_aware, localtime
 from django.utils.translation import gettext as _
 from ics import Calendar, Event
 from ics.parse import ContentLine
