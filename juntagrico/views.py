@@ -90,7 +90,6 @@ def job(request, job_id):
         messages.extend(error_message(request))
         request.member_messages = messages
 
-
     all_participants = MemberDao.members_by_job(job)
     number_of_participants = len(all_participants)
     unique_participants = all_participants.annotate(

@@ -9,6 +9,8 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
+from django.db.models import Count, Sum
+
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
@@ -31,6 +33,8 @@ from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
+from juntagrico.util.pdf import render_to_pdf_http
+from datetime import date
 
 
 @login_required
@@ -461,13 +465,38 @@ def manage_shares(request):
         overflow_list.append(member.subscription_future.share_overflow)
     if member.subscription_current is not None:
         overflow_list.append(member.subscription_current.share_overflow)
-
+    active_share_years = member.active_share_years
+    if active_share_years:
+        active_share_years.remove(timezone.now().year)
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required': not_canceled_share_count - min(overflow_list)
+        'required': not_canceled_share_count - min(overflow_list),
+        'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)
+
+
+@login_required
+def share_certificate(request):
+    year = int(request.GET['year'])
+    member = request.user.member
+    active_share_years = member.active_share_years
+    if year >= timezone.now().year or year not in active_share_years:
+        return error_page(request, _('{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden.').format(Config.vocabulary('share')))
+    shares_date = date(year, 12, 31)
+    shares = member.active_shares_for_date(date=shares_date).values('value').annotate(count=Count('value')).annotate(total=Sum('value')).order_by('value')
+    shares_total = 0
+    for share in shares:
+        shares_total = shares_total + share['total']
+    renderdict = {
+        'member': member,
+        'cert_date': timezone.now().date(),
+        'shares_date': shares_date,
+        'shares': shares,
+        'shares_total': shares_total,
+    }
+    return render_to_pdf_http('exports/share_certificate.html', renderdict, _('Bescheinigung') + str(year) + '.pdf')
 
 
 @login_required

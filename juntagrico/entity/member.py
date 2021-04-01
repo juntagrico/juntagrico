@@ -11,6 +11,7 @@ from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.util.users import make_username
+from datetime import date
 
 
 def q_joined_subscription():
@@ -73,6 +74,29 @@ class Member(JuntagricoBaseModel):
         """ :return: shares that have been paid by member and not cancelled AND paid back yet
         """
         return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
+
+    def active_shares_for_date(self, date=timezone.now):
+        return self.share_set.filter(paid_date__lte=date).filter(Q(payback_date__isnull=True) | Q(payback_date__gte=date))
+
+    @property
+    def active_share_years(self):
+        """ :return: list of years spanning member's first to last active share in the past
+        """
+        shares = self.share_set.filter(paid_date__isnull=False).order_by('paid_date')
+        years = []
+        if shares:
+            first_share_date = timezone.now().date()
+            last_share_date = date.min
+            for share in shares:
+                first_share_date = min(first_share_date, share.paid_date)
+                if share.payback_date:
+                    last_share_date = max(last_share_date, share.payback_date)
+                else:
+                    last_share_date = timezone.now().date()
+                last_share_date = max(last_share_date, first_share_date)
+            years = list(range(first_share_date.year, last_share_date.year + 1))
+            years = [y for y in years if y <= timezone.now().year]
+        return years
 
     @property
     def active_shares_count(self):
