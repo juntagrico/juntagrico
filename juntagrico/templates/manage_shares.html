@@ -11,7 +11,26 @@
     {% vocabulary "share_pl" as v_share_pl %}
     {% vocabulary "share" as v_share %}
     {% vocabulary "subscription" as v_subscription %}
-    <b>{% trans "Übersicht" %}</b>
+    <h4>{% trans "Bescheinigung" %}</h4>
+    <p>
+        {% blocktrans %}Hier kannst du eine Bescheinigung über deine {{ v_share_pl }} der letzten Jahre herunterladen{% endblocktrans %}:
+    </p>
+    {% if certificate_years %}
+        <form action="{% url 'share-certificate' %}" method="get" class="form-inline">
+            <div class="form-group">
+                <select class="form-control" id="year_select" name="year">
+                    {% for year in certificate_years %}
+                    <option value="{{ year }}"{% if forloop.last %} selected="selected"{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="submit" value="{% trans "Bescheinigung" %} {% trans "herunterladen" %}" class="btn btn-primary">
+        </form>
+    {% else %}
+        <p class="font-italic">Keine {{ v_share_pl }} der vergangenen Jahre gefunden. Wenn du seit diesem Jahr {{ v_share_pl }} hälst, steht dir hier nächstes Jahr eine Bescheinigung zur Verfügung.</p>
+    {% endif %}
+
+    <h4>{% trans "Übersicht" %}</h4>
     {% if shares|length == 0 %}
         {% blocktrans %}Du hast noch keine {{ v_share_pl }}{% endblocktrans %}
     {% else %}

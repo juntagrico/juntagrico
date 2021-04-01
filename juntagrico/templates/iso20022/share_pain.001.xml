@@ -47,7 +47,7 @@
                     <EndToEndId>EndToEndId-001-01-{{ share.id }}</EndToEndId>
                 </PmtId>
                 <Amt>
-                    <InstdAmt Ccy="CHF">{{ amount }}</InstdAmt>
+                    <InstdAmt Ccy="CHF">{{ share.value }}</InstdAmt>
                 </Amt>
                 <Cdtr>
                     <Nm>{{ share.member.first_name }} {{ share.member.last_name }}</Nm>

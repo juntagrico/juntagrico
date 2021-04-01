@@ -1,5 +1,6 @@
 import os
 from setuptools import find_packages, setup
+import juntagrico
 
 ROOT_DIR = os.path.dirname(__file__)
 SOURCE_DIR = os.path.join(ROOT_DIR)
@@ -19,7 +20,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='juntagrico',
-    version='1.3.9',
+    version=juntagrico.version,
     packages=find_packages(),
     include_package_data=True,
     license='GNU Lesser General Public License v3 (LGPLv3)',

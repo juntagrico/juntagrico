@@ -16,6 +16,7 @@ It provides the basic functionality like
    :hidden:
 
    instalation.rst
+   first_steps.rst
    settings.rst
    theming.rst
    1_3_release_notes.rst

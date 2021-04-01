@@ -171,6 +171,12 @@ div.all-page-title.row {
     font-size: 14px;
 }
 
+.version {
+    margin-top: 6px;
+    font-size: 12px;
+    display: block;
+}
+
 ul.subadmin-menu {
     padding-left: 7px;
 }
@@ -212,6 +218,11 @@ a.inline {
 
 .nav-link.yellow:hover, .nav-link.yellow:focus {
     color: #999999;
+}
+
+/* assignment widget */
+.partner-assignments {
+    opacity:0.5;
 }
 
 /* next jobs widget menu stuff checked */

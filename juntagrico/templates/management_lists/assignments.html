@@ -1,5 +1,6 @@
 {% extends "management_lists/man_list_base.html" %}
 {% load i18n %}
+{% load common %}
 {% load config %}
 {% block page_title %}
     <h3>
@@ -7,6 +8,8 @@
     </h3>
 {% endblock %}
 {% block list %}
+    {% show_core as b_show_core %}
+    {% requires_core as b_requires_core %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
     <table id="filter-table" class="list table" style="display: table;">
         <thead>
@@ -23,7 +26,7 @@
                  <th >
                     {% blocktrans %}{{ v_assignment_pl }} status{% endblocktrans %}
                 </th>
-                {% if show_core and requires_core %}
+                {% if b_show_core and b_requires_core %}
                         <th>
                             {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
                         </th>
@@ -56,7 +59,7 @@
                     <td>
                         {{ subscription.assignments_progress|floatformat }}%
                     </td>
-                    {% if show_core and requires_core %}
+                    {% if b_show_core and b_requires_core %}
                         <th>
                             {{ subscription.core_assignments|floatformat }}
                         </th>
@@ -81,7 +84,7 @@
     </table>
     <script type='text/javascript'>
         var search_builder_enabled=true;
-        {% if show_core %}
+        {% if b_show_core and b_requires_core%}
             var search_builder_columns=[1,2,3,4,5,6];
         {% else %}
             var search_builder_columns=[1,2,3];

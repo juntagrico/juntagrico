@@ -91,6 +91,12 @@ DATE_INPUT_FORMATS = ['%d.%m.%Y', ]
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+
+class InvalidTemplateVariable(str):
+    def __mod__(self, other):
+        raise NameError(f"In template, undefined variable or unknown value for: '{other}'")
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -111,6 +117,7 @@ TEMPLATES = [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader'
             ],
+            'string_if_invalid': InvalidTemplateVariable("%s"),
             'debug': True
         },
     },
