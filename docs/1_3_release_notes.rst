@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+1.3.12
+------
+
+Fixes
+^^^^^
+* Ical invitation now in utf 8
+
 1.3.11
 ------
 Features & Improvements
