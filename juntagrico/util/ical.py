@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, vDatetime
 
 from juntagrico.config import Config
 
@@ -23,11 +23,11 @@ def generate_ical_for_job(job):
     e = Event()
     # By giving it a UID the calendar will (hopefully) replace previous versions of this event.
     e.add(name='UID', value=f'{repr(job)}@{Config.server_url()}')
-    e.add(name='DTSTAMP', value=timezone.now())
+    e['DTSTAMP'] = vDatetime(timezone.now()).to_ical()
     e.add(name='NAME', value=Config.organisation_name() + ' ' + _('Einsatz') + ': ' + job.type.get_name)
     e.add(name='LOCATION', value=job.type.location)
     e.add(name='DESCRIPTION', value=job.type.description)
-    e.add(name='DTSTART', value=job.start_time())
+    e['DTSTART'] = vDatetime(job.start_time()).to_ical()
     e.add(name='DURATION', value=timedelta(hours=job.duration))
     e.add(name=f"ORGANIZER;CN={Config.organisation_name()}",
           value=f"mailto:{job.type.activityarea.get_email()}")
