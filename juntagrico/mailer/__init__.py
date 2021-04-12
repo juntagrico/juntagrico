@@ -117,7 +117,7 @@ class EmailSender:
     @chainable
     def attach_ics(self, ics):
 
-        self.email.attach(ics.name, ics.content)
+        self.email.attach(ics.name, ics.content, 'text/calendar')
 
     @chainable
     def start_thread(self, uid):
