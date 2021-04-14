@@ -27,4 +27,4 @@ class SubscriptionPartDao:
 
     @staticmethod
     def canceled_extra_subs():
-        return SubscriptionPart.objects.filter(type__size__product__is_extra=True).filter(q_cancelled())
+        return SubscriptionPart.objects.filter(type__size__product__is_extra=True).filter(q_cancelled() & ~q_deactivated())

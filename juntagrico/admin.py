@@ -46,7 +46,6 @@ admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
 admin.site.register(ListMessage, ListMessageAdmin)
-admin.site.register(SubscriptionProduct, BaseAdmin)
 admin.site.register(BillingPeriod, BaseAdmin)
 if Config.enable_shares():
     admin.site.register(Share, ShareAdmin)

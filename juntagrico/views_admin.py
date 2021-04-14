@@ -225,7 +225,6 @@ def amount_overview(request):
 def future(request):
     subscriptionsizes = []
     subscription_lines = dict({})
-    extra_lines = dict({})
     for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
         subscriptionsizes.append(subscription_size.id)
         subscription_lines[subscription_size.id] = {
@@ -237,20 +236,15 @@ def future(request):
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
                 subscription_size)
-    for users_subscription in SubscriptionPartDao.all_active_extrasubscritions():
-        extra_lines[users_subscription.type.name]['now'] += 1
 
     for subscription in SubscriptionDao.future_subscriptions():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
                 subscription_size)
-    for users_subscription in SubscriptionPartDao.future_extrasubscriptions():
-        extra_lines[users_subscription.type.name]['future'] += 1
 
     renderdict = {
         'changed': request.GET.get('changed'),
         'subscription_lines': iter(subscription_lines.values()),
-        'extra_lines': iter(extra_lines.values()),
     }
     return render(request, 'future.html', renderdict)
 
@@ -354,7 +348,7 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
-        worksheet_s.write_string(row, 0, sub['subscription'].overview)
+        worksheet_s.write_string(row, 0, sub['subscription'].size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
         worksheet_s.write_string(row, 3, phone)

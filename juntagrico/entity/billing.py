@@ -17,10 +17,10 @@ class Billable(JuntagricoBasePoly):
 
 class BillingPeriod(JuntagricoBaseModel):
     '''
-    Billing Period for Extra subscriptions for which a bill has to be issued
+    Billing Period for subscription product for which a bill has to be issued
     '''
 
-    product = models.ForeignKey('SubscriptionProduct', related_name='periods', null=True, blank=False,
+    type = models.ForeignKey('SubscriptionType', related_name='periods', null=True, blank=False,
                              on_delete=models.PROTECT)
     price = models.DecimalField(_('Preis'), max_digits=10, decimal_places=2)
     start_day = models.PositiveIntegerField(_('Start Tag'))

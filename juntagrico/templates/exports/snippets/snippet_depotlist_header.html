@@ -32,13 +32,6 @@
                 <td class="small bottom-border left-border"></td>
             {% endfor %}
         {% endfor %}
-        {% for category in extra_sub_categories %}
-            {% for type in category.types_for_depot_list %}
-                <td class="small bottom-border {% if forloop.first and forloop.parentloop.first %}left-border{% endif %} {% if forloop.last %}right-border{% endif %}">{{ type.size }}</td>
-            {% empty %}
-                <td class="small bottom-border {% if forloop.parentloop.first %}left-border{% endif %} right-border"></td>
-            {% endfor %}
-        {% endfor %}
         <td colspan="2" class="small bottom-border right-border"></td>
     </tr>
     <tr class="horz-center">
@@ -50,22 +43,12 @@
                 <td></td>
             {% endfor %}
         {% endfor %}
-        {% for category in extra_sub_categories %}
-            {% for type in category.types_for_depot_list %}
-                <td>{{ subscriptions|by_depot:depot|get_extra_subs_by_type:type|count }}</td>
-            {% empty %}
-                <td></td>
-            {% endfor %}
-        {% endfor %}
         <td colspan="2" ></td>
     </tr>
     <tr class="bottom-border horz-center">
         <th class="namecol vert-bottom horz-left">{% trans "Name" %}</th>
         {% for product in products %}
             <th colspan="{{ product.sizes_for_depot_list|count }}"></th>
-        {% endfor %}
-        {% for category in extra_sub_categories %}
-            <th colspan="{{ category.types_for_depot_list|count }}"></th>
         {% endfor %}
         <th class="fontsmall vert-bottom">{% trans "abgeholt" %}</th>
         <th class="fontsmall vert-bottom">{% vocabulary "package" %} {% trans "retour" %}</th>

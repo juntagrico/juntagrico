@@ -3,8 +3,8 @@ from django import template
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.jobextradao import JobExtraDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico import version
 
@@ -20,7 +20,7 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def has_extra_subscriptions():
-    return ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0
+    return SubscriptionProductDao.all_extra_products().count() > 0
 
 
 @register.simple_tag

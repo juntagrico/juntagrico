@@ -31,10 +31,10 @@
             {% for extrasubscription in management_list %}
                 <tr>
                     <td>
-                        {{ extrasubscription.type.size.name }}
+                        {{ extrasubscription.type.display_name }}
                     </td>
                     <td>
-                        {{ extrasubscription.subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}
+                        {{ extrasubscription.subscription.primary_member.first_name }} {{ extrasubscription.subscription.primary_member.last_name }}
                     </td>
                     <td>
                         <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="{% url 'mail' %}">
@@ -52,9 +52,9 @@
                     <td>
                         {% if extrasubscription.activation_date %}
                         {% trans "Wurde bereits aktiviert" %} {{ extrasubscription.activation_date }}
-                        {% elif extrasubscription.main_subscription.state == 'waiting' %}
+                        {% elif extrasubscription.subscription.state == 'waiting' %}
                             {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist noch nicht aktiv {% endblocktrans %}
-                        {% elif extrasubscription.main_subscription.state == 'inactive' %}
+                        {% elif extrasubscription.subscription.state == 'inactive' %}
                             {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist deaktiviert {% endblocktrans %}
                         {% else %}
                         <a href="{% url 'extra-activate' extrasubscription.id %}"class="btn btn-success">

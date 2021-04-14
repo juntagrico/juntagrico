@@ -22,11 +22,6 @@ class Migration(migrations.Migration):
             field=models.BooleanField(default=False, verbose_name='Ist Zusatzabo Produkt'),
         ),
         migrations.AddField(
-            model_name='extrasubbillingperiod',
-            name='product',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='prodperiods', to='juntagrico.subscriptionproduct'),
-        ),
-        migrations.AddField(
             model_name='depot',
             name='depot_list',
             field=models.BooleanField(default=True, verbose_name='Sichtbar auf Depotliste'),
@@ -103,5 +98,10 @@ class Migration(migrations.Migration):
             model_name='share',
             name='value',
             field=models.DecimalField(decimal_places=2, default=juntagrico.entity.share.share_value_default, max_digits=8, verbose_name='Wert'),
+        ),
+        migrations.AddField(
+            model_name='extrasubbillingperiod',
+            name='type2',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='periods2', to='juntagrico.subscriptiontype'),
         ),
     ]

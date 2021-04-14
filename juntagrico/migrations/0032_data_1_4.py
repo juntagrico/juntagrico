@@ -33,7 +33,8 @@ def sort_order_to_depot_code(apps, schema_editor):
     Depots = apps.get_model('juntagrico', 'Depot')
     for depot in Depots.objects.all():
         # sort_order is not guaranteed to be unique, so append random string to ensure uniqueness
-        depot.code = '{:05d}'.format(depot.sort_order) + '_' + ''.join(random.choices(string.ascii_lowercase + string.digits, k=7))
+        depot.code = '{:05d}'.format(depot.sort_order) + '_' + ''.join(
+            random.choices(string.ascii_lowercase + string.digits, k=7))
         depot.save()
 
 
@@ -76,25 +77,25 @@ def migrate_extras(apps, schema_editor):
     ExtraSubBillingPeriod = apps.get_model('juntagrico', 'ExtraSubBillingPeriod')
     subprods = {}
     for ecat in ExtraSubscriptionCategory.objects.all():
-        subprod_data={
+        subprod_data = {
             'name': ecat.name,
             'description': ecat.description,
             'is_extra': True
         }
-        subprods[ecat]=SubscriptionProduct.objects.create(**subprod_data)
+        subprods[ecat] = SubscriptionProduct.objects.create(**subprod_data)
     subtypes = {}
     for etype in ExtraSubscriptionType.objects.all():
         subsize_data = {
-            'name':etype.name,
-            'long_name':etype.size,
-            'units':etype.id,
-            'depot_list':etype.depot_list,
-            'visible':etype.visible,
-            'description':etype.description,
-            'product':subprods[etype.category]
+            'name': etype.name,
+            'long_name': etype.size,
+            'units': etype.id,
+            'depot_list': etype.depot_list,
+            'visible': etype.visible,
+            'description': etype.description,
+            'product': subprods[etype.category]
         }
         subtype_data = {
-            'name':'standard',
+            'name': 'standard',
             'long_name': '',
             'size': SubscriptionSize.objects.create(**subsize_data),
             'required_assignments': 0,
@@ -104,7 +105,7 @@ def migrate_extras(apps, schema_editor):
         }
         subtypes[etype] = SubscriptionType.objects.create(**subtype_data)
     for esub in ExtraSubscription.objects.all():
-        subpart_data ={
+        subpart_data = {
             'subscription': esub.main_subscription,
             'type': subtypes[esub.type],
             'creation_date': esub.creation_date,
@@ -114,71 +115,11 @@ def migrate_extras(apps, schema_editor):
         }
         SubscriptionPart.objects.create(**subpart_data)
     for esbp in ExtraSubBillingPeriod.objects.all():
-        esbp.product = subprods[esbp.type.category]
+        esbp.type2 = subprods[esbp.type]
         esbp.save()
-
-
-
-
-
-def migrate_extras(apps, schema_editor):
-    SubscriptionProduct = apps.get_model('juntagrico', 'SubscriptionProduct')
-    SubscriptionSize = apps.get_model('juntagrico', 'SubscriptionSize')
-    SubscriptionType = apps.get_model('juntagrico', 'SubscriptionType')
-    SubscriptionPart = apps.get_model('juntagrico', 'SubscriptionPart')
-    ExtraSubscriptionCategory = apps.get_model('juntagrico', 'ExtraSubscriptionCategory')
-    ExtraSubscriptionType = apps.get_model('juntagrico', 'ExtraSubscriptionType')
-    ExtraSubscription = apps.get_model('juntagrico', 'ExtraSubscription')
-    ExtraSubBillingPeriod = apps.get_model('juntagrico', 'ExtraSubBillingPeriod')
-    subprods = {}
-    for ecat in ExtraSubscriptionCategory.objects.all():
-        subprod_data={
-            'name': ecat.name,
-            'description': ecat.description,
-            'is_extra': True
-        }
-        subprods[ecat]=SubscriptionProduct.objects.create(**subprod_data)
-    subtypes = {}
-    for etype in ExtraSubscriptionType.objects.all():
-        subsize_data = {
-            'name':etype.name,
-            'long_name':etype.size,
-            'units':etype.id,
-            'depot_list':etype.depot_list,
-            'visible':etype.visible,
-            'description':etype.description,
-            'product':subprods[etype.category]
-        }
-        subtype_data = {
-            'name':'standard',
-            'long_name': '',
-            'size': SubscriptionSize.objects.create(**subsize_data),
-            'required_assignments': 0,
-            'price': 0,
-            'visible': etype.visible,
-            'description': ''
-        }
-        subtypes[etype] = SubscriptionType.objects.create(**subtype_data)
-    for esub in ExtraSubscription.objects.all():
-        subpart_data ={
-            'subscription': esub.main_subscription,
-            'type': subtypes[esub.type],
-            'creation_date': esub.creation_date,
-            'activation_date': esub.activation_date,
-            'cancellation_date': esub.cancellation_date,
-            'deactivation_date': esub.deactivation_date
-        }
-        SubscriptionPart.objects.create(**subpart_data)
-    for esbp in ExtraSubBillingPeriod.objects.all():
-        esbp.product = subprods[esbp.type.category]
-        esbp.save()
-
-
-
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('juntagrico', '0031_pre_1_4'),
     ]

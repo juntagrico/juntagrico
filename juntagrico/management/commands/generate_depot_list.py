@@ -3,7 +3,6 @@ from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
@@ -49,7 +48,6 @@ class Command(BaseCommand):
         depot_dict = {
             'subscriptions': SubscriptionDao.all_active_subscritions(),
             'products': SubscriptionProductDao.get_all_for_depot_list(),
-            'extra_sub_categories': ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered(),
             'depots': DepotDao.all_depots_for_list(),
 
             'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in

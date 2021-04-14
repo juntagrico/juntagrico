@@ -150,5 +150,5 @@ class AdminTests(JuntagricoTestCase):
 
     def testSubtypeAdminNoShares(self):
         with self.settings(ENABLE_SHARES=False):
-            self.assertGet(reverse('admin:juntagrico_extrasubscriptiontype_change', args=(self.esub_type.pk,)),
+            self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.extrasub_type.pk,)),
                            member=self.admin)

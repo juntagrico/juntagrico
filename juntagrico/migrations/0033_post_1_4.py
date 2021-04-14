@@ -32,12 +32,27 @@ class Migration(migrations.Migration):
             model_name='billingperiod',
             name='type',
         ),
+        migrations.RenameField(
+            model_name='billingperiod',
+            old_name='type2',
+            new_name='type'
+        ),
         migrations.AlterField(
             model_name='billingperiod',
-            name='product',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='periods', to='juntagrico.subscriptionproduct'),
+            name='type',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='periods', to='juntagrico.subscriptiontype'),
         ),
         migrations.DeleteModel(
             name='ExtraSubscription',
+        ),
+        migrations.RemoveField(
+            model_name='extrasubscriptiontype',
+            name='category',
+        ),
+        migrations.DeleteModel(
+            name='ExtraSubscriptionCategory',
+        ),
+        migrations.DeleteModel(
+            name='ExtraSubscriptionType',
         ),
     ]

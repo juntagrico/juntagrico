@@ -31,13 +31,6 @@
                     <td class="top-border left-border"></td>
                 {% endfor %}
             {% endfor %}
-            {% for category in extra_sub_categories %}
-                {% for type in category.types_for_depot_list %}
-                    <td class="top-border left-border">{{ subscription|get_extra_subs_by_type:type|count|default:'' }}</td>
-                {% empty %}
-                    <td class="top-border left-border"></td>
-                {% endfor %}
-            {% endfor %}
             <td class="checkboxcol top-border left-border"></td>
             <td class="checkboxcol top-border left-border right-border"></td>
         </tr>

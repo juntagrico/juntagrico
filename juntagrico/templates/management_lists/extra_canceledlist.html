@@ -27,10 +27,10 @@
             {% for extrasubscription in management_list %}
                 <tr>
                     <td>
-                        {{ extrasubscription.type.size.name }}
+                        {{ extrasubscription.type.display_name }}
                     </td>
                     <td>
-                        {{ extrasubscription.subscription.primary_member.first_name }} {{ extrasubscription.main_subscription.primary_member.last_name }}
+                        {{ extrasubscription.subscription.primary_member.first_name }} {{ extrasubscription.subscription.primary_member.last_name }}
                     </td>
                     <td>
                         <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="{% url 'mail' %}">

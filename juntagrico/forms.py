@@ -288,16 +288,17 @@ class SubscriptionTypeField(Field):
 
 
 class SubscriptionPartBaseForm(Form):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
+        self._product_method = product_method
 
     def _collect_type_fields(self):
         containers = []
-        for product in SubscriptionProductDao.get_all_visible():
+        for product in self._product_method().all():
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)

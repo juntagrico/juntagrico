@@ -8,7 +8,7 @@
 {% blocktrans %}Soeben wurde ein/e neue/s/r {{ v_subscription }} bestellt{% endblocktrans %}
 
 {% trans "ID" %}: {{subscription.id}}
-{% trans "Beschrieb" %}: {{subscription.overview}}
+{% trans "Beschrieb" %}: {{subscription}}
 {{ serverurl }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch

@@ -3,11 +3,11 @@ from django.db.models import signals
 from django.utils.translation import gettext as _
 
 import juntagrico
+from juntagrico.config import Config
 from juntagrico.entity.jobs import Assignment, OneTimeJob, RecuringJob, Job
 from juntagrico.entity.member import Member, SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.lifecycle.extrasub import extra_sub_pre_save
 from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
 from juntagrico.lifecycle.member import member_pre_save, member_post_save, handle_member_deactivated, \
     handle_member_created
@@ -18,7 +18,6 @@ from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_s
 from juntagrico.lifecycle.submembership import sub_membership_pre_save
 from juntagrico.lifecycle.subpart import sub_part_pre_save
 from juntagrico.util.signals import register_entities_for_post_init_and_save
-from juntagrico.config import Config
 
 
 class SpecialRoles(models.Model):
