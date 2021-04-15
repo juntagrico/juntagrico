@@ -57,5 +57,5 @@ class BillingPeriod(JuntagricoBaseModel):
                                                self.end_month)
 
     class Meta:
-        verbose_name = _('Verechnungsperdiode')
-        verbose_name_plural = _('Verechnungsperdioden')
+        verbose_name = _('Verrechnungsperiode')
+        verbose_name_plural = _('Verrechnungsperioden')
