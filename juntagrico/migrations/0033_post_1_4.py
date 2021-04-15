@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='billingperiod',
-            options={'verbose_name': 'Verechnungsperdiode', 'verbose_name_plural': 'Verechnungsperdioden'},
+            options={'verbose_name': 'Verrechnungsperiode', 'verbose_name_plural': 'Verrechnungsperioden'},
         ),
         migrations.RemoveField(
             model_name='billingperiod',
