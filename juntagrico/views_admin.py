@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from xlsxwriter import Workbook
 
+from juntagrico import version
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
@@ -22,7 +23,7 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
-from juntagrico.util import return_to_previous_location
+from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.models import q_cancelled
 from juntagrico.view_decorators import any_permission_required
 from juntagrico.util.management_list import get_changedate
@@ -520,3 +521,12 @@ def assignments(request):
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)
+
+
+@permission_required('juntagrico.is_operations_group')
+def versions(request):
+    versions = {'juntagrico': version}
+    versions.update(addons.config.get_versions())
+    render_dict = get_menu_dict(request)
+    render_dict.update({'versions': versions})
+    return render(request, 'versions.html', render_dict)

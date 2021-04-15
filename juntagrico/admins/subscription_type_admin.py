@@ -5,7 +5,8 @@ from adminsortable2.admin import SortableAdminMixin
 
 class SubscriptionTypeAdmin(SortableAdminMixin, BaseAdmin):
     list_display = ['__str__', 'price', 'required_assignments',
-                    'required_core_assignments', 'visible', 'trial']
+                    'required_core_assignments', 'visible']
+    exclude = ['trial']
 
     def get_exclude(self, request, obj=None):
         if not Config.enable_shares():

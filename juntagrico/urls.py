@@ -175,4 +175,7 @@ urlpatterns = [
     # /js
     path('my/js/i18n', juntagrico.i18njs, name='js-i18n'),
 
+    # /versions
+    path('my/versions', juntagrico_admin.versions, name='versions')
+
 ]

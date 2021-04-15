@@ -1,24 +1,38 @@
 1.3 Release Notes
 =================
 
-1.3.11
------
-Has no migrations
+1.3.13
+------
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Developer Features:
+  * Upgraded to Django 3.2
 
+
+1.3.12
+------
+Fixes
+^^^^^
+* Ical invitation now in utf 8
+
+1.3.11
+------
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Include multiplier in job copy form
+* See versions of installed juntagrico apps when clicking on version in the admin menu
 
 Fixes
 ^^^^^
 * Fix bug in share order form evaluation
 * Fix signup to job with infinite slots
+* Fix for primary member on sub with future deactivation date
+* Fix in ical for local start times
+* Exclude unused model fields in admin
 
 
 1.3.10
------
-Has no migrations
-
+------
 Fixes
 ^^^^^
 * Fix participants list in job emails
@@ -29,8 +43,6 @@ Fixes
 
 1.3.9
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Fix in user name generation
@@ -44,8 +56,6 @@ Features & Improvements
 
 1.3.8
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Fix in member cancellation
@@ -61,8 +71,6 @@ Features & Improvements
 
 1.3.7
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Add mail button for depot admins
@@ -70,8 +78,6 @@ Fixes
 
 1.3.6
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Assignments overviews only consider current business year
@@ -84,8 +90,6 @@ Features & Improvements
 
 1.3.5
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Fix for MIME-Type picky browser
@@ -93,8 +97,6 @@ Fixes
 
 1.3.4
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Fix incorrect display of email count in subscription filters
@@ -112,8 +114,6 @@ Features & Improvements
 
 1.3.3
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Fix in depot list amount overview
@@ -127,8 +127,6 @@ Features & Improvements
 
 1.3.2
 -----
-Has no migrations
-
 Fixes
 ^^^^^
 * Fix subscription count and depot display in member filter list
@@ -142,8 +140,6 @@ Features & Improvements
 
 1.3.1
 -----
-Has no migrations
-
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Developer Features:

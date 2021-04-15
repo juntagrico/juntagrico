@@ -1,4 +1,5 @@
 from django.forms import BaseInlineFormSet
+from django.utils import timezone
 
 from juntagrico.admins.forms.subscriptionmembership_admin_form import SubscriptionMembershipAdminForm
 from juntagrico.dao.memberdao import MemberDao
@@ -13,8 +14,9 @@ from juntagrico.entity.member import SubscriptionMembership
 class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
     def clean(self):
         def consider_form(form):
+            leave_date = getattr(form.instance, 'leave_date', None)
             return not form.cleaned_data.get('DELETE', False) \
-                and (hasattr(form.instance, 'leave_date') and form.instance.leave_date is None) \
+                and (leave_date is None or leave_date > timezone.now().date()) \
                 and hasattr(form.instance, 'member')
         if not self.instance.inactive:
             members = [form.instance.member for form in self.forms if consider_form(form)]

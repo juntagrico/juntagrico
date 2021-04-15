@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-11 18:35+0100\n"
+"POT-Creation-Date: 2021-04-15 20:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -123,11 +123,11 @@ msgstr ""
 msgid "Alte {0}"
 msgstr ""
 
-#: .\juntagrico\admins\inlines\subscription_membership_inlines.py:34
+#: .\juntagrico\admins\inlines\subscription_membership_inlines.py:36
 msgid "{} Mitgliedschaft"
 msgstr ""
 
-#: .\juntagrico\admins\inlines\subscription_membership_inlines.py:35
+#: .\juntagrico\admins\inlines\subscription_membership_inlines.py:37
 msgid "{} Mitgliedschaften"
 msgstr ""
 
@@ -201,7 +201,7 @@ msgstr ""
 #: .\juntagrico\templates\size_change.html:28
 #: .\juntagrico\templates\snippets\snippet_jobs.html:20
 #: .\juntagrico\templates\snippets\snippet_jobs.html:51
-#: .\juntagrico\templates\subscription.html:69 .\juntagrico\views_admin.py:349
+#: .\juntagrico\templates\subscription.html:69 .\juntagrico\views_admin.py:350
 msgid "Status"
 msgstr ""
 
@@ -304,7 +304,7 @@ msgstr ""
 
 #: .\juntagrico\config.py:35
 #: .\juntagrico\templates\createsubscription\summary.html:49
-#: .\juntagrico\views_admin.py:300 .\juntagrico\views_admin.py:350
+#: .\juntagrico\views_admin.py:301 .\juntagrico\views_admin.py:351
 msgid "Depot"
 msgstr ""
 
@@ -405,7 +405,7 @@ msgid "Verrechenbare Einheiten"
 msgstr ""
 
 #: .\juntagrico\entity\billing.py:25 .\juntagrico\entity\subtypes.py:67
-#: .\juntagrico\views_admin.py:357
+#: .\juntagrico\views_admin.py:358
 msgid "Preis"
 msgstr ""
 
@@ -473,7 +473,7 @@ msgstr ""
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:15
 #: .\juntagrico\templates\management_lists\share_canceledlist.html:34
 #: .\juntagrico\templates\members.html:28
-#: .\juntagrico\templates\members.html:53 .\juntagrico\views_admin.py:295
+#: .\juntagrico\templates\members.html:53 .\juntagrico\views_admin.py:296
 msgid "Name"
 msgstr ""
 
@@ -608,7 +608,7 @@ msgstr ""
 #: .\juntagrico\entity\jobs.py:19 .\juntagrico\entity\jobs.py:291
 #: .\juntagrico\templates\snippets\snippet_jobs.html:37
 #: .\juntagrico\templates\widgets\assignements.html:12
-#: .\juntagrico\views_admin.py:298
+#: .\juntagrico\views_admin.py:299
 msgid "Kernbereich"
 msgstr ""
 
@@ -839,7 +839,7 @@ msgid "Telefonnr"
 msgstr ""
 
 #: .\juntagrico\entity\member.py:46 .\juntagrico\templates\members.html:43
-#: .\juntagrico\templates\members.html:68 .\juntagrico\views_admin.py:303
+#: .\juntagrico\templates\members.html:68 .\juntagrico\views_admin.py:304
 msgid "Mobile"
 msgstr ""
 
@@ -1841,7 +1841,7 @@ msgstr ""
 #: .\juntagrico\templates\createsubscription\summary.html:30
 #: .\juntagrico\templates\createsubscription\summary.html:67
 #: .\juntagrico\templates\members.html:40
-#: .\juntagrico\templates\members.html:65 .\juntagrico\views_admin.py:302
+#: .\juntagrico\templates\members.html:65 .\juntagrico\views_admin.py:303
 msgid "Telefon"
 msgstr ""
 
@@ -2010,7 +2010,7 @@ msgstr ""
 #: .\juntagrico\templates\menu\admin_menu.html:153
 #: .\juntagrico\templates\menu\admin_menu.html:259
 #: .\juntagrico\templates\widgets\assignements.html:7
-#: .\juntagrico\views_admin.py:343
+#: .\juntagrico\views_admin.py:344
 msgid "Übersicht"
 msgstr ""
 
@@ -2542,7 +2542,7 @@ msgstr ""
 #: .\juntagrico\templates\members.html:62
 #: .\juntagrico\templates\newpassword.html:18
 #: .\juntagrico\templates\registration\login.html:11
-#: .\juntagrico\views_admin.py:301
+#: .\juntagrico\views_admin.py:302
 msgid "Email"
 msgstr ""
 
@@ -3045,7 +3045,7 @@ msgstr ""
 msgid "Listen"
 msgstr ""
 
-#: .\juntagrico\templates\menu\admin_menu.html:278
+#: .\juntagrico\templates\menu\admin_menu.html:280
 msgid "Version: "
 msgstr ""
 
@@ -3569,12 +3569,12 @@ msgid "Welchen Teil möchtest du ändern?"
 msgstr ""
 
 #: .\juntagrico\templates\subscriptions.html:28
-#: .\juntagrico\templates\subscriptions.html:50 .\juntagrico\views_admin.py:344
+#: .\juntagrico\templates\subscriptions.html:50 .\juntagrico\views_admin.py:345
 msgid "HauptbezieherIn"
 msgstr ""
 
 #: .\juntagrico\templates\subscriptions.html:31
-#: .\juntagrico\templates\subscriptions.html:53 .\juntagrico\views_admin.py:348
+#: .\juntagrico\templates\subscriptions.html:53 .\juntagrico\views_admin.py:349
 msgid "Weitere BezieherInnen"
 msgstr ""
 
@@ -3586,6 +3586,10 @@ msgstr ""
 #: .\juntagrico\templates\subscriptions.html:43
 #: .\juntagrico\templates\subscriptions.html:65
 msgid "E-Mails"
+msgstr ""
+
+#: .\juntagrico\templates\versions.html:6
+msgid "Versionen"
 msgstr ""
 
 #: .\juntagrico\templates\welcome.html:7
@@ -3643,7 +3647,7 @@ msgid ""
 "Deine Mitgliedschaft ist deaktiviert. Bei Fragen melde dich bitte bei {}"
 msgstr ""
 
-#: .\juntagrico\util\ical.py:40 .\juntagrico\util\ical.py:54
+#: .\juntagrico\util\ical.py:27 .\juntagrico\util\ical.py:38
 msgid "Einsatz"
 msgstr ""
 
@@ -3760,83 +3764,83 @@ msgstr ""
 msgid "Dezember"
 msgstr ""
 
-#: .\juntagrico\views.py:174
+#: .\juntagrico\views.py:175
 msgid " (mit einer weiteren Person)"
 msgstr ""
 
-#: .\juntagrico\views.py:176
+#: .\juntagrico\views.py:177
 msgid " (mit {} weiteren Personen)"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:150
+#: .\juntagrico\views_admin.py:151
 msgid "Alle aktiven {}"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:161
+#: .\juntagrico\views_admin.py:162
 msgid "Alle {}"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:175 .\juntagrico\views_admin.py:213
+#: .\juntagrico\views_admin.py:176 .\juntagrico\views_admin.py:214
 msgid "Alle aktiven {} im {} {}"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:189
+#: .\juntagrico\views_admin.py:190
 msgid "Alle aktiven {} im Tätigkeitsbereich {}"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:199
+#: .\juntagrico\views_admin.py:200
 msgid "Alle aktiven {} im Überblick"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:299
+#: .\juntagrico\views_admin.py:300
 msgid "Taetigkeitsbereiche"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:312
+#: .\juntagrico\views_admin.py:313
 msgid "-Kein Tätigkeitsbereich-"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:314
+#: .\juntagrico\views_admin.py:315
 msgid "Kein Depot definiert"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:345
+#: .\juntagrico\views_admin.py:346
 msgid "HauptbezieherInEmail"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:346
+#: .\juntagrico\views_admin.py:347
 msgid "HauptbezieherInTelefon"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:347
+#: .\juntagrico\views_admin.py:348
 msgid "HauptbezieherInMobile"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:352
+#: .\juntagrico\views_admin.py:353
 msgid "{} soll"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:353
+#: .\juntagrico\views_admin.py:354
 msgid "{} status(%)"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:354
+#: .\juntagrico\views_admin.py:355
 msgid "{} Kernbereich"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:355
+#: .\juntagrico\views_admin.py:356
 msgid "{} Kernbereich soll"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:356
+#: .\juntagrico\views_admin.py:357
 msgid "{} Kernbereich status(%)"
 msgstr ""
 
-#: .\juntagrico\views_admin.py:519
+#: .\juntagrico\views_admin.py:520
 msgid "Bitte gib ein Datum im Format MM/TT/JJJJ ein."
 msgstr ""
 
-#: .\juntagrico\views_admin.py:542
+#: .\juntagrico\views_admin.py:543
 msgid "Haubtbezieher ist nicht gesetzt"
 msgstr ""
 

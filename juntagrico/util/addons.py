@@ -16,6 +16,7 @@ class AddonsConfig:
         self._sub_change = []
         self._registry = {}
         self._config_classes = []
+        self._versions = {}
 
     def register_admin_menu(self, template):
         self._admin_menus.append(template)
@@ -60,6 +61,12 @@ class AddonsConfig:
 
     def get_config_classes(self):
         return self._config_classes
+
+    def register_version(self, name, version):
+        self._versions[name] = version
+
+    def get_versions(self):
+        return self._versions
 
 
 class DefaultAddonsConfig(LazyObject):
