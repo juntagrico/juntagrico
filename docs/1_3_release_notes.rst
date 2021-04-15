@@ -1,9 +1,16 @@
 Release Notes
 =============
 
+1.3.13
+------
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Developer Features:
+  * Upgraded to Django 3.2
+
+
 1.3.12
 ------
-
 Fixes
 ^^^^^
 * Ical invitation now in utf 8
