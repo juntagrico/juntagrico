@@ -8,7 +8,7 @@ from juntagrico.lifecycle.submembership import check_submembership_parent_dates
 from juntagrico.lifecycle.subpart import check_subpart_parent_dates
 from juntagrico.mailer import adminnotification
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
-from juntagrico.util.lifecycle import handle_activated_deactivated, cancel_extra_sub
+from juntagrico.util.lifecycle import handle_activated_deactivated
 from juntagrico.util.models import q_activated
 
 
@@ -50,8 +50,6 @@ def handle_sub_activated(sender, instance, **kwargs):
 def handle_sub_deactivated(sender, instance, **kwargs):
     instance.deactivation_date = instance.deactivation_date or timezone.now().date()
     change_date = instance.deactivation_date
-    for extra in instance.extra_subscription_set.all():
-        extra.deactivate(change_date)
     for part in instance.active_parts.all():
         part.deactivate(change_date)
     for part in instance.future_parts.all():
@@ -62,8 +60,6 @@ def handle_sub_deactivated(sender, instance, **kwargs):
 
 def handle_sub_canceled(sender, instance, **kwargs):
     instance.cancellation_date = instance.cancellation_date or timezone.now().date()
-    for extra in instance.extra_subscription_set.all():
-        cancel_extra_sub(extra)
     for part in instance.parts.filter(q_activated()).all():
         part.cancel()
     for part in instance.parts.filter(~q_activated()).all():
@@ -110,8 +106,6 @@ def check_children_dates(instance):
     try:
         for part in instance.parts.all():
             check_subpart_parent_dates(part, instance)
-        for extra in instance.extra_subscription_set.all():
-            check_subpart_parent_dates(extra, instance)
     except ValidationError:
         raise ValidationError(
             _(

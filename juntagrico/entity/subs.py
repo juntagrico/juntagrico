@@ -44,12 +44,7 @@ class Subscription(Billable, SimpleStateModel):
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
     def __str__(self):
-        return _('Abo ({1}) {0}').format(self.overview, self.id)
-
-    @property
-    def overview(self):
-        namelist = [self.size, self.extra_size]
-        return Config.sub_overview_format('delimiter').join(filter(None, namelist))
+        return _('Abo ({1}) {0}').format(self.size, self.id)
 
     @staticmethod
     def get_part_overview(parts):
@@ -110,24 +105,8 @@ class Subscription(Billable, SimpleStateModel):
         )
 
     @property
-    def extra_size(self):
-        delimiter = Config.sub_overview_format('delimiter')
-        sformat = Config.sub_overview_format('format')
-        sizes = {}
-        for esub in self.extra_subscriptions.all() or self.future_extra_subscriptions.all():
-            sizes[esub.type] = 1 + sizes.get(esub.type, 0)
-        return delimiter.join(
-            [sformat.format(
-                product='',
-                size=key.category.name,
-                type=key.size,
-                amount=value,
-            ) for key, value in sizes.items()]
-        )
-
-    @property
     def types_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).count()
+        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -252,17 +231,19 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.extra_subscription_set.filter(q_isactive())
+        return self.active_parts.filter(type__size__product__is_extra=True)
 
     @property
     def future_extra_subscriptions(self):
-        return self.extra_subscription_set.filter(~q_cancelled() & ~q_deactivated())
+        return self.future_parts.filter(type__size__product__is_extra=True)
+
+    @property
+    def active_and_future_extra_subscriptions(self):
+        return self.active_and_future_parts.filter(type__size__product__is_extra=True)
 
     @property
     def extrasubscriptions_changed(self):
-        current_extrasubscriptions = self.extra_subscriptions.all()
-        future_extrasubscriptions = self.future_extra_subscriptions.all()
-        return set(current_extrasubscriptions) != set(future_extrasubscriptions)
+        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
@@ -302,6 +283,10 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     @property
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
+
+    @property
+    def is_extra(self):
+        return self.type.size.product.is_extra
 
     def clean(self):
         check_sub_part_consistency(self)

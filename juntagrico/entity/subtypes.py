@@ -13,6 +13,7 @@ class SubscriptionProduct(JuntagricoBaseModel):
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    is_extra = models.BooleanField(_('Ist Zusatzabo Produkt'), default=False)
 
     def __str__(self):
         return self.name
@@ -74,9 +75,19 @@ class SubscriptionType(JuntagricoBaseModel):
         _('Beschreibung'), max_length=1000, blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
+    @property
+    def has_periods(self):
+        return self.periods.count() > 0
+
+    @property
+    def display_name(self):
+        name_parts = [self.size.product.name, self.size.name]
+        if self.long_name:
+            name_parts.append(self.long_name)
+        return '-'.join(name_parts)
+
     def __str__(self):
-        return self.name + ' - ' + _('Grösse') + ': ' + self.size.name \
-            + ' - ' + _('Produkt') + ': ' + self.size.product.name
+        return self.name + ' - ' + _('Grösse') + ': ' + self.size.name + ' - ' + _('Produkt') + ': ' + self.size.product.name
 
     def __lt__(self, other):
         return self.pk < other.pk

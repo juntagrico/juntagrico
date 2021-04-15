@@ -188,7 +188,7 @@
                         <ul>
                             {% for extra_subscription in subscription.extra_subscriptions %}
                                 <li>
-                                    {{ extra_subscription.type.name }}
+                                    {{ extra_subscription.type.display_name }}
                                 </li>
                             {% endfor %}
                         </ul>
@@ -211,7 +211,7 @@
                             <ul>
                                 {% for extra_subscription in subscription.future_extra_subscriptions %}
                                     <li>
-                                        {{ extra_subscription.type.name }}
+                                        {{ extra_subscription.type.display_name }}
                                     </li>
                                 {% endfor %}
                             </ul>

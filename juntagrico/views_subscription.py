@@ -14,12 +14,10 @@ from django.db.models import Count, Sum
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
-from juntagrico.dao.extrasubscriptiontypedao import ExtraSubscriptionTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
+from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.extrasubs import ExtraSubscription
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -68,7 +66,7 @@ def subscription(request, subscription_id=None):
             'primary': subscription.primary_member.email == member.email,
             'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
-            'has_extra_subscriptions': ExtraSubscriptionCategoryDao.all_categories_ordered().count() > 0,
+            'has_extra_subscriptions': SubscriptionProductDao.all_extra_products().count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
             'can_leave': can_leave,
         })
@@ -186,25 +184,26 @@ def size_change(request, subscription_id):
 
 @primary_member_of_subscription
 def extra_change(request, subscription_id):
-    '''
-    change an extra subscription
-    '''
+    """
+        change an extra subscription
+    """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     extra_order_allowed = subscription.waiting or subscription.active
     if request.method == 'POST':
         if not extra_order_allowed:
             raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
                                   format(Config.vocabulary('subscription_pl')), code='invalid')
-        for type in ExtraSubscriptionTypeDao.all_visible_extra_types():
-            value = int(request.POST.get('extra' + str(type.id)))
-            if value > 0:
-                for x in range(value):
-                    ExtraSubscription.objects.create(
-                        main_subscription=subscription, type=type)
-        return redirect('extra-change', subscription_id=subscription.id)
+        form = SubscriptionPartOrderForm(subscription, request.POST,
+                                         product_method=SubscriptionProductDao.all_visible_extra_products)
+        if form.is_valid():
+            create_subscription_parts(subscription, form.get_selected())
+            return return_to_previous_location(request)
+    else:
+        form = SubscriptionPartOrderForm(product_method=SubscriptionProductDao.all_visible_extra_products)
     renderdict = {
-        'types': ExtraSubscriptionTypeDao.all_visible_extra_types(),
-        'extras': subscription.extra_subscription_set.all(),
+        'form': form,
+        'extras': subscription.active_and_future_extra_subscriptions.all(),
+        'subscription': subscription,
         'sub_id': subscription_id,
         'extra_order_allowed': extra_order_allowed,
     }
@@ -399,7 +398,7 @@ def leave_subscription(request, subscription_id):
 
 @permission_required('juntagrico.is_operations_group')
 def activate_extra(request, extra_id):
-    extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    extra = get_object_or_404(SubscriptionPart, id=extra_id)
     change_date = request.session.get('changedate', None)
     if extra.activation_date is None and extra.deactivation_date is None:
         extra.activate(change_date)
@@ -408,7 +407,7 @@ def activate_extra(request, extra_id):
 
 @permission_required('juntagrico.is_operations_group')
 def deactivate_extra(request, extra_id):
-    extra = get_object_or_404(ExtraSubscription, id=extra_id)
+    extra = get_object_or_404(SubscriptionPart, id=extra_id)
     change_date = request.session.get('changedate', None)
     if extra.activation_date is not None:
         extra.deactivate(change_date)
@@ -417,7 +416,7 @@ def deactivate_extra(request, extra_id):
 
 @primary_member_of_subscription
 def cancel_extra(request, extra_id, subscription_id):
-    extra = get_object_or_404(ExtraSubscription, main_subscription__id=subscription_id, id=extra_id)
+    extra = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=extra_id)
     if extra.activation_date is None:
         extra.delete()
     else:

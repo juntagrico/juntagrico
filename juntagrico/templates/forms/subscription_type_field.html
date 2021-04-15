@@ -14,7 +14,16 @@
             {{ type.description|linebreaksbr }}
             <br/>
         {% endif %}
-        {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+        {% if type.has_periods %}
+            {% vocabulary "price" %}:
+            {% for period in type.periods.all %}
+                <br/>
+                {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
+                {{ period.price }} {% config "currency" %}
+            {% endfor %}
+        {% else %}
+            {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+        {% endif %}
         {% config "enable_shares" as c_enable_shares %}
         {% if c_enable_shares %}
             <br/>

@@ -109,7 +109,7 @@
                         </td>
                         <td>
                             {% if member.subscription_current != None and member.subscription_current.active %}
-                                {{ member.subscription_current.overview }}
+                                {{ member.subscription_current.size }}
                             {% else %}
                                 Kein {% vocabulary "subscription" %}
                             {% endif %}
