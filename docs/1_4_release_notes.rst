@@ -9,6 +9,7 @@ Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
     * Share certificate download
+    * Shares have now two new fields to be compliant with the german coop law
 
 * Admin Features:
     * Added possibility to hide depots from depot list
@@ -19,6 +20,7 @@ Features & Improvements
 
 * Developer Features:
     * Menu dict method eliminated for easier view creation and performance improvements
+    * Moved to BigAutofield for ids
 
 Fixes
 ^^^^^

@@ -9,7 +9,7 @@ from juntagrico.config import Config
 
 class ShareAdmin(BaseAdmin):
     fields = ('member', 'value', 'creation_date', 'paid_date', 'issue_date', 'booking_date', 'cancelled_date',
-              'termination_date', 'payback_date', 'number', 'sent_back', 'notes')
+              'termination_date', 'payback_date', 'number', 'sent_back', 'reason_for_acquisition', 'reason_for_cancellation', 'notes')
     readonly_fields = ['creation_date']
     list_display = ['__str__', 'member', 'number', 'value', 'paid_date', 'issue_date', 'booking_date', 'cancelled_date',
                     'termination_date', 'payback_date']

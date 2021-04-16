@@ -7,6 +7,15 @@ from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
 
+reason_for_acquisition_choices = ((1, _('Gründungsmitglied')),
+                                  (2, _('Beitrittserklärung')),
+                                  (3, _('Beitritts- und Übertragungserklärung')))
+
+reason_for_cancellation_choices = ((1, _('Kündigung')),
+                                   (2, _('Kündigung und Übertragungserklärung')),
+                                   (3, _('Ausschluss')),
+                                   (4, _('Tod')))
+
 
 def share_value_default():
     return float(Config.share_price())
@@ -27,6 +36,10 @@ class Share(Billable):
     number = models.IntegerField(
         _('Anteilschein Nummer'), null=True, blank=True)
     sent_back = models.BooleanField(_('Zurückgesandt'), default=False)
+    reason_for_acquisition = models.PositiveIntegerField(
+        _('Grund des Erwerbs'), null=True, blank=True, choices=reason_for_acquisition_choices)
+    reason_for_cancellation = models.PositiveIntegerField(
+        _('Grund der Kündigung'), null=True, blank=True, choices=reason_for_cancellation_choices)
     notes = models.TextField(
         _('Notizen'), max_length=1000, default='', blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))

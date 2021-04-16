@@ -527,6 +527,5 @@ def assignments(request):
 def versions(request):
     versions = {'juntagrico': version}
     versions.update(addons.config.get_versions())
-    render_dict = get_menu_dict(request)
-    render_dict.update({'versions': versions})
+    render_dict = {'versions': versions}
     return render(request, 'versions.html', render_dict)

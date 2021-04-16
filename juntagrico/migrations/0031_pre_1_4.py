@@ -104,4 +104,19 @@ class Migration(migrations.Migration):
             name='type2',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='periods2', to='juntagrico.subscriptiontype'),
         ),
+        migrations.AddField(
+            model_name='share',
+            name='reason_for_acquisition',
+            field=models.PositiveIntegerField(blank=True, choices=[(1, 'Gründungsmitglied'), (2, 'Beitrittserklärung'),
+                                                                   (3, 'Beitritts- und Übertragungserklärung')],
+                                              null=True, verbose_name='Grund des Erwerbs'),
+        ),
+        migrations.AddField(
+            model_name='share',
+            name='reason_for_cancellation',
+            field=models.PositiveIntegerField(blank=True,
+                                              choices=[(1, 'Kündigung'), (2, 'Kündigung und Übertragungserklärung'),
+                                                       (3, 'Ausschluss'), (4, 'Tod')], null=True,
+                                              verbose_name='Grund der Kündigung'),
+        ),
     ]
