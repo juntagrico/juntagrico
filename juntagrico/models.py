@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import gettext as _
@@ -31,7 +32,8 @@ class SpecialRoles(models.Model):
                        ('is_book_keeper', _('Benutzer ist Buchhalter')),
                        ('can_send_mails', _('Benutzer kann im System Emails versenden')),
                        ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),
-                       ('depot_list_notification', _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),)
+                       ('depot_list_notification',
+                        _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),)
 
 
 ''' non lifecycle related signals '''
@@ -71,3 +73,14 @@ juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
 ''' lifecycle all post init'''
 register_entities_for_post_init_and_save()
+
+'''monkey patch User email method'''
+
+
+def member_email(self):
+    return self.member.email
+
+
+User.member_email = property(member_email)
+
+User.EMAIL_FIELD = 'member_email'
