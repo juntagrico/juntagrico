@@ -35,8 +35,6 @@ class ActivityArea(JuntagricoBaseModel):
     suitable_for_children = models.TextField(_('Kinder Begleitung'), null=True, blank=True)
     suitable_for_pets = models.TextField(_('Haustier Begleitung'), null=True, blank=True)
 
-
-
     def __str__(self):
         return '%s' % self.name
 
