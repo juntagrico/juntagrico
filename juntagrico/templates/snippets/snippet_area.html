@@ -1,0 +1,98 @@
+{% load i18n %}
+{% load config %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Beschreibung" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.description|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% if area.previous_knowledge.strip %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Lernen / Vorkentnisse" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.previous_knowledge|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% endif %}
+{% if area.introduction.strip %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Einführung" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.introduction|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% endif %}
+    <div class="row mb-4">
+        <div class="col-md-3">
+            {% trans "Verantwortlicher" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
+            <br/>
+            {% if area.email is not None %}
+                <a href="mailto:{{ area.email }}">
+                    {{ area.email }}
+                </a>
+            {% else %}
+                <a href="mailto:{{ area.coordinator.email }}">
+                    {{ area.coordinator.email }}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% if area.dress_code.strip %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Kleidung" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.dress_code|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% endif %}
+{% if area.job_infos.strip %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Einsätze" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.job_infos|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% endif %}
+{% if area.communication.strip %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Informations & Kommunikationswege" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.communication|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% endif %}
+{% if area.suitable_for_children.strip %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Kinderbegleitung" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.suitable_for_children|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% endif %}
+{% if area.suitable_for_pets.strip %}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            {% trans "Haustierbegleitung" %}:
+        </div>
+        <div class="col-md-9">
+            {{ area.suitable_for_pets|linebreaksbr|urlize }}
+        </div>
+    </div>
+{% endif %}

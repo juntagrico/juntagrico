@@ -7,32 +7,7 @@
     </h3>
 {% endblock %}
 {% block content %}
-    <div class="row mb-3">
-        <div class="col-md-3">
-            {% trans "Beschreibung" %}:
-        </div>
-        <div class="col-md-9">
-            {{ area.description|linebreaksbr|urlize }}
-        </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-3">
-            {% trans "Verantwortlicher" %}:
-        </div>
-        <div class="col-md-9">
-            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
-            <br/>
-            {% if area.email is not None %}
-                <a href="mailto:{{ area.email }}">
-                    {{ area.email }}
-                </a>
-            {% else %}
-                <a href="mailto:{{ area.coordinator.email }}">
-                    {{ area.coordinator.email }}
-                </a>
-            {% endif %}
-        </div>
-    </div>
+    {% include "snippets/snippet_area.html" %}
     <div class="row mb-3 no-gutters">
         <div class="offset-md-3 col-md-9">
             <span class="switch switch-sm">

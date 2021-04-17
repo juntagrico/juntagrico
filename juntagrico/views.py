@@ -25,6 +25,7 @@ from juntagrico.mailer import membernotification
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.management import password_generator, cancel_share
 from juntagrico.util.messages import home_messages, job_messages, error_message
+from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
 
@@ -202,6 +203,18 @@ def show_area(request, area_id):
         'area_checked': area_checked,
     }
     return render(request, 'area.html', renderdict)
+
+
+@login_required
+def pdf_area(request, area_id):
+    '''
+    Details for an area as pdf
+    '''
+    area = get_object_or_404(ActivityArea, id=int(area_id))
+    renderdict = {
+        'area': area,
+    }
+    return render_to_pdf_http('exports/area.html', renderdict, '{0}.pdf'.format(area.name))
 
 
 @login_required

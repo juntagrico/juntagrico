@@ -13,8 +13,7 @@ from juntagrico.util.temporal import weekday_short
 
 class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), default='')
     core = models.BooleanField(_('Kernbereich'), default=False)
     hidden = models.BooleanField(
         _('versteckt'), default=False,
@@ -27,6 +26,16 @@ class ActivityArea(JuntagricoBaseModel):
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    previous_knowledge = models.TextField(_('Lernen/Vorkentnisse'), null=True, blank=True)
+    introduction = models.TextField(_('Einführung'), null=True, blank=True)
+    dress_code = models.TextField(_('Kleidung'), null=True, blank=True)
+    member_goal = models.PositiveBigIntegerField(_('{0}-Ziel').format(Config.vocabulary('member_pl')), null=True, blank=True)
+    job_infos = models.TextField(_('Infos zu Einsätzen'), null=True, blank=True)
+    communication = models.TextField(_('Infos zu Komunikationswegen'), null=True, blank=True)
+    suitable_for_children = models.TextField(_('Kinder Begleitung'), null=True, blank=True)
+    suitable_for_pets = models.TextField(_('Haustier Begleitung'), null=True, blank=True)
+
+
 
     def __str__(self):
         return '%s' % self.name

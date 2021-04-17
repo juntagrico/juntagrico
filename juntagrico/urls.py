@@ -87,6 +87,7 @@ urlpatterns = [
     path('my/area/<int:area_id>/', juntagrico.show_area, name='area'),
     path('my/area/<int:area_id>/join', juntagrico.area_join, name='area-join'),
     path('my/area/<int:area_id>/leave', juntagrico.area_leave, name='area-leave'),
+    path('my/area/<int:area_id>/pdf', juntagrico.pdf_area, name='area-pdf'),
 
     # /depot
     path('my/depot/<int:depot_id>/', juntagrico.depot, name='depot'),
