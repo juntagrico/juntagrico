@@ -115,7 +115,7 @@ def migrate_extras(apps, schema_editor):
         }
         SubscriptionPart.objects.create(**subpart_data)
     for esbp in ExtraSubBillingPeriod.objects.all():
-        esbp.type2 = subprods[esbp.type]
+        esbp.type2 = subtypes[esbp.type]
         esbp.save()
 
 
