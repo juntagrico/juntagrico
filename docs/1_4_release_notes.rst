@@ -20,6 +20,7 @@ Features & Improvements
     * Added value field for shares
 
 * Developer Features:
+    * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
     * Menu dict method eliminated for easier view creation and performance improvements
     * Moved to BigAutofield for ids
 
