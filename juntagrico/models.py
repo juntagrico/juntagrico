@@ -33,7 +33,9 @@ class SpecialRoles(models.Model):
                        ('can_send_mails', _('Benutzer kann im System Emails versenden')),
                        ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),
                        ('depot_list_notification',
-                        _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),)
+                        _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),
+                       ('can_view_exports', _('Benutzer kann Exporte öffnen')),
+                       ('can_view_lists', _('Benutzer kann Listen öffnen')),)
 
 
 ''' non lifecycle related signals '''

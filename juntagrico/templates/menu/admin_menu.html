@@ -20,14 +20,14 @@
     {% trans "Administration" %}
 </h5>
 <ul class="admin-menu nav flex-column">
-    {% if perms.juntagrico.is_operations_group or area_admin %}
+    {% if request.user.is_staff %}
         <li class="nav-item">
             <a class="nav-link" href="/admin">
                 {% trans "Datenverwaltung" %}
             </a>
         </li>
     {% endif %}
-    {% if perms.juntagrico.is_operations_group or perms.juntagrico.can_filter_subscriptions%}
+    {% if perms.juntagrico.change_subscription or perms.juntagrico.can_filter_subscriptions%}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#subman">
                 {% blocktrans %}{{ v_subscription_pl }}{% endblocktrans %}
@@ -36,34 +36,42 @@
             </a>
             <div class="collapse" id="subman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if perms.juntagrico.can_filter_subscriptions %}
+                    {% if perms.juntagrico.can_filter_subscriptions or perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'filter-subs' %}">
                                 {% blocktrans %}Aktive{% endblocktrans %}
                             </a>
                         </li>
                     {% endif %}
-                    {% if perms.juntagrico.is_operations_group %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
                                 {% trans "Warteliste" %}
                             </a>
                         </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-changelist' %}">
                                 {% trans "Änderungsliste" %}
                             </a>
                         </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
                                 {% trans "Kündigungsliste" %}
                             </a>
                         </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'future' %}">
                                 {% trans "Zukunftsblick" %}
                             </a>
                         </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-inconsistencies' %}">
                                 {% blocktrans %}Inkonsistenzen{% endblocktrans %}
@@ -77,7 +85,7 @@
             </div>
         </li>
     {% endif %}
-    {% if perms.juntagrico.is_operations_group and b_has_extra_subscriptions %}
+    {% if perms.juntagrico.change_subscriptionpart and b_has_extra_subscriptions %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#extrasubman">
                 {% blocktrans %}Zusatzabos{% endblocktrans %}
@@ -86,21 +94,25 @@
             </a>
             <div class="collapse" id="extrasubman">
                 <ul class="nav flex-column subadmin-menu">
+                {% if perms.juntagrico.change_subscriptionpart %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
                             {% trans "Warteliste" %}
                         </a>
                     </li>
+                {% endif %}
+                {% if perms.juntagrico.change_subscriptionpart %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-extra-canceledlist' %}">
                             {% trans "Kündigungsliste" %}
                         </a>
                     </li>
+                {% endif %}
                 </ul>
             </div>
         </li>
     {% endif %}
-    {% if perms.juntagrico.is_operations_group or perms.juntagrico.can_filter_members %}
+    {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#memberman">
                 {% blocktrans %}{{ v_member_pl }}{% endblocktrans %}
@@ -109,7 +121,7 @@
             </a>
             <div class="collapse" id="memberman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if perms.juntagrico.can_filter_members%}
+                    {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'filters-active' %}">
                                 {% blocktrans %}Aktive{% endblocktrans %}
@@ -121,7 +133,7 @@
                             </a>
                         </li>
                     {% endif %}
-                    {% if perms.juntagrico.is_operations_group %}
+                    {% if perms.juntagrico.change_member %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'member-mgmt-canceledlist' %}">
                                  {% blocktrans %}Kündigungsliste{% endblocktrans %}
@@ -132,7 +144,7 @@
             </div>
         </li>
     {% endif %}
-    {% if perms.juntagrico.is_operations_group %}
+    {% if perms.juntagrico.change_assingment %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#assman">
                 {% blocktrans %}{{ v_assignment_pl }}{% endblocktrans %}
@@ -150,7 +162,7 @@
             </div>
         </li>
     {% endif %}
-    {% if perms.juntagrico.is_operations_group and c_enable_shares %}
+    {% if perms.juntagrico.change_share and c_enable_shares %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#shareman">
                 {% blocktrans %}{{ v_share_pl }}{% endblocktrans %}
@@ -219,7 +231,7 @@
             </a>
         </li>
     {% endif %}
-    {% if perms.juntagrico.is_operations_group %}
+    {% if perms.juntagrico.can_view_lists %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#lists">
                 {% trans "Listen" %}
@@ -246,6 +258,8 @@
                 </ul>
             </div>
         </li>
+    {% endif %}
+    {% if perms.juntagrico.can_view_exports %}
         <li class="nav-item">
             <a class="nav-link" href="{% url 'export' %}">
                 {% trans "Exporte" %}

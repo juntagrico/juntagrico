@@ -119,4 +119,8 @@ class Migration(migrations.Migration):
                                                        (3, 'Ausschluss'), (4, 'Tod')], null=True,
                                               verbose_name='Grund der Kündigung'),
         ),
+        migrations.AlterModelOptions(
+            name='specialroles',
+            options={'permissions': (('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'), ('can_send_mails', 'Benutzer kann im System Emails versenden'), ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'), ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'), ('can_view_exports', 'Benutzer kann Exporte öffnen'), ('can_view_lists', 'Benutzer kann Listen öffnen'))},
+        ),
     ]
