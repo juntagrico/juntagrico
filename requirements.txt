@@ -1,5 +1,5 @@
 Django==3.2
-django-admin-sortable2 @ git+http://github.com/jrief/django-admin-sortable2.git
+django-admin-sortable2==1.0
 django-crispy-forms==1.11.2
 django-impersonate==1.7.3
 django-polymorphic==3.0.0
