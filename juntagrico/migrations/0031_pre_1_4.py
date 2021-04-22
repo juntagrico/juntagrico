@@ -123,4 +123,19 @@ class Migration(migrations.Migration):
             name='specialroles',
             options={'permissions': (('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'), ('can_send_mails', 'Benutzer kann im System Emails versenden'), ('can_use_general_email', 'Benutzer kann General Email Adresse verwenden'), ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'), ('can_view_exports', 'Benutzer kann Exporte öffnen'), ('can_view_lists', 'Benutzer kann Listen öffnen'))},
         ),
+        migrations.AlterField(
+            model_name='jobtype',
+            name='default_duration',
+            field=models.FloatField(help_text='Standard-Dauer für diese Jobart', validators=[django.core.validators.MinValueValidator(0)], verbose_name='Dauer in Stunden'),
+        ),
+        migrations.AlterField(
+            model_name='onetimejob',
+            name='default_duration',
+            field=models.FloatField(help_text='Standard-Dauer für diese Jobart', validators=[django.core.validators.MinValueValidator(0)], verbose_name='Dauer in Stunden'),
+        ),
+        migrations.AlterField(
+            model_name='recuringjob',
+            name='duration_override',
+            field=models.FloatField(blank=True, default=None, help_text='Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.', null=True, validators=[django.core.validators.MinValueValidator(0)], verbose_name='Dauer in Stunden (Überschreibend)'),
+        ),
     ]

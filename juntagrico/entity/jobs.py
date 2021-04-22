@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.datetime_safe import time
@@ -112,8 +113,8 @@ class AbstractJobType(JuntagricoBaseModel):
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
-    default_duration = models.PositiveIntegerField(_('Dauer in Stunden'),
-                                                   help_text='Standard-Dauer für diese Jobart')
+    default_duration = models.FloatField(_('Dauer in Stunden'),
+                                                   help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
     location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
@@ -255,8 +256,8 @@ class Job(JuntagricoBasePoly):
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
     additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
-    duration_override = models.PositiveIntegerField(
-        _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None,
+    duration_override = models.FloatField(
+        _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None, validators=[MinValueValidator(0)],
         help_text=_('Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.')
     )
 
