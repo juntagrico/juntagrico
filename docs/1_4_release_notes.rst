@@ -18,11 +18,13 @@ Features & Improvements
     * New setting SUB_OVERVIEW_FORMAT for the formatting of the subscription overview
     * Added special role for notification on depot list generation
     * Added value field for shares
+    * Job duration is now a floating point value
 
 * Developer Features:
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
     * Menu dict method eliminated for easier view creation and performance improvements
     * Moved to BigAutofield for ids
+    * Upgraded tynimce to version 5.7.1
 
 Fixes
 ^^^^^
