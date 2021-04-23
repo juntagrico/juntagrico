@@ -114,7 +114,7 @@ class AbstractJobType(JuntagricoBaseModel):
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
     default_duration = models.FloatField(_('Dauer in Stunden'),
-                                                   help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
+                                         help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
     location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
