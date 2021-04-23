@@ -139,4 +139,8 @@ class Migration(migrations.Migration):
             name='duration_override',
             field=models.FloatField(blank=True, default=None, help_text='Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.', null=True, validators=[django.core.validators.MinValueValidator(0)], verbose_name='Dauer in Stunden (Überschreibend)'),
         ),
+        migrations.AlterModelOptions(
+            name='subscription',
+            options={'permissions': [('can_filter_subscriptions', 'Benutzer kann Abo filtern'), ('can_change_deactivated_subscriptions', 'Benutzer kann deaktivierte Abo ändern'), ('notified_on_subscription_creation', 'Wird bei Abo Erstellung informiert'), ('notified_on_subscription_cancellation', 'Wird bei Abo Kündigung informiert')], 'verbose_name': 'Abo', 'verbose_name_plural': 'Abos'},
+        ),
     ]

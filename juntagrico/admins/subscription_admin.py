@@ -18,8 +18,8 @@ class SubscriptionAdmin(BaseAdmin):
                      'subscriptionmembership__member__last_name',
                      'depot__name', 'nickname']
 
-    inlines = [SubscriptionMembershipInline, SubscriptionPartInline, ExtraSubscriptionInline]
-    add_inlines = [SubscriptionMembershipInline, SubscriptionPartInline, ExtraSubscriptionInline]
+    inlines = [SubscriptionMembershipInline, SubscriptionPartInline]
+
     fieldsets = [
         (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'nickname']}),
         (Config.vocabulary('depot'), {'fields': ['depot', 'future_depot']}),
@@ -45,7 +45,15 @@ class SubscriptionAdmin(BaseAdmin):
             return self.add_fieldsets
         return super().get_fieldsets(request, obj)
 
-    def get_inlines(self, request, obj):
-        if not obj:
-            return self.add_inlines
-        return super().get_inlines(request, obj)
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return self.readonly_fields
+        sub_is_deactivated = obj.inactive
+        if sub_is_deactivated and (
+                not (request.user.is_superuser or request.user.has_perm('juntagrico.can_change_deactivated_subscriptions'))):
+            for inline in self.inlines:
+                readonly_fields = inline.readonly_fields or []
+                readonly_fields.extend([field.name for field in inline.model._meta.fields])
+                inline.readonly_fields = list(set(readonly_fields))
+            return [field.name for field in obj._meta.fields]
+        return self.readonly_fields

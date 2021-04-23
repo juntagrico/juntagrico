@@ -19,6 +19,8 @@ Features & Improvements
     * Added special role for notification on depot list generation
     * Added value field for shares
     * Job duration is now a floating point value
+    * Deactivated subscription can only be edited if the user has the can_change_deactivated_subscriptions permission
+    * Past jobs can only be edited if the user has the can_edit_past_jobs permission
 
 * Developer Features:
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
