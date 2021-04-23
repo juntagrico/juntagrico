@@ -143,4 +143,9 @@ class Migration(migrations.Migration):
             name='subscription',
             options={'permissions': [('can_filter_subscriptions', 'Benutzer kann Abo filtern'), ('can_change_deactivated_subscriptions', 'Benutzer kann deaktivierte Abo ändern'), ('notified_on_subscription_creation', 'Wird bei Abo Erstellung informiert'), ('notified_on_subscription_cancellation', 'Wird bei Abo Kündigung informiert')], 'verbose_name': 'Abo', 'verbose_name_plural': 'Abos'},
         ),
+        migrations.AddField(
+            model_name='depot',
+            name='access_information',
+            field=models.TextField(default='', help_text='Nur für Mitglieder des/r Depot sichtbar', max_length=1000, verbose_name='Zugangsbeschreibung'),
+        ),
     ]
