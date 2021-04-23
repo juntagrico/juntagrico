@@ -1,6 +1,7 @@
+from adminsortable2.admin import SortableAdminMixin
+
 from juntagrico.admins import BaseAdmin
 from juntagrico.config import Config
-from adminsortable2.admin import SortableAdminMixin
 
 
 class SubscriptionTypeAdmin(SortableAdminMixin, BaseAdmin):

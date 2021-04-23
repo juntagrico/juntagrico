@@ -6,10 +6,10 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.util.pdf import render_to_pdf_storage
-from juntagrico.util.temporal import weekdays
-from juntagrico.util.subs import activate_future_depots
 from juntagrico.mailer import adminnotification
+from juntagrico.util.pdf import render_to_pdf_storage
+from juntagrico.util.subs import activate_future_depots
+from juntagrico.util.temporal import weekdays
 
 
 class Command(BaseCommand):

@@ -1,7 +1,7 @@
 from django import forms
-from django.utils.translation import gettext as _
-from django.utils import timezone
 from django.contrib.admin.widgets import AdminDateWidget
+from django.utils import timezone
+from django.utils.translation import gettext as _
 
 field_choices = [('paid_date', _('Bezahlt am')),
                  ('issue_date', _('Ausgestellt am')),

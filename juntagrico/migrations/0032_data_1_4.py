@@ -2,7 +2,9 @@
 
 import random
 import string
+
 from django.db import migrations
+
 from juntagrico.entity.member import Member
 
 

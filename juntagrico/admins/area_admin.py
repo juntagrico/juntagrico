@@ -1,6 +1,7 @@
+from adminsortable2.admin import SortableAdminMixin
+
 from juntagrico.admins import BaseAdmin
 from juntagrico.util.admin import queryset_for_coordinator
-from adminsortable2.admin import SortableAdminMixin
 
 
 class AreaAdmin(SortableAdminMixin, BaseAdmin):

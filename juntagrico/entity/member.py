@@ -1,4 +1,5 @@
 import hashlib
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -11,7 +12,6 @@ from juntagrico.entity import JuntagricoBaseModel, notifiable
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.util.users import make_username
-from datetime import date
 
 
 def q_joined_subscription():

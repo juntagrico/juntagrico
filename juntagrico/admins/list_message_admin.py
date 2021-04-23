@@ -1,5 +1,6 @@
-from juntagrico.admins import BaseAdmin
 from adminsortable2.admin import SortableAdminMixin
+
+from juntagrico.admins import BaseAdmin
 
 
 class ListMessageAdmin(SortableAdminMixin, BaseAdmin):
