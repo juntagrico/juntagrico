@@ -1,6 +1,6 @@
 from django.utils.translation import gettext as _
 
-from juntagrico.admins import BaseAdmin
+from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
@@ -11,7 +11,7 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 from juntagrico.util.models import attribute_copy
 
 
-class JobTypeAdmin(BaseAdmin):
+class JobTypeAdmin(RichTextAdmin):
     list_display = ['__str__', 'activityarea',
                     'default_duration', 'location', 'visible']
     list_filter = ('activityarea', 'visible')

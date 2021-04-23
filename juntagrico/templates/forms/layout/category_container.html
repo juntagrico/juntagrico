@@ -3,7 +3,7 @@
     <div class="col-md-12">
         <strong>{{ div.name }}</strong>
         <br/>
-        {{ div.description|linebreaksbr }}
+        {{ div.description|linebreaksbr|urlize|safe }}
     </div>
 </div>
 {{ fields|safe }}

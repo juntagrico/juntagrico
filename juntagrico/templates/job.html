@@ -110,8 +110,8 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-5">
-            <div class="job-description">{{ job.type.description|linebreaksbr|urlize }}</div>
-            <div class="job-additional-description">{{ job.additional_description|linebreaksbr|urlize }}</div>
+            <div class="job-description">{{ job.type.description|linebreaksbr|urlize|safe }}</div>
+            <div class="job-additional-description">{{ job.additional_description|linebreaksbr|urlize|safe }}</div>
         </div>
     </div>
     <br/>

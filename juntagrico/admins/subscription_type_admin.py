@@ -1,10 +1,10 @@
 from adminsortable2.admin import SortableAdminMixin
 
-from juntagrico.admins import BaseAdmin
+from juntagrico.admins import RichTextAdmin
 from juntagrico.config import Config
 
 
-class SubscriptionTypeAdmin(SortableAdminMixin, BaseAdmin):
+class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['__str__', 'price', 'required_assignments',
                     'required_core_assignments', 'visible']
     exclude = ['trial']
@@ -19,9 +19,9 @@ if Config.enable_shares():
     SubscriptionTypeAdmin.list_display.insert(2, 'shares')
 
 
-class SubscriptionSizeAdmin(BaseAdmin):
+class SubscriptionSizeAdmin(RichTextAdmin):
     list_display = ['__str__', 'units', 'product', 'visible', 'depot_list']
 
 
-class SubscriptionProductAdmin(SortableAdminMixin, BaseAdmin):
+class SubscriptionProductAdmin(SortableAdminMixin, RichTextAdmin):
     pass

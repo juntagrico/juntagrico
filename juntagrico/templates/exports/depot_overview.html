@@ -21,7 +21,7 @@
         <td></td>
         {% for product in products %}
             <th colspan="{{ product.sizes_for_depot_list|count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}<br/><span
-                    style="font-size:11px">{{ product.description }}</span></th>
+                    style="font-size:11px">{{ product.description|safe }}</span></th>
         {% endfor %}
     </tr>
     <tr>

@@ -19,12 +19,14 @@ Features & Improvements
     * Added special role for notification on depot list generation
     * Added value field for shares
     * Job duration is now a floating point value
+    * Text fields can now contain html code
 
 * Developer Features:
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
     * Menu dict method eliminated for easier view creation and performance improvements
     * Moved to BigAutofield for ids
-    * Upgraded tynimce to version 5.7.1
+    * Upgraded TyniMCE to version 5.7.1
+    * Added possibility to enable rich text fields in description fields for configuration see :ref:`Rich Text Editor`
 
 Fixes
 ^^^^^

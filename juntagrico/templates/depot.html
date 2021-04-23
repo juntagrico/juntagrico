@@ -45,7 +45,7 @@
                 {% trans "Beschreibung" %}
             </div>
             <div class="col-md-9">
-                {{ depot.description|linebreaksbr|urlize }}
+                {{ depot.description|linebreaksbr|urlize|safe }}
             </div>
         </div>
     {% endif %}

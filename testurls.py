@@ -15,13 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path, re_path
+
 import juntagrico
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    re_path(r'^admin/', admin.site.urls),
 
-    url(r'^impersonate/', include('impersonate.urls')),
+    re_path(r'^impersonate/', include('impersonate.urls')),
+    re_path(r'^djrichtextfield/', include('djrichtextfield.urls')),
 
-    url(r'^', include('juntagrico.urls')),
-    url(r'^$', juntagrico.views.home),
+    re_path(r'^', include('juntagrico.urls')),
+    re_path(r'^$', juntagrico.views.home),
 ]

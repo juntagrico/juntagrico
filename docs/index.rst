@@ -19,6 +19,7 @@ It provides the basic functionality like
    first_steps.rst
    settings.rst
    theming.rst
+   rich_text_editor.rst
    1_3_release_notes.rst
    1_3_release_notes.rst
    1_2_release_notes.rst

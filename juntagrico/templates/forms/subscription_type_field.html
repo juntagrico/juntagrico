@@ -11,7 +11,7 @@
             <br/>
         {% endif %}
         {% if type.description.strip %}
-            {{ type.description|linebreaksbr }}
+            {{ type.description|linebreaksbr|urlize|safe }}
             <br/>
         {% endif %}
         {% if type.has_periods %}

@@ -11,7 +11,7 @@ Du hast dich für den {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" um {{
 
 {% trans "Details" %}:
 
-{% trans "Job" %}:             {{ job.type.description }}
+{% trans "Job" %}:             {{ job.type.description|striptags }}
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 {% trans "Teilnehmer" %}:      {{ job.participant_names }}
 {% trans "Ort" %}:             {{ job.type.location }}
