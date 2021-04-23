@@ -10,7 +10,7 @@ from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob, JobType
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 
 
 class JobAdmin(BaseAdmin):

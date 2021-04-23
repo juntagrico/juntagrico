@@ -27,10 +27,9 @@ class Depot(JuntagricoBaseModel):
                                      null=True, blank=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     access_information = models.TextField(_('Zugangsbeschreibung'), max_length=1000, default='',
-                                          help_text=_('Nur für {0} des/r {1} sichtbar').format(
-                                              Config.vocabulary('member_pl'),
-                                              Config.vocabulary('depot')
-                                          ))
+                                          help_text=_('Nur für {0} des/r {1} sichtbar')
+                                          .format(Config.vocabulary('member_pl'),
+                                                  Config.vocabulary('depot')))
     depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)

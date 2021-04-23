@@ -2,7 +2,6 @@ from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
-from juntagrico.admins.inlines.extra_subscription_inline import ExtraSubscriptionInline
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInline
 from juntagrico.admins.inlines.subscription_part_inlines import SubscriptionPartInline
 from juntagrico.config import Config

@@ -26,7 +26,7 @@ class SubscriptionMembershipAdminForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if 'member' in self.fields:
             self.fields['member'].widget = MemberRawIdWidget(rel=SubscriptionMembership._meta.get_field('member').remote_field,
-                                                         admin_site=site, field=self.fields['member'])
+                                                             admin_site=site, field=self.fields['member'])
 
     def clean(self):
         if 'member' in self.cleaned_data:
