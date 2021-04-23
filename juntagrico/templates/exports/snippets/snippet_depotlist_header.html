@@ -13,7 +13,7 @@
         <th class="namecol"></th>
         {% for product in products %}
             <th colspan="{{ product.sizes_for_depot_list|count }}" class="top-border {% if forloop.first %}left-border{% endif %} {% if category %}right-border{% endif %}">{{ product.name }}
-                {% if product.description %}<br /><span class="proddescr">{{ product.description }}</span>{% endif %}
+                {% if product.description|safe %}<br /><span class="proddescr">{{ product.description }}</span>{% endif %}
             </th>
         {% endfor %}
         {% for category in extra_sub_categories %}
