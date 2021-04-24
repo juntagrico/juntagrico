@@ -28,6 +28,7 @@ Features & Improvements
     * Menu dict method eliminated for easier view creation and performance improvements
     * Moved to BigAutofield for ids
     * Upgraded tynimce to version 5.7.1
+    * template tags are now unde juntagrico. For example former ``{% load config %}`` becomes ``{% load juntagrico.config %}``
 
 Fixes
 ^^^^^
