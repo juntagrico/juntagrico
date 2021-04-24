@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% vocabulary "share" as v_share %}
 <Document
         xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd pain.001.001.03.ch.02.xsd"
