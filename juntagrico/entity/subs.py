@@ -271,7 +271,8 @@ class Subscription(Billable, SimpleStateModel):
         verbose_name = Config.vocabulary('subscription')
         verbose_name_plural = Config.vocabulary('subscription_pl')
         permissions = (
-            ('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),)
+            ('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),
+            ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),)
 
 
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):

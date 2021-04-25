@@ -90,6 +90,7 @@ urlpatterns = [
 
     # /depot
     path('my/depot/<int:depot_id>/', juntagrico.depot, name='depot'),
+    path('my/depot/', juntagrico.depot_landing, name='depot-landing'),
 
     # /deliveries
     path('my/deliveries', juntagrico.deliveries, name='deliveries'),

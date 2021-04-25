@@ -129,6 +129,14 @@ def job(request, job_id):
 
 
 @login_required
+def depot_landing(request):
+    subscription = request.user.member.subscription_current or request.user.member.subscription_future
+    if subscription:
+        return depot(request, subscription.depot_id)
+    return redirect('home')
+
+
+@login_required
 def depot(request, depot_id):
     '''
     Details for a Depot
