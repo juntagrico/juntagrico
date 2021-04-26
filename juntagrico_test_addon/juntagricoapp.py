@@ -2,6 +2,7 @@ from juntagrico.entity.member import Member
 from juntagrico.util import addons
 from juntagrico_test_addon.admin import MemberShareInline
 
+
 def show_admin_menu(user):
     return True
 
