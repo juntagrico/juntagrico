@@ -81,9 +81,10 @@ def area_admin(request):
 def get_version():
     return version
 
+
 @register.filter
 def richtext(value):
-    if not 'djrichtextfield' in settings.INSTALLED_APPS or not hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
+    if 'djrichtextfield' not in settings.INSTALLED_APPS or not hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
         value = urlize(value)
         value = linebreaksbr(value)
     return value
