@@ -39,3 +39,7 @@ Custom Mail Templates
 Since juntagrico sends plaintext emails the raw content of a rich text field would be displayed which is html content.
 Because raw html is not very user-friendly to read we apply the ``striptag`` filter in the default email texts for possible rich text fields.
 If you override one of these templates and use a rich text editor you should do the same in your custom templates.
+
+Disabling the Rich Text Editor
+------------------------------
+Disabling the rich text editor will not convert back the texts to non html. This has to be done manually.
