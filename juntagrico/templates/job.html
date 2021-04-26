@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load juntagrico.common %}
 {% load juntagrico.config %}
 {% block page_title %}
     <h3>
@@ -110,8 +111,8 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-5">
-            <div class="job-description">{{ job.type.description|linebreaksbr|urlize|safe }}</div>
-            <div class="job-additional-description">{{ job.additional_description|linebreaksbr|urlize|safe }}</div>
+            <div class="job-description">{{ job.type.description|richtext|safe }}</div>
+            <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
         </div>
     </div>
     <br/>
