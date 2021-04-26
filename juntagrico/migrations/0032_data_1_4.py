@@ -79,8 +79,13 @@ def migrate_extras(apps, schema_editor):
     ExtraSubBillingPeriod = apps.get_model('juntagrico', 'ExtraSubBillingPeriod')
     subprods = {}
     for ecat in ExtraSubscriptionCategory.objects.all():
+        name = ecat.name
+        number = 0
+        while SubscriptionProduct.objects.filter(name=name).count() > 0 :
+            name = ecat.name + str(number)
+            number = number + 1
         subprod_data = {
-            'name': ecat.name,
+            'name': name,
             'description': ecat.description,
             'is_extra': True
         }
