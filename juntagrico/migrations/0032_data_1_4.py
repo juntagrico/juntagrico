@@ -81,7 +81,7 @@ def migrate_extras(apps, schema_editor):
     for ecat in ExtraSubscriptionCategory.objects.all():
         name = ecat.name
         number = 0
-        while SubscriptionProduct.objects.filter(name=name).count() > 0 :
+        while SubscriptionProduct.objects.filter(name=name).count() > 0:
             name = ecat.name + str(number)
             number = number + 1
         subprod_data = {
