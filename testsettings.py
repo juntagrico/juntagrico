@@ -126,3 +126,22 @@ LOCALE_PATHS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
+
+
+# Raise error on any invalid template tag (https://djangosnippets.org/snippets/646/)
+class InvalidVarException(object):
+    def __mod__(self, missing):
+        try:
+            missing_str = missing.decode('utf-8')
+        except Exception:
+            missing_str = 'Failed to create string representation'
+        raise Exception('Unknown template variable %r %s' % (missing, missing_str))
+
+    def __contains__(self, search):
+        if search == '%s':
+            return True
+        return False
+
+
+TEMPLATE_DEBUG = True
+TEMPLATE_STRING_IF_INVALID = InvalidVarException()
