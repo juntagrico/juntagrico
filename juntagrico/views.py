@@ -425,22 +425,6 @@ def change_password(request):
     return render(request, 'password.html', renderdict)
 
 
-def new_password(request):
-    sent = False
-    if request.method == 'POST':
-        sent = True
-        member = MemberDao.member_by_email(request.POST.get('username'))
-        if member is not None:
-            pw = password_generator()
-            member.user.set_password(pw)
-            member.user.save()
-            membernotification.reset_password(member.email, pw)
-    renderdict = {
-        'sent': sent
-    }
-    return render(request, 'newpassword.html', renderdict)
-
-
 def logout_view(request):
     auth.logout(request)
     return redirect('home')

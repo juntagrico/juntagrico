@@ -71,14 +71,6 @@ class Command(BaseCommand):
         })))
         print()
 
-        print('*** password ***')
-
-        print(get_email_content('password', base_dict({
-            'email': 'email@email.org',
-            'password': 'password',
-        })))
-        print()
-
         print('*** j_reminder ***')
 
         contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()

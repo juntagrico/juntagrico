@@ -32,10 +32,10 @@ urlpatterns = [
     path('logout/', juntagrico.logout_view, name='logout'),
 
     # /accounts (password reset)
-    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='password_reset.html', email_template_name='mails/member/django_password_reset.txt'), name='password_reset'),
-    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password_reset_sent.html'), name='password_reset_done'),
-    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
+    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form_cust.html', email_template_name='mails/member/password_reset_email.txt'), name='password_reset'),
+    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done_cust.html'), name='password_reset_done'),
+    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm_cust.html'), name='password_reset_confirm'),
+    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete_cust.html'), name='password_reset_complete'),
 
     # /home
     path('my/home', juntagrico.home, name='home'),
@@ -43,7 +43,6 @@ urlpatterns = [
     # /my (personal stuff)
     # /my/password
     path('my/password', juntagrico.change_password, name='password'),
-    path('my/newpassword', juntagrico.new_password, name='new-password'),
     # my/email
     path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),
     # /my/membership
