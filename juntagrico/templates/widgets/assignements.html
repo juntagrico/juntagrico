@@ -1,5 +1,7 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
+{% load juntagrico.widgets %}
+{% assignment_data request as asdata %}
 <hr/>
 <div class="assignments">
     {% block assignments %}
@@ -7,17 +9,27 @@
             {% vocabulary "subscription" %} {% vocabulary "assignment_pl" %}-{% trans "Übersicht" %}
         </h5>
         {% spaceless %}
-        {% for i in assignmentsrange %}
-            {% if i < userassignemnts_core_bound %}
-                <img alt="{% trans "Kernbereich" %}" title="{% trans "Kernbereich" %}"src="{% images "single_core" %}"/>
-            {% elif i < userassignments_bound %}
-                <img alt="{% trans "anderer Tätigkeitsbereich" %}" title="{% trans "anderer Tätigkeitsbereich" %}"src="{% images "single_full" %}"/>
-            {% elif i < partner_assignments_core_bound %}
-                <img alt="{% trans "Kernbereich Partner" %}" title="{% trans "Kernbereich Partner" %}"src="{% images "single_core" %}" style="opacity:0.5;"/>
-            {% elif i < partner_assignments_bound %}
-                <img alt="{% trans "anderer Tätigkeitsbereich Partner" %}"title="{% trans "anderer Tätigkeitsbereich Partner" %}" src="{% images "single_full" %}"style="opacity:0.5;"/>
+        {% for i in asdata.total %}
+            {% if i < asdata.member_core %}
+                <img alt="{% trans "Kernbereich" %}"
+                     title="{% trans "Kernbereich" %}"
+                     src="{% images "single_core" %}"/>
+            {% elif i < asdata.member %}
+                <img alt="{% trans "anderer Tätigkeitsbereich" %}"
+                     title="{% trans "anderer Tätigkeitsbereich" %}"
+                     src="{% images "single_full" %}"/>
+            {% elif i < asdata.partner_core_bound %}
+                <img alt="{% trans "Kernbereich Partner" %}"
+                     title="{% trans "Kernbereich Partner" %}"
+                     src="{% images "single_core" %}" class="partner-assignments"/>
+            {% elif i < asdata.partner_bound %}
+                <img alt="{% trans "anderer Tätigkeitsbereich Partner" %}"
+                     title="{% trans "anderer Tätigkeitsbereich Partner" %}"
+                     src="{% images "single_full" %}" class="partner-assignments"/>
             {% else %}
-                <img alt="{% trans "noch zu erledigen" %} ({% vocabulary "subscription" %})"src="{% images "single_empty" %}"title="{% trans "noch zu erledigen" %} ({% vocabulary "subscription" %})"/>
+                <img alt="{% trans "noch zu erledigen" %} ({% vocabulary "subscription" %})"
+                     title="{% trans "noch zu erledigen" %} ({% vocabulary "subscription" %})"
+                     src="{% images "single_empty" %}"/>
             {% endif %}
         {% endfor %}
         {% endspaceless %}

@@ -1,6 +1,6 @@
 {% extends "mails/email.txt" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block content %}
 {% vocabulary "share" as v_share %}
 {% trans "Hallo" %}

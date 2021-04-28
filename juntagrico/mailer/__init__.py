@@ -39,10 +39,21 @@ def get_emails_by_permission(permission_code):
     return emails
 
 
+def requires_someone_with_perm(perm):
+    def skip_decorator(func):
+        def wrapper(*args, **kwargs):
+            emails = get_emails_by_permission(perm)
+            if len(emails) > 0:
+                kwargs['emails'] = emails
+                return func(*args, **kwargs)
+        return wrapper
+    return skip_decorator
+
+
 def filter_whitelist_emails(to_emails):
     if settings.DEBUG:
-        ok_mails = [x for x in to_emails if x in settings.WHITELIST_EMAILS]
-        not_send = [x for x in to_emails if x not in settings.WHITELIST_EMAILS]
+        ok_mails = [x for x in to_emails if any(re.match(wle, x) for wle in settings.WHITELIST_EMAILS)]
+        not_send = [x for x in to_emails if x not in ok_mails]
         log.info(('Mail not sent to: ' + ', '.join(not_send) + ' not in whitelist'))
         return ok_mails
     else:
@@ -105,6 +116,7 @@ class EmailSender:
 
     @chainable
     def attach_ics(self, ics):
+
         self.email.attach(ics.name, ics.content)
 
     @chainable

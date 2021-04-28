@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
@@ -8,8 +9,8 @@ from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.entity.jobs import RecuringJob
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
+from juntagrico.entity.jobs import RecuringJob, JobType
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 
 
 class JobAdmin(BaseAdmin):
@@ -20,6 +21,20 @@ class JobAdmin(BaseAdmin):
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return self.readonly_fields
+        job_is_in_past = obj.end_time() < timezone.now()
+        job_is_running = obj.start_time() < timezone.now()
+        job_canceled = obj.canceled
+        job_read_only = job_canceled or job_is_running or job_is_in_past
+        if job_read_only and (
+                not (request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))):
+            for inline in self.inlines:
+                inline.readonly_fields = [field.name for field in inline.model._meta.fields]
+            return [field.name for field in obj._meta.fields]
+        return self.readonly_fields
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
@@ -77,8 +92,10 @@ class JobAdmin(BaseAdmin):
                                                'juntagrico.is_area_admin',
                                                JobTypeDao.visible_types_by_coordinator,
                                                **kwargs)
+            # show jobtype even if invisible to be able to edit and save this job with the same type
+            # HACK: get instance via url argument
+            instance_pk = request.resolver_match.kwargs.get('object_id')
+            if instance_pk is not None:
+                kwargs['queryset'] |= JobType.objects.filter(recuringjob__pk=instance_pk)
+                kwargs['queryset'] = kwargs['queryset'].distinct()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def change_view(self, request, object_id, extra_context=None):
-        extra_context = extra_context_for_past_jobs(request, RecuringJob, object_id, extra_context)
-        return super().change_view(request, object_id, extra_context=extra_context)

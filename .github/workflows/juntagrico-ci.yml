@@ -1,0 +1,68 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: juntagrico-ci
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main, release_* ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_SETTINGS_MODULE: testsettings
+      PYTHONPATH: .
+      CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: install dependencies
+      run: |
+        pip install --upgrade -r requirements-local.txt
+    - name: install CodeClimate reporter
+      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
+      run: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+        ./cc-test-reporter before-build
+    - name: run tests
+      run: |
+        django-admin.py makemigrations --noinput
+        coverage run -m manage test
+    - name: publish code coverage
+      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
+      run: |
+        coverage report
+        coverage xml
+        ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
+        ./cc-test-reporter upload-coverage -i coverageupload
+    - name: flake 8
+      run: |
+        flake8 --count --ignore E501 juntagrico
+        flake8 --count --ignore E501 test
+    - name: Slack notification
+      if: ${{  env.SLACK_WEBHOOK != null && github.event_name == 'push' && always()}}
+      env:
+        STATUS: ${{ job.status }}
+      uses: Ilshidur/action-slack@2.1.0
+      with:
+        args: 'A new <{{GITHUB_SERVER_URL}}/{{GITHUB_REPOSITORY}}/commit/{{GITHUB_SHA}}|commit> in repo {{GITHUB_REPOSITORY}} has been pushed by {{GITHUB_ACTOR}} and has the status {{STATUS}}.'
+    - name: Slack notification pullrequest
+      if: ${{ env.SLACK_WEBHOOK != null && github.event_name == 'pull_request' && always()}}
+      env:
+        PULL_ID: ${{ github.event.number }}
+        STATUS: ${{ job.status }}
+      uses: Ilshidur/action-slack@2.1.0
+      with:
+        args: 'A new build of <{{GITHUB_SERVER_URL}}/{{GITHUB_REPOSITORY}}/pull/{{PULL_ID}}|pr> in repo {{GITHUB_REPOSITORY}} has been triggered by {{GITHUB_ACTOR}} and has the status {{STATUS}}'

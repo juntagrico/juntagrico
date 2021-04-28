@@ -3,20 +3,21 @@ define([], function () {
 
     tinymce.init({
         selector: "textarea.mailer",
-        'theme': "modern",
-        'plugins': 'link',
-        'relative_urls': false,
-        "valid_styles": {
+        theme: "silver",
+        plugins: 'link lists',
+        relative_urls: false,
+        valid_styles: {
             '*': 'color,text-align,font-size,font-weight,font-style,text-decoration'
         },
+        menubar: 'edit insert format',
         menu: {
             edit: {title: 'Edit', items: 'undo redo | cut copy paste | selectall'},
             insert: {title: 'Insert', items: 'link'},
             format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'}
         },
-        "convert_urls":true,
-        "relative_urls":false,
-        "remove_script_host":false,
+        toolbar: "undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link",
+        convert_urls:true,
+        remove_script_host:false,
     });
     $("#sendmail").click(function () {
         var editor = tinyMCE.get('message');

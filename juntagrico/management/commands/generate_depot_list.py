@@ -3,12 +3,12 @@ from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.extrasubscriptioncategorydao import ExtraSubscriptionCategoryDao
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.mailer import membernotification
+from juntagrico.mailer import adminnotification
 from juntagrico.util.pdf import render_to_pdf_storage
+from juntagrico.util.subs import activate_future_depots
 from juntagrico.util.temporal import weekdays
 
 
@@ -40,25 +40,18 @@ class Command(BaseCommand):
             return
 
         if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
-            for subscription in SubscriptionDao.subscritions_with_future_depots():
-                subscription.depot = subscription.future_depot
-                subscription.future_depot = None
-                subscription.save()
-                emails = []
-                for member in subscription.recipients:
-                    emails.append(member.email)
-                membernotification.depot_changed(emails, subscription.depot)
+            activate_future_depots()
 
         if options['force'] and not options['future']:
             print('future depots ignored, use --future to override')
 
         depot_dict = {
             'subscriptions': SubscriptionDao.all_active_subscritions(),
-            'products': SubscriptionProductDao.get_all(),
-            'extra_sub_categories': ExtraSubscriptionCategoryDao.categories_for_depot_list_ordered(),
-            'depots': DepotDao.all_depots_order_by_code(),
+            'products': SubscriptionProductDao.get_all_for_depot_list(),
+            'depots': DepotDao.all_depots_for_list(),
+
             'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in
-                         DepotDao.distinct_weekdays()},
+                         DepotDao.distinct_weekdays_for_depot_list()},
             'messages': ListMessageDao.all_active()
         }
 
@@ -68,3 +61,5 @@ class Command(BaseCommand):
                               depot_dict, 'depot_overview.pdf')
         render_to_pdf_storage('exports/amount_overview.html',
                               depot_dict, 'amount_overview.pdf')
+
+        adminnotification.depot_list_generated()

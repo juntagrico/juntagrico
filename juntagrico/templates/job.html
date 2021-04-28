@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {{ job.type.get_name }}
@@ -139,7 +139,7 @@
         </div>
         <div class="col-md-5">
             {% if number_of_participants == 0 and not job_fully_booked %}
-                {% trans "Noch niemand" %} :-(
+                {% trans "Noch niemand" %} 🥺
             {% else %}
                 <ul>
                     {% for participant, url, reachable, extras in participants_summary %}

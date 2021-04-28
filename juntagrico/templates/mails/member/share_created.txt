@@ -1,6 +1,6 @@
 {% extends "mails/email.txt" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block content %}
 {% config "organisation_address" as c_addr %}
 {% config "organisation_bank_connection" as c_bank %}

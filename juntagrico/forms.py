@@ -288,16 +288,17 @@ class SubscriptionTypeField(Field):
 
 
 class SubscriptionPartBaseForm(Form):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
+        self._product_method = product_method
 
     def _collect_type_fields(self):
         containers = []
-        for product in SubscriptionProductDao.get_all():
+        for product in self._product_method().all():
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
@@ -370,7 +371,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Bestandteile!{}').format(
                 Config.vocabulary('share_pl'),
                 '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                    reverse('share-order'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
+                    reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
             ))
             raise ValidationError(share_error_message, code='share_error')
         # check that at least one subscription was selected
@@ -383,3 +384,12 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             ))
             raise ValidationError(amount_error_message, code='amount_error')
         return super().clean()
+
+
+class NicknameForm(Form):
+    nickname = CharField(label=_('{}-Spitzname').format(Config.vocabulary('subscription')), max_length=30, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', _('Speichern')))

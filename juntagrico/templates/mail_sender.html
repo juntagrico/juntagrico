@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Mails verschicken" %}
@@ -11,6 +12,7 @@
     {% vocabulary "co_member_pl" as v_co_member_pl %}
     {% vocabulary "share" as v_share %}
     {% config "enable_shares" as enable_shares %}
+    {% area_admin request as area_admin %}
     <form action="{% url mail_url %}" method="POST"class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group row">
@@ -68,7 +70,7 @@
                 </div>
                 <label class="col-md-9" for="allsubscription">
                     {% blocktrans trimmed %}
-                    {{ v_subscription }}-BezieherIn (inkl. {{ v_co_member_pl }}
+                    {{ v_subscription }}-BezieherIn (inkl. {{ v_co_member_pl }})
                     {% endblocktrans %}
                 </label>
             </div>

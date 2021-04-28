@@ -1,8 +1,10 @@
+from adminsortable2.admin import SortableAdminMixin
+
 from juntagrico.admins import BaseAdmin
 from juntagrico.util.admin import queryset_for_coordinator
 
 
-class AreaAdmin(BaseAdmin):
+class AreaAdmin(SortableAdminMixin, BaseAdmin):
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']
     list_display = ['name', 'core', 'hidden', 'coordinator', 'get_email']

@@ -11,6 +11,7 @@ def _get_setting_with_key(setting_key, default):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
         return (default() if callable(default) else default)[key]
+
     return inner
 
 
@@ -33,7 +34,8 @@ class Config:
             'member_type': _('Mitglied'),
             'member_type_pl': _('Mitglieder'),
             'depot': _('Depot'),
-            'depot_pl': _('Depots')
+            'depot_pl': _('Depots'),
+            'package': _('Tasche'),
         }
     )
     organisation_name = _get_setting('ORGANISATION_NAME', 'Juntagrico')
@@ -75,7 +77,6 @@ class Config:
     promoted_job_types = _get_setting('PROMOTED_JOB_TYPES', [])
     promomted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
-    billing = _get_setting('BILLING', False)
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
     business_year_cancelation_month = _get_setting('BUSINESS_YEAR_CANCELATION_MONTH', 12)
     membership_end_month = _get_setting('MEMBERSHIP_END_MONTH', 6)
@@ -86,6 +87,13 @@ class Config:
             'confirm_text': _('einverstanden'),
             'link_text': _('Hier findest du mehr zum Thema'),
             'url': '/my/cookies'
+        }
+    )
+    sub_overview_format = _get_setting_with_key(
+        'SUB_OVERVIEW_FORMAT',
+        lambda: {
+            'delimiter': '|',
+            'format': '{product}:{size}:{type}={amount}'
         }
     )
 
@@ -122,6 +130,7 @@ class Config:
             's_canceled': 'mails/admin/subscription_canceled.txt',
             'a_share_created': 'mails/admin/share_created.txt',
             'a_member_created': 'mails/admin/member_created.txt',
+            'a_depot_list_generated': 'mails/admin/depot_list_generated.txt',
             'm_canceled': 'mails/admin/member_canceled.txt',
         }
     )

@@ -1,5 +1,6 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
+{% load juntagrico.subscription %}
 {% vocabulary "subscription" as v_subscription %}
 <div class="row mt-3">
     <div class="col-md-2">
@@ -20,7 +21,7 @@
         <br/>
         {% trans "Zukünftige Bestandteile" %}:
         <br/>
-        {{ subscription.future_size_name|safe }}
+        {{ subscription.future_part_overview|overview|safe }}
         <br/>
     </div>
     <div class="col-md-2">

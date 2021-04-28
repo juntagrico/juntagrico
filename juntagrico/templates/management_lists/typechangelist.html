@@ -1,6 +1,7 @@
 {% extends "management_lists/man_list_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
+{% load juntagrico.subscription %}
 {% block page_title %}
     <h3>
         {% trans "Bestandteile Änderungsliste" %}
@@ -37,7 +38,7 @@
                 <tr>
                     <td>
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
-                            {{ subscription.overview }}
+                            {{ subscription }}
                         </a>
                     </td>
                     <td>
@@ -54,10 +55,10 @@
                         </form>
                     </td>
                     <td>
-                        {{ subscription.size_name }}
+                        {{ subscription.part_overview|overview|safe }}
                     </td>
                     <td>
-                        {{ subscription.future_size_name }}
+                        {{ subscription.future_part_overview|overview|safe }}
                     </td>
                     <td>
                         {{ subscription.part_change_date|date:"Y-m-d" }}

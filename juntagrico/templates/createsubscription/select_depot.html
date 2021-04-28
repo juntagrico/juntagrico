@@ -1,6 +1,6 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block styles %}
     <link rel="stylesheet" href="/static/external/leaflet/leaflet.css" />
 {% endblock %}
@@ -25,7 +25,7 @@
                 <div class="col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.code }}"{% if depot == selected %}selected{% endif %}>
+                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}"{% if depot == selected %}selected{% endif %}>
                                 {{ depot.name }}
                             </option>
                         {% endfor %}
@@ -70,7 +70,7 @@
                 addr_location: '{{ depot.addr_location }}',
                 latitude: '{{ depot.latitude }}',
                 longitude: '{{ depot.longitude }}',
-                code: '{{ depot.code }}'
+                code: '{{ depot.sort_order }}'
                 });
             {% endif %}
         {% endfor %}

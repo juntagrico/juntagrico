@@ -8,8 +8,8 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm
 from juntagrico.util import temporal
-from juntagrico.view_decorators import create_subscription_session
 from juntagrico.util.management import new_signup
+from juntagrico.view_decorators import create_subscription_session
 
 
 @create_subscription_session
@@ -36,7 +36,7 @@ def cs_select_depot(request, cs_session):
         cs_session.depot = DepotDao.depot_by_id(request.POST.get('depot'))
         return redirect(cs_session.next_page())
 
-    depots = DepotDao.all_depots()
+    depots = DepotDao.all_visible_depots()
     requires_map = any(depot.has_geo for depot in depots)
     render_dict = {
         'member': cs_session.main_member,
@@ -85,6 +85,7 @@ class CSAddMemberView(FormView, ModelFormMixin):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
+            **{},
             co_members=self.cs_session.co_members if not self.edit else [],
             **kwargs
         )
@@ -154,12 +155,16 @@ class CSSelectSharesView(TemplateView):
         super().__init__()
         self.cs_session = None
 
-    def get_context_data(self, shares):
-        return {
-            'shares': shares,
-            'member': self.cs_session.main_member,
-            'co_members': self.cs_session.co_members
-        }
+    def get_context_data(self, shares, **kwargs):
+        return super().get_context_data(
+            **{},
+            **{
+                'shares': shares,
+                'member': self.cs_session.main_member,
+                'co_members': self.cs_session.co_members
+            },
+            **kwargs
+        )
 
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
@@ -168,9 +173,9 @@ class CSSelectSharesView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # read form
-        self.cs_session.main_member.new_shares = int(request.POST.get('shares_mainmember', 0))
+        self.cs_session.main_member.new_shares = int(request.POST.get('shares_mainmember', 0) or 0)
         for co_member in self.cs_session.co_members:
-            co_member.new_shares = int(request.POST.get(co_member.email, 0))
+            co_member.new_shares = int(request.POST.get(co_member.email, 0) or 0)
         # evaluate
         shares = self.cs_session.count_shares()
         if self.cs_session.evaluate_ordered_shares(shares):
@@ -189,7 +194,11 @@ class CSSummaryView(TemplateView):
     template_name = 'createsubscription/summary.html'
 
     def get_context_data(self, cs_session, **kwargs):
-        return cs_session.to_dict()
+        return super().get_context_data(
+            **{},
+            **cs_session.to_dict(),
+            **kwargs
+        )
 
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
@@ -202,13 +211,16 @@ class CSSummaryView(TemplateView):
         # handle new signup
         member = new_signup(cs_session.pop())
         # finish registration
-        if member.future_subscription is None:
+        if member.subscription_future is None:
             return redirect('welcome')
         return redirect('welcome-with-sub')
 
 
 def cs_welcome(request, with_sub=False):
-    return render(request, 'welcome.html', {'no_subscription': not with_sub})
+    render_dict = {
+        'no_subscription': not with_sub
+    }
+    return render(request, 'welcome.html', render_dict)
 
 
 @create_subscription_session

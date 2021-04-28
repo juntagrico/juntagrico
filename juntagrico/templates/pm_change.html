@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
-    {% vocabulary "co_member_pl" as v_co_member_pl %}
     <h3>
         {% blocktrans %}Haupt-{{ v_subscription }}-BezieherIn ändern{% endblocktrans %}
     </h3>
@@ -11,6 +10,7 @@
 {% block content %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "member" as v_member %}
+    {% vocabulary "co_member_pl" as v_co_member_pl %}
     {% if has_comembers %}
     <form method="post" class="createsubscription">
             {% csrf_token %}

@@ -19,6 +19,7 @@ def welcome(member, password):
 
 def welcome_co_member(co_member, password, new_shares, new=True):
     # sends either welcome mail or just information mail to new/added co-member
+    sub = co_member.subscription_future or co_member.subscription_current
     EmailSender.get_sender(
         _('Willkommen bei {0}').format(enriched_organisation('D')),
         get_email_content('co_welcome' if new else 'co_added', base_dict(locals())),
@@ -70,7 +71,7 @@ def job_signup(email, job):
     ).attach_ics(generate_ical_for_job(job)).start_thread(job).send_to(email)
 
 
-def job_reminder(emails, job, participants):
+def job_reminder(emails, job):
     contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
     EmailSender.get_sender(
         organisation_subject(_('Einsatz-Erinnerung')),

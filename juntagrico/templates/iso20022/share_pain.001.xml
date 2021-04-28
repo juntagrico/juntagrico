@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% vocabulary "share" as v_share %}
 <Document
         xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd pain.001.001.03.ch.02.xsd"
@@ -47,7 +47,7 @@
                     <EndToEndId>EndToEndId-001-01-{{ share.id }}</EndToEndId>
                 </PmtId>
                 <Amt>
-                    <InstdAmt Ccy="CHF">{{ amount }}</InstdAmt>
+                    <InstdAmt Ccy="CHF">{{ share.value }}</InstdAmt>
                 </Amt>
                 <Cdtr>
                     <Nm>{{ share.member.first_name }} {{ share.member.last_name }}</Nm>
