@@ -36,6 +36,6 @@ plugins:
   sonar-python:
     enabled: true
 exclude_patterns:
-  - "**/static/external/"
+  - "**/static/juntagrico/external/"
   - "**/migrations/"
   - "juntagrico/management/commands/generate_testdata.py"
