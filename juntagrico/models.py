@@ -83,6 +83,6 @@ def member_email(self):
     return self.member.email
 
 
-User.member_email = property(member_email)
+User.member__email = property(member_email)
 
-User.EMAIL_FIELD = 'member_email'
+User.EMAIL_FIELD = 'member__email'
