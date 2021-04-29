@@ -434,7 +434,7 @@ STYLE_SHEET
 
   .. code-block:: python
 
-    "/static/css/personal.css"
+    "/static/juntagrico/css/personal.css"
 
 FAVICON
 ^^^^^^^
@@ -446,7 +446,7 @@ FAVICON
 
   .. code-block:: python
 
-    "/static/img/favicon.ico"
+    "/static/juntagrico/img/favicon.ico"
 
 IMAGES
 ^^^^^^
@@ -456,15 +456,15 @@ IMAGES
 
   .. code-block:: python
 
-    {'status_100': '/static/img/status_100.png',
-        'status_75': '/static/img/status_75.png',
-        'status_50': '/static/img/status_50.png',
-        'status_25': '/static/img/status_25.png',
-        'status_0': '/static/img/status_0.png',
-        'single_full': '/static/img/single_full.png',
-        'single_empty': '/static/img/single_empty.png',
-        'single_core': '/static/img/single_core.png',
-        'core': '/static/img/core.png'}
+    {'status_100': '/static/juntagrico/img/status_100.png',
+        'status_75': '/static/juntagrico/img/status_75.png',
+        'status_50': '/static/juntagrico/img/status_50.png',
+        'status_25': '/static/juntagrico/img/status_25.png',
+        'status_0': '/static/juntagrico/img/status_0.png',
+        'single_full': '/static/juntagrico/img/single_full.png',
+        'single_empty': '/static/juntagrico/img/single_empty.png',
+        'single_core': '/static/juntagrico/img/single_core.png',
+        'core': '/static/juntagrico/img/core.png'}
 
 BOOTSTRAP
 ^^^^^^^^^
@@ -476,7 +476,7 @@ BOOTSTRAP
 
   .. code-block:: python
 
-    "/static/external/bootstrap-3.3.1/css/bootstrap.min.css"
+    "/static/juntagrico/external/bootstrap-3.3.1/css/bootstrap.min.css"
 
 
 Email

@@ -136,7 +136,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
 
 DJRICHTEXTFIELD_CONFIG = {
-    'js': ['/static/external/tinymce/tinymce.min.js'],
+    'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
     'init_template': 'djrichtextfield/init/tinymce.js',
     'settings': {
         'menubar': False,

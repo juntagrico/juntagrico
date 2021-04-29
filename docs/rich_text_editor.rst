@@ -20,7 +20,7 @@ To enable the rich text editor you have to do the following:
     .. code-block:: python
 
         DJRICHTEXTFIELD_CONFIG = {
-            'js': ['/static/external/tinymce/tinymce.min.js'],
+            'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
             'init_template': 'djrichtextfield/init/tinymce.js',
             'settings': {
                 'menubar': False,
