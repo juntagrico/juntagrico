@@ -38,3 +38,4 @@ Fixes
 * Fix in member user relation to prevent members without an user
 * Fix JobExtra(Type) labels in admin
 * Take remaining core assignments into account in assignment widget
+* Depot list overview generation date is now properly placed
