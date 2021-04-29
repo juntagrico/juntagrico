@@ -29,6 +29,7 @@ Features & Improvements
     * Moved to BigAutofield for ids
     * Upgraded tynimce to version 5.7.1
     * template tags are now unde juntagrico. For example former ``{% load config %}`` becomes ``{% load juntagrico.config %}``
+    * all juntagrico static files are now under ''static/juntagrico''
 
 Fixes
 ^^^^^
