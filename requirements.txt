@@ -3,6 +3,7 @@ django-admin-sortable2==1.0
 django-crispy-forms==1.11.2
 django-impersonate==1.7.3
 django-polymorphic==3.0.0
+django-richtextfield==1.6.1
 icalendar==4.0.7
 schwifty==2021.1.0
 xhtml2pdf==0.2.4 # rq.filter: !=0.2.5

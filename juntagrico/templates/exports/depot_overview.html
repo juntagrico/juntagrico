@@ -12,7 +12,7 @@
 
 <body>
 {% for weekday_name, weekday_id in weekdays.items %}
-<div id="header_content">
+<div id="header_content" style="text-align:right">
     {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
 </div>
     <h2 style="font-size: 18px;">{{ weekday_name }}</h2>
@@ -21,7 +21,7 @@
         <td></td>
         {% for product in products %}
             <th colspan="{{ product.sizes_for_depot_list|count }}" class="top-border {% if forloop.first %}left-border{% endif %} right-border">{{ product.name }}<br/><span
-                    style="font-size:11px">{{ product.description }}</span></th>
+                    style="font-size:11px">{{ product.description|safe }}</span></th>
         {% endfor %}
     </tr>
     <tr>
