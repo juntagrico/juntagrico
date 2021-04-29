@@ -19,6 +19,7 @@ Features & Improvements
     * Added special role for notification on depot list generation
     * Added value field for shares
     * Job duration is now a floating point value
+    * Text fields can now contain html code
     * Deactivated subscription can only be edited if the user has the can_change_deactivated_subscriptions permission
     * Past jobs can only be edited if the user has the can_edit_past_jobs permission
     * Depot has now a special field for access information
@@ -27,7 +28,8 @@ Features & Improvements
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
     * Menu dict method eliminated for easier view creation and performance improvements
     * Moved to BigAutofield for ids
-    * Upgraded tynimce to version 5.7.1
+    * Upgraded TyniMCE to version 5.7.1
+    * Added possibility to enable rich text fields in description fields for configuration see :ref:`Rich Text Editor`
     * template tags are now unde juntagrico. For example former ``{% load config %}`` becomes ``{% load juntagrico.config %}``
 
 Fixes

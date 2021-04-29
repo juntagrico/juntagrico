@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load juntagrico.common %}
 {% load juntagrico.config %}
 {% block styles %}
     <link rel="stylesheet" href="/static/external/leaflet/leaflet.css" />
@@ -45,7 +46,7 @@
                 {% trans "Beschreibung" %}
             </div>
             <div class="col-md-9">
-                {{ depot.description|linebreaksbr|urlize }}
+                {{ depot.description|richtext|safe }}
             </div>
         </div>
     {% endif %}
@@ -55,7 +56,7 @@
                 {% trans "Zugangsbeschreibung" %}
             </div>
             <div class="col-md-9">
-                {{ depot.access_information|linebreaksbr|urlize }}
+                {{ depot.access_information|richtext|safe }}
             </div>
         </div>
     {% endif %}
