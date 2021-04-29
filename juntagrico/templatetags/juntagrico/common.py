@@ -1,4 +1,6 @@
 from django import template
+from django.conf import settings
+from django.template.defaultfilters import urlize, linebreaksbr
 
 from juntagrico import version
 from juntagrico.dao.activityareadao import ActivityAreaDao
@@ -78,3 +80,11 @@ def area_admin(request):
 @register.simple_tag
 def get_version():
     return version
+
+
+@register.filter
+def richtext(value):
+    if 'djrichtextfield' not in settings.INSTALLED_APPS or not hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
+        value = urlize(value)
+        value = linebreaksbr(value)
+    return value

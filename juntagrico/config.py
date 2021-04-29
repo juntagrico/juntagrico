@@ -133,21 +133,21 @@ class Config:
             'm_canceled': 'mails/admin/member_canceled.txt',
         }
     )
-    style_sheet = _get_setting('STYLE_SHEET', '/static/css/personal.css')
-    favicon = _get_setting('FAVICON', '/static/img/favicon.ico')
-    bootstrap = _get_setting('BOOTSTRAP', '/static/external/bootstrap-4.3.1/css/bootstrap.min.css')
+    style_sheet = _get_setting('STYLE_SHEET', '/static/juntagrico/css/personal.css')
+    favicon = _get_setting('FAVICON', '/static/juntagrico/img/favicon.ico')
+    bootstrap = _get_setting('BOOTSTRAP', '/static/juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css')
     images = _get_setting_with_key(
         'IMAGES',
         {
-            'status_100': '/static/img/status_100.png',
-            'status_75': '/static/img/status_75.png',
-            'status_50': '/static/img/status_50.png',
-            'status_25': '/static/img/status_25.png',
-            'status_0': '/static/img/status_0.png',
-            'single_full': '/static/img/single_full.png',
-            'single_empty': '/static/img/single_empty.png',
-            'single_core': '/static/img/single_core.png',
-            'core': '/static/img/core.png'
+            'status_100': '/static/juntagrico/img/status_100.png',
+            'status_75': '/static/juntagrico/img/status_75.png',
+            'status_50': '/static/juntagrico/img/status_50.png',
+            'status_25': '/static/juntagrico/img/status_25.png',
+            'status_0': '/static/juntagrico/img/status_0.png',
+            'single_full': '/static/juntagrico/img/single_full.png',
+            'single_empty': '/static/juntagrico/img/single_empty.png',
+            'single_core': '/static/juntagrico/img/single_core.png',
+            'core': '/static/juntagrico/img/core.png'
         }
     )
 

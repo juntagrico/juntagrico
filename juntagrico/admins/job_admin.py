@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from juntagrico.admins import BaseAdmin
+from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
@@ -13,7 +13,7 @@ from juntagrico.entity.jobs import RecuringJob, JobType
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 
 
-class JobAdmin(BaseAdmin):
+class JobAdmin(RichTextAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']

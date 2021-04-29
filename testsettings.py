@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'juntagrico',
     'crispy_forms',
     'adminsortable2',
+    'djrichtextfield',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -133,3 +134,13 @@ LOCALE_PATHS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
+
+DJRICHTEXTFIELD_CONFIG = {
+    'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
+    'init_template': 'djrichtextfield/init/tinymce.js',
+    'settings': {
+        'menubar': False,
+        'plugins': 'link  lists',
+        'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+    }
+}

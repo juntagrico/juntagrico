@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
 {% endblock %}
 {% block all_page_title %}
     {% vocabulary "depot" as v_depot %}
@@ -75,7 +75,7 @@
             {% endif %}
         {% endfor %}
     </script>
-    <script type="text/javascript" src="/static/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initCreateSubscription.js">
+    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initCreateSubscription.js">
     </script>
 {% endblock %}
