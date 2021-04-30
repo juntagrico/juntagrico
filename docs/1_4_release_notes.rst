@@ -25,6 +25,7 @@ Features & Improvements
     * Deactivated subscription can only be edited if the user has the can_change_deactivated_subscriptions permission
     * Past jobs can only be edited if the user has the can_edit_past_jobs permission
     * Depot has now a special field for access information
+    * New Setting DEFAULT_DEPOTLIST_GENERATORS
 
 * Developer Features:
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
