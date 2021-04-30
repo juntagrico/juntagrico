@@ -29,5 +29,3 @@ class Command(BaseCommand):
         for generator in Config.default_depot_list_generators():
             gen = import_string(generator)
             gen(*args, **options)
-
-
