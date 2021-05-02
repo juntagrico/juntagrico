@@ -380,12 +380,26 @@ DEPOT_LIST_GENERATION_DAYS
     [0,1,2,3,4,5,6]
 
 
+
+DEFAULT_DEPOTLIST_GENERATORS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  Generators used to generate the depot list. Generators need the method signature ``generator_name(*args, **options)``
+
+  Type: List of Strings which define the different generators to be invoked
+
+  default value
+
+  .. code-block:: python
+
+    ['juntagrico.util.depot_list.default_depot_list_generation']
+
+
 Appearance
 ----------
 
 VOCABULARY
 ^^^^^^^^^^
-  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in acordance to your oganisation form.
+  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your oganisation form.
 
   Type: Dictionary
 
@@ -411,7 +425,18 @@ VOCABULARY
         'depot_pl' : 'Depots',
         'package': 'Tasche',
     }
+    
+SUB_OVERVIEW_FORMAT
+^^^^^^^^^^^^^^^^^^^
+  Template and delimiter for formatting the subscription overview.
 
+  default value
+
+  .. code-block:: python
+
+    {'delimiter': '|',
+     'format': '{product}:{size}:{type}={amount}'
+    }
 
 STYLE_SHEET
 ^^^^^^^^^^^
@@ -423,7 +448,7 @@ STYLE_SHEET
 
   .. code-block:: python
 
-    "/static/css/personal.css"
+    "/static/juntagrico/css/personal.css"
 
 FAVICON
 ^^^^^^^
@@ -435,7 +460,7 @@ FAVICON
 
   .. code-block:: python
 
-    "/static/img/favicon.ico"
+    "/static/juntagrico/img/favicon.ico"
 
 IMAGES
 ^^^^^^
@@ -445,15 +470,15 @@ IMAGES
 
   .. code-block:: python
 
-    {'status_100': '/static/img/status_100.png',
-        'status_75': '/static/img/status_75.png',
-        'status_50': '/static/img/status_50.png',
-        'status_25': '/static/img/status_25.png',
-        'status_0': '/static/img/status_0.png',
-        'single_full': '/static/img/single_full.png',
-        'single_empty': '/static/img/single_empty.png',
-        'single_core': '/static/img/single_core.png',
-        'core': '/static/img/core.png'}
+    {'status_100': '/static/juntagrico/img/status_100.png',
+        'status_75': '/static/juntagrico/img/status_75.png',
+        'status_50': '/static/juntagrico/img/status_50.png',
+        'status_25': '/static/juntagrico/img/status_25.png',
+        'status_0': '/static/juntagrico/img/status_0.png',
+        'single_full': '/static/juntagrico/img/single_full.png',
+        'single_empty': '/static/juntagrico/img/single_empty.png',
+        'single_core': '/static/juntagrico/img/single_core.png',
+        'core': '/static/juntagrico/img/core.png'}
 
 BOOTSTRAP
 ^^^^^^^^^
@@ -465,7 +490,7 @@ BOOTSTRAP
 
   .. code-block:: python
 
-    "/static/external/bootstrap-3.3.1/css/bootstrap.min.css"
+    "/static/juntagrico/external/bootstrap-3.3.1/css/bootstrap.min.css"
 
 
 Email
@@ -570,7 +595,6 @@ COOKIE_CONSENT
      'link_text': _('Hier findest du mehr zum Thema'),
      'url': '/my/cookies'
     }
-
 
 Demo Settings
 -------------

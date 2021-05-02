@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "member_pl" as v_member_pl %}
@@ -76,11 +76,11 @@
                 {% for member in members %}
                     <tr>
                         <td>
-                            {% if operation_group %}
+                            {% if perms.juntagrico.is_operations_group %}
                                 <a href="/impersonate/{{ member.user.id }}" target="__blank">
                                 {% endif %}
                                 {{ member.first_name }} {{ member.last_name }}
-                                {% if operation_group %}
+                                {% if perms.juntagrico.is_operations_group %}
                                 </a>
                             {% endif %}
                         </td>
@@ -109,7 +109,7 @@
                         </td>
                         <td>
                             {% if member.subscription_current != None and member.subscription_current.active %}
-                                {{ member.subscription_current.overview }}
+                                {{ member.subscription_current.size }}
                             {% else %}
                                 Kein {% vocabulary "subscription" %}
                             {% endif %}
@@ -123,8 +123,8 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js">
+    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMembers.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initMembers.js">
     </script>
 {% endblock %}

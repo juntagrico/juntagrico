@@ -1,4 +1,5 @@
 import hashlib
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -31,7 +32,7 @@ class Member(JuntagricoBaseModel):
     # user class is only used for logins, permissions, and other builtin django stuff
     # all user information should be stored in the Member model
     user = models.OneToOneField(
-        User, related_name='member', null=True, blank=True, on_delete=models.CASCADE)
+        User, related_name='member', on_delete=models.CASCADE)
 
     first_name = models.CharField(_('Vorname'), max_length=30)
     last_name = models.CharField(_('Nachname'), max_length=30)
@@ -73,6 +74,29 @@ class Member(JuntagricoBaseModel):
         """ :return: shares that have been paid by member and not cancelled AND paid back yet
         """
         return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
+
+    def active_shares_for_date(self, date=timezone.now):
+        return self.share_set.filter(paid_date__lte=date).filter(Q(payback_date__isnull=True) | Q(payback_date__gte=date))
+
+    @property
+    def active_share_years(self):
+        """ :return: list of years spanning member's first to last active share in the past
+        """
+        shares = self.share_set.filter(paid_date__isnull=False).order_by('paid_date')
+        years = []
+        if shares:
+            first_share_date = timezone.now().date()
+            last_share_date = date.min
+            for share in shares:
+                first_share_date = min(first_share_date, share.paid_date)
+                if share.payback_date:
+                    last_share_date = max(last_share_date, share.payback_date)
+                else:
+                    last_share_date = timezone.now().date()
+                last_share_date = max(last_share_date, first_share_date)
+            years = list(range(first_share_date.year, last_share_date.year + 1))
+            years = [y for y in years if y <= timezone.now().year]
+        return years
 
     @property
     def active_shares_count(self):
@@ -154,17 +178,15 @@ class Member(JuntagricoBaseModel):
         check_member_consistency(self)
 
     @classmethod
-    def create(cls, sender, instance, created, **kwds):
+    def create(cls, sender, instance, **kwds):
         '''
         Callback to create corresponding user when new member is created.
         '''
-        if created and instance.user is None:
-            username = make_username(instance.first_name, instance.last_name)
-            user = User(username=username)
-            user.save()
-            user = User.objects.get(username=username)
+        if getattr(instance, 'user', None) is None:
+            username = make_username(
+                instance.first_name, instance.last_name)
+            user, created = User.objects.get_or_create(username=username)
             instance.user = user
-            instance.save()
 
     @classmethod
     def post_delete(cls, sender, instance, **kwds):

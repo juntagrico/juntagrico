@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {{ area.name }}
@@ -12,7 +13,7 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-9">
-            {{ area.description|linebreaksbr|urlize }}
+            {{ area.description|richtext|safe }}
         </div>
     </div>
     <div class="row mb-4">
@@ -60,6 +61,6 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initArea.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initArea.js">
     </script>
 {% endblock %}

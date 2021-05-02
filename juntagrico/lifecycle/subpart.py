@@ -1,5 +1,5 @@
-from django.utils.translation import gettext as _
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 from juntagrico.signals import sub_part_activated, sub_part_deactivated
 from juntagrico.util.lifecycle import handle_activated_deactivated

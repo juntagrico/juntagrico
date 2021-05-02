@@ -26,3 +26,8 @@ class ShareTests(JuntagricoTestCase):
         share.save()
         self.assertGet(reverse('share-payout', args=[share.pk]), 302)
         self.assertEqual(self.member2.active_shares.count(), 0)
+
+    def testShareCertificate(self):
+        self.client.force_login(self.member.user)
+        response = self.client.get(reverse('share-certificate') + '?year=2017')
+        self.assertEqual(response['content-type'], 'application/pdf')

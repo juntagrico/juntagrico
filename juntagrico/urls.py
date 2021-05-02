@@ -44,6 +44,7 @@ urlpatterns = [
     path('my/cancel/membership', juntagrico.cancel_membership, name='cancel-membership'),
     # /my/share
     path('my/share/manage/', juntagrico_subscription.manage_shares, name='manage-shares'),
+    path('my/share/certificate', juntagrico_subscription.share_certificate, name='share-certificate'),
     path('my/share/cancel/<int:share_id>/', juntagrico_subscription.cancel_share, name='share-cancel'),
     path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),
     # /my/subscription
@@ -89,6 +90,7 @@ urlpatterns = [
 
     # /depot
     path('my/depot/<int:depot_id>/', juntagrico.depot, name='depot'),
+    path('my/depot/', juntagrico.depot_landing, name='depot-landing'),
 
     # /deliveries
     path('my/deliveries', juntagrico.deliveries, name='deliveries'),

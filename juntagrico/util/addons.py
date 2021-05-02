@@ -11,6 +11,7 @@ class AddonsConfig:
     def __init__(self):
         self._admin_menus = []
         self._admin_subscription_menus = []
+        self._show_admin_menu_methods = []
         self._user_menus = []
         self._sub_overview = []
         self._sub_change = []
@@ -23,6 +24,15 @@ class AddonsConfig:
 
     def get_admin_menus(self):
         return self._admin_menus
+
+    def register_show_admin_menu_method(self, method):
+        self._show_admin_menu_methods.append(method)
+
+    def show_admin_menu(self, user):
+        result = False
+        for method in self._show_admin_menu_methods:
+            result = result or method(user)
+        return result
 
     def register_user_menu(self, template):
         self._user_menus.append(template)

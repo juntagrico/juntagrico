@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 var email_string = "{% trans "E-Mail senden" %}";
 var send_string = "{% trans "senden" %}";
 var email_single_string = "{% trans "E-Mail an dieses" %}";

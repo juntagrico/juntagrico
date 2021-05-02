@@ -4,7 +4,6 @@ from django.utils import timezone
 
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType, ExtraSubscription
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
@@ -25,6 +24,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_depots()
         self.set_up_sub_types()
         self.set_up_sub()
+        self.set_up_extra_sub_types()
         self.set_up_extra_sub()
         self.set_up_mail_template()
         self.set_up_deliveries()
@@ -192,13 +192,11 @@ class JuntagricoTestCase(TestCase):
         depots
         """
         depot_data = {
-            'code': 'c1',
             'name': 'depot',
             'contact': self.member,
             'weekday': 1}
         self.depot = Depot.objects.create(**depot_data)
         depot_data = {
-            'code': 'c2',
             'name': 'depot2',
             'contact': self.member,
             'weekday': 1}
@@ -272,20 +270,44 @@ class JuntagricoTestCase(TestCase):
         self.sub2.save()
         SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
 
+    def set_up_extra_sub_types(self):
+        """
+        subscription product, size and types
+        """
+        extrasub_product_data = {
+            'name': 'extraproduct',
+            'is_extra': True
+        }
+        self.extrasub_product = SubscriptionProduct.objects.create(**extrasub_product_data)
+        extrasub_size_data = {
+            'name': 'extrasub_name',
+            'long_name': 'sub_long_name',
+            'units': 1,
+            'visible': True,
+            'depot_list': True,
+            'product': self.extrasub_product,
+            'description': 'sub_desc'
+        }
+        self.extrasub_size = SubscriptionSize.objects.create(**extrasub_size_data)
+        extrasub_type_data = {
+            'name': 'extrasub_type_name',
+            'long_name': 'sub_type_long_name',
+            'size': self.extrasub_size,
+            'shares': 0,
+            'visible': True,
+            'required_assignments': 10,
+            'price': 1000,
+            'description': 'sub_type_desc'}
+        self.extrasub_type = SubscriptionType.objects.create(**extrasub_type_data)
+
     def set_up_extra_sub(self):
         '''
         extra subscription
         '''
-        esub_cat_data = {'name': 'Extrasub_Category'}
-        self.esub_cat = ExtraSubscriptionCategory.objects.create(**esub_cat_data)
-        esub_type_data = {'name': 'Extrasub_Type',
-                          'description': 'desc',
-                          'category': self.esub_cat}
-        self.esub_type = ExtraSubscriptionType.objects.create(**esub_type_data)
-        esub_data = {'main_subscription': self.sub2,
-                     'type': self.esub_type}
-        self.esub = ExtraSubscription.objects.create(**esub_data)
-        self.esub2 = ExtraSubscription.objects.create(**esub_data)
+        esub_data = {'subscription': self.sub2,
+                     'type': self.extrasub_type}
+        self.esub = SubscriptionPart.objects.create(**esub_data)
+        self.esub2 = SubscriptionPart.objects.create(**esub_data)
 
     def set_up_mail_template(self):
         mail_template_data = {'name': 'MailTemplate'}

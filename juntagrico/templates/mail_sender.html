@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Mails verschicken" %}
@@ -11,6 +12,7 @@
     {% vocabulary "co_member_pl" as v_co_member_pl %}
     {% vocabulary "share" as v_share %}
     {% config "enable_shares" as enable_shares %}
+    {% area_admin request as area_admin %}
     <form action="{% url mail_url %}" method="POST"class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group row">
@@ -191,10 +193,10 @@
     </form>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/attachment_appender.js">
+    <script type="text/javascript" src="/static/juntagrico/external/attachment_appender.js">
     </script>
-    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js">
+    <script type="text/javascript" src="/static/juntagrico/external/tinymce/tinymce.min.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMailer.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initMailer.js">
     </script>
 {% endblock %}

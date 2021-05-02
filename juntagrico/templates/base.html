@@ -1,5 +1,12 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% load juntagrico.menu %}
+{% depot_admin request as qs_depot_admin %}
+{% area_admin request as qs_area_admin %}
+{% messages request as l_messages %}
+{% show_admin_menu request as b_show_admin_menu %}
+
 <!DOCTYPE html>
 <html lang="de">
     <head>
@@ -10,18 +17,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="shortcut icon" href="{% config "favicon" %}"/>
         <link href="{% config "bootstrap" %}" rel="stylesheet"/>
-        <link href="/static/external/mid/css/materialdesignicons.min.css" rel="stylesheet"/>
-        <link href="/static/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet"/>
-        <link href="/static/external/font-awesome-5.3.1/css/all.min.css" rel="stylesheet"/>
-        <link href="/static/external/cc/cookieconsent.min.css" rel="stylesheet"/>
-        <link href="/static/external/datatables.min.css" rel="stylesheet"/>
+        <link href="/static/juntagrico/external/mid/css/materialdesignicons.min.css" rel="stylesheet"/>
+        <link href="/static/juntagrico/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet"/>
+        <link href="/static/juntagrico/external/font-awesome-5.3.1/css/all.min.css" rel="stylesheet"/>
+        <link href="/static/juntagrico/external/cc/cookieconsent.min.css" rel="stylesheet"/>
+        <link href="/static/juntagrico/external/datatables.min.css" rel="stylesheet"/>
         {% block styles %}
         {% endblock %}
-        <link href="/static/css/juntagrico.css" rel="stylesheet"/>
-        <link href="/static/css/slider.css" rel="stylesheet"/>
+        <link href="/static/juntagrico/css/juntagrico.css" rel="stylesheet"/>
+        <link href="/static/juntagrico/css/slider.css" rel="stylesheet"/>
         <link href="{% config "style_sheet" %}" rel="stylesheet"/>
     </head>
-    <body id="{{ view_name }}" class="{% block body_extra_classes %}{% endblock %}">
+    <body id="{{ request|view_name }}" class="{% block body_extra_classes %}{% endblock %}">
         <div class="page-container container">
             <div class="bordertop">
             </div>
@@ -43,7 +50,7 @@
 
                       <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             {% include "menu/user_menu.html" %}
-                            {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
+                            {% if b_show_admin_menu %}
                                 {% include "menu/admin_menu.html" %}
                             {% endif %}
                       </div>
@@ -58,11 +65,11 @@
                     </a>
                 </div>
             </div>
-            {% if user.is_impersonate %}
+            {% if request.user.is_impersonate %}
                 <div class="impersonate-row row">
                     <div class="col-md-12">
                         <div class="alert alert-warning">
-                            {% blocktrans trimmed with fn=user.member.first_name ln=user.member.last_name %}
+                            {% blocktrans trimmed with fn=request.user.member.first_name ln=request.user.member.last_name %}
                             Du imitierst derzeit den Benutzer “{{ fn }} {{ ln }}”.
                             {% endblocktrans %}
                             <a href="/impersonate/stop">
@@ -87,7 +94,7 @@
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
                         {% include "menu/user_menu.html" %}
-                        {% if depot_admin|length > 0 or area_admin|length > 0 or operation_group %}
+                        {% if b_show_admin_menu %}
                             {% include "menu/admin_menu.html" %}
                         {% endif %}
                         {% include "widgets/assignements.html" %}
@@ -96,7 +103,7 @@
                     <div class="content-container col-md-9 col-sm-12">
                         <div class="messages row">
                             <div class="col-md-12">
-                                {% for message in messages %}
+                                {% for message in l_messages %}
                                     {{ message }}
                                 {% endfor %}
                             </div>
@@ -119,15 +126,15 @@
                 {% endblock %}
             </div>
         </div>
-        <script type="text/javascript" src="/static/external/jquery-3.3.1/jquery-3.3.1.min.js">
+        <script type="text/javascript" src="/static/juntagrico/external/jquery-3.3.1/jquery-3.3.1.min.js">
         </script>
-        <script type="text/javascript" src="/static/external/bootstrap-4.3.1/js/bootstrap.bundle.min.js">
+        <script type="text/javascript" src="/static/juntagrico/external/bootstrap-4.3.1/js/bootstrap.bundle.min.js">
         </script>
         <script type="text/javascript" src="{% url 'js-i18n' %}">
         </script>
-        <script type="text/javascript" src="/static/js/juntagrico.js">
+        <script type="text/javascript" src="/static/juntagrico/js/juntagrico.js">
         </script>
-        <script src="/static/external/cc/cookieconsent.min.js" data-cfasync="false"></script>
+        <script src="/static/juntagrico/external/cc/cookieconsent.min.js" data-cfasync="false"></script>
         <script>
         window.cookieconsent.initialise({
             "content": {

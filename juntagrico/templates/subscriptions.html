@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
@@ -70,11 +70,11 @@
                 {% for subscription in subscriptions %}
                     <tr>
                         <td>
-                            {% if operation_group %}
+                            {% if perms.juntagrico.is_operations_group %}
                                 <a href="/impersonate/{{ subscription.primary_member.user.id }}"target="__blank">
                                 {% endif %}
                                 {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
-                                {% if operation_group %}
+                                {% if perms.juntagrico.is_operations_group %}
                                 </a>
                             {% endif %}
                         </td>
@@ -85,7 +85,7 @@
                             {{ subscription.depot.name }}
                         </td>
                         <td>
-                            {{ subscription.overview }}
+                            {{ subscription }}
                         </td>
                         <td>
                             {{ subscription.activation_date|date:"Y-m-d" }}
@@ -107,8 +107,8 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js">
+    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initSubscriptions.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initSubscriptions.js">
     </script>
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends "management_lists/man_list_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block page_title %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
     <h3>
@@ -24,7 +24,7 @@
                 <tr>
                     <td>
                         <a href="{% url 'admin:juntagrico_subscription_change' element.subscription.id %}">
-                            {{ element.subscription.overview }}
+                            {{ element.subscription }}
                         </a>
                     </td>
                     <td>

@@ -1,6 +1,6 @@
-{% load depot_extras %}
+{% load juntagrico.depot_extras %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% vocabulary "depot" as v_depot %}
 <html>
 <head>
@@ -27,13 +27,6 @@
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
                     <td class="top-border left-border">{{ subscription|get_types_by_size:size|count|default:'' }}</td>
-                {% empty %}
-                    <td class="top-border left-border"></td>
-                {% endfor %}
-            {% endfor %}
-            {% for category in extra_sub_categories %}
-                {% for type in category.types_for_depot_list %}
-                    <td class="top-border left-border">{{ subscription|get_extra_subs_by_type:type|count|default:'' }}</td>
                 {% empty %}
                     <td class="top-border left-border"></td>
                 {% endfor %}

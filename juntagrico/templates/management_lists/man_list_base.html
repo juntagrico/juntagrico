@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block styles %}
-    <link href="/static/external/datepicker/datepicker.min.css" rel="stylesheet"/>
+    <link href="/static/juntagrico/external/datepicker/datepicker.min.css" rel="stylesheet"/>
 {% endblock %}
 {% block content %}
     {% config "enable_shares" as enable_shares %}
@@ -68,11 +68,11 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js">
+    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
     </script>
-    <script type="text/javascript" src="/static/external/datepicker/datepicker.min.js">
+    <script type="text/javascript" src="/static/juntagrico/external/datepicker/datepicker.min.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initManList.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initManList.js">
     </script>
     {% block extrascripts %}
     {% endblock %}

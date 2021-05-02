@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
 {% endblock %}
 {% block page_title %}
     {% vocabulary "depot" as v_depot %}
@@ -48,7 +48,7 @@
                 <div class="controls col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.code }}">
+                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}">
                                 {{ depot.name }}
                             </option>
                         {% endfor %}
@@ -86,7 +86,7 @@
                     addr_location: '{{ depot.addr_location }}',
                     latitude: '{{ depot.latitude }}',
                     longitude: '{{ depot.longitude }}',
-                    code: '{{ depot.code }}'
+                    code: '{{ depot.sort_order }}'
                     });
                 {% endif %}
             {% endfor %}
@@ -94,7 +94,7 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js"data-main="/static/js/initChangeDepot.js">
+    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initChangeDepot.js">
     </script>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
 {% block page_title %}
     <h3>
         {% trans "Zusatzabos ändern" %}
@@ -30,7 +31,7 @@
                     {% for extra in extras %}
                         <tr>
                             <td>
-                                {{ extra.type.name }}
+                                {{ extra.type.display_name }}
                             </td>
                             <td>
                                 {{ extra.state_text }}
@@ -50,35 +51,12 @@
         </div>
     {% endif %}
 {% if extra_order_allowed %}
-    <div class="row mt-3 mb-3">
-        <b class="col-md-12">{% trans "Zusatzabos bestellen" %}</b>
+    <div class="row mt-5 mb-3">
+        <h4>{% trans "Zusatzabos bestellen" %}</h4>
     </div>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group row">
-            {% for type in types %}
-                <div class="col-md-3">
-                    <input type="number" name="extra{{ type.id }}" class="form-control" value="0" min="0"/>
-                </div>
-                <div class="col-md-9">
-                    {{ type.name }}
-                    <br/>
-                    {{ type.description|linebreaksbr|urlize }}
-                    <br/>
-                    {% for period in type.periods.all %}
-                        {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
-                        {{ period.price }} {% config "currency" %}
-                        <br/>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-        <div class="form-actions ">
-            <button type="submit" class="btn btn-success">
-                {% trans "Zusatzabos bestellen" %}
-            </button>
-        </div>
-    </form>
+
+    {% crispy form %}
+
 {% else %}
     <div>
         <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Zusatzabos bestellt werden.{% endblocktrans %}</i>
@@ -88,8 +66,8 @@
     </script>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/bootstrap-input-spinner.js">
+    <script type="text/javascript" src="/static/juntagrico/external/bootstrap-input-spinner.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initChangeExtra.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initChangeExtra.js">
     </script>
 {% endblock %}

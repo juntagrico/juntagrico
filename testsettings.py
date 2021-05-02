@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'impersonate',
     'juntagrico',
     'crispy_forms',
+    'adminsortable2',
+    'djrichtextfield',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -90,6 +92,12 @@ DATE_INPUT_FORMATS = ['%d.%m.%Y', ]
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+
+class InvalidTemplateVariable(str):
+    def __mod__(self, other):
+        raise NameError(f"In template, undefined variable or unknown value for: '{other}'")
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -110,6 +118,7 @@ TEMPLATES = [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader'
             ],
+            'string_if_invalid': InvalidTemplateVariable("%s"),
             'debug': True
         },
     },
@@ -125,3 +134,13 @@ LOCALE_PATHS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
+
+DJRICHTEXTFIELD_CONFIG = {
+    'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
+    'init_template': 'djrichtextfield/init/tinymce.js',
+    'settings': {
+        'menubar': False,
+        'plugins': 'link  lists',
+        'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+    }
+}

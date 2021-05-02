@@ -1,6 +1,12 @@
 {% load i18n %}
-{% load config %}
-{% load common %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% load juntagrico.menu %}
+{% has_extra_subscriptions as b_has_extra_subscriptions %}
+{% depot_admin request as qs_depot_admin %}
+{% area_admin request as qs_area_admin %}
+{% admin_menus as l_admin_menus %}
+{% admin_subscription_menus as l_admin_subscription_menus %}
 {% config "enable_shares" as c_enable_shares %}
 {% vocabulary "subscription" as v_subscription %}
 {% vocabulary "subscription_pl" as v_subscription_pl %}
@@ -14,14 +20,14 @@
     {% trans "Administration" %}
 </h5>
 <ul class="admin-menu nav flex-column">
-    {% if operation_group or area_admin %}
+    {% if request.user.is_staff %}
         <li class="nav-item">
             <a class="nav-link" href="/admin">
                 {% trans "Datenverwaltung" %}
             </a>
         </li>
     {% endif %}
-    {% if operation_group or can_filter_subscriptions%}
+    {% if perms.juntagrico.change_subscription or perms.juntagrico.can_filter_subscriptions%}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#subman">
                 {% blocktrans %}{{ v_subscription_pl }}{% endblocktrans %}
@@ -30,56 +36,56 @@
             </a>
             <div class="collapse" id="subman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if can_filter_subscriptions %}
+                    {% if perms.juntagrico.can_filter_subscriptions or perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'filter-subs' %}">
                                 {% blocktrans %}Aktive{% endblocktrans %}
                             </a>
                         </li>
                     {% endif %}
-                    {% if operation_group %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
                                 {% trans "Warteliste" %}
                             </a>
                         </li>
                     {% endif %}
-                    {% if operation_group %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-changelist' %}">
                                 {% trans "Änderungsliste" %}
                             </a>
                         </li>
                     {% endif %}
-                    {% if operation_group %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
                                 {% trans "Kündigungsliste" %}
                             </a>
                         </li>
                     {% endif %}
-                    {% if operation_group %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'future' %}">
                                 {% trans "Zukunftsblick" %}
                             </a>
                         </li>
                     {% endif %}
-                    {% if operation_group %}
+                    {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-inconsistencies' %}">
                                 {% blocktrans %}Inkonsistenzen{% endblocktrans %}
                             </a>
                         </li>
                     {% endif %}
-                    {% for menu in admin_subscription_menus %}
+                    {% for menu in l_admin_subscription_menus %}
                         {% include menu %}
                     {% endfor %}
                 </ul>
             </div>
         </li>
     {% endif %}
-    {% if operation_group and has_extra_subscriptions %}
+    {% if perms.juntagrico.change_subscriptionpart and b_has_extra_subscriptions %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#extrasubman">
                 {% blocktrans %}Zusatzabos{% endblocktrans %}
@@ -88,25 +94,25 @@
             </a>
             <div class="collapse" id="extrasubman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if operation_group and has_extra_subscriptions %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
-                                {% trans "Warteliste" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if operation_group and has_extra_subscriptions %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-mgmt-extra-canceledlist' %}">
-                                {% trans "Kündigungsliste" %}
-                            </a>
-                        </li>
-                    {% endif %}
+                {% if perms.juntagrico.change_subscriptionpart %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
+                            {% trans "Warteliste" %}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.juntagrico.change_subscriptionpart %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'sub-mgmt-extra-canceledlist' %}">
+                            {% trans "Kündigungsliste" %}
+                        </a>
+                    </li>
+                {% endif %}
                 </ul>
             </div>
         </li>
     {% endif %}
-    {% if operation_group or can_filter_members %}
+    {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#memberman">
                 {% blocktrans %}{{ v_member_pl }}{% endblocktrans %}
@@ -115,7 +121,7 @@
             </a>
             <div class="collapse" id="memberman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if can_filter_members%}
+                    {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'filters-active' %}">
                                 {% blocktrans %}Aktive{% endblocktrans %}
@@ -127,7 +133,7 @@
                             </a>
                         </li>
                     {% endif %}
-                    {% if operation_group %}
+                    {% if perms.juntagrico.change_member %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'member-mgmt-canceledlist' %}">
                                  {% blocktrans %}Kündigungsliste{% endblocktrans %}
@@ -138,7 +144,7 @@
             </div>
         </li>
     {% endif %}
-    {% if operation_group%}
+    {% if perms.juntagrico.change_assingment %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#assman">
                 {% blocktrans %}{{ v_assignment_pl }}{% endblocktrans %}
@@ -147,18 +153,16 @@
             </a>
             <div class="collapse" id="assman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if operation_group%}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'filter-assignments' %}">
-                                 {% blocktrans %}Übersicht{% endblocktrans %}
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'filter-assignments' %}">
+                             {% blocktrans %}Übersicht{% endblocktrans %}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>
     {% endif %}
-    {% if operation_group and c_enable_shares %}
+    {% if perms.juntagrico.change_share and c_enable_shares %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#shareman">
                 {% blocktrans %}{{ v_share_pl }}{% endblocktrans %}
@@ -167,19 +171,16 @@
             </a>
             <div class="collapse" id="shareman">
                 <ul class="nav flex-column subadmin-menu">
-
-                    {% if operation_group%}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'share-mgmt-canceledlist' %}">
-                                 {% blocktrans %}Kündigungsliste{% endblocktrans %}
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'share-mgmt-canceledlist' %}">
+                             {% blocktrans %}Kündigungsliste{% endblocktrans %}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>
     {% endif %}
-    {% if depot_admin|length > 0 %}
+    {% if qs_depot_admin|length > 0 %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#depotman">
                 {% blocktrans %}{{ v_depot_pl }}{% endblocktrans %}
@@ -188,7 +189,7 @@
             </a>
             <div class="collapse" id="depotman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% for depot in depot_admin %}
+                    {% for depot in qs_depot_admin %}
                         <li class="nav-item inline">
                             <a class="nav-link inline" href="{%  url 'filter-depot' depot.id %}">
                                 {% vocabulary "member_pl" %}
@@ -203,7 +204,7 @@
             </div>
         </li>
     {% endif %}
-    {% if area_admin|length > 0 %}
+    {% if qs_area_admin|length > 0 %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#areaman">
                 {% trans "Tätigkeitsbereiche" %}
@@ -212,7 +213,7 @@
             </a>
             <div class="collapse" id="areaman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% for area in area_admin %}
+                    {% for area in qs_area_admin %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'filter-area' area.id %}">
                                 {% vocabulary "member_pl" %} {% trans "in" %} {{ area.name }}
@@ -230,7 +231,7 @@
             </a>
         </li>
     {% endif %}
-    {% if operation_group %}
+    {% if perms.juntagrico.can_view_lists %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#lists">
                 {% trans "Listen" %}
@@ -239,46 +240,38 @@
             </a>
             <div class="collapse" id="lists">
                 <ul class="nav flex-column admin-menu subadmin-menu">
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'lists-depot-amountoverview' %}">
-                                {% trans "Mengen Übersicht" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'lists-depotlist' %}">
-                                {% vocabulary "depot" %}-{% trans "Listen" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if operation_group %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'lists-depot-overview' %}">
-                                {% vocabulary "depot" %} {% trans "Übersicht" %}
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lists-depot-amountoverview' %}">
+                            {% trans "Mengen Übersicht" %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lists-depotlist' %}">
+                            {% vocabulary "depot" %}-{% trans "Listen" %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lists-depot-overview' %}">
+                            {% vocabulary "depot" %} {% trans "Übersicht" %}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>
     {% endif %}
-    {% if operation_group %}
+    {% if perms.juntagrico.can_view_exports %}
         <li class="nav-item">
             <a class="nav-link" href="{% url 'export' %}">
                 {% trans "Exporte" %}
             </a>
         </li>
     {% endif %}
-    {% for menu in admin_menus %}
+    {% for menu in l_admin_menus %}
         {% include menu %}
     {% endfor %}
-    {% if operation_group %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'versions' %}">
-                {% trans "Version: " %}{% get_version %}
-            </a>
-        </li>
-    {% endif %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'versions' %}">
+            {% trans "Version: " %}{% get_version %}
+        </a>
+    </li>
 </ul>

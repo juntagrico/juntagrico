@@ -1,6 +1,6 @@
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.mailer import membernotification
 from juntagrico.dao.subscriptiondao import SubscriptionDao
+from juntagrico.mailer import membernotification
 
 
 def subscriptions_with_assignments(subscriptions):
