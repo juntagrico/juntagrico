@@ -23,7 +23,7 @@ from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.management import password_generator, cancel_share
+from juntagrico.util.management import cancel_share
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
