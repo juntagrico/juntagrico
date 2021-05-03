@@ -7,7 +7,7 @@ juntagrico relies heavily on the Django permission mechanism to customize the sy
 
 Grant Permissions
 -----------------
-Permissions are granted in the admin part of juntagrico, which in fact is the admin part of Django. To grant soeone a Permission, the persons `User` has to be edited.
+Permissions are granted in the admin part of juntagrico, which in fact is the admin part of Django. To grant soeone a Permission, the persons ``User`` has to be edited.
 You find a link to a members user instance in the member admin form.
 There you can search for a permission and add it to the user using the little right arrow next to it. Do not forget to save the user in order for the permissions to take effect.
 You can also create groups of permissions which can be assigned to single users. If you need more information on that check out the Django documentation concerning permissions.
@@ -161,7 +161,7 @@ Email Permissions
 -----------------
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the email adress specified in the setting `INFO_EMAIL` as sender in the mail form.
+Member can use the email adress specified in the setting :ref:`INFO_EMAIL` as sender in the mail form.
 
 Search Hints:
     * German: General Email
@@ -184,7 +184,7 @@ Search Hints:
 
 Dependent Permissions
 ---------------------
-In order to be able to edit some types of entites not only the `change` permission od this entity type has to be granted to a member but also
+In order to be able to edit some types of entites not only the ``change`` permission od this entity type has to be granted to a member but also
 some dependent permissions.
 
 Subscription
