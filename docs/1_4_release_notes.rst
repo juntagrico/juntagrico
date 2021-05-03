@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+1.4.1
+-----
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * Documentation on :ref:`Permissions`
+
+
 1.4.0
 -----
 Has migrations
