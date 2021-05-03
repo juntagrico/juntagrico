@@ -7,7 +7,7 @@ Release Notes
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Admin Features:
-    * Documentation on :ref:`Permissions`
+    * Documentation on :doc:`Permissions`
 
 
 1.4.0
