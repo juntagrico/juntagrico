@@ -429,25 +429,28 @@ def canceledlist(request):
                                         'management_lists/canceledlist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
-def typechangelist(request):
+@permission_required('juntagrico.change_subscriptionpart')
+def part_waitinglist(request):
     render_dict = get_changedate(request)
-    changedlist = []
-    subscriptions_list = SubscriptionDao.all_active_subscritions().filter(~q_cancelled())
-    for subscription in subscriptions_list:
-        if subscription.types_changed > 0:
-            changedlist.append(subscription)
-    return subscription_management_list(changedlist, render_dict, 'management_lists/typechangelist.html', request)
+    changedlist = SubscriptionPartDao.waiting_parts_for_active_subscriptions()
+    return subscription_management_list(changedlist, render_dict, 'management_lists/part_waitinglist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscriptionpart')
+def part_canceledlist(request):
+    render_dict = get_changedate(request)
+    changedlist = SubscriptionPartDao.waiting_parts_for_active_subscriptions()
+    return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
 def extra_waitinglist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionPartDao.waiting_extra_subs(), render_dict,
                                         'management_lists/extra_waitinglist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscriptionpart')
 def extra_canceledlist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionPartDao.canceled_extra_subs(), render_dict,

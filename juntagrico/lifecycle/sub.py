@@ -67,7 +67,7 @@ def handle_sub_canceled(sender, instance, **kwargs):
 
 
 def handle_sub_created(sender, instance, **kwargs):
-    adminnotification.subscription_created(instance)
+    pass
 
 
 def check_sub_consistency(instance):

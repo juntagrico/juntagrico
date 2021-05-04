@@ -52,15 +52,22 @@
                     {% endif %}
                     {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-mgmt-changelist' %}">
-                                {% trans "Änderungsliste" %}
+                            <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
+                                {% trans "Kündigungsliste" %}
                             </a>
                         </li>
                     {% endif %}
                     {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
-                                {% trans "Kündigungsliste" %}
+                            <a class="nav-link" href="{% url 'sub-mgmt-part-waitinglist' %}">
+                                {% trans "Bestandteile Warteliste" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscription %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sub-mgmt-part-canceledlist %}">
+                                {% trans "Bestandteile Kündigungsliste" %}
                             </a>
                         </li>
                     {% endif %}
