@@ -13,9 +13,13 @@ class ManListTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-mgmt-canceledlist'))
         self.assertGet(reverse('sub-mgmt-canceledlist'), member=self.member2, code=302)
 
-    def testSubChangeList(self):
-        self.assertGet(reverse('sub-mgmt-changelist'))
-        self.assertGet(reverse('sub-mgmt-changelist'), member=self.member2, code=302)
+    def testPartWaitingList(self):
+        self.assertGet(reverse('sub-mgmt-part-waitinglist'))
+        self.assertGet(reverse('sub-mgmt-part-waitinglist'), member=self.member2, code=302)
+
+    def testPartCanceledList(self):
+        self.assertGet(reverse('sub-mgmt-part-canceledlist'))
+        self.assertGet(reverse('sub-mgmt-part-canceledlist'), member=self.member2, code=302)
 
     def testExtraWaitingList(self):
         self.assertGet(reverse('sub-mgmt-extra-waitinglist'))
