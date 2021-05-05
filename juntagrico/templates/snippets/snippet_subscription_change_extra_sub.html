@@ -15,10 +15,6 @@
         {% endif %}
     </div>
     <div class="col-md-4">
-        {% trans "Nächstmögliches Datum" %}:
-        <br/>
-        {{ next_extra_subscription_date |date:"d.m.Y" }}
-        <br/>
         {% trans "Zukünftige Zusatz-Abos" %}:
         <br/>
         {% if not  subscription.extrasubscriptions_changed %}

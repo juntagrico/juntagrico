@@ -64,7 +64,6 @@ def subscription(request, subscription_id=None):
             'subscription': subscription,
             'co_members': subscription.co_members(member),
             'primary': subscription.primary_member.email == member.email,
-            'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
             'has_extra_subscriptions': SubscriptionProductDao.all_extra_products().count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),

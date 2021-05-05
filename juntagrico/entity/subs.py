@@ -249,17 +249,6 @@ class Subscription(Billable, SimpleStateModel):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
 
     @staticmethod
-    def next_extra_change_date():
-        month = int(time.strftime('%m'))
-        if month >= 7:
-            next_extra = datetime.date(
-                day=1, month=1, year=timezone.now().today().year + 1)
-        else:
-            next_extra = datetime.date(
-                day=1, month=7, year=timezone.now().today().year)
-        return next_extra
-
-    @staticmethod
     def next_size_change_date():
         return start_of_next_business_year()
 
