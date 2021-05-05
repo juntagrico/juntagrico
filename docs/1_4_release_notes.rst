@@ -6,7 +6,16 @@ Release Notes
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+* Member Features:
+    * Missleading extra change dates have been removed
+    * Parts can no be ordered all year round
+    * Parts can be canceled al year round
+
 * Admin Features:
+    * Subscription parts ahve now also a waitinglist and cancelled list
+    * Notifications on subscription parts are implemented
+    * Notification on share cancellation is implemented
     * Documentation on :doc:`Permissions`
 
 

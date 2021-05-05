@@ -86,14 +86,10 @@ def subscription_change(request, subscription_id):
     change an subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now().date()
-    can_change = not (temporal.cancelation_date() <= now < temporal.start_of_next_business_year())
     renderdict = {
         'subscription': subscription,
         'member': request.user.member,
-        'change_size': can_change,
         'next_cancel_date': temporal.next_cancelation_date(),
-        'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year(),
         'sub_change_addons': addons.config.get_sub_changes(),
     }
