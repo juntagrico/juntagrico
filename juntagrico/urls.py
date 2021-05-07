@@ -7,6 +7,7 @@ from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.util.auth import JuntagricoLoginView
+from juntagrico.config import Config
 
 # GUIDELINES for adding urls
 # 1. Add the url to the section that matches best and start the url as the section title says
@@ -33,7 +34,7 @@ urlpatterns = [
 
     # /accounts (password reset)
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form_cust.html',
-                                                                          email_template_name='mails/member/password_reset_email.txt'), name='password_reset'),
+                                                                          email_template_name=Config.emails('password')), name='password_reset'),
     path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done_cust.html'), name='password_reset_done'),
     path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm_cust.html'), name='password_reset_confirm'),
     path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete_cust.html'), name='password_reset_complete'),
