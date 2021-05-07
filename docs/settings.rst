@@ -380,12 +380,26 @@ DEPOT_LIST_GENERATION_DAYS
     [0,1,2,3,4,5,6]
 
 
+
+DEFAULT_DEPOTLIST_GENERATORS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  Generators used to generate the depot list. Generators need the method signature ``generator_name(*args, **options)``
+
+  Type: List of Strings which define the different generators to be invoked
+
+  default value
+
+  .. code-block:: python
+
+    ['juntagrico.util.depot_list.default_depot_list_generation']
+
+
 Appearance
 ----------
 
 VOCABULARY
 ^^^^^^^^^^
-  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in acordance to your oganisation form.
+  Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your oganisation form.
 
   Type: Dictionary
 
@@ -414,7 +428,7 @@ VOCABULARY
     
 SUB_OVERVIEW_FORMAT
 ^^^^^^^^^^^^^^^^^^^
-  Template and delimiter for the formating of the subscription overview.
+  Template and delimiter for formatting the subscription overview.
 
   default value
 
