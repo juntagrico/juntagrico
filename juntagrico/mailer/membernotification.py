@@ -41,13 +41,6 @@ def email_confirmation(member):
     ).send_to(member.email)
 
 
-def reset_password(email, password):
-    EmailSender.get_sender(
-        organisation_subject(_('Dein neues Passwort')),
-        get_email_content('password', base_dict(locals())),
-    ).send_to(email)
-
-
 def depot_changed(emails, depot):
     EmailSender.get_sender(
         organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),

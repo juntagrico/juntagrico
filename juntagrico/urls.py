@@ -1,3 +1,4 @@
+from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from juntagrico import views as juntagrico
@@ -6,6 +7,7 @@ from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.util.auth import JuntagricoLoginView
+from juntagrico.config import Config
 
 # GUIDELINES for adding urls
 # 1. Add the url to the section that matches best and start the url as the section title says
@@ -30,13 +32,19 @@ urlpatterns = [
     # logout/
     path('logout/', juntagrico.logout_view, name='logout'),
 
+    # /accounts (password reset)
+    path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form_cust.html',
+                                                                          email_template_name=Config.emails('password')), name='password_reset'),
+    path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done_cust.html'), name='password_reset_done'),
+    path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm_cust.html'), name='password_reset_confirm'),
+    path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete_cust.html'), name='password_reset_complete'),
+
     # /home
     path('my/home', juntagrico.home, name='home'),
 
     # /my (personal stuff)
     # /my/password
     path('my/password', juntagrico.change_password, name='password'),
-    path('my/newpassword', juntagrico.new_password, name='new-password'),
     # my/email
     path('my/sendconfirm', juntagrico.send_confirm, name='send-confirm'),
     # /my/membership

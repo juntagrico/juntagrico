@@ -54,11 +54,11 @@ class ProfileTests(JuntagricoTestCase):
                                               'passwordRepeat': 'password'})
 
     def testNewPassword(self):
-        self.assertGet(reverse('new-password'))
+        self.assertGet(reverse('password_reset'))
         self.assertEqual(len(mail.outbox), 0)
 
     def testNewPasswordPost(self):
-        self.assertPost(reverse('new-password'), {'username': 'email3@email.org'})
+        self.assertPost(reverse('password_reset'), {'email': 'email3@email.org'}, code=302)
         self.assertEqual(len(mail.outbox), 1)
 
     def testLogout(self):
