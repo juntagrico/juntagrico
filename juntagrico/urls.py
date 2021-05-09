@@ -115,10 +115,13 @@ urlpatterns = [
     path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
          name='sub-deactivate'),
     # /manage/subscription/part
-    path('my/subscription/part/waitinglist', juntagrico_admin.part_waitinglist, name='sub-mgmt-part-waitinglist'),
-    path('my/subscription/part/canceledlist', juntagrico_admin.part_canceledlist, name='sub-mgmt-part-canceledlist'),
-    path('my/subscription/part/activate/<int:part_id>/', juntagrico_subscription.activate_part, name='part-activate'),
-    path('my/subscription/part/deactivate/<int:part_id>/', juntagrico_subscription.deactivate_part, name='part-deactivate'),
+    path('manage/subscription/part/waitinglist', juntagrico_admin.part_waitinglist, name='sub-mgmt-part-waitinglist'),
+    path('manage/subscription/part/canceledlist', juntagrico_admin.part_canceledlist,
+         name='sub-mgmt-part-canceledlist'),
+    path('manage/subscription/part/<int:part_id>/activate/', juntagrico_subscription.activate_part,
+         name='part-activate'),
+    path('manage/subscription/part/<int:part_id>/deactivate/', juntagrico_subscription.deactivate_part,
+         name='part-deactivate'),
     # /manage/subscription/extra
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),
     path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
