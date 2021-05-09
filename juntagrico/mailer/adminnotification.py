@@ -55,7 +55,7 @@ def subparts_created(parts, subscription, **kwargs):
     ).send()
 
 
-@requires_someone_with_perm('notified_on_subscriptionpar_cancellation')
+@requires_someone_with_perm('notified_on_subscriptionpart_cancellation')
 def subpart_canceled(part, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Bestandteil gekündigt')),
