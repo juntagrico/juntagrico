@@ -513,6 +513,6 @@ def payout_share(request, share_id):
     share.save()
     member = share.member
     if member.active_shares_count == 0 and member.canceled is True:
-        member.inactive = True
+        member.deactivation_date = timezone.now().date()
         member.save()
     return return_to_previous_location(request)

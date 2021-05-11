@@ -6,8 +6,13 @@ Release Notes
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Better password reset process
 * Admin Features:
     * Documentation on :doc:`Permissions`
+* Fixes:
+    * Fix in share payout
+
 
 
 1.4.0
