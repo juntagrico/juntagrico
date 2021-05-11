@@ -6,6 +6,8 @@ Release Notes
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Added IBAN Field at membership cancellation
 * Admin Features:
     * Documentation on :doc:`Permissions`
 

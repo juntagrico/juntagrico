@@ -2,7 +2,7 @@ from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML, Div
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea
 from django.urls import reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -36,6 +36,38 @@ class PasswordForm(Form):
         if self.data['password'] != self.data['passwordRepeat']:
             raise ValidationError(_('Passwörter stimmen nicht überein'))
         return self.data['passwordRepeat']
+
+
+class MemberCancellationForm(Form):
+    message = CharField(label=_('Mitteilung'), widget=Textarea)
+    iban = CharField(label=_('IBAN')
+                     , help_text=_('Bitte hinterlege oder überprüfe deine IBAN, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')))
+
+    def __init__(self, member, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.member = member
+        self.fields['iban'].visible = member.is_cooperation_member
+
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-3'
+        self.helper.field_class = 'col-md-9'
+
+        self.helper.layout = Layout(
+            'message', 'iban',
+            FormActions(
+                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
+            ),
+        )
+
+
+    def clean_iban(self):
+        if self.member.is_cooperation_member:
+            try:
+                IBAN(self.data['iban'])
+            except ValueError:
+                raise ValidationError(_('IBAN ist nicht gültig'))
+        return self.data['iban']
 
 
 class MemberProfileForm(ModelForm):
