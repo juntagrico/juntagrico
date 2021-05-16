@@ -32,7 +32,7 @@ def job_messages(request, job):
         result.append(get_template('messages/job_past.html').render())
     elif job.start_time() < timezone.now():
         result.append(get_template('messages/job_running.html').render())
-    if member in all_participants:
+    elif member in all_participants:
         render_dict = {
             'amount': all_participants.count(member) - 1,
         }
@@ -40,7 +40,7 @@ def job_messages(request, job):
         render_result = template.render(render_dict)
         result.append(render_result)
 
-    if job.free_slots == 0 and not job.canceled:
+    elif job.free_slots == 0:
         result.append(get_template('messages/job_fully_booked.html').render())
     return result
 
