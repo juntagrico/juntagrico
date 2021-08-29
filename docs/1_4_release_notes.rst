@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Dev
+---
+
+Fixes
+^^^^^
+* Use informal language consistently in password reset process
+
 1.4.1
 -----
 
