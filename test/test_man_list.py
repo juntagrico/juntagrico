@@ -1,3 +1,5 @@
+import datetime
+
 from django.urls import reverse
 
 from test.util.test import JuntagricoTestCase
@@ -40,6 +42,5 @@ class ManListTests(JuntagricoTestCase):
     def testChangeDate(self):
         self.assertGet(reverse('changedate-set'), code=404)
         self.assertPost(reverse('changedate-set'), data={'date': '01/01/1970'}, code=302)
-        self.assertPost(reverse('changedate-set'), member=self.member2, code=302)
+        self.assertEqual(self.client.session['changedate'], datetime.date(1970, 1, 1))
         self.assertGet(reverse('changedate-unset'), code=302)
-        self.assertGet(reverse('changedate-unset'), member=self.member2, code=302)
