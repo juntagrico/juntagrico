@@ -364,7 +364,7 @@ def cancel_membership(request):
         message = request.POST.get('message')
         member = request.user.member
         member.end_date = end_date
-        member.cancelation_date = now
+        member.cancellation_date = now
         if member.is_cooperation_member:
             adminnotification.member_canceled(member, end_date, message)
         else:
