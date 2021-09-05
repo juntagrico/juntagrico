@@ -141,6 +141,10 @@ def depot(request, depot_id):
     '''
     Details for a Depot
     '''
+    # if member has no subscription at this depot show depot of members subscription instead
+    if request.user.member.subscriptionmembership_set.filter(subscription__depot_id=depot_id).count() == 0:
+        return depot_landing(request)
+
     depot = get_object_or_404(Depot, id=int(depot_id))
 
     renderdict = {
