@@ -7,6 +7,7 @@ Dev
 Fixes
 ^^^^^
 * Use informal language consistently in password reset process
+* Make assignment admin menu entry visible as documented
 
 1.4.1
 -----
