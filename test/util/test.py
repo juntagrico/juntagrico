@@ -63,6 +63,8 @@ class JuntagricoTestCase(TestCase):
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_filter_subscriptions'))
         self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_subscription'))
+        self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_operations_group'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_send_mails'))
