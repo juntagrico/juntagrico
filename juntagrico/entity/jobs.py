@@ -253,7 +253,7 @@ class Job(JuntagricoBasePoly):
         job_canceled = self.canceled
         job_read_only = job_canceled or job_is_running or job_is_in_past
         return not job_read_only or (
-                request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))
+            request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))
 
     class Meta:
         verbose_name = _('AbstractJob')
