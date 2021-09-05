@@ -22,19 +22,13 @@ class JobAdmin(RichTextAdmin):
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']
 
-    def get_readonly_fields(self, request, obj=None):
+    def has_change_permission(self, request, obj=None):
         if obj is None:
-            return self.readonly_fields
-        job_is_in_past = obj.end_time() < timezone.now()
-        job_is_running = obj.start_time() < timezone.now()
-        job_canceled = obj.canceled
-        job_read_only = job_canceled or job_is_running or job_is_in_past
-        if job_read_only and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))):
-            for inline in self.inlines:
-                inline.readonly_fields = [field.name for field in inline.model._meta.fields]
-            return [field.name for field in obj._meta.fields]
-        return self.readonly_fields
+            return False
+        return obj.can_modify(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return self.has_change_permission(request, obj)
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:

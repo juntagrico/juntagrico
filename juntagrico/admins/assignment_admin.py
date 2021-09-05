@@ -8,6 +8,14 @@ class AssignmentAdmin(BaseAdmin):
     search_fields = ['member__first_name', 'member__last_name']
     raw_id_fields = ['member', 'job']
 
+    def has_change_permission(self, request, obj=None):
+        if obj is None:
+            return False
+        return obj.can_modify(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return self.has_change_permission(request, obj)
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.has_perm('juntagrico.is_area_admin') and (
