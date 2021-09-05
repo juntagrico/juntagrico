@@ -44,11 +44,15 @@ class SubscriptionAdmin(BaseAdmin):
             return self.add_fieldsets
         return super().get_fieldsets(request, obj)
 
-    def has_change_permission(self, request, obj=None):
+    @staticmethod
+    def can_change_deactivated_subscription(request, obj=None):
         if obj is None:
             return False
         return not obj.inactive or (
             request.user.is_superuser or request.user.has_perm('juntagrico.can_change_deactivated_subscriptions'))
 
+    def has_change_permission(self, request, obj=None):
+        return self.can_change_deactivated_subscription(request, obj) and super().has_change_permission(request, obj)
+
     def has_delete_permission(self, request, obj=None):
-        return self.has_change_permission(request, obj)
+        return self.can_change_deactivated_subscription(request, obj) and super().has_delete_permission(request, obj)

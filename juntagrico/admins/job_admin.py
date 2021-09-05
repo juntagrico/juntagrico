@@ -1,7 +1,6 @@
 from django.conf.urls import url
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
@@ -23,12 +22,10 @@ class JobAdmin(RichTextAdmin):
     readonly_fields = ['free_slots']
 
     def has_change_permission(self, request, obj=None):
-        if obj is None:
-            return False
-        return obj.can_modify(request)
+        return obj is not None and obj.can_modify(request) and super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return self.has_change_permission(request, obj)
+        return obj is not None and obj.can_modify(request) and super().has_delete_permission(request, obj)
 
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:

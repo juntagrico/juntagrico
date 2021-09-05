@@ -9,12 +9,10 @@ class AssignmentAdmin(BaseAdmin):
     raw_id_fields = ['member', 'job']
 
     def has_change_permission(self, request, obj=None):
-        if obj is None:
-            return False
-        return obj.can_modify(request)
+        return obj is not None and obj.can_modify(request) and super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return self.has_change_permission(request, obj)
+        return obj is not None and obj.can_modify(request) and super().has_delete_permission(request, obj)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
