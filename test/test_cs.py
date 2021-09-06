@@ -110,3 +110,9 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertEqual(Share.objects.filter(member__email=new_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(primary_member__email=new_member_data['email']).count(), 1)
         self.assertEqual(len(mail.outbox), 5)  # welcome mail, share mail & 3 admin notifications
+
+        # signup with different case email address should fail
+        new_member_data['email'] = 'Test@user.com'
+        response = self.client.post(reverse('signup'), new_member_data)
+        self.assertEqual(response.status_code, 200)  # no redirect = failed
+

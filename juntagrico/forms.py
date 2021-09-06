@@ -127,6 +127,20 @@ class MemberBaseForm(ModelForm):
                             'addr_street', 'addr_zipcode', 'addr_location',
                             'phone', 'mobile_phone', 'email', 'birthday')
 
+    @staticmethod
+    def duplicate_email_message():
+        return mark_safe(
+            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + '<a href="' + reverse(
+                "home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+        )
+
+    def clean_email(self):
+        # check case insensitive uniqueness, because existing emails might already be upper case
+        if Member.objects.filter(email__iexact=self.cleaned_data['email']):
+            raise ValidationError(self.duplicate_email_message())
+        # store email in lower case from now on
+        return self.cleaned_data['email'].lower()
+
 
 class RegisterMemberForm(MemberBaseForm):
     agb = BooleanField(required=True)
@@ -141,9 +155,7 @@ class RegisterMemberForm(MemberBaseForm):
                 Submit('submit', _('Anmelden'), css_class='btn-success'),
             )
         )
-        self.fields['email'].error_messages['unique'] = mark_safe(
-            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + '<a href="' + reverse("home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
-        )
+        self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
 
     @staticmethod
     def agb_label():
@@ -178,7 +190,7 @@ class CoMemberBaseForm(MemberBaseForm):
         self.existing_emails = existing_emails or []  # list of emails that can not be used
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = super().clean_email()
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
                                             .format(Config.vocabulary('co_member_pl'))))
