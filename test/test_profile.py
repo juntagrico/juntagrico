@@ -23,6 +23,8 @@ class ProfileTests(JuntagricoTestCase):
 
     def testCancelMembershipPost(self):
         self.assertPost(reverse('cancel-membership'), code=302)
+        self.member.refresh_from_db()
+        self.assertTrue(self.member.canceled)
 
     def testCancelMembershipNonCoopPost(self):
         self.assertPost(reverse('cancel-membership'), code=302, member=self.member3)
