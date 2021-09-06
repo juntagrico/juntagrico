@@ -190,7 +190,7 @@ class CoMemberBaseForm(MemberBaseForm):
         self.existing_emails = existing_emails or []  # list of emails that can not be used
 
     def clean_email(self):
-        email = super().clean_email()
+        email = self.cleaned_data['email'].lower()
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
                                             .format(Config.vocabulary('co_member_pl'))))
@@ -210,6 +210,7 @@ class CoMemberBaseForm(MemberBaseForm):
         return email
 
     def clean(self):
+        # disable default uniqueness check
         return self.cleaned_data
 
     @staticmethod

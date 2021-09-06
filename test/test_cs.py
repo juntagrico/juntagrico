@@ -115,4 +115,3 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         new_member_data['email'] = 'Test@user.com'
         response = self.client.post(reverse('signup'), new_member_data)
         self.assertEqual(response.status_code, 200)  # no redirect = failed
-
