@@ -14,6 +14,12 @@ define([], function () {
             "regex": true,
             "smart": false
         },
+        "columnDefs": [
+            {
+                "targets": [ 5 ],
+                "visible": false,
+            },
+        ],
         "language": {
             "search": "Suchen: "
         }
@@ -23,6 +29,20 @@ define([], function () {
     align_filter();
 
     table_column_search(table);
+
+    // update on slot filter field
+    $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            var min = parseInt( $('#free_slot_filter').val(), 10 );
+            var free_slots = parseFloat( data[5] ) || 0;
+            if ( isNaN( min ) || free_slots >= min ) { return true; }
+            return false;
+        }
+    );
+
+    $("#free_slot_filter").off("keyup change").on("keyup change", function () {
+        table.draw();
+    });
 
     job_collapsible(table);
 

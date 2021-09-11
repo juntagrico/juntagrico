@@ -20,7 +20,14 @@
                 {% trans "Job" %}
             </th>
             <th class="align-top">
-                {% trans "Status" %}
+                {% trans "Status" %}<br>
+                <form class="form-inline">
+                    <label for="free_slot_filter">{% trans "Freie Plätze" %}&nbsp;&ge;&nbsp;</label>
+                    <input id="free_slot_filter" type='number' placeholder='' style='width: 4em;'
+                           class='form-control input-sm' value="0" min="0"/>
+                </form>
+            </th>
+            <th class="align-top table-search">
             </th>
             {% if b_show_job_extras %}
                 <th class="align-top">
@@ -53,6 +60,9 @@
                     {% if job.free_slots > -1 %}
                     <img alt="{% trans "Status" %}: {{ job.get_status_percentage }}"src="{% images job.get_status_percentage %}"/>
                     {% endif %}
+                </td>
+                <td>
+                    {{ job.free_slots }}
                 </td>
                 {% if b_show_job_extras %}
                     <td>
