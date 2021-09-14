@@ -15,7 +15,7 @@ def show_admin_menu(request):
     perms = ['juntagrico.change_subscription',
              'juntagrico.change_subscriptionpart',
              'juntagrico.change_member',
-             'juntagrico.change_assingment',
+             'juntagrico.change_assignment',
              'juntagrico.change_share',
              'juntagrico.can_filter_subscriptions',
              'juntagrico.can_filter_members',

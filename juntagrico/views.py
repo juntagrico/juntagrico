@@ -145,7 +145,9 @@ def depot(request, depot_id):
 
     renderdict = {
         'depot': depot,
-        'requires_map': depot.has_geo
+        'requires_map': depot.has_geo,
+        'show_access': request.user.member.subscriptionmembership_set.filter(
+            subscription__depot=depot).count() > 0
     }
     return render(request, 'depot.html', renderdict)
 
@@ -364,7 +366,7 @@ def cancel_membership(request):
         message = request.POST.get('message')
         member = request.user.member
         member.end_date = end_date
-        member.cancelation_date = now
+        member.cancellation_date = now
         if member.is_cooperation_member:
             adminnotification.member_canceled(member, end_date, message)
         else:

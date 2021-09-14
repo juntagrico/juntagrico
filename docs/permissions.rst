@@ -108,12 +108,12 @@ Member sees the member entry in the administration menu.
 Search Hints:
     * German: Mitglied
 
-juntagrico.change_assingment
+juntagrico.change_assignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Member sees the assignment entry in the administration menu.
 
 Search Hints:
-    * German: Arbeitseins
+    * German: Arbeitseinsatz
 
 juntagrico.change_share
 ^^^^^^^^^^^^^^^^^^^^^^^

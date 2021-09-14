@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+Dev
+---
+
+Fixes
+^^^^^
+* Use informal language consistently in password reset process
+* Make assignment admin menu entry visible as documented
+* Fix membership cancellation
+
 1.4.1
 -----
 
