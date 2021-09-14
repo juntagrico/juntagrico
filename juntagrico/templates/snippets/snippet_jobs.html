@@ -21,14 +21,18 @@
             </th>
             <th class="align-top">
                 {% trans "Status" %}<br>
+                {% if show_free_slot_filter %}
                 <form class="form-inline">
                     <label for="free_slot_filter">{% trans "Freie Plätze" %}&nbsp;&ge;&nbsp;</label>
                     <input id="free_slot_filter" type='number' placeholder='' style='width: 4em;'
                            class='form-control input-sm' value="0" min="0"/>
                 </form>
+                {% endif %}
             </th>
-            <th class="align-top free-slot-count">
-            </th>
+            {% if show_free_slot_filter %}
+                <th class="align-top free-slot-count">
+                </th>
+            {% endif %}
             {% if b_show_job_extras %}
                 <th class="align-top">
                     {% trans "Extras" %}
@@ -61,9 +65,11 @@
                     <img alt="{% trans "Status" %}: {{ job.get_status_percentage }}"src="{% images job.get_status_percentage %}"/>
                     {% endif %}
                 </td>
-                <td>
-                    {{ job.free_slots }}
-                </td>
+                {% if show_free_slot_filter %}
+                    <td>
+                        {{ job.free_slots }}
+                    </td>
+                {% endif %}
                 {% if b_show_job_extras %}
                     <td>
                         {{ job.extras|safe }}
