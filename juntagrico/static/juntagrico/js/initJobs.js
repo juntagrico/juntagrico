@@ -2,11 +2,13 @@
 define([], function () {
 
     $("#filter-table thead th.table-search").each(function () {
-        var title = $(this).text();
         $(this).append("<input type='text' placeholder='' style='width: 100%;' class='form-control input-sm' />");
     });
 
-    var table = $("#filter-table").DataTable({
+    let free_slot_count = 'free-slot-count'
+    let index = $('#filter-table th.'+free_slot_count).prevAll().length
+
+    let table = $("#filter-table").DataTable({
         "paging": false,
         "info": false,
         "ordering": false,
@@ -16,7 +18,7 @@ define([], function () {
         },
         "columnDefs": [
             {
-                "targets": [ 5 ],
+                "targets": free_slot_count,
                 "visible": false,
             },
         ],
@@ -32,11 +34,10 @@ define([], function () {
 
     // update on slot filter field
     $.fn.dataTable.ext.search.push(
-        function( settings, data, dataIndex ) {
-            var min = parseInt( $('#free_slot_filter').val(), 10 );
-            var free_slots = parseFloat( data[5] ) || 0;
-            if ( isNaN( min ) || free_slots >= min ) { return true; }
-            return false;
+        function( settings, data) {
+            let min = parseInt( $('#free_slot_filter').val(), 10 );
+            let free_slots = parseFloat( data[index] ) || 0;
+            return isNaN(min) || free_slots >= min;
         }
     );
 
