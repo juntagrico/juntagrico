@@ -138,7 +138,7 @@ def my_mails_intern(request, mail_url, error_message=None):
     return render(request, 'mail_sender.html', renderdict)
 
 
-@permission_required('juntagrico.can_filter_members')
+@any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters_active(request):
     members = MemberDao.active_members()
     renderdict = {
@@ -148,7 +148,7 @@ def filters_active(request):
     return render(request, 'members.html', renderdict)
 
 
-@permission_required('juntagrico.can_filter_members')
+@any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters(request):
     members = MemberDao.all_members()
     renderdict = {
@@ -184,7 +184,7 @@ def filters_area(request, area_id):
     return render(request, 'members.html', renderdict)
 
 
-@permission_required('juntagrico.can_filter_subscriptions')
+@any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
 def subscriptions(request):
     renderdict = {
         'subscriptions': SubscriptionDao.all_active_subscritions(),
@@ -207,22 +207,22 @@ def filter_subscriptions_depot(request, depot_id):
     return render(request, 'subscriptions.html', renderdict)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_lists')
 def depotlist(request):
     return return_pdf_http('depotlist.pdf')
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_lists')
 def depot_overview(request):
     return return_pdf_http('depot_overview.pdf')
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_lists')
 def amount_overview(request):
     return return_pdf_http('amount_overview.pdf')
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscription')
 def future(request):
     subscriptionsizes = []
     subscription_lines = dict({})
@@ -261,7 +261,7 @@ def get_mail_template(request, template_id):
     return HttpResponse(result)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_exports')
 def excel_export_members_filter(request):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
@@ -309,7 +309,7 @@ def excel_export_members_filter(request):
     return response
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_exports')
 def excel_export_subscriptions(request):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
@@ -372,7 +372,7 @@ def excel_export_subscriptions(request):
     return response
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_exports')
 def excel_export_members(request):
     fields = [
         'first_name',
@@ -391,7 +391,7 @@ def excel_export_members(request):
     return generate_excel(fields, Member)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_exports')
 def excel_export_shares(request):
     fields = [
         'id',
@@ -410,26 +410,26 @@ def excel_export_shares(request):
     return generate_excel(fields, Share)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.can_view_exports')
 def export(request):
     return render(request, 'export.html', {})
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscription')
 def waitinglist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionDao.not_started_subscriptions(), render_dict,
                                         'management_lists/waitinglist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscription')
 def canceledlist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionDao.canceled_subscriptions(), render_dict,
                                         'management_lists/canceledlist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscription')
 def typechangelist(request):
     render_dict = get_changedate(request)
     changedlist = []
@@ -440,35 +440,35 @@ def typechangelist(request):
     return subscription_management_list(changedlist, render_dict, 'management_lists/typechangelist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscriptionpart')
 def extra_waitinglist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionPartDao.waiting_extra_subs(), render_dict,
                                         'management_lists/extra_waitinglist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscriptionpart')
 def extra_canceledlist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionPartDao.canceled_extra_subs(), render_dict,
                                         'management_lists/extra_canceledlist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_share')
 def share_canceledlist(request):
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(ShareDao.canceled_shares(), render_dict,
                                         'management_lists/share_canceledlist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_member')
 def member_canceledlist(request):
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(MemberDao.canceled_members(), render_dict,
                                         'management_lists/member_canceledlist.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_member')
 def deactivate_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
     member.deactivation_date = timezone.now().date()
@@ -476,7 +476,6 @@ def deactivate_member(request, member_id):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.is_operations_group')
 def set_change_date(request):
     if request.method != 'POST':
         raise Http404
@@ -489,13 +488,12 @@ def set_change_date(request):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.is_operations_group')
 def unset_change_date(request):
     request.session['changedate'] = None
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_subscription')
 def sub_inconsistencies(request):
     management_list = []
     for sub in SubscriptionDao.all_subscritions():
@@ -515,7 +513,7 @@ def sub_inconsistencies(request):
                                         'management_lists/inconsistent.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
+@permission_required('juntagrico.change_assignment')
 def assignments(request):
     management_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
     render_dict = {'change_date_disabled': True}
@@ -523,7 +521,6 @@ def assignments(request):
                                         'management_lists/assignments.html', request)
 
 
-@permission_required('juntagrico.is_operations_group')
 def versions(request):
     versions = {'juntagrico': version}
     versions.update(addons.config.get_versions())
