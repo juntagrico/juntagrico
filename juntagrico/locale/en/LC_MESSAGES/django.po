@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-02 21:23+0200\n"
+"POT-Creation-Date: 2021-05-11 22:16+0200\n"
 "PO-Revision-Date: 2020-02-03 11:42+0000\n"
 "Last-Translator: Weblate Admin <weblate@example.com>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -1158,6 +1158,7 @@ msgid "Telefonnummer"
 msgstr "Phone number"
 
 #: .\juntagrico\forms.py:49 .\juntagrico\forms.py:114
+#: .\juntagrico\templates\registration\password_reset_form_cust.html:17
 #, fuzzy
 #| msgid "E-Mail Adresse"
 msgid "E-Mail-Adresse"
@@ -1203,6 +1204,7 @@ msgid "IBAN ist nicht gültig"
 msgstr "IBAN is not valid"
 
 #: .\juntagrico\forms.py:141 .\juntagrico\templates\registration\login.html:37
+#: .\juntagrico\templates\registration\password_reset_complete_cust.html:9
 msgid "Anmelden"
 msgstr "Log In"
 
@@ -1532,39 +1534,34 @@ msgid "E-Mail-Adresse bestätigen"
 msgstr "E-mail address"
 
 #: .\juntagrico\mailer\membernotification.py:46
-#: .\juntagrico\templates\mails\member\password_reset.txt:9
-msgid "Dein neues Passwort"
-msgstr "Your new password"
-
-#: .\juntagrico\mailer\membernotification.py:53
 #, fuzzy
 #| msgid "{0} - {1} geändert"
 msgid "{} geändert"
 msgstr "{0} - {1} changed"
 
-#: .\juntagrico\mailer\membernotification.py:61
+#: .\juntagrico\mailer\membernotification.py:54
 msgid "Austritt aus {}"
 msgstr "Leaving {}"
 
-#: .\juntagrico\mailer\membernotification.py:69
+#: .\juntagrico\mailer\membernotification.py:62
 #, fuzzy
 #| msgid "{0} - für Einsatz angemeldet"
 msgid "Für Einsatz angemeldet"
 msgstr "{0} - Registered for job"
 
-#: .\juntagrico\mailer\membernotification.py:77
+#: .\juntagrico\mailer\membernotification.py:70
 #, fuzzy
 #| msgid "{0} - Einsatz-Erinnerung"
 msgid "Einsatz-Erinnerung"
 msgstr "{0} - Job Reminder"
 
-#: .\juntagrico\mailer\membernotification.py:85
+#: .\juntagrico\mailer\membernotification.py:78
 #, fuzzy
 #| msgid "{0} - Einsatz-Zeit geändert"
 msgid "Einsatz-Zeit geändert"
 msgstr "{0} - Job time changed"
 
-#: .\juntagrico\mailer\membernotification.py:93
+#: .\juntagrico\mailer\membernotification.py:86
 #, fuzzy
 #| msgid "{0} - Einsatz abgesagt"
 msgid "Einsatz abgesagt"
@@ -2933,7 +2930,7 @@ msgstr ""
 #: .\juntagrico\templates\mails\member\job_signup.txt:23
 #: .\juntagrico\templates\mails\member\job_time_changed.txt:23
 #: .\juntagrico\templates\mails\member\member_welcome.txt:25
-#: .\juntagrico\templates\mails\member\password_reset.txt:11
+#: .\juntagrico\templates\mails\member\password_reset.txt:10
 #: .\juntagrico\templates\mails\member\share_created.txt:32
 #, python-format
 msgid "Bis bald und liebe Grüsse die %(c_organisation_name)s-Betriebsgruppe"
@@ -3173,15 +3170,15 @@ msgstr ""
 "confirm your email."
 
 #: .\juntagrico\templates\mails\member\password_reset.txt:6
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "%(c_organisation_name)s freut sich dir dein neues Passwort schicken zu "
+#| "dürfen."
 msgid ""
-"%(c_organisation_name)s freut sich dir dein neues Passwort schicken zu "
-"dürfen."
+"%(c_organisation_name)s freut sich dir beim Setzen deines neuen Passworts "
+"behilflich sein zu dürfen. Um den Vorgang zu beenden, klicke bitte auf den "
+"untenstehenden Link: "
 msgstr "%(c_organisation_name)s is pleased to send you your new password."
-
-#: .\juntagrico\templates\mails\member\password_reset.txt:8
-msgid "Dein Benutzername"
-msgstr "Your username"
 
 #: .\juntagrico\templates\mails\member\share_created.txt:15
 #, fuzzy, python-format
@@ -3798,6 +3795,65 @@ msgstr "Request new password"
 #: .\juntagrico\templates\registration\login.html:52
 msgid "Registrieren und mitmachen!"
 msgstr "Register and join!"
+
+#: .\juntagrico\templates\registration\password_reset_complete_cust.html:7
+msgid "Ihr Passwort wurde zurückgesetzt. Sie können sich nun anmelden."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:9
+msgid ""
+"Bitte geben Sie Ihr neues Passwort zweimal ein, damit wir überprüfen können, "
+"ob es richtig eingetippt wurde."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:16
+#, fuzzy
+#| msgid "Dein neues Passwort"
+msgid "Neues Passwort:"
+msgstr "Your new password"
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:22
+#, fuzzy
+#| msgid "Passwort (wiederholen)"
+msgid "Passwort wiederholen:"
+msgstr "Repeat password"
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:36
+#, fuzzy
+#| msgid "Passwort ändern"
+msgid "Mein Passwort ändern"
+msgstr "Change Password"
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:44
+msgid ""
+"Der Link zum Zurücksetzen Ihres Passworts ist ungültig, wahrscheinlich weil "
+"er schon einmal benutzt wurde. Bitte setzen Sie Ihr Passwort erneut zurück."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_done_cust.html:7
+msgid ""
+"Wir haben eine E-Mail zum Zurücksetzen des Passwortes an die angegebene E-"
+"Mail-Adresse gesendet, sofern ein entsprechendes Konto existiert. Sie sollte "
+"in Kürze ankommen."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_done_cust.html:9
+msgid ""
+"Falls die E-Mail nicht angekommen sein sollte, bitte die E-Mail-Adresse auf "
+"Richtigkeit und gegebenenfalls den Spam-Ordner überprüfen."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_form_cust.html:7
+msgid ""
+"Passwort vergessen? Einfach die E-Mail-Adresse unten eingeben und den "
+"Anweisungen zum Zurücksetzen des Passworts in der E-Mail folgen."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_form_cust.html:25
+#, fuzzy
+#| msgid "Neues Passwort zusenden"
+msgid "Mein Passwort zurücksetzen"
+msgstr "Send new password"
 
 #: .\juntagrico\templates\signup.html:9
 #, python-format
@@ -4534,6 +4590,9 @@ msgstr ""
 #: .\juntagrico\views_subscription.py:485
 msgid "{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden."
 msgstr ""
+
+#~ msgid "Dein Benutzername"
+#~ msgstr "Your username"
 
 #~ msgid "Sortier-Code"
 #~ msgstr "Sort code"

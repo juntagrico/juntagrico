@@ -109,10 +109,10 @@ class CSAddMemberView(FormView, ModelFormMixin):
             self.object = self.cs_session.get_co_member(self.edit - 1)
 
         # collect used email addresses to block reusage
-        self.existing_emails.append(cs_session.main_member.email)
+        self.existing_emails.append(cs_session.main_member.email.lower())
         for co_member in self.cs_session.co_members:
             if co_member is not self.object:
-                self.existing_emails.append(co_member.email)
+                self.existing_emails.append(co_member.email.lower())
 
         return super().dispatch(request, *args, **kwargs)
 

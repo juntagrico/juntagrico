@@ -1,22 +1,37 @@
 Release Notes
 =============
 
-1.4.1
------
+Dev
+---
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
-
 * Member Features:
     * Misleading extra change dates have been removed
     * Parts can now be ordered all year round
     * Parts can be canceled all year round
 
+Fixes
+^^^^^
+* Use informal language consistently in password reset process
+* Make assignment admin menu entry visible as documented
+* Fix membership cancellation
+
+1.4.1
+-----
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Better password reset process
 * Admin Features:
     * Subscription parts now also have a waiting list and cancelled list
     * Notifications on subscription parts are implemented
     * Notification on share cancellation is implemented
     * Documentation on :doc:`Permissions`
+* Fixes:
+    * Fix in share payout
+
 
 
 1.4.0

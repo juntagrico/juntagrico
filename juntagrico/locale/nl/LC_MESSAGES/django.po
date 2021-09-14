@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-02 21:23+0200\n"
+"POT-Creation-Date: 2021-05-11 22:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1059,6 +1059,7 @@ msgid "Telefonnummer"
 msgstr ""
 
 #: .\juntagrico\forms.py:49 .\juntagrico\forms.py:114
+#: .\juntagrico\templates\registration\password_reset_form_cust.html:17
 msgid "E-Mail-Adresse"
 msgstr ""
 
@@ -1095,6 +1096,7 @@ msgid "IBAN ist nicht gültig"
 msgstr ""
 
 #: .\juntagrico\forms.py:141 .\juntagrico\templates\registration\login.html:37
+#: .\juntagrico\templates\registration\password_reset_complete_cust.html:9
 msgid "Anmelden"
 msgstr ""
 
@@ -1374,31 +1376,26 @@ msgid "E-Mail-Adresse bestätigen"
 msgstr ""
 
 #: .\juntagrico\mailer\membernotification.py:46
-#: .\juntagrico\templates\mails\member\password_reset.txt:9
-msgid "Dein neues Passwort"
-msgstr ""
-
-#: .\juntagrico\mailer\membernotification.py:53
 msgid "{} geändert"
 msgstr ""
 
-#: .\juntagrico\mailer\membernotification.py:61
+#: .\juntagrico\mailer\membernotification.py:54
 msgid "Austritt aus {}"
 msgstr ""
 
-#: .\juntagrico\mailer\membernotification.py:69
+#: .\juntagrico\mailer\membernotification.py:62
 msgid "Für Einsatz angemeldet"
 msgstr ""
 
-#: .\juntagrico\mailer\membernotification.py:77
+#: .\juntagrico\mailer\membernotification.py:70
 msgid "Einsatz-Erinnerung"
 msgstr ""
 
-#: .\juntagrico\mailer\membernotification.py:85
+#: .\juntagrico\mailer\membernotification.py:78
 msgid "Einsatz-Zeit geändert"
 msgstr ""
 
-#: .\juntagrico\mailer\membernotification.py:93
+#: .\juntagrico\mailer\membernotification.py:86
 msgid "Einsatz abgesagt"
 msgstr ""
 
@@ -2584,7 +2581,7 @@ msgstr ""
 #: .\juntagrico\templates\mails\member\job_signup.txt:23
 #: .\juntagrico\templates\mails\member\job_time_changed.txt:23
 #: .\juntagrico\templates\mails\member\member_welcome.txt:25
-#: .\juntagrico\templates\mails\member\password_reset.txt:11
+#: .\juntagrico\templates\mails\member\password_reset.txt:10
 #: .\juntagrico\templates\mails\member\share_created.txt:32
 #, python-format
 msgid "Bis bald und liebe Grüsse die %(c_organisation_name)s-Betriebsgruppe"
@@ -2787,12 +2784,9 @@ msgstr ""
 #: .\juntagrico\templates\mails\member\password_reset.txt:6
 #, python-format
 msgid ""
-"%(c_organisation_name)s freut sich dir dein neues Passwort schicken zu "
-"dürfen."
-msgstr ""
-
-#: .\juntagrico\templates\mails\member\password_reset.txt:8
-msgid "Dein Benutzername"
+"%(c_organisation_name)s freut sich dir beim Setzen deines neuen Passworts "
+"behilflich sein zu dürfen. Um den Vorgang zu beenden, klicke bitte auf den "
+"untenstehenden Link: "
 msgstr ""
 
 #: .\juntagrico\templates\mails\member\share_created.txt:15
@@ -3325,6 +3319,57 @@ msgstr ""
 
 #: .\juntagrico\templates\registration\login.html:52
 msgid "Registrieren und mitmachen!"
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_complete_cust.html:7
+msgid "Ihr Passwort wurde zurückgesetzt. Sie können sich nun anmelden."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:9
+msgid ""
+"Bitte geben Sie Ihr neues Passwort zweimal ein, damit wir überprüfen können, "
+"ob es richtig eingetippt wurde."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:16
+msgid "Neues Passwort:"
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:22
+msgid "Passwort wiederholen:"
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:36
+msgid "Mein Passwort ändern"
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_confirm_cust.html:44
+msgid ""
+"Der Link zum Zurücksetzen Ihres Passworts ist ungültig, wahrscheinlich weil "
+"er schon einmal benutzt wurde. Bitte setzen Sie Ihr Passwort erneut zurück."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_done_cust.html:7
+msgid ""
+"Wir haben eine E-Mail zum Zurücksetzen des Passwortes an die angegebene E-"
+"Mail-Adresse gesendet, sofern ein entsprechendes Konto existiert. Sie sollte "
+"in Kürze ankommen."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_done_cust.html:9
+msgid ""
+"Falls die E-Mail nicht angekommen sein sollte, bitte die E-Mail-Adresse auf "
+"Richtigkeit und gegebenenfalls den Spam-Ordner überprüfen."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_form_cust.html:7
+msgid ""
+"Passwort vergessen? Einfach die E-Mail-Adresse unten eingeben und den "
+"Anweisungen zum Zurücksetzen des Passworts in der E-Mail folgen."
+msgstr ""
+
+#: .\juntagrico\templates\registration\password_reset_form_cust.html:25
+msgid "Mein Passwort zurücksetzen"
 msgstr ""
 
 #: .\juntagrico\templates\signup.html:9

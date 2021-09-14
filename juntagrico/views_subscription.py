@@ -215,13 +215,6 @@ class SignupView(FormView, ModelFormMixin):
     def get_form_class(self):
         return EditMemberForm if self.cs_session.edit else RegisterMemberForm
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(
-            **{},
-            menu={'join': 'active'},
-            **kwargs
-        )
-
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
         if Config.enable_registration() is False:
@@ -238,9 +231,6 @@ class SignupView(FormView, ModelFormMixin):
     def form_valid(self, form):
         self.cs_session.main_member = form.instance
         return redirect(self.cs_session.next_page())
-
-    def render(self, **kwargs):
-        return self.render_to_response(self.get_context_data(**kwargs))
 
 
 def confirm(request, member_hash):
@@ -273,7 +263,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
+        form_kwargs['existing_emails'] = [m.email.lower() for m in self.subscription.recipients]
         return form_kwargs
 
     def get_initial(self):
@@ -482,6 +472,6 @@ def payout_share(request, share_id):
     share.save()
     member = share.member
     if member.active_shares_count == 0 and member.canceled is True:
-        member.inactive = True
+        member.deactivation_date = timezone.now().date()
         member.save()
     return return_to_previous_location(request)

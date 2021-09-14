@@ -55,7 +55,7 @@
                     </td>
                     <td>
                         {% if subscription.deactivation_date %}
-                        {% trans "Wurde bereits deaktiviert" %} {{ subscription.deactivation_date }}
+                        {% trans "Wurde bereits deaktiviert auf den" %} {{ subscription.deactivation_date }}
                         {% else %}
                         <a href="{% url 'sub-deactivate' subscription.id %}"class="btn btn-success">
                             {% trans "deaktivieren" %}
