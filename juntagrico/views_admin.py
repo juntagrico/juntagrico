@@ -428,9 +428,8 @@ def canceledlist(request):
                                         'management_lists/canceledlist.html', request)
 
 
-
-@permission_required('juntagrico.change_subscription')
-def typechangelist(request):
+@permission_required('juntagrico.change_subscriptionpart')
+def part_waitinglist(request):
     render_dict = get_changedate(request)
     changedlist = SubscriptionPartDao.waiting_parts_for_active_subscriptions()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_waitinglist.html', request)
@@ -439,7 +438,7 @@ def typechangelist(request):
 @permission_required('juntagrico.change_subscriptionpart')
 def part_canceledlist(request):
     render_dict = get_changedate(request)
-    changedlist = SubscriptionPartDao.waiting_parts_for_active_subscriptions()
+    changedlist = SubscriptionPartDao.canceled_parts_for_active_subscriptions()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
 
 
