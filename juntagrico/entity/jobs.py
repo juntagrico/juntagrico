@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
@@ -38,13 +39,12 @@ class ActivityArea(JuntagricoBaseModel):
         else:
             return self.get_email()
 
+    @admin.display(description=email.verbose_name)
     def get_email(self):
         if self.email is not None:
             return self.email
         else:
             return self.coordinator.email
-
-    get_email.short_description = email.verbose_name
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -168,14 +168,13 @@ class Job(JuntagricoBasePoly):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
     @property
+    @admin.display(description=_('Freie Plätze'))
     def free_slots(self):
         if self.infinite_slots:
             return -1
         if not (self.slots is None):
             return self.slots - self.occupied_places()
         return 0
-
-    free_slots.fget.short_description = _('Freie Plätze')
 
     @property
     def duration(self):
@@ -304,9 +303,9 @@ class Assignment(JuntagricoBaseModel):
     def __str__(self):
         return '%s #%s' % (Config.vocabulary('assignment'), self.id)
 
+    @admin.display(ordering='job__time')
     def time(self):
         return self.job.time
-    time.admin_order_field = 'job__time'
 
     def is_core(self):
         return self.job.type.activityarea.core

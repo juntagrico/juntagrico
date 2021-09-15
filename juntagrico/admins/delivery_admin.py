@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.contrib import messages
+from django.contrib import messages, admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
@@ -16,6 +16,7 @@ class DeliveryAdmin(BaseAdmin):
     inlines = [DeliveryInline]
     save_as = True
 
+    @admin.action(description=_('Lieferung kopieren...'))
     def copy_delivery(self, request, queryset):
         if queryset.count() != 1:
             self.message_user(
@@ -24,8 +25,6 @@ class DeliveryAdmin(BaseAdmin):
 
         inst, = queryset.all()
         return HttpResponseRedirect('copy_delivery/%s/' % inst.id)
-
-    copy_delivery.short_description = _('Lieferung kopieren...')
 
     def get_form(self, request, obj=None, **kwds):
         if 'copy_delivery' in request.path:

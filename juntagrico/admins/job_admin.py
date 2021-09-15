@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.contrib import messages
+from django.contrib import messages, admin
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -36,6 +36,7 @@ class JobAdmin(RichTextAdmin):
             return [field.name for field in obj._meta.fields]
         return self.readonly_fields
 
+    @admin.action(description=_('Job mehrfach kopieren...'))
     def mass_copy_job(self, request, queryset):
         if queryset.count() != 1:
             self.message_user(
@@ -45,15 +46,12 @@ class JobAdmin(RichTextAdmin):
         inst, = queryset.all()
         return HttpResponseRedirect('copy_job/%s/' % inst.id)
 
-    mass_copy_job.short_description = _('Job mehrfach kopieren...')
-
+    @admin.action(description=_('Jobs kopieren'))
     def copy_job(self, request, queryset):
         for inst in queryset.all():
             newjob = RecuringJob(
                 type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
-
-    copy_job.short_description = _('Jobs kopieren')
 
     def get_form(self, request, obj=None, **kwds):
         if 'copy_job' in request.path:

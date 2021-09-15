@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
@@ -33,11 +34,9 @@ class SubscriptionAdmin(BaseAdmin):
         (_('Administration'), {'fields': ['notes']}),
     ]
 
+    @admin.display(description=_('Status'), ordering='activation_date')
     def text_state(self, instance):
         return instance.state_text
-
-    text_state.short_description = _('Status')
-    text_state.admin_order_field = 'activation_date'
 
     def get_fieldsets(self, request, obj=None):
         if not obj:
