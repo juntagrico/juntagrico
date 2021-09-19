@@ -145,7 +145,9 @@ def depot(request, depot_id):
 
     renderdict = {
         'depot': depot,
-        'requires_map': depot.has_geo
+        'requires_map': depot.has_geo,
+        'show_access': request.user.member.subscriptionmembership_set.filter(
+            subscription__depot=depot).count() > 0
     }
     return render(request, 'depot.html', renderdict)
 

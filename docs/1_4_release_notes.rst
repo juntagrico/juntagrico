@@ -4,11 +4,27 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Show less and clearer messages on job page
+    * Clarify some texts
+
+* Developer Features:
+    * Support for Python 3.9 and dropped support for python 3.6 and 3.7
+
 Fixes
 ^^^^^
+* Made email uniqueness check case-insensitive
+* Only show depot access information for current depot
 * Use informal language consistently in password reset process
-* Make assignment admin menu entry visible as documented
+* Menu fixes:
+  * Make assignment admin menu entry visible as documented
+  * Highlight jobs menu entry when page is active
+  * Fix view access to match menu visibility
 * Fix membership cancellation
+* Upgraded datatables.js to fix issue with search builder on Safari
+
 
 1.4.1
 -----
@@ -33,7 +49,7 @@ Features & Improvements
 * Upgrade Instructions:
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
     * You may have to add permissions to users to restore their admin menu visibility and ability to edit some entities. See below.
-    * If you overrode templates, wou will have to move and update them
+    * If you overrode templates, you will have to move and update them
         * Template tags are now namespaced in juntagrico. For example former ``{% load config %}`` becomes ``{% load juntagrico.config %}``
         * All juntagrico static files are now namespaced and can be found in ''static/juntagrico''
         * Menu dict method eliminated for easier view creation and performance improvements

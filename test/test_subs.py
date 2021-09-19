@@ -44,6 +44,7 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testDepot(self):
         self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
+        self.assertGet(reverse('depot-landing'))
 
     def testNicknameChange(self):
         test_nickname = 'My Nickname'
