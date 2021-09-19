@@ -15,6 +15,7 @@ Features & Improvements
 
 Fixes
 ^^^^^
+* Fix editing limitations for past jobs and deactivated subs
 * Made email uniqueness check case-insensitive
 * Only show depot access information for current depot
 * Use informal language consistently in password reset process
