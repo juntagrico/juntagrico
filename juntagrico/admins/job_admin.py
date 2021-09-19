@@ -1,10 +1,11 @@
 from django.conf.urls import url
-from django.contrib import messages, admin
+from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
+from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
@@ -37,12 +38,8 @@ class JobAdmin(RichTextAdmin):
         return self.readonly_fields
 
     @admin.action(description=_('Job mehrfach kopieren...'))
+    @single_element_action('Genau 1 Job auswählen!')
     def mass_copy_job(self, request, queryset):
-        if queryset.count() != 1:
-            self.message_user(
-                request, _('Genau 1 Job auswählen!'), level=messages.ERROR)
-            return HttpResponseRedirect('')
-
         inst, = queryset.all()
         return HttpResponseRedirect('copy_job/%s/' % inst.id)
 

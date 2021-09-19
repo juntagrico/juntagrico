@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -6,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
+from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subs import Subscription
@@ -53,11 +53,8 @@ class MemberAdmin(BaseAdmin):
         return not instance.inactive
 
     @admin.action(description=Config.vocabulary('member') + ' imitieren (impersonate)...')
+    @single_element_action('Genau 1 ' + Config.vocabulary('member') + ' auswählen!')
     def impersonate_job(self, request, queryset):
-        if queryset.count() != 1:
-            self.message_user(
-                request, 'Genau 1 ' + Config.vocabulary('member') + ' auswählen!', level=messages.ERROR)
-            return HttpResponseRedirect('')
         inst, = queryset.all()
         return HttpResponseRedirect('/impersonate/%s/' % inst.user.id)
 
