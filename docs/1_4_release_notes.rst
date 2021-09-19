@@ -12,6 +12,7 @@ Features & Improvements
 
 * Developer Features:
     * Support for Python 3.9 and dropped support for python 3.6 and 3.7
+    * Refactor: Using new Django 3.2 features
 
 Fixes
 ^^^^^
