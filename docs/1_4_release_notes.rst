@@ -4,11 +4,27 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Show less and clearer messages on job page
+    * Clarify some texts
+
+* Developer Features:
+    * Support for Python 3.9 and dropped support for python 3.6 and 3.7
+
 Fixes
 ^^^^^
+* Made email uniqueness check case-insensitive
+* Only show depot access information for current depot
 * Use informal language consistently in password reset process
-* Make assignment admin menu entry visible as documented
+* Menu fixes:
+  * Make assignment admin menu entry visible as documented
+  * Highlight jobs menu entry when page is active
+  * Fix view access to match menu visibility
 * Fix membership cancellation
+* Upgraded datatables.js to fix issue with search builder on Safari
+
 
 1.4.1
 -----
