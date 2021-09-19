@@ -7,6 +7,7 @@ Dev
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
+    * Filter for free slots on jobs
     * Show less and clearer messages on job page
     * Clarify some texts
 
