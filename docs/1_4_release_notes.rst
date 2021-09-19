@@ -33,7 +33,7 @@ Features & Improvements
 * Upgrade Instructions:
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
     * You may have to add permissions to users to restore their admin menu visibility and ability to edit some entities. See below.
-    * If you overrode templates, wou will have to move and update them
+    * If you overrode templates, you will have to move and update them
         * Template tags are now namespaced in juntagrico. For example former ``{% load config %}`` becomes ``{% load juntagrico.config %}``
         * All juntagrico static files are now namespaced and can be found in ''static/juntagrico''
         * Menu dict method eliminated for easier view creation and performance improvements
