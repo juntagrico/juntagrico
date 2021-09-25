@@ -44,15 +44,15 @@ class SubscriptionAdmin(BaseAdmin):
             return self.add_fieldsets
         return super().get_fieldsets(request, obj)
 
-    def get_readonly_fields(self, request, obj=None):
+    @staticmethod
+    def can_change_deactivated_subscription(request, obj=None):
         if obj is None:
-            return self.readonly_fields
-        sub_is_deactivated = obj.inactive
-        if sub_is_deactivated and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.can_change_deactivated_subscriptions'))):
-            for inline in self.inlines:
-                readonly_fields = inline.readonly_fields or []
-                readonly_fields.extend([field.name for field in inline.model._meta.fields])
-                inline.readonly_fields = list(set(readonly_fields))
-            return [field.name for field in obj._meta.fields]
-        return self.readonly_fields
+            return False
+        return not obj.inactive or (
+            request.user.is_superuser or request.user.has_perm('juntagrico.can_change_deactivated_subscriptions'))
+
+    def has_change_permission(self, request, obj=None):
+        return self.can_change_deactivated_subscription(request, obj) and super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return self.can_change_deactivated_subscription(request, obj) and super().has_delete_permission(request, obj)
