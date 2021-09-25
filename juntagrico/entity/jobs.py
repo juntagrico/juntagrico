@@ -247,6 +247,14 @@ class Job(JuntagricoBasePoly):
     def clean(self):
         check_job_consistency(self)
 
+    def can_modify(self, request):
+        job_is_in_past = self.end_time() < timezone.now()
+        job_is_running = self.start_time() < timezone.now()
+        job_canceled = self.canceled
+        job_read_only = job_canceled or job_is_running or job_is_in_past
+        return not job_read_only or (
+            request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))
+
     class Meta:
         verbose_name = _('AbstractJob')
         verbose_name_plural = _('AbstractJobs')
@@ -314,6 +322,9 @@ class Assignment(JuntagricoBaseModel):
     @classmethod
     def pre_save(cls, sender, instance, **kwargs):
         instance.core_cache = instance.is_core()
+
+    def can_modify(self, request):
+        self.job.can_modify(request)
 
     class Meta:
         verbose_name = Config.vocabulary('assignment')
