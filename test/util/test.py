@@ -82,6 +82,8 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='can_send_mails'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_load_templates'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_subscriptionpart'))
         self.member.user.save()
 
     def set_up_admin(self):

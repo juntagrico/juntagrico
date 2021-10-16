@@ -25,14 +25,8 @@
         <br/>
     </div>
     <div class="col-md-2">
-        <a {% if change_size %}href="{% url 'size-change' subscription.id %}"{% endif %}class="btn btn-success"{% if not change_size %}disabled="disabled"{% endif %}>
+        <a href="{% url 'size-change' subscription.id %}" class="btn btn-success" >
             {% trans "Bestandteile ändern" %}
         </a>
-        <br/>
-        {% if not change_size %}
-            {% blocktrans trimmed with nby=next_business_year|date:"F" ncd=next_cancel_date|date:"F" %}
-            nur {{ nby }}-{{ ncd }} möglich
-            {% endblocktrans %}
-        {% endif %}
     </div>
 </div>

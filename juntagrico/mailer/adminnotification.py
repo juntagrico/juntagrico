@@ -46,11 +46,38 @@ def subscription_canceled(subscription, message, **kwargs):
     ).send()
 
 
+@requires_someone_with_perm('notified_on_subscriptionpart_creation')
+def subparts_created(parts, subscription, **kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('Neuer Bestandteil erstellt')),
+        get_email_content('a_subpart_created', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_subscriptionpart_cancellation')
+def subpart_canceled(part, **kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('Bestandteil gekündigt')),
+        get_email_content('a_subpart_canceled', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
 @requires_someone_with_perm('notified_on_share_creation')
 def share_created(share, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('share'))),
         get_email_content('a_share_created', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_share_cancellation')
+def share_canceled(share, **kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('{} gekündigt').format(Config.vocabulary('share'))),
+        get_email_content('a_share_canceled', base_dict(locals())),
         bcc=kwargs['emails']
     ).send()
 

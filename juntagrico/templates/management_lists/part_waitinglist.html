@@ -1,0 +1,69 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block page_title %}
+    <h3>
+        {% trans "Warteliste der Bestandteile" %}
+    </h3>
+{% endblock %}
+{% block list %}
+    {% vocabulary "subscription" as v_subscription %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "Typ" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
+                <th class="filter">
+                    {% trans "Email" %}
+                </th>
+                <th class="filter">
+                    {% trans "Bestelldatum" %}
+                </th>
+                <th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for part in management_list %}
+                <tr>
+                    <td>
+                        {{ part.type.display_name }}
+                    </td>
+                    <td>
+                        {{ part.subscription.primary_member.first_name }} {{ part.subscription.primary_member.last_name }}
+                    </td>
+                    <td>
+                        <form id="part{{ part.id }}" method="post" action="{% url 'mail' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="recipients"value="{{ part.subscription.primary_member.email }}"/>
+                            <input type="hidden" name="recipients_count" value="1"/>
+                            <a href="#"onclick="$('#part{{ part.id }}').submit();" class="email">
+                                {{ part.subscription.primary_member.email }}
+                            </a>
+                        </form>
+                    </td>
+                    <td>
+                        {{ part.creation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% if part.activation_date %}
+                        {% trans "Wurde bereits aktiviert" %} {{ part.activation_date }}
+                        {% elif part.subscription.state == 'waiting' %}
+                            {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist noch nicht aktiv {% endblocktrans %}
+                        {% elif part.subscription.state == 'inactive' %}
+                            {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist deaktiviert {% endblocktrans %}
+                        {% else %}
+                        <a href="{% url 'part-activate' part.id %}"class="btn btn-success">
+                            {% trans "aktivieren" %}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

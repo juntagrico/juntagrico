@@ -25,7 +25,6 @@ from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate
-from juntagrico.util.models import q_cancelled
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.subs import subscriptions_with_assignments
 from juntagrico.util.views_admin import subscription_management_list
@@ -429,15 +428,18 @@ def canceledlist(request):
                                         'management_lists/canceledlist.html', request)
 
 
-@permission_required('juntagrico.change_subscription')
-def typechangelist(request):
+@permission_required('juntagrico.change_subscriptionpart')
+def part_waitinglist(request):
     render_dict = get_changedate(request)
-    changedlist = []
-    subscriptions_list = SubscriptionDao.all_active_subscritions().filter(~q_cancelled())
-    for subscription in subscriptions_list:
-        if subscription.types_changed > 0:
-            changedlist.append(subscription)
-    return subscription_management_list(changedlist, render_dict, 'management_lists/typechangelist.html', request)
+    changedlist = SubscriptionPartDao.waiting_parts_for_active_subscriptions()
+    return subscription_management_list(changedlist, render_dict, 'management_lists/part_waitinglist.html', request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def part_canceledlist(request):
+    render_dict = get_changedate(request)
+    changedlist = SubscriptionPartDao.canceled_parts_for_active_subscriptions()
+    return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
 
 
 @permission_required('juntagrico.change_subscriptionpart')

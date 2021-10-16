@@ -6,7 +6,6 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.lifecycle.submembership import check_submembership_parent_dates
 from juntagrico.lifecycle.subpart import check_subpart_parent_dates
-from juntagrico.mailer import adminnotification
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
 from juntagrico.util.lifecycle import handle_activated_deactivated
 from juntagrico.util.models import q_activated
@@ -67,7 +66,7 @@ def handle_sub_canceled(sender, instance, **kwargs):
 
 
 def handle_sub_created(sender, instance, **kwargs):
-    adminnotification.subscription_created(instance)
+    pass
 
 
 def check_sub_consistency(instance):

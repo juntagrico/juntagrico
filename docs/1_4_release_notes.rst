@@ -7,6 +7,9 @@ Dev
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
+    * Misleading extra change dates have been removed
+    * Parts can now be ordered all year round
+    * Parts can be canceled all year round
     * Filter for free slots on jobs
     * Show less and clearer messages on job page
     * Clarify some texts
@@ -37,6 +40,9 @@ Features & Improvements
 * Member Features:
     * Better password reset process
 * Admin Features:
+    * Subscription parts now also have a waiting list and cancelled list
+    * Notifications on subscription parts are implemented
+    * Notification on share cancellation is implemented
     * Documentation on :doc:`Permissions`
 * Fixes:
     * Fix in share payout

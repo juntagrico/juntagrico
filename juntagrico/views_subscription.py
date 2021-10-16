@@ -16,7 +16,6 @@ from django.views.generic.edit import ModelFormMixin
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
@@ -24,7 +23,7 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm
-from juntagrico.mailer import membernotification
+from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.management import cancel_sub, create_subscription_parts
@@ -64,7 +63,6 @@ def subscription(request, subscription_id=None):
             'subscription': subscription,
             'co_members': subscription.co_members(member),
             'primary': subscription.primary_member.email == member.email,
-            'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
             'has_extra_subscriptions': SubscriptionProductDao.all_extra_products().count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
@@ -88,14 +86,10 @@ def subscription_change(request, subscription_id):
     change an subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now().date()
-    can_change = not (temporal.cancelation_date() <= now < temporal.start_of_next_business_year())
     renderdict = {
         'subscription': subscription,
         'member': request.user.member,
-        'change_size': can_change,
         'next_cancel_date': temporal.next_cancelation_date(),
-        'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year(),
         'sub_change_addons': addons.config.get_sub_changes(),
     }
@@ -168,7 +162,7 @@ def size_change(request, subscription_id):
                                   format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST)
         if form.is_valid():
-            create_subscription_parts(subscription, form.get_selected())
+            create_subscription_parts(subscription, form.get_selected(), True)
             return return_to_previous_location(request)
     else:
         form = SubscriptionPartOrderForm()
@@ -196,7 +190,7 @@ def extra_change(request, subscription_id):
         form = SubscriptionPartOrderForm(subscription, request.POST,
                                          product_method=SubscriptionProductDao.all_visible_extra_products)
         if form.is_valid():
-            create_subscription_parts(subscription, form.get_selected())
+            create_subscription_parts(subscription, form.get_selected(), True)
             return return_to_previous_location(request)
     else:
         form = SubscriptionPartOrderForm(product_method=SubscriptionProductDao.all_visible_extra_products)
@@ -328,22 +322,6 @@ def deactivate_subscription(request, subscription_id):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.is_operations_group')
-def activate_future_types(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    changedate = request.session.get('changedate', timezone.now().date())
-    try:
-        for part in SubscriptionPartDao.get_canceled_for_subscription(subscription):
-            part.deactivation_date = changedate
-            part.save()
-        for part in SubscriptionPartDao.get_waiting_for_subscription(subscription):
-            part.activation_date = changedate
-            part.save()
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
-
-
 @primary_member_of_subscription
 def cancel_part(request, part_id, subscription_id):
     part = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=part_id)
@@ -351,6 +329,7 @@ def cancel_part(request, part_id, subscription_id):
         part.delete()
     else:
         part.cancel()
+        adminnotification.subpart_canceled(part)
     return return_to_previous_location(request)
 
 
@@ -386,31 +365,21 @@ def leave_subscription(request, subscription_id):
     return render(request, 'leavesubscription.html', {})
 
 
-@permission_required('juntagrico.is_operations_group')
-def activate_extra(request, extra_id):
-    extra = get_object_or_404(SubscriptionPart, id=extra_id)
+@permission_required('juntagrico.change_subscriptionpart')
+def activate_part(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
     change_date = request.session.get('changedate', None)
-    if extra.activation_date is None and extra.deactivation_date is None:
-        extra.activate(change_date)
+    if part.activation_date is None and part.deactivation_date is None:
+        part.activate(change_date)
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.is_operations_group')
-def deactivate_extra(request, extra_id):
-    extra = get_object_or_404(SubscriptionPart, id=extra_id)
+@permission_required('juntagrico.change_subscriptionpart')
+def deactivate_part(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
     change_date = request.session.get('changedate', None)
-    if extra.activation_date is not None:
-        extra.deactivate(change_date)
-    return return_to_previous_location(request)
-
-
-@primary_member_of_subscription
-def cancel_extra(request, extra_id, subscription_id):
-    extra = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=extra_id)
-    if extra.activation_date is None:
-        extra.delete()
-    else:
-        extra.cancel()
+    if part.activation_date is not None:
+        part.deactivate(change_date)
     return return_to_previous_location(request)
 
 
