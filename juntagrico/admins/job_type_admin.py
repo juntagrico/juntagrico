@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
@@ -18,6 +19,7 @@ class JobTypeAdmin(RichTextAdmin):
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
 
+    @admin.action(description=_('Jobart in EinzelJobs konvertieren'))
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
             i = 0
@@ -40,8 +42,6 @@ class JobTypeAdmin(RichTextAdmin):
             for je in JobExtraDao.by_type(inst.id):
                 je.delete()
             inst.delete()
-
-    transform_job_type.short_description = _('Jobart in EinzelJobs konvertieren')
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')

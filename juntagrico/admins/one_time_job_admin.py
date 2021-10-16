@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
@@ -21,6 +22,7 @@ class OneTimeJobAdmin(RichTextAdmin):
     inlines = [AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
 
+    @admin.action(description=_('EinzelJobs in Jobart konvertieren'))
     def transform_job(self, request, queryset):
         for inst in queryset.all():
             t = JobType()
@@ -38,8 +40,6 @@ class OneTimeJobAdmin(RichTextAdmin):
             inst.delete()
             t.name = name
             t.save()
-
-    transform_job.short_description = _('EinzelJobs in Jobart konvertieren')
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'activityarea__coordinator')

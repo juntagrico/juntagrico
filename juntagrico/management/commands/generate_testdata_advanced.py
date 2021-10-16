@@ -18,10 +18,13 @@ class Command(BaseCommand):
     members = []
 
     def generate_member_dict(self, props):
+        checked_email = fake.email()
+        while 0 != Member.objects.filter(email=checked_email).count():
+            checked_email = fake.email()
         result = {
             'birthday': fake.date(),
             'confirmed': True,
-            'email': fake.email(),
+            'email': checked_email,
             'first_name': fake.first_name(),
             'last_name': fake.last_name(),
             'mobile_phone': '',
