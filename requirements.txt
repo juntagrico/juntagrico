@@ -1,10 +1,10 @@
-Django==3.2.2
-django-admin-sortable2==1.0
-django-crispy-forms==1.11.2
+Django==3.2.8
+django-admin-sortable2==1.0.2
+django-crispy-forms==1.13.0
 django-impersonate==1.7.3
 django-polymorphic==3.0.0
 django-richtextfield==1.6.1
-icalendar==4.0.7
-schwifty==2021.5.0
+icalendar==4.0.9
+schwifty==2021.10.2
 xhtml2pdf==0.2.4 # rq.filter: !=0.2.5
-XlsxWriter==1.4.2
+XlsxWriter==3.0.1
