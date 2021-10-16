@@ -1,9 +1,10 @@
 from django.conf.urls import url
-from django.contrib import messages
+from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
+from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
@@ -27,24 +28,18 @@ class JobAdmin(RichTextAdmin):
     def has_delete_permission(self, request, obj=None):
         return obj is not None and obj.can_modify(request) and super().has_delete_permission(request, obj)
 
+    @admin.action(description=_('Job mehrfach kopieren...'))
+    @single_element_action('Genau 1 Job auswählen!')
     def mass_copy_job(self, request, queryset):
-        if queryset.count() != 1:
-            self.message_user(
-                request, _('Genau 1 Job auswählen!'), level=messages.ERROR)
-            return HttpResponseRedirect('')
-
         inst, = queryset.all()
         return HttpResponseRedirect('copy_job/%s/' % inst.id)
 
-    mass_copy_job.short_description = _('Job mehrfach kopieren...')
-
+    @admin.action(description=_('Jobs kopieren'))
     def copy_job(self, request, queryset):
         for inst in queryset.all():
             newjob = RecuringJob(
                 type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
-
-    copy_job.short_description = _('Jobs kopieren')
 
     def get_form(self, request, obj=None, **kwds):
         if 'copy_job' in request.path:
