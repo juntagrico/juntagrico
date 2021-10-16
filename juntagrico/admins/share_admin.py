@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -18,6 +19,7 @@ class ShareAdmin(BaseAdmin):
     raw_id_fields = ['member']
     actions = ['mass_edit_share_dates']
 
+    @admin.action(description=_('Datum für ausgewählte {} setzen').format(Config.vocabulary('share_pl')))
     def mass_edit_share_dates(self, request, queryset):
         if 'apply' in request.POST:
             form = EditShareDatesForm(request.POST)
@@ -48,5 +50,3 @@ class ShareAdmin(BaseAdmin):
                           'shares': queryset,
                           'form': form,
                       })
-
-    mass_edit_share_dates.short_description = _('Datum für ausgewählte {} setzen').format(Config.vocabulary('share_pl'))

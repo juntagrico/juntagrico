@@ -1,10 +1,10 @@
 from django.conf.urls import url
-from django.contrib import messages
+from django.contrib import admin
 from django.http import HttpResponseRedirect
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
+from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
@@ -22,38 +22,24 @@ class JobAdmin(RichTextAdmin):
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']
 
-    def get_readonly_fields(self, request, obj=None):
-        if obj is None:
-            return self.readonly_fields
-        job_is_in_past = obj.end_time() < timezone.now()
-        job_is_running = obj.start_time() < timezone.now()
-        job_canceled = obj.canceled
-        job_read_only = job_canceled or job_is_running or job_is_in_past
-        if job_read_only and (
-                not (request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))):
-            for inline in self.inlines:
-                inline.readonly_fields = [field.name for field in inline.model._meta.fields]
-            return [field.name for field in obj._meta.fields]
-        return self.readonly_fields
+    def has_change_permission(self, request, obj=None):
+        return obj is not None and obj.can_modify(request) and super().has_change_permission(request, obj)
 
+    def has_delete_permission(self, request, obj=None):
+        return obj is not None and obj.can_modify(request) and super().has_delete_permission(request, obj)
+
+    @admin.action(description=_('Job mehrfach kopieren...'))
+    @single_element_action('Genau 1 Job auswählen!')
     def mass_copy_job(self, request, queryset):
-        if queryset.count() != 1:
-            self.message_user(
-                request, _('Genau 1 Job auswählen!'), level=messages.ERROR)
-            return HttpResponseRedirect('')
-
         inst, = queryset.all()
         return HttpResponseRedirect('copy_job/%s/' % inst.id)
 
-    mass_copy_job.short_description = _('Job mehrfach kopieren...')
-
+    @admin.action(description=_('Jobs kopieren'))
     def copy_job(self, request, queryset):
         for inst in queryset.all():
             newjob = RecuringJob(
                 type=inst.type, slots=inst.slots, time=inst.time)
             newjob.save()
-
-    copy_job.short_description = _('Jobs kopieren')
 
     def get_form(self, request, obj=None, **kwds):
         if 'copy_job' in request.path:

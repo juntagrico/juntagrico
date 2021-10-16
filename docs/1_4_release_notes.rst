@@ -10,14 +10,17 @@ Features & Improvements
     * Misleading extra change dates have been removed
     * Parts can now be ordered all year round
     * Parts can be canceled all year round
+    * Filter for free slots on jobs
     * Show less and clearer messages on job page
     * Clarify some texts
 
 * Developer Features:
     * Support for Python 3.9 and dropped support for python 3.6 and 3.7
+    * Refactor: Using new Django 3.2 features
 
 Fixes
 ^^^^^
+* Fix editing limitations for past jobs and deactivated subs
 * Made email uniqueness check case-insensitive
 * Only show depot access information for current depot
 * Use informal language consistently in password reset process
