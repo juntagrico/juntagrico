@@ -8,7 +8,7 @@
 {% endblock %}
 {% block content %}
     <div id="jobs">
-        {% include "snippets/snippet_jobs.html" %}
+        {% include "snippets/snippet_jobs.html" with show_free_slot_filter=True %}
     </div>
 {% endblock %}
 {% block scripts %}
