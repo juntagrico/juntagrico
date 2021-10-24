@@ -18,13 +18,12 @@
 {% endblock %}
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-md-3">
             {% trans "Zeitpunkt" %}:
         </div>
         <div class="col-md-5">
-            {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}
-            <br/>
+            <div class="pb-4">{{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}</div>
             {% if job_is_in_past %}
                 (vor {{ job.end_time|timesince }})
             {% elif job_is_running %}
@@ -34,9 +33,8 @@
             {% endif %}
         </div>
     </div>
-    <br/>
     {% if job.free_slots > -1 %}
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-md-3">
             {% trans "Status" %}:
         </div>
@@ -52,10 +50,9 @@
             {% endspaceless %}
         </div>
     </div>
-    <br/>
     {% endif %}
     {% if job.multiplier > 1 %}
-        <div class="row">
+        <div class="row pb-4">
             <div class="col-md-3">
                 {% vocabulary "assignment_pl" %}:
             </div>
@@ -65,9 +62,8 @@
                 {% endblocktrans %}
             </div>
         </div>
-        <br/>
     {% elif job.multiplier == 0 %}
-        <div class="row">
+        <div class="row pb-4">
             <div class="col-md-3">
                 {% vocabulary "assignment_pl" %}:
             </div>
@@ -77,11 +73,10 @@
                 {% endblocktrans %}
             </div>
         </div>
-        <br/>
     {% endif %}
 
     {% if job.extras.strip %}
-        <div class="row">
+        <div class="row pb-4">
             <div class="col-md-3">
                 {% trans "Extras" %}:
             </div>
@@ -94,9 +89,8 @@
                 {% endfor %}
             </div>
         </div>
-        <br/>
     {% endif %}
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-md-3">
             {% trans "Ort" %}:
         </div>
@@ -113,8 +107,7 @@
             {% endif %}
         </div>
     </div>
-    <br/>
-    <div class="row">
+    <div class="row pb-4">
         <div class="col-md-3">
             {% trans "Beschreibung" %}:
         </div>
@@ -125,9 +118,8 @@
             {% endif %}
         </div>
     </div>
-    <br/>
     {% if can_contact %}
-        <div class="row">
+        <div class="row pb-4">
             <div class="col-md-3">
                 {% trans "Kontaktieren" %}:
             </div>
@@ -140,11 +132,21 @@
                         {% trans "Allen eine Email senden" %}
                     </button>
                 </form>
-                <br/>
             </div>
         </div>
     {% endif %}
-    <div class="row">
+    <div class="row pb-4">
+        <div class="col-md-3">
+            {% trans "Kontakt" %}:
+        </div>
+        <div class="col-md-5">
+                {{ job.type.activityarea.coordinator|richtext|safe }}
+                <a class="ml-1" href="{% url 'contact-member' member_id=job.type.activityarea.coordinator.pk %}">
+                    <i class="far fa-envelope"> </i>
+                </a>
+        </div>
+    </div>
+    <div class="row pb-4">
         <div class="col-md-3">
             {% trans "Dabei sind" %}:
         </div>
@@ -170,7 +172,6 @@
             {% endif %}
         </div>
     </div>
-    <br/>
     {% if can_subscribe %}
         <div class="row">
             <div class="col-md-3">
@@ -180,7 +181,7 @@
                 <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich verbindlich für diesen Einsatz eintragen?" %}')">
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}
-                        <div>
+                        <div class="pg-4">
                             <select name="jobs" class="form-control">
                                 {% for i in allowed_additional_participants %}
                                     {% if i == 1 %}
@@ -207,19 +208,16 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <br/>
                     {% else %}
                         <input type="hidden" name="jobs" value="1"/>
                     {% endif %}
                     {% for extra in job.empty_per_job_extras %}
-                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                        <input class="pb-4" type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
                         {{ extra.extra_type.name }}
-                        <br/>
                     {% endfor %}
                     {% for extra in job.per_member_extras %}
-                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                        <input class="pb-4" type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
                         {{ extra.extra_type.name }}
-                        <br/>
                     {% endfor %}
                     <div>
                         <button type="submit" class="btn btn-success">
