@@ -4,6 +4,14 @@ Release Notes
 Dev
 ---
 
+Fixes
+^^^^^
+* Fix: Allow editing of assignments via admin
+* Fix link in admin main page from "show" to "edit" where it was wrong
+
+1.4.2
+-----
+
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
@@ -25,9 +33,9 @@ Fixes
 * Only show depot access information for current depot
 * Use informal language consistently in password reset process
 * Menu fixes:
-  * Make assignment admin menu entry visible as documented
-  * Highlight jobs menu entry when page is active
-  * Fix view access to match menu visibility
+    * Make assignment admin menu entry visible as documented
+    * Highlight jobs menu entry when page is active
+    * Fix view access to match menu visibility
 * Fix membership cancellation
 * Upgraded datatables.js to fix issue with search builder on Safari
 
