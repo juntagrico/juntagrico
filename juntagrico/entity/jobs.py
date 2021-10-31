@@ -323,7 +323,7 @@ class Assignment(JuntagricoBaseModel):
         instance.core_cache = instance.is_core()
 
     def can_modify(self, request):
-        self.job.can_modify(request)
+        return self.job.can_modify(request)
 
     class Meta:
         verbose_name = Config.vocabulary('assignment')
