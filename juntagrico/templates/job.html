@@ -20,7 +20,8 @@
             {% trans "Zeitpunkt" %}:
         </div>
         <div class="col-md-5">
-            <div class="pb-4">{{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}</div>
+            {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}
+            <br/>
             {% if job_is_in_past %}
                 (vor {{ job.end_time|timesince }})
             {% elif job_is_running %}
@@ -202,12 +203,14 @@
                         <input type="hidden" name="jobs" value="1"/>
                     {% endif %}
                     {% for extra in job.empty_per_job_extras %}
-                        <input class="pb-4" type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
                         {{ extra.extra_type.name }}
+                        <br/>
                     {% endfor %}
                     {% for extra in job.per_member_extras %}
-                        <input class="pb-4" type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
                         {{ extra.extra_type.name }}
+                        <br/>
                     {% endfor %}
                     <div>
                         <button type="submit" class="btn btn-success">
