@@ -230,6 +230,8 @@ class SignupView(FormView, ModelFormMixin):
 
     def form_valid(self, form):
         self.cs_session.main_member = form.instance
+        # monkey patch comment field into main_member
+        self.cs_session.main_member.comment = form.cleaned_data['comment']
         return redirect(self.cs_session.next_page())
 
 
