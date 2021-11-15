@@ -204,6 +204,8 @@ class CSSummaryView(TemplateView):
     def dispatch(self, request, cs_session, *args, **kwargs):
         # remember that user reached summary to come back here after editing
         cs_session.edit = True
+        if request.method == 'POST':
+            cs_session.main_member.comment = request.POST.get("comment", "")
         return super().dispatch(request, *args, cs_session=cs_session, **kwargs)
 
     @staticmethod
