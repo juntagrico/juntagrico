@@ -69,7 +69,8 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             'mobile_phone': '',
             'email': 'test@user.com',
             'birthday': '',
-            'agb': 'on'
+            'agb': 'on',
+            'comment': 'Short comment'
         }
         response = self.client.post(reverse('signup'), new_member_data)
         self.assertRedirects(response, reverse('cs-subscription'))
