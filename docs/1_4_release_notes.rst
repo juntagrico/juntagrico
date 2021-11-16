@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Dev
+---
+
+Fixes
+^^^^^
+* Fix export of share payment file (pain.001)
+
 1.4.3
 -----
 
