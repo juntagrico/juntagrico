@@ -11,30 +11,37 @@
     {% show_core as b_show_core %}
     {% requires_core as b_requires_core %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% vocabulary "subscription" as v_subscription %}
     <table id="filter-table" class="list table" style="display: table;">
         <thead>
             <tr>
                 <th class="filter">
                     {% trans "BezieherInnen" %}
                 </th>
-                 <th >
+                <th class="search-builder-column">
+                    {% trans "Startdatum" %}
+                </th>
+                <th class="search-builder-column">
+                    {% blocktrans %}{{ v_subscription }}-Status{% endblocktrans %}
+                </th>
+                <th class="search-builder-column">
                     {% vocabulary "assignment_pl" %}
                 </th>
-                 <th >
+                <th class="search-builder-column">
                     {% blocktrans %}{{ v_assignment_pl }} benötigt{% endblocktrans %}
                 </th>
-                 <th >
-                    {% blocktrans %}{{ v_assignment_pl }} status{% endblocktrans %}
+                <th class="search-builder-column">
+                    {% blocktrans %}{{ v_assignment_pl }} Status{% endblocktrans %}
                 </th>
                 {% if b_show_core and b_requires_core %}
-                        <th>
+                        <th class="search-builder-column">
                             {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
                         </th>
-                        <th>
+                        <th class="search-builder-column">
                             {% blocktrans %}{{ v_assignment_pl }} Kernbereich benötigt{% endblocktrans %}
                         </th>
-                        <th>
-                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich status{% endblocktrans %}
+                        <th class="search-builder-column">
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich Status{% endblocktrans %}
                         </th>
                  {% endif %}
                 <th class="d-none">
@@ -49,6 +56,12 @@
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.subscription.id %}">
                             {{ subscription.subscription.recipients_names }}
                         </a>
+                    </td>
+                    <td>
+                        {{ subscription.subscription.start_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ subscription.subscription.state }}
                     </td>
                     <td>
                         {{ subscription.assignments|floatformat }}
@@ -84,10 +97,6 @@
     </table>
     <script type='text/javascript'>
         var search_builder_enabled=true;
-        {% if b_show_core and b_requires_core%}
-            var search_builder_columns=[1,2,3,4,5,6];
-        {% else %}
-            var search_builder_columns=[1,2,3];
-        {% endif %}
+        var search_builder_columns='.search-builder-column';
     </script>
 {% endblock %}
