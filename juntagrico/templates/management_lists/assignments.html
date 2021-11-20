@@ -51,23 +51,23 @@
                         </a>
                     </td>
                     <td>
-                        {{ subscription.assignments|floatformat }}
+                        {{ subscription.assignments|floatformat:0 }}
                     </td>
                     <td>
                         {{ subscription.subscription.required_assignments }}
                     </td>
                     <td>
-                        {{ subscription.assignments_progress|floatformat }}%
+                        {{ subscription.assignments_progress|floatformat:0 }}%
                     </td>
                     {% if b_show_core and b_requires_core %}
                         <th>
-                            {{ subscription.core_assignments|floatformat }}
+                            {{ subscription.core_assignments|floatformat:0 }}
                         </th>
                         <th>
                             {{ subscription.subscription.required_core_assignments }}
                         </th>
                         <th>
-                            {{ subscription.core_assignments_progress|floatformat }}%
+                            {{ subscription.core_assignments_progress|floatformat:0 }}%
                         </th>
                     {% endif %}
                     <td class="email d-none">
