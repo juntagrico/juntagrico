@@ -1,13 +1,17 @@
 from adminsortable2.admin import SortableAdminMixin
+from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from juntagrico.admins import RichTextAdmin
+from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.util.admin import queryset_for_coordinator
 
 
-class AreaAdmin(SortableAdminMixin, RichTextAdmin):
+class AreaAdmin(PolymorphicInlineSupportMixin, SortableAdminMixin, RichTextAdmin):
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']
     list_display = ['name', 'core', 'hidden', 'coordinator', 'get_email', 'auto_add_new_members']
+    list_display = ['name', 'core', 'hidden', 'coordinator', 'get_email']
+    inlines = [ContactInline]
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'coordinator')

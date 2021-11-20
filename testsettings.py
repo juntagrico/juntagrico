@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'adminsortable2',
     'djrichtextfield',
+    'polymorphic',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
