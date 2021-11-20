@@ -2,24 +2,26 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
+from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
+from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob, JobType
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 
 
-class JobAdmin(RichTextAdmin):
+class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
-    inlines = [AssignmentInline]
+    inlines = [ContactInline, AssignmentInline]
     readonly_fields = ['free_slots']
 
     def has_change_permission(self, request, obj=None):
