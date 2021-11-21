@@ -116,7 +116,6 @@ class LowercaseEmailField(models.EmailField):
         """
         Convert email to lowercase.
         """
-        value = super().to_python(value)
         # Value can be None so check that it's a string before lowercasing.
         if isinstance(value, str):
             return value.lower()
