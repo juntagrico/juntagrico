@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.entity.member import Member
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.jobs import get_status_image
 from juntagrico.util.temporal import weekday_short
@@ -328,3 +329,55 @@ class Assignment(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('assignment')
         verbose_name_plural = Config.vocabulary('assignment_pl')
+
+
+class Contact(JuntagricoBasePoly):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, null=True, blank=True)
+    job_type = models.ForeignKey(JobType, on_delete=models.CASCADE, null=True, blank=True)
+    activity_area = models.ForeignKey(ActivityArea, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name = _('Kontakt')
+        verbose_name_plural = _('Kontakte')
+
+
+class MemberContact(Contact):
+    EMAIL = 'E'
+    TEL = 'T'
+    EMAIL_TEL = 'B'
+    DISPLAY_OPTIONS = [
+        (EMAIL, _('E-Mail')),
+        (TEL, _('Telefonnummer')),
+        (EMAIL_TEL, _('E-Mail & Telefonnummer')),
+    ]
+
+    member = models.ForeignKey(Member, on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
+    display = models.CharField(_('Anzeige'), max_length=1, choices=DISPLAY_OPTIONS, default=EMAIL)
+
+    class Meta:
+        verbose_name = Config.vocabulary('member')
+        verbose_name_plural = Config.vocabulary('member_pl')
+
+
+class EmailContact(Contact):
+    email = models.EmailField(_('E-Mail'))
+
+    class Meta:
+        verbose_name = _('E-Mail-Adresse')
+        verbose_name_plural = _('E-Mail-Adresse')
+
+
+class PhoneContact(Contact):
+    phone = models.CharField(_('Telefonnummer'), max_length=50)
+
+    class Meta:
+        verbose_name = _('Telefonnummer')
+        verbose_name_plural = _('Telefonnummer')
+
+
+class TextContact(Contact):
+    text = models.TextField(_('Kontaktbeschrieb'))
+
+    class Meta:
+        verbose_name = _('Freier Kontaktbeschrieb')
+        verbose_name_plural = _('Freie Kontaktbeschriebe')
