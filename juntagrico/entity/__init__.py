@@ -108,6 +108,21 @@ class SimpleStateModel(models.Model):
         abstract = True
 
 
+class LowercaseEmailField(models.EmailField):
+    """
+    Override EmailField to convert emails to lowercase before saving.
+    """
+    def get_prep_value(self, value):
+        """
+        Convert email to lowercase.
+        """
+        value = super().to_python(value)
+        # Value can be None so check that it's a string before lowercasing.
+        if isinstance(value, str):
+            return value.lower()
+        return value
+
+
 def notifiable(cls):
     entity_name = cls.__qualname__.split('.')[0].lower()
     new_permissions = list(getattr(cls, 'permissions', [])) + [

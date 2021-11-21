@@ -134,13 +134,6 @@ class MemberBaseForm(ModelForm):
                 "home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
         )
 
-    def clean_email(self):
-        # check case insensitive uniqueness, because existing emails might already be upper case
-        if Member.objects.filter(email__iexact=self.cleaned_data['email']):
-            raise ValidationError(self.duplicate_email_message())
-        # store email in lower case from now on
-        return self.cleaned_data['email'].lower()
-
 
 class RegisterMemberForm(MemberBaseForm):
     agb = BooleanField(required=True)
