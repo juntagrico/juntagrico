@@ -6,7 +6,7 @@ from django.views.generic.edit import ModelFormMixin
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm
+    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm
 from juntagrico.util import temporal
 from juntagrico.util.management import new_signup
 from juntagrico.view_decorators import create_subscription_session
@@ -194,18 +194,23 @@ class CSSummaryView(TemplateView):
     template_name = 'createsubscription/summary.html'
 
     def get_context_data(self, cs_session, **kwargs):
-        return super().get_context_data(
+        context = super().get_context_data(
             **{},
             **cs_session.to_dict(),
             **kwargs
         )
+        form = RegisterSummaryForm(self.request.POST or None, initial={'comment': cs_session.main_member.comment})
+        context["form"] = form
+        return context
 
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
         # remember that user reached summary to come back here after editing
         cs_session.edit = True
         if request.method == 'POST':
-            cs_session.main_member.comment = request.POST.get("comment", "")
+            context = self.get_context_data(cs_session=cs_session, **kwargs)
+            if context["form"].is_valid():
+                cs_session.main_member.comment = context["form"].cleaned_data["comment"]
         return super().dispatch(request, *args, cs_session=cs_session, **kwargs)
 
     @staticmethod
