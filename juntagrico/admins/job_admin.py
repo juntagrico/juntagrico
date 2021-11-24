@@ -21,18 +21,31 @@ class JobAdmin(RichTextAdmin):
     exclude = ['reminder_sent']
     inlines = [AssignmentInline]
     readonly_fields = ['free_slots']
+    JOB_COPY_PATH = 'copy_job'
 
     def has_change_permission(self, request, obj=None):
-        return (obj is None or obj.can_modify(request)) and super().has_change_permission(request, obj)
+        return (self.is_copy_view(request) or obj is None or obj.can_modify(request)
+                ) and super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return (obj is None or obj.can_modify(request)) and super().has_delete_permission(request, obj)
+        return (self.is_copy_view(request) or obj is None or obj.can_modify(request)
+                ) and super().has_delete_permission(request, obj)
+
+    def get_readonly_fields(self, request, obj=None):
+        if self.is_copy_view(request):
+            return []  # special case for mass job copy action
+        return super().readonly_fields(request, obj)
+
+    def get_inlines(self, request, obj):
+        if self.is_copy_view(request):
+            return []  # special case for mass job copy action
+        return super().get_inlines(request, obj)
 
     @admin.action(description=_('Job mehrfach kopieren...'))
     @single_element_action('Genau 1 Job auswählen!')
     def mass_copy_job(self, request, queryset):
         inst, = queryset.all()
-        return HttpResponseRedirect('copy_job/%s/' % inst.id)
+        return HttpResponseRedirect(self.JOB_COPY_PATH + '/%s/' % inst.id)
 
     @admin.action(description=_('Jobs kopieren'))
     def copy_job(self, request, queryset):
@@ -42,28 +55,24 @@ class JobAdmin(RichTextAdmin):
             newjob.save()
 
     def get_form(self, request, obj=None, **kwds):
-        if 'copy_job' in request.path:
+        if self.JOB_COPY_PATH in request.path:
             return JobCopyForm
         return super().get_form(request, obj, **kwds)
 
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            url(r'^copy_job/(?P<jobid>.*?)/$',
+            url(rf'^{self.JOB_COPY_PATH}/(?P<jobid>.*?)/$',
                 self.admin_site.admin_view(self.copy_job_view))
         ]
         return my_urls + urls
 
+    def is_copy_view(self, request):
+        return self.JOB_COPY_PATH in request.path
+
     def copy_job_view(self, request, jobid):
-        # HUGE HACK: modify admin properties just for this view
-        tmp_readonly = self.readonly_fields
-        tmp_inlines = self.inlines
-        self.readonly_fields = []
-        self.inlines = []
         res = self.change_view(request, jobid, extra_context={
             'title': 'Copy job'})
-        self.readonly_fields = tmp_readonly
-        self.inlines = tmp_inlines
         return res
 
     def get_queryset(self, request):
