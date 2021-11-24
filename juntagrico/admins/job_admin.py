@@ -34,7 +34,7 @@ class JobAdmin(RichTextAdmin):
     def get_readonly_fields(self, request, obj=None):
         if self.is_copy_view(request):
             return []  # special case for mass job copy action
-        return super().readonly_fields(request, obj)
+        return super().get_readonly_fields(request, obj)
 
     def get_inlines(self, request, obj):
         if self.is_copy_view(request):
