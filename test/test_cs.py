@@ -9,6 +9,16 @@ from test.util.test import JuntagricoTestCase
 
 class CreateSubscriptionTests(JuntagricoTestCase):
 
+    def setUp(self):
+        super().setUp()
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_subscription_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_member_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_share_creation'))
+        self.member.user.save()
+
     def testSignupLogout(self):
         self.client.force_login(self.member.user)
         user = auth.get_user(self.client)
@@ -52,13 +62,6 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertEqual(response.status_code, 200)
 
     def commonSignupTest(self, with_comment=False):
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_subscription_creation'))
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_member_creation'))
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_share_creation'))
-        self.member.user.save()
         new_member_data = {
             'last_name': 'Last Name',
             'first_name': 'First Name',
