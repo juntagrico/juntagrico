@@ -190,33 +190,35 @@ class CSSelectSharesView(TemplateView):
         return super().get(request, *args, shares=shares, **kwargs)
 
 
-class CSSummaryView(TemplateView):
+class CSSummaryView(FormView):
     template_name = 'createsubscription/summary.html'
+    form_class = RegisterSummaryForm
 
-    def get_context_data(self, cs_session, **kwargs):
-        context = super().get_context_data(
+    def __init__(self):
+        super().__init__()
+        self.cs_session = None
+
+    def get_initial(self):
+        return {'comment': self.cs_session.main_member.comment}
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(
             **{},
-            **cs_session.to_dict(),
+            **self.cs_session.to_dict(),
             **kwargs
         )
-        form = RegisterSummaryForm(self.request.POST or None, initial={'comment': cs_session.main_member.comment})
-        context["form"] = form
-        return context
 
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
+        self.cs_session = cs_session
         # remember that user reached summary to come back here after editing
         cs_session.edit = True
-        if request.method == 'POST':
-            context = self.get_context_data(cs_session=cs_session, **kwargs)
-            if context["form"].is_valid():
-                cs_session.main_member.comment = context["form"].cleaned_data["comment"]
-        return super().dispatch(request, *args, cs_session=cs_session, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
-    @staticmethod
-    def post(request, cs_session):
+    def form_valid(self, form):
+        self.cs_session.main_member.comment = form.cleaned_data["comment"]
         # handle new signup
-        member = new_signup(cs_session.pop())
+        member = new_signup(self.cs_session.pop())
         # finish registration
         if member.subscription_future is None:
             return redirect('welcome')
