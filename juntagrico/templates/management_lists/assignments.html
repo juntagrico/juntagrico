@@ -58,10 +58,10 @@
                         </a>
                     </td>
                     <td>
-                        {{ subscription.subscription.start_date|date:"Y-m-d" }}
+                        {{ subscription.subscription.activation_date|date:"Y-m-d" }}
                     </td>
                     <td>
-                        {{ subscription.subscription.state }}
+                        {{ subscription.subscription.state_text }}
                     </td>
                     <td>
                         {{ subscription.assignments|floatformat }}
