@@ -75,6 +75,8 @@ class SubscriptionType(JuntagricoBaseModel):
     description = models.TextField(
         _('Beschreibung'), max_length=1000, blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    default_activity_area = models.ForeignKey(
+        'ActivityArea', on_delete=models.PROTECT, null=True, blank=True, verbose_name=_('Standard Tätigkeitsbereich'))
 
     @property
     def has_periods(self):
