@@ -8,6 +8,7 @@ from juntagrico.admins.depot_admin import DepotAdmin
 from juntagrico.admins.job_admin import JobAdmin
 from juntagrico.admins.job_type_admin import JobTypeAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
+from juntagrico.admins.location_admin import LocationAdmin
 from juntagrico.admins.member_admin import MemberAdmin, MemberAdminWithShares
 from juntagrico.admins.one_time_job_admin import OneTimeJobAdmin
 from juntagrico.admins.share_admin import ShareAdmin
@@ -17,6 +18,7 @@ from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin, Sub
 from juntagrico.config import Config
 from juntagrico.entity.billing import BillingPeriod
 from juntagrico.entity.delivery import Delivery
+from juntagrico.entity.location import Location
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Assignment, ActivityArea, JobExtra, JobExtraType, JobType, RecuringJob, OneTimeJob
 from juntagrico.entity.listmessage import ListMessage
@@ -30,6 +32,7 @@ from juntagrico.util import addons
 # loading addons here so that we have the information about admin extensions stuff like inlines etc
 addons.load_addons()
 
+admin.site.register(Location, LocationAdmin)
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(SubscriptionSize, SubscriptionSizeAdmin)
 admin.site.register(SubscriptionType, SubscriptionTypeAdmin)
