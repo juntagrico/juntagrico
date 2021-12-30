@@ -25,10 +25,10 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     readonly_fields = ['free_slots']
 
     def has_change_permission(self, request, obj=None):
-        return obj is not None and obj.can_modify(request) and super().has_change_permission(request, obj)
+        return (obj is None or obj.can_modify(request)) and super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return obj is not None and obj.can_modify(request) and super().has_delete_permission(request, obj)
+        return (obj is None or obj.can_modify(request)) and super().has_delete_permission(request, obj)
 
     @admin.action(description=_('Job mehrfach kopieren...'))
     @single_element_action('Genau 1 Job auswählen!')

@@ -45,9 +45,7 @@ class SubscriptionAdmin(BaseAdmin):
 
     @staticmethod
     def can_change_deactivated_subscription(request, obj=None):
-        if obj is None:
-            return False
-        return not obj.inactive or (
+        return obj is None or not obj.inactive or (
             request.user.is_superuser or request.user.has_perm('juntagrico.can_change_deactivated_subscriptions'))
 
     def has_change_permission(self, request, obj=None):
