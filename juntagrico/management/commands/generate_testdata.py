@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -81,10 +82,15 @@ class Command(BaseCommand):
         area_2 = ActivityArea.objects.create(**area2_fields)
         area_2.members.set([member_1])
         area_2.save()
+
+        location_1_fields = {'name': 'auf dem Hof'}
+        location_1 = Location.objects.create(**location_1_fields)
+        location_1.save()
+
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type_1 = JobType.objects.create(**type1_fields)
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,

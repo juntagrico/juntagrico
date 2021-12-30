@@ -17,8 +17,7 @@ class LocationAdmin(SortableAdminMixin, RichTextAdmin):
         if 'apply' in request.POST:
             form = LocationReplaceForm(queryset, request.POST)
             if form.is_valid():
-                replace_by = form.cleaned_data['replace_by']
-                # TODO: replace elements from queryset in all places they are used and them delete them.
+                form.save()
                 return HttpResponseRedirect(request.get_full_path())
         else:
             form = LocationReplaceForm(queryset)

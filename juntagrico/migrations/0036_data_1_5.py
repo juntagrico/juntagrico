@@ -14,6 +14,18 @@ def lowercase_emails(apps, schema_editor):
             print('\nWARNING: Duplicate email address must be fixed manually: ', member.email)
 
 
+def migrate_extras(apps, schema_editor):
+    JobType = apps.get_model('juntagrico', 'JobType')
+    OneTimeJob = apps.get_model('juntagrico', 'OneTimeJob')
+    Location = apps.get_model('juntagrico', 'Location')
+    for job_type in JobType.objects.all():
+        job_type.location2 = Location.objects.get_or_create(name=job_type.location)[0]
+        job_type.save()
+    for one_time_job in OneTimeJob.objects.all():
+        one_time_job.location2 = Location.objects.get_or_create(name=one_time_job.location)[0]
+        one_time_job.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -21,5 +33,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(migrate_extras),
         migrations.RunPython(lowercase_emails),
     ]

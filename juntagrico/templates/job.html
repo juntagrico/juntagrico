@@ -98,11 +98,14 @@
             {% trans "Ort" %}:
         </div>
         <div class="col-md-5">
-            {{ job.type.location }} (
-            <a href="https://www.google.com/maps/search/?api=1&query={{ job.type.location | urlencode }}" target="_blank">
-                Karte
-            </a>
-            )
+            {{ job.type.location }}
+            {% if job.type.location.google_maps_query %}
+                (
+                <a href="https://www.google.com/maps/search/?api=1&query={{ job.type.location.google_maps_query | urlencode }}" target="_blank">
+                    Karte
+                </a>
+                )
+            {% endif %}
         </div>
     </div>
     <br/>
