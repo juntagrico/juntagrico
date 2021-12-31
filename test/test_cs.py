@@ -101,6 +101,11 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             }
         )
         self.assertRedirects(response, reverse('cs-co-members'))
+        co_member_data = new_member_data.copy()
+        co_member_data['email'] = 'test2@user.com'
+        response = self.client.post(reverse('cs-co-members'), co_member_data)
+        self.assertRedirects(response, reverse('cs-co-members'))
+        self.assertGet(reverse('cs-shares'), 200)
         response = self.client.post(
             reverse('cs-shares'),
             {
@@ -115,7 +120,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertEqual(Member.objects.filter(email=new_member_data['email']).count(), 1)
         self.assertEqual(Share.objects.filter(member__email=new_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(primary_member__email=new_member_data['email']).count(), 1)
-        self.assertEqual(len(mail.outbox), 5)  # welcome mail, share mail & 3 admin notifications
+        self.assertEqual(len(mail.outbox), 7)  # welcome mail, share mail & same for co-member & 3 admin notifications
         # first mail should be admin notification
         if with_comment:
             self.assertIn(test_comment, mail.outbox[0].body)
