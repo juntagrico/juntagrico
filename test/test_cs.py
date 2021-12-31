@@ -1,5 +1,4 @@
 from django.contrib import auth
-from django.contrib.auth.models import Permission
 from django.core import mail
 from django.urls import reverse
 
@@ -8,16 +7,6 @@ from test.util.test import JuntagricoTestCase
 
 
 class CreateSubscriptionTests(JuntagricoTestCase):
-
-    def setUp(self):
-        super().setUp()
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_subscription_creation'))
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_member_creation'))
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_share_creation'))
-        self.member.user.save()
 
     def testSignupLogout(self):
         self.client.force_login(self.member.user)
