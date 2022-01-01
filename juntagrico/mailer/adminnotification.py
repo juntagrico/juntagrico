@@ -29,7 +29,7 @@ def member_left_activityarea(area, member):
 
 
 @requires_someone_with_perm('notified_on_subscription_creation')
-def subscription_created(subscription, **kwargs):
+def subscription_created(subscription, comment='', **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('subscription'))),
         get_email_content('n_sub', base_dict(locals())),
