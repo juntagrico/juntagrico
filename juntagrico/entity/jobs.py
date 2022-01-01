@@ -19,8 +19,8 @@ from juntagrico.util.temporal import weekday_short
 
 def get_emails(source, fallback):
     emails = source.filter(
-        Q(instance_of=EmailContact)
-        | Q(MemberContact___display__in=[MemberContact.DISPLAY_EMAIL, MemberContact.DISPLAY_EMAIL_TEL])
+        Q(instance_of=EmailContact) | Q(MemberContact___display__in=[MemberContact.DISPLAY_EMAIL,
+                                                                     MemberContact.DISPLAY_EMAIL_TEL])
     )
     if emails.count():
         return [e.email for e in emails]
