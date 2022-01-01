@@ -169,10 +169,10 @@ class Command(BaseCommand):
                 self.generate_depot_sub(depot, options['sub_shares'], type)
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
-                        'hidden': False, 'coordinator': self.members[0], 'show_coordinator_phonenumber': False,
+                        'hidden': False, 'coordinator': self.members[0],
                         'auto_add_new_members': True}
         area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
-                        'hidden': False, 'coordinator': self.members[1], 'show_coordinator_phonenumber': False,
+                        'hidden': False, 'coordinator': self.members[1],
                         'auto_add_new_members': False}
         area_1, _ = ActivityArea.objects.get_or_create(
             name=area1_fields['name'],
