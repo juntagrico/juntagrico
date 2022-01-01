@@ -18,20 +18,12 @@
     </div>
     <div class="row mb-4">
         <div class="col-md-3">
-            {% trans "Verantwortlicher" %}:
+            {% trans "Kontaktperson" %}:
         </div>
         <div class="col-md-9">
-            {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
-            <br/>
-            {% if area.email is not None %}
-                <a href="mailto:{{ area.email }}">
-                    {{ area.email }}
-                </a>
-            {% else %}
-                <a href="mailto:{{ area.coordinator.email }}">
-                    {{ area.coordinator.email }}
-                </a>
-            {% endif %}
+            {% for contact in area.contacts %}
+                {{ contact.to_html }}
+            {% endfor %}
         </div>
     </div>
     <div class="row mb-3 no-gutters">

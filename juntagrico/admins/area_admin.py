@@ -1,5 +1,8 @@
 from adminsortable2.admin import SortableAdminMixin
+from django.utils.safestring import mark_safe
 from polymorphic.admin import PolymorphicInlineSupportMixin
+from django.utils.translation import gettext as _
+from django.contrib import admin
 
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.contact_inline import ContactInline
@@ -9,8 +12,12 @@ from juntagrico.util.admin import queryset_for_coordinator
 class AreaAdmin(PolymorphicInlineSupportMixin, SortableAdminMixin, RichTextAdmin):
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']
-    list_display = ['name', 'core', 'hidden', 'coordinator', 'get_email']
+    list_display = ['name', 'core', 'hidden', 'coordinator', 'contacts_text']
     inlines = [ContactInline]
+
+    @admin.display(description=_('Kontakt'))
+    def contacts_text(self, instance):
+        return mark_safe("<br>".join([str(c) for c in instance.contacts]))
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'coordinator')

@@ -131,6 +131,9 @@
             {% trans "Kontakt" %}:
         </div>
         <div class="col-md-5">
+            {% for contact in job.contacts %}
+                {{ contact.to_html }}
+            {% endfor %}
                 {{ job.type.activityarea.coordinator|richtext|safe }}
                 <a class="ml-1" href="{% url 'contact-member' member_id=job.type.activityarea.coordinator.pk %}">
                     <i class="far fa-envelope"> </i>

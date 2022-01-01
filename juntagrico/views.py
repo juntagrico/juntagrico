@@ -159,21 +159,14 @@ def areas(request):
     Details for all areas a member can participate
     '''
     member = request.user.member
-    my_areas = []
+    areas = ActivityAreaDao.all_visible_areas_ordered()
     last_was_core = True
-    for area in ActivityAreaDao.all_visible_areas_ordered():
-        my_areas.append({
-            'name': area.name,
-            'checked': member in area.members.all(),
-            'id': area.id,
-            'core': area.core,
-            'coordinator': area.coordinator,
-            'email': area.email,
-            'first_non_core': not area.core and last_was_core
-        })
+    for area in areas:
+        area.checked = member in area.members.all()
+        area.first_non_core = not area.core and last_was_core
         last_was_core = area.core
     renderdict = {
-        'areas': my_areas,
+        'areas': areas,
     }
     return render(request, 'areas.html', renderdict)
 

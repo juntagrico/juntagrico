@@ -65,7 +65,6 @@ def job_signup(email, job):
 
 
 def job_reminder(emails, job):
-    contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
     EmailSender.get_sender(
         organisation_subject(_('Einsatz-Erinnerung')),
         get_email_content('j_reminder', base_dict(locals())),
