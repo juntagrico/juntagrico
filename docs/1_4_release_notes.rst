@@ -7,6 +7,7 @@ Dev
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
+* Fix mailtext command for password reset text
 
 1.4.3
 -----
