@@ -145,8 +145,8 @@ class AdminTests(JuntagricoTestCase):
     def testShareAdmin(self):
         url = reverse('admin:juntagrico_share_changelist')
         selected_items = [self.share.pk]
-        self.assertPost(url, data={'action': 'mark_paid', '_selected_action': selected_items}, member=self.admin,
-                        code=302)
+        self.assertPost(url, data={'action': 'mass_edit_share_dates', '_selected_action': selected_items},
+                        member=self.admin)
 
     def testSubtypeAdminNoShares(self):
         with self.settings(ENABLE_SHARES=False):
