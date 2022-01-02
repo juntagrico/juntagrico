@@ -46,7 +46,9 @@ class ShareAdmin(BaseAdmin):
 
         return render(request,
                       'admin/mass_edit_share_dates_intermediate.html',
-                      context={
-                          'shares': queryset,
-                          'form': form,
-                      })
+                      context=dict(
+                          self.admin_site.each_context(request),
+                          title=_('Mehrere Anteilscheindaten bearbeiten'),
+                          shares=queryset,
+                          form=form
+                      ))
