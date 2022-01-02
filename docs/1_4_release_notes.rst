@@ -7,6 +7,7 @@ Dev
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
+* Fix minor template issues
 
 1.4.3
 -----
