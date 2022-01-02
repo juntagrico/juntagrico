@@ -4,6 +4,11 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Option to enter a comment that is sent with the admin notification in the sign up and share order process
+
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
