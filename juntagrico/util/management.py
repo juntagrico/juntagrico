@@ -86,24 +86,20 @@ def create_subscription(start_date, depot, subscription_types, member):
     subscription.save()
     # set types
     create_subscription_parts(subscription, subscription_types)
+    adminnotification.subscription_created(subscription)
     return subscription
 
 
 def add_recipient_to_subscription(subscription, recipient):
-    if subscription.state == 'waiting':
-        recipients = subscription.members_future
-    elif subscription.state == 'inactive':
-        recipients = subscription.members_old
-    else:
-        recipients = subscription.members
-    recipients.add(recipient)
-    subscription.save()
+    recipient.join_subscription(subscription)
 
 
-def create_subscription_parts(subscription, selected_types):
-    SubscriptionPart.objects.bulk_create(
+def create_subscription_parts(subscription, selected_types, notify=False):
+    parts = SubscriptionPart.objects.bulk_create(
         itertools.chain(*[[SubscriptionPart(subscription=subscription, type=sub_type)] * amount
                           for sub_type, amount in selected_types.items()]))
+    if notify:
+        adminnotification.subparts_created(parts, subscription)
 
 
 def cancel_sub(subscription, end_date, message):
@@ -117,7 +113,7 @@ def cancel_sub(subscription, end_date, message):
 
 
 def cancel_extra_sub(extra):
-    if extra.deactivation_date is not None:
+    if extra.activation_date is not None:
         extra.cancel()
     elif extra.activation_date is None and extra.deactivation_date is None:
         extra.delete()

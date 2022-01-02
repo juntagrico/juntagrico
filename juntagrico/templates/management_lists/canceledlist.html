@@ -1,6 +1,6 @@
 {% extends "management_lists/man_list_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Kündigungsliste" %}
@@ -34,7 +34,7 @@
                 <tr>
                     <td>
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
-                            {{ subscription.overview }}
+                            {{ subscription }}
                         </a>
                     </td>
                     <td>
@@ -55,7 +55,7 @@
                     </td>
                     <td>
                         {% if subscription.deactivation_date %}
-                        {% trans "Wurde bereits deaktiviert" %} {{ subscription.deactivation_date }}
+                        {% trans "Wurde bereits deaktiviert auf den" %} {{ subscription.deactivation_date }}
                         {% else %}
                         <a href="{% url 'sub-deactivate' subscription.id %}"class="btn btn-success">
                             {% trans "deaktivieren" %}

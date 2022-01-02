@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'impersonate',
     'juntagrico',
     'crispy_forms',
+    'adminsortable2',
+    'djrichtextfield',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -73,7 +75,7 @@ if DEBUG is True:
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
-LANGUAGE_CODE = 'de'
+LANGUAGE_CODE = 'de-CH'
 
 SITE_ID = 1
 
@@ -90,6 +92,12 @@ DATE_INPUT_FORMATS = ['%d.%m.%Y', ]
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+
+class InvalidTemplateVariable(str):
+    def __mod__(self, other):
+        raise NameError(f"In template, undefined variable or unknown value for: '{other}'")
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -101,6 +109,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
+                'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
@@ -109,6 +118,7 @@ TEMPLATES = [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader'
             ],
+            'string_if_invalid': InvalidTemplateVariable("%s"),
             'debug': True
         },
     },
@@ -124,3 +134,13 @@ LOCALE_PATHS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
+
+DJRICHTEXTFIELD_CONFIG = {
+    'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
+    'init_template': 'djrichtextfield/init/tinymce.js',
+    'settings': {
+        'menubar': False,
+        'plugins': 'link  lists',
+        'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+    }
+}

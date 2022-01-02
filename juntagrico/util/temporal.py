@@ -98,25 +98,15 @@ def next_membership_end_date():
 
 
 def calculate_next(day, month):
-    now = timezone.now()
-    if now.month < month or (now.month == month and now.day <= day):
-        year = now.year
-    else:
-        year = now.year + 1
-    return datetime.date(year, month, day)
+    return calculate_next_offset(day, month, timezone.now())
 
 
 def calculate_last(day, month):
-    now = timezone.now()
-    if now.month > month or (now.month == month and now.day >= day):
-        year = now.year
-    else:
-        year = now.year - 1
-    return datetime.date(year, month, day)
+    return calculate_last_offset(day, month, timezone.now())
 
 
 def calculate_next_offset(day, month, offset):
-    if offset.month < month or (offset.month == month and offset.day <= day):
+    if offset.month < month or (offset.month == month and offset.day < day):
         year = offset.year
     else:
         year = offset.year + 1
@@ -129,6 +119,10 @@ def calculate_last_offset(day, month, offset):
     else:
         year = offset.year - 1
     return datetime.date(year, month, day)
+
+
+def calculate_remaining_days_percentage(date):
+    return (end_of_business_year() - date).days / (end_of_business_year() - start_of_business_year()).days
 
 
 month_choices = ((1, _('Januar')),

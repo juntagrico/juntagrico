@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" type="text/css" href="/static/external/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/juntagrico/external/datatables.min.css"/>
 {% endblock %}
 {% block content %}
     <h3>
@@ -38,8 +38,8 @@
     {% endfor %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js">
+    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initHomeJobs.js">
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initHomeJobs.js">
     </script>
 {% endblock %}

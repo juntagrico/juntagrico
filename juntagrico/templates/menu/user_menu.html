@@ -1,22 +1,26 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% load juntagrico.menu %}
+{% show_deliveries request as b_show_deliveries %}
+{% user_menus as l_user_menus %}
 {% vocabulary "subscription" as v_subscription %}
 <ul class="main-menu nav flex-column">
     <li>
         <h5>
-            {% blocktrans with fn=user.member.first_name %}Dein Menu {{ fn }}{% endblocktrans %}
+            {% blocktrans with fn=request.user.member.first_name %}Dein Menu {{ fn }}{% endblocktrans %}
         </h5>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.subscription }}" href="{% url 'sub-detail' %}">
+        <a class="nav-link {{ request|activemenu:"subscription" }}" href="{% url 'sub-detail' %}">
             {{ v_subscription }}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.jobs }}" href="{% url 'jobs' %}">
+        <a class="nav-link {{ request|activemenu:"jobs" }}" href="{% url 'jobs' %}">
             {% trans "Einsätze" %}
         </a>
-        {% if menu.jobs == 'active' %}
+        {% if request|activemenu:"jobs" == 'active' %}
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'memberjobs' %}">
@@ -31,29 +35,29 @@
             </ul>
         {% endif %}
     </li>
-    {% if show_deliveries %}
+    {% if b_show_deliveries %}
         <li class="nav-item">
-            <a class="nav-link {{ menu.deliveries }}" href="{% url 'deliveries' %}">
+            <a class="nav-link {{ request|activemenu:"deliveries" }}" href="{% url 'deliveries' %}">
                 {% trans "Lieferungen" %}
             </a>
         </li>
     {% endif %}
     <li class="nav-item">
-        <a class="nav-link {{ menu.area }}" href="{% url 'areas' %}">
+        <a class="nav-link {{ request|activemenu:"area" }}" href="{% url 'areas' %}">
             {% trans "Tätigkeitsbereiche" %}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.personalInfo }}" href="{% url 'profile' %}">
+        <a class="nav-link {{ request|activemenu:"membership" }}" href="{% url 'profile' %}">
             {% trans "Mitgliedschaft" %}
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ menu.contact }}" href="{% url 'contact' %}">
+        <a class="nav-link {{ request|activemenu:"contact" }}" href="{% url 'contact' %}">
             {% trans "Kontakt" %}
         </a>
     </li>
-    {% for user_menu in user_menus %}
+    {% for user_menu in l_user_menus %}
         {% include user_menu %}
     {% endfor %}
     <li class="separator">

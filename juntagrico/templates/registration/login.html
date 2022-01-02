@@ -1,6 +1,6 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block allcontent %}
     {% config "enable_registration" as enable_registration %}
     <div class="offset-md-2 col-md-8">
@@ -24,7 +24,11 @@
             </div>
             {% if form.errors %}
                 <div class="offset-md-3 col-md-6 alert alert-danger">
-                    {% trans "Sorry, das ist kein gültiges Login" %}
+                    {% for fekey, fevalue in form.errors.items %}
+                        {% for ferror in fevalue %}
+                            {{ ferror|safe }}
+                        {% endfor %}
+                    {% endfor %}
                 </div>
             {% endif %}
             <div class="form-group row">
@@ -36,7 +40,7 @@
             </div>
             <div class="form-group row">
                 <div class="offset-md-3 col-md-6">
-                    <a href="/my/newpassword">
+                    <a href="{% url 'password_reset' %}">
                         {% trans "Neues Passwort anfordern" %}
                     </a>
                 </div>

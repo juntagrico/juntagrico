@@ -1,0 +1,145 @@
+{% load i18n %}
+{% load juntagrico.config %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<title>Bescheinigung</title>
+<meta charset="utf-8">
+<style>
+    body {
+        font-family: Helvetica;
+        font-size: 12pt;
+    }
+
+     @page {
+        size: A4;
+        @frame content_frame {
+            left: 50pt;
+            width: 500pt;
+            top: 50pt;
+            height: 750pt;
+        }
+
+        @frame header_frame {
+            -pdf-frame-content:header_content;
+            left: 50pt;
+            width: 512pt;
+            top: 50pt;
+            height: 20pt;
+            text-align:center;
+        }
+
+        @frame footer_frame {
+            -pdf-frame-content:footer_content;
+            left: 50pt;
+            width: 512pt;
+            top: 760pt;
+            height: 90pt;
+            text-align:center;
+        }
+    }
+
+    .org_address {
+        text-align: right;
+     }
+
+    table {
+        align: center;
+        text-align: left;
+    }
+
+    td, th {
+        text-align: left;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .member {
+        display: inline-block;
+        margin-left: 1em;
+    }
+
+    .letter_date {
+        padding-top: 60px;
+    }
+
+    .subject {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+</style>
+</head>
+<body>
+{% block content %}
+    {% vocabulary "share" as v_share %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    {% vocabulary "member" as v_member %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% config "organisation_address" as organisation_address %}
+    {% config "currency" as currency %}
+<p class="org_address">
+{{ organisation_address.name }}<br>
+{% if organisation_address.extra %}
+    {{ organisation_address.extra }}<br>
+{% endif %}
+{{ organisation_address.street }} {{ organisation_address.number }}<br>
+{{ organisation_address.zip }} {{ organisation_address.city }}
+</p>
+<p>
+{{ member.first_name }} {{ member.last_name }}<br>
+{{ member.addr_street }}<br>
+{{ member.addr_zipcode }} {{ member.addr_location }}
+</p>
+<p class="letter_date">{{ cert_date|date:"DATE_FORMAT" }}</p>
+<p class="subject"><b>{% trans "Bescheinigung" %} {{ v_share_pl }}</b></p>
+
+<p class="member">
+    Name: {{ member.first_name }} {{ member.last_name }}<br>
+    {{ v_member }}-Nr.: {{ member.id }}
+</p>
+<p class="main_text">
+    {% blocktrans %}
+    Hiermit bestätigen wir dem oben genannten {{ v_member }} folgende {{ v_share_pl }}:
+    {% endblocktrans %}
+</p>
+<table>
+  <tr>
+    <th>{% trans "Datum" %}</th>
+    <th>{% trans "Anzahl" %}</th>
+    <th>{% trans "Wert" %}</th>
+    <th class="text-right">{% trans "Gesamt" %}</th>
+  </tr>
+    {% for share in shares %}
+      <tr>
+        <td>{{ shares_date|date:"SHORT_DATE_FORMAT" }}</td>
+        <td>{{ share.count|floatformat }}</td>
+        <td>{{ share.value|floatformat:2 }} {{ currency }}</td>
+        <td class="text-right">{{ share.total|floatformat:2 }} {{ currency }}</td>
+      </tr>
+    {% endfor %}
+    <tr></tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td class="text-right"><b>Total:</b></td>
+        <td class="text-right">{{ shares_total|floatformat:2 }} {{ currency }}</td>
+      </tr>
+</table>
+<p>
+    {% blocktrans %}Eine Verzinsung findet nicht statt.{% endblocktrans %}
+</p>
+<p>
+    {% blocktrans %}
+    Wir bitten Sie, diese Bescheinigung zu prüfen und Beanstandungen direkt zu melden.
+    {% endblocktrans %}
+</p>
+<p><b>
+    {% blocktrans %}
+    Bitte bewahren Sie diese Bescheigung für Ihre Steuererklärung auf.
+    {% endblocktrans %}
+</b></p>
+{% endblock %}
+</body>
+</html>

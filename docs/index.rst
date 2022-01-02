@@ -16,6 +16,12 @@ It provides the basic functionality like
    :hidden:
 
    instalation.rst
+   first_steps.rst
    settings.rst
+   permissions.rst
    theming.rst
-   release_notes.rst
+   rich_text_editor.rst
+   1_4_release_notes.rst
+   1_3_release_notes.rst
+   1_2_release_notes.rst
+   1_1_release_notes.rst

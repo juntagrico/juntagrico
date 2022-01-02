@@ -19,7 +19,8 @@ class FilterTests(JuntagricoTestCase):
         self.assertGet(reverse('filters'), member=self.member2, code=302)
 
     def testAreaFilter(self):
-        self.assertGet(reverse('filter-area', args=[self.area.pk]))
+        self.assertGet(reverse('filter-area', args=[self.area.pk]), code=404)
+        self.assertGet(reverse('filter-area', args=[self.area.pk]), member=self.area_admin)
         self.assertGet(reverse('filter-area', args=[self.area.pk]), member=self.member2, code=302)
 
     def testDepotFilter(self):

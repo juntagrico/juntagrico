@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
-{% load subscription %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.subscription %}
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
@@ -9,6 +10,7 @@
     </h3>
 {% endblock %}
 {% block content %}
+    {% has_extra_subscriptions as b_has_extra_subscriptions %}
     {% config "enable_shares" as c_enable_shares %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -18,8 +20,8 @@
         <div class="alert alert-success">
             {% trans "Du bist auf der Warteliste" %}
             <br/>
-            <a href="{% url 'sub-detail-id' member.future_subscription.id %}">
-                {% trans "Mehr Infos dazu findest du hier" %}
+            <a href="{% url 'sub-detail-id' member.subscription_future.id %}">
+                {% trans "Mehr Infos und Optionen dazu findest du hier" %}
             </a>
         </div>
     {% elif can_order %}
@@ -40,13 +42,13 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                 </div>
             </div>
@@ -91,13 +93,13 @@
                     {% vocabulary "share_pl" %}
                 </div>
                 <div class="col-md-9">
-                    {{ shares }}
+                    {{ shares|add:shares_unpaid }}
                     {% if shares_unpaid > 0 %}
                         ({% blocktrans %}davon {{ shares_unpaid }} noch nicht bezahlt{% endblocktrans %})
                     {% endif %}
                     <br/>
-                    <a href="{% url 'share-order' %}">
-                        {% blocktrans %}Bestelle mehr {{ v_share_pl }} hier{% endblocktrans %}
+                    <a href="{% url 'manage-shares' %}">
+                        {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
                     </a>
                     <br/>
                     <br/>
@@ -110,7 +112,7 @@
                                 {{ ln }}
                                 {% endblocktrans %}
                                 {% if not co_member.confirmed %}
-                                    ({% trans "nicht bestätigt" %})
+                                    ({% trans "E-Mail-Adresse nicht bestätigt" %})
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -159,7 +161,7 @@
                 {% blocktrans %}Name auf {{ v_depot }}-Liste{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.nickname_or_recipients_names }}
+                {{ subscription.recipients_display_name }}
             </div>
         </div>
         {% endif %}
@@ -174,7 +176,7 @@
                 </a>
             </div>
         </div>
-        {% if has_extra_subscriptions %}
+        {% if b_has_extra_subscriptions %}
             <div class="row mb-3">
                 <div class="col-md-3">
                     {% trans "Zusatzabos" %}
@@ -186,7 +188,7 @@
                         <ul>
                             {% for extra_subscription in subscription.extra_subscriptions %}
                                 <li>
-                                    {{ extra_subscription.type.name }}
+                                    {{ extra_subscription.type.display_name }}
                                 </li>
                             {% endfor %}
                         </ul>
@@ -209,7 +211,7 @@
                             <ul>
                                 {% for extra_subscription in subscription.future_extra_subscriptions %}
                                     <li>
-                                        {{ extra_subscription.type.name }}
+                                        {{ extra_subscription.type.display_name }}
                                     </li>
                                 {% endfor %}
                             </ul>

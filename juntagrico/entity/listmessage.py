@@ -10,7 +10,7 @@ class ListMessage(JuntagricoBaseModel):
     '''
     message = models.CharField(_('Nachricht'), max_length=256)
     active = models.BooleanField(_('aktiv'), default=True)
-    sort_order = models.FloatField(_('Nummer zum Sortieren'), default=1.0)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     def __str__(self):
         return self.message
@@ -18,3 +18,4 @@ class ListMessage(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('Depot Listen Nachricht')
         verbose_name_plural = _('Depot Listen Nachrichten')
+        ordering = ['sort_order']

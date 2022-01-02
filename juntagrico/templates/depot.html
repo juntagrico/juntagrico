@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
 {% endblock %}
 {% block page_title %}
     <h3>
@@ -45,7 +46,17 @@
                 {% trans "Beschreibung" %}
             </div>
             <div class="col-md-9">
-                {{ depot.description|linebreaksbr|urlize }}
+                {{ depot.description|richtext|safe }}
+            </div>
+        </div>
+    {% endif %}
+    {% if depot.access_information and show_access %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                {% trans "Zugangsbeschreibung" %}
+            </div>
+            <div class="col-md-9">
+                {{ depot.access_information|richtext|safe }}
             </div>
         </div>
     {% endif %}
@@ -69,11 +80,11 @@
             addr_location: '{{ depot.addr_location }}',
             latitude: '{{ depot.latitude }}',
             longitude: '{{ depot.longitude }}',
-            code: '{{ depot.code }}'
+            code: '{{ depot.sort_order }}'
             });
         {% endif %}
     </script>
-    <script type="text/javascript" src="/static/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initDepot.js">
+    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initDepot.js">
     </script>
 {% endblock %}

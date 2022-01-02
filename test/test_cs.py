@@ -9,6 +9,16 @@ from test.util.test import JuntagricoTestCase
 
 class CreateSubscriptionTests(JuntagricoTestCase):
 
+    def setUp(self):
+        super().setUp()
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_subscription_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_member_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_share_creation'))
+        self.member.user.save()
+
     def testSignupLogout(self):
         self.client.force_login(self.member.user)
         user = auth.get_user(self.client)
@@ -51,14 +61,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         response = self.client.get(reverse('welcome'))
         self.assertEqual(response.status_code, 200)
 
-    def testSignup(self):
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_subscription_creation'))
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_member_creation'))
-        self.member.user.user_permissions.add(
-            Permission.objects.get(codename='notified_on_share_creation'))
-        self.member.user.save()
+    def commonSignupTest(self, with_comment=False):
         new_member_data = {
             'last_name': 'Last Name',
             'first_name': 'First Name',
@@ -71,6 +74,8 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             'birthday': '',
             'agb': 'on'
         }
+        if with_comment:
+            new_member_data['comment'] = 'Short comment'
         response = self.client.post(reverse('signup'), new_member_data)
         self.assertRedirects(response, reverse('cs-subscription'))
         response = self.client.post(
@@ -104,9 +109,24 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         )
         self.assertRedirects(response, reverse('cs-summary'))
         # confirm summary
-        response = self.client.post(reverse('cs-summary'))
+        test_comment = 'new test comment'
+        response = self.client.post(reverse('cs-summary'), {'comment': test_comment if with_comment else ''})
         self.assertRedirects(response, reverse('welcome-with-sub'))
         self.assertEqual(Member.objects.filter(email=new_member_data['email']).count(), 1)
         self.assertEqual(Share.objects.filter(member__email=new_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(primary_member__email=new_member_data['email']).count(), 1)
         self.assertEqual(len(mail.outbox), 5)  # welcome mail, share mail & 3 admin notifications
+        # first mail should be admin notification
+        if with_comment:
+            self.assertIn(test_comment, mail.outbox[0].body)
+
+        # signup with different case email address should fail
+        new_member_data['email'] = 'Test@user.com'
+        response = self.client.post(reverse('signup'), new_member_data)
+        self.assertEqual(response.status_code, 200)  # no redirect = failed
+
+    def testSignupWithComment(self):
+        self.commonSignupTest(True)
+
+    def testSignupWithoutComment(self):
+        self.commonSignupTest()

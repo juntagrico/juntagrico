@@ -13,7 +13,7 @@ from juntagrico.util.temporal import weekday_choices
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
-        fields = ['type', 'slots']
+        fields = ['type', 'slots', 'infinite_slots', 'multiplier']
 
     weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
@@ -54,20 +54,17 @@ class JobCopyForm(forms.ModelForm):
 
         inst = self.instance
 
-        newjobs = []
+        newjob = None
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
             if is_naive(dt):
                 dt = gdtz().localize(dt)
-            job = RecuringJob.objects.create(
-                type=inst.type, slots=inst.slots, time=dt)
-            newjobs.append(job)
-            job.save()
-
-        # create new objects
-        # HACK: admin expects a saveable object to be returned when commit=False
-        # return newjobs[-1]
-        return inst
+            newjob = RecuringJob.objects.create(
+                type=inst.type, slots=inst.slots, infinite_slots=inst.infinite_slots,
+                multiplier=inst.multiplier, time=dt
+            )
+            newjob.save()
+        return newjob
 
     def save_m2m(self):
         # HACK: the admin expects this method to exist

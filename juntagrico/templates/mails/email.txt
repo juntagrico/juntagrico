@@ -1,4 +1,4 @@
-{% load config %}
+{% load juntagrico.config %}
 {% spaceless %}
 {% block content %}{% endblock %}
 {% endspaceless %}

@@ -1,3 +1,5 @@
+from django.contrib import admin
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.datetime_safe import time
@@ -11,7 +13,6 @@ from juntagrico.util.temporal import weekday_short
 
 
 class ActivityArea(JuntagricoBaseModel):
-
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
         _('Beschreibung'), max_length=1000, default='')
@@ -26,6 +27,7 @@ class ActivityArea(JuntagricoBaseModel):
         _('Telefonnummer von KoordinatorIn anzeigen'), default=False)
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     def __str__(self):
         return '%s' % self.name
@@ -36,17 +38,17 @@ class ActivityArea(JuntagricoBaseModel):
         else:
             return self.get_email()
 
+    @admin.display(description=email.verbose_name)
     def get_email(self):
         if self.email is not None:
             return self.email
         else:
             return self.coordinator.email
 
-    get_email.short_description = email.verbose_name
-
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
         verbose_name_plural = _('Tätigkeitsbereiche')
+        ordering = ['sort_order']
         permissions = (
             ('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
 
@@ -60,6 +62,9 @@ class JobExtraType(JuntagricoBaseModel):
         _('Icon für fehlendes Extra'), max_length=1000, blank=False, null=False)
     display_full = models.CharField(
         _('Icon für Extra'), max_length=1000, blank=False, null=False)
+
+    def __str__(self):
+        return '%s %s' % (self.id, self.name)
 
     class Meta:
         verbose_name = _('JobExtraTyp')
@@ -89,6 +94,10 @@ class JobExtra(JuntagricoBaseModel):
             return self.recuring_type
         return self.onetime_type
 
+    def __str__(self):
+        target = self.recuring_type or self.onetime_type
+        return '%s:%s' % (self.extra_type, target)
+
     class Meta:
         verbose_name = _('JobExtra')
         verbose_name_plural = _('JobExtras')
@@ -103,8 +112,8 @@ class AbstractJobType(JuntagricoBaseModel):
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
-    default_duration = models.PositiveIntegerField(_('Dauer in Stunden'),
-                                                   help_text='Standard-Dauer für diese Jobart')
+    default_duration = models.FloatField(_('Dauer in Stunden'),
+                                         help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
     location = models.CharField('Ort', max_length=100, default='')
 
     def __str__(self):
@@ -158,6 +167,7 @@ class Job(JuntagricoBasePoly):
         return int(time.mktime(self.time.timetuple()) * 1000)
 
     @property
+    @admin.display(description=_('Freie Plätze'))
     def free_slots(self):
         if self.infinite_slots:
             return -1
@@ -165,12 +175,11 @@ class Job(JuntagricoBasePoly):
             return self.slots - self.occupied_slots
         return 0
 
-    free_slots.fget.short_description = _('Freie Plätze')
-
     @property
     def occupied_slots(self):
         return self.assignment_set.count()
-    
+
+    @property
     def duration(self):
         return self.type.default_duration
 
@@ -222,8 +231,28 @@ class Job(JuntagricoBasePoly):
     def per_member_extras(self):
         return self.type.job_extras_set.filter(per_member=True)
 
+    @property
+    def participants(self):
+        return [a.member for a in self.assignment_set.all().prefetch_related('member') if a.member]
+
+    @property
+    def participant_names(self):
+        return ", ".join([str(m) for m in self.participants])
+
+    @property
+    def participant_emails(self):
+        return [m.email for m in self.participants]
+
     def clean(self):
         check_job_consistency(self)
+
+    def can_modify(self, request):
+        job_is_in_past = self.end_time() < timezone.now()
+        job_is_running = self.start_time() < timezone.now()
+        job_canceled = self.canceled
+        job_read_only = job_canceled or job_is_running or job_is_in_past
+        return not job_read_only or (
+            request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))
 
     class Meta:
         verbose_name = _('AbstractJob')
@@ -234,8 +263,8 @@ class Job(JuntagricoBasePoly):
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
     additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
-    duration_override = models.PositiveIntegerField(
-        _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None,
+    duration_override = models.FloatField(
+        _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None, validators=[MinValueValidator(0)],
         help_text=_('Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.')
     )
 
@@ -282,9 +311,9 @@ class Assignment(JuntagricoBaseModel):
     def __str__(self):
         return '%s #%s' % (Config.vocabulary('assignment'), self.id)
 
+    @admin.display(ordering='job__time')
     def time(self):
         return self.job.time
-    time.admin_order_field = 'job__time'
 
     def is_core(self):
         return self.job.type.activityarea.core
@@ -292,6 +321,9 @@ class Assignment(JuntagricoBaseModel):
     @classmethod
     def pre_save(cls, sender, instance, **kwargs):
         instance.core_cache = instance.is_core()
+
+    def can_modify(self, request):
+        return self.job.can_modify(request)
 
     class Meta:
         verbose_name = Config.vocabulary('assignment')

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {{ job.type.get_name }}
@@ -110,8 +111,8 @@
             {% trans "Beschreibung" %}:
         </div>
         <div class="col-md-5">
-            <div class="job-description">{{ job.type.description|linebreaksbr|urlize }}</div>
-            <div class="job-additional-description">{{ job.additional_description|linebreaksbr|urlize }}</div>
+            <div class="job-description">{{ job.type.description|richtext|safe }}</div>
+            <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
         </div>
     </div>
     <br/>
@@ -166,7 +167,7 @@
                 {% trans "Ich trage mich ein" %}:
             </div>
             <div class="col-md-3">
-                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich sicher für diesen Job verbindlich eintragen?" %}')">
+                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich verbindlich für diesen Einsatz eintragen?" %}')">
                     {% csrf_token %}
                     {% if allowed_additional_participants|length > 1 %}
                         <div>

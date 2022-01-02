@@ -1,5 +1,8 @@
 {% load i18n %}
-{% load config %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% show_core as b_show_core %}
+{% show_job_extras as b_show_job_extras %}
 <table id="filter-table" class="list table" style="width: 100%">
     <thead>
         <tr>
@@ -21,15 +24,26 @@
                 {% trans "Bereich" %}
             </th>
 
-            {% if show_core %}
+            {% if b_show_core %}
                 <th class="align-top">
                     {% trans "Kern" %}
                 </th>
             {% endif %}
             <th class="align-top">
-                {% trans "Status" %}
+                {% trans "Status" %}<br>
+                {% if show_free_slot_filter %}
+                <form class="form-inline">
+                    <label for="free_slot_filter">{% trans "Freie Plätze" %}&nbsp;&ge;&nbsp;</label>
+                    <input id="free_slot_filter" type='number' placeholder='' style='width: 4em;'
+                           class='form-control input-sm' value="0" min="0"/>
+                </form>
+                {% endif %}
             </th>
-            {% if show_extras %}
+            {% if show_free_slot_filter %}
+                <th class="align-top free-slot-count">
+                </th>
+            {% endif %}
+            {% if b_show_job_extras %}
                 <th class="align-top">
                     {% trans "Extras" %}
                 </th>
@@ -60,7 +74,7 @@
                 <td>
                     {{ job.type.activityarea.name }}
                 </td>
-                {% if show_core %}
+                {% if b_show_core %}
                     <td>
                         {% if job.type.activityarea.core %}
                             <img alt="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
@@ -79,7 +93,12 @@
                     {{ job.occupied_slots }} / {{ job.slots }}
                     {% endif %}
                 </td>
-                {% if show_extras %}
+                {% if show_free_slot_filter %}
+                    <td>
+                        {{ job.free_slots }}
+                    </td>
+                {% endif %}
+                {% if b_show_job_extras %}
                     <td>
                         {{ job.extras|safe }}
                     </td>

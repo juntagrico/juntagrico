@@ -1,6 +1,7 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
 {% block all_page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <div class="offset-md-3 col-md-9 juntagrico">
@@ -89,18 +90,10 @@
             <p>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</p>
         {% endif %}
 
+
+        <h4>Kommentar</h4>
         <form action="" method="post">
-            {% csrf_token %}
-            <div class="form-group row">
-                <div class="col-md-12">
-                    <button type="submit" class="btn btn-success">
-                        {% trans "Verbindlich bestellen" %}
-                    </button>
-                    <a href="{% url 'cs-cancel' %}" class="btn">
-                        {% trans "Abbrechen" %}
-                    </a>
-                </div>
-            </div>
+            {% crispy form %}
         </form>
     </div>
 {% endblock %}

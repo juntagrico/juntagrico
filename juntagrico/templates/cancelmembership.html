@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Künde deine Mitgliedschaft" %}
@@ -73,18 +73,12 @@
                         </div>
                     </div>
                 </form>
-            {% elif missing_iban and enable_shares %}
+            {% elif missing_iban and enable_shares and coop_member%}
                 {% blocktrans trimmed %}
                 Du musst zuerst deine IBAN hinterlegen, damit deine {{ v_share_pl }} ausbezahlt werden können.
                 {% endblocktrans %}
-            {% elif enable_shares %}
-                {% blocktrans trimmed %}
-                Du bist entweder Hauptabonnent oder ohne deine {{ v_share_pl }} hat dein/e jetztige/r/s
-                {{ v_subscription }} nicht genug {{ v_share_pl }} um weiter zu existieren. Falls du Hilfe brauchst
-                um das Problem zu beheben wende dich an {{ c_info_email }}.
-                {% endblocktrans %}
             {% else %}
-                {% blocktrans%}Du bist Hauptabonnent, wende dich an {{ c_info_email }} um das anzupassen.{% endblocktrans %}
+                {% blocktrans%}Du bist noch in eine/r/m  {{ v_subscription }} als BezieherIn eingetragen.{% endblocktrans %}
             {% endif %}
         </div>
     </div>

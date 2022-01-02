@@ -23,6 +23,8 @@ class ProfileTests(JuntagricoTestCase):
 
     def testCancelMembershipPost(self):
         self.assertPost(reverse('cancel-membership'), code=302)
+        self.member.refresh_from_db()
+        self.assertTrue(self.member.canceled)
 
     def testCancelMembershipNonCoopPost(self):
         self.assertPost(reverse('cancel-membership'), code=302, member=self.member3)
@@ -37,7 +39,7 @@ class ProfileTests(JuntagricoTestCase):
             share.payback_date = timezone.now().date()
             share.save()
         # and delete the subscription
-        self.member.subscription.delete()
+        self.member.subscription_current.delete()
         self.assertPost(reverse('member-deactivate', args=(self.member.pk,)), code=302)
         self.member.refresh_from_db()
         self.assertTrue(self.member.inactive)
@@ -54,11 +56,11 @@ class ProfileTests(JuntagricoTestCase):
                                               'passwordRepeat': 'password'})
 
     def testNewPassword(self):
-        self.assertGet(reverse('new-password'))
+        self.assertGet(reverse('password_reset'))
         self.assertEqual(len(mail.outbox), 0)
 
     def testNewPasswordPost(self):
-        self.assertPost(reverse('new-password'), {'username': 'email3@email.org'})
+        self.assertPost(reverse('password_reset'), {'email': 'email3@email.org'}, code=302)
         self.assertEqual(len(mail.outbox), 1)
 
     def testLogout(self):

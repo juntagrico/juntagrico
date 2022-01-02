@@ -1,6 +1,6 @@
 {% extends "mails/email.txt" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block content %}
 {% config "organisation_name" as c_organisation_name %}
 {% trans "Nicht vergessen" %}:
@@ -11,9 +11,10 @@ Am {{ jt }}-{{ jet }} findet dein {{ c_organisation_name }}-Arbeitseinsatz "{{ j
 
 {% trans "Details" %}:
 
-{% trans "Job" %}:             {{ job.type.description }}
+{% trans "Job" %}:             {{ job.type.description|striptags }}
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
-{% trans "Teilnehmer" %}:      {{ participants }}
+{% trans "Ort" %}:             {{ job.type.location }}
+{% trans "Teilnehmer" %}:      {{ job.participant_names }}
 {% trans "Verantwortlich" %}:  {{ job.type.activityarea.coordinator }}: {{ job.type.activityarea.contact }}
 {% blocktrans trimmed %}
 Wir freuen uns, dich zu sehen und zählen auf dich!

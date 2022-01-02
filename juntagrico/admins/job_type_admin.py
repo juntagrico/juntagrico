@@ -1,6 +1,7 @@
+from django.contrib import admin
 from django.utils.translation import gettext as _
 
-from juntagrico.admins import BaseAdmin
+from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
@@ -11,13 +12,14 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 from juntagrico.util.models import attribute_copy
 
 
-class JobTypeAdmin(BaseAdmin):
+class JobTypeAdmin(RichTextAdmin):
     list_display = ['__str__', 'activityarea',
                     'default_duration', 'location', 'visible']
     list_filter = ('activityarea', 'visible')
     actions = ['transform_job_type']
     inlines = [JobExtraInline]
 
+    @admin.action(description=_('Jobart in EinzelJobs konvertieren'))
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
             i = 0
@@ -40,8 +42,6 @@ class JobTypeAdmin(BaseAdmin):
             for je in JobExtraDao.by_type(inst.id):
                 je.delete()
             inst.delete()
-
-    transform_job_type.short_description = _('Jobart in EinzelJobs konvertieren')
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
