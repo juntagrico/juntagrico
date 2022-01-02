@@ -4,6 +4,12 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+* Admin Features:
+    * More filter options in assignment management list
+
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
