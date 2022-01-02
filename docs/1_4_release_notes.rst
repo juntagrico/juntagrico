@@ -4,6 +4,12 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+* Member Features:
+    * Show minimum subscription duration in share order process
+
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
