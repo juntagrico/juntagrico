@@ -7,6 +7,7 @@ Dev
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
+* Fix unauthorized share cancellation
 
 1.4.3
 -----
