@@ -12,6 +12,7 @@ Features & Improvements
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
+* Fix past job editing limitation for one time jobs
 
 1.4.3
 -----
