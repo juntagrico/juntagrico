@@ -113,7 +113,9 @@ class CSSessionObject(SessionObject):
             'existing_co_member': sum([len(co_member.usable_shares) for co_member in self.co_members]),
             'total_required': max(self.required_shares(), 1)
         }
-        shares['remaining_required'] = max(0, shares['total_required'] - max(0, shares['existing_main_member'] + shares['existing_co_member']))
+        shares['remaining_required'] = max(
+            0, shares['total_required'] - max(0, shares['existing_main_member'] + shares['existing_co_member'])
+        )
         return shares
 
     def evaluate_ordered_shares(self, shares=None):

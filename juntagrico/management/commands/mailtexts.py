@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
         print('*** n_sub ***')
 
-        print(get_email_content('n_sub', base_dict({'subscription': subscription})))
+        print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
         print()
 
         print('*** co_welcome ***')
