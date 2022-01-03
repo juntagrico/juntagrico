@@ -41,8 +41,6 @@ def subscription(request, subscription_id=None):
     '''
     member = request.user.member
     future_subscription = member.subscription_future is not None
-    can_order = member.subscription_future is None and (
-        member.subscription_current is None or member.subscription_current.cancellation_date is not None)
     if subscription_id is None:
         subscription = member.subscription_current
     else:
@@ -71,7 +69,7 @@ def subscription(request, subscription_id=None):
     renderdict.update({
         'no_subscription': subscription is None,
         'end_date': end_date,
-        'can_order': can_order,
+        'can_order': member.can_order_subscription,
         'future_subscription': future_subscription,
         'member': request.user.member,
         'shares': request.user.member.active_shares.count(),

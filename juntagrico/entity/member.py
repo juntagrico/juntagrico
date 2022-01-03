@@ -170,6 +170,11 @@ class Member(JuntagricoBaseModel):
         return (self.subscription_future is not None) | (self.subscription_current is not None)
 
     @property
+    def can_order_subscription(self):
+        return self.subscription_future is None and (
+            self.subscription_current is None or self.subscription_current.cancellation_date is not None)
+
+    @property
     def blocked(self):
         future = self.subscription_future is not None
         current = self.subscription_current is not None and not self.subscription_current.inactive
