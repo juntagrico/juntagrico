@@ -7,12 +7,16 @@ Dev
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
+    * Show minimum subscription duration in share order process
     * Option to enter a comment that is sent with the admin notification in the sign up and share order process
 
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
 * Fix past job editing limitation for one time jobs
+* Fix unauthorized share cancellation
+* Fix mailtext command for password reset text
+* Fix minor template issues
 
 1.4.3
 -----
