@@ -36,9 +36,19 @@
         <h4>{{ v_subscription }} <a href="{% url 'cs-subscription' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
         <p>
         {% for type, amount in subscriptions.items %}
-            {%blocktrans trimmed with tn=type.name tp=type.price%}
-            <b>{{ amount }}</b>&times; {{ tn }} à {{ c_currency }} {{ tp }}/Jahr
-            {%endblocktrans%}
+            <strong>{{ amount }}</strong>&times; {{ type.name }}
+            {% if type.has_periods %}
+                {% for period in type.periods.all %}
+                    <br/>
+                    {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
+                    {{ period.price }} {% config "currency" %}
+                {% endfor %}
+            {% else %}
+                {%blocktrans with tp=type.price%}
+                 à {{ c_currency }} {{ tp }}/Jahr.
+                {%endblocktrans%}
+                {{ type.min_duration_info }}
+            {% endif %}
             {% if not forloop.last %}<br>{% endif %}
         {% endfor %}
         {% if subscriptions|length == 0 %}

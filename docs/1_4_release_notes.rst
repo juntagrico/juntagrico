@@ -7,7 +7,9 @@ Dev
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
+    * Show minimum subscription duration in share order process
     * Option to enter a comment that is sent with the admin notification in the sign up and share order process
+
 
 Fixes
 ^^^^^
