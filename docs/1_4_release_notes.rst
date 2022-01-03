@@ -4,6 +4,9 @@ Release Notes
 Dev
 ---
 
+1.4.4
+-----
+
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Admin Features:

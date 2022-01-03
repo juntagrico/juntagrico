@@ -1,4 +1,4 @@
-Django==3.2.8
+Django==3.2.10
 django-admin-sortable2==1.0.2
 django-crispy-forms==1.13.0
 django-impersonate==1.7.3
