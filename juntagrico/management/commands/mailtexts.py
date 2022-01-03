@@ -76,6 +76,9 @@ class Command(BaseCommand):
         print(get_email_content('password', base_dict({
             'email': 'email@email.org',
             'password': 'password',
+            'protocol': 'https',
+            'uid': 'uid',
+            'token': 'token'
         })))
         print()
 
