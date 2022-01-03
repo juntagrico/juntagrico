@@ -111,7 +111,7 @@ function default_data_table() {
 }
 
 function job_no_search_datatable() {
-    var table = $("#filter-table").DataTable({
+    $("#filter-table").DataTable({
         "responsive": true,
         "paging": false,
         "info": false,
@@ -119,9 +119,13 @@ function job_no_search_datatable() {
         "searching": false,
         "columnDefs": [
             {
-                "targets": [1],
+                "targets": 'job-description',
                 "visible": false
-            }
+            },
+            {
+                "targets": ['job-date', 'job-status', 'job-name'],
+                "responsivePriority": 1
+            },
         ]
     });
 }

@@ -18,8 +18,12 @@ define([], function () {
         },
         "columnDefs": [
             {
-                "targets": [1, free_slot_count],
+                "targets": ['job-description', free_slot_count],
                 "visible": false,
+            },
+            {
+                "targets": ['job-date', 'job-status', 'job-name'],
+                "responsivePriority": 1
             },
         ],
         "language": {

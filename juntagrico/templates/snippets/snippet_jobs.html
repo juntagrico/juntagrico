@@ -6,12 +6,11 @@
 <table id="filter-table" class="list table" style="width: 100%">
     <thead>
         <tr>
-            <th></th>
-            <th></th>
-            <th class="align-top table-search">
+            <th class="job-description"></th>
+            <th class="align-top table-search job-date">
                 {% trans "Datum" %}
             </th>
-            <th class="align-top table-search">
+            <th class="align-top table-search job-name">
                 {% trans "Job" %}
             </th>
             <th class="align-top table-search">
@@ -29,10 +28,10 @@
                     {% trans "Kern" %}
                 </th>
             {% endif %}
-            <th class="align-top">
+            <th class="align-top job-status">
                 {% trans "Status" %}<br>
                 {% if show_free_slot_filter %}
-                <form class="form-inline">
+                <form id="free_slot_filter_form" class="form-inline">
                     <label for="free_slot_filter">{% trans "Freie Plätze" %}&nbsp;&ge;&nbsp;</label>
                     <input id="free_slot_filter" type='number' placeholder='' style='width: 4em;'
                            class='form-control input-sm' value="0" min="0"/>
@@ -53,7 +52,6 @@
     <tbody>
         {% for job in jobs %}
             <tr>
-                <td></td>
                 <td>
                     {{ job.type.description }}
                 </td>

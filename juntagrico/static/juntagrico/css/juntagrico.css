@@ -315,6 +315,14 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::befor
     display: none;
 }
 
+#free_slot_filter_form {
+    display: none;  /* hides filter if the column is not shown in the responsive view */
+}
+
+.job-status #free_slot_filter_form {
+    display: initial;
+}
+
 /* arrows for collapsible list elements */
 .details-control, .shown .details-control {
     font-family: 'Font Awesome 5 Free';
