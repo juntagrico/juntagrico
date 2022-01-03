@@ -13,6 +13,7 @@ Features & Improvements
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
+* Fix unauthorized share cancellation
 * Fix mailtext command for password reset text
 * Fix minor template issues
 
