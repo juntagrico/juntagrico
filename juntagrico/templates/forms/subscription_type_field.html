@@ -24,6 +24,8 @@
             {% endfor %}
         {% else %}
             {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+            <br/>
+            {% trans "Laufzeit" %}: {{ type.min_duration_info }}
         {% endif %}
         {% config "enable_shares" as c_enable_shares %}
         {% if c_enable_shares %}

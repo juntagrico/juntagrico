@@ -199,7 +199,7 @@ class CSSummaryView(FormView):
         self.cs_session = None
 
     def get_initial(self):
-        return {'comment': self.cs_session.main_member.comment}
+        return {'comment': getattr(self.cs_session.main_member, 'comment', '')}
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(

@@ -41,8 +41,6 @@ def subscription(request, subscription_id=None):
     '''
     member = request.user.member
     future_subscription = member.subscription_future is not None
-    can_order = member.subscription_future is None and (
-        member.subscription_current is None or member.subscription_current.cancellation_date is not None)
     if subscription_id is None:
         subscription = member.subscription_current
     else:
@@ -71,7 +69,7 @@ def subscription(request, subscription_id=None):
     renderdict.update({
         'no_subscription': subscription is None,
         'end_date': end_date,
-        'can_order': can_order,
+        'can_order': member.can_order_subscription,
         'future_subscription': future_subscription,
         'member': request.user.member,
         'shares': request.user.member.active_shares.count(),
@@ -418,20 +416,13 @@ def manage_shares(request):
     member = request.user.member
     shares = member.share_set.order_by('cancelled_date', '-paid_date')
 
-    # calculate required shares backwards to account for shared subscriptions
-    not_canceled_share_count = member.usable_shares_count
-    overflow_list = [not_canceled_share_count]
-    if member.subscription_future is not None:
-        overflow_list.append(member.subscription_future.share_overflow)
-    if member.subscription_current is not None:
-        overflow_list.append(member.subscription_current.share_overflow)
     active_share_years = member.active_share_years
     if active_share_years:
         active_share_years.remove(timezone.now().year)
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required': not_canceled_share_count - min(overflow_list),
+        'required': member.required_shares_count,
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)
@@ -461,9 +452,11 @@ def share_certificate(request):
 
 @login_required
 def cancel_share(request, share_id):
-    share = get_object_or_404(Share, id=share_id, member=request.user.member)
-    share.cancelled_date = timezone.now().date()
-    share.save()
+    member = request.user.member
+    if member.cancellable_shares_count > 0:
+        share = get_object_or_404(Share, id=share_id, member=member)
+        share.cancelled_date = timezone.now().date()
+        share.save()
     return return_to_previous_location(request)
 
 
