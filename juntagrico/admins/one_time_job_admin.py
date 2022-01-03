@@ -22,6 +22,12 @@ class OneTimeJobAdmin(RichTextAdmin):
     inlines = [AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
 
+    def has_change_permission(self, request, obj=None):
+        return (obj is None or obj.can_modify(request)) and super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return (obj is None or obj.can_modify(request)) and super().has_delete_permission(request, obj)
+
     @admin.action(description=_('EinzelJobs in Jobart konvertieren'))
     def transform_job(self, request, queryset):
         for inst in queryset.all():
