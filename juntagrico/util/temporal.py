@@ -94,7 +94,7 @@ def next_membership_end_date():
     else:
         offset = end_of_next_business_year()
     day = calendar.monthrange(offset.year, month)[1]
-    return calculate_next_offset(day, month, offset)
+    return datetime.date(offset.year, month, day)
 
 
 def calculate_next(day, month):
