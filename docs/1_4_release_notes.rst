@@ -4,6 +4,9 @@ Release Notes
 Dev
 ---
 
+1.4.5
+-----
+
 Fixes
 ^^^^^
 * Fix membership cancellation date
