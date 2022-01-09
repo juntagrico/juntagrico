@@ -171,13 +171,13 @@ class RegisterMemberForm(MemberBaseForm):
             if link().strip():
                 documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
         if documents_html:
-            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten.'
+            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. '
                      'Hiermit beantrage ich meine Aufnahme.').format(
                 (' ' + _('und') + ' ').join(documents_html),
                 Config.organisation_long_name()
             )
         else:
-            return _('Ich erkläre meinen Willen, "{}" beizutreten.'
+            return _('Ich erkläre meinen Willen, "{}" beizutreten. '
                      'Hiermit beantrage ich meine Aufnahme.').format(Config.organisation_long_name())
 
 
