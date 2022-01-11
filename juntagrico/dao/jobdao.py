@@ -50,6 +50,10 @@ class JobDao:
         return Job.objects.filter(time__gte=timezone.now()).order_by('time')
 
     @staticmethod
+    def get_jobs_for_time_range(start, end):
+        return Job.objects.filter(time__gte=start).filter(time__lte=end).order_by('time')
+
+    @staticmethod
     def get_jobs_for_current_day():
         daystart = gdtz().localize(datetime.combine(date.today(), time.min))
         return Job.objects.filter(time__gte=daystart).order_by('time')
