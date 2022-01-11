@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.utils.translation import gettext as _
 
 
@@ -101,8 +102,8 @@ class Config:
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    adminportal_name = _get_setting('ADMINPORTAL_NAME', 'my.juntagrico')
-    adminportal_server_url = _get_setting('ADMINPORTAL_SERVER_URL', 'my.juntagrico.juntagrico')
+    adminportal_name = _get_setting('ADMINPORTAL_NAME', lambda: Site.objects.get_current().name)
+    adminportal_server_url = _get_setting('ADMINPORTAL_SERVER_URL', lambda: Site.objects.get_current().domain)
     default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.defaultmailer.Mailer')
     from_filter = _get_setting_with_key('FROM_FILTER',
                                         {
