@@ -4,21 +4,26 @@ Release Notes
 Dev
 ---
 
+
+1.4.6
+-----
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Admin Features:
     * Bylaws are now optional
+    * Member address now visible and searchable in data administration
+* Developer Features:
+    * Jobs table is now responsive
+
 
 1.4.5
 -----
-
 Fixes
 ^^^^^
 * Fix membership cancellation date
 
 1.4.4
 -----
-
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Admin Features:
@@ -37,7 +42,6 @@ Fixes
 
 1.4.3
 -----
-
 Fixes
 ^^^^^
 * Fix: Allow editing of assignments via admin
@@ -45,7 +49,6 @@ Fixes
 
 1.4.2
 -----
-
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
@@ -55,7 +58,6 @@ Features & Improvements
     * Filter for free slots on jobs
     * Show less and clearer messages on job page
     * Clarify some texts
-
 * Developer Features:
     * Support for Python 3.9 and dropped support for python 3.6 and 3.7
     * Refactor: Using new Django 3.2 features
@@ -76,7 +78,6 @@ Fixes
 
 1.4.1
 -----
-
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
