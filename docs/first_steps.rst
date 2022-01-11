@@ -12,8 +12,8 @@ Initial List Generation
 The depot lists are created by the following django management command :command:`generate_depot_list`. This command can
 be called manually or using a cronjob.
 
-Configure the Website Name
---------------------------
-The website name is used in the password recovery emails.
+Configure the Website Name and Domain
+-------------------------------------
+The website name and domain are displayed in various places on the website and in some emails.
 In the Django-Admin under Websites edit the `example.com` entry
-and set the names to your website URL and display name.
+and set the names to your website domain and display name.
