@@ -12,7 +12,7 @@ You find a link to a members user instance in the member admin form.
 There you can search for a permission and add it to the user using the little right arrow next to it. Do not forget to save the user in order for the permissions to take effect.
 You can also create groups of permissions which can be assigned to single users. If you need more information on that check out the Django documentation concerning permissions.
 
-Area and Depot Admins
+Area and Dept Admins
 --------------------
 juntagrico.is_depot_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^^

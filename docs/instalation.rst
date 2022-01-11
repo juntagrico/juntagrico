@@ -60,6 +60,6 @@ Since we use session we need a serializer
 Django also needs to be configured to send emails and to access a database. If you need more helping points see the testsettings in the project folder
 
 
-juntagrico Settings
+juntaggrico Settings
 --------------------
 For more information see the settings page.

@@ -104,31 +104,27 @@ SERVER_URL
 
 ADMINPORTAL_NAME
 ^^^^^^^^^^^^^^^^
-  DEPRECATED: Instead modify the display name of the entry in django admin websites.
-
   The name you want to use for the portal
 
   Type: String
 
-  default value is taken from the websites display name in the django admin
+  default value
 
   .. code-block:: python
 
-    "example.com"
+    "my.juntagrico"
 
 ADMINPORTAL_SERVER_URL
 ^^^^^^^^^^^^^^^^^^^^^^
-  DEPRECATED: Instead modify the domain name of the entry in django admin websites.
-
   The base URL where you run juntagrico (and where your static lies)
 
   Type: String
 
-  default value is taken from the websites domain name in the django admin
+  default value
 
   .. code-block:: python
 
-    "example.com"
+    "my.juntagrico.juntagrico"
 
 
 Accounting
