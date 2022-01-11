@@ -161,17 +161,24 @@ class RegisterMemberForm(MemberBaseForm):
 
     @staticmethod
     def agb_label():
-        return _('Ich habe {}{}{} gelesen und erkläre meinen Willen, "{}" beizutreten.\
-            Hiermit beantrage ich meine Aufnahme.').format(
-            '<a target="_blank" href="{}">{}</a>'.format(Config.bylaws(), _('die Statuten')),
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.business_regulations(), _('das Betriebsreglement')
-            ) if Config.business_regulations().strip() else '',
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.gdpr_info(), _('die DSGVO Infos')
-            ) if Config.gdpr_info().strip() else '',
-            Config.organisation_long_name()
-        )
+        documents = {
+            'die Statuten': Config.bylaws,
+            'das Betriebsreglement': Config.business_regulations,
+            'die DSGVO Infos': Config.gdpr_info,
+        }
+        documents_html = []
+        for text, link in documents.items():
+            if link().strip():
+                documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
+        if documents_html:
+            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(
+                (' ' + _('und') + ' ').join(documents_html),
+                Config.organisation_long_name()
+            )
+        else:
+            return _('Ich erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(Config.organisation_long_name())
 
 
 class RegisterSummaryForm(Form):
