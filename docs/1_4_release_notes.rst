@@ -14,6 +14,8 @@ Features & Improvements
     * Member address now visible and searchable in data administration
 * Developer Features:
     * Jobs table is now responsive
+    * Deprecated setting ADMINPORTAL_NAME
+    * Fixed site issue in password reset email
 
 
 1.4.5
