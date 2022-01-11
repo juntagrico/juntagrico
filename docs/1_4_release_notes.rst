@@ -3,7 +3,10 @@ Release Notes
 
 Dev
 ---
-
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * Uploaded email attachments can now be removed
 
 1.4.6
 -----
