@@ -6,6 +6,7 @@
 {% config "info_email" as c_info_email %}
 {% config "bylaws" as c_bylaws %}
 {% config "business_regulations" as c_business_regulations %}
+{% config "gdpr_info" as c_gdpr_info %}
 {% config "faq_doc" as c_faq_doc %}
 {% config "organisation_name" as c_organisation_name %}
 {% enriched_organisation "D" as v_d_enriched_organisation %}
@@ -35,6 +36,7 @@
 {% trans "Ebenfalls bestätigst du, dass du folgendes gelesen hast" %}:
 {% if c_bylaws.strip %} - {% trans "die Statuten" %} ({{ c_bylaws|safe }}){% endif %}
 {% if c_business_regulations.strip %} - {% trans "das Betriebsreglement" %} ({{ c_business_regulations|safe }}){% endif %}
+{% if c_gdpr_info.strip %} - {% trans "die DSGVO Infos" %} ({{ c_gdpr_info|safe }}){% endif %}
 {% endif %}
 
 {% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein, melde dies bitte {{ c_info_email }}.{% endblocktrans %}
