@@ -4,6 +4,11 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * Bylaws are now optional
+
 1.4.5
 -----
 
