@@ -9,6 +9,13 @@ Features & Improvements
 * Admin Features:
     * Bylaws are now optional
 
+1.4.5
+-----
+
+Fixes
+^^^^^
+* Fix membership cancellation date
+
 1.4.4
 -----
 

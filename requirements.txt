@@ -7,4 +7,4 @@ django-richtextfield==1.6.1
 icalendar==4.0.9
 schwifty==2021.10.2
 xhtml2pdf==0.2.4 # rq.filter: !=0.2.5
-XlsxWriter==3.0.1
+XlsxWriter==3.0.2
