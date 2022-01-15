@@ -4,6 +4,15 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Enable use of setting STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+Fixes
+^^^^^
+* Fix job table on activity area page
+* Add missing datatables resources
+
 
 1.4.6
 -----
