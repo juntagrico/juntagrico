@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
 {% block page_title %}
@@ -193,10 +194,10 @@
     </form>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/attachment_appender.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/attachment_appender.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/tinymce/tinymce.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/tinymce/tinymce.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initMailer.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initMailer.js' %}">
     </script>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
 {% load juntagrico.menu %}
@@ -17,15 +18,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="shortcut icon" href="{% config "favicon" %}"/>
         <link href="{% config "bootstrap" %}" rel="stylesheet"/>
-        <link href="/static/juntagrico/external/mid/css/materialdesignicons.min.css" rel="stylesheet"/>
-        <link href="/static/juntagrico/external/ionicons-2.0.1/css/ionicons.min.css" rel="stylesheet"/>
-        <link href="/static/juntagrico/external/font-awesome-5.3.1/css/all.min.css" rel="stylesheet"/>
-        <link href="/static/juntagrico/external/cc/cookieconsent.min.css" rel="stylesheet"/>
-        <link href="/static/juntagrico/external/datatables.min.css" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/external/mid/css/materialdesignicons.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/external/ionicons-2.0.1/css/ionicons.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/external/font-awesome-5.3.1/css/all.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/external/cc/cookieconsent.min.css' %}" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/external/datatables.min.css' %}" rel="stylesheet"/>
         {% block styles %}
         {% endblock %}
-        <link href="/static/juntagrico/css/juntagrico.css" rel="stylesheet"/>
-        <link href="/static/juntagrico/css/slider.css" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/css/juntagrico.css' %}" rel="stylesheet"/>
+        <link href="{% static 'juntagrico/css/slider.css' %}" rel="stylesheet"/>
         <link href="{% config "style_sheet" %}" rel="stylesheet"/>
     </head>
     <body id="{{ request|view_name }}" class="{% block body_extra_classes %}{% endblock %}">
@@ -126,15 +127,15 @@
                 {% endblock %}
             </div>
         </div>
-        <script type="text/javascript" src="/static/juntagrico/external/jquery-3.3.1/jquery-3.3.1.min.js">
+        <script type="text/javascript" src="{% static 'juntagrico/external/jquery-3.3.1/jquery-3.3.1.min.js' %}">
         </script>
-        <script type="text/javascript" src="/static/juntagrico/external/bootstrap-4.3.1/js/bootstrap.bundle.min.js">
+        <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-4.3.1/js/bootstrap.bundle.min.js' %}">
         </script>
         <script type="text/javascript" src="{% url 'js-i18n' %}">
         </script>
-        <script type="text/javascript" src="/static/juntagrico/js/juntagrico.js">
+        <script type="text/javascript" src="{% static 'juntagrico/js/juntagrico.js' %}">
         </script>
-        <script src="/static/juntagrico/external/cc/cookieconsent.min.js" data-cfasync="false"></script>
+        <script src="{% static 'juntagrico/external/cc/cookieconsent.min.js' %}" data-cfasync="false"></script>
         <script>
         window.cookieconsent.initialise({
             "content": {
