@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
 {% block page_title %}
     {% vocabulary "depot" as v_depot %}
@@ -94,7 +95,7 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initChangeDepot.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/leaflet/leaflet.js' %}"></script>
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}"data-main="{% static 'juntagrico/js/initChangeDepot.js' %}">
     </script>
 {% endblock %}
