@@ -1,0 +1,23 @@
+{% load i18n %}
+<p>Interessiert an {{ v_d_enriched_organisation }}?</p>
+{% if c_enable_shares %}
+    <p>
+        {% blocktrans trimmed %}
+        Die Mitgliedschaft bei {{ v_d_enriched_organisation }} ist geknüpft an den Erwerb von
+        {{ v_share_pl }} in der Höhe
+        von CHF {{ c_share_price }} pro {{ v_share }}. Die Anzahl {{ v_share_pl }}
+        ist abhängig von den {{ v_subscription }}-Bestandteilen. Die {{ v_share_pl }} sind das
+        Kapital, das vor allem zur Finanzierung von Investitionen – zum Beispiel Infrastruktur – verwendet
+        wird.
+        Beim Austritt werden die {{ v_share_pl }} rückerstattet.
+        {% endblocktrans %}
+    </p>
+{% endif %}
+<p>
+    {% blocktrans trimmed %}
+    Die {{ v_member_type_pl }} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten
+    gemeinsam zum Gelingen des Betriebes bei.
+    Wer bei {{ v_d_enriched_organisation }} {{ v_member_type }} ist, verpflichtet sich zur
+    Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
+    {% endblocktrans %}
+</p>

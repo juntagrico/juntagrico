@@ -1,0 +1,12 @@
+{% load i18n %}
+{% blocktrans trimmed %}
+Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
+Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
+{% endblocktrans %}
+<br/>
+{% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
+{% if activity_area_info.strip %}
+    <br/>
+    {% trans "Infos zu den Tätigkeitsbereichen erhältst du im" %}
+    <a target="_blank" href="{{ activity_area_info }}">{% trans "Infoblatt" %}</a>.
+{% endif %}

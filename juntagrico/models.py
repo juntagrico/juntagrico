@@ -9,6 +9,7 @@ from juntagrico.entity.jobs import Assignment, OneTimeJob, RecuringJob, Job
 from juntagrico.entity.member import Member, SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.textoverride import TextOverride, pre_save as textoverride_pre_save
 from juntagrico.lifecycle.job import job_pre_save, handle_job_canceled, handle_job_time_changed
 from juntagrico.lifecycle.member import member_pre_save, member_post_save, handle_member_deactivated, \
     handle_member_created
@@ -73,6 +74,8 @@ signals.pre_save.connect(member_pre_save, sender=Member)
 signals.post_save.connect(member_post_save, sender=Member)
 juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
+''' text override init '''
+signals.pre_save.connect(textoverride_pre_save, sender=TextOverride)
 ''' lifecycle all post init'''
 register_entities_for_post_init_and_save()
 

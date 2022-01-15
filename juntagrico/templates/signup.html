@@ -25,32 +25,7 @@
         {% vocabulary "member_type_pl" as v_member_type_pl %}
         <div class="row mb-3">
             <div class="col-md-12">
-                Interessiert an {% enriched_organisation "D" %}?
-            </div>
-        </div>
-        {% if c_enable_shares %}
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    {% blocktrans trimmed %}
-                    Die Mitgliedschaft bei {{ v_d_enriched_organisation }} ist geknüpft an den Erwerb von
-                    {{ v_share_pl }} in der Höhe
-                    von CHF {{ c_share_price }} pro {{ v_share }}. Die Anzahl {{ v_share_pl }}
-                    ist abhängig von den {{ v_subscription }}-Bestandteilen. Die {{ v_share_pl }} sind das
-                    Kapital, das vor allem zur Finanzierung von Investitionen – zum Beispiel Infrastruktur – verwendet
-                    wird.
-                    Beim Austritt werden die {{ v_share_pl }} rückerstattet.
-                    {% endblocktrans %}
-                </div>
-            </div>
-        {% endif %}
-        <div class="row mb-3">
-            <div class="col-md-12">
-                {% blocktrans trimmed %}
-                Die {{ v_member_type_pl }} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten
-                gemeinsam zum Gelingen des Betriebes bei.
-                Wer bei {{ v_d_enriched_organisation }} {{ v_member_type }} ist, verpflichtet sich zur
-                Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
-                {% endblocktrans %}
+                {% include "textsnippets/signup_intro.html" %}
             </div>
         </div>
         {% if c_bylaws.strip or c_business_regulations.strip %}
