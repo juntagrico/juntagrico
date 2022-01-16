@@ -85,7 +85,8 @@ class Config:
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
         lambda: {
-            'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+            'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(
+                Site.objects.get_current().name),
             'confirm_text': _('einverstanden'),
             'link_text': _('Hier findest du mehr zum Thema'),
             'url': '/my/cookies'
@@ -102,8 +103,6 @@ class Config:
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    adminportal_name = _get_setting('ADMINPORTAL_NAME', lambda: Site.objects.get_current().name)
-    adminportal_server_url = _get_setting('ADMINPORTAL_SERVER_URL', lambda: Site.objects.get_current().domain)
     default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.defaultmailer.Mailer')
     from_filter = _get_setting_with_key('FROM_FILTER',
                                         {
