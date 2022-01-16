@@ -10,8 +10,7 @@
     </div>
 {% endblock %}
 {% block allcontent %}
-    {% config "adminportal_name" as an%}
-    {% blocktrans with an=an%}
+    {% blocktrans with an=request.site.name%}
     {{ an }} verwendet Cookies.
     {{ an }} verwendet aber keine Cookies für Tracking etc.
     {{ an }} verwendet Session Cookies und Cookies zur CSRF Bekämpfung.
