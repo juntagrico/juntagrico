@@ -197,6 +197,8 @@
     </script>
     <script type="text/javascript" src="/static/juntagrico/external/tinymce/tinymce.min.js">
     </script>
+    {% config 'mailer_richtext_options' as c_mailer_richtext_options %}
+    {{ c_mailer_richtext_options|json_script:"mailer_richtext_options" }}
     <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initMailer.js">
     </script>
 {% endblock %}

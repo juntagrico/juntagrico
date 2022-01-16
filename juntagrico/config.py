@@ -156,6 +156,7 @@ class Config:
             'core': '/static/juntagrico/img/core.png'
         }
     )
+    mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
 
     # demo settings
     demouser = _get_setting('DEMO_USER')

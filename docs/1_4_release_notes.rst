@@ -4,6 +4,10 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Developer Features:
+    * The mailer textfield can now be configured using the new `MAILER_RICHTEXT_OPTIONS` setting
 
 1.4.6
 -----
