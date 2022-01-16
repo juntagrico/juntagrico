@@ -26,6 +26,7 @@ Features & Improvements
 * Developer Features:
     * ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` are removed in favor of the sites app. See upgrade instructions.
     * Added settings ``SCRIPTS`` and ``STYLES`` and removed ``STYLE_SHEET``
+    * The mailer textfield can now be configured using the new `MAILER_RICHTEXT_OPTIONS` setting
 
 
 

@@ -562,6 +562,18 @@ WHITELIST_EMAILS
     []
 
 
+MAILER_RICHTEXT_OPTIONS
+^^^^^^^^^^^^^^^^^^^^^^^
+  Configuration overrides of the tinyMCE editor of the mailer view.
+  See default config in ``static/juntagrico/js/initMailer.js``.
+
+  default value:
+
+  .. code-block:: python
+
+    {}
+
+
 GDPR
 ----
 

@@ -18,6 +18,7 @@ define([], function () {
         toolbar: "undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link",
         convert_urls:true,
         remove_script_host:false,
+        ...JSON.parse(document.getElementById('mailer_richtext_options').textContent)
     });
     $("#sendmail").click(function () {
         var editor = tinyMCE.get('message');
