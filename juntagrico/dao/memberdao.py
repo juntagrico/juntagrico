@@ -151,8 +151,8 @@ class MemberDao:
 
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
-        start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
-        end = gdtz().localize(datetime.combine(end_of_business_year(), time.max))
+        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
+        end = datetime.combine(end_of_business_year(), time.min, tzinfo=gdtz())
         return members.annotate(assignment_count=Sum(
             Case(When(assignment__job__time__gte=start,
                       assignment__job__time__lt=end,

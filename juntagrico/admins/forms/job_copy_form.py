@@ -36,7 +36,7 @@ class JobCopyForm(forms.ModelForm):
         self.fields['start_date'].initial = inst.time.date() + \
             datetime.timedelta(days=1)
         if is_naive(inst.time):
-            self.fields['time'].initial = gdtz().localize(inst.time)
+            self.fields['time'].initial = inst.time.astimezone(gdtz())
         else:
             self.fields['time'].initial = localtime(inst.time)
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
@@ -58,7 +58,7 @@ class JobCopyForm(forms.ModelForm):
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
             if is_naive(dt):
-                dt = gdtz().localize(dt)
+                dt = dt.astimezone(gdtz())
             newjob = RecuringJob.objects.create(
                 type=inst.type, slots=inst.slots, infinite_slots=inst.infinite_slots,
                 multiplier=inst.multiplier, time=dt

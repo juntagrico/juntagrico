@@ -55,7 +55,7 @@ class JobDao:
 
     @staticmethod
     def get_jobs_for_current_day():
-        daystart = gdtz().localize(datetime.combine(date.today(), time.min))
+        daystart = datetime.combine(date.today(), time.min, tzinfo=gdtz())
         return Job.objects.filter(time__gte=daystart).order_by('time')
 
     @staticmethod
