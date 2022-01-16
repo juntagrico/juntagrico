@@ -4,6 +4,9 @@ Release Notes
 Dev
 ---
 
+Fixes
+^^^^^
+* Fix job table on activity area page
 
 1.4.6
 -----
