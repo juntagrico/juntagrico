@@ -393,3 +393,13 @@ th {
 .cc-btn{
     font-size: 0.875rem;
 }
+
+/* contact display */
+.contact {
+    display: block;
+}
+
+.contact span{
+    display: block;
+    white-space: nowrap;
+}

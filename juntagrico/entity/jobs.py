@@ -1,15 +1,29 @@
 from django.contrib import admin
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.datetime_safe import time
+from django.utils.html import urlize
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.entity.member import Member
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.temporal import weekday_short
+
+
+def get_emails(source, fallback):
+    emails = source.filter(
+        Q(instance_of=EmailContact) | Q(MemberContact___display__in=[MemberContact.DISPLAY_EMAIL,
+                                                                     MemberContact.DISPLAY_EMAIL_TEL])
+    )
+    if emails.count():
+        return [e.email for e in emails]
+    return fallback()
 
 
 class ActivityArea(JuntagricoBaseModel):
@@ -21,10 +35,6 @@ class ActivityArea(JuntagricoBaseModel):
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
-    email = models.EmailField(_('E-Mail'), null=True, blank=True,
-                              help_text=_('Wenn leer wird E-Mail-Adresse von KoordinatorIn angezeigt'))
-    show_coordinator_phonenumber = models.BooleanField(
-        _('Telefonnummer von KoordinatorIn anzeigen'), default=False)
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
@@ -32,18 +42,14 @@ class ActivityArea(JuntagricoBaseModel):
     def __str__(self):
         return '%s' % self.name
 
-    def contact(self):
-        if self.show_coordinator_phonenumber is True:
-            return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
-        else:
-            return self.get_email()
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
 
-    @admin.display(description=email.verbose_name)
-    def get_email(self):
-        if self.email is not None:
-            return self.email
-        else:
-            return self.coordinator.email
+    def get_emails(self):
+        return get_emails(self.contact_set, lambda: [self.coordinator.email])
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -135,6 +141,15 @@ class JobType(AbstractJobType):
     '''
 
     visible = models.BooleanField(_('Sichtbar'), default=True)
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.activityarea.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.activityarea.get_emails)
 
     class Meta:
         verbose_name = _('Jobart')
@@ -272,6 +287,15 @@ class RecuringJob(Job):
     def duration(self):
         return self.duration_override if self.duration_override else super().duration
 
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.type.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.type.get_emails)
+
     class Meta:
         verbose_name = _('Job')
         verbose_name_plural = _('Jobs')
@@ -288,6 +312,15 @@ class OneTimeJob(Job, AbstractJobType):
 
     def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name)
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.activityarea.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.activityarea.get_emails)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -328,3 +361,119 @@ class Assignment(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('assignment')
         verbose_name_plural = Config.vocabulary('assignment_pl')
+
+
+class Contact(JuntagricoBasePoly):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, null=True, blank=True)
+    job_type = models.ForeignKey(JobType, on_delete=models.CASCADE, null=True, blank=True)
+    activity_area = models.ForeignKey(ActivityArea, on_delete=models.CASCADE, null=True, blank=True)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    def to_html(self):
+        return mark_safe('<span class="contact contact-{}">{}</span>'.format(
+            self.__class__.__name__.lower().replace('contact', ''),
+            self._inner_html()
+        ))
+
+    def _inner_html(self):
+        raise NotImplementedError
+
+    class Meta:
+        verbose_name = _('Kontakt')
+        verbose_name_plural = _('Kontakte')
+        ordering = ['sort_order']
+
+
+class MemberContact(Contact):
+    DISPLAY_EMAIL = 'E'
+    DISPLAY_TEL = 'T'
+    DISPLAY_EMAIL_TEL = 'B'
+    DISPLAY_OPTIONS = [
+        (DISPLAY_EMAIL, _('E-Mail')),
+        (DISPLAY_TEL, _('Telefonnummer')),
+        (DISPLAY_EMAIL_TEL, _('E-Mail & Telefonnummer')),
+    ]
+
+    member = models.ForeignKey(Member, on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
+    display = models.CharField(_('Anzeige'), max_length=1, choices=DISPLAY_OPTIONS, default=DISPLAY_EMAIL)
+
+    @property
+    def show_email(self):
+        return self.display in [self.DISPLAY_EMAIL, self.DISPLAY_EMAIL_TEL]
+
+    @property
+    def show_tel(self):
+        return self.display in [self.DISPLAY_TEL, self.DISPLAY_EMAIL_TEL]
+
+    def __str__(self):
+        strings = [str(self.member)]
+        if self.show_email:
+            strings.append(self.member.email)
+        if self.show_tel:
+            if self.member.mobile_phone:
+                strings.append(self.member.mobile_phone + ',')
+            strings.append(self.member.phone)
+        return " ".join(strings)
+
+    @property
+    def email(self):
+        if self.show_email:
+            return self.member.email
+        return None
+
+    def _inner_html(self):
+        inner_html = '<span class="contact-member-name">{}</span>\n'.format(self.member)
+        if self.show_email:
+            inner_html += '<span class="contact-member-email"><a href="mailto:{0}">{0}</a>' \
+                          '</span>\n'.format(self.member.email)
+        if self.show_tel:
+            if self.member.mobile_phone:
+                inner_html += '<span class="contact-member-mobile-phone">{}</span>\n'.format(self.member.mobile_phone)
+            inner_html += '<span class="contact-member-phone">{}</span>\n'.format(self.member.phone)
+        return inner_html
+
+    class Meta:
+        verbose_name = Config.vocabulary('member')
+        verbose_name_plural = Config.vocabulary('member_pl')
+
+
+class EmailContact(Contact):
+    email = models.EmailField(_('E-Mail'))
+
+    def __str__(self):
+        return self.email
+
+    def _inner_html(self):
+        return '<a href="mailto:{0}">{0}</a>'.format(self.email)
+
+    class Meta:
+        verbose_name = _('E-Mail-Adresse')
+        verbose_name_plural = _('E-Mail-Adresse')
+
+
+class PhoneContact(Contact):
+    phone = models.CharField(_('Telefonnummer'), max_length=50)
+
+    def __str__(self):
+        return self.phone
+
+    def _inner_html(self):
+        return self.phone
+
+    class Meta:
+        verbose_name = _('Telefonnummer')
+        verbose_name_plural = _('Telefonnummer')
+
+
+class TextContact(Contact):
+    text = models.TextField(_('Kontaktbeschrieb'))
+
+    def __str__(self):
+        return self.text
+
+    def _inner_html(self):
+        return urlize(self.text)
+
+    class Meta:
+        verbose_name = _('Freier Kontaktbeschrieb')
+        verbose_name_plural = _('Freie Kontaktbeschriebe')

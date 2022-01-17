@@ -30,7 +30,7 @@ def generate_ical_for_job(job):
     e['DTSTART'] = vDatetime(job.start_time()).to_ical()
     e.add(name='DURATION', value=timedelta(hours=job.duration))
     e.add(name=f"ORGANIZER;CN={Config.organisation_name()}",
-          value=f"mailto:{job.type.activityarea.get_email()}")
+          value=f"mailto:{job.type.activityarea.get_emails()[0]}")
     if job.canceled:
         e.add(name='STATUS', value='CANCELLED')
     c.add_component(e)
