@@ -102,31 +102,6 @@ SERVER_URL
 
     "www.juntagrico.juntagrico"
 
-ADMINPORTAL_NAME
-^^^^^^^^^^^^^^^^
-  The name you want to use for the portal
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "my.juntagrico"
-
-ADMINPORTAL_SERVER_URL
-^^^^^^^^^^^^^^^^^^^^^^
-  The base URL where you run juntagrico (and where your static lies)
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "my.juntagrico.juntagrico"
-
-
 Accounting
 ----------
 
@@ -590,7 +565,7 @@ COOKIE_CONSENT
 
   .. code-block:: python
 
-    {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+    {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Site.objects.get_current().name),
      'confirm_text': _('einverstanden'),
      'link_text': _('Hier findest du mehr zum Thema'),
      'url': '/my/cookies'

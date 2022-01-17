@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
@@ -51,8 +51,8 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            url(r'^copy_job/(?P<jobid>.*?)/$',
-                self.admin_site.admin_view(self.copy_job_view))
+            re_path(r'^copy_job/(?P<jobid>.*?)/$',
+                    self.admin_site.admin_view(self.copy_job_view))
         ]
         return my_urls + urls
 

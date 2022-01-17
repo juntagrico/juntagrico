@@ -11,7 +11,7 @@
 <html lang="de">
     <head>
         <title>
-            {% config "adminportal_name" %}
+            {{ request.site.name }}
         </title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -40,7 +40,7 @@
             </div>
             <div class="row d-md-none">
                 <nav class="navbar navbar-expand-md col-sm-12">
-                      <a class="navbar-brand" href="#">{% config "adminportal_name" %}</a>
+                      <a class="navbar-brand" href="/my/home">{{ request.site.name }}</a>
 
                 {% block small_menu_content %}
                       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

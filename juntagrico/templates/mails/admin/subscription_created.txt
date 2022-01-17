@@ -9,6 +9,7 @@
 
 {% trans "ID" %}: {{subscription.id}}
 {% trans "Beschrieb" %}: {{subscription}}
+{% trans "Kommentar" %}: {{comment}}
 {{ serverurl }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch

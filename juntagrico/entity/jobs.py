@@ -13,7 +13,6 @@ from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
 from juntagrico.entity.member import Member
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.util.jobs import get_status_image
 from juntagrico.util.temporal import weekday_short
 
 
@@ -188,8 +187,12 @@ class Job(JuntagricoBasePoly):
         if self.infinite_slots:
             return -1
         if not (self.slots is None):
-            return self.slots - self.occupied_places()
+            return self.slots - self.occupied_slots
         return 0
+
+    @property
+    def occupied_slots(self):
+        return self.assignment_set.count()
 
     @property
     def duration(self):
@@ -201,14 +204,11 @@ class Job(JuntagricoBasePoly):
     def start_time(self):
         return self.time
 
-    def occupied_places(self):
-        return self.assignment_set.count()
-
-    def get_status_percentage(self):
+    def status_percentage(self):
         assignments = AssignmentDao.assignments_for_job(self.id)
         if self.slots < 1:
-            return get_status_image(100)
-        return get_status_image(assignments.count() * 100 / self.slots)
+            return 100
+        return assignments.count() * 100 / self.slots
 
     def is_core(self):
         return self.type.activityarea.core

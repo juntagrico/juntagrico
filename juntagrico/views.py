@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -34,15 +36,16 @@ def home(request):
     '''
     Overview on juntagrico
     '''
-
-    next_jobs = set(JobDao.get_current_jobs()[:7])
-    pinned_jobs = set(JobDao.get_pinned_jobs())
-    next_promotedjobs = set(JobDao.get_promoted_jobs())
+    start = timezone.now()
+    end = start + timedelta(14)
+    next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
+    pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
+    next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
     messages = getattr(request, 'member_messages', []) or []
     messages.extend(home_messages(request))
     request.member_messages = messages
     renderdict = {
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda job: job.time),
+        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
     }
 

@@ -288,6 +288,41 @@ textarea#recipients[disabled=disabled] {
     height: 400px;
 }
 
+/* stuff for responsive tables */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    font-weight: 900;
+    font-size: 27px;
+    line-height: 1;
+    color: #66cc66;
+    background: inherit;
+    border: none;
+    box-shadow: none;
+    margin-top: 0;
+    padding: 8px 0.445rem 8px 0;
+    content: "\f105";
+    top: 0px;
+    left: 0px;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before {
+    background: inherit;
+    content: "\f107";
+}
+
+.dtr-title > input {
+    display: none;
+}
+
+#free_slot_filter_form {
+    display: none;  /* hides filter if the column is not shown in the responsive view */
+}
+
+.job-status #free_slot_filter_form {
+    display: initial;
+}
+
 /* arrows for collapsible list elements */
 .details-control, .shown .details-control {
     font-family: 'Font Awesome 5 Free';

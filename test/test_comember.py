@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.core import mail
 
 from juntagrico.models import Member, Share, Subscription
 from test.util.test import JuntagricoTestCase
@@ -11,6 +12,7 @@ class CoMemberTests(JuntagricoTestCase):
         self.member5 = self.create_member('email5@email.org')
         self.member5.iban = 'CH6189144414396247884'
         self.member5.save()
+        mail.outbox.clear()
 
     @staticmethod
     def get_co_member_data(email):
@@ -37,6 +39,8 @@ class CoMemberTests(JuntagricoTestCase):
         self.assertEqual(Member.objects.filter(email=new_co_member_data['email']).count(), 1)
         self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(subscriptionmembership__member__email=new_co_member_data['email']).count(), 1)
+        # membership and share order emails to co-member & admin notifications for the same
+        self.assertEqual(len(mail.outbox), 4)
 
     def testAddExistingCoMemberWithSub(self):
         # existing member with subs can not be added as co members

@@ -117,6 +117,21 @@ class Member(JuntagricoBaseModel):
         return self.usable_shares.count()
 
     @property
+    def required_shares_count(self):
+        # calculate required shares backwards to account for shared subscriptions
+        not_canceled_share_count = self.usable_shares_count
+        overflow_list = [not_canceled_share_count]
+        if self.subscription_future is not None:
+            overflow_list.append(self.subscription_future.share_overflow)
+        if self.subscription_current is not None:
+            overflow_list.append(self.subscription_current.share_overflow)
+        return not_canceled_share_count - min(overflow_list)
+
+    @property
+    def cancellable_shares_count(self):
+        return self.usable_shares_count - max(self.required_shares_count, 1)
+
+    @property
     def subscription_future(self):
         sub_membership = self.subscriptionmembership_set.filter(~q_joined_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
@@ -153,6 +168,11 @@ class Member(JuntagricoBaseModel):
     @property
     def in_subscription(self):
         return (self.subscription_future is not None) | (self.subscription_current is not None)
+
+    @property
+    def can_order_subscription(self):
+        return self.subscription_future is None and (
+            self.subscription_current is None or self.subscription_current.cancellation_date is not None)
 
     @property
     def blocked(self):
