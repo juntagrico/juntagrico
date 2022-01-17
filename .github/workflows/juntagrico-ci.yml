@@ -38,7 +38,7 @@ jobs:
         ./cc-test-reporter before-build
     - name: run tests
       run: |
-        django-admin.py makemigrations --noinput
+        python -m django makemigrations --noinput
         coverage run -m manage test
     - name: publish code coverage
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
