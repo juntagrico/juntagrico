@@ -21,7 +21,7 @@ def share_pain001(request):
     payable_shares = [share for share in shares if share.member.iban is not None and share.member.iban != '']
     total_amount = 0
     for share in payable_shares:
-        total_amount = total_amount + share['value']
+        total_amount = total_amount + share.value
     context = {
         'shares': payable_shares,
         'nmbr_of_tx': len(payable_shares),

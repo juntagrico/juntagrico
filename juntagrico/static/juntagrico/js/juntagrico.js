@@ -6,23 +6,6 @@
     });
  }
 
- function job_collapsible(table, format=default_job_format) {
-    $('#filter-table').on('click', 'td.details-control', function () {
-          var tr = $(this).closest('tr');
-          var row = table.row(tr);
-
-          if (row.child.isShown()) {
-              // This row is already open - close it
-              row.child.hide();
-              tr.removeClass('shown');
-          } else {
-              // Open this row
-              row.child(format(tr.data('place'),tr.data('starttime'),tr.data('endtime'),tr.data('area'))).show();
-              tr.addClass('shown');
-          }
-      });
- }
-
  function table_column_search(table) {
     table.columns().every(function () {
         var that = this;
@@ -127,8 +110,24 @@ function default_data_table() {
     return table;
 }
 
-function default_job_format(place,starttime,endtime,area) {
-      return '<div>Zeit: ' + starttime + '-' + endtime + '<br/>Ort: ' +place + '<br/>Bereich: ' +area + '</div>';
+function job_no_search_datatable() {
+    $("#filter-table").DataTable({
+        "responsive": true,
+        "paging": false,
+        "info": false,
+        "ordering": false,
+        "searching": false,
+        "columnDefs": [
+            {
+                "targets": 'job-description',
+                "visible": false
+            },
+            {
+                "targets": ['job-date', 'job-status', 'job-name'],
+                "responsivePriority": 1
+            },
+        ]
+    });
 }
 
 function area_slider() {

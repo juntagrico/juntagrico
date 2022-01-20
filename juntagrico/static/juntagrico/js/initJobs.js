@@ -9,17 +9,21 @@ define([], function () {
     let index = $('#filter-table th.'+free_slot_count).prevAll().length
 
     let table = $("#filter-table").DataTable({
+        "responsive": true,
         "paging": false,
         "info": false,
         "ordering": false,
         "search": {
-            "regex": true,
-            "smart": false
+            "smart": true
         },
         "columnDefs": [
             {
-                "targets": free_slot_count,
+                "targets": ['job-description', free_slot_count],
                 "visible": false,
+            },
+            {
+                "targets": ['job-date', 'job-status', 'job-name'],
+                "responsivePriority": 1
             },
         ],
         "language": {
@@ -44,7 +48,4 @@ define([], function () {
     $("#free_slot_filter").off("keyup change").on("keyup change", function () {
         table.draw();
     });
-
-    job_collapsible(table);
-
 });

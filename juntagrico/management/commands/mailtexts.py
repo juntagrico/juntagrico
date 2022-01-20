@@ -1,7 +1,7 @@
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import RecuringJob
@@ -9,10 +9,6 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import get_email_content, base_dict
-
-
-def get_server():
-    return 'http://' + Config.adminportal_server_url()
 
 
 class Command(BaseCommand):
@@ -49,7 +45,7 @@ class Command(BaseCommand):
 
         print('*** n_sub ***')
 
-        print(get_email_content('n_sub', base_dict({'subscription': subscription})))
+        print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
         print()
 
         print('*** co_welcome ***')
@@ -76,6 +72,10 @@ class Command(BaseCommand):
         print(get_email_content('password', base_dict({
             'email': 'email@email.org',
             'password': 'password',
+            'protocol': 'https',
+            'domain': Site.objects.get_current().domain,
+            'uid': 'uid',
+            'token': 'token'
         })))
         print()
 

@@ -1,3 +1,4 @@
+from django.contrib.sites.models import Site
 from django.template.loader import get_template
 from django.utils.translation import gettext as _
 
@@ -10,7 +11,7 @@ Form emails
 
 
 def contact(subject, message, member, copy_to_member):
-    subject = _('Anfrage per {0}:').format(Config.adminportal_name()) + subject
+    subject = _('Anfrage per {0}:').format(Site.objects.get_current().name) + subject
     email_sender = EmailSender.get_sender(subject, message)
     email_sender.send_to(Config.info_email(), reply_to=[member.email])
     if copy_to_member:
@@ -18,7 +19,7 @@ def contact(subject, message, member, copy_to_member):
 
 
 def contact_member(subject, message, member, contact_member, copy_to_member, files):
-    subject = _('Nachricht per {0}:').format(Config.adminportal_name()) + subject
+    subject = _('Nachricht per {0}:').format(Site.objects.get_current().name) + subject
     email_sender = EmailSender.get_sender(subject, message, reply_to=[member.email]).attach_files(files)
     email_sender.send_to(contact_member.email)
     if copy_to_member:

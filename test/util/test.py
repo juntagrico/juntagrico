@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from django.core import mail
 
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot
@@ -30,6 +31,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_extra_sub()
         self.set_up_mail_template()
         self.set_up_deliveries()
+        mail.outbox.clear()
 
     @staticmethod
     def create_member(email):
@@ -86,6 +88,12 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='can_load_templates'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='change_subscriptionpart'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_subscription_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_member_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_share_creation'))
         self.member.user.save()
 
     def set_up_admin(self):
