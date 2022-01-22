@@ -307,13 +307,13 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
-        add_user_to_activity_area(subscription)
+        add_subscription_member_to_activity_area(subscription)
     except ValidationError as e:
         return error_page(request, e.message)
     return return_to_previous_location(request)
 
 
-def add_user_to_activity_area(subscription):
+def add_subscription_member_to_activity_area(subscription):
     activity_area = ActivityArea.objects.filter(auto_add_new_members=True)
     member_ids = SubscriptionMembership.objects.filter(subscription=subscription).values_list('member')
     members = Member.objects.filter(pk__in=member_ids)
