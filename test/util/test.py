@@ -146,7 +146,8 @@ class JuntagricoTestCase(TestCase):
         area
         """
         area_data = {'name': 'name',
-                     'coordinator': self.area_admin}
+                     'coordinator': self.area_admin,
+                     'auto_add_new_members': True}
         area_data2 = {'name': 'name2',
                       'coordinator': self.area_admin,
                       'hidden': True}
