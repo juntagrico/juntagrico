@@ -73,11 +73,12 @@ urlpatterns = [
          name='sub-cancel'),
     path('my/subscription/leave/<int:subscription_id>/', juntagrico_subscription.leave_subscription,
          name='sub-leave'),
-    # /my/subscription/{id}/extra
+    # /my/subscription/extra/{id}
     path('my/subscription/change/extra/<int:subscription_id>/', juntagrico_subscription.extra_change,
          name='extra-change'),
-    # /my/subscription/{id}/part
+    # /my/subscription/part/{id}
     path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),
+    path('my/subscription/part/<int:part_id>/change', juntagrico_subscription.part_change, name='part-change'),
     path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
          name='part-cancel'),
     # /my/assignments

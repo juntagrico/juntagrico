@@ -1,8 +1,10 @@
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML, Div
+from crispy_forms.utils import TEMPLATE_PACK
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -13,6 +15,7 @@ from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Subscription
 
 
@@ -325,6 +328,20 @@ class SubscriptionTypeField(Field):
         return super().render(*args, extra_context=extra_context, **kwargs)
 
 
+class SubscriptionTypeOption(Div):
+    template = 'forms/subscription_type_option.html'
+
+    def __init__(self, name, *args, instance, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance = instance
+        self.value = instance.id
+        self.name = name
+
+    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK, **kwargs):
+        template = self.get_template_name(template_pack)
+        return render_to_string(template, {"type": self.instance, "option": self})
+
+
 class SubscriptionPartBaseForm(Form):
     def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
         super().__init__(*args, **kwargs)
@@ -334,6 +351,12 @@ class SubscriptionPartBaseForm(Form):
         self.helper.field_class = 'col-md-9'
         self._product_method = product_method
 
+    def get_type_field(self, subscription_type):
+        field_name = f'amount[{subscription_type.id}]'
+        self.fields[field_name] = IntegerField(label=subscription_type.name, min_value=0,
+                                               initial=self._get_initial(subscription_type))
+        return SubscriptionTypeField(field_name, instance=subscription_type)
+
     def _collect_type_fields(self):
         containers = []
         for product in self._product_method().all():
@@ -341,17 +364,14 @@ class SubscriptionPartBaseForm(Form):
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
                 for subscription_type in subscription_size.types.filter(visible=True):
-                    field_name = f'amount[{subscription_type.id}]'
-                    self.fields[field_name] = IntegerField(label=subscription_type.name, min_value=0,
-                                                           initial=self._get_initial(subscription_type))
-
-                    size_container.append(SubscriptionTypeField(field_name, instance=subscription_type))
+                    if (type_field := self.get_type_field(subscription_type)) is not None:
+                        size_container.append(type_field)
                 product_container.append(size_container)
             containers.append(product_container)
         return containers
 
     def _get_initial(self, subscription_type):
-        raise NotImplementedError
+        return 0
 
     def get_selected(self):
         return {
@@ -396,9 +416,6 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             )
         )
 
-    def _get_initial(self, subscription_type):
-        return 0
-
     def clean(self):
         selected = self.get_selected()
         # check if members in subscription have sufficient shares
@@ -421,6 +438,52 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
                     _('&rarr; Oder {} komplett künden').format(Config.vocabulary('subscription')))
             ))
             raise ValidationError(amount_error_message, code='amount_error')
+        return super().clean()
+
+
+class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
+    part_type = ChoiceField()
+
+    def __init__(self, part=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.part = part
+        self.fields['part_type'].choices = self.get_choices
+        self.helper.label_class = ''
+        self.helper.field_class = 'col-md-12'
+        self.helper.layout = Layout(
+            *self._collect_type_fields(),
+            FormActions(
+                Submit('submit', _('Ändern'), css_class='btn-success')
+            )
+        )
+
+    def get_type_field(self, subscription_type):
+        if subscription_type.pk == self.part.type.pk:
+            return None
+        return SubscriptionTypeOption('part_type', instance=subscription_type)
+
+    def get_choices(self):
+        for subscription_type in SubscriptionTypeDao.get_normal_visible().exclude(pk=self.part.type.pk):
+            yield subscription_type.id, subscription_type.name
+
+    def clean(self):
+        selected = self.cleaned_data.get('part_type')
+        if selected:
+            sub_type = SubscriptionType.objects.get(id=selected)
+            # check if members in subscription have sufficient shares
+            additional_available_shares = self.part.subscription.all_shares - self.part.subscription.required_shares
+            additional_required_shares = sub_type.shares - self.part.type.shares
+            if additional_available_shares < additional_required_shares:
+                share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diesen Bestandteil!{}').format(
+                    Config.vocabulary('share_pl'),
+                    '<br/><a href="{}" class="alert-link">{}</a>'.format(
+                        reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
+                ))
+                raise ValidationError(share_error_message, code='share_error')
+        else:
+            # re-raise field error as form error
+            for error_code, error in self.errors.items():
+                raise ValidationError(error, code=error_code)
         return super().clean()
 
 

@@ -47,9 +47,15 @@
                                     {% trans "kündigen" %}
                                 </a>
                             {% elif part.subscription.future_parts.count == 1  and  part.cancellation_date is None %}
-                                {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
-                                {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
-                                    <br/><a href="{% url 'sub-cancel' subscription.id %}">{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}</a>
+                                {% if can_change_part %}
+                                    <a href="{% url 'part-change' part.id %}"class="btn btn-success">
+                                        {% trans "ändern" %}
+                                    </a>
+                                {% else %}
+                                    {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
+                                    {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
+                                        <br/><a href="{% url 'sub-cancel' subscription.id %}">{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}</a>
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         </td>
