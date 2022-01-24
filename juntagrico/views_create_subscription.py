@@ -4,8 +4,8 @@ from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.entity.jobs import ActivityArea
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm
 from juntagrico.util import temporal
@@ -204,7 +204,7 @@ class CSSummaryView(FormView):
 
     def get_context_data(self, **kwargs):
         args = self.cs_session.to_dict()
-        args['activity_areas'] = ActivityArea.objects.filter(auto_add_new_members=True)
+        args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return super().get_context_data(
             **{},
             **args,

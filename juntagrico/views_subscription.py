@@ -14,12 +14,12 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
-from juntagrico.entity.member import Member, SubscriptionMembership
+from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
@@ -314,14 +314,7 @@ def activate_subscription(request, subscription_id):
 
 
 def add_subscription_member_to_activity_area(subscription):
-    activity_area = ActivityArea.objects.filter(auto_add_new_members=True)
-    member_ids = SubscriptionMembership.objects.filter(subscription=subscription).values_list('member')
-    members = Member.objects.filter(pk__in=member_ids)
-
-    for member in members:
-        for area in activity_area:
-            if member not in area.members.all():
-                area.members.add(member)
+    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')

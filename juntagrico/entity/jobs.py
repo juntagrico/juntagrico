@@ -30,7 +30,7 @@ class ActivityArea(JuntagricoBaseModel):
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     auto_add_new_members = models.BooleanField(_('Standard Tätigkeitesbereich für neue Benutzer'), default=False,
                                                help_text=_(
-                                                   'Neue Benutzer automatisch zu diesem Tätigkeitsbereich hinzufügen.'))
+                                                   'Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.'))
 
     def __str__(self):
         return '%s' % self.name
