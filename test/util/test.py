@@ -56,6 +56,7 @@ class JuntagricoTestCase(TestCase):
         self.member2 = self.create_member('email2@email.org')
         self.member3 = self.create_member('email3@email.org')
         self.member4 = self.create_member('email4@email.org')
+        self.member5 = self.create_member('email5@email.org')
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
