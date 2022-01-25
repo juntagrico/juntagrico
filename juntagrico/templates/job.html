@@ -112,7 +112,9 @@
         </div>
         <div class="col-md-5">
             <div class="job-description">{{ job.type.description|richtext|safe }}</div>
-            <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
+            {% if job.additional_description %}
+                <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
+            {% endif %}
         </div>
     </div>
     <br/>
