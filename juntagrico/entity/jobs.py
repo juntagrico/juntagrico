@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
@@ -28,6 +29,9 @@ class ActivityArea(JuntagricoBaseModel):
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    def get_absolute_url(self):
+        return reverse('area', args=[self.pk])
 
     def __str__(self):
         return '%s' % self.name
@@ -151,6 +155,9 @@ class Job(JuntagricoBasePoly):
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
+
+    def get_absolute_url(self):
+        return reverse('job', args=[self.pk])
 
     @property
     def type(self):

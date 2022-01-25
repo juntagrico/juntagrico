@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -36,6 +37,9 @@ class Depot(JuntagricoBaseModel):
 
     overview_cache = None
     subscription_cache = None
+
+    def get_absolute_url(self):
+        return reverse('depot', args=[self.pk])
 
     def __str__(self):
         return '%s %s' % (self.id, self.name)

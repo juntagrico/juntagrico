@@ -13,6 +13,7 @@ class JobTests(JuntagricoTestCase):
 
     def testJob(self):
         self.assertGet(reverse('job', args=[self.job1.pk]))
+        self.assertGet(reverse('job', args=[self.one_time_job1.pk]))
 
     def testPastJob(self):
         self.assertGet(reverse('memberjobs'))
