@@ -60,6 +60,7 @@ class Member(JuntagricoBaseModel):
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+    number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
 
     @property
     def canceled(self):
