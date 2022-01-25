@@ -45,10 +45,10 @@
                 <label class="control-label col-md-3" for="depot">
                     {% blocktrans %}Neue/s/r {{ v_depot }}{% endblocktrans %}
                 </label>
-                <div class="controls col-md-9">
+                <div class="controls col-md-9" id="depot-map-container">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}">
+                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == subscription.depot %}selected{% endif %}>
                                 {{ depot.name }}
                             </option>
                         {% endfor %}
@@ -56,10 +56,6 @@
                     <label for="depot">
                         {% blocktrans %}Wähle 1 {{ v_depot }} aus als zukünftiger {{ v_subscription }}-Abholort. {% endblocktrans %}
                     </label>
-                    {% if requires_map %}
-                        <div style="height: 20rem" id="depot-map">
-                        </div>
-                    {% endif %}
                 </div>
             </div>
             <div class="offset-md-3 form-actions">
@@ -74,26 +70,11 @@
                 </button>
             </div>
         </form>
-        <script>
-            var depot_id = {{ subscription.depot.id }}
-            var depots = [];
-            {% for depot in depots %}
-                {% if depot.has_geo %}
-                    depots.push(
-                    {name: '{{ depot.name }}',
-                    addr_street: '{{ depot.addr_street }}',
-                    addr_zipcode: '{{ depot.addr_zipcode }}',
-                    addr_location: '{{ depot.addr_location }}',
-                    latitude: '{{ depot.latitude }}',
-                    longitude: '{{ depot.longitude }}',
-                    code: '{{ depot.sort_order }}'
-                    });
-                {% endif %}
-            {% endfor %}
-        </script>
     {% endif %}
 {% endblock %}
 {% block scripts %}
+    {{ subscription.depot.name|json_script:'selected_depot' }}
+    {{ depots.map_info|json_script:'depots' }}
     <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initChangeDepot.js">
     </script>

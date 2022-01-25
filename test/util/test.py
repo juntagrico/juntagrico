@@ -171,6 +171,14 @@ class JuntagricoTestCase(TestCase):
         location_data2 = {'name': 'location2'}
         self.location = Location.objects.create(**location_data)
         self.location2 = Location.objects.create(**location_data2)
+        location_data_depot = {'name': 'Depot location',
+                               'latitude': '12.513',
+                               'longitude': '1.314',
+                               'addr_street': 'Fakestreet 123',
+                               'addr_zipcode': '1000',
+                               'addr_location': 'Faketown',
+                               'description': 'Place to be'}
+        self.location_depot = Location.objects.create(**location_data_depot)
 
     def set_up_job(self):
         """
@@ -242,12 +250,14 @@ class JuntagricoTestCase(TestCase):
         depot_data = {
             'name': 'depot',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot = Depot.objects.create(**depot_data)
         depot_data = {
             'name': 'depot2',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot2 = Depot.objects.create(**depot_data)
 
     def set_up_sub_types(self):

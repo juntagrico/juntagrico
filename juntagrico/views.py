@@ -145,10 +145,8 @@ def depot(request, depot_id):
     Details for a Depot
     '''
     depot = get_object_or_404(Depot, id=int(depot_id))
-
     renderdict = {
         'depot': depot,
-        'requires_map': depot.has_geo,
         'show_access': request.user.member.subscriptionmembership_set.filter(
             subscription__depot=depot).count() > 0
     }

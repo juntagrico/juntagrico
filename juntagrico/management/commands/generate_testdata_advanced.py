@@ -55,6 +55,15 @@ class Command(BaseCommand):
             Share.objects.create(**share_dict)
 
     def generate_depot(self, props, member, i):
+        location_dict = {
+            'name': fake.company(),
+            'addr_street': '{} {}'.format(props['strasselang'], props['hnr']),
+            'addr_zipcode': props['plz'],
+            'addr_location': props['ort'],
+            'latitude': fake.latitude(),
+            'longitude': fake.longitude(),
+        }
+        location, _ = Location.objects.update_or_create(**location_dict)
         depot_dict = {
             'contact': member,
             'description': fake.random_element(elements=[
@@ -64,14 +73,8 @@ class Command(BaseCommand):
             ]),
             'name': fake.company(),
             'weekday': fake.random_int(0, 6),
-            'latitude': fake.latitude(),
-            'longitude': fake.longitude(),
+            'location': location
         }
-        depot_dict.update({
-            'addr_street': '{} {}'.format(props['strasselang'], props['hnr']),
-            'addr_zipcode': props['plz'],
-            'addr_location': props['ort'],
-        })
         depot, _ = Depot.objects.update_or_create(**depot_dict)
         return depot
 

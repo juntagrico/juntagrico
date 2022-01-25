@@ -16,9 +16,7 @@
             {% trans "Adresse" %}
         </div>
         <div class="col-md-9">
-            {{ depot.addr_street }}
-            <br/>
-            {{ depot.addr_zipcode }} {{ depot.addr_location }}
+            {{ depot.location.address_html|safe }}
         </div>
     </div>
     <div class="row mb-3">
@@ -46,6 +44,7 @@
                 {% trans "Beschreibung" %}
             </div>
             <div class="col-md-9">
+                {{ depot.location.description|richtext|safe }}
                 {{ depot.description|richtext|safe }}
             </div>
         </div>
@@ -61,29 +60,12 @@
         </div>
     {% endif %}
     <div class="row">
-        <div class="offset-md-3 col-md-9">
-            {% if requires_map %}
-                <div style="height: 20rem" id="depot-map">
-                </div>
-            {% endif %}
+        <div class="offset-md-3 col-md-9" id="depot-map-container">
         </div>
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript">
-        var depots = [];
-        {% if depot.has_geo %}
-            depots.push(
-            {name: '{{ depot.name }}',
-            addr_street: '{{ depot.addr_street }}',
-            addr_zipcode: '{{ depot.addr_zipcode }}',
-            addr_location: '{{ depot.addr_location }}',
-            latitude: '{{ depot.latitude }}',
-            longitude: '{{ depot.longitude }}',
-            code: '{{ depot.sort_order }}'
-            });
-        {% endif %}
-    </script>
+    {{ depot.map_info|json_script:'depot_data' }}
     <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
     <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initDepot.js">
     </script>

@@ -28,6 +28,31 @@ class Migration(migrations.Migration):
             old_name='location2',
             new_name='location'
         ),
+        migrations.RemoveField(
+            model_name='depot',
+            name='addr_location',
+        ),
+        migrations.RemoveField(
+            model_name='depot',
+            name='addr_street',
+        ),
+        migrations.RemoveField(
+            model_name='depot',
+            name='addr_zipcode',
+        ),
+        migrations.RemoveField(
+            model_name='depot',
+            name='latitude',
+        ),
+        migrations.RemoveField(
+            model_name='depot',
+            name='longitude',
+        ),
+        migrations.RenameField(
+            model_name='depot',
+            old_name='location2',
+            new_name='location'
+        ),
         migrations.AlterField(
             model_name='jobtype',
             name='location',
@@ -36,6 +61,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterField(
             model_name='onetimejob',
+            name='location',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.location',
+                                    verbose_name='Ort'),
+        ),
+        migrations.AlterField(
+            model_name='depot',
             name='location',
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.location',
                                     verbose_name='Ort'),

@@ -45,12 +45,20 @@ class Command(BaseCommand):
                           'visible': True, 'required_assignments': 10, 'price': 1000,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
         subtype = SubscriptionType.objects.create(**subtype_fields)
-        depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'latitude': '47.379308',
+        depot1_location_fields = {'name': 'Depot Toblerplatz', 'latitude': '47.379308',
                          'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
-                         'addr_location': 'Zürich', 'description': 'Hinter dem Migros', 'contact': member_2}
-        depot2_fields = {'name': 'Siemens', 'weekday': 4, 'latitude': '47.379173',
+                         'addr_location': 'Zürich'}
+        depot1_location = Location.objects.create(**depot1_location_fields)
+        depot1_location.save()
+        depot2_location_fields = {'name': 'Depot Siemens', 'latitude': '47.379173',
                          'longitude': '8.495392', 'addr_street': 'Albisriederstrasse 207', 'addr_zipcode': '8047',
-                         'addr_location': 'Zürich', 'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
+                         'addr_location': 'Zürich'}
+        depot2_location = Location.objects.create(**depot2_location_fields)
+        depot2_location.save()
+        depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'location': depot1_location,
+                         'description': 'Hinter dem Migros', 'contact': member_2}
+        depot2_fields = {'name': 'Siemens', 'weekday': 4, 'location': depot2_location,
+                         'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
         depot1 = Depot.objects.create(**depot1_fields)
         depot2 = Depot.objects.create(**depot2_fields)
         sub_1_fields = {'depot': depot1, 'future_depot': None,
