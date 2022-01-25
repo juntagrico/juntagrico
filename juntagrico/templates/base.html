@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
 {% load juntagrico.menu %}
@@ -26,7 +27,14 @@
         {% endblock %}
         <link href="/static/juntagrico/css/juntagrico.css" rel="stylesheet"/>
         <link href="/static/juntagrico/css/slider.css" rel="stylesheet"/>
-        <link href="{% config "style_sheet" %}" rel="stylesheet"/>
+        {% styles "template" as styles_template %}
+        {% if styles_template %}
+            {% include styles_template %}
+        {% endif %}
+        {% styles "static" as static_styles %}
+        {% for static_style in static_styles %}
+            <link href="{% static static_style %}" rel="stylesheet"/>
+        {% endfor %}
     </head>
     <body id="{{ request|view_name }}" class="{% block body_extra_classes %}{% endblock %}">
         <div class="page-container container">
@@ -153,5 +161,13 @@
         {% block scripts %}
             {# no scripts by default #}
         {% endblock %}
+        {% scripts "template" as scripts_template %}
+        {% if scripts_template %}
+            {% include scripts_template %}
+        {% endif %}
+        {% scripts "static" as static_scripts %}
+        {% for static_script in static_scripts %}
+            <script type="text/javascript" src="{% static static_script %}"></script>
+        {% endfor %}
     </body>
 </html>
