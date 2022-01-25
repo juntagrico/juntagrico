@@ -4,6 +4,10 @@ Release Notes
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * Edit pages of jobs, areas and depots now show a link to the frontend of the edited element on the top right
 
 1.4.6
 -----
