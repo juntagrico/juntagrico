@@ -79,7 +79,7 @@ class MemberDao:
     @staticmethod
     def members_with_shares():
         return Member.objects.filter(Q(share__isnull=False) & (
-                Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=timezone.now())))
+            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=timezone.now())))
 
     @staticmethod
     def members_by_job(job):
