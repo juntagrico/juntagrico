@@ -4,6 +4,9 @@ Release Notes
 Dev
 ---
 
+Fixes
+^^^^^
+* Only include members with active shares, when mailing to all members with shares
 
 1.4.6
 -----
