@@ -142,28 +142,41 @@ function area_slider() {
     })
 }
 
-function map_with_markers(depots){
-    markers = []
+function map_with_markers(depots, selected){
+    let markers = []
     if(depots[0]) {
-        var map = L.map('depot-map').setView([depots[0].latitude, depots[0].longitude], 11);
+        $('#depot-map-container').append('<div id="depot-map">')
+        let map = L.map('depot-map').setView([depots[0].location.latitude, depots[0].location.longitude], 11);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
                 '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);
 
         $.each(depots, function (i, depot) {
-            var marker = add_marker(depot, map)
+            let marker = add_marker(depot, map)
+            if (depot.name === selected) {
+                marker.openPopup()
+            }
             markers.push(marker)
         });
-        var group = new L.featureGroup(markers);
+        let group = new L.featureGroup(markers);
         map.fitBounds(group.getBounds(),{padding:[100,100]});
     }
     return markers
 }
 
 function add_marker(depot, map){
-    var marker = L.marker([depot.latitude, depot.longitude]).addTo(map);
+    let marker = L.marker([depot.location.latitude, depot.location.longitude]).addTo(map);
     marker.bindPopup("<b>" + depot.name + "</b><br/>" +
-            depot.addr_street + "<br/>"
-            + depot.addr_zipcode + " " + depot.addr_location);
+            depot.location.addr_street + "<br/>"
+            + depot.location.addr_zipcode + " " + depot.location.addr_location);
+    marker.name = depot.name
     return marker
+}
+
+function open_marker(markers, name){
+    markers.forEach(function(marker) {
+        if(name === marker.name){
+            marker.openPopup()
+        }
+    })
 }

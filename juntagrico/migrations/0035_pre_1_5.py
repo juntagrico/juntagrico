@@ -64,4 +64,9 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.location',
                                     verbose_name='Ort', null=True),
         ),
+        migrations.AddField(
+            model_name='depot',
+            name='location2',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.location', null=True),
+        ),
     ]

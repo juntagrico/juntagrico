@@ -288,6 +288,10 @@ textarea#recipients[disabled=disabled] {
     height: 400px;
 }
 
+#depot-map {
+    height: 20rem;
+}
+
 /* stuff for responsive tables */
 table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
     font-family: 'Font Awesome 5 Free';
