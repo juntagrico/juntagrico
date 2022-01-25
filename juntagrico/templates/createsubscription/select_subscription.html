@@ -11,6 +11,7 @@
     </div>
 {% endblock %}
 {% block allcontent %}
+    <div class="offset-md-2 col-md-8 mb-4 hide-if-empty">{% include "textsnippets/select_subscription_intro.html" %}</div>
     <div class="offset-md-2 col-md-8">
         {% crispy form %}
     </div>

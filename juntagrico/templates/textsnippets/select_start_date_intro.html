@@ -1,0 +1,9 @@
+{% load i18n %}
+{% trans "Info" %}:
+{% blocktrans trimmed with sd=start_date|date:"d.m.Y" %}
+Normalerweise ist der {{ v_subscription }}-Start der Start eines Geschäftsjahres. Das nächste
+Startdatum wäre der <strong>{{ sd }}</strong>.
+Es kann jedoch vorkommen, dass unter dem Jahr 1 {{ v_subscription }} frei wird. Würdest du
+gerne schon früher einsteigen falls 1 {{ v_subscription }} frei wird, dann kannst du das
+Startdatum unten anpassen.
+{% endblocktrans %}

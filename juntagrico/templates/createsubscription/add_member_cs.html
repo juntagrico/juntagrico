@@ -19,16 +19,7 @@
     <div class="offset-md-2 col-md-8">
         <div class="row mb-4">
             <div class="col-md-12">
-                {% blocktrans trimmed %}
-                Du kannst weitere {{ v_subscription }}-BezieherInnen als {{ v_co_member }} hinzufügen. Fülle bitte die
-                untenstehenden Felder aus
-                und klicke anschliessend auf "{{ v_co_member }} hinzufügen".
-                {% endblocktrans %}
-                <br/>
-                {% blocktrans trimmed %}
-                Falls du keine {{ v_co_member_pl }} hinzufügen möchtest, klicke auf "Überspringen".<br>
-                Wenn du alle {{ v_co_member_pl }} hinzugefügt hast, klicke auf "Keine weiteren {{ v_co_member_pl }} hinzufügen".
-                {% endblocktrans %}
+                {% include 'textsnippets/add_member_cs_intro.html' %}
             </div>
         </div>
 
