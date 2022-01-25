@@ -46,13 +46,14 @@ class Command(BaseCommand):
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
         subtype = SubscriptionType.objects.create(**subtype_fields)
         depot1_location_fields = {'name': 'Depot Toblerplatz', 'latitude': '47.379308',
-                         'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
-                         'addr_location': 'Zürich'}
+                                  'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
+                                  'addr_location': 'Zürich'}
         depot1_location = Location.objects.create(**depot1_location_fields)
         depot1_location.save()
         depot2_location_fields = {'name': 'Depot Siemens', 'latitude': '47.379173',
-                         'longitude': '8.495392', 'addr_street': 'Albisriederstrasse 207', 'addr_zipcode': '8047',
-                         'addr_location': 'Zürich'}
+                                  'longitude': '8.495392', 'addr_street': 'Albisriederstrasse 207',
+                                  'addr_zipcode': '8047',
+                                  'addr_location': 'Zürich'}
         depot2_location = Location.objects.create(**depot2_location_fields)
         depot2_location.save()
         depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'location': depot1_location,
