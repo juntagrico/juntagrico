@@ -142,18 +142,18 @@ function area_slider() {
     })
 }
 
-function map_with_markers(depots, selected){
+function map_with_markers(locations, selected){
     let markers = []
-    if(depots[0]) {
-        $('#depot-map-container').append('<div id="depot-map">')
-        let map = L.map('depot-map').setView([depots[0].location.latitude, depots[0].location.longitude], 11);
+    if(locations[0]) {
+        $('#map-container').append('<div id="location-map">')
+        let map = L.map('location-map').setView([locations[0].latitude, locations[0].longitude], 11);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
                 '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);
 
-        $.each(depots, function (i, depot) {
-            let marker = add_marker(depot, map)
-            if (depot.name === selected) {
+        $.each(locations, function (i, location) {
+            let marker = add_marker(location, map)
+            if (location.name === selected) {
                 marker.openPopup()
             }
             markers.push(marker)
@@ -164,12 +164,14 @@ function map_with_markers(depots, selected){
     return markers
 }
 
-function add_marker(depot, map){
-    let marker = L.marker([depot.location.latitude, depot.location.longitude]).addTo(map);
-    marker.bindPopup("<b>" + depot.name + "</b><br/>" +
-            depot.location.addr_street + "<br/>"
-            + depot.location.addr_zipcode + " " + depot.location.addr_location);
-    marker.name = depot.name
+function add_marker(location, map){
+    let marker = L.marker([location.latitude, location.longitude]).addTo(map);
+    let description = "<strong>" + location.name + "</strong><br/>"
+    if(location.addr_street) description += location.addr_street + "<br/>"
+    if(location.addr_zipcode) description += location.addr_zipcode + " "
+    if(location.addr_location) description += location.addr_location
+    marker.bindPopup(description);
+    marker.name = location.name
     return marker
 }
 

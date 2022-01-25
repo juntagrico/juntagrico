@@ -27,17 +27,22 @@ class Location(JuntagricoBaseModel):
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     @property
-    def has_geo(self):
+    def has_coordinates(self):
         lat = self.latitude is not None and self.latitude != ''
         long = self.longitude is not None and self.longitude != ''
+        return lat and long
+
+    @property
+    def has_geo(self):
         street = self.addr_street is not None and self.addr_street != ''
         zipcode = self.addr_zipcode is not None and self.addr_zipcode != ''
         loc = self.addr_location is not None and self.addr_location != ''
-        return lat and long and street and zipcode and loc
+        return self.has_coordinates and street and zipcode and loc
 
     @property
     def map_info(self):
         return {
+            "name": self.name,
             "addr_street": self.addr_street,
             "addr_zipcode": self.addr_zipcode,
             "addr_location": self.addr_location,
@@ -56,7 +61,7 @@ class Location(JuntagricoBaseModel):
         return '{} {}'.format(self.addr_zipcode or '', self.addr_location or '').strip()
 
     def get_address(self):
-        return [self.addr_street or '', self.city]
+        return [a for a in [self.addr_street, self.city] if a]
 
     @property
     def address(self):
@@ -65,6 +70,10 @@ class Location(JuntagricoBaseModel):
     @property
     def address_html(self):
         return '<br>'.join(self.get_address())
+
+    @property
+    def to_html(self):
+        return '<br>'.join([self.name, *self.get_address()])
 
     def __str__(self):
         string = str(self.name)
