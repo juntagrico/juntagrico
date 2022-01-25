@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext as _
 
+from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
 
 
@@ -20,7 +21,9 @@ class Location(JuntagricoBaseModel):
     addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
     description = models.TextField(_('Beschreibung'), max_length=1000, default='', blank=True)
-    visible = models.BooleanField(_('Sichtbar'), default=True)
+    visible = models.BooleanField(_('Sichtbar'), default=True,
+                                  help_text=_('Ort steht bei Einsatz und {} zur Auswahl').format(
+                                      Config.vocabulary('depot')))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     @property
