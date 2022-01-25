@@ -46,7 +46,7 @@
                 <label class="control-label col-md-3" for="depot">
                     {% blocktrans %}Neue/s/r {{ v_depot }}{% endblocktrans %}
                 </label>
-                <div class="controls col-md-9" id="depot-map-container">
+                <div class="controls col-md-9" id="map-container">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
                             <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == subscription.depot %}selected{% endif %}>

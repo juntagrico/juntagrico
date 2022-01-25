@@ -16,11 +16,12 @@ class LocationAdmin(SortableAdminMixin, RichTextAdmin):
             'fields': ('name', 'description', 'visible')
         }),
         (_('Adresse'), {
-            'description': _('Wenn Adresse nicht leer ist, wird ein Link zu einer Karte angezeigt.'),
+            'description': _('Wenn Adresse nicht leer ist, wird ein Link zur Wegbeschreibung angezeigt.'),
             'fields': ('addr_street', ('addr_zipcode', 'addr_location')),
         }),
         (_('Koordinaten'), {
-            'description': _('Wenn Koordinaten nicht leer sind, wird eine Karte eingeblendet.'),
+            'description': _('Wenn Koordinaten nicht leer sind, wird eine Karte eingeblendet '
+                             'und ein Link zur Wegbeschreibung angezeigt.'),
             'fields': (('latitude', 'longitude'),),
         }),
     )

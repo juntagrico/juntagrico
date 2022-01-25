@@ -39,11 +39,9 @@ class Depot(JuntagricoBaseModel):
 
     @property
     def map_info(self):
-        return {
-            "name": self.name,
-            "location": self.location.map_info,
-            "code": self.sort_order
-        }
+        map_info = self.location.map_info
+        map_info['name'] = self.name
+        return map_info
 
     @property
     def weekday_name(self):
