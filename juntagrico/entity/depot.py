@@ -62,7 +62,7 @@ class Depot(JuntagricoBaseModel):
 
     @property
     def pickup_end_time(self):
-        start_date = datetime.strptime('1970 1 '+str(self.weekday), '%Y %W %w')
+        start_date = datetime.strptime('1970 1 ' + str(self.weekday), '%Y %W %w')
         start_datetime = datetime.combine(start_date, self.pickup_time or time.min)
         return start_datetime + timedelta(hours=self.pickup_duration)
 
