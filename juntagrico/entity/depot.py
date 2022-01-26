@@ -1,10 +1,14 @@
+from datetime import datetime, timedelta, time
+from django.template.defaultfilters import date
+
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.util.models import q_isactive
-from juntagrico.util.temporal import weekday_choices, weekdays
+from juntagrico.util.temporal import weekday_choices
 
 
 class Depot(JuntagricoBaseModel):
@@ -14,6 +18,9 @@ class Depot(JuntagricoBaseModel):
     name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
     weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)
+    pickup_time = models.TimeField(_('Abholzeit'), null=True, blank=True)
+    pickup_duration = models.FloatField(_('Abholzeitfenster in Stunden'), null=True, blank=True,
+                                        validators=[MinValueValidator(0)])
     capacity = models.PositiveIntegerField(_('Kapazität'), default=0)
     latitude = models.CharField(_('Latitude'), max_length=100, default='',
                                 null=True, blank=True)
@@ -54,11 +61,33 @@ class Depot(JuntagricoBaseModel):
         return lat and long and street and zip and loc
 
     @property
-    def weekday_name(self):
-        day = _('Unbekannt')
-        if 8 > self.weekday > 0:
-            day = weekdays[self.weekday]
-        return day
+    def pickup_end_time(self):
+        start_date = datetime.strptime('1970 1 '+str(self.weekday), '%Y %W %w')
+        start_datetime = datetime.combine(start_date, self.pickup_time or time.min)
+        return start_datetime + timedelta(hours=self.pickup_duration)
+
+    @property
+    def pickup_display(self):
+        """ get string with pickup start day, end time, if it is not midnight
+         end day if it is different than start day and end time if it is not midnight
+        """
+        parts = [self.get_weekday_display()]
+        if self.pickup_time and self.pickup_time > time.min:
+            parts.append(date(self.pickup_time, 'H:i'))
+        if self.pickup_duration:
+            end_time = self.pickup_end_time
+            display_format = []
+            if end_time.time() > time.min:
+                display_format.append('H:i')
+            else:
+                # if end_time is midnight, show the previous day as end day
+                end_time -= timedelta(1)
+            if end_time.isoweekday() != self.weekday:
+                display_format.insert(0, 'l')
+            if display_format:
+                parts.append(_('bis'))
+                parts.append(date(end_time, ' '.join(display_format)))
+        return ' '.join(parts)
 
     class Meta:
         verbose_name = Config.vocabulary('depot')
