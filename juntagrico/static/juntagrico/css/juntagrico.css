@@ -393,3 +393,8 @@ th {
 .cc-btn{
     font-size: 0.875rem;
 }
+
+/* text overrides */
+.hide-if-empty:empty {
+    display: none;
+}

@@ -1,0 +1,6 @@
+{% load i18n %}
+{% blocktrans %}Du bist jetzt {{ v_member_type }} bei {{ v_d_enriched_organisation }}.{% endblocktrans %}
+{% if not no_subscription %}
+    {% blocktrans %}Du wurdest als {{ v_subscription }}-BezieherIn zur Warteliste hinzugefügt.{% endblocktrans %}
+{% endif %}
+{% trans "Du erhälst eine Email mit allen weiteren Infos an die von dir angegebene Emailadresse ( unsere Mails verirren sich manchmal in den SPAM Ordner )." %}

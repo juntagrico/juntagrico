@@ -30,32 +30,7 @@
         {% endif %}
         <div class="row mb-4">
             <div class="col-md-12">
-                {% trans "Infos" %}:
-                {% blocktrans trimmed %}
-                Um {{ v_member_type }} bei {{ v_d_enriched_organisation }} zu werden, musst du mindestens
-                1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
-                Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }}
-                zurückerstattet.
-                {% endblocktrans %}
-                {% if shares.total_required > 0 %}
-                    {% blocktrans trimmed with shares.total_required as st %}
-                    Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ st }}
-                    {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
-                    {% endblocktrans %}
-                    <br/>
-                {% else %}
-                    {% blocktrans trimmed %}
-                    Als {{ v_member_type }} ohne {{ v_subscription }} benötigst du 1
-                    {{ v_share }}. Du kannst natürlich noch mehr erwerben.
-                    {% endblocktrans %}
-                    <br/>
-                {% endif %}
-                {% if co_members|length > 0 %}
-                    {% blocktrans trimmed with shares.remaining_required as sr %}
-                    Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
-                    deinen {{ v_co_member_pl }} auf.
-                    {% endblocktrans %}
-                {% endif %}
+                {% include 'textsnippets/select_shares_intro.html' %}
             </div>
         </div>
         <form action="" method="post">

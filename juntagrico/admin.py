@@ -14,6 +14,7 @@ from juntagrico.admins.share_admin import ShareAdmin
 from juntagrico.admins.subscription_admin import SubscriptionAdmin
 from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin, SubscriptionSizeAdmin, \
     SubscriptionProductAdmin
+from juntagrico.admins.text_override_admin import TextOverrideAdmin
 from juntagrico.config import Config
 from juntagrico.entity.billing import BillingPeriod
 from juntagrico.entity.delivery import Delivery
@@ -25,6 +26,7 @@ from juntagrico.entity.member import Member, SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionSize, SubscriptionType, SubscriptionProduct
+from juntagrico.entity.textoverride import TextOverride
 from juntagrico.util import addons
 
 # loading addons here so that we have the information about admin extensions stuff like inlines etc
@@ -50,3 +52,4 @@ admin.site.register(ListMessage, ListMessageAdmin)
 admin.site.register(BillingPeriod, BaseAdmin)
 if Config.enable_shares():
     admin.site.register(Share, ShareAdmin)
+admin.site.register(TextOverride, TextOverrideAdmin)
