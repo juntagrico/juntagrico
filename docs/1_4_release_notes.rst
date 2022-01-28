@@ -9,6 +9,11 @@ Features & Improvements
 * Admin Features:
     * Edit pages of jobs, areas and depots now show a link to the frontend of the edited element on the top right
 
+Fixes
+^^^^^
+* Only include members with active shares, when mailing to all members with shares
+* Fix: Cancelled, but still active subscriptions are now shown in the member list
+
 1.4.6
 -----
 Features & Improvements

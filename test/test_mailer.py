@@ -1,3 +1,4 @@
+from django.core import mail
 from django.urls import reverse
 
 from test.util.test import JuntagricoTestCase
@@ -23,6 +24,14 @@ class MailerTests(JuntagricoTestCase):
             }
             self.assertGet(reverse('mail-send'), code=404)
             self.assertPost(reverse('mail-send'), post_data, code=302)
+
+    def testAllSharesMailSend(self):
+        post_data = {
+            'sender': 'test@mail.org',
+            'allshares': 'on'
+        }
+        self.assertPost(reverse('mail-send'), post_data, code=302)
+        self.assertListEqual(sorted(mail.outbox[0].bcc), ['email1@email.org', 'email4@email.org'])
 
     def testMailResult(self):
         self.assertGet(reverse('mail-result', args=[1]))
