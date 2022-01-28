@@ -6,6 +6,7 @@ from faker import Faker
 
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
@@ -54,6 +55,15 @@ class Command(BaseCommand):
             Share.objects.create(**share_dict)
 
     def generate_depot(self, props, member, i):
+        location_dict = {
+            'name': fake.company(),
+            'addr_street': '{} {}'.format(props['strasselang'], props['hnr']),
+            'addr_zipcode': props['plz'],
+            'addr_location': props['ort'],
+            'latitude': fake.latitude(),
+            'longitude': fake.longitude(),
+        }
+        location, _ = Location.objects.update_or_create(**location_dict)
         depot_dict = {
             'contact': member,
             'description': fake.random_element(elements=[
@@ -63,14 +73,8 @@ class Command(BaseCommand):
             ]),
             'name': fake.company(),
             'weekday': fake.random_int(0, 6),
-            'latitude': fake.latitude(),
-            'longitude': fake.longitude(),
+            'location': location
         }
-        depot_dict.update({
-            'addr_street': '{} {}'.format(props['strasselang'], props['hnr']),
-            'addr_zipcode': props['plz'],
-            'addr_location': props['ort'],
-        })
         depot, _ = Depot.objects.update_or_create(**depot_dict)
         return depot
 
@@ -189,10 +193,13 @@ class Command(BaseCommand):
         else:
             area_2.members.set(self.members)
         area_2.save()
+        location_1_fields = {'name': 'auf dem Hof'}
+        location_1 = Location.objects.create(**location_1_fields)
+        location_1.save()
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type_1 = JobType.objects.create(**type1_fields)
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,

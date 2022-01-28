@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
@@ -8,6 +9,7 @@ from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.entity.jobs import OneTimeJob
+from juntagrico.entity.location import Location
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
@@ -42,6 +44,13 @@ class JobTypeAdmin(RichTextAdmin):
             for je in JobExtraDao.by_type(inst.id):
                 je.delete()
             inst.delete()
+
+    def get_form(self, request, obj=None, **kwds):
+        form = super().get_form(request, obj, **kwds)
+        # only include visible and current locations in choices
+        # filter queryset here, because here the obj is available
+        form.base_fields['location'].queryset = Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
+        return form
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')

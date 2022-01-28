@@ -13,6 +13,9 @@
         {% endif %}
     </h3>
 {% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
+{% endblock %}
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
     <div class="row">
@@ -97,12 +100,17 @@
         <div class="col-md-3">
             {% trans "Ort" %}:
         </div>
-        <div class="col-md-5">
-            {{ job.type.location }} (
-            <a href="https://www.google.com/maps/search/?api=1&query={{ job.type.location | urlencode }}" target="_blank">
-                Karte
-            </a>
-            )
+        <div class="col-md-5" id="map-container">
+            {{ job.type.location.to_html|safe }}
+            {% if job.type.location.google_maps_query %}
+                <br>
+                {% if job.type.location.has_coordinates %}
+                    <a class="open-map" href="#">{% trans "Karte" %}</a> -
+                {% endif %}
+                <a href="https://www.google.com/maps/dir/?api=1&destination={{ job.type.location.google_maps_query | urlencode }}" target="_blank">
+                    {% trans "Wegbeschreibung" %}
+                </a>
+            {% endif %}
         </div>
     </div>
     <br/>
@@ -224,4 +232,8 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
+    {{ job.type.location.map_info|json_script:'location_data' }}
+    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
+    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initJob.js">
+    </script>
 {% endblock %}

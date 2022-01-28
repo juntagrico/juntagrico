@@ -8,6 +8,7 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
+from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.temporal import weekday_short
 
@@ -118,7 +119,7 @@ class AbstractJobType(JuntagricoBaseModel):
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
     default_duration = models.FloatField(_('Dauer in Stunden'),
                                          help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
-    location = models.CharField('Ort', max_length=100, default='')
+    location = models.ForeignKey(Location, on_delete=models.PROTECT, verbose_name=_('Ort'))
 
     def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name)
