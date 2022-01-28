@@ -95,7 +95,8 @@ class Migration(migrations.Migration):
                 'ordering': ['sort_order'],
             },
             bases=(models.Model, juntagrico.entity.OldHolder),
-        ),migrations.CreateModel(
+        ),
+        migrations.CreateModel(
             name='EmailContact',
             fields=[
                 ('contact_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='juntagrico.contact')),
