@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
             model_name='member',
             name='email',
             field=juntagrico.entity.LowercaseEmailField(max_length=254, unique=True),
+        ),
         migrations.AddField(
             model_name='member',
             name='number',
@@ -25,4 +26,5 @@ class Migration(migrations.Migration):
             model_name='subscriptiontype',
             name='price',
             field=models.DecimalField(decimal_places=2, max_digits=9, verbose_name='Preis'),
+        ),
     ]
