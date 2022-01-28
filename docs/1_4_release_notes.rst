@@ -3,10 +3,16 @@ Release Notes
 
 Dev
 ---
+
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Admin Features:
     * Uploaded email attachments can now be removed
+
+Fixes
+^^^^^
+* Only include members with active shares, when mailing to all members with shares
+* Fix: Cancelled, but still active subscriptions are now shown in the member list
 
 1.4.6
 -----
