@@ -43,7 +43,6 @@ class ActivityArea(JuntagricoBaseModel):
             return self.contact_set.all()
         return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
 
-    @property
     def get_emails(self):
         return get_emails(self.contact_set, lambda: [self.coordinator.email])
 
