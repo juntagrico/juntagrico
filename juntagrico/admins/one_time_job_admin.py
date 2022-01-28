@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.db.models import Q
 from django.utils.translation import gettext as _
+from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
+from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
@@ -14,14 +16,14 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 from juntagrico.util.models import attribute_copy
 
 
-class OneTimeJobAdmin(RichTextAdmin):
+class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     list_display = ['__str__', 'time', 'slots', 'free_slots']
     list_filter = ('activityarea', ('time', FutureDateTimeFilter))
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
     exclude = ['reminder_sent']
 
-    inlines = [AssignmentInline, JobExtraInline]
+    inlines = [ContactInline, AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
 
     def has_change_permission(self, request, obj=None):

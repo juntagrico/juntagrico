@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
@@ -8,6 +9,7 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
+from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.temporal import weekday_short
@@ -23,10 +25,6 @@ class ActivityArea(JuntagricoBaseModel):
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
-    email = models.EmailField(_('E-Mail'), null=True, blank=True,
-                              help_text=_('Wenn leer wird E-Mail-Adresse von KoordinatorIn angezeigt'))
-    show_coordinator_phonenumber = models.BooleanField(
-        _('Telefonnummer von KoordinatorIn anzeigen'), default=False)
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
@@ -34,21 +32,19 @@ class ActivityArea(JuntagricoBaseModel):
                                                help_text=_(
                                                    'Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.'))
 
+    contact_set = GenericRelation(Contact)
+
     def __str__(self):
         return '%s' % self.name
 
-    def contact(self):
-        if self.show_coordinator_phonenumber is True:
-            return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
-        else:
-            return self.get_email()
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
 
-    @admin.display(description=email.verbose_name)
-    def get_email(self):
-        if self.email is not None:
-            return self.email
-        else:
-            return self.coordinator.email
+    def get_emails(self):
+        return get_emails(self.contact_set, lambda: [self.coordinator.email])
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -138,8 +134,18 @@ class JobType(AbstractJobType):
     '''
     Recuring type of job. do only add fields here you do not need in a onetime job
     '''
-
     visible = models.BooleanField(_('Sichtbar'), default=True)
+
+    contact_set = GenericRelation(Contact)
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.activityarea.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.activityarea.get_emails)
 
     class Meta:
         verbose_name = _('Jobart')
@@ -157,6 +163,8 @@ class Job(JuntagricoBasePoly):
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
+
+    contact_set = GenericRelation(Contact)
 
     @property
     def type(self):
@@ -278,6 +286,15 @@ class RecuringJob(Job):
     def duration(self):
         return self.duration_override if self.duration_override else super().duration
 
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.type.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.type.get_emails)
+
     class Meta:
         verbose_name = _('Job')
         verbose_name_plural = _('Jobs')
@@ -294,6 +311,15 @@ class OneTimeJob(Job, AbstractJobType):
 
     def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name)
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.activityarea.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.activityarea.get_emails)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

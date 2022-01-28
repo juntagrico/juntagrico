@@ -80,4 +80,69 @@ class Migration(migrations.Migration):
             name='location2',
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.location', null=True),
         ),
+        migrations.CreateModel(
+            name='Contact',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('object_id', models.BigIntegerField()),
+                ('sort_order', models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')),
+                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
+                ('polymorphic_ctype', models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_juntagrico.contact_set+', to='contenttypes.contenttype')),
+            ],
+            options={
+                'verbose_name': 'Kontakt',
+                'verbose_name_plural': 'Kontakte',
+                'ordering': ['sort_order'],
+            },
+            bases=(models.Model, juntagrico.entity.OldHolder),
+        ),
+        migrations.CreateModel(
+            name='EmailContact',
+            fields=[
+                ('contact_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='juntagrico.contact')),
+                ('email', models.EmailField(max_length=254, verbose_name='E-Mail')),
+            ],
+            options={
+                'verbose_name': 'E-Mail-Adresse',
+                'verbose_name_plural': 'E-Mail-Adresse',
+            },
+            bases=('juntagrico.contact',),
+        ),
+        migrations.CreateModel(
+            name='PhoneContact',
+            fields=[
+                ('contact_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='juntagrico.contact')),
+                ('phone', models.CharField(max_length=50, verbose_name='Telefonnummer')),
+            ],
+            options={
+                'verbose_name': 'Telefonnummer',
+                'verbose_name_plural': 'Telefonnummer',
+            },
+            bases=('juntagrico.contact',),
+        ),
+        migrations.CreateModel(
+            name='TextContact',
+            fields=[
+                ('contact_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='juntagrico.contact')),
+                ('text', models.TextField(verbose_name='Kontaktbeschrieb')),
+            ],
+            options={
+                'verbose_name': 'Freier Kontaktbeschrieb',
+                'verbose_name_plural': 'Freie Kontaktbeschriebe',
+            },
+            bases=('juntagrico.contact',),
+        ),
+        migrations.CreateModel(
+            name='MemberContact',
+            fields=[
+                ('contact_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='juntagrico.contact')),
+                ('display', models.CharField(choices=[('E', 'E-Mail'), ('T', 'Telefonnummer'), ('B', 'E-Mail & Telefonnummer')], default='E', max_length=1, verbose_name='Anzeige')),
+                ('member', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.member', verbose_name='Mitglied')),
+            ],
+            options={
+                'verbose_name': 'Mitglied',
+                'verbose_name_plural': 'Mitglieder',
+            },
+            bases=('juntagrico.contact',),
+        ),
     ]
