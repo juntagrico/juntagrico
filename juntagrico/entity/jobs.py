@@ -35,6 +35,8 @@ class ActivityArea(JuntagricoBaseModel):
 
     contact_set = GenericRelation(Contact)
 
+    contact_set = GenericRelation(Contact)
+
     def __str__(self):
         return '%s' % self.name
 
