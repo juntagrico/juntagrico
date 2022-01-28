@@ -9,6 +9,11 @@ Features & Improvements
 * Developer Features:
     * The mailer textfield can now be configured using the new `MAILER_RICHTEXT_OPTIONS` setting
 
+Fixes
+^^^^^
+* Only include members with active shares, when mailing to all members with shares
+* Fix: Cancelled, but still active subscriptions are now shown in the member list
+
 1.4.6
 -----
 Features & Improvements
