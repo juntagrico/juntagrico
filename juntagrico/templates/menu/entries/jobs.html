@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load juntagrico.common %}
+<li class="nav-item">
+    <a class="nav-link {{ request|activemenu:"jobs" }}" href="{% url 'jobs' %}">
+        {% trans "Einsätze" %}
+    </a>
+    {% if 'user_menu_jobs'|is_used_hook and request|activemenu:"jobs" == 'active' %}
+        <ul class="nav flex-column sub-menu">
+            {% hook 'user_menu_jobs' %}
+        </ul>
+    {% endif %}
+</li>

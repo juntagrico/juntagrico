@@ -1,0 +1,9 @@
+{% load i18n %}
+{% load juntagrico.common %}
+{% if b_show_deliveries %}
+    <li class="nav-item">
+        <a class="nav-link {{ request|activemenu:"deliveries" }}" href="{% url 'deliveries' %}">
+            {% trans "Lieferungen" %}
+        </a>
+    </li>
+{% endif %}

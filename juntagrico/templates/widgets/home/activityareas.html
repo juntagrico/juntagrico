@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <h4>
+            {% trans "Zu den Kalendern der einzelnen Tätigkeitsbereiche" %}
+        </h4>
+    </div>
+</div>
+{% for area in areas %}
+    <div class="row mb-1">
+        <div class="col-md-12">
+            <a href="{% url 'area' area.id %}" class="{% if area.core %}core{% endif %}">
+                {{ area.name }}
+            </a>
+        </div>
+    </div>
+{% endfor %}

@@ -1,0 +1,18 @@
+{% load i18n %}
+{% load juntagrico.common %}
+<h3>
+    {% trans "Aktuelle Arbeitseinsätze" %}
+</h3>
+<div class="row mb-3">
+    <div class="col-md-12">
+        {% hook 'pre_job' %}
+        {% include "snippets/snippet_jobs.html" %}
+    </div>
+</div>
+<div class="row mb-5">
+    <div class="col-md-12">
+        <a href="{% url 'jobs' %}">
+            {% trans "Hier alle Arbeitseinsätze anzeigen" %}
+        </a>
+    </div>
+</div>

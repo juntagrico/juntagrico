@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load juntagrico.common %}
+<li class="nav-item">
+    <a class="nav-link {{ request|activemenu:"membership" }}" href="{% url 'profile' %}">
+        {% trans "Mitgliedschaft" %}
+    </a>
+</li>
