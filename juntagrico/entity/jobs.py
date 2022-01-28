@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
