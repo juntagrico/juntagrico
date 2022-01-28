@@ -19,6 +19,7 @@ Features & Improvements
 * Member Features:
 
 * Admin Features:
+    * Members have now a field number in the data administration
 
 * Developer Features:
     * ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` are removed in favor of the sites app. See upgrade instructions.
