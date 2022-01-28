@@ -4,6 +4,13 @@
 Dev
 ---
 
+1.4.7
+-----
+Fixes
+^^^^^
+* Fix job table on activity area page
+* Only include members with active shares, when mailing to all members with shares
+* Fix: Cancelled, but still active subscriptions are now shown in the member list
 
 1.4.6
 -----

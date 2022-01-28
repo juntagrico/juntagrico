@@ -78,7 +78,8 @@ class MemberDao:
 
     @staticmethod
     def members_with_shares():
-        return Member.objects.filter(share__isnull=False)
+        return Member.objects.filter(Q(share__isnull=False) & (
+            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=timezone.now())))
 
     @staticmethod
     def members_by_job(job):
@@ -125,7 +126,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_shares():
-        return Member.objects.filter(share__isnull=False).exclude(q_deactivated())
+        return MemberDao.members_with_shares().exclude(q_deactivated())
 
     @staticmethod
     def member_with_active_subscription_for_depot(depot):

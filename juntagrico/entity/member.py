@@ -153,7 +153,7 @@ class Member(JuntagricoBaseModel):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = timezone.now().date() if subscription.active else None
+            join_date = None if subscription.waiting else timezone.now().date()
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
     def leave_subscription(self, subscription, changedate=None):

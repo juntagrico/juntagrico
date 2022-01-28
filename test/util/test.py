@@ -56,6 +56,7 @@ class JuntagricoTestCase(TestCase):
         self.member2 = self.create_member('email2@email.org')
         self.member3 = self.create_member('email3@email.org')
         self.member4 = self.create_member('email4@email.org')
+        self.member5 = self.create_member('email5@email.org')
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
@@ -140,6 +141,14 @@ class JuntagricoTestCase(TestCase):
         self.share = Share.objects.create(**self.share_data)
         self.share_data4 = self.get_share_data(self.member4)
         self.share4 = Share.objects.create(**self.share_data4)
+        # create cancelled but not paid back share
+        self.share_data5 = self.get_share_data(self.member5)
+        self.share_data5.update({
+            'booking_date': '2017-12-27',
+            'cancelled_date': '2017-12-27',
+            'termination_date': '2017-12-27',
+        })
+        self.share5 = Share.objects.create(**self.share_data5)
 
     def set_up_area(self):
         """
