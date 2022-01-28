@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block page_title %}
     <h3>
@@ -91,6 +92,6 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/attachment_appender.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/attachment_appender.js' %}">
     </script>
 {% endblock %}
