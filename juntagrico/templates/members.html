@@ -92,7 +92,7 @@
                             {% endfor %}
                         </td>
                         <td>
-                            {% if member.subscription_current != None and member.subscription_current.active %}
+                            {% if member.subscription_current != None %}
                                 {{ member.subscription_current.depot.name }}
                             {% else %}
                                 Kein {% vocabulary "depot" %}
@@ -108,7 +108,7 @@
                             {{ member.mobile_phone }}
                         </td>
                         <td>
-                            {% if member.subscription_current != None and member.subscription_current.active %}
+                            {% if member.subscription_current != None %}
                                 {{ member.subscription_current.size }}
                             {% else %}
                                 Kein {% vocabulary "subscription" %}
