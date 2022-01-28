@@ -38,6 +38,31 @@ def migrate_location(apps, schema_editor):
         )[0]
         a_depot.save()
 
+from juntagrico.config import Config
+
+
+def migrate_location(apps, schema_editor):
+    JobType = apps.get_model('juntagrico', 'JobType')
+    OneTimeJob = apps.get_model('juntagrico', 'OneTimeJob')
+    Depot = apps.get_model('juntagrico', 'Depot')
+    Location = apps.get_model('juntagrico', 'Location')
+    for job_type in JobType.objects.all():
+        job_type.location2 = Location.objects.get_or_create(name=job_type.location)[0]
+        job_type.save()
+    for one_time_job in OneTimeJob.objects.all():
+        one_time_job.location2 = Location.objects.get_or_create(name=one_time_job.location)[0]
+        one_time_job.save()
+    for a_depot in Depot.objects.all():
+        a_depot.location2 = Location.objects.get_or_create(
+            name=f"{Config.vocabulary('depot')} {a_depot.name}",
+            latitude=a_depot.latitude,
+            longitude=a_depot.longitude,
+            addr_street=a_depot.addr_street,
+            addr_zipcode=a_depot.addr_zipcode,
+            addr_location=a_depot.addr_location
+        )[0]
+        a_depot.save()
+
 
 class Migration(migrations.Migration):
 

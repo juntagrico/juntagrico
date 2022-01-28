@@ -21,6 +21,7 @@ class Migration(migrations.Migration):
             model_name='member',
             name='number',
             field=models.IntegerField(blank=True, null=True, verbose_name='Mitglieder-Nummer'),
+
         ),
         migrations.AlterField(
             model_name='subscriptiontype',
