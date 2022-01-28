@@ -1,22 +1,23 @@
-from polymorphic.admin import StackedPolymorphicInline
-from juntagrico.entity.jobs import Contact, MemberContact, EmailContact, PhoneContact, TextContact
+from polymorphic.admin import GenericStackedPolymorphicInline
+
+from juntagrico.entity.contact import Contact, MemberContact, EmailContact, PhoneContact, TextContact
 
 
-class ContactInline(StackedPolymorphicInline):
-    class MemberContactInline(StackedPolymorphicInline.Child):
+class ContactInline(GenericStackedPolymorphicInline):
+    class MemberContactInline(GenericStackedPolymorphicInline.Child):
         model = MemberContact
         fields = ('member', 'display', 'sort_order')
         raw_id_fields = ('member',)
 
-    class EmailContactInline(StackedPolymorphicInline.Child):
+    class EmailContactInline(GenericStackedPolymorphicInline.Child):
         model = EmailContact
         fields = ('email', 'sort_order')
 
-    class PhoneContactInline(StackedPolymorphicInline.Child):
+    class PhoneContactInline(GenericStackedPolymorphicInline.Child):
         model = PhoneContact
         fields = ('phone', 'sort_order')
 
-    class TextContactInline(StackedPolymorphicInline.Child):
+    class TextContactInline(GenericStackedPolymorphicInline.Child):
         model = TextContact
         fields = ('text', 'sort_order')
 
