@@ -15,4 +15,9 @@ class Migration(migrations.Migration):
             name='number',
             field=models.IntegerField(blank=True, null=True, verbose_name='Mitglieder-Nummer'),
         ),
+        migrations.AlterField(
+            model_name='subscriptiontype',
+            name='price',
+            field=models.DecimalField(decimal_places=2, max_digits=9, verbose_name='Preis'),
+        ),
     ]
