@@ -89,6 +89,18 @@
             </a></p>
         {% endif %}
 
+        {% if activity_areas %}
+            <h4>{% trans "Tätigkeitsbereiche" %}</h4>
+            <p>{% blocktrans %}Du wird automatisch in folgende Tätigkeitsbereiche eingetragen.{% endblocktrans %}</p>
+            <ul>
+                {% for area in activity_areas %}
+                    <li><strong>{{ area.name }}</strong> {{ area.description |safe }}</li>
+                {% endfor %}
+            </ul>
+
+            <p>{% blocktrans %}Du kannst das jederzeit unter dem Menupunkt Tätigkeitsbereiche ändern.{% endblocktrans %}</p>
+        {% endif %}
+
         {% if c_enable_shares %}
             <h4>{% trans "Anteilscheine" %} <a href="{% url 'cs-shares' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
             <p>

@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm
@@ -202,9 +203,11 @@ class CSSummaryView(FormView):
         return {'comment': getattr(self.cs_session.main_member, 'comment', '')}
 
     def get_context_data(self, **kwargs):
+        args = self.cs_session.to_dict()
+        args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return super().get_context_data(
             **{},
-            **self.cs_session.to_dict(),
+            **args,
             **kwargs
         )
 
