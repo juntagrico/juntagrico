@@ -71,4 +71,12 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.location',
                                     verbose_name='Ort'),
         ),
+        migrations.RemoveField(
+            model_name='activityarea',
+            name='email',
+        ),
+        migrations.RemoveField(
+            model_name='activityarea',
+            name='show_coordinator_phonenumber',
+        ),
     ]

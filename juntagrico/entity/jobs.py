@@ -8,10 +8,9 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
-from juntagrico.entity.member import Member
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.temporal import weekday_short
 
@@ -35,8 +34,6 @@ class ActivityArea(JuntagricoBaseModel):
 
     contact_set = GenericRelation(Contact)
 
-    contact_set = GenericRelation(Contact)
-
     def __str__(self):
         return '%s' % self.name
 
@@ -46,6 +43,7 @@ class ActivityArea(JuntagricoBaseModel):
             return self.contact_set.all()
         return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
 
+    @property
     def get_emails(self):
         return get_emails(self.contact_set, lambda: [self.coordinator.email])
 

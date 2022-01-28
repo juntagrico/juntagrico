@@ -27,6 +27,7 @@ Features & Improvements
     * Activity areas can be flagge to be added automatically to a member on creation
     * depot description is now optional
     * price is now a decimal value
+    * Areas, Jobs and Jobtypes can now have a list of contacts
 
 * Developer Features:
     * ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` are removed in favor of the sites app. See upgrade instructions.

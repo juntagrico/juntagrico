@@ -12,7 +12,7 @@ from juntagrico.util.admin import queryset_for_coordinator
 class AreaAdmin(PolymorphicInlineSupportMixin, SortableAdminMixin, RichTextAdmin):
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']
-    list_display = ['name', 'core', 'hidden', 'coordinator', 'get_email', 'auto_add_new_members', 'contacts_text']
+    list_display = ['name', 'core', 'hidden', 'coordinator', 'auto_add_new_members', 'contacts_text']
     inlines = [ContactInline]
 
     @admin.display(description=_('Kontakt'))
