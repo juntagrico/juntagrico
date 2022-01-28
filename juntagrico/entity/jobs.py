@@ -360,4 +360,3 @@ class Assignment(JuntagricoBaseModel):
     class Meta:
         verbose_name = Config.vocabulary('assignment')
         verbose_name_plural = Config.vocabulary('assignment_pl')
-
