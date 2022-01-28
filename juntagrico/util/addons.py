@@ -27,7 +27,7 @@ class TemplateHookRegistry:
         self.insert_at(hook, 0, template)
 
     def inser_after(self, hook, after, template):
-        self.insert_at(hook, self._hooks[hook].index(after)+1, template)
+        self.insert_at(hook, self._hooks[hook].index(after) + 1, template)
 
     def insert_before(self, hook, before, template):
         self.insert_at(hook, self._hooks[hook].index(before), template)
