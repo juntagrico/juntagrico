@@ -2,11 +2,12 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.entity import JuntagricoBaseModel, absolute_url
 from juntagrico.util.models import q_isactive
 from juntagrico.util.temporal import weekday_choices, weekdays
 
 
+@absolute_url(name='depot')
 class Depot(JuntagricoBaseModel):
     '''
     Location where stuff is picked up.

@@ -7,11 +7,12 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.temporal import weekday_short
 
 
+@absolute_url(name='area')
 class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
@@ -144,6 +145,7 @@ class JobType(AbstractJobType):
         verbose_name_plural = _('Jobarten')
 
 
+@absolute_url(name='job')
 class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plätze'), default=0)
     infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
