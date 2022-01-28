@@ -12,7 +12,7 @@
 
 {% trans "Name" %}:            {{ depot.name }}
 {% trans "Ort" %}:             {{ depot.addr_street }}, {{ depot.addr_zipcode }} {{ depot.addr_location }}
-{% trans "Wochentag" %}:       {{ depot.weekday_name}}
+{% trans "Abholung" %}:        {{ depot.pickup_display }}
 {% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}:  {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
 {% trans "Beschreibung" %}:    {{ depot.description|striptags }}
 

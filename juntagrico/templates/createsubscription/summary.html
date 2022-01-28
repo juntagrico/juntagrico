@@ -59,7 +59,7 @@
         {% if subscriptions|length > 0 %}
             <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
             <p>{{ depot.name }}
-                <br>{% trans 'Abholung jeweils am' %} {{ depot.weekday_name }}
+                <br>{% trans 'Abholung jeweils am' %} {{ depot.pickup_display }}
                 {% if depot.addr_street %}<br>{{ depot.addr_street }}{% endif %}
                 {% if depot.addr_zipcode or depot.addr_location %}<br>{{ depot.addr_zipcode }} {{ depot.addr_location }}{% endif %}
             </p>
