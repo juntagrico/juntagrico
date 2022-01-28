@@ -27,7 +27,8 @@ class Migration(migrations.Migration):
             model_name='subscriptiontype',
             name='price',
             field=models.DecimalField(decimal_places=2, max_digits=9, verbose_name='Preis'),
-        ),migrations.AddField(
+        ),
+        migrations.AddField(
             model_name='activityarea',
             name='auto_add_new_members',
             field=models.BooleanField(default=False, help_text='Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.', verbose_name='Standard Tätigkeitesbereich für neue Benutzer'),
