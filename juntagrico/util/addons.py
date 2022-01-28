@@ -25,31 +25,23 @@ class AddonsConfig:
     def get_admin_menus(self):
         return self._admin_menus
 
+    def register_admin_subscription_menu(self, template):
+        self._admin_subscription_menus.append(template)
+
+    def get_admin_subscription_menu(self):
+        return self._admin_subscription_menus
+
     def register_show_admin_menu_method(self, method):
         self._show_admin_menu_methods.append(method)
 
     def show_admin_menu(self, user):
-        result = False
-        for method in self._show_admin_menu_methods:
-            result = result or method(user)
-        return result
+        return any(method(user) for method in self._show_admin_menu_methods)
 
     def register_user_menu(self, template):
         self._user_menus.append(template)
 
     def get_user_menus(self):
         return self._user_menus
-
-    def register_model_inline(self, model, inline):
-        inline_list = self._registry.get(model, [])
-        inline_list.append(inline)
-        self._registry[model] = inline_list
-
-    def register_config_class(self, cls):
-        self._config_classes.append(cls)
-
-    def get_model_inlines(self, model):
-        return self._registry.get(model, [])
 
     def register_sub_overview(self, template):
         self._sub_overview.append(template)
@@ -63,11 +55,16 @@ class AddonsConfig:
     def get_sub_changes(self):
         return self._sub_change
 
-    def register_admin_subscription_menu(self, template):
-        self._admin_subscription_menus.append(template)
+    def register_model_inline(self, model, inline):
+        inline_list = self._registry.get(model, [])
+        inline_list.append(inline)
+        self._registry[model] = inline_list
 
-    def get_admin_subscription_menu(self):
-        return self._admin_subscription_menus
+    def get_model_inlines(self, model):
+        return self._registry.get(model, [])
+
+    def register_config_class(self, cls):
+        self._config_classes.append(cls)
 
     def get_config_classes(self):
         return self._config_classes

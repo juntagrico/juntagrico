@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.models import PolymorphicModel
@@ -130,3 +131,12 @@ def notifiable(cls):
     ]
     cls.permissions = new_permissions
     return cls
+
+
+def absolute_url(*args, **kwargs):
+    def wrapper(cls):
+        def get_absolute_url(self):
+            return reverse(kwargs['name'], args=[self.pk])
+        setattr(cls, 'get_absolute_url', get_absolute_url)
+        return cls
+    return wrapper

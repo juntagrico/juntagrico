@@ -2,6 +2,7 @@
 
 from django.db import migrations
 import juntagrico.entity
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -15,5 +16,13 @@ class Migration(migrations.Migration):
             model_name='member',
             name='email',
             field=juntagrico.entity.LowercaseEmailField(max_length=254, unique=True),
+        migrations.AddField(
+            model_name='member',
+            name='number',
+            field=models.IntegerField(blank=True, null=True, verbose_name='Mitglieder-Nummer'),
         ),
+        migrations.AlterField(
+            model_name='subscriptiontype',
+            name='price',
+            field=models.DecimalField(decimal_places=2, max_digits=9, verbose_name='Preis'),
     ]

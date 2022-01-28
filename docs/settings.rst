@@ -102,31 +102,6 @@ SERVER_URL
 
     "www.juntagrico.juntagrico"
 
-ADMINPORTAL_NAME
-^^^^^^^^^^^^^^^^
-  The name you want to use for the portal
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "my.juntagrico"
-
-ADMINPORTAL_SERVER_URL
-^^^^^^^^^^^^^^^^^^^^^^
-  The base URL where you run juntagrico (and where your static lies)
-
-  Type: String
-
-  default value
-
-  .. code-block:: python
-
-    "my.juntagrico.juntagrico"
-
-
 Accounting
 ----------
 
@@ -438,17 +413,37 @@ SUB_OVERVIEW_FORMAT
      'format': '{product}:{size}:{type}={amount}'
     }
 
-STYLE_SHEET
-^^^^^^^^^^^
-  If you want to use a custom design this specifies the path for your css
-
-  Type: String
+STYLES
+^^^^^^
+  Define styles to be included on all pages.
+  If the template key is set, the specified template will be loaded in the header of the page.
+  In the static key a list of css files can be defined to be included.
+  If both keys are defined the template is included before the static css files.
 
   default value
 
   .. code-block:: python
 
-    "/static/juntagrico/css/personal.css"
+    {
+        'template': '',
+        'static': []
+    }
+
+SCRIPTS
+^^^^^^^
+  Define scripts to be included on all pages.
+  If the template key is set, the specified template will be loaded in the scripts part of the page.
+  In the static key a list of javascript files can be defined to be included.
+  If both keys are defined the template is included before the static javascript files.
+
+  default value
+
+  .. code-block:: python
+
+    {
+        'template': '',
+        'static': []
+    }
 
 FAVICON
 ^^^^^^^
@@ -567,6 +562,18 @@ WHITELIST_EMAILS
     []
 
 
+MAILER_RICHTEXT_OPTIONS
+^^^^^^^^^^^^^^^^^^^^^^^
+  Configuration overrides of the tinyMCE editor of the mailer view.
+  See default config in ``static/juntagrico/js/initMailer.js``.
+
+  default value:
+
+  .. code-block:: python
+
+    {}
+
+
 GDPR
 ----
 
@@ -590,7 +597,7 @@ COOKIE_CONSENT
 
   .. code-block:: python
 
-    {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+    {'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Site.objects.get_current().name),
      'confirm_text': _('einverstanden'),
      'link_text': _('Hier findest du mehr zum Thema'),
      'url': '/my/cookies'

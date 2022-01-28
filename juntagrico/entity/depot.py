@@ -2,11 +2,12 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.entity import JuntagricoBaseModel, absolute_url
 from juntagrico.util.models import q_isactive
 from juntagrico.util.temporal import weekday_choices, weekdays
 
 
+@absolute_url(name='depot')
 class Depot(JuntagricoBaseModel):
     '''
     Location where stuff is picked up.
@@ -25,7 +26,7 @@ class Depot(JuntagricoBaseModel):
                                     null=True, blank=True)
     addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), max_length=1000, default='', blank=True)
     access_information = models.TextField(_('Zugangsbeschreibung'), max_length=1000, default='',
                                           help_text=_('Nur für {0} des/r {1} sichtbar')
                                           .format(Config.vocabulary('member_pl'),

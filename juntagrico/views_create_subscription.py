@@ -4,9 +4,10 @@ from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm
+    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm
 from juntagrico.util import temporal
 from juntagrico.util.management import new_signup
 from juntagrico.view_decorators import create_subscription_session
@@ -190,26 +191,37 @@ class CSSelectSharesView(TemplateView):
         return super().get(request, *args, shares=shares, **kwargs)
 
 
-class CSSummaryView(TemplateView):
+class CSSummaryView(FormView):
     template_name = 'createsubscription/summary.html'
+    form_class = RegisterSummaryForm
 
-    def get_context_data(self, cs_session, **kwargs):
+    def __init__(self):
+        super().__init__()
+        self.cs_session = None
+
+    def get_initial(self):
+        return {'comment': getattr(self.cs_session.main_member, 'comment', '')}
+
+    def get_context_data(self, **kwargs):
+        args = self.cs_session.to_dict()
+        args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return super().get_context_data(
             **{},
-            **cs_session.to_dict(),
+            **args,
             **kwargs
         )
 
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
+        self.cs_session = cs_session
         # remember that user reached summary to come back here after editing
         cs_session.edit = True
-        return super().dispatch(request, *args, cs_session=cs_session, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
-    @staticmethod
-    def post(request, cs_session):
+    def form_valid(self, form):
+        self.cs_session.main_member.comment = form.cleaned_data["comment"]
         # handle new signup
-        member = new_signup(cs_session.pop())
+        member = new_signup(self.cs_session.pop())
         # finish registration
         if member.subscription_future is None:
             return redirect('welcome')

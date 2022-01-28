@@ -2,7 +2,7 @@ from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML, Div
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea
 from django.urls import reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -136,6 +136,7 @@ class MemberBaseForm(ModelForm):
 
 
 class RegisterMemberForm(MemberBaseForm):
+    comment = CharField(required=False, max_length=4000, label='Kommentar', widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
 
     def __init__(self, *args, **kwargs):
@@ -143,6 +144,7 @@ class RegisterMemberForm(MemberBaseForm):
         self.fields['agb'].label = self.agb_label()
         self.helper.layout = Layout(
             *self.base_layout,
+            'comment',
             'agb',
             FormActions(
                 Submit('submit', _('Anmelden'), css_class='btn-success'),
@@ -152,16 +154,39 @@ class RegisterMemberForm(MemberBaseForm):
 
     @staticmethod
     def agb_label():
-        return _('Ich habe {}{}{} gelesen und erkläre meinen Willen, "{}" beizutreten.\
-            Hiermit beantrage ich meine Aufnahme.').format(
-            '<a target="_blank" href="{}">{}</a>'.format(Config.bylaws(), _('die Statuten')),
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.business_regulations(), _('das Betriebsreglement')
-            ) if Config.business_regulations().strip() else '',
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.gdpr_info(), _('die DSGVO Infos')
-            ) if Config.gdpr_info().strip() else '',
-            Config.organisation_long_name()
+        documents = {
+            'die Statuten': Config.bylaws,
+            'das Betriebsreglement': Config.business_regulations,
+            'die DSGVO Infos': Config.gdpr_info,
+        }
+        documents_html = []
+        for text, link in documents.items():
+            if link().strip():
+                documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
+        if documents_html:
+            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(
+                (' ' + _('und') + ' ').join(documents_html),
+                Config.organisation_long_name()
+            )
+        else:
+            return _('Ich erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(Config.organisation_long_name())
+
+
+class RegisterSummaryForm(Form):
+    comment = CharField(required=False, max_length=4000, label='',
+                        widget=Textarea(attrs={"rows": 3, "class": "textarea form-control"}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'comment',
+            FormActions(
+                Submit('submit', _('Verbindlich bestellen'), css_class='btn btn-success'),
+                HTML('<a href="{0}" class="btn">{1}</a>'.format(reverse('cs-cancel'), _("Abbrechen")))
+            )
         )
 
 

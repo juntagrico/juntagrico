@@ -7,12 +7,12 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.util.jobs import get_status_image
 from juntagrico.util.temporal import weekday_short
 
 
+@absolute_url(name='area')
 class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
@@ -29,6 +29,9 @@ class ActivityArea(JuntagricoBaseModel):
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    auto_add_new_members = models.BooleanField(_('Standard Tätigkeitesbereich für neue Benutzer'), default=False,
+                                               help_text=_(
+                                                   'Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.'))
 
     def __str__(self):
         return '%s' % self.name
@@ -142,6 +145,7 @@ class JobType(AbstractJobType):
         verbose_name_plural = _('Jobarten')
 
 
+@absolute_url(name='job')
 class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plätze'), default=0)
     infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
@@ -173,8 +177,12 @@ class Job(JuntagricoBasePoly):
         if self.infinite_slots:
             return -1
         if not (self.slots is None):
-            return self.slots - self.occupied_places()
+            return self.slots - self.occupied_slots
         return 0
+
+    @property
+    def occupied_slots(self):
+        return self.assignment_set.count()
 
     @property
     def duration(self):
@@ -186,14 +194,11 @@ class Job(JuntagricoBasePoly):
     def start_time(self):
         return self.time
 
-    def occupied_places(self):
-        return self.assignment_set.count()
-
-    def get_status_percentage(self):
+    def status_percentage(self):
         assignments = AssignmentDao.assignments_for_job(self.id)
         if self.slots < 1:
-            return get_status_image(100)
-        return get_status_image(assignments.count() * 100 / self.slots)
+            return 100
+        return assignments.count() * 100 / self.slots
 
     def is_core(self):
         return self.type.activityarea.core

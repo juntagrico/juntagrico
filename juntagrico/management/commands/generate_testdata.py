@@ -70,9 +70,11 @@ class Command(BaseCommand):
         SubscriptionPart.objects.create(subscription=subscription_2, type=subtype, activation_date=datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
-                        'hidden': False, 'coordinator': member_1, 'show_coordinator_phonenumber': False}
+                        'hidden': False, 'coordinator': member_1, 'show_coordinator_phonenumber': False,
+                        'auto_add_new_members': True}
         area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
-                        'hidden': False, 'coordinator': member_2, 'show_coordinator_phonenumber': False}
+                        'hidden': False, 'coordinator': member_2, 'show_coordinator_phonenumber': False,
+                        'auto_add_new_members': False}
         area_1 = ActivityArea.objects.create(**area1_fields)
         area_1.members.set([member_2])
         area_1.save()

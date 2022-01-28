@@ -51,8 +51,8 @@
                     <br/>
                 {% endif %}
                 {% if co_members|length > 0 %}
-                    {% blocktrans trimmed %}
-                    Teile die restlichen benötigten {{ shares.remaining_required }} {{ v_share_pl }} unter dir und
+                    {% blocktrans trimmed with shares.remaining_required as sr %}
+                    Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
                     deinen {{ v_co_member_pl }} auf.
                     {% endblocktrans %}
                 {% endif %}

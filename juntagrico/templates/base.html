@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
 {% load juntagrico.menu %}
@@ -11,7 +12,7 @@
 <html lang="de">
     <head>
         <title>
-            {% config "adminportal_name" %}
+            {{ request.site.name }}
         </title>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -26,7 +27,14 @@
         {% endblock %}
         <link href="/static/juntagrico/css/juntagrico.css" rel="stylesheet"/>
         <link href="/static/juntagrico/css/slider.css" rel="stylesheet"/>
-        <link href="{% config "style_sheet" %}" rel="stylesheet"/>
+        {% styles "template" as styles_template %}
+        {% if styles_template %}
+            {% include styles_template %}
+        {% endif %}
+        {% styles "static" as static_styles %}
+        {% for static_style in static_styles %}
+            <link href="{% static static_style %}" rel="stylesheet"/>
+        {% endfor %}
     </head>
     <body id="{{ request|view_name }}" class="{% block body_extra_classes %}{% endblock %}">
         <div class="page-container container">
@@ -40,7 +48,7 @@
             </div>
             <div class="row d-md-none">
                 <nav class="navbar navbar-expand-md col-sm-12">
-                      <a class="navbar-brand" href="#">{% config "adminportal_name" %}</a>
+                      <a class="navbar-brand" href="/my/home">{{ request.site.name }}</a>
 
                 {% block small_menu_content %}
                       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -132,7 +140,7 @@
         </script>
         <script type="text/javascript" src="{% url 'js-i18n' %}">
         </script>
-        <script type="text/javascript" src="/static/juntagrico/js/juntagrico.js">
+        <script type="text/javascript" src="/static/juntagrico/js/juntagrico.js?v=1">
         </script>
         <script src="/static/juntagrico/external/cc/cookieconsent.min.js" data-cfasync="false"></script>
         <script>
@@ -153,5 +161,13 @@
         {% block scripts %}
             {# no scripts by default #}
         {% endblock %}
+        {% scripts "template" as scripts_template %}
+        {% if scripts_template %}
+            {% include scripts_template %}
+        {% endif %}
+        {% scripts "static" as static_scripts %}
+        {% for static_script in static_scripts %}
+            <script type="text/javascript" src="{% static static_script %}"></script>
+        {% endfor %}
     </body>
 </html>

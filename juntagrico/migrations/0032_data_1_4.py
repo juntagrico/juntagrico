@@ -5,12 +5,11 @@ import string
 
 from django.db import migrations
 
-from juntagrico.entity.member import Member
-
 
 def fix_user_field(apps, schema_editor):
     # In case there are legacy members with user field None, trigger
     # standard pre-save option to create corresponding users
+    Member = apps.get_model('juntagrico', 'Member')
     for m in Member.objects.all():
         if getattr(m, 'user', None) is None:
             m.save()
