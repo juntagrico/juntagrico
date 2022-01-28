@@ -27,6 +27,15 @@ class Migration(migrations.Migration):
             model_name='subscriptiontype',
             name='price',
             field=models.DecimalField(decimal_places=2, max_digits=9, verbose_name='Preis'),
+        ),migrations.AddField(
+            model_name='activityarea',
+            name='auto_add_new_members',
+            field=models.BooleanField(default=False, help_text='Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.', verbose_name='Standard Tätigkeitesbereich für neue Benutzer'),
+        ),
+        migrations.AlterField(
+            model_name='depot',
+            name='description',
+            field=models.TextField(blank=True, default='', max_length=1000, verbose_name='Beschreibung'),
         ),
         migrations.CreateModel(
             name='Location',
@@ -43,7 +52,7 @@ class Migration(migrations.Migration):
                 ('addr_zipcode', models.CharField(blank=True, max_length=10, null=True, verbose_name='PLZ')),
                 ('addr_location', models.CharField(blank=True, max_length=50, null=True, verbose_name='Ort')),
                 ('description', models.TextField(blank=True, default='', max_length=1000, verbose_name='Beschreibung')),
-                ('visible', models.BooleanField(default=True, verbose_name='Sichtbar')),
+                ('visible', models.BooleanField(default=True, verbose_name='Sichtbar', help_text='Ort steht bei Einsatz und Depot zur Auswahl')),
                 ('sort_order', models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')),
             ],
             options={

@@ -24,6 +24,9 @@ Features & Improvements
     * Members have now a field number in the data administration
     * Edit pages of jobs, areas and depots now show a link to the frontend of the edited element on the top right
     * Uploaded email attachments can now be removed
+    * Activity areas can be flagge to be added automatically to a member on creation
+    * depot description is now optional
+    * price is now a decimal value
 
 * Developer Features:
     * ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` are removed in favor of the sites app. See upgrade instructions.
