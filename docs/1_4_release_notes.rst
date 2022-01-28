@@ -4,6 +4,9 @@ Release Notes
 Dev
 ---
 
+Fixes
+^^^^^
+* Fix: Cancelled, but still active subscriptions are now shown in the member list
 
 1.4.6
 -----
