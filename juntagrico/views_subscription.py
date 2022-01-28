@@ -264,7 +264,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = [m.email.lower() for m in self.subscription.recipients]
+        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
         return form_kwargs
 
     def get_initial(self):
