@@ -9,6 +9,7 @@ from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.util import addons
 
 register = template.Library()
 
@@ -88,3 +89,14 @@ def richtext(value):
         value = urlize(value)
         value = linebreaksbr(value)
     return value
+
+
+@register.inclusion_tag('utils/include_list.html', takes_context=True)
+def hook(context, name):
+    context['hook_templates'] = addons.config.template.get(name)
+    return context
+
+
+@register.filter
+def is_used_hook(name):
+    return len(addons.config.template.get(name))

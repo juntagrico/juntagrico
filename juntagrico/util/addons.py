@@ -6,6 +6,36 @@ class AddonNotConfigured(Exception):
     pass
 
 
+class TemplateHookRegistry:
+    def __init__(self):
+        self._hooks = {}
+
+    def register(self, hook, templates=None):
+        """ registers hook (with default templates)
+        """
+        self._hooks[hook] = templates or []
+
+    def insert_at(self, hook, pos, template):
+        if template in self._hooks[hook]:
+            del self._hooks[hook][template]  # replace if it was already in the list
+        self._hooks[hook].insert(pos, template)
+
+    def append(self, hook, template):
+        self.insert_at(hook, len(self._hooks[hook]), template)
+
+    def prepend(self, hook, template):
+        self.insert_at(hook, 0, template)
+
+    def inser_after(self, hook, after, template):
+        self.insert_at(hook, self._hooks[hook].index(after)+1, template)
+
+    def insert_before(self, hook, before, template):
+        self.insert_at(hook, self._hooks[hook].index(before), template)
+
+    def get(self, hook):
+        return self._hooks[hook]
+
+
 class AddonsConfig:
 
     def __init__(self):
@@ -18,6 +48,7 @@ class AddonsConfig:
         self._registry = {}
         self._config_classes = []
         self._versions = {}
+        self.template = TemplateHookRegistry()
 
     def register_admin_menu(self, template):
         self._admin_menus.append(template)
