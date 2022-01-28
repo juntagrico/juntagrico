@@ -8,11 +8,12 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.lifecycle.job import check_job_consistency
 from juntagrico.util.temporal import weekday_short
 
 
+@absolute_url(name='area')
 class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
     description = models.TextField(
@@ -32,9 +33,6 @@ class ActivityArea(JuntagricoBaseModel):
     auto_add_new_members = models.BooleanField(_('Standard Tätigkeitesbereich für neue Benutzer'), default=False,
                                                help_text=_(
                                                    'Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.'))
-
-    def get_absolute_url(self):
-        return reverse('area', args=[self.pk])
 
     def __str__(self):
         return '%s' % self.name
@@ -148,6 +146,7 @@ class JobType(AbstractJobType):
         verbose_name_plural = _('Jobarten')
 
 
+@absolute_url(name='job')
 class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plätze'), default=0)
     infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
@@ -158,9 +157,6 @@ class Job(JuntagricoBasePoly):
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
-
-    def get_absolute_url(self):
-        return reverse('job', args=[self.pk])
 
     @property
     def type(self):
