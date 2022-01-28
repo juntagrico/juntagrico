@@ -413,17 +413,37 @@ SUB_OVERVIEW_FORMAT
      'format': '{product}:{size}:{type}={amount}'
     }
 
-STYLE_SHEET
-^^^^^^^^^^^
-  If you want to use a custom design this specifies the path for your css
-
-  Type: String
+STYLES
+^^^^^^
+  Define styles to be included on all pages.
+  If the template key is set, the specified template will be loaded in the header of the page.
+  In the static key a list of css files can be defined to be included.
+  If both keys are defined the template is included before the static css files.
 
   default value
 
   .. code-block:: python
 
-    "/static/juntagrico/css/personal.css"
+    {
+        'template': '',
+        'static': []
+    }
+
+SCRIPTS
+^^^^^^^
+  Define scripts to be included on all pages.
+  If the template key is set, the specified template will be loaded in the scripts part of the page.
+  In the static key a list of javascript files can be defined to be included.
+  If both keys are defined the template is included before the static javascript files.
+
+  default value
+
+  .. code-block:: python
+
+    {
+        'template': '',
+        'static': []
+    }
 
 FAVICON
 ^^^^^^^

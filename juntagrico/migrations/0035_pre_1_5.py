@@ -53,5 +53,11 @@ class Migration(migrations.Migration):
             model_name='depot',
             name='location2',
             field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='juntagrico.location', null=True),
+
+        migrations.AddField(
+            model_name='member',
+            name='number',
+            field=models.IntegerField(blank=True, null=True, verbose_name='Mitglieder-Nummer'),
+
         ),
     ]

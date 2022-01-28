@@ -138,7 +138,8 @@ class Config:
             'm_canceled': 'mails/admin/member_canceled.txt',
         }
     )
-    style_sheet = _get_setting('STYLE_SHEET', '/static/juntagrico/css/personal.css')
+    styles = _get_setting_with_key('STYLES', {'template': '', 'static': []})
+    scripts = _get_setting_with_key('SCRIPTS', {'template': '', 'static': []})
     favicon = _get_setting('FAVICON', '/static/juntagrico/img/favicon.ico')
     bootstrap = _get_setting('BOOTSTRAP', '/static/juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css')
     images = _get_setting_with_key(
