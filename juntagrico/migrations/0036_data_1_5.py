@@ -38,6 +38,26 @@ def migrate_location(apps, schema_editor):
         a_depot.save()
 
 
+def migrate_contacts(apps, schema_editor):
+    ActivityArea = apps.get_model('juntagrico', 'ActivityArea')
+    TextContact = apps.get_model('juntagrico', 'TextContact')
+    EmailContact = apps.get_model('juntagrico', 'EmailContact')
+    ContentType = apps.get_model('contenttypes', 'ContentType')
+    for area in ActivityArea.objects.all():
+        # if previous contact was not just name and email of coordinator, create contacts to display info as before
+        if area.email:
+            # In migration world everything must be done manually. The fake historic models won't do it
+            area_ct = ContentType.objects.get_for_model(ActivityArea)
+            text_ct = ContentType.objects.get_for_model(TextContact)
+            email_ct = ContentType.objects.get_for_model(EmailContact)
+            TextContact.objects.create(text=f'{area.coordinator.first_name} {area.coordinator.last_name}',
+                                       polymorphic_ctype=text_ct,
+                                       object_id=area.id, content_type=area_ct)
+            EmailContact.objects.create(email=area.email,
+                                        polymorphic_ctype=email_ct,
+                                        object_id=area.id, content_type=area_ct)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -46,5 +66,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(migrate_location),
+        migrations.RunPython(migrate_contacts),
         migrations.RunPython(lowercase_emails),
     ]
