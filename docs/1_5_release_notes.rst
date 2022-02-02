@@ -10,6 +10,7 @@ Upgrade Instructions
   using the values from your ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` settings.
     * Remove these settings.
     * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
+* Add ``'polymorphic'`` to the ``INSTALLED_APPS`` setting.
 * Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}``
 * Add the Setting STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 * The option ``Telefonnummer von KoordinatorIn anzeigen`` on activity areas was previously only used to show the
