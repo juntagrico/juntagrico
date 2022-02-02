@@ -8,7 +8,7 @@ Contact Information
 
 ORGANISATION_NAME
 ^^^^^^^^^^^^^^^^^
-  The short name of your orgnisation
+  The short name of your organisation
 
   Type: String
 
