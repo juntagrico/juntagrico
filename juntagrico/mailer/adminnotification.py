@@ -15,7 +15,7 @@ def member_joined_activityarea(area, member):
         _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
             member.first_name, member.last_name, area.name
         ),
-    ).send_to(area.get_email())
+    ).send_to(area.get_emails())
 
 
 def member_left_activityarea(area, member):
@@ -25,7 +25,7 @@ def member_left_activityarea(area, member):
           'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
             member.first_name, member.last_name, area.name
         ),
-    ).send_to(area.get_email())
+    ).send_to(area.get_emails())
 
 
 @requires_someone_with_perm('notified_on_subscription_creation')

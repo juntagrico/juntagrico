@@ -68,7 +68,7 @@ class SubscriptionType(JuntagricoBaseModel):
         _('Anz benötigter Arbeitseinsätze'))
     required_core_assignments = models.PositiveIntegerField(
         _('Anz benötigter Kern Arbeitseinsätze'), default=0)
-    price = models.IntegerField(_('Preis'))
+    price = models.DecimalField(_('Preis'), max_digits=9, decimal_places=2)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     trial = models.BooleanField(_('Probe-Abo'), default=False)
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)

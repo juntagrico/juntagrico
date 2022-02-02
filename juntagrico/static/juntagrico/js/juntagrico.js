@@ -142,28 +142,43 @@ function area_slider() {
     })
 }
 
-function map_with_markers(depots){
-    markers = []
-    if(depots[0]) {
-        var map = L.map('depot-map').setView([depots[0].latitude, depots[0].longitude], 11);
+function map_with_markers(locations, selected){
+    let markers = []
+    if(locations[0]) {
+        $('#map-container').append('<div id="location-map">')
+        let map = L.map('location-map').setView([locations[0].latitude, locations[0].longitude], 11);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
                 '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(map);
 
-        $.each(depots, function (i, depot) {
-            var marker = add_marker(depot, map)
+        $.each(locations, function (i, location) {
+            let marker = add_marker(location, map)
+            if (location.name === selected) {
+                marker.openPopup()
+            }
             markers.push(marker)
         });
-        var group = new L.featureGroup(markers);
+        let group = new L.featureGroup(markers);
         map.fitBounds(group.getBounds(),{padding:[100,100]});
     }
     return markers
 }
 
-function add_marker(depot, map){
-    var marker = L.marker([depot.latitude, depot.longitude]).addTo(map);
-    marker.bindPopup("<b>" + depot.name + "</b><br/>" +
-            depot.addr_street + "<br/>"
-            + depot.addr_zipcode + " " + depot.addr_location);
+function add_marker(location, map){
+    let marker = L.marker([location.latitude, location.longitude]).addTo(map);
+    let description = "<strong>" + location.name + "</strong><br/>"
+    if(location.addr_street) description += location.addr_street + "<br/>"
+    if(location.addr_zipcode) description += location.addr_zipcode + " "
+    if(location.addr_location) description += location.addr_location
+    marker.bindPopup(description);
+    marker.name = location.name
     return marker
+}
+
+function open_marker(markers, name){
+    markers.forEach(function(marker) {
+        if(name === marker.name){
+            marker.openPopup()
+        }
+    })
 }

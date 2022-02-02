@@ -60,8 +60,7 @@
             <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
             <p>{{ depot.name }}
                 <br>{% trans 'Abholung jeweils am' %} {{ depot.weekday_name }}
-                {% if depot.addr_street %}<br>{{ depot.addr_street }}{% endif %}
-                {% if depot.addr_zipcode or depot.addr_location %}<br>{{ depot.addr_zipcode }} {{ depot.addr_location }}{% endif %}
+                {% if depot.location.address %}<br>{{ depot.location.address_html|safe }}{% endif %}
             </p>
 
             <h4>{% trans "Gewünschtes Startdatum" %} <a href="{% url 'cs-start' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
@@ -87,6 +86,18 @@
                     {% blocktrans %}{{ v_co_member_pl }} hinzufügen{% endblocktrans %}
                 {% endif %}
             </a></p>
+        {% endif %}
+
+        {% if activity_areas %}
+            <h4>{% trans "Tätigkeitsbereiche" %}</h4>
+            <p>{% blocktrans %}Du wird automatisch in folgende Tätigkeitsbereiche eingetragen.{% endblocktrans %}</p>
+            <ul>
+                {% for area in activity_areas %}
+                    <li><strong>{{ area.name }}</strong> {{ area.description |safe }}</li>
+                {% endfor %}
+            </ul>
+
+            <p>{% blocktrans %}Du kannst das jederzeit unter dem Menupunkt Tätigkeitsbereiche ändern.{% endblocktrans %}</p>
         {% endif %}
 
         {% if c_enable_shares %}

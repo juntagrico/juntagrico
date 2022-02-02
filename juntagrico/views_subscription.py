@@ -14,6 +14,7 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
@@ -110,16 +111,12 @@ def depot_change(request, subscription_id):
                 Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
-    depots = DepotDao.all_visible_depots()
-    requires_map = False
-    for depot in depots:
-        requires_map = requires_map or depot.has_geo
+    depots = DepotDao.all_visible_depots_with_map_info()
     renderdict = {
         'subscription': subscription,
         'saved': saved,
         'member': request.user.member,
         'depots': depots,
-        'requires_map': requires_map,
     }
     return render(request, 'depot_change.html', renderdict)
 
@@ -263,7 +260,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = [m.email.lower() for m in self.subscription.recipients]
+        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
         return form_kwargs
 
     def get_initial(self):
@@ -306,9 +303,14 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
+        add_subscription_member_to_activity_area(subscription)
     except ValidationError as e:
         return error_page(request, e.message)
     return return_to_previous_location(request)
+
+
+def add_subscription_member_to_activity_area(subscription):
+    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')

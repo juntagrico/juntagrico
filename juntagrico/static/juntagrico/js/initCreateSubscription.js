@@ -1,12 +1,17 @@
 /*global define, $, mwember_shares, depots, destinations, google */
 define([], function () {
-
-    if (typeof depots !== 'undefined') {
-        // preselect depot
-        if (window.depot_id) {
-            $("#depot").val(window.depot_id);
+    let depot_element = document.getElementById('depots')
+    if (depot_element) {
+        let depots = JSON.parse(depot_element.textContent)
+        let selected_depot_element = document.getElementById('selected_depot')
+        let selected_depot = null
+        if (selected_depot_element) {
+            selected_depot = JSON.parse(selected_depot_element.textContent)
         }
-        map_with_markers(depots)
+        let markers = map_with_markers(depots, selected_depot)
+        $('#depot').on('change', function(e){
+            open_marker(markers, $("option:selected", this)[0].text)
+        })
     }
 
     function total_selected_subs() {

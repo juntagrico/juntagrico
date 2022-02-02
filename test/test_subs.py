@@ -14,8 +14,10 @@ class SubscriptionTests(JuntagricoTestCase):
     def testSubActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()
+        self.area.refresh_from_db()
         self.assertIsNone(self.member2.subscription_future)
         self.assertEqual(self.member2.subscription_current, self.sub2)
+        self.assertTrue(self.member2 in self.area.members.all())
 
     def testSubChange(self):
         self.assertGet(reverse('sub-change', args=[self.sub.pk]))
