@@ -417,8 +417,9 @@ def manage_shares(request):
     shares = member.share_set.order_by('cancelled_date', '-paid_date')
 
     active_share_years = member.active_share_years
-    if active_share_years:
-        active_share_years.remove(timezone.now().year)
+    current_year = timezone.now().year
+    if active_share_years and current_year in active_share_years:
+        active_share_years.remove(current_year)
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
