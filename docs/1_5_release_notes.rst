@@ -25,7 +25,6 @@ Features & Improvements
 * Member Features:
 
 * Admin Features:
-    * Members have now a field number in the data administration
     * Edit pages of jobs, areas and depots now show a link to the frontend of the edited element on the top right
     * Uploaded email attachments can now be removed
     * Activity areas can be flagged to be added automatically to a member on creation
