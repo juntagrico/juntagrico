@@ -4,10 +4,6 @@
 Dev
 ---
 
-Fixes
-^^^^^
-* Fix shares overview for members that have no shares this year
-
 1.4.7
 -----
 Fixes

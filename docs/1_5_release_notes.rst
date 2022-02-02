@@ -15,6 +15,7 @@ Upgrade Instructions
 
 Fixes
 ^^^^^
+* Fix shares overview for members that have no shares this year
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
