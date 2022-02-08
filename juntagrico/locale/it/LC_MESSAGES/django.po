@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-31 10:50+0100\n"
+"POT-Creation-Date: 2022-02-08 10:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,21 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\juntagrico\admins\area_admin.py:18 .\juntagrico\admins\member_admin.py:23
+#: .\juntagrico\entity\contact.py:40 .\juntagrico\templates\contact.html:6
+#: .\juntagrico\templates\contact_member.html:7
+#: .\juntagrico\templates\exports\snippets\snippet_depotlist_header.html:8
+#: .\juntagrico\templates\job.html:141
+#: .\juntagrico\templates\mails\member\job_reminder.txt:18
+#: .\juntagrico\templates\management_lists\canceledlist.html:20
+#: .\juntagrico\templates\management_lists\part_canceledlist.html:17
+#: .\juntagrico\templates\management_lists\part_waitinglist.html:18
+#: .\juntagrico\templates\management_lists\typechangelist.html:18
+#: .\juntagrico\templates\management_lists\waitinglist.html:20
+#: .\juntagrico\templates\menu\user_menu.html:57
+msgid "Kontakt"
+msgstr "Contatto"
 
 #: .\juntagrico\admins\delivery_admin.py:20
 #, fuzzy
@@ -85,6 +100,7 @@ msgstr "Giorni feriali"
 #: .\juntagrico\templates\mails\member\job_reminder.txt:15
 #: .\juntagrico\templates\mails\member\job_signup.txt:15
 #: .\juntagrico\templates\mails\member\job_time_changed.txt:15
+#: .\juntagrico\templates\snippets\snippet_jobs.html:20
 msgid "Zeit"
 msgstr "Tempo"
 
@@ -111,6 +127,12 @@ msgstr "Ogni due settimane"
 #: .\juntagrico\admins\forms\job_copy_form.py:49
 msgid "Kein neuer Job fällt zwischen Anfangs- und Enddatum"
 msgstr "Nessun nuovo lavoro cade tra la data di inizio e la data di fine"
+
+#: .\juntagrico\admins\forms\location_replace_form.py:8
+#, fuzzy
+#| msgid "Start Monat"
+msgid "Ersetzen mit"
+msgstr "Mese di inizio"
 
 #: .\juntagrico\admins\forms\member_admin_form.py:37
 #, python-brace-format
@@ -163,100 +185,113 @@ msgstr ""
 msgid "{} Bestandteile"
 msgstr ""
 
-#: .\juntagrico\admins\job_admin.py:31
+#: .\juntagrico\admins\job_admin.py:33
 msgid "Job mehrfach kopieren..."
 msgstr "Copiare il lavoro più volte..."
 
-#: .\juntagrico\admins\job_admin.py:37
+#: .\juntagrico\admins\job_admin.py:39
 msgid "Jobs kopieren"
 msgstr "Copiare i lavori"
 
-#: .\juntagrico\admins\job_type_admin.py:22
+#: .\juntagrico\admins\job_type_admin.py:26
 msgid "Jobart in EinzelJobs konvertieren"
 msgstr "Convertire il tipo di lavoro in lavori singoli"
 
-#: .\juntagrico\admins\member_admin.py:22 .\juntagrico\templates\contact.html:6
-#: .\juntagrico\templates\contact_member.html:6
-#: .\juntagrico\templates\exports\snippets\snippet_depotlist_header.html:8
-#: .\juntagrico\templates\management_lists\canceledlist.html:20
-#: .\juntagrico\templates\management_lists\part_canceledlist.html:17
-#: .\juntagrico\templates\management_lists\part_waitinglist.html:18
-#: .\juntagrico\templates\management_lists\typechangelist.html:18
-#: .\juntagrico\templates\management_lists\waitinglist.html:20
-#: .\juntagrico\templates\menu\user_menu.html:57
-msgid "Kontakt"
-msgstr "Contatto"
-
-#: .\juntagrico\admins\member_admin.py:23 .\juntagrico\templates\depot.html:16
+#: .\juntagrico\admins\location_admin.py:18
+#: .\juntagrico\admins\member_admin.py:24 .\juntagrico\templates\depot.html:17
 msgid "Adresse"
 msgstr "Indirizzo"
 
-#: .\juntagrico\admins\member_admin.py:24
-msgid "Bankdaten"
+#: .\juntagrico\admins\location_admin.py:19
+msgid ""
+"Wenn Adresse nicht leer ist, wird ein Link zur Wegbeschreibung angezeigt."
+msgstr ""
+
+#: .\juntagrico\admins\location_admin.py:22
+#, fuzzy
+#| msgid "Koordiniert von"
+msgid "Koordinaten"
+msgstr "Coordinato da"
+
+#: .\juntagrico\admins\location_admin.py:23
+msgid ""
+"Wenn Koordinaten nicht leer sind, wird eine Karte eingeblendet und ein Link "
+"zur Wegbeschreibung angezeigt."
+msgstr ""
+
+#: .\juntagrico\admins\location_admin.py:29
+msgid "Ausgewählte Orte ersetzen"
+msgstr ""
+
+#: .\juntagrico\admins\location_admin.py:43
+msgid "Orte Ersetzen"
 msgstr ""
 
 #: .\juntagrico\admins\member_admin.py:25
+msgid "Bankdaten"
+msgstr ""
+
+#: .\juntagrico\admins\member_admin.py:26
 #: .\juntagrico\admins\subscription_admin.py:26
 #: .\juntagrico\admins\subscription_admin.py:32
 #: .\juntagrico\admins\subscription_admin.py:37
-#: .\juntagrico\templates\extra_change.html:24
-#: .\juntagrico\templates\job.html:38
-#: .\juntagrico\templates\manage_shares.html:45
-#: .\juntagrico\templates\size_change.html:28
-#: .\juntagrico\templates\snippets\snippet_jobs.html:23
-#: .\juntagrico\templates\snippets\snippet_jobs.html:65
+#: .\juntagrico\templates\extra_change.html:25
+#: .\juntagrico\templates\job.html:40
+#: .\juntagrico\templates\manage_shares.html:46
+#: .\juntagrico\templates\size_change.html:29
+#: .\juntagrico\templates\snippets\snippet_jobs.html:32
 #: .\juntagrico\templates\subscription.html:71 .\juntagrico\views_admin.py:325
 msgid "Status"
 msgstr "Stato"
 
-#: .\juntagrico\admins\member_admin.py:28
+#: .\juntagrico\admins\member_admin.py:29
 #: .\juntagrico\admins\subscription_admin.py:28
 #: .\juntagrico\admins\subscription_admin.py:34
 #: .\juntagrico\templates\menu\admin_menu.html:20
 msgid "Administration"
 msgstr "Amministrazione"
 
-#: .\juntagrico\admins\member_admin.py:50
+#: .\juntagrico\admins\member_admin.py:51
 msgid "Aktiv"
 msgstr "Attivo"
 
-#: .\juntagrico\admins\member_admin.py:64
+#: .\juntagrico\admins\member_admin.py:65
 #, fuzzy
 #| msgid "Kein/e/n {0}"
 msgid "Kein/e {}"
 msgstr "Nessuno {0}"
 
-#: .\juntagrico\admins\member_admin.py:66
+#: .\juntagrico\admins\member_admin.py:67
 #, fuzzy
 #| msgid "Zukünftige/r/s {0}"
 msgid "Zukünftige/r/s {}"
 msgstr "Futuro r/s {0}"
 
-#: .\juntagrico\admins\member_admin.py:69
+#: .\juntagrico\admins\member_admin.py:70
 #, fuzzy
 #| msgid "Zukünftige/r/s {0}"
 msgid "Kein/e zukünftige/r/s {}"
 msgstr "Futuro r/s {0}"
 
-#: .\juntagrico\admins\member_admin.py:71
+#: .\juntagrico\admins\member_admin.py:72
 #, fuzzy
 #| msgid "Alte {0}"
 msgid "Alte {}"
 msgstr "Vecchio {0}"
 
-#: .\juntagrico\admins\member_admin.py:74
+#: .\juntagrico\admins\member_admin.py:75
 #, fuzzy
 #| msgid "Kein/e/n {0}"
 msgid "Keine alten {}"
 msgstr "Nessuno {0}"
 
-#: .\juntagrico\admins\member_admin.py:98
+#: .\juntagrico\admins\member_admin.py:99
 #, fuzzy
 #| msgid "Kein/e/n {0}"
 msgid "Kein/e/n {}"
 msgstr "Nessuno {0}"
 
-#: .\juntagrico\admins\one_time_job_admin.py:25
+#: .\juntagrico\admins\one_time_job_admin.py:35
 msgid "EinzelJobs in Jobart konvertieren"
 msgstr "Convertire i lavori singoli in tipo di lavoro"
 
@@ -268,153 +303,157 @@ msgstr ""
 msgid "{} von {} {} bearbeitet"
 msgstr ""
 
-#: .\juntagrico\config.py:23 .\juntagrico\config.py:34
+#: .\juntagrico\admins\share_admin.py:51
+msgid "Mehrere Anteilscheindaten bearbeiten"
+msgstr ""
+
+#: .\juntagrico\config.py:25 .\juntagrico\config.py:36
 msgid "Mitglied"
 msgstr "Membro"
 
-#: .\juntagrico\config.py:24 .\juntagrico\config.py:35
+#: .\juntagrico\config.py:26 .\juntagrico\config.py:37
 msgid "Mitglieder"
 msgstr "Membri"
 
-#: .\juntagrico\config.py:25
+#: .\juntagrico\config.py:27
 msgid "Arbeitseinsatz"
 msgstr "Assegnazione del lavoro"
 
-#: .\juntagrico\config.py:26
-#: .\juntagrico\templates\forms\subscription_type_field.html:34
+#: .\juntagrico\config.py:28
+#: .\juntagrico\templates\forms\subscription_type_field.html:36
 msgid "Arbeitseinsätze"
 msgstr "Incarichi di lavoro"
 
-#: .\juntagrico\config.py:27
+#: .\juntagrico\config.py:29
 msgid "Anteilschein"
 msgstr "Certificato di unità"
 
-#: .\juntagrico\config.py:28
-#: .\juntagrico\templates\createsubscription\summary.html:82
+#: .\juntagrico\config.py:30
+#: .\juntagrico\templates\createsubscription\summary.html:104
 msgid "Anteilscheine"
 msgstr "Certificati azionari"
 
-#: .\juntagrico\config.py:29 .\juntagrico\templates\extra_change.html:21
+#: .\juntagrico\config.py:31 .\juntagrico\templates\extra_change.html:22
 msgid "Abo"
 msgstr "Abbonamento"
 
-#: .\juntagrico\config.py:30
+#: .\juntagrico\config.py:32
 msgid "Abos"
 msgstr "Abbonamenti"
 
-#: .\juntagrico\config.py:31
+#: .\juntagrico\config.py:33
 msgid "MitabonnentIn"
 msgstr "Coabbonato"
 
-#: .\juntagrico\config.py:32
+#: .\juntagrico\config.py:34
 msgid "MitabonnentInnen"
 msgstr "Co-sottoscrittori"
 
-#: .\juntagrico\config.py:33
+#: .\juntagrico\config.py:35
 msgid "Betriebsbeitrag"
 msgstr "Contributo operativo"
 
-#: .\juntagrico\config.py:36
-#: .\juntagrico\templates\createsubscription\summary.html:49
+#: .\juntagrico\config.py:38
+#: .\juntagrico\templates\createsubscription\summary.html:60
 #: .\juntagrico\views_admin.py:276 .\juntagrico\views_admin.py:326
 msgid "Depot"
 msgstr "Deposito"
 
-#: .\juntagrico\config.py:37
+#: .\juntagrico\config.py:39
 msgid "Depots"
 msgstr "Depositi"
 
-#: .\juntagrico\config.py:38
+#: .\juntagrico\config.py:40
 #, fuzzy
 #| msgid "Tasche retour"
 msgid "Tasche"
 msgstr "Restituzione del bagaglio"
 
-#: .\juntagrico\config.py:87
+#: .\juntagrico\config.py:89
 msgid "{} verwendet folgende Cookies: session, csfr, cookieconsent."
 msgstr "{} utilizza i seguenti cookie: sessione, csfr, cookieconsent."
 
-#: .\juntagrico\config.py:88
+#: .\juntagrico\config.py:91
 msgid "einverstanden"
 msgstr "d'accordo"
 
-#: .\juntagrico\config.py:89
+#: .\juntagrico\config.py:92
 msgid "Hier findest du mehr zum Thema"
 msgstr "Qui potete trovare ulteriori informazioni sull'argomento"
 
-#: .\juntagrico\entity\__init__.py:27
+#: .\juntagrico\entity\__init__.py:28
 msgid "wartend"
 msgstr "in attesa"
 
-#: .\juntagrico\entity\__init__.py:28 .\juntagrico\entity\listmessage.py:12
+#: .\juntagrico\entity\__init__.py:29 .\juntagrico\entity\listmessage.py:12
 #: .\juntagrico\templates\subscription.html:75
 msgid "aktiv"
 msgstr "attivo"
 
-#: .\juntagrico\entity\__init__.py:29
+#: .\juntagrico\entity\__init__.py:30
 msgid "aktiv - gekündigt"
 msgstr "attivo - cancellato"
 
-#: .\juntagrico\entity\__init__.py:30
+#: .\juntagrico\entity\__init__.py:31
 msgid "inaktiv-gekündigt"
 msgstr "inattivo terminato"
 
-#: .\juntagrico\entity\__init__.py:37
+#: .\juntagrico\entity\__init__.py:38
 msgid "Erstellungsdatum"
 msgstr "Data di creazione"
 
-#: .\juntagrico\entity\__init__.py:38
-#: .\juntagrico\templates\subscriptions.html:40
-#: .\juntagrico\templates\subscriptions.html:62
+#: .\juntagrico\entity\__init__.py:39
+#: .\juntagrico\templates\subscriptions.html:41
+#: .\juntagrico\templates\subscriptions.html:63
 msgid "Aktivierungsdatum"
 msgstr "Data di attivazione"
 
-#: .\juntagrico\entity\__init__.py:39 .\juntagrico\entity\member.py:55
+#: .\juntagrico\entity\__init__.py:40 .\juntagrico\entity\member.py:55
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:18
 #: .\juntagrico\templates\management_lists\part_canceledlist.html:23
 #: .\juntagrico\templates\management_lists\share_canceledlist.html:37
 msgid "Kündigungsdatum"
 msgstr "Data di cancellazione"
 
-#: .\juntagrico\entity\__init__.py:40 .\juntagrico\entity\member.py:57
+#: .\juntagrico\entity\__init__.py:41 .\juntagrico\entity\member.py:57
 #, fuzzy
 #| msgid "Deaktivierungssdatum"
 msgid "Deaktivierungsdatum"
 msgstr "Data di disattivazione"
 
-#: .\juntagrico\entity\__init__.py:88 .\juntagrico\entity\share.py:59
+#: .\juntagrico\entity\__init__.py:89 .\juntagrico\entity\share.py:59
 msgid "Fehler!"
 msgstr ""
 
-#: .\juntagrico\entity\__init__.py:99
+#: .\juntagrico\entity\__init__.py:100
 #, fuzzy
 #| msgid "Bitte \"Bezahlt am\" ausfüllen"
 msgid "Bitte \"Aktivierungsdatum\" ausfüllen"
 msgstr "Compilare \"Pagato"
 
-#: .\juntagrico\entity\__init__.py:101
+#: .\juntagrico\entity\__init__.py:102
 #, fuzzy
 #| msgid "Bitte \"Gekündigt am\" ausfüllen"
 msgid "Bitte \"Kündigungsdatum\" ausfüllen"
 msgstr "Compilare \"Terminato il"
 
-#: .\juntagrico\entity\__init__.py:103
+#: .\juntagrico\entity\__init__.py:104
 msgid "Das \"Kündigungsdatum\" kann nicht in der Zukunft liegen"
 msgstr ""
 
-#: .\juntagrico\entity\__init__.py:105
+#: .\juntagrico\entity\__init__.py:106
 #: .\juntagrico\lifecycle\submembership.py:21
 #, fuzzy
 #| msgid "Daten Reihenfolge stimm nicht."
 msgid "Datenreihenfolge stimmt nicht."
 msgstr "La sequenza dei dati non è corretta."
 
-#: .\juntagrico\entity\__init__.py:114
+#: .\juntagrico\entity\__init__.py:129
 #, python-brace-format
 msgid "Wird bei {0} Erstellung informiert"
 msgstr "Viene informato al {0} creazione"
 
-#: .\juntagrico\entity\__init__.py:115
+#: .\juntagrico\entity\__init__.py:130
 #, python-brace-format
 msgid "Wird bei {0} Kündigung informiert"
 msgstr "Viene informato al {0} Termine"
@@ -427,7 +466,7 @@ msgstr "Unità fatturabile"
 msgid "Verrechenbare Einheiten"
 msgstr "Unità fatturabili"
 
-#: .\juntagrico\entity\billing.py:25 .\juntagrico\entity\subtypes.py:70
+#: .\juntagrico\entity\billing.py:25 .\juntagrico\entity\subtypes.py:71
 #: .\juntagrico\views_admin.py:333
 msgid "Preis"
 msgstr "Prezzo"
@@ -472,11 +511,72 @@ msgstr "Periodo di fatturazione Abbonamenti supplementari"
 msgid "Verrechnungsperioden"
 msgstr "Diodi del periodo di fatturazione Abbonamenti supplementari"
 
+#: .\juntagrico\entity\contact.py:28 .\juntagrico\entity\depot.py:28
+#: .\juntagrico\entity\jobs.py:30 .\juntagrico\entity\listmessage.py:13
+#: .\juntagrico\entity\location.py:27 .\juntagrico\entity\subtypes.py:16
+#: .\juntagrico\entity\subtypes.py:77
+msgid "Reihenfolge"
+msgstr ""
+
+#: .\juntagrico\entity\contact.py:41
+#, fuzzy
+#| msgid "Kontakt"
+msgid "Kontakte"
+msgstr "Contatto"
+
+#: .\juntagrico\entity\contact.py:50 .\juntagrico\entity\contact.py:99
+#: .\juntagrico\templates\createsubscription\summary.html:30
+#: .\juntagrico\templates\createsubscription\summary.html:76
+#: .\juntagrico\templates\management_lists\canceledlist.html:23
+#: .\juntagrico\templates\management_lists\share_canceledlist.html:49
+msgid "E-Mail"
+msgstr "E-mail"
+
+#: .\juntagrico\entity\contact.py:51 .\juntagrico\entity\contact.py:113
+#: .\juntagrico\entity\contact.py:122 .\juntagrico\entity\contact.py:123
+#: .\juntagrico\forms.py:48 .\juntagrico\forms.py:113
+msgid "Telefonnummer"
+msgstr "Numero di telefono"
+
+#: .\juntagrico\entity\contact.py:52
+#, fuzzy
+#| msgid "Telefonnummer"
+msgid "E-Mail & Telefonnummer"
+msgstr "Numero di telefono"
+
+#: .\juntagrico\entity\contact.py:56
+#, fuzzy
+#| msgid "Angezeigter Name"
+msgid "Anzeige"
+msgstr "Nome visualizzato"
+
+#: .\juntagrico\entity\contact.py:108 .\juntagrico\entity\contact.py:109
+#: .\juntagrico\forms.py:49 .\juntagrico\forms.py:114
+#: .\juntagrico\templates\registration\password_reset_form_cust.html:17
+msgid "E-Mail-Adresse"
+msgstr "Indirizzo e-mail"
+
+#: .\juntagrico\entity\contact.py:127
+#, fuzzy
+#| msgid "Kontaktieren"
+msgid "Kontaktbeschrieb"
+msgstr "Contatto"
+
+#: .\juntagrico\entity\contact.py:136
+msgid "Freier Kontaktbeschrieb"
+msgstr ""
+
+#: .\juntagrico\entity\contact.py:137
+#, fuzzy
+#| msgid "Keine Einsätze ausgeschrieben"
+msgid "Freie Kontaktbeschriebe"
+msgstr "Nessuna operazione pubblicizzata"
+
 #: .\juntagrico\entity\delivery.py:14
 msgid "Lieferdatum"
 msgstr "Data di consegna"
 
-#: .\juntagrico\entity\delivery.py:16 .\juntagrico\entity\subtypes.py:50
+#: .\juntagrico\entity\delivery.py:16 .\juntagrico\entity\subtypes.py:51
 #, python-brace-format
 msgid "{0}-Grösse"
 msgstr "{0}-Dimensione"
@@ -490,16 +590,17 @@ msgstr "Consegna"
 msgid "Lieferungen"
 msgstr "consegne"
 
-#: .\juntagrico\entity\delivery.py:40 .\juntagrico\entity\jobs.py:17
+#: .\juntagrico\entity\delivery.py:40 .\juntagrico\entity\jobs.py:20
 #: .\juntagrico\entity\jobs.py:61 .\juntagrico\entity\jobs.py:111
-#: .\juntagrico\entity\mailing.py:11 .\juntagrico\entity\subtypes.py:12
-#: .\juntagrico\entity\subtypes.py:35 .\juntagrico\entity\subtypes.py:60
+#: .\juntagrico\entity\location.py:12 .\juntagrico\entity\mailing.py:11
+#: .\juntagrico\entity\subtypes.py:13 .\juntagrico\entity\subtypes.py:36
+#: .\juntagrico\entity\subtypes.py:61
 #: .\juntagrico\templates\exports\snippets\snippet_depotlist_header.html:49
 #: .\juntagrico\templates\mails\member\depot_changed.txt:13
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:15
 #: .\juntagrico\templates\management_lists\share_canceledlist.html:34
-#: .\juntagrico\templates\members.html:28
-#: .\juntagrico\templates\members.html:53 .\juntagrico\views_admin.py:271
+#: .\juntagrico\templates\members.html:29
+#: .\juntagrico\templates\members.html:54 .\juntagrico\views_admin.py:271
 msgid "Name"
 msgstr "Nome"
 
@@ -509,6 +610,7 @@ msgid "Menge"
 msgstr "Quantità"
 
 #: .\juntagrico\entity\delivery.py:42
+#: .\juntagrico\templates\mails\admin\subscription_created.txt:12
 #: .\juntagrico\templates\snippets\snippet_delivery.html:28
 msgid "Kommentar"
 msgstr "Commento"
@@ -521,136 +623,113 @@ msgstr "Oggetto della consegna"
 msgid "Lieferobjekte"
 msgstr "Oggetti di consegna"
 
-#: .\juntagrico\entity\depot.py:14
+#: .\juntagrico\entity\depot.py:16
 #, python-brace-format
 msgid "{0} Name"
 msgstr "{0} Nome"
 
-#: .\juntagrico\entity\depot.py:16 .\juntagrico\templates\depot.html:26
+#: .\juntagrico\entity\depot.py:18 .\juntagrico\templates\depot.html:25
 #: .\juntagrico\templates\mails\member\depot_changed.txt:15
 msgid "Wochentag"
 msgstr "Giorno feriale"
 
-#: .\juntagrico\entity\depot.py:17
+#: .\juntagrico\entity\depot.py:19
 msgid "Kapazität"
 msgstr "Capacità"
 
-#: .\juntagrico\entity\depot.py:18
-msgid "Latitude"
-msgstr "Latitudine"
-
-#: .\juntagrico\entity\depot.py:20
-msgid "Longitude"
-msgstr "Longitudine"
-
-#: .\juntagrico\entity\depot.py:22 .\juntagrico\entity\member.py:41
-msgid "Strasse"
-msgstr "Via"
-
-#: .\juntagrico\entity\depot.py:24 .\juntagrico\entity\member.py:42
-msgid "PLZ"
-msgstr "POSTCODE"
-
-#: .\juntagrico\entity\depot.py:26 .\juntagrico\entity\member.py:43
-#: .\juntagrico\templates\job.html:98
+#: .\juntagrico\entity\depot.py:20 .\juntagrico\entity\jobs.py:118
+#: .\juntagrico\entity\location.py:21 .\juntagrico\entity\location.py:85
+#: .\juntagrico\entity\member.py:43 .\juntagrico\templates\job.html:96
 #: .\juntagrico\templates\mails\member\depot_changed.txt:14
 #: .\juntagrico\templates\mails\member\job_canceled.txt:15
 #: .\juntagrico\templates\mails\member\job_reminder.txt:16
 #: .\juntagrico\templates\mails\member\job_signup.txt:17
 #: .\juntagrico\templates\mails\member\job_time_changed.txt:17
+#: .\juntagrico\templates\snippets\snippet_jobs.html:17
 msgid "Ort"
 msgstr "Posto"
 
-#: .\juntagrico\entity\depot.py:28 .\juntagrico\entity\jobs.py:19
-#: .\juntagrico\entity\jobs.py:114 .\juntagrico\entity\subtypes.py:14
-#: .\juntagrico\entity\subtypes.py:42 .\juntagrico\entity\subtypes.py:75
-#: .\juntagrico\templates\area.html:13 .\juntagrico\templates\depot.html:46
-#: .\juntagrico\templates\job.html:111
+#: .\juntagrico\entity\depot.py:21 .\juntagrico\entity\jobs.py:22
+#: .\juntagrico\entity\jobs.py:114 .\juntagrico\entity\location.py:23
+#: .\juntagrico\entity\subtypes.py:15 .\juntagrico\entity\subtypes.py:43
+#: .\juntagrico\entity\subtypes.py:76 .\juntagrico\templates\area.html:17
+#: .\juntagrico\templates\depot.html:45 .\juntagrico\templates\job.html:113
 #: .\juntagrico\templates\mails\member\depot_changed.txt:17
 msgid "Beschreibung"
 msgstr "Descrizione"
 
-#: .\juntagrico\entity\depot.py:29 .\juntagrico\templates\depot.html:56
+#: .\juntagrico\entity\depot.py:22 .\juntagrico\templates\depot.html:56
 #, fuzzy
 #| msgid "Beschreibung"
 msgid "Zugangsbeschreibung"
 msgstr "Descrizione"
 
-#: .\juntagrico\entity\depot.py:30
+#: .\juntagrico\entity\depot.py:23
 #, python-brace-format
 msgid "Nur für {0} des/r {1} sichtbar"
 msgstr ""
 
-#: .\juntagrico\entity\depot.py:33 .\juntagrico\entity\subtypes.py:39
+#: .\juntagrico\entity\depot.py:26 .\juntagrico\entity\subtypes.py:40
 msgid "Sichtbar auf Depotliste"
 msgstr "Visibile sulla lista di deposito"
 
-#: .\juntagrico\entity\depot.py:34 .\juntagrico\entity\jobs.py:138
-#: .\juntagrico\entity\subtypes.py:40 .\juntagrico\entity\subtypes.py:71
+#: .\juntagrico\entity\depot.py:27 .\juntagrico\entity\jobs.py:137
+#: .\juntagrico\entity\location.py:24 .\juntagrico\entity\subtypes.py:41
+#: .\juntagrico\entity\subtypes.py:72
 msgid "Sichtbar"
 msgstr "Visibile"
 
-#: .\juntagrico\entity\depot.py:35 .\juntagrico\entity\jobs.py:31
-#: .\juntagrico\entity\listmessage.py:13 .\juntagrico\entity\subtypes.py:15
-#: .\juntagrico\entity\subtypes.py:76
-msgid "Reihenfolge"
-msgstr ""
-
-#: .\juntagrico\entity\depot.py:58
+#: .\juntagrico\entity\depot.py:48
 msgid "Unbekannt"
 msgstr "Sconosciuto"
 
-#: .\juntagrico\entity\depot.py:67
+#: .\juntagrico\entity\depot.py:57
 msgid "Benutzer ist Depot Admin"
 msgstr "L'utente è Depot Admin"
 
-#: .\juntagrico\entity\jobs.py:20 .\juntagrico\entity\jobs.py:307
-#: .\juntagrico\templates\snippets\snippet_jobs.html:51
+#: .\juntagrico\entity\jobs.py:23 .\juntagrico\entity\jobs.py:339
+#: .\juntagrico\templates\snippets\snippet_jobs.html:78
 #: .\juntagrico\templates\widgets\assignements.html:14
 #: .\juntagrico\templates\widgets\assignements.html:15
 #: .\juntagrico\views_admin.py:274
 msgid "Kernbereich"
 msgstr "Area centrale"
 
-#: .\juntagrico\entity\jobs.py:22
+#: .\juntagrico\entity\jobs.py:25
 msgid "versteckt"
 msgstr "nascosto"
 
-#: .\juntagrico\entity\jobs.py:23
+#: .\juntagrico\entity\jobs.py:26
 msgid ""
 "Nicht auf der \"Tätigkeitsbereiche\"-Seite anzeigen. Einsätze bleiben "
 "sichtbar."
 msgstr ""
 
-#: .\juntagrico\entity\jobs.py:24
+#: .\juntagrico\entity\jobs.py:27
 #, fuzzy
 #| msgid "Koordiniert von"
 msgid "KoordinatorIn"
 msgstr "Coordinato da"
 
-#: .\juntagrico\entity\jobs.py:25
-#: .\juntagrico\templates\createsubscription\summary.html:29
-#: .\juntagrico\templates\createsubscription\summary.html:66
-#: .\juntagrico\templates\management_lists\canceledlist.html:23
-#: .\juntagrico\templates\management_lists\share_canceledlist.html:49
-msgid "E-Mail"
-msgstr "E-mail"
+#: .\juntagrico\entity\jobs.py:31
+#, fuzzy
+#| msgid "anderer Tätigkeitsbereich Partner"
+msgid "Standard Tätigkeitesbereich für neue Benutzer"
+msgstr "Altro settore di attività Partner"
 
-#: .\juntagrico\entity\jobs.py:26
-msgid "Wenn leer wird E-Mail-Adresse von KoordinatorIn angezeigt"
-msgstr ""
-
-#: .\juntagrico\entity\jobs.py:28
-msgid "Telefonnummer von KoordinatorIn anzeigen"
+#: .\juntagrico\entity\jobs.py:33
+msgid ""
+"Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt."
 msgstr ""
 
 #: .\juntagrico\entity\jobs.py:50 .\juntagrico\entity\jobs.py:115
 msgid "Tätigkeitsbereich"
 msgstr "Settore di attività"
 
-#: .\juntagrico\entity\jobs.py:51 .\juntagrico\templates\areas.html:43
-#: .\juntagrico\templates\members.html:31
-#: .\juntagrico\templates\members.html:56
+#: .\juntagrico\entity\jobs.py:51 .\juntagrico\templates\areas.html:44
+#: .\juntagrico\templates\createsubscription\summary.html:92
+#: .\juntagrico\templates\members.html:32
+#: .\juntagrico\templates\members.html:57
 #: .\juntagrico\templates\menu\admin_menu.html:217
 #: .\juntagrico\templates\menu\user_menu.html:47
 msgid "Tätigkeitsbereiche"
@@ -696,111 +775,111 @@ msgstr "Nome visualizzato"
 msgid "Dauer in Stunden"
 msgstr "Durata in ore"
 
-#: .\juntagrico\entity\jobs.py:141 .\juntagrico\entity\jobs.py:264
+#: .\juntagrico\entity\jobs.py:151 .\juntagrico\entity\jobs.py:278
 msgid "Jobart"
 msgstr "Tipo di lavoro"
 
-#: .\juntagrico\entity\jobs.py:142
+#: .\juntagrico\entity\jobs.py:152
 msgid "Jobarten"
 msgstr "Tipi di lavoro"
 
-#: .\juntagrico\entity\jobs.py:146
+#: .\juntagrico\entity\jobs.py:157
 #, fuzzy
 #| msgid "Einsätze"
 msgid "Plätze"
 msgstr "Missioni"
 
-#: .\juntagrico\entity\jobs.py:147
+#: .\juntagrico\entity\jobs.py:158
 #, fuzzy
 #| msgid "Unendlich Plaetze"
 msgid "Unendlich Plätze"
 msgstr "Luoghi infiniti"
 
-#: .\juntagrico\entity\jobs.py:148 .\juntagrico\templates\job.html:20
+#: .\juntagrico\entity\jobs.py:159 .\juntagrico\templates\job.html:23
 msgid "Zeitpunkt"
 msgstr "Data"
 
-#: .\juntagrico\entity\jobs.py:150
+#: .\juntagrico\entity\jobs.py:161
 #, fuzzy, python-brace-format
 #| msgid "{0}) vielfaches"
 msgid "{0} vielfaches"
 msgstr "{0}) multiplo"
 
-#: .\juntagrico\entity\jobs.py:153
+#: .\juntagrico\entity\jobs.py:164
 msgid "Reminder verschickt"
 msgstr "Promemoria inviato"
 
-#: .\juntagrico\entity\jobs.py:154
+#: .\juntagrico\entity\jobs.py:165
 msgid "abgesagt"
 msgstr "cancellato"
 
-#: .\juntagrico\entity\jobs.py:161
+#: .\juntagrico\entity\jobs.py:174
 #, python-brace-format
 msgid "Job {0}"
 msgstr "Lavoro {0}"
 
-#: .\juntagrico\entity\jobs.py:171
-#: .\juntagrico\templates\snippets\snippet_jobs.html:26
+#: .\juntagrico\entity\jobs.py:184
+#: .\juntagrico\templates\snippets\snippet_jobs.html:35
 #, fuzzy
 #| msgid "Meine Einsätze"
 msgid "Freie Plätze"
 msgstr "Le mie scommesse"
 
-#: .\juntagrico\entity\jobs.py:258
+#: .\juntagrico\entity\jobs.py:272
 msgid "AbstractJob"
 msgstr "AbstractJob"
 
-#: .\juntagrico\entity\jobs.py:259
+#: .\juntagrico\entity\jobs.py:273
 msgid "AbstractJobs"
 msgstr "AbstractJobs"
 
-#: .\juntagrico\entity\jobs.py:260
+#: .\juntagrico\entity\jobs.py:274
 msgid "kann vergangene Jobs editieren"
 msgstr "può modificare i lavori passati"
 
-#: .\juntagrico\entity\jobs.py:265
+#: .\juntagrico\entity\jobs.py:279
 msgid "Zusätzliche Beschreibung"
 msgstr "Descrizione supplementare"
 
-#: .\juntagrico\entity\jobs.py:267
+#: .\juntagrico\entity\jobs.py:281
 #, fuzzy
 #| msgid "Dauer in Stunden"
 msgid "Dauer in Stunden (Überschreibend)"
 msgstr "Durata in ore"
 
-#: .\juntagrico\entity\jobs.py:268
+#: .\juntagrico\entity\jobs.py:282
 msgid ""
 "Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen."
 msgstr ""
 
-#: .\juntagrico\entity\jobs.py:276
+#: .\juntagrico\entity\jobs.py:299
 #: .\juntagrico\templates\mails\member\job_canceled.txt:13
 #: .\juntagrico\templates\mails\member\job_reminder.txt:14
 #: .\juntagrico\templates\mails\member\job_signup.txt:14
 #: .\juntagrico\templates\mails\member\job_time_changed.txt:14
-#: .\juntagrico\templates\snippets\snippet_jobs.html:20
+#: .\juntagrico\templates\snippets\snippet_jobs.html:14
 msgid "Job"
 msgstr "Lavoro"
 
-#: .\juntagrico\entity\jobs.py:277
+#: .\juntagrico\entity\jobs.py:300
 msgid "Jobs"
 msgstr "Offerte di lavoro"
 
-#: .\juntagrico\entity\jobs.py:297
+#: .\juntagrico\entity\jobs.py:329
 msgid "EinzelJob"
 msgstr "Lavoro singolo"
 
-#: .\juntagrico\entity\jobs.py:298
+#: .\juntagrico\entity\jobs.py:330
 msgid "EinzelJobs"
 msgstr "Lavori individuali"
 
-#: .\juntagrico\entity\jobs.py:308
+#: .\juntagrico\entity\jobs.py:340
 #, fuzzy
 #| msgid "JobExtras"
 msgid "Job Extras"
 msgstr "JobExtras"
 
-#: .\juntagrico\entity\jobs.py:309 .\juntagrico\entity\share.py:26
+#: .\juntagrico\entity\jobs.py:341 .\juntagrico\entity\share.py:26
 #: .\juntagrico\templates\exports\share_certificate.html:111
 #: .\juntagrico\templates\js\i18n.js:64
 msgid "Wert"
@@ -817,6 +896,33 @@ msgstr "Messaggio"
 #: .\juntagrico\entity\listmessage.py:20
 msgid "Depot Listen Nachrichten"
 msgstr "Liste di deposito Notizie"
+
+#: .\juntagrico\entity\location.py:13
+msgid "Breitengrad"
+msgstr ""
+
+#: .\juntagrico\entity\location.py:15
+msgid "Längengrad"
+msgstr ""
+
+#: .\juntagrico\entity\location.py:17
+#, fuzzy
+#| msgid "Strasse/Nr."
+msgid "Strasse & Nr."
+msgstr "Via/no."
+
+#: .\juntagrico\entity\location.py:19 .\juntagrico\entity\member.py:42
+msgid "PLZ"
+msgstr "POSTCODE"
+
+#: .\juntagrico\entity\location.py:25
+msgid "Ort steht bei Einsatz und {} zur Auswahl"
+msgstr ""
+
+#: .\juntagrico\entity\location.py:86
+#: .\juntagrico\templates\admin\replace_location_intermediate.html:15
+msgid "Orte"
+msgstr ""
 
 #: .\juntagrico\entity\mailing.py:12
 msgid "Template"
@@ -846,6 +952,10 @@ msgstr "Nome"
 msgid "Nachname"
 msgstr "Cognome"
 
+#: .\juntagrico\entity\member.py:41
+msgid "Strasse"
+msgstr "Via"
+
 #: .\juntagrico\entity\member.py:44
 msgid "Geburtsdatum"
 msgstr "Data di nascita"
@@ -854,8 +964,8 @@ msgstr "Data di nascita"
 msgid "Telefonnr"
 msgstr "Numero di telefono"
 
-#: .\juntagrico\entity\member.py:47 .\juntagrico\templates\members.html:43
-#: .\juntagrico\templates\members.html:68 .\juntagrico\views_admin.py:279
+#: .\juntagrico\entity\member.py:47 .\juntagrico\templates\members.html:44
+#: .\juntagrico\templates\members.html:69 .\juntagrico\views_admin.py:279
 msgid "Mobile"
 msgstr "Mobile"
 
@@ -893,30 +1003,36 @@ msgstr "Note"
 msgid "Notizen für Administration. Nicht sichtbar für {}"
 msgstr ""
 
-#: .\juntagrico\entity\member.py:199 .\juntagrico\entity\subs.py:259
+#: .\juntagrico\entity\member.py:63
+#, fuzzy
+#| msgid "Mitglieder"
+msgid "Mitglieder-Nummer"
+msgstr "Membri"
+
+#: .\juntagrico\entity\member.py:220 .\juntagrico\entity\subs.py:259
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
 msgstr "L'utente può filtrare {0}."
 
-#: .\juntagrico\entity\member.py:205
+#: .\juntagrico\entity\member.py:226
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Beitrittsdatum"
 msgstr "Data di nascita"
 
-#: .\juntagrico\entity\member.py:206
+#: .\juntagrico\entity\member.py:227
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Austrittsdatum"
 msgstr "Data di nascita"
 
-#: .\juntagrico\entity\member.py:213
+#: .\juntagrico\entity\member.py:234
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaft"
 msgstr "annullare l'iscrizione"
 
-#: .\juntagrico\entity\member.py:214
+#: .\juntagrico\entity\member.py:235
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaften"
@@ -1029,7 +1145,7 @@ msgstr ""
 
 #: .\juntagrico\entity\subs.py:37
 #: .\juntagrico\templates\createsubscription\select_start_date.html:30
-#: .\juntagrico\templates\createsubscription\summary.html:56
+#: .\juntagrico\templates\createsubscription\summary.html:66
 msgid "Gewünschtes Startdatum"
 msgstr "Data di inizio desiderata"
 
@@ -1049,74 +1165,83 @@ msgstr "Sub ({0}) {0} {0}"
 msgid "Benutzer kann deaktivierte {0} ändern"
 msgstr "L'utente può filtrare {0}."
 
-#: .\juntagrico\entity\subs.py:267 .\juntagrico\entity\subtypes.py:96
+#: .\juntagrico\entity\subs.py:267 .\juntagrico\entity\subtypes.py:105
 #, python-brace-format
 msgid "{0}-Typ"
 msgstr "{0} tipo"
 
-#: .\juntagrico\entity\subtypes.py:16
+#: .\juntagrico\entity\subtypes.py:17
 msgid "Ist Zusatzabo Produkt"
 msgstr ""
 
-#: .\juntagrico\entity\subtypes.py:26 .\juntagrico\entity\subtypes.py:27
+#: .\juntagrico\entity\subtypes.py:27 .\juntagrico\entity\subtypes.py:28
 #, python-brace-format
 msgid "{0}-Produkt"
 msgstr "{0}-Prodotto"
 
-#: .\juntagrico\entity\subtypes.py:36 .\juntagrico\entity\subtypes.py:61
+#: .\juntagrico\entity\subtypes.py:37 .\juntagrico\entity\subtypes.py:62
 msgid "Langer Name"
 msgstr "Nome lungo"
 
-#: .\juntagrico\entity\subtypes.py:37
+#: .\juntagrico\entity\subtypes.py:38
 #: .\juntagrico\templates\exports\amount_overview.html:28
 msgid "Einheiten"
 msgstr "Unità"
 
-#: .\juntagrico\entity\subtypes.py:44 .\juntagrico\entity\subtypes.py:90
+#: .\juntagrico\entity\subtypes.py:45 .\juntagrico\entity\subtypes.py:99
 msgid "Produkt"
 msgstr "Prodotto"
 
-#: .\juntagrico\entity\subtypes.py:51
+#: .\juntagrico\entity\subtypes.py:52
 #, python-brace-format
 msgid "{0}-Grössen"
 msgstr "{0}- Dimensioni"
 
-#: .\juntagrico\entity\subtypes.py:63 .\juntagrico\entity\subtypes.py:90
-#: .\juntagrico\templates\size_change.html:25
+#: .\juntagrico\entity\subtypes.py:64 .\juntagrico\entity\subtypes.py:99
+#: .\juntagrico\templates\size_change.html:26
 msgid "Grösse"
 msgstr "Dimensione"
 
-#: .\juntagrico\entity\subtypes.py:65
+#: .\juntagrico\entity\subtypes.py:66
 msgid "Anz benötigter Anteilsscheine"
 msgstr "Numero di certificati azionari richiesti"
 
-#: .\juntagrico\entity\subtypes.py:67
+#: .\juntagrico\entity\subtypes.py:68
 msgid "Anz benötigter Arbeitseinsätze"
 msgstr "Numero di incarichi di lavoro richiesti"
 
-#: .\juntagrico\entity\subtypes.py:69
+#: .\juntagrico\entity\subtypes.py:70
 msgid "Anz benötigter Kern Arbeitseinsätze"
 msgstr "Numero di incarichi di lavoro richiesti"
 
-#: .\juntagrico\entity\subtypes.py:72
+#: .\juntagrico\entity\subtypes.py:73
 #, fuzzy
 #| msgid "ProbeAbo"
 msgid "Probe-Abo"
 msgstr "Abbonamento di prova"
 
-#: .\juntagrico\entity\subtypes.py:73
+#: .\juntagrico\entity\subtypes.py:74
 #, fuzzy
 #| msgid "ProbeAbo Dauer in Tagen"
 msgid "Probe-Abo Dauer in Tagen"
 msgstr "Abbonamento di prova Durata in giorni"
 
-#: .\juntagrico\entity\subtypes.py:97
+#: .\juntagrico\entity\subtypes.py:85
+msgid "{} Tage. Keine automatische Verlängerung."
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:89
+#, python-brace-format
+msgid "Bis {day}.{month}. Automatische Verlängerung."
+msgstr ""
+
+#: .\juntagrico\entity\subtypes.py:106
 #, python-brace-format
 msgid "{0}-Typen"
 msgstr "{0}- Tipi"
 
 #: .\juntagrico\forms.py:30
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:26
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:27
 #: .\juntagrico\templates\mails\member\member_welcome.txt:15
 #: .\juntagrico\templates\password.html:21
 #: .\juntagrico\templates\registration\login.html:19
@@ -1131,18 +1256,9 @@ msgstr "Password (ripetizione)"
 msgid "Passwörter stimmen nicht überein"
 msgstr "Le password non corrispondono"
 
-#: .\juntagrico\forms.py:48 .\juntagrico\forms.py:113
-msgid "Telefonnummer"
-msgstr "Numero di telefono"
-
-#: .\juntagrico\forms.py:49 .\juntagrico\forms.py:114
-#: .\juntagrico\templates\registration\password_reset_form_cust.html:17
-msgid "E-Mail-Adresse"
-msgstr "Indirizzo e-mail"
-
 #: .\juntagrico\forms.py:50 .\juntagrico\forms.py:115
-#: .\juntagrico\templates\createsubscription\summary.html:32
-#: .\juntagrico\templates\createsubscription\summary.html:69
+#: .\juntagrico\templates\createsubscription\summary.html:33
+#: .\juntagrico\templates\createsubscription\summary.html:79
 msgid "Geburtstag"
 msgstr "Compleanno"
 
@@ -1182,47 +1298,61 @@ msgstr "Questo indirizzo e-mail esiste già nel sistema."
 msgid "Hier geht's zum Login."
 msgstr "Clicca qui per il login."
 
-#: .\juntagrico\forms.py:155 .\juntagrico\templates\registration\login.html:37
+#: .\juntagrico\forms.py:150 .\juntagrico\templates\registration\login.html:37
 #: .\juntagrico\templates\registration\password_reset_complete_cust.html:9
 msgid "Anmelden"
 msgstr "Login"
 
-#: .\juntagrico\forms.py:162
+#: .\juntagrico\forms.py:167
+#, fuzzy
+#| msgid ""
+#| "Ich habe {}{}{} gelesen und erkläre meinen Willen, \"{}\" "
+#| "beizutreten.            Hiermit beantrage ich meine Aufnahme."
 msgid ""
-"Ich habe {}{}{} gelesen und erkläre meinen Willen, \"{}\" "
-"beizutreten.            Hiermit beantrage ich meine Aufnahme."
+"Ich habe {} gelesen und erkläre meinen Willen, \"{}\" beizutreten. Hiermit "
+"beantrage ich meine Aufnahme."
 msgstr ""
 "Ho letto {}{}{}{}{}{} e dichiaro la mia volontà di aderire \"{}            "
 "Con la presente richiedo l'ammissione."
 
-#: .\juntagrico\forms.py:164
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:35
-msgid "die Statuten"
-msgstr "gli statuti"
-
-#: .\juntagrico\forms.py:165 .\juntagrico\forms.py:168
-#: .\juntagrico\templates\js\i18n.js:60
+#: .\juntagrico\forms.py:169 .\juntagrico\templates\js\i18n.js:60
 msgid "und"
 msgstr "e"
 
-#: .\juntagrico\forms.py:166
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:36
-msgid "das Betriebsreglement"
-msgstr "il regolamento di funzionamento"
+#: .\juntagrico\forms.py:173
+#, fuzzy
+#| msgid ""
+#| "Ich habe {}{}{} gelesen und erkläre meinen Willen, \"{}\" "
+#| "beizutreten.            Hiermit beantrage ich meine Aufnahme."
+msgid ""
+"Ich erkläre meinen Willen, \"{}\" beizutreten. Hiermit beantrage ich meine "
+"Aufnahme."
+msgstr ""
+"Ho letto {}{}{}{}{}{} e dichiaro la mia volontà di aderire \"{}            "
+"Con la presente richiedo l'ammissione."
 
-#: .\juntagrico\forms.py:169
-msgid "die DSGVO Infos"
-msgstr "il DSGVO info"
+#: .\juntagrico\forms.py:187
+msgid "Verbindlich bestellen"
+msgstr "Ordine vincolante"
 
-#: .\juntagrico\forms.py:182 .\juntagrico\forms.py:274
+#: .\juntagrico\forms.py:188 .\juntagrico\forms.py:251
+#: .\juntagrico\forms.py:264 .\juntagrico\forms.py:293
+#: .\juntagrico\forms.py:370
+#: .\juntagrico\templates\createsubscription\select_depot.html:51
+#: .\juntagrico\templates\createsubscription\select_shares.html:104
+#: .\juntagrico\templates\createsubscription\select_start_date.html:53
+msgid "Abbrechen"
+msgstr "Annulla"
+
+#: .\juntagrico\forms.py:200 .\juntagrico\forms.py:292
 msgid "Ändern"
 msgstr "Cambia"
 
-#: .\juntagrico\forms.py:195
+#: .\juntagrico\forms.py:213
 msgid "Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet."
 msgstr "Questo indirizzo e-mail è già utilizzato da voi o dal vostro {}."
 
-#: .\juntagrico\forms.py:200
+#: .\juntagrico\forms.py:218
 msgid ""
 "Die Person mit dieser E-Mail-Adresse ist bereits aktiv                 {}-"
 "BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen "
@@ -1231,71 +1361,62 @@ msgstr ""
 "La persona con questo indirizzo e-mail è già attiva {}-BezierIn. Si prega di "
 "contattare {} se si desidera aggiungere {} esistente come {}."
 
-#: .\juntagrico\forms.py:218
+#: .\juntagrico\forms.py:236
 msgid "{} hinzufügen"
 msgstr "Aggiungi"
 
-#: .\juntagrico\forms.py:233 .\juntagrico\forms.py:246
-#: .\juntagrico\forms.py:275 .\juntagrico\forms.py:352
-#: .\juntagrico\templates\createsubscription\select_depot.html:54
-#: .\juntagrico\templates\createsubscription\select_shares.html:103
-#: .\juntagrico\templates\createsubscription\select_start_date.html:53
-#: .\juntagrico\templates\createsubscription\summary.html:100
-msgid "Abbrechen"
-msgstr "Annulla"
-
-#: .\juntagrico\forms.py:251
+#: .\juntagrico\forms.py:269
 msgid "Keine weiteren {} hinzufügen"
 msgstr "Non aggiungere altro {}"
 
-#: .\juntagrico\forms.py:256
+#: .\juntagrico\forms.py:274
 msgid "Überspringen"
 msgstr "Salta"
 
-#: .\juntagrico\forms.py:344
+#: .\juntagrico\forms.py:362
 #, fuzzy
 #| msgid "Kein/e/n {0}"
 msgid "Kein {}"
 msgstr "Nessuno {0}"
 
-#: .\juntagrico\forms.py:351
-#: .\juntagrico\templates\createsubscription\select_depot.html:51
-#: .\juntagrico\templates\createsubscription\select_shares.html:100
+#: .\juntagrico\forms.py:369
+#: .\juntagrico\templates\createsubscription\select_depot.html:48
+#: .\juntagrico\templates\createsubscription\select_shares.html:101
 #: .\juntagrico\templates\createsubscription\select_start_date.html:50
 msgid "Weiter"
 msgstr "Continua"
 
-#: .\juntagrico\forms.py:369
+#: .\juntagrico\forms.py:387
 #, fuzzy
 #| msgid "Verbindlich bestellen"
 msgid "{}-Bestandteile bestellen"
 msgstr "Ordine vincolante"
 
-#: .\juntagrico\forms.py:384
+#: .\juntagrico\forms.py:402
 #, fuzzy
 #| msgid "Es sind zu wenig %(v_share_pl)s vorhanden für diese Grösse!"
 msgid "Es sind zu wenig {} vorhanden für diese Bestandteile!{}"
 msgstr "Ci sono troppo pochi %(v_share_pl)s disponibili per questa dimensione!"
 
-#: .\juntagrico\forms.py:387
+#: .\juntagrico\forms.py:405
 #, fuzzy
 #| msgid "Bestelle hier mehr Anteilscheine."
 msgid "&rarr; Bestelle hier mehr {}"
 msgstr "Ordina qui altri certificati azionari."
 
-#: .\juntagrico\forms.py:392
+#: .\juntagrico\forms.py:410
 msgid "Wähle mindestens 1 {} aus.{}"
 msgstr ""
 
-#: .\juntagrico\forms.py:396
+#: .\juntagrico\forms.py:414
 msgid "&rarr; Oder {} komplett künden"
 msgstr ""
 
-#: .\juntagrico\forms.py:403
+#: .\juntagrico\forms.py:421
 msgid "{}-Spitzname"
 msgstr ""
 
-#: .\juntagrico\forms.py:408
+#: .\juntagrico\forms.py:426
 msgid "Speichern"
 msgstr ""
 
@@ -1442,7 +1563,7 @@ msgstr "Di nuova creazione {}"
 
 #: .\juntagrico\mailer\adminnotification.py:43
 #: .\juntagrico\mailer\adminnotification.py:79
-#: .\juntagrico\mailer\adminnotification.py:97
+#: .\juntagrico\mailer\adminnotification.py:99
 msgid "{} gekündigt"
 msgstr "Annullato"
 
@@ -1458,20 +1579,20 @@ msgstr "Ordine vincolante"
 msgid "Bestandteil gekündigt"
 msgstr "Modifica dei dati personali"
 
-#: .\juntagrico\mailer\adminnotification.py:88
+#: .\juntagrico\mailer\adminnotification.py:90
 msgid "Neue/r/s {}"
 msgstr "Nuovo {}"
 
-#: .\juntagrico\mailer\adminnotification.py:106
+#: .\juntagrico\mailer\adminnotification.py:108
 msgid "Neue {}-Liste generiert"
 msgstr ""
 
-#: .\juntagrico\mailer\formemails.py:13
+#: .\juntagrico\mailer\formemails.py:14
 #, python-brace-format
 msgid "Anfrage per {0}:"
 msgstr "Richiesta di {0}:"
 
-#: .\juntagrico\mailer\formemails.py:21
+#: .\juntagrico\mailer\formemails.py:22
 #, python-brace-format
 msgid "Nachricht per {0}:"
 msgstr "Messaggio di {0}:"
@@ -1502,15 +1623,15 @@ msgstr "Uscire da {}"
 msgid "Für Einsatz angemeldet"
 msgstr "Registrato per l'uso"
 
-#: .\juntagrico\mailer\membernotification.py:70
+#: .\juntagrico\mailer\membernotification.py:69
 msgid "Einsatz-Erinnerung"
 msgstr "Promemoria per il dispiegamento"
 
-#: .\juntagrico\mailer\membernotification.py:78
+#: .\juntagrico\mailer\membernotification.py:77
 msgid "Einsatz-Zeit geändert"
 msgstr "Tempo di funzionamento modificato"
 
-#: .\juntagrico\mailer\membernotification.py:86
+#: .\juntagrico\mailer\membernotification.py:85
 msgid "Einsatz abgesagt"
 msgstr "Missione annullata"
 
@@ -1571,11 +1692,13 @@ msgid "Optionen"
 msgstr ""
 
 #: .\juntagrico\templates\admin\mass_edit_share_dates_intermediate.html:16
-#: .\juntagrico\templates\createsubscription\summary.html:8
+#: .\juntagrico\templates\admin\replace_location_intermediate.html:13
+#: .\juntagrico\templates\createsubscription\summary.html:9
 msgid "Zusammenfassung"
 msgstr "Sommario"
 
 #: .\juntagrico\templates\admin\mass_edit_share_dates_intermediate.html:21
+#: .\juntagrico\templates\admin\replace_location_intermediate.html:18
 #, fuzzy
 #| msgid "Lieferobjekte"
 msgid "Objekte"
@@ -1587,27 +1710,38 @@ msgstr "Oggetti di consegna"
 msgid "Anwenden"
 msgstr "inviare"
 
-#: .\juntagrico\templates\area.html:21
-msgid "Verantwortlicher"
-msgstr "Responsabile"
+#: .\juntagrico\templates\admin\replace_location_intermediate.html:6
+msgid ""
+"Löscht und ersetzt diese Orte an allen verwendeten Stellen.\n"
+"    Dies kann nicht rückgängig gemacht werden."
+msgstr ""
 
-#: .\juntagrico\templates\area.html:42
+#: .\juntagrico\templates\admin\replace_location_intermediate.html:27
+msgid "Unwiderruflich Ersetzen"
+msgstr ""
+
+#: .\juntagrico\templates\area.html:25 .\juntagrico\templates\areas.html:48
+#: .\juntagrico\templates\depot.html:33
+msgid "Kontaktperson"
+msgstr "Persona di contatto"
+
+#: .\juntagrico\templates\area.html:38
 msgid "Mitmachen"
 msgstr "Iscriviti a"
 
-#: .\juntagrico\templates\area.html:50
+#: .\juntagrico\templates\area.html:46
 msgid "Kommende Termine"
 msgstr "Prossime date"
 
-#: .\juntagrico\templates\area.html:58
+#: .\juntagrico\templates\area.html:54
 msgid "Keine Einsätze ausgeschrieben"
 msgstr "Nessuna operazione pubblicizzata"
 
-#: .\juntagrico\templates\areas.html:6
+#: .\juntagrico\templates\areas.html:7
 msgid "Mitarbeit"
 msgstr "Cooperazione"
 
-#: .\juntagrico\templates\areas.html:13
+#: .\juntagrico\templates\areas.html:14
 #, python-format
 msgid ""
 "Wer bei %(v_d_enriched_organisation)s mitmacht verpflichtet sich, im Rahmen "
@@ -1618,7 +1752,7 @@ msgstr ""
 "al successo dell'azienda nell'ambito delle proprie motivazioni, priorità e "
 "possibilità."
 
-#: .\juntagrico\templates\areas.html:18
+#: .\juntagrico\templates\areas.html:19
 msgid ""
 "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig "
 "Mitarbeiten und Verantwortung übernehmen möchtest."
@@ -1626,35 +1760,31 @@ msgstr ""
 "Iscriviti ai campi di attività in cui vorresti lavorare e assumerti "
 "regolarmente delle responsabilità."
 
-#: .\juntagrico\templates\areas.html:22
+#: .\juntagrico\templates\areas.html:23
 msgid "Infos zu den Tätigkeitsbereichen erhältst du im"
 msgstr "Potete trovare informazioni sui settori di attività in"
 
-#: .\juntagrico\templates\areas.html:24
+#: .\juntagrico\templates\areas.html:25
 msgid "Infoblatt"
 msgstr "Scheda informativa"
 
-#: .\juntagrico\templates\areas.html:38
+#: .\juntagrico\templates\areas.html:39
 #, fuzzy
 #| msgid "Kernbereiche "
 msgid "Kernbereiche"
 msgstr "Aree principali"
 
-#: .\juntagrico\templates\areas.html:41
+#: .\juntagrico\templates\areas.html:42
 msgid "Weitere Bereiche"
 msgstr "Altre aree"
 
-#: .\juntagrico\templates\areas.html:47
-msgid "Koordiniert von"
-msgstr "Coordinato da"
-
-#: .\juntagrico\templates\base.html:72
+#: .\juntagrico\templates\base.html:80
 #, python-format
 msgid "Du imitierst derzeit den Benutzer “%(fn)s %(ln)s”."
 msgstr "Attualmente state imitando l'utente \"%(fn)s %(ln)s\"."
 
-#: .\juntagrico\templates\base.html:76
-#: .\juntagrico\templates\management_lists\man_list_base.html:36
+#: .\juntagrico\templates\base.html:84
+#: .\juntagrico\templates\management_lists\man_list_base.html:37
 msgid "Beende dies hier"
 msgstr "Finisci qui"
 
@@ -1700,15 +1830,15 @@ msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
 #: .\juntagrico\templates\cancelmembership.html:62
 #: .\juntagrico\templates\cancelsubscription.html:27
 #: .\juntagrico\templates\contact.html:45
-#: .\juntagrico\templates\contact_member.html:48
-#: .\juntagrico\templates\mail_sender.html:133
+#: .\juntagrico\templates\contact_member.html:49
+#: .\juntagrico\templates\mail_sender.html:134
 msgid "Mitteilung"
 msgstr "Comunicazione"
 
 #: .\juntagrico\templates\cancelmembership.html:65
 #: .\juntagrico\templates\cancelsubscription.html:29
 #: .\juntagrico\templates\contact.html:48
-#: .\juntagrico\templates\contact_member.html:51
+#: .\juntagrico\templates\contact_member.html:52
 #: .\juntagrico\templates\leavesubscription.html:30
 msgid "Hier Nachricht eingeben"
 msgstr "Inserire qui il messaggio"
@@ -1781,52 +1911,52 @@ msgid "Bitte vergiss nicht, deine MitabonentInnen zu informieren."
 msgstr ""
 
 #: .\juntagrico\templates\contact.html:13
-#: .\juntagrico\templates\contact_member.html:12
+#: .\juntagrico\templates\contact_member.html:13
 msgid "Nachricht gesandt"
 msgstr "messaggio inviato"
 
 #: .\juntagrico\templates\contact.html:21
-#: .\juntagrico\templates\contact_member.html:24
-#: .\juntagrico\templates\mail_sender.html:20
+#: .\juntagrico\templates\contact_member.html:25
+#: .\juntagrico\templates\mail_sender.html:21
 msgid "Absender"
 msgstr "Mittente"
 
 #: .\juntagrico\templates\contact.html:29
-#: .\juntagrico\templates\contact_member.html:32
-#: .\juntagrico\templates\mail_sender.html:45
+#: .\juntagrico\templates\contact_member.html:33
+#: .\juntagrico\templates\mail_sender.html:46
 msgid "Empfänger"
 msgstr "Destinatario"
 
 #: .\juntagrico\templates\contact.html:37
 #: .\juntagrico\templates\contact.html:40
-#: .\juntagrico\templates\contact_member.html:40
-#: .\juntagrico\templates\contact_member.html:43
-#: .\juntagrico\templates\mail_sender.html:125
+#: .\juntagrico\templates\contact_member.html:41
+#: .\juntagrico\templates\contact_member.html:44
+#: .\juntagrico\templates\mail_sender.html:126
 msgid "Betreff"
 msgstr "Oggetto"
 
 #: .\juntagrico\templates\contact.html:56
-#: .\juntagrico\templates\contact_member.html:59
+#: .\juntagrico\templates\contact_member.html:60
 msgid "Kopie an mich"
 msgstr "copia a me"
 
 #: .\juntagrico\templates\contact.html:64
-#: .\juntagrico\templates\contact_member.html:86
-#: .\juntagrico\templates\mail_sender.html:189
+#: .\juntagrico\templates\contact_member.html:87
+#: .\juntagrico\templates\mail_sender.html:190
 msgid "Nachricht verschicken"
 msgstr "invia messaggio"
 
-#: .\juntagrico\templates\contact_member.html:14
+#: .\juntagrico\templates\contact_member.html:15
 msgid "zurück"
 msgstr "indietro"
 
-#: .\juntagrico\templates\contact_member.html:67
-#: .\juntagrico\templates\mail_sender.html:170
+#: .\juntagrico\templates\contact_member.html:68
+#: .\juntagrico\templates\mail_sender.html:171
 msgid "Anhänge"
 msgstr "Allegati"
 
-#: .\juntagrico\templates\contact_member.html:75
-#: .\juntagrico\templates\mail_sender.html:178
+#: .\juntagrico\templates\contact_member.html:76
+#: .\juntagrico\templates\mail_sender.html:179
 msgid "Datei auswählen"
 msgstr "Seleziona il file"
 
@@ -1834,7 +1964,7 @@ msgstr "Seleziona il file"
 msgid "Cookies"
 msgstr "Biscotti"
 
-#: .\juntagrico\templates\cookie.html:14
+#: .\juntagrico\templates\cookie.html:13
 #, python-format
 msgid ""
 "\n"
@@ -1930,26 +2060,25 @@ msgstr ""
 "aggiungete più %(v_co_member_pl)s\"."
 
 #: .\juntagrico\templates\createsubscription\add_member_cs.html:48
-#: .\juntagrico\util\jobs.py:14
 msgid "Fertig"
 msgstr "Finito"
 
-#: .\juntagrico\templates\createsubscription\select_depot.html:11
+#: .\juntagrico\templates\createsubscription\select_depot.html:12
 #, python-format
 msgid "%(v_depot)s auswählen"
 msgstr "Selezionare %(v_depot)s"
 
-#: .\juntagrico\templates\createsubscription\select_depot.html:37
+#: .\juntagrico\templates\createsubscription\select_depot.html:38
 #, python-format
 msgid "Wähle 1 %(v_depot)s als %(v_subscription)s-Abholort aus."
 msgstr "Selezionare 1 %(v_depot)s come %(v_subscription)s di prelievo."
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:8
+#: .\juntagrico\templates\createsubscription\select_shares.html:9
 #, python-format
 msgid "%(v_share_pl)s erwerben"
 msgstr "Acquisto %(v_share_pl)s"
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:24
+#: .\juntagrico\templates\createsubscription\select_shares.html:25
 #, fuzzy, python-format
 #| msgid ""
 #| "Du brauchst entweder mehr %(v_share_pl)s für die von dir gewählte "
@@ -1963,11 +2092,11 @@ msgstr ""
 "Avete bisogno di più %(v_share_pl)s per la dimensione %(v_subscription)s da "
 "voi scelta oppure una delle vostre voci non è un numero postitivo."
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:33
+#: .\juntagrico\templates\createsubscription\select_shares.html:34
 msgid "Infos"
 msgstr "Info"
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:34
+#: .\juntagrico\templates\createsubscription\select_shares.html:35
 #, fuzzy, python-format
 #| msgid ""
 #| "Um %(v_member_type)s bei %(v_d_enriched_organisation)s zu werden, musst "
@@ -1985,7 +2114,7 @@ msgstr ""
 "%(c_share_price)s). Quando lasciate %(v_d_enriched_organisation)s riceverete "
 "il rimborso di %(v_share_pl)s."
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:41
+#: .\juntagrico\templates\createsubscription\select_shares.html:42
 #, fuzzy, python-format
 #| msgid ""
 #| "Für die von dir ausgewählte %(v_subscription)s-Grösse(n) brauchst du "
@@ -1998,7 +2127,7 @@ msgstr ""
 "%(st)s %(v_share_pl)s %(v_share_pl)s. Naturalmente si può comprare ancora di "
 "più."
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:47
+#: .\juntagrico\templates\createsubscription\select_shares.html:48
 #, python-format
 msgid ""
 "Als %(v_member_type)s ohne %(v_subscription)s benötigst du 1 %(v_share)s. Du "
@@ -2007,32 +2136,35 @@ msgstr ""
 "Come %(v_member_type)s senza %(v_subscription)s è necessario 1 %(v_share)s. "
 "Naturalmente si può comprare ancora di più."
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:54
-#, python-format
+#: .\juntagrico\templates\createsubscription\select_shares.html:55
+#, fuzzy, python-format
+#| msgid ""
+#| "Teile die restlichen benötigten %(shares.remaining_required)s "
+#| "%(v_share_pl)s unter dir und deinen %(v_co_member_pl)s auf."
 msgid ""
-"Teile die restlichen benötigten %(shares.remaining_required)s %(v_share_pl)s "
-"unter dir und deinen %(v_co_member_pl)s auf."
+"Teile die restlichen benötigten %(sr)s %(v_share_pl)s unter dir und deinen "
+"%(v_co_member_pl)s auf."
 msgstr ""
 "Dividete le %(shares.remaining_required)s %(v_share_pl)s rimanenti di cui "
 "avete bisogno tra voi e i vostri %(v_co_member_pl)s."
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:65
+#: .\juntagrico\templates\createsubscription\select_shares.html:66
 #, fuzzy, python-format
 #| msgid "Deine %(v_share_pl)s"
 msgid "Neue %(v_share_pl)s"
 msgstr "Il vostro %(v_share_pl)s"
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:72
+#: .\juntagrico\templates\createsubscription\select_shares.html:73
 #, python-format
 msgid "Du brauchst als HauptbezieherIn mindestens 1 %(v_share)s."
 msgstr "È necessario almeno l'1 %(v_share)s come destinatario principale."
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:76
+#: .\juntagrico\templates\createsubscription\select_shares.html:77
 #, python-format
 msgid "Du hast bereits %(msc)s %(v_share_pl)s"
 msgstr "Avete già %(msc)s %(v_share_pl)s"
 
-#: .\juntagrico\templates\createsubscription\select_shares.html:91
+#: .\juntagrico\templates\createsubscription\select_shares.html:92
 #, python-format
 msgid "besitzt bereits %(cac)s %(v_share_pl)s"
 msgstr "possiede già %(cac)s %(v_share_pl)s"
@@ -2069,82 +2201,89 @@ msgstr "Vale solo se l'1 %(v_subscription)s è gratuito alla data desiderata."
 msgid "Das gewählte Startdatum ist nicht gültig"
 msgstr "La data di inizio selezionata non è valida"
 
-#: .\juntagrico\templates\createsubscription\select_subscription.html:9
+#: .\juntagrico\templates\createsubscription\select_subscription.html:10
 #, fuzzy, python-format
 #| msgid "Wähle deine %(v_subscription)s-Grösse"
 msgid "Wähle deine %(v_subscription)s-Bestandteile"
 msgstr "Scegliete la vostra dimensione %(v_subscription)s"
 
-#: .\juntagrico\templates\createsubscription\summary.html:23
+#: .\juntagrico\templates\createsubscription\summary.html:24
 msgid "Personalien"
 msgstr "Dati personali"
 
-#: .\juntagrico\templates\createsubscription\summary.html:30
-#: .\juntagrico\templates\createsubscription\summary.html:67
-#: .\juntagrico\templates\members.html:40
-#: .\juntagrico\templates\members.html:65 .\juntagrico\views_admin.py:278
+#: .\juntagrico\templates\createsubscription\summary.html:31
+#: .\juntagrico\templates\createsubscription\summary.html:77
+#: .\juntagrico\templates\members.html:41
+#: .\juntagrico\templates\members.html:66 .\juntagrico\views_admin.py:278
 msgid "Telefon"
 msgstr "Telefono"
 
-#: .\juntagrico\templates\createsubscription\summary.html:31
-#: .\juntagrico\templates\createsubscription\summary.html:68
+#: .\juntagrico\templates\createsubscription\summary.html:32
+#: .\juntagrico\templates\createsubscription\summary.html:78
 msgid "Mobil"
 msgstr "Mobile"
 
-#: .\juntagrico\templates\createsubscription\summary.html:38
+#: .\juntagrico\templates\createsubscription\summary.html:47
 #, python-format
-msgid "<b>%(amount)s</b>&times; %(tn)s à %(c_currency)s %(tp)s/Jahr"
-msgstr "<b>%(amount)s</b>&volte; %(tn)s à %(c_currency)s %(tp)s/anno"
+msgid ""
+"\n"
+"                 à %(c_currency)s %(tp)s/Jahr.\n"
+"                "
+msgstr ""
 
-#: .\juntagrico\templates\createsubscription\summary.html:44
+#: .\juntagrico\templates\createsubscription\summary.html:55
 #, python-format
 msgid "Keine %(v_subscription_pl)s"
 msgstr "Nessuno %(v_subscription_pl)s"
 
-#: .\juntagrico\templates\createsubscription\summary.html:51
+#: .\juntagrico\templates\createsubscription\summary.html:62
 msgid "Abholung jeweils am"
 msgstr "Riprendete da"
 
-#: .\juntagrico\templates\createsubscription\summary.html:74
+#: .\juntagrico\templates\createsubscription\summary.html:84
 #, python-format
 msgid "Weitere %(v_co_member_pl)s hinzufügen"
 msgstr "Aggiungere ulteriori %(v_co_member_pl)s"
 
-#: .\juntagrico\templates\createsubscription\summary.html:76
+#: .\juntagrico\templates\createsubscription\summary.html:86
 #, python-format
 msgid "%(v_co_member_pl)s hinzufügen"
 msgstr "Aggiungere %(v_co_member_pl)s"
 
-#: .\juntagrico\templates\createsubscription\summary.html:89
+#: .\juntagrico\templates\createsubscription\summary.html:93
+#, fuzzy
+#| msgid "Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen"
+msgid "Du wirst automatisch in folgende Tätigkeitsbereiche eingetragen."
+msgstr "{0} {1} è appena stato inserito nel campo di attività {2}"
+
+#: .\juntagrico\templates\createsubscription\summary.html:100
+#, fuzzy
+#| msgid "Zu den Kalendern der einzelnen Tätigkeitsbereiche"
+msgid "Du kannst das jederzeit unter dem Menupunkt Tätigkeitsbereiche ändern."
+msgstr "Ai calendari dei singoli campi di attività"
+
+#: .\juntagrico\templates\createsubscription\summary.html:111
 #, python-format
 msgid "Zu je einmalig %(c_currency)s %(c_share_price)s"
 msgstr "In una sola volta ogni %(c_currency)s %(c_share_price)s"
 
-#: .\juntagrico\templates\createsubscription\summary.html:97
-msgid "Verbindlich bestellen"
-msgstr "Ordine vincolante"
-
-#: .\juntagrico\templates\deliveries.html:6
+#: .\juntagrico\templates\deliveries.html:7
 msgid "Alle Lieferungen im Überblick"
 msgstr "Tutte le consegne in sintesi"
 
-#: .\juntagrico\templates\depot.html:34
-msgid "Kontaktperson"
-msgstr "Persona di contatto"
-
-#: .\juntagrico\templates\depot_change.html:10
-#: .\juntagrico\templates\depot_change.html:73
+#: .\juntagrico\templates\depot_change.html:11
+#: .\juntagrico\templates\depot_change.html:70
 #: .\juntagrico\templates\snippets\snippet_subscription_change_depot.html:18
 #, python-format
 msgid "%(v_depot)s ändern"
 msgstr "Variazione %(v_depot)s"
 
-#: .\juntagrico\templates\depot_change.html:19
+#: .\juntagrico\templates\depot_change.html:20
 #, python-format
 msgid "Dein/e %(v_depot)s wurde geändert."
 msgstr "Il vostro %(v_depot)s è stato modificato."
 
-#: .\juntagrico\templates\depot_change.html:21
+#: .\juntagrico\templates\depot_change.html:22
 #, python-format
 msgid ""
 "!!!Achtung! Dein/e %(v_depot)s änderst erst bei der nächsten %(v_depot)s-"
@@ -2157,29 +2296,29 @@ msgstr ""
 "mail a %(spe)s con la conferma per il vostro nuovo %(v_depot)s %(sde)s "
 "%(v_depot)s è ancora attivo!"
 
-#: .\juntagrico\templates\depot_change.html:30
+#: .\juntagrico\templates\depot_change.html:31
 #: .\juntagrico\templates\pm_change.html:47
 #, python-format
 msgid "Zurück zur %(v_subscription)s-Übersicht"
 msgstr "Torna alla panoramica %(v_subscription)s"
 
-#: .\juntagrico\templates\depot_change.html:38
+#: .\juntagrico\templates\depot_change.html:39
 #, python-format
 msgid "Alte/s/r %(v_depot)s"
 msgstr "Vecchi/s/r %(v_depot)s"
 
-#: .\juntagrico\templates\depot_change.html:46
+#: .\juntagrico\templates\depot_change.html:47
 #, python-format
 msgid "Neue/s/r %(v_depot)s"
 msgstr "Nuovo/s/r %(v_depot)s"
 
-#: .\juntagrico\templates\depot_change.html:57
+#: .\juntagrico\templates\depot_change.html:58
 #, python-format
 msgid "Wähle 1 %(v_depot)s aus als zukünftiger %(v_subscription)s-Abholort. "
 msgstr ""
 "Selezionare 1 %(v_depot)s come futuro luogo di prelievo %(v_subscription)s"
 
-#: .\juntagrico\templates\depot_change.html:66
+#: .\juntagrico\templates\depot_change.html:63
 #, python-format
 msgid ""
 "Achtung! Dein/e %(v_depot)s änderst erst bei der nächsten %(v_depot)slisten "
@@ -2236,9 +2375,9 @@ msgid "%(v_depot)s-Listen"
 msgstr "%(v_depot)s liste"
 
 #: .\juntagrico\templates\exports\share_certificate.html:96
-#: .\juntagrico\templates\manage_shares.html:14
-#: .\juntagrico\templates\manage_shares.html:27
-#: .\juntagrico\views_subscription.py:457
+#: .\juntagrico\templates\manage_shares.html:15
+#: .\juntagrico\templates\manage_shares.html:28
+#: .\juntagrico\views_subscription.py:453
 #, fuzzy
 #| msgid "Beschreibung"
 msgid "Bescheinigung"
@@ -2254,7 +2393,7 @@ msgid ""
 msgstr ""
 
 #: .\juntagrico\templates\exports\share_certificate.html:109
-#: .\juntagrico\templates\snippets\snippet_jobs.html:17
+#: .\juntagrico\templates\snippets\snippet_jobs.html:11
 msgid "Datum"
 msgstr "Data"
 
@@ -2301,21 +2440,21 @@ msgstr "raccolto"
 msgid "retour"
 msgstr "Restituzione del bagaglio"
 
-#: .\juntagrico\templates\extra_change.html:7
+#: .\juntagrico\templates\extra_change.html:8
 #, fuzzy
 #| msgid "Zusatz-Abos ändern"
 msgid "Zusatzabos ändern"
 msgstr "Modifica abbonamenti aggiuntivi"
 
-#: .\juntagrico\templates\extra_change.html:13
+#: .\juntagrico\templates\extra_change.html:14
 #, fuzzy
 #| msgid "Du hast noch keine Zusatz-Abos"
 msgid "Du hast noch keine Zusatzabos"
 msgstr "Non avete ancora abbonamenti aggiuntivi"
 
-#: .\juntagrico\templates\extra_change.html:15
+#: .\juntagrico\templates\extra_change.html:16
 #: .\juntagrico\templates\mails\admin\depot_list_generated.txt:11
-#: .\juntagrico\templates\manage_shares.html:33
+#: .\juntagrico\templates\manage_shares.html:34
 #: .\juntagrico\templates\menu\admin_menu.html:165
 #: .\juntagrico\templates\menu\admin_menu.html:262
 #: .\juntagrico\templates\widgets\assignements.html:9
@@ -2323,25 +2462,25 @@ msgstr "Non avete ancora abbonamenti aggiuntivi"
 msgid "Übersicht"
 msgstr "Panoramica"
 
-#: .\juntagrico\templates\extra_change.html:42
+#: .\juntagrico\templates\extra_change.html:43
 #, fuzzy
 #| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
 msgid "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?"
 msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
 
-#: .\juntagrico\templates\extra_change.html:43
-#: .\juntagrico\templates\manage_shares.html:70
-#: .\juntagrico\templates\size_change.html:47
+#: .\juntagrico\templates\extra_change.html:44
+#: .\juntagrico\templates\manage_shares.html:71
+#: .\juntagrico\templates\size_change.html:48
 msgid "kündigen"
 msgstr "annullare"
 
-#: .\juntagrico\templates\extra_change.html:55
+#: .\juntagrico\templates\extra_change.html:56
 #, fuzzy
 #| msgid "Extra-Abos bestellen"
 msgid "Zusatzabos bestellen"
 msgstr "Ordina abbonamenti extra"
 
-#: .\juntagrico\templates\extra_change.html:62
+#: .\juntagrico\templates\extra_change.html:63
 #, python-format
 msgid ""
 "Für gekündigte %(v_subscription_pl)s können keine Zusatzabos bestellt werden."
@@ -2367,7 +2506,11 @@ msgstr ""
 "%(v_member_type_pl)s senza %(v_subscription)s pagano una tassa annuale di "
 "%(base_fee)s %(c_currency)s"
 
-#: .\juntagrico\templates\forms\subscription_type_field.html:36
+#: .\juntagrico\templates\forms\subscription_type_field.html:28
+msgid "Laufzeit"
+msgstr ""
+
+#: .\juntagrico\templates\forms\subscription_type_field.html:38
 msgid "Stunden"
 msgstr "orari"
 
@@ -2396,15 +2539,15 @@ msgstr "Aggiornato"
 msgid "Zukunft"
 msgstr "Futuro"
 
-#: .\juntagrico\templates\home.html:6
+#: .\juntagrico\templates\home.html:10
 msgid "Aktuelle Arbeitseinsätze"
 msgstr "Assegnazioni di lavoro attuali"
 
-#: .\juntagrico\templates\home.html:16
+#: .\juntagrico\templates\home.html:20
 msgid "Hier alle Arbeitseinsätze anzeigen"
 msgstr "Mostra tutti gli incarichi di lavoro qui"
 
-#: .\juntagrico\templates\home.html:23
+#: .\juntagrico\templates\home.html:27
 msgid "Zu den Kalendern der einzelnen Tätigkeitsbereiche"
 msgstr "Ai calendari dei singoli campi di attività"
 
@@ -2449,7 +2592,7 @@ msgstr "Se avete domande inviate un'e-mail a"
 msgid "Frage zu unbezahltem Anteilsschein"
 msgstr "Domanda sul certificato azionario non pagato"
 
-#: .\juntagrico\templates\job.html:60
+#: .\juntagrico\templates\job.html:61
 #, python-format
 msgid ""
 "Du erhälst für diesen Job das %(jm)s fachen an %(v_assignment_pl)s "
@@ -2462,67 +2605,79 @@ msgstr ""
 msgid "Du erhältst für diesen Event keine %(v_assignment_pl)s gutgeschrieben."
 msgstr "Non vi sarà accreditato %(v_assignment_pl)s per questo evento."
 
-#: .\juntagrico\templates\job.html:83
-#: .\juntagrico\templates\snippets\snippet_jobs.html:38
+#: .\juntagrico\templates\job.html:82
+#: .\juntagrico\templates\snippets\snippet_jobs.html:47
 msgid "Extras"
 msgstr "Extra"
 
-#: .\juntagrico\templates\job.html:122
+#: .\juntagrico\templates\job.html:103
+#, fuzzy
+#| msgid "wartend"
+msgid "Karte"
+msgstr "in attesa"
+
+#: .\juntagrico\templates\job.html:106
+#, fuzzy
+#| msgid "Beschreibung"
+msgid "Wegbeschreibung"
+msgstr "Descrizione"
+
+#: .\juntagrico\templates\job.html:125
 msgid "Kontaktieren"
 msgstr "Contatto"
 
-#: .\juntagrico\templates\job.html:130
+#: .\juntagrico\templates\job.html:133
 msgid "Allen eine Email senden"
 msgstr "Invia un'e-mail a tutti"
 
-#: .\juntagrico\templates\job.html:139
+#: .\juntagrico\templates\job.html:151
 msgid "Dabei sind"
 msgstr "Questi sono"
 
-#: .\juntagrico\templates\job.html:143
+#: .\juntagrico\templates\job.html:155
 msgid "Noch niemand"
 msgstr "Nessuno ancora"
 
-#: .\juntagrico\templates\job.html:167
+#: .\juntagrico\templates\job.html:178
 msgid "Ich trage mich ein"
 msgstr "Accedo"
 
-#: .\juntagrico\templates\job.html:170
+#: .\juntagrico\templates\job.html:181
 #, fuzzy
 #| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
 msgid "Möchtest du dich verbindlich für diesen Einsatz eintragen?"
 msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
 
-#: .\juntagrico\templates\job.html:178
+#: .\juntagrico\templates\job.html:189
 msgid "Unbegleitet"
 msgstr "Non accompagnato"
 
-#: .\juntagrico\templates\job.html:182
+#: .\juntagrico\templates\job.html:193
 msgid "Zu Zweit"
 msgstr "Noi due"
 
-#: .\juntagrico\templates\job.html:186
+#: .\juntagrico\templates\job.html:197
 msgid "Zu Dritt"
 msgstr "In tre"
 
-#: .\juntagrico\templates\job.html:190
+#: .\juntagrico\templates\job.html:201
 msgid "Zu Viert"
 msgstr "Quattro di noi"
 
-#: .\juntagrico\templates\job.html:194
+#: .\juntagrico\templates\job.html:205
 msgid "weitere Personen und ich"
 msgstr "altre persone e io"
 
-#: .\juntagrico\templates\job.html:216
+#: .\juntagrico\templates\job.html:226
 msgid "Bestätigen"
 msgstr "Confermare"
 
-#: .\juntagrico\templates\jobs.html:6
+#: .\juntagrico\templates\jobs.html:10
 msgid "Alle Einsätze im Überblick"
 msgstr "Tutte le applicazioni in sintesi"
 
-#: .\juntagrico\templates\js\i18n.js:3 .\juntagrico\templates\members.html:19
-#: .\juntagrico\templates\subscriptions.html:19
+#: .\juntagrico\templates\js\i18n.js:3 .\juntagrico\templates\members.html:20
+#: .\juntagrico\templates\subscriptions.html:20
 #, fuzzy
 #| msgid "Email senden"
 msgid "E-Mail senden"
@@ -2689,50 +2844,50 @@ msgstr ""
 msgid "Mitteilung an den/die Haupt-%(v_subscription)s-BezieherIn"
 msgstr "Notifica all'abbonato principale %(v_subscription)s"
 
-#: .\juntagrico\templates\mail_sender.html:7
+#: .\juntagrico\templates\mail_sender.html:8
 msgid "Mails verschicken"
 msgstr "e-mail"
 
-#: .\juntagrico\templates\mail_sender.html:47
+#: .\juntagrico\templates\mail_sender.html:48
 msgid "bearbeiten"
 msgstr "modifica"
 
-#: .\juntagrico\templates\mail_sender.html:60
+#: .\juntagrico\templates\mail_sender.html:61
 msgid "Wähle mindestens eine der folgenden Gruppen"
 msgstr "Scegliere almeno uno dei seguenti gruppi"
 
-#: .\juntagrico\templates\mail_sender.html:72
+#: .\juntagrico\templates\mail_sender.html:73
 #, fuzzy, python-format
 #| msgid "%(v_subscription)s-BezieherIn (inkl. %(v_co_member_pl)s"
 msgid "%(v_subscription)s-BezieherIn (inkl. %(v_co_member_pl)s)"
 msgstr "%(v_subscription)s abbonato (compreso %(v_co_member_pl)s"
 
-#: .\juntagrico\templates\mail_sender.html:87
+#: .\juntagrico\templates\mail_sender.html:88
 #, python-format
 msgid "Alle mit %(v_share)s"
 msgstr "Tutti con %(v_share)s"
 
-#: .\juntagrico\templates\mail_sender.html:102
+#: .\juntagrico\templates\mail_sender.html:103
 msgid "Alle im System"
 msgstr "Tutto nel sistema"
 
-#: .\juntagrico\templates\mail_sender.html:114
+#: .\juntagrico\templates\mail_sender.html:115
 msgid "Nur an diese Email(s getrennt durch Leerzeichen)"
 msgstr "Solo a questa/e e-mail separate da spazi)"
 
-#: .\juntagrico\templates\mail_sender.html:119
+#: .\juntagrico\templates\mail_sender.html:120
 msgid "Nur an diese Email"
 msgstr "Solo a questa e-mail"
 
-#: .\juntagrico\templates\mail_sender.html:136
+#: .\juntagrico\templates\mail_sender.html:137
 msgid "Nachricht hier eingeben"
 msgstr "Inserisci qui il tuo messaggio"
 
-#: .\juntagrico\templates\mail_sender.html:147
+#: .\juntagrico\templates\mail_sender.html:148
 msgid "Templates"
 msgstr "Modelli"
 
-#: .\juntagrico\templates\mail_sender.html:162
+#: .\juntagrico\templates\mail_sender.html:163
 msgid "Template laden"
 msgstr "Modello di carico"
 
@@ -2779,13 +2934,13 @@ msgstr "Panoramica delle quantità"
 
 #: .\juntagrico\templates\mails\admin\depot_list_generated.txt:14
 #: .\juntagrico\templates\mails\admin\member_canceled.txt:15
-#: .\juntagrico\templates\mails\admin\member_created.txt:12
+#: .\juntagrico\templates\mails\admin\member_created.txt:13
 #: .\juntagrico\templates\mails\admin\share_canceled.txt:13
 #: .\juntagrico\templates\mails\admin\share_created.txt:13
 #: .\juntagrico\templates\mails\admin\subpart_canceled.txt:14
 #: .\juntagrico\templates\mails\admin\subpart_created.txt:17
 #: .\juntagrico\templates\mails\admin\subscription_canceled.txt:16
-#: .\juntagrico\templates\mails\admin\subscription_created.txt:14
+#: .\juntagrico\templates\mails\admin\subscription_created.txt:15
 msgid ""
 "Liebe Grüsse und einen schönen Tag noch\n"
 "Dein Server"
@@ -2810,11 +2965,16 @@ msgid "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen"
 msgstr "Ha anche lasciato il seguente messaggio per voi"
 
 #: .\juntagrico\templates\mails\admin\member_created.txt:6
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "Soeben hat %(fn)s %(ln)s sich registriert.\n"
+#| "E-Mail: %(e)s\n"
 msgid ""
 "\n"
 "Soeben hat %(fn)s %(ln)s sich registriert.\n"
 "E-Mail: %(e)s\n"
+"Kommentar: %(k)s\n"
 msgstr ""
 "\n"
 "Proprio ora %(fn)s %(ln)s si è registrato.\n"
@@ -2894,7 +3054,7 @@ msgstr ""
 "%(new_shares)s %(v_share_pl)s per voi."
 
 #: .\juntagrico\templates\mails\member\co_member_added.txt:15
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:21
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:22
 #, python-format
 msgid "Soeben hat dich '%(pm)s' als %(v_co_member)s hinzugefügt."
 msgstr "Proprio ora '%(pm)s' vi ha aggiunto come %(v_co_member)s"
@@ -2911,7 +3071,7 @@ msgstr ""
 "Altrimenti si presume che questo sia corretto."
 
 #: .\juntagrico\templates\mails\member\co_member_added.txt:21
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:46
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:50
 #: .\juntagrico\templates\mails\member\depot_changed.txt:20
 #: .\juntagrico\templates\mails\member\email_confirm.txt:9
 #: .\juntagrico\templates\mails\member\job_canceled.txt:20
@@ -2947,13 +3107,13 @@ msgstr ""
 "A presto e cordialmente salutiamo il gruppo aziendale "
 "%(c_organisation_name)s\n"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:16
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:17
 #: .\juntagrico\templates\mails\member\member_welcome.txt:11
 #, python-format
 msgid "Wir freuen uns, dich bei %(v_d_enriched_organisation)s zu begrüssen."
 msgstr "Siamo lieti di darvi il benvenuto a %(v_d_enriched_organisation)s."
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:19
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:20
 #, python-format
 msgid ""
 "Soeben hat dich '%(pm)s' als %(v_co_member)s hinzugefügt und für dich "
@@ -2962,29 +3122,29 @@ msgstr ""
 "Proprio ora '%(pm)s' vi ha aggiunto come %(v_co_member)s e ha ordinato "
 "%(shares)s %(v_share_pl)s per voi."
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:24
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:25
 #: .\juntagrico\templates\mails\member\member_welcome.txt:13
 #, python-format
 msgid "Um dich auf %(serverurl)s einloggen zu können benutze folgende Daten"
 msgstr ""
 "Per poter effettuare il login a %(serverurl)s utilizzare i seguenti dati"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:25
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:26
 #: .\juntagrico\templates\mails\member\member_welcome.txt:14
 #: .\juntagrico\templates\management_lists\member_canceledlist.html:30
 #: .\juntagrico\templates\management_lists\part_canceledlist.html:20
 #: .\juntagrico\templates\management_lists\part_waitinglist.html:21
 #: .\juntagrico\templates\management_lists\typechangelist.html:21
 #: .\juntagrico\templates\management_lists\waitinglist.html:23
-#: .\juntagrico\templates\members.html:37
-#: .\juntagrico\templates\members.html:62
+#: .\juntagrico\templates\members.html:38
+#: .\juntagrico\templates\members.html:63
 #: .\juntagrico\templates\newpassword.html:18
 #: .\juntagrico\templates\registration\login.html:11
 #: .\juntagrico\views_admin.py:277
 msgid "Email"
 msgstr "e-mail"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:27
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:28
 msgid ""
 "Nutze den Bestätigungslink um deine E-Mail-Adresse zu bestätigen und gleich "
 "dein Passwort zu ändern."
@@ -2992,35 +3152,47 @@ msgstr ""
 "Utilizzate il link di conferma per confermare il vostro indirizzo e-mail e "
 "cambiate immediatamente la vostra password."
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:28
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:29
 #: .\juntagrico\templates\mails\member\member_welcome.txt:17
 msgid "Bestätigungslink"
 msgstr "Link di conferma"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:30
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:31
 msgid "Damit bestätigst du dass du damit einverstanden bist"
 msgstr "Così facendo, confermate di essere d'accordo"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:31
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:32
 #, python-format
 msgid "%(c_organisation_name)s-%(v_member_type)s zu werden"
 msgstr "%(c_organisation_name)s-%(v_member_type)s per diventare"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:32
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:33
 #, python-format
 msgid "dem/r %(v_subscription)s beizutreten"
 msgstr "per aderire alla %(v_subscription)s"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:33
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:34
 #, python-format
 msgid "die bestellten %(v_share_pl)s zu erwerben"
 msgstr "per acquistare il %(v_share_pl)s ordinato"
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:34
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:36
 msgid "Ebenfalls bestätigst du, dass du folgendes gelesen hast"
 msgstr "Lei certifica inoltre di aver letto"
 
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:37
+msgid "die Statuten"
+msgstr "gli statuti"
+
 #: .\juntagrico\templates\mails\member\co_member_welcome.txt:38
+msgid "das Betriebsreglement"
+msgstr "il regolamento di funzionamento"
+
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:39
+msgid "die DSGVO Infos"
+msgstr "il DSGVO info"
+
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:42
 #, python-format
 msgid ""
 "Solltest du irrtumlicherweise hier eingetragen worden sein, melde dies bitte "
@@ -3029,7 +3201,7 @@ msgstr ""
 "Se è stato inserito qui per errore, la preghiamo di segnalare questo "
 "%(c_info_email)s."
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:41
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:45
 #: .\juntagrico\templates\mails\member\member_welcome.txt:20
 #, python-format
 msgid ""
@@ -3039,7 +3211,7 @@ msgstr ""
 "Per ulteriori domande si prega di consultare le FAQ (%(fd)s) o di scrivere "
 "una mail a %(c_info_email)s."
 
-#: .\juntagrico\templates\mails\member\co_member_welcome.txt:43
+#: .\juntagrico\templates\mails\member\co_member_welcome.txt:47
 #: .\juntagrico\templates\mails\member\member_welcome.txt:22
 #, python-format
 msgid "Für weitere Fragen schreibe eine Mail an %(c_info_email)s."
@@ -3118,10 +3290,6 @@ msgstr "Al %(jt)s-%(jet)s si svolge l'incarico di lavoro %(c)s \"%(jtg)s\"."
 msgid "Teilnehmer"
 msgstr "Partecipanti"
 
-#: .\juntagrico\templates\mails\member\job_reminder.txt:18
-msgid "Verantwortlich"
-msgstr "Responsabile"
-
 #: .\juntagrico\templates\mails\member\job_reminder.txt:19
 #: .\juntagrico\templates\mails\member\job_signup.txt:19
 #: .\juntagrico\templates\mails\member\job_time_changed.txt:19
@@ -3194,104 +3362,116 @@ msgstr ""
 "(questo è particolarmente importante se si paga questo/n/s %(v_share)s per "
 "qualcun altro)"
 
-#: .\juntagrico\templates\manage_shares.html:7
+#: .\juntagrico\templates\manage_shares.html:8
 #, fuzzy, python-format
 #| msgid "%(v_share_pl)s erwerben"
 msgid "%(v_share_pl)s Verwalten"
 msgstr "Acquisto %(v_share_pl)s"
 
-#: .\juntagrico\templates\manage_shares.html:16
+#: .\juntagrico\templates\manage_shares.html:17
 #, python-format
 msgid ""
 "Hier kannst du eine Bescheinigung über deine %(v_share_pl)s der letzten "
 "Jahre herunterladen"
 msgstr ""
 
-#: .\juntagrico\templates\manage_shares.html:27
+#: .\juntagrico\templates\manage_shares.html:28
 msgid "herunterladen"
 msgstr ""
 
-#: .\juntagrico\templates\manage_shares.html:35
+#: .\juntagrico\templates\manage_shares.html:36
 #, fuzzy, python-format
 #| msgid "Deine %(v_share_pl)s"
 msgid "Du hast noch keine %(v_share_pl)s"
 msgstr "Il vostro %(v_share_pl)s"
 
-#: .\juntagrico\templates\manage_shares.html:42
+#: .\juntagrico\templates\manage_shares.html:43
 #, fuzzy
 #| msgid "Nummer Intern"
 msgid "Nummer"
 msgstr "Numero Interno"
 
-#: .\juntagrico\templates\manage_shares.html:62
+#: .\juntagrico\templates\manage_shares.html:63
 #, fuzzy, python-format
 #| msgid "Du brauchst als HauptbezieherIn mindestens 1 %(v_share)s."
 msgid "Du brauchst mindestens 1 %(v_share)s"
 msgstr "È necessario almeno l'1 %(v_share)s come destinatario principale."
 
-#: .\juntagrico\templates\manage_shares.html:64
+#: .\juntagrico\templates\manage_shares.html:65
 #, fuzzy, python-format
 #| msgid "Du wirst bei deinem/r %(v_subscription)s ausgetragen"
 msgid "Diese/s/r %(v_share)s wird in einem/r %(v_subscription)s benötigt"
 msgstr "Sarete registrati al vostro %(v_subscription)s"
 
-#: .\juntagrico\templates\manage_shares.html:66
+#: .\juntagrico\templates\manage_shares.html:67
 #, python-format
 msgid "Diese/s/r %(v_share)s wurde noch nicht als bezahlt verbucht"
 msgstr ""
 
-#: .\juntagrico\templates\manage_shares.html:69
+#: .\juntagrico\templates\manage_shares.html:70
 #, fuzzy, python-format
 #| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
 msgid " Möchtest du sicher diese/s/n %(v_share)s verbindlich kündigen? "
 msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
 
-#: .\juntagrico\templates\manage_shares.html:81
-#: .\juntagrico\templates\manage_shares.html:102
+#: .\juntagrico\templates\manage_shares.html:82
+#: .\juntagrico\templates\manage_shares.html:103
 #, python-format
 msgid "%(v_share_pl)s bestellen"
 msgstr "Ordine %(v_share_pl)s"
 
-#: .\juntagrico\templates\manage_shares.html:95
+#: .\juntagrico\templates\manage_shares.html:96
 msgid "Deine Eingabe ist ungültig"
 msgstr "Il vostro input non è valido"
 
-#: .\juntagrico\templates\management_lists\assignments.html:18
+#: .\juntagrico\templates\management_lists\assignments.html:19
 #, fuzzy
 #| msgid "Weitere Bezieher"
 msgid "BezieherInnen"
 msgstr "Altri destinatari"
 
-#: .\juntagrico\templates\management_lists\assignments.html:24
+#: .\juntagrico\templates\management_lists\assignments.html:22
+#, fuzzy
+#| msgid "Start Datum"
+msgid "Startdatum"
+msgstr "Data di inizio"
+
+#: .\juntagrico\templates\management_lists\assignments.html:25
+#, fuzzy, python-format
+#| msgid "%(v_subscription)s erstellen"
+msgid "%(v_subscription)s-Status"
+msgstr "Creare %(v_subscription)s"
+
+#: .\juntagrico\templates\management_lists\assignments.html:31
 #, fuzzy, python-format
 #| msgid "%(v_assignment_pl)s Kernbereich"
 msgid "%(v_assignment_pl)s benötigt"
 msgstr "%(v_assignment_pl)s Area principale"
 
-#: .\juntagrico\templates\management_lists\assignments.html:27
+#: .\juntagrico\templates\management_lists\assignments.html:34
 #, fuzzy, python-format
 #| msgid "%(v_assignment_pl)s Kernbereich"
-msgid "%(v_assignment_pl)s status"
+msgid "%(v_assignment_pl)s Status"
 msgstr "%(v_assignment_pl)s Area principale"
 
-#: .\juntagrico\templates\management_lists\assignments.html:31
+#: .\juntagrico\templates\management_lists\assignments.html:38
 #, python-format
 msgid "%(v_assignment_pl)s Kernbereich"
 msgstr "%(v_assignment_pl)s Area principale"
 
-#: .\juntagrico\templates\management_lists\assignments.html:34
+#: .\juntagrico\templates\management_lists\assignments.html:41
 #, fuzzy, python-format
 #| msgid "%(v_assignment_pl)s Kernbereich"
 msgid "%(v_assignment_pl)s Kernbereich benötigt"
 msgstr "%(v_assignment_pl)s Area principale"
 
-#: .\juntagrico\templates\management_lists\assignments.html:37
+#: .\juntagrico\templates\management_lists\assignments.html:44
 #, fuzzy, python-format
 #| msgid "%(v_assignment_pl)s Kernbereich"
-msgid "%(v_assignment_pl)s Kernbereich status"
+msgid "%(v_assignment_pl)s Kernbereich Status"
 msgstr "%(v_assignment_pl)s Area principale"
 
-#: .\juntagrico\templates\management_lists\assignments.html:41
+#: .\juntagrico\templates\management_lists\assignments.html:48
 msgid "Emails"
 msgstr "E-mail"
 
@@ -3339,22 +3519,22 @@ msgstr "Nessuno %(v_subscription_pl)s"
 msgid "Fehler"
 msgstr ""
 
-#: .\juntagrico\templates\management_lists\man_list_base.html:17
+#: .\juntagrico\templates\management_lists\man_list_base.html:18
 msgid "Lege das Datum für die Änderung fest."
 msgstr "Impostare la data per la modifica."
 
-#: .\juntagrico\templates\management_lists\man_list_base.html:27
+#: .\juntagrico\templates\management_lists\man_list_base.html:28
 #: .\juntagrico\templates\management_lists\typechangelist.html:68
 #: .\juntagrico\templates\pm_change.html:36
 msgid "ändern"
 msgstr "modifica"
 
-#: .\juntagrico\templates\management_lists\man_list_base.html:34
+#: .\juntagrico\templates\management_lists\man_list_base.html:35
 #, python-format
 msgid "Das Änderungsdatum ist auf %(change_date)s gesetzt."
 msgstr "La data di modifica è impostata a %(change_date)s."
 
-#: .\juntagrico\templates\management_lists\man_list_base.html:52
+#: .\juntagrico\templates\management_lists\man_list_base.html:53
 msgid "Email senden"
 msgstr "invia e-mail"
 
@@ -3844,7 +4024,7 @@ msgstr "Invia nuova password"
 msgid "%(v_member_type)s werden"
 msgstr "%(v_member_type)s diventa"
 
-#: .\juntagrico\templates\signup.html:33
+#: .\juntagrico\templates\signup.html:34
 #, fuzzy, python-format
 #| msgid ""
 #| "Die Mitgliedschaft bei %(v_d_enriched_organisation)s ist geknüpft an den "
@@ -3868,7 +4048,7 @@ msgstr ""
 "finanziare gli investimenti - per esempio le infrastrutture. Le "
 "%(v_share_pl)s saranno rimborsate al momento della partenza."
 
-#: .\juntagrico\templates\signup.html:47
+#: .\juntagrico\templates\signup.html:48
 #, python-format
 msgid ""
 "Die %(v_member_type_pl)s tragen im Rahmen ihrer Motivationen, Prioritäten "
@@ -3882,68 +4062,68 @@ msgstr ""
 "%(v_d_enriched_organisation)s %(v_member_type)s si impegna a collaborare. Un "
 "ulteriore impegno, oltre a quello spontaneo, è sempre benvenuto."
 
-#: .\juntagrico\templates\signup.html:57
+#: .\juntagrico\templates\signup.html:59
 #, python-format
 msgid ""
 "Bevor du dich als %(v_member_type)s anmeldest, lies bitte folgendes durch"
 msgstr "Prima di registrarsi come %(v_member_type)s, leggere quanto segue"
 
-#: .\juntagrico\templates\signup.html:63
+#: .\juntagrico\templates\signup.html:66
 msgid "Statuten"
 msgstr "Statuto"
 
-#: .\juntagrico\templates\signup.html:69
+#: .\juntagrico\templates\signup.html:73
 msgid "Betriebsreglement"
 msgstr "Norme di funzionamento"
 
-#: .\juntagrico\templates\size_change.html:8
+#: .\juntagrico\templates\size_change.html:9
 #, fuzzy, python-format
 #| msgid "%(v_subscription)s ändern"
 msgid "%(v_subscription)s-Bestandteile ändern"
 msgstr "Variazione %(v_subscription)s"
 
-#: .\juntagrico\templates\size_change.html:18
+#: .\juntagrico\templates\size_change.html:19
 msgid "Bestandteile verwalten"
 msgstr ""
 
-#: .\juntagrico\templates\size_change.html:46
+#: .\juntagrico\templates\size_change.html:47
 #, fuzzy
 #| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
 msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
 msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
 
-#: .\juntagrico\templates\size_change.html:50
+#: .\juntagrico\templates\size_change.html:51
 #, fuzzy, python-format
 #| msgid "Wähle deine %(v_subscription)s-Grösse"
 msgid " Dein/e %(v_subscription)s braucht mindestens 1 Bestandteil"
 msgstr "Scegliete la vostra dimensione %(v_subscription)s"
 
-#: .\juntagrico\templates\size_change.html:52
+#: .\juntagrico\templates\size_change.html:53
 #: .\juntagrico\templates\subscription_change.html:29
 #, python-format
 msgid "%(v_subscription)s komplett künden"
 msgstr "Annullare completamente %(v_subscription)s"
 
-#: .\juntagrico\templates\size_change.html:64
+#: .\juntagrico\templates\size_change.html:65
 #, fuzzy
 #| msgid "Verbindlich bestellen"
 msgid "Bestandteile bestellen"
 msgstr "Ordine vincolante"
 
-#: .\juntagrico\templates\size_change.html:71
+#: .\juntagrico\templates\size_change.html:72
 #, python-format
 msgid ""
 "Für gekündigte %(v_subscription_pl)s können keine Bestandteile bestellt "
 "werden."
 msgstr ""
 
-#: .\juntagrico\templates\size_change.html:76
+#: .\juntagrico\templates\size_change.html:77
 #, fuzzy, python-format
 #| msgid "%(v_subscription)s künden"
 msgid "%(v_subscription)s kündigen"
 msgstr "Annullare %(v_subscription)s"
 
-#: .\juntagrico\templates\size_change.html:81
+#: .\juntagrico\templates\size_change.html:82
 #, fuzzy, python-format
 #| msgid "%(v_subscription)s komplett künden"
 msgid "%(v_subscription)s komplett kündigen"
@@ -3953,7 +4133,13 @@ msgstr "Annullare completamente %(v_subscription)s"
 msgid "Bezeichnung"
 msgstr "Designazione"
 
-#: .\juntagrico\templates\snippets\snippet_jobs.html:13
+#: .\juntagrico\templates\snippets\snippet_jobs.html:23
+#, fuzzy
+#| msgid "Kernbereich"
+msgid "Bereich"
+msgstr "Area centrale"
+
+#: .\juntagrico\templates\snippets\snippet_jobs.html:28
 msgid "Kern"
 msgstr "Core"
 
@@ -4238,27 +4424,27 @@ msgstr "Solo il destinatario principale può apportare modifiche."
 msgid "Welchen Teil möchtest du ändern?"
 msgstr "Quale parte vuoi cambiare?"
 
-#: .\juntagrico\templates\subscriptions.html:28
-#: .\juntagrico\templates\subscriptions.html:50 .\juntagrico\views_admin.py:320
+#: .\juntagrico\templates\subscriptions.html:29
+#: .\juntagrico\templates\subscriptions.html:51 .\juntagrico\views_admin.py:320
 #, fuzzy
 #| msgid "Hauptbezieher"
 msgid "HauptbezieherIn"
 msgstr "Destinatario principale"
 
-#: .\juntagrico\templates\subscriptions.html:31
-#: .\juntagrico\templates\subscriptions.html:53 .\juntagrico\views_admin.py:324
+#: .\juntagrico\templates\subscriptions.html:32
+#: .\juntagrico\templates\subscriptions.html:54 .\juntagrico\views_admin.py:324
 #, fuzzy
 #| msgid "Weitere Bezieher"
 msgid "Weitere BezieherInnen"
 msgstr "Altri destinatari"
 
-#: .\juntagrico\templates\subscriptions.html:37
-#: .\juntagrico\templates\subscriptions.html:59
+#: .\juntagrico\templates\subscriptions.html:38
+#: .\juntagrico\templates\subscriptions.html:60
 msgid "Inhalt"
 msgstr "Contenuto"
 
-#: .\juntagrico\templates\subscriptions.html:43
-#: .\juntagrico\templates\subscriptions.html:65
+#: .\juntagrico\templates\subscriptions.html:44
+#: .\juntagrico\templates\subscriptions.html:66
 #, fuzzy
 #| msgid "E-Mail"
 msgid "E-Mails"
@@ -4336,22 +4522,6 @@ msgstr ""
 msgid "Einsatz"
 msgstr "Distribuzione"
 
-#: .\juntagrico\util\jobs.py:15
-msgid "Dreiviertel"
-msgstr "Tre quarti"
-
-#: .\juntagrico\util\jobs.py:16
-msgid "Halb"
-msgstr "Metà"
-
-#: .\juntagrico\util\jobs.py:17
-msgid "Angefangen"
-msgstr "Iniziato"
-
-#: .\juntagrico\util\jobs.py:18
-msgid "Nix"
-msgstr "Nix"
-
 #: .\juntagrico\util\organisation_name.py:13
 msgid "der"
 msgstr "il"
@@ -4401,59 +4571,59 @@ msgstr "Sabato"
 msgid "Sonntag"
 msgstr "Domenica"
 
-#: .\juntagrico\util\temporal.py:138
+#: .\juntagrico\util\temporal.py:132
 msgid "Januar"
 msgstr "Gennaio"
 
-#: .\juntagrico\util\temporal.py:139
+#: .\juntagrico\util\temporal.py:133
 msgid "Februar"
 msgstr "Febbraio"
 
-#: .\juntagrico\util\temporal.py:140
+#: .\juntagrico\util\temporal.py:134
 msgid "März"
 msgstr "Marzo"
 
-#: .\juntagrico\util\temporal.py:141
+#: .\juntagrico\util\temporal.py:135
 msgid "April"
 msgstr "Aprile"
 
-#: .\juntagrico\util\temporal.py:142
+#: .\juntagrico\util\temporal.py:136
 msgid "Mai"
 msgstr "Maggio"
 
-#: .\juntagrico\util\temporal.py:143
+#: .\juntagrico\util\temporal.py:137
 msgid "Juni"
 msgstr "Giugno"
 
-#: .\juntagrico\util\temporal.py:144
+#: .\juntagrico\util\temporal.py:138
 msgid "Juli"
 msgstr "Luglio"
 
-#: .\juntagrico\util\temporal.py:145
+#: .\juntagrico\util\temporal.py:139
 msgid "August"
 msgstr "Agosto"
 
-#: .\juntagrico\util\temporal.py:146
+#: .\juntagrico\util\temporal.py:140
 msgid "September"
 msgstr "Settembre"
 
-#: .\juntagrico\util\temporal.py:147
+#: .\juntagrico\util\temporal.py:141
 msgid "Oktober"
 msgstr "Ottobre"
 
-#: .\juntagrico\util\temporal.py:148
+#: .\juntagrico\util\temporal.py:142
 msgid "November"
 msgstr "Novembre"
 
-#: .\juntagrico\util\temporal.py:149
+#: .\juntagrico\util\temporal.py:143
 msgid "Dezember"
 msgstr "Dicembre"
 
-#: .\juntagrico\views.py:103
+#: .\juntagrico\views.py:106
 msgid " (mit einer weiteren Person)"
 msgstr " (con un'altra persona)"
 
-#: .\juntagrico\views.py:105
+#: .\juntagrico\views.py:108
 msgid " (mit {} weiteren Personen)"
 msgstr " (con {\\a6}altre persone)"
 
@@ -4549,17 +4719,47 @@ msgstr ""
 msgid "Haubtbezieher ist nicht gesetzt"
 msgstr ""
 
-#: .\juntagrico\views_subscription.py:161
+#: .\juntagrico\views_subscription.py:156
 msgid "Für gekündigte {} können keine Bestandteile bestellt werden"
 msgstr ""
 
-#: .\juntagrico\views_subscription.py:188
+#: .\juntagrico\views_subscription.py:183
 msgid "Für gekündigte {} können keine Zusatzabos bestellt werden"
 msgstr ""
 
-#: .\juntagrico\views_subscription.py:444
+#: .\juntagrico\views_subscription.py:440
 msgid "{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden."
 msgstr ""
+
+#~ msgid "Latitude"
+#~ msgstr "Latitudine"
+
+#~ msgid "Longitude"
+#~ msgstr "Longitudine"
+
+#~ msgid "Verantwortlicher"
+#~ msgstr "Responsabile"
+
+#~ msgid "Koordiniert von"
+#~ msgstr "Coordinato da"
+
+#~ msgid "Verantwortlich"
+#~ msgstr "Responsabile"
+
+#~ msgid "Dreiviertel"
+#~ msgstr "Tre quarti"
+
+#~ msgid "Halb"
+#~ msgstr "Metà"
+
+#~ msgid "Angefangen"
+#~ msgstr "Iniziato"
+
+#~ msgid "Nix"
+#~ msgstr "Nix"
+
+#~ msgid "<b>%(amount)s</b>&times; %(tn)s à %(c_currency)s %(tp)s/Jahr"
+#~ msgstr "<b>%(amount)s</b>&volte; %(tn)s à %(c_currency)s %(tp)s/anno"
 
 #, fuzzy
 #~| msgid "Genau 1 Job auswählen!"

@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel, notifiable
+from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.util.users import make_username
@@ -36,7 +36,7 @@ class Member(JuntagricoBaseModel):
 
     first_name = models.CharField(_('Vorname'), max_length=30)
     last_name = models.CharField(_('Nachname'), max_length=30)
-    email = models.EmailField(unique=True)
+    email = LowercaseEmailField(unique=True)
 
     addr_street = models.CharField(_('Strasse'), max_length=100)
     addr_zipcode = models.CharField(_('PLZ'), max_length=10)
@@ -60,6 +60,7 @@ class Member(JuntagricoBaseModel):
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+    number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
 
     @property
     def canceled(self):
@@ -117,6 +118,21 @@ class Member(JuntagricoBaseModel):
         return self.usable_shares.count()
 
     @property
+    def required_shares_count(self):
+        # calculate required shares backwards to account for shared subscriptions
+        not_canceled_share_count = self.usable_shares_count
+        overflow_list = [not_canceled_share_count]
+        if self.subscription_future is not None:
+            overflow_list.append(self.subscription_future.share_overflow)
+        if self.subscription_current is not None:
+            overflow_list.append(self.subscription_current.share_overflow)
+        return not_canceled_share_count - min(overflow_list)
+
+    @property
+    def cancellable_shares_count(self):
+        return self.usable_shares_count - max(self.required_shares_count, 1)
+
+    @property
     def subscription_future(self):
         sub_membership = self.subscriptionmembership_set.filter(~q_joined_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
@@ -137,7 +153,7 @@ class Member(JuntagricoBaseModel):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = timezone.now().date() if subscription.active else None
+            join_date = None if subscription.waiting else timezone.now().date()
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
     def leave_subscription(self, subscription, changedate=None):
@@ -153,6 +169,11 @@ class Member(JuntagricoBaseModel):
     @property
     def in_subscription(self):
         return (self.subscription_future is not None) | (self.subscription_current is not None)
+
+    @property
+    def can_order_subscription(self):
+        return self.subscription_future is None and (
+            self.subscription_current is None or self.subscription_current.cancellation_date is not None)
 
     @property
     def blocked(self):

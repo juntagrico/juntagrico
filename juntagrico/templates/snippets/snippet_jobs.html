@@ -3,26 +3,35 @@
 {% load juntagrico.config %}
 {% show_core as b_show_core %}
 {% show_job_extras as b_show_job_extras %}
-<table id="filter-table" class="list table" style="display: table;">
+<table id="filter-table" class="list table" style="width: 100%">
     <thead>
         <tr>
-            <th class="align-top">
+            <th class="job-description"></th>
+            <th class="align-top table-search job-date">
+                {% trans "Datum" %}
             </th>
+            <th class="align-top table-search job-name">
+                {% trans "Job" %}
+            </th>
+            <th class="align-top table-search">
+                {% trans "Ort" %}
+            </th>
+            <th class="align-top">
+                {% trans "Zeit" %}
+            </th>
+            <th class="align-top table-search">
+                {% trans "Bereich" %}
+            </th>
+
             {% if b_show_core %}
                 <th class="align-top">
                     {% trans "Kern" %}
                 </th>
             {% endif %}
-            <th class="align-top table-search">
-                {% trans "Datum" %}
-            </th>
-            <th class="align-top table-search">
-                {% trans "Job" %}
-            </th>
-            <th class="align-top">
+            <th class="align-top job-status">
                 {% trans "Status" %}<br>
                 {% if show_free_slot_filter %}
-                <form class="form-inline">
+                <form id="free_slot_filter_form" class="form-inline">
                     <label for="free_slot_filter">{% trans "Freie Plätze" %}&nbsp;&ge;&nbsp;</label>
                     <input id="free_slot_filter" type='number' placeholder='' style='width: 4em;'
                            class='form-control input-sm' value="0" min="0"/>
@@ -42,16 +51,10 @@
     </thead>
     <tbody>
         {% for job in jobs %}
-            <tr data-place="{{ job.type.location }}" data-starttime="{{ job.time |date:'H:i' }}"data-endtime="{{ job.end_time |date:'H:i' }}" data-area="{{ job.type.activityarea.name }}">
-                <td class="details-control">
+            <tr>
+                <td>
+                    {{ job.type.description }}
                 </td>
-                {% if b_show_core %}
-                    <td>
-                        {% if job.type.activityarea.core %}
-                            <img alt="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
-                        {% endif %}
-                    </td>
-                {% endif %}
                 <td>
                     {{ job.weekday_name }}&nbsp;{{ job.time |date:"d." }}{{ job.time |date:"m." }}{{ job.time |date:"Y" }}
                 </td>
@@ -61,8 +64,31 @@
                     </a>
                 </td>
                 <td>
+                    {{ job.type.location }}
+                </td>
+                <td>
+                    {{ job.time |date:'H:i' }} - {{ job.end_time |date:'H:i' }}
+                </td>
+                <td>
+                    {{ job.type.activityarea.name }}
+                </td>
+                {% if b_show_core %}
+                    <td>
+                        {% if job.type.activityarea.core %}
+                            <img alt="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
+                        {% endif %}
+                    </td>
+                {% endif %}
+                <td class="
+                    {% if job.status_percentage < 25 %}
+                        text-danger
+                    {% elif job.status_percentage < 100%}
+                    {% else %}
+                        text-success
+                    {% endif %}
+                ">
                     {% if job.free_slots > -1 %}
-                    <img alt="{% trans "Status" %}: {{ job.get_status_percentage }}"src="{% images job.get_status_percentage %}"/>
+                    {{ job.occupied_slots }} / {{ job.slots }}
                     {% endif %}
                 </td>
                 {% if show_free_slot_filter %}

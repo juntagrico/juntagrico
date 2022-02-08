@@ -1,8 +1,9 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
 {% block all_page_title %}
     {% vocabulary "depot" as v_depot %}
@@ -25,7 +26,7 @@
                 <div class="col-md-9">
                     <select name="depot" id="depot" class="form-control">
                         {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}"{% if depot == selected %}selected{% endif %}>
+                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == selected %}selected{% endif %}>
                                 {{ depot.name }}
                             </option>
                         {% endfor %}
@@ -38,11 +39,7 @@
                 </label>
             </div>
             <div id="depot_container" class="form-group row">
-                <div class="offset-md-3 col-md-9">
-                    {% if requires_map %}
-                        <div style="height: 20rem" id="depot-map">
-                        </div>
-                    {% endif %}
+                <div class="offset-md-3 col-md-9" id="map-container">
                 </div>
             </div>
             <div class="form-actions row">
@@ -59,23 +56,11 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript">
-        var depots = [];
-        {% for depot in depots %}
-            {% if depot.has_geo %}
-                depots.push(
-                {name: '{{ depot.name }}',
-                addr_street: '{{ depot.addr_street }}',
-                addr_zipcode: '{{ depot.addr_zipcode }}',
-                addr_location: '{{ depot.addr_location }}',
-                latitude: '{{ depot.latitude }}',
-                longitude: '{{ depot.longitude }}',
-                code: '{{ depot.sort_order }}'
-                });
-            {% endif %}
-        {% endfor %}
-    </script>
-    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initCreateSubscription.js">
-    </script>
+    {% if selected %}
+        {{ selected.name|json_script:'selected_depot' }}
+    {% endif %}
+    {{ depots.map_info|json_script:'depots' }}
+  <script type="text/javascript" src="{% static 'juntagrico/external/leaflet/leaflet.js' %}"></script>
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}"data-main="{% static 'juntagrico/js/initCreateSubscription.js' %}">
+     </script>
 {% endblock %}

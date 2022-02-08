@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.contrib.sites.models import Site
+from django.templatetags.static import static
 from django.utils.translation import gettext as _
 
 
@@ -84,7 +86,8 @@ class Config:
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
         lambda: {
-            'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(Config.adminportal_name()),
+            'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(
+                Site.objects.get_current().name),
             'confirm_text': _('einverstanden'),
             'link_text': _('Hier findest du mehr zum Thema'),
             'url': '/my/cookies'
@@ -101,8 +104,6 @@ class Config:
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    adminportal_name = _get_setting('ADMINPORTAL_NAME', 'my.juntagrico')
-    adminportal_server_url = _get_setting('ADMINPORTAL_SERVER_URL', 'my.juntagrico.juntagrico')
     default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.defaultmailer.Mailer')
     from_filter = _get_setting_with_key('FROM_FILTER',
                                         {
@@ -138,23 +139,25 @@ class Config:
             'm_canceled': 'mails/admin/member_canceled.txt',
         }
     )
-    style_sheet = _get_setting('STYLE_SHEET', '/static/juntagrico/css/personal.css')
-    favicon = _get_setting('FAVICON', '/static/juntagrico/img/favicon.ico')
-    bootstrap = _get_setting('BOOTSTRAP', '/static/juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css')
+    favicon = _get_setting('FAVICON', static('juntagrico/img/favicon.ico'))
+    bootstrap = _get_setting('BOOTSTRAP', static('juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css'))
+    styles = _get_setting_with_key('STYLES', {'template': '', 'static': []})
+    scripts = _get_setting_with_key('SCRIPTS', {'template': '', 'static': []})
     images = _get_setting_with_key(
         'IMAGES',
         {
-            'status_100': '/static/juntagrico/img/status_100.png',
-            'status_75': '/static/juntagrico/img/status_75.png',
-            'status_50': '/static/juntagrico/img/status_50.png',
-            'status_25': '/static/juntagrico/img/status_25.png',
-            'status_0': '/static/juntagrico/img/status_0.png',
-            'single_full': '/static/juntagrico/img/single_full.png',
-            'single_empty': '/static/juntagrico/img/single_empty.png',
-            'single_core': '/static/juntagrico/img/single_core.png',
-            'core': '/static/juntagrico/img/core.png'
+            'status_100': static('juntagrico/img/status_100.png'),
+            'status_75': static('juntagrico/img/status_75.png'),
+            'status_50': static('juntagrico/img/status_50.png'),
+            'status_25': static('juntagrico/img/status_25.png'),
+            'status_0': static('juntagrico/img/status_0.png'),
+            'single_full': static('juntagrico/img/single_full.png'),
+            'single_empty': static('juntagrico/img/single_empty.png'),
+            'single_core': static('juntagrico/img/single_core.png'),
+            'core': static('juntagrico/img/core.png')
         }
     )
+    mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
 
     # demo settings
     demouser = _get_setting('DEMO_USER')

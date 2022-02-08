@@ -1,16 +1,56 @@
-Release Notes
-=============
+1.4 Release Notes
+=================
 
 Dev
 ---
 
+1.4.7
+-----
+Fixes
+^^^^^
+* Fix job table on activity area page
+* Only include members with active shares, when mailing to all members with shares
+* Fix: Cancelled, but still active subscriptions are now shown in the member list
+
+1.4.6
+-----
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * Bylaws are now optional
+    * Member address now visible and searchable in data administration
+* Developer Features:
+    * Jobs table is now responsive
+    * Deprecated setting ADMINPORTAL_NAME
+    * Fixed site issue in password reset email
+
+
+1.4.5
+-----
+Fixes
+^^^^^
+* Fix membership cancellation date
+
+1.4.4
+-----
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * More filter options in assignment management list
+* Member Features:
+    * Show minimum subscription duration in share order process
+    * Option to enter a comment that is sent with the admin notification in the sign up and share order process
+
 Fixes
 ^^^^^
 * Fix export of share payment file (pain.001)
+* Fix past job editing limitation for one time jobs
+* Fix unauthorized share cancellation
+* Fix mailtext command for password reset text
+* Fix minor template issues
 
 1.4.3
 -----
-
 Fixes
 ^^^^^
 * Fix: Allow editing of assignments via admin
@@ -18,7 +58,6 @@ Fixes
 
 1.4.2
 -----
-
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
@@ -28,7 +67,6 @@ Features & Improvements
     * Filter for free slots on jobs
     * Show less and clearer messages on job page
     * Clarify some texts
-
 * Developer Features:
     * Support for Python 3.9 and dropped support for python 3.6 and 3.7
     * Refactor: Using new Django 3.2 features
@@ -49,7 +87,6 @@ Fixes
 
 1.4.1
 -----
-
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
