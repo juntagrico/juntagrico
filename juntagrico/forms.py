@@ -82,7 +82,7 @@ class MemberProfileForm(ModelForm):
         return mark_safe(
             escape(
                 text
-            ).format('<a href="mailto:{0}">{0}</a>'.format(Config.info_email()))
+            ).format('<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members')))
         )
 
     def clean_iban(self):
@@ -218,7 +218,7 @@ class CoMemberBaseForm(MemberBaseForm):
                 raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktiv\
                  {}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
                     Config.vocabulary('subscription'),
-                    '<a href="mailto:{0}">{0}</a>'.format(Config.info_email()),
+                    '<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
                     Config.vocabulary('member_type_pl'),
                     Config.vocabulary('co_member_pl')
                 )))

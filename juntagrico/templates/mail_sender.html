@@ -30,8 +30,8 @@
                         {% endfor %}
                     {% endfor %}
                     {% if can_use_general_email %}
-                        <option value="{% config "info_email" %}">
-                            {% config "info_email" %}
+                        <option value="{% contacts "general" %}">
+                            {% contacts "general" %}
                         </option>
                     {% endif %}
                     <option value="{{ email }}">

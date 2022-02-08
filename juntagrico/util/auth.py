@@ -30,7 +30,7 @@ class JuntagricoAuthenticationForm(AuthenticationForm):
     error_messages = {
         'invalid_login': _('Sorry, das ist kein gültiges Login'),
         'inactive': _('Deine Mitgliedschaft ist deaktiviert. Bei Fragen melde dich bitte bei {}').format(
-            '<a class="alert-link" href="mailto:{0}">{0}</a>'.format(Config.info_email())
+            '<a class="alert-link" href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members'))
         ),
     }
 
