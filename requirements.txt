@@ -1,6 +1,6 @@
-Django==4.0.1
-django-admin-sortable2==1.0.3
-django-crispy-forms==1.13.0
+Django==4.0.2
+django-admin-sortable2==1.0.4
+django-crispy-forms==1.14.0
 django-impersonate==1.7.3
 django-polymorphic==3.1.0
 django-richtextfield==1.6.1
