@@ -6,6 +6,7 @@ from django.core import mail
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
+from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
@@ -21,6 +22,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_admin()
         self.set_up_shares()
         self.set_up_area()
+        self.set_up_location()
         self.set_up_job()
         self.set_up_depots()
         self.set_up_sub_types()
@@ -155,7 +157,8 @@ class JuntagricoTestCase(TestCase):
         area
         """
         area_data = {'name': 'name',
-                     'coordinator': self.area_admin}
+                     'coordinator': self.area_admin,
+                     'auto_add_new_members': True}
         area_data2 = {'name': 'name2',
                       'coordinator': self.area_admin,
                       'hidden': True}
@@ -164,14 +167,43 @@ class JuntagricoTestCase(TestCase):
         self.member.areas.add(self.area)
         self.member.save()
 
+    def set_up_location(self):
+        """
+        location
+        """
+        location_data = {'name': 'location1',
+                         'latitude': '12.513',
+                         'longitude': '1.314',
+                         'addr_street': 'Fakestreet 123',
+                         'addr_zipcode': '1000',
+                         'addr_location': 'Faketown',
+                         'description': 'Place to be'}
+        location_data2 = {'name': 'location2'}
+        self.location = Location.objects.create(**location_data)
+        self.location2 = Location.objects.create(**location_data2)
+        location_data_depot = {'name': 'Depot location',
+                               'latitude': '12.513',
+                               'longitude': '1.314',
+                               'addr_street': 'Fakestreet 123',
+                               'addr_zipcode': '1000',
+                               'addr_location': 'Faketown',
+                               'description': 'Place to be'}
+        self.location_depot = Location.objects.create(**location_data_depot)
+
     def set_up_job(self):
         """
         job_type
         """
         job_type_data = {'name': 'nameot',
                          'activityarea': self.area,
-                         'default_duration': 2}
+                         'default_duration': 2,
+                         'location': self.location}
         self.job_type = JobType.objects.create(**job_type_data)
+        job_type_data2 = {'name': 'nameot2',
+                          'activityarea': self.area2,
+                          'default_duration': 4,
+                          'location': self.location2}
+        self.job_type2 = JobType.objects.create(**job_type_data2)
         """
         job_extra
         """
@@ -210,7 +242,8 @@ class JuntagricoTestCase(TestCase):
                              'activityarea': self.area,
                              'default_duration': 2,
                              'slots': 1,
-                             'time': time}
+                             'time': time,
+                             'location': self.location2}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
         """
         assignment
@@ -227,12 +260,14 @@ class JuntagricoTestCase(TestCase):
         depot_data = {
             'name': 'depot',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot = Depot.objects.create(**depot_data)
         depot_data = {
             'name': 'depot2',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot2 = Depot.objects.create(**depot_data)
 
     def set_up_sub_types(self):

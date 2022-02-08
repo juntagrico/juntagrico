@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block content %}
+<p>{% blocktrans %}Löscht und ersetzt diese Orte an allen verwendeten Stellen.
+    Dies kann nicht rückgängig gemacht werden.{% endblocktrans %}</p>
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h2>{% trans "Zusammenfassung" %}</h2>
+    <ul>
+        <li>{% trans "Orte" %}: {{ locations|length }}</li>
+    </ul>
+
+    <h2>{% trans "Objekte" %}</h2>
+    <ul>
+        {% for location in locations %}
+        <li><a href="{% url 'admin:juntagrico_location_change' location.id %}">{{ location }}</a></li>
+        <input type="hidden" name="_selected_action" value="{{ location.pk }}" />
+        {% endfor %}
+    </ul>
+
+    <input type="hidden" name="action" value="replace" />
+    <input type="submit" name="apply" value="{% trans "Unwiderruflich Ersetzen" %}"/>
+</form>
+{% endblock %}

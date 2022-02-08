@@ -38,3 +38,13 @@ def get_config_classes():
     configs = [Config]
     configs.extend(addons_config.get_config_classes())
     return configs
+
+
+@register.simple_tag
+def scripts(key):
+    return Config.scripts(key)
+
+
+@register.simple_tag
+def styles(key):
+    return Config.styles(key)
