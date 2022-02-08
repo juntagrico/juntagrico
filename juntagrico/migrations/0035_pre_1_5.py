@@ -8,6 +8,7 @@ import juntagrico.entity
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('contenttypes', '0002_remove_content_type_name'),
         ('juntagrico', '0034_auto_20210415_2041'),
     ]
 
@@ -87,7 +88,7 @@ class Migration(migrations.Migration):
                 ('object_id', models.BigIntegerField()),
                 ('sort_order', models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')),
                 ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
-                ('polymorphic_ctype', models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_juntagrico.contact_set+', to='contenttypes.contenttype')),
+                ('polymorphic_ctype', models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_%(app_label)s.%(class)s_set+', to='contenttypes.contenttype')),
             ],
             options={
                 'verbose_name': 'Kontakt',
@@ -144,5 +145,19 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Mitglieder',
             },
             bases=('juntagrico.contact',),
+        ),
+        migrations.AlterField(
+            model_name='billable',
+            name='polymorphic_ctype',
+            field=models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='polymorphic_%(app_label)s.%(class)s_set+',
+                                    to='contenttypes.contenttype'),
+        ),
+        migrations.AlterField(
+            model_name='job',
+            name='polymorphic_ctype',
+            field=models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='polymorphic_%(app_label)s.%(class)s_set+',
+                                    to='contenttypes.contenttype'),
         ),
     ]

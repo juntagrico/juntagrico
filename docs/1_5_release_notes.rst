@@ -10,8 +10,12 @@ Upgrade Instructions
   using the values from your ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` settings.
     * Remove these settings.
     * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
+* Add ``'polymorphic'`` to the ``INSTALLED_APPS`` setting.
 * Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}``
 * Add the Setting STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+* The option ``Telefonnummer von KoordinatorIn anzeigen`` on activity areas was previously only used to show the
+  phone number of the area coordinator in job reminder emails and has been removed.
+  Use to new contact field to show a phone number consistently in all places where the area contact is displayed.
 
 Fixes
 ^^^^^
@@ -22,13 +26,12 @@ Features & Improvements
 * Member Features:
 
 * Admin Features:
-    * Members have now a field number in the data administration
     * Edit pages of jobs, areas and depots now show a link to the frontend of the edited element on the top right
     * Uploaded email attachments can now be removed
-    * Activity areas can be flagge to be added automatically to a member on creation
+    * Activity areas can be flagged to be added automatically to a member on creation
     * depot description is now optional
     * price is now a decimal value
-    * Areas, Jobs and Jobtypes can now have a list of contacts
+    * Areas, jobs and job types can now have a list of contacts
 
 * Developer Features:
     * ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` are removed in favor of the sites app. See upgrade instructions.

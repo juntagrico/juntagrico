@@ -90,7 +90,7 @@
 
         {% if activity_areas %}
             <h4>{% trans "Tätigkeitsbereiche" %}</h4>
-            <p>{% blocktrans %}Du wird automatisch in folgende Tätigkeitsbereiche eingetragen.{% endblocktrans %}</p>
+            <p>{% blocktrans %}Du wirst automatisch in folgende Tätigkeitsbereiche eingetragen.{% endblocktrans %}</p>
             <ul>
                 {% for area in activity_areas %}
                     <li><strong>{{ area.name }}</strong> {{ area.description |safe }}</li>
