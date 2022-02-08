@@ -1,6 +1,8 @@
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.db import transaction
+from django.core import management
 
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
@@ -14,13 +16,16 @@ from juntagrico.mailer import get_email_content, base_dict
 class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
-        subscription = Subscription.objects.all()[0]
-        shares = Share.objects.all()[:2]
-        job = RecuringJob.objects.all()[0]
-        member = Member.objects.filter(MemberDao.has_future_subscription())[0]
-        member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
-        co_member = Member.objects.filter(MemberDao.has_future_subscription())[1]
-        depot = Depot.objects.all()[0]
+        with transaction.atomic(durable=True):
+            # generate temporary test data to ensure that required objects are available
+            management.call_command('generate_testdata')
+            subscription = Subscription.objects.all()[0]
+            shares = Share.objects.all()[:2]
+            job = RecuringJob.objects.all()[0]
+            member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
+            member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
+            depot = Depot.objects.all()[0]
+            transaction.set_rollback(True)  # force rollback
 
         print('*** welcome  mit abo***')
 
