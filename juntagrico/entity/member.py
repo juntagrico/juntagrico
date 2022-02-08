@@ -149,22 +149,27 @@ class Member(JuntagricoBaseModel):
 
     def join_subscription(self, subscription):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        if sub_membership and sub_membership.leave_date:
+        today = timezone.now().date()
+        if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date >= today):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = None if subscription.waiting else timezone.now().date()
+            join_date = None if subscription.waiting else today
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
-    def leave_subscription(self, subscription, changedate=None):
-        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        membership_present = sub_membership and sub_membership.leave_date is None
-        if membership_present and sub_membership.join_date is not None:
+    def leave_subscription(self, subscription=None, changedate=None):
+        subscription = subscription or self.subscription_current
+        if subscription:
+            sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
             changedate = changedate or timezone.now().date()
-            sub_membership.leave_date = changedate
-            sub_membership.save()
-        elif membership_present and sub_membership.join_date is None:
-            sub_membership.delete()
+            # if subscription will not have been left at change date already
+            if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date > changedate):
+                # if subscription will have been joined at change date
+                if sub_membership.join_date is not None and sub_membership.join_date <= changedate:
+                    sub_membership.leave_date = changedate
+                    sub_membership.save()
+                else:
+                    sub_membership.delete()
 
     @property
     def in_subscription(self):
