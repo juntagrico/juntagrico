@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load static %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Mails verschicken" %}
@@ -11,6 +13,7 @@
     {% vocabulary "co_member_pl" as v_co_member_pl %}
     {% vocabulary "share" as v_share %}
     {% config "enable_shares" as enable_shares %}
+    {% area_admin request as area_admin %}
     <form action="{% url mail_url %}" method="POST"class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group row">
@@ -20,11 +23,11 @@
             <div class="col-md-10" id="sender-email">
                 <select name="sender" class="form-control">
                     {% for area in area_admin %}
-                        {% if area.email is not None %}
-                            <option value="{{ area.email }}">
-                                {{ area.email }}
+                        {% for email in area.get_emails %}
+                            <option value="{{ email }}">
+                                {{ email }}
                             </option>
-                        {% endif %}
+                        {% endfor %}
                     {% endfor %}
                     {% if can_use_general_email %}
                         <option value="{% config "info_email" %}">
@@ -68,7 +71,7 @@
                 </div>
                 <label class="col-md-9" for="allsubscription">
                     {% blocktrans trimmed %}
-                    {{ v_subscription }}-BezieherIn (inkl. {{ v_co_member_pl }}
+                    {{ v_subscription }}-BezieherIn (inkl. {{ v_co_member_pl }})
                     {% endblocktrans %}
                 </label>
             </div>
@@ -191,10 +194,12 @@
     </form>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/attachment_appender.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/attachment_appender.js' %}">
     </script>
-    <script type="text/javascript" src="/static/external/tinymce/tinymce.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/tinymce/tinymce.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initMailer.js">
+    {% config 'mailer_richtext_options' as c_mailer_richtext_options %}
+    {{ c_mailer_richtext_options|json_script:"mailer_richtext_options" }}
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initMailer.js' %}">
     </script>
 {% endblock %}

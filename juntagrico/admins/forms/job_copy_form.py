@@ -13,7 +13,7 @@ from juntagrico.util.temporal import weekday_choices
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
-        fields = ['type', 'slots']
+        fields = ['type', 'slots', 'infinite_slots', 'multiplier']
 
     weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
@@ -36,7 +36,7 @@ class JobCopyForm(forms.ModelForm):
         self.fields['start_date'].initial = inst.time.date() + \
             datetime.timedelta(days=1)
         if is_naive(inst.time):
-            self.fields['time'].initial = gdtz().localize(inst.time)
+            self.fields['time'].initial = inst.time.astimezone(gdtz())
         else:
             self.fields['time'].initial = localtime(inst.time)
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
@@ -54,18 +54,17 @@ class JobCopyForm(forms.ModelForm):
 
         inst = self.instance
 
-        newjobs = []
+        newjob = None
         for date in self.get_dates(self.cleaned_data):
             dt = datetime.datetime.combine(date, time)
-            job = RecuringJob.objects.create(
-                type=inst.type, slots=inst.slots, time=dt)
-            newjobs.append(job)
-            job.save()
-
-        # create new objects
-        # HACK: admin expects a saveable object to be returned when commit=False
-        # return newjobs[-1]
-        return inst
+            if is_naive(dt):
+                dt = dt.astimezone(gdtz())
+            newjob = RecuringJob.objects.create(
+                type=inst.type, slots=inst.slots, infinite_slots=inst.infinite_slots,
+                multiplier=inst.multiplier, time=dt
+            )
+            newjob.save()
+        return newjob
 
     def save_m2m(self):
         # HACK: the admin expects this method to exist

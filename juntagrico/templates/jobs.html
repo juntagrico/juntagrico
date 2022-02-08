@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load static %}
+{% load juntagrico.config %}
+{% block styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'juntagrico/external/datatables.min.css' %}"/>
+{% endblock %}
 {% block page_title %}
     <h3>
         {% trans "Alle Einsätze im Überblick" %}
@@ -8,12 +12,12 @@
 {% endblock %}
 {% block content %}
     <div id="jobs">
-        {% include "snippets/snippet_jobs.html" %}
+        {% include "snippets/snippet_jobs.html" with show_free_slot_filter=True %}
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initJobs.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initJobs.js' %}">
     </script>
 {% endblock %}

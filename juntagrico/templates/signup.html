@@ -1,6 +1,6 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% load crispy_forms_tags %}
 {% block all_page_title %}
     {% vocabulary "member_type" as v_member_type %}
@@ -13,6 +13,7 @@
 {% block allcontent %}
     <div class="col-md-12">
         {% config "enable_shares" as c_enable_shares %}
+        {% config "bylaws" as c_bylaws %}
         {% config "business_regulations" as c_business_regulations %}
         {% config "gdpr_info" as c_gdpr_info %}
         {% config "share_price" as c_share_price %}
@@ -52,17 +53,20 @@
                 {% endblocktrans %}
             </div>
         </div>
+        {% if c_bylaws.strip or c_business_regulations.strip %}
         <div class="row mb-4">
             <div class="col-md-12">
                 {% blocktrans trimmed %}
                 Bevor du dich als {{ v_member_type }} anmeldest, lies bitte folgendes durch
                 {% endblocktrans %} :
                 <ul>
-                    <li>
-                        <a target="_blank" href="{% config "bylaws"|safe %}">
-                            {% trans "Statuten" %}
-                        </a>
-                    </li>
+                    {% if c_bylaws.strip %}
+                        <li>
+                            <a target="_blank" href="{{ c_bylaws|safe }}">
+                                {% trans "Statuten" %}
+                            </a>
+                        </li>
+                    {% endif %}
                     {% if c_business_regulations.strip %}
                         <li>
                             <a target="_blank" href="{{ c_business_regulations|safe }}">
@@ -73,6 +77,7 @@
                 </ul>
             </div>
         </div>
+        {% endif %}
         <div class="row">
             <div class="offset-md-2 col-md-8">
                 <form action="" method="post">

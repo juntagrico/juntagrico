@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load static %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
 {% block page_title %}
     <h3>
@@ -15,9 +17,7 @@
             {% trans "Adresse" %}
         </div>
         <div class="col-md-9">
-            {{ depot.addr_street }}
-            <br/>
-            {{ depot.addr_zipcode }} {{ depot.addr_location }}
+            {{ depot.location.address_html|safe }}
         </div>
     </div>
     <div class="row mb-3">
@@ -45,35 +45,29 @@
                 {% trans "Beschreibung" %}
             </div>
             <div class="col-md-9">
-                {{ depot.description|linebreaksbr|urlize }}
+                {{ depot.location.description|richtext|safe }}
+                {{ depot.description|richtext|safe }}
+            </div>
+        </div>
+    {% endif %}
+    {% if depot.access_information and show_access %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                {% trans "Zugangsbeschreibung" %}
+            </div>
+            <div class="col-md-9">
+                {{ depot.access_information|richtext|safe }}
             </div>
         </div>
     {% endif %}
     <div class="row">
-        <div class="offset-md-3 col-md-9">
-            {% if requires_map %}
-                <div style="height: 20rem" id="depot-map">
-                </div>
-            {% endif %}
+        <div class="offset-md-3 col-md-9" id="map-container">
         </div>
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript">
-        var depots = [];
-        {% if depot.has_geo %}
-            depots.push(
-            {name: '{{ depot.name }}',
-            addr_street: '{{ depot.addr_street }}',
-            addr_zipcode: '{{ depot.addr_zipcode }}',
-            addr_location: '{{ depot.addr_location }}',
-            latitude: '{{ depot.latitude }}',
-            longitude: '{{ depot.longitude }}',
-            code: '{{ depot.code }}'
-            });
-        {% endif %}
-    </script>
-    <script type="text/javascript" src="/static/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initDepot.js">
+    {{ depot.map_info|json_script:'depot_data' }}
+    <script type="text/javascript" src="{% static 'juntagrico/external/leaflet/leaflet.js' %}"></script>
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initDepot.js' %}">
     </script>
 {% endblock %}

@@ -5,3 +5,8 @@ recursive-include juntagrico/templates *
 recursive-include juntagrico/locale *
 include requirements.txt
 global-exclude *.pyc
+exclude manage.py
+exclude testsettings*.py
+exclude testurls*.py
+recursive-exclude test *
+recursive-exclude juntagrico_test_addon *

@@ -19,11 +19,13 @@ def share_pain001(request):
     share_ids = request.POST.get('share_ids').split('_')
     shares = [get_object_or_404(Share, id=int(sid)) for sid in share_ids]
     payable_shares = [share for share in shares if share.member.iban is not None and share.member.iban != '']
+    total_amount = 0
+    for share in payable_shares:
+        total_amount = total_amount + share.value
     context = {
         'shares': payable_shares,
         'nmbr_of_tx': len(payable_shares),
-        'amount': Config.share_price(),
-        'total_amount': len(payable_shares) * int(Config.share_price()),
+        'total_amount': total_amount,
         'banking_info': Config.organisation_bank_connection(),
         'version': '1.1.8',
         'now': now,

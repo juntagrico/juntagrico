@@ -1,6 +1,6 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block all_page_title %}
     {% vocabulary "member_type" as v_member_type %}
     <div class="page-title col-md-12">
@@ -10,8 +10,7 @@
     </div>
 {% endblock %}
 {% block allcontent %}
-    {% config "adminportal_name" as an%}
-    {% blocktrans with an=an%}
+    {% blocktrans with an=request.site.name%}
     {{ an }} verwendet Cookies.
     {{ an }} verwendet aber keine Cookies für Tracking etc.
     {{ an }} verwendet Session Cookies und Cookies zur CSRF Bekämpfung.

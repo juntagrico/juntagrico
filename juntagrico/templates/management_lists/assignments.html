@@ -1,0 +1,102 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% block page_title %}
+    <h3>
+        {% vocabulary "assignment_pl" %}
+    </h3>
+{% endblock %}
+{% block list %}
+    {% show_core as b_show_core %}
+    {% requires_core as b_requires_core %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% vocabulary "subscription" as v_subscription %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "BezieherInnen" %}
+                </th>
+                <th class="search-builder-column">
+                    {% trans "Startdatum" %}
+                </th>
+                <th class="search-builder-column">
+                    {% blocktrans %}{{ v_subscription }}-Status{% endblocktrans %}
+                </th>
+                <th class="search-builder-column">
+                    {% vocabulary "assignment_pl" %}
+                </th>
+                <th class="search-builder-column">
+                    {% blocktrans %}{{ v_assignment_pl }} benötigt{% endblocktrans %}
+                </th>
+                <th class="search-builder-column">
+                    {% blocktrans %}{{ v_assignment_pl }} Status{% endblocktrans %}
+                </th>
+                {% if b_show_core and b_requires_core %}
+                        <th class="search-builder-column">
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich{% endblocktrans %}
+                        </th>
+                        <th class="search-builder-column">
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich benötigt{% endblocktrans %}
+                        </th>
+                        <th class="search-builder-column">
+                            {% blocktrans %}{{ v_assignment_pl }} Kernbereich Status{% endblocktrans %}
+                        </th>
+                 {% endif %}
+                <th class="d-none">
+                    {% trans "Emails" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in management_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.subscription.id %}">
+                            {{ subscription.subscription.recipients_names }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ subscription.subscription.activation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ subscription.subscription.state_text }}
+                    </td>
+                    <td>
+                        {{ subscription.assignments|floatformat }}
+                    </td>
+                    <td>
+                        {{ subscription.subscription.required_assignments }}
+                    </td>
+                    <td>
+                        {{ subscription.assignments_progress|floatformat:0 }}%
+                    </td>
+                    {% if b_show_core and b_requires_core %}
+                        <th>
+                            {{ subscription.core_assignments|floatformat:0 }}
+                        </th>
+                        <th>
+                            {{ subscription.subscription.required_core_assignments }}
+                        </th>
+                        <th>
+                            {{ subscription.core_assignments_progress|floatformat:0 }}%
+                        </th>
+                    {% endif %}
+                    <td class="email d-none">
+                            {% for recipient in subscription.subscription.recipients %}
+                                {{ recipient.email }}
+                                {% if not forloop.last %}
+                                    ,
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script type='text/javascript'>
+        var search_builder_enabled=true;
+        var search_builder_columns='.search-builder-column';
+    </script>
+{% endblock %}

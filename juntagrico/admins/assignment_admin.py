@@ -8,6 +8,12 @@ class AssignmentAdmin(BaseAdmin):
     search_fields = ['member__first_name', 'member__last_name']
     raw_id_fields = ['member', 'job']
 
+    def has_change_permission(self, request, obj=None):
+        return (obj is None or obj.can_modify(request)) and super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return (obj is None or obj.can_modify(request)) and super().has_delete_permission(request, obj)
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.has_perm('juntagrico.is_area_admin') and (
@@ -20,5 +26,5 @@ class AssignmentAdmin(BaseAdmin):
                                            db_field.name,
                                            'job',
                                            'juntagrico.is_area_admin',
-                                           JobDao.ids_for_area_by_contact)
+                                           JobDao.for_area_by_contact)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

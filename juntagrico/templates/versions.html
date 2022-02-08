@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block page_title %}
+    <h3>
+        {% trans "Versionen" %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% for app, version in versions.items %}
+    <div class="row ">
+        <div class="col-md-3">
+            {{ app }}
+        </div>
+        <div class="col-md-9">
+            {{ version }}
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

@@ -1,7 +1,10 @@
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from django.db import transaction
+from django.core import management
 
-from juntagrico.config import Config
+from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.member import Member
@@ -10,21 +13,20 @@ from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import get_email_content, base_dict
 
 
-def get_server():
-    return 'http://' + Config.adminportal_server_url()
-
-
 class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
-        subscription = Subscription.objects.all()[0]
-        shares = Share.objects.all()[:2]
-        job = RecuringJob.objects.all()[0]
-        member = Member.objects.filter(subscription__isnull=False)[0]
-        member_with_future_sub = Member.objects.filter(future_subscription__isnull=False)[0]
-        member_wo_subs = Member.objects.filter(subscription__isnull=True)[0]
-        co_member = Member.objects.filter(subscription__isnull=False)[0]
-        depot = Depot.objects.all()[0]
+        with transaction.atomic(durable=True):
+            # generate temporary test data to ensure that required objects are available
+            management.call_command('generate_testdata')
+            subscription = Subscription.objects.all()[0]
+            shares = Share.objects.all()[:2]
+            job = RecuringJob.objects.all()[0]
+            member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
+            member_with_future_sub = Member.objects.filter(future_subscription__isnull=False)[0]
+            member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
+            depot = Depot.objects.all()[0]
+            transaction.set_rollback(True)  # force rollback
 
         print('*** welcome  mit abo***')
 
@@ -49,14 +51,15 @@ class Command(BaseCommand):
 
         print('*** n_sub ***')
 
-        print(get_email_content('n_sub', base_dict({'subscription': subscription})))
+        print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
         print()
 
         print('*** co_welcome ***')
 
         print(get_email_content('co_welcome', base_dict({
             'co_member': co_member,
-            'password': 'password'
+            'password': 'password',
+            'sub': co_member.subscription_future or co_member.subscription_current
         })))
         print()
 
@@ -65,7 +68,8 @@ class Command(BaseCommand):
         print(get_email_content('co_added', base_dict({
             'co_member': co_member,
             'password': 'password',
-            'new_shares': '9'
+            'new_shares': '9',
+            'sub': co_member.subscription_future or co_member.subscription_current
         })))
         print()
 
@@ -74,16 +78,17 @@ class Command(BaseCommand):
         print(get_email_content('password', base_dict({
             'email': 'email@email.org',
             'password': 'password',
+            'protocol': 'https',
+            'domain': Site.objects.get_current().domain,
+            'uid': 'uid',
+            'token': 'token'
         })))
         print()
 
         print('*** j_reminder ***')
 
-        contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
         print(get_email_content('j_reminder', base_dict({
-            'contact': contact,
-            'job': job,
-            'participants': ", ".join([str(member), str(co_member)])
+            'job': job
         })))
         print()
 

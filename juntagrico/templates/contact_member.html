@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load static %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Kontakt" %}
@@ -10,14 +11,15 @@
     {% if is_sent %}
         <div class="alert alert-success">
             {% trans "Nachricht gesandt" %}
-            <a href="{% url 'job' job_id %}/" style="text-decoration: underline">
-                {% trans "zurück zum Einsatz" %}
+            <a href="{{ back_url }}/" style="text-decoration: underline">
+                {% trans "zurück" %}
             </a>
         </div>
     {% else %}
         <br/>
-        <form action="{% url 'contact-member' member_id job_id %}" method="POST" enctype="multipart/form-data">
+        <form action="{% url 'contact-member' member_id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+        <input name="back_url" type="hidden" value="{{ back_url }}">
             <div class="form-group row">
                 <label class="col-md-3">
                     {% trans "Absender" %}
@@ -90,6 +92,6 @@
     {% endif %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/attachment_appender.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/attachment_appender.js' %}">
     </script>
 {% endblock %}

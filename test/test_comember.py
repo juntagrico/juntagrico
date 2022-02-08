@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.core import mail
 
 from juntagrico.models import Member, Share, Subscription
 from test.util.test import JuntagricoTestCase
@@ -8,9 +9,10 @@ class CoMemberTests(JuntagricoTestCase):
 
     def setUp(self):
         super().setUp()
-        self.member4 = self.create_member('email4@email.org')
-        self.member4.iban = 'CH6189144414396247884'
-        self.member4.save()
+        self.co_member = self.create_member('co_member@email.org')
+        self.co_member.iban = 'CH6189144414396247884'
+        self.co_member.save()
+        mail.outbox.clear()
 
     @staticmethod
     def get_co_member_data(email):
@@ -36,7 +38,9 @@ class CoMemberTests(JuntagricoTestCase):
         self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data, 302)
         self.assertEqual(Member.objects.filter(email=new_co_member_data['email']).count(), 1)
         self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 1)
-        self.assertEqual(Subscription.objects.filter(members__email=new_co_member_data['email']).count(), 1)
+        self.assertEqual(Subscription.objects.filter(subscriptionmembership__member__email=new_co_member_data['email']).count(), 1)
+        # membership and share order emails to co-member & admin notifications for the same
+        self.assertEqual(len(mail.outbox), 4)
 
     def testAddExistingCoMemberWithSub(self):
         # existing member with subs can not be added as co members
@@ -47,20 +51,20 @@ class CoMemberTests(JuntagricoTestCase):
         # no new shares should be created
         self.assertEqual(Share.objects.filter(member=self.member2).count(), 0)
         # member now is not part of subscription
-        self.assertNotEqual(self.member2.subscription, self.sub)
+        self.assertNotEqual(self.member2.subscription_current, self.sub)
 
     def testAddExistingCoMember(self):
-        co_member_before = self.member4.__dict__
-        new_co_member_data = self.get_co_member_data(self.member4.email)
+        co_member_before = self.co_member.__dict__
+        new_co_member_data = self.get_co_member_data(self.co_member.email)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data, 302)
-        self.member4.refresh_from_db()
+        self.co_member.refresh_from_db()
         # member still exists and is unchanged
-        self.assertEqual(self.member4.id, co_member_before['id'])
-        self.assertEqual(self.member4.user_id, co_member_before['user_id'])
-        self.assertEqual(self.member4.iban, co_member_before['iban'])
-        self.assertEqual(self.member4.addr_street, co_member_before['addr_street'])
-        self.assertEqual(self.member4.first_name, co_member_before['first_name'])
+        self.assertEqual(self.co_member.id, co_member_before['id'])
+        self.assertEqual(self.co_member.user_id, co_member_before['user_id'])
+        self.assertEqual(self.co_member.iban, co_member_before['iban'])
+        self.assertEqual(self.co_member.addr_street, co_member_before['addr_street'])
+        self.assertEqual(self.co_member.first_name, co_member_before['first_name'])
         # no new shares should be created
-        self.assertEqual(Share.objects.filter(member=self.member4).count(), 0)
+        self.assertEqual(Share.objects.filter(member=self.co_member).count(), 0)
         # member now is part of subscription
-        self.assertEqual(self.member4.subscription, self.sub)
+        self.assertEqual(self.co_member.subscription_current, self.sub)

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load static %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Alle Lieferungen im Überblick" %}
@@ -10,8 +11,8 @@
     {% include "snippets/snippet_delivery.html" %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/external/datatables.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/external/require.min.js" data-main="/static/js/initDeliveries.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initDeliveries.js' %}">
     </script>
 {% endblock %}

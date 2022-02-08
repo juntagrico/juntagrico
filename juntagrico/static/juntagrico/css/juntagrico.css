@@ -1,0 +1,409 @@
+/* general overrides of bootstrap */
+ul {
+    padding-left: 20px;
+}
+
+/* general stuff  checked */
+html, body {
+    font-family: "Source Sans Pro Light";
+    background-color: #fefffa;
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Source Sans Pro Regular";
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro Light';
+    src: url('/static/juntagrico/fonts/SourceSansPro-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro Regular';
+    src: url('/static/juntagrico/fonts/SourceSansPro-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+a {
+    color: #66cc66;
+}
+
+a:hover, a:focus {
+    color: #999999;
+}
+
+a.canceled {
+    color: #ff3399;
+    text-decoration: line-through;
+}
+
+a.canceled:hover, a.canceled:focus {
+    color: #ff3399;
+}
+
+/* crispy-form */
+.asteriskField {
+    padding-left: 0.2em;
+}
+
+body#juntagrico-views-profile .asteriskField {
+    display: none;
+}
+
+/* logo stuff checked */
+.juntagrico-logo {
+    background: url(/static/juntagrico/img/juntagrico.png) 0 0;
+    display: inline-block;
+    width: 580px;
+    height: 161px;
+}
+
+/* title stuff checked */
+.page-title h3, .allcontent h3 {
+    margin-top: 0;
+    margin-bottom: 40px;
+    color: #66cc66;
+    font-size: 30pt;
+}
+
+.edit i, .delete i {
+    font-size: 0.7em;
+}
+
+.edit, .delete {
+    vertical-align: top;
+}
+
+a.delete {
+    color: #999;
+}
+
+a:hover.delete {
+    color: red;
+}
+
+/* container stuff checked */
+.page-container {
+    min-height: 100%;
+    position: relative;
+    padding: 0 40px 0 40px;
+}
+
+@media (min-width: 768px) {
+    .page-container {
+        width: 750px
+    }
+}
+
+@media (min-width: 992px) {
+    .page-container {
+        width: 970px
+    }
+}
+
+@media (min-width: 1200px) {
+    .page-container {
+        width: 1170px
+    }
+}
+
+/* layouts */
+body.wide-layout > .page-container {
+    width: 95%;
+    max-width: 95%;
+}
+
+/* row size stuff checked */
+.page-container > div.row {
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+div.allcontent.row {
+    margin-top: 0;
+}
+
+div.all-page-title.row {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.footer {
+    margin-top: 60px;
+    margin-bottom: 50px;
+}
+
+/* messages stuff checked */
+.messages {
+    margin-bottom: 2em;
+}
+
+/* menu stuff checked */
+.main-menu {
+    font-size: 19px;
+    font-family: "Source Sans Pro Regular";
+}
+
+.main-menu-small {
+    font-size: 14px;
+}
+
+.main-menu li a, .admin-menu li a {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 0;
+    margin-top: 2px;
+    line-height: 22px;
+}
+
+.main-menu.separator {
+    height: 12px;
+}
+
+.admin-menu {
+    font-family: "Source Sans Pro Light";
+    font-size: 14px;
+}
+
+.version {
+    margin-top: 6px;
+    font-size: 12px;
+    display: block;
+}
+
+ul.subadmin-menu {
+    padding-left: 7px;
+}
+
+ul.sub-menu {
+    font-family: "Source Sans Pro Light";
+    font-size: 14px;
+    padding-left: 7px;
+}
+
+li.inline {
+    display: inline-block;
+}
+
+a.inline {
+    display: inline-block;
+    padding-right: 0;
+}
+
+.nav-link, .nav-link:focus {
+    color: black;
+}
+
+.nav-link.active, .nav-link.active:focus {
+    color: #66cc66;
+}
+
+.nav-link.active:hover {
+    color: black;
+}
+
+.nav-link:hover {
+    color: #66cc66;
+}
+
+.nav-link.yellow {
+    color: #ffcc66;
+}
+
+.nav-link.yellow:hover, .nav-link.yellow:focus {
+    color: #999999;
+}
+
+/* assignment widget */
+.partner-assignments {
+    opacity:0.5;
+}
+
+/* next jobs widget menu stuff checked */
+.jobs-widget .next-jobs {
+    margin-top: 5px;
+}
+
+.jobs-widget .next-jobs .time {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* mail recipients stuff checked */
+textarea#recipients {
+    width: 100%;
+}
+
+textarea#recipients[disabled=disabled] {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+#edit-recipients-action {
+    font-size: smaller;
+}
+
+#edit-recipients-action::before {
+    content: "(";
+}
+
+#edit-recipients-action::after {
+    content: ")";
+}
+
+/* mail attachement stuff checked */
+.file-upload {
+    line-height: 30px;
+}
+
+.file-upload-button {
+    display: inline-block;
+    position: relative;
+}
+
+.file-upload-button > input[type=file] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+}
+
+/* core assignment stuff checked */
+.core {
+    color: #780fff;
+}
+
+/* map stuff checked */
+#map-canvas {
+    width: 100%;
+    height: 400px;
+}
+
+#location-map {
+    height: 20rem;
+}
+
+/* stuff for responsive tables */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    font-weight: 900;
+    font-size: 27px;
+    line-height: 1;
+    color: #66cc66;
+    background: inherit;
+    border: none;
+    box-shadow: none;
+    margin-top: 0;
+    padding: 8px 0.445rem 8px 0;
+    content: "\f105";
+    top: 0px;
+    left: 0px;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before {
+    background: inherit;
+    content: "\f107";
+}
+
+.dtr-title > input {
+    display: none;
+}
+
+#free_slot_filter_form {
+    display: none;  /* hides filter if the column is not shown in the responsive view */
+}
+
+.job-status #free_slot_filter_form {
+    display: initial;
+}
+
+/* arrows for collapsible list elements */
+.details-control, .shown .details-control {
+    font-family: 'Font Awesome 5 Free';
+    font-style: normal;
+    font-weight: 900;
+    font-size: 27px;
+    line-height: 1;
+    color: #66cc66;
+}
+
+.details-control::before {
+    content: "\f105";
+}
+
+.shown .details-control::before {
+    content: "\f107";
+}
+
+/* increment buttons stuff*/
+.btn-increment, .btn-decrement {
+    line-height: 1;
+}
+
+/* data table stuff checked */
+th {
+    font-weight: normal;
+}
+
+.table th {
+    border-top-style: none;
+}
+
+#filter {
+    width: 100%;
+}
+
+#filter table {
+    width: 100%;
+    font-size: 10px;
+}
+
+#managementlist {
+    width: 100%;
+}
+
+#managementlist table {
+    width: 100%;
+    font-size: 14px;
+}
+
+#managementlist table th {
+    vertical-align: top;
+    padding-left: 0;
+}
+
+/* deliveries stuff checked */
+.delivery-table {
+    width: 70%;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+/* cookie consent stuff checked */
+.cc-window{
+    font-family: "Source Sans Pro Light";
+    background-color: #fefffa;
+}
+.cc-btn{
+    font-size: 0.875rem;
+}
+
+/* contact display */
+.contact {
+    display: block;
+}
+
+.contact span{
+    display: block;
+    white-space: nowrap;
+}

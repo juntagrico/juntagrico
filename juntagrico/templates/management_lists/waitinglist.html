@@ -1,6 +1,6 @@
 {% extends "management_lists/man_list_base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Warteliste" %}
@@ -45,7 +45,7 @@
                 <tr>
                     <td>
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
-                            {{ subscription.overview }}
+                            {{ subscription }}
                         </a>
                     </td>
                     <td>

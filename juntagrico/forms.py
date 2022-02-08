@@ -2,7 +2,7 @@ from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML, Div
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea
 from django.urls import reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -127,8 +127,16 @@ class MemberBaseForm(ModelForm):
                             'addr_street', 'addr_zipcode', 'addr_location',
                             'phone', 'mobile_phone', 'email', 'birthday')
 
+    @staticmethod
+    def duplicate_email_message():
+        return mark_safe(
+            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + '<a href="' + reverse(
+                "home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+        )
+
 
 class RegisterMemberForm(MemberBaseForm):
+    comment = CharField(required=False, max_length=4000, label='Kommentar', widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
 
     def __init__(self, *args, **kwargs):
@@ -136,27 +144,49 @@ class RegisterMemberForm(MemberBaseForm):
         self.fields['agb'].label = self.agb_label()
         self.helper.layout = Layout(
             *self.base_layout,
+            'comment',
             'agb',
             FormActions(
                 Submit('submit', _('Anmelden'), css_class='btn-success'),
             )
         )
-        self.fields['email'].error_messages['unique'] = mark_safe(
-            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + '<a href="' + reverse("home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
-        )
+        self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
 
     @staticmethod
     def agb_label():
-        return _('Ich habe {}{}{} gelesen und erkläre meinen Willen, "{}" beizutreten.\
-            Hiermit beantrage ich meine Aufnahme.').format(
-            '<a target="_blank" href="{}">{}</a>'.format(Config.bylaws(), _('die Statuten')),
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.business_regulations(), _('das Betriebsreglement')
-            ) if Config.business_regulations().strip() else '',
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.gdpr_info(), _('die DSGVO Infos')
-            ) if Config.gdpr_info().strip() else '',
-            Config.organisation_long_name()
+        documents = {
+            'die Statuten': Config.bylaws,
+            'das Betriebsreglement': Config.business_regulations,
+            'die DSGVO Infos': Config.gdpr_info,
+        }
+        documents_html = []
+        for text, link in documents.items():
+            if link().strip():
+                documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
+        if documents_html:
+            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(
+                (' ' + _('und') + ' ').join(documents_html),
+                Config.organisation_long_name()
+            )
+        else:
+            return _('Ich erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(Config.organisation_long_name())
+
+
+class RegisterSummaryForm(Form):
+    comment = CharField(required=False, max_length=4000, label='',
+                        widget=Textarea(attrs={"rows": 3, "class": "textarea form-control"}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'comment',
+            FormActions(
+                Submit('submit', _('Verbindlich bestellen'), css_class='btn btn-success'),
+                HTML('<a href="{0}" class="btn">{1}</a>'.format(reverse('cs-cancel'), _("Abbrechen")))
+            )
         )
 
 
@@ -178,7 +208,7 @@ class CoMemberBaseForm(MemberBaseForm):
         self.existing_emails = existing_emails or []  # list of emails that can not be used
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data['email'].lower()
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
                                             .format(Config.vocabulary('co_member_pl'))))
@@ -198,6 +228,7 @@ class CoMemberBaseForm(MemberBaseForm):
         return email
 
     def clean(self):
+        # disable default uniqueness check
         return self.cleaned_data
 
     @staticmethod
@@ -288,16 +319,17 @@ class SubscriptionTypeField(Field):
 
 
 class SubscriptionPartBaseForm(Form):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
+        self._product_method = product_method
 
     def _collect_type_fields(self):
         containers = []
-        for product in SubscriptionProductDao.get_all():
+        for product in self._product_method().all():
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
@@ -370,7 +402,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Bestandteile!{}').format(
                 Config.vocabulary('share_pl'),
                 '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                    reverse('share-order'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
+                    reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
             ))
             raise ValidationError(share_error_message, code='share_error')
         # check that at least one subscription was selected
@@ -383,3 +415,12 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             ))
             raise ValidationError(amount_error_message, code='amount_error')
         return super().clean()
+
+
+class NicknameForm(Form):
+    nickname = CharField(label=_('{}-Spitzname').format(Config.vocabulary('subscription')), max_length=30, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', _('Speichern')))

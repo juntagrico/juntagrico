@@ -1,10 +1,13 @@
 from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
+from django.core import mail
 
+from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.extrasubs import ExtraSubscriptionCategory, ExtraSubscriptionType
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
+from juntagrico.entity.location import Location
+from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -16,13 +19,19 @@ class JuntagricoTestCase(TestCase):
 
     def setUp(self):
         self.set_up_member()
+        self.set_up_admin()
         self.set_up_shares()
         self.set_up_area()
+        self.set_up_location()
         self.set_up_job()
         self.set_up_depots()
         self.set_up_sub_types()
         self.set_up_sub()
+        self.set_up_extra_sub_types()
         self.set_up_extra_sub()
+        self.set_up_mail_template()
+        self.set_up_deliveries()
+        mail.outbox.clear()
 
     @staticmethod
     def create_member(email):
@@ -33,6 +42,7 @@ class JuntagricoTestCase(TestCase):
                        'addr_zipcode': 'addr_zipcode',
                        'addr_location': 'addr_location',
                        'phone': 'phone',
+                       'mobile_phone': 'phone',
                        'confirmed': True,
                        }
         member = Member.objects.create(**member_data)
@@ -47,32 +57,71 @@ class JuntagricoTestCase(TestCase):
         self.member = self.create_member('email1@email.org')
         self.member2 = self.create_member('email2@email.org')
         self.member3 = self.create_member('email3@email.org')
+        self.member4 = self.create_member('email4@email.org')
+        self.member5 = self.create_member('email5@email.org')
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
+            Permission.objects.get(codename='is_area_admin'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_filter_members'))
+        self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_filter_subscriptions'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_subscription'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_member'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_share'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_assignment'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_subscriptionpart'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_view_lists'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_view_exports'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_operations_group'))
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='can_send_mails'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='can_load_templates'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='change_subscriptionpart'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_subscription_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_member_creation'))
+        self.member.user.user_permissions.add(
+            Permission.objects.get(codename='notified_on_share_creation'))
         self.member.user.save()
+
+    def set_up_admin(self):
         """
-        admin member
+        admin members
         """
-        admin_data = {'first_name': 'admin',
-                      'last_name': 'last_name',
-                      'email': 'admin@email.org',
-                      'addr_street': 'addr_street',
-                      'addr_zipcode': 'addr_zipcode',
-                      'addr_location': 'addr_location',
-                      'phone': 'phone',
-                      'confirmed': True,
-                      }
-        self.admin = Member.objects.create(**admin_data)
+        self.admin = self.create_member('admin@email.org')
         self.admin.user.set_password("123456")
         self.admin.user.is_staff = True
         self.admin.user.is_superuser = True
         self.admin.user.save()
+        self.area_admin = self.create_member('areaadmin@email.org')
+        self.area_admin.user.set_password("123456")
+        self.area_admin.user.is_staff = True
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='is_area_admin'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_activityarea'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_assignment'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_jobtype'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_recuringjob'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='change_onetimejob'))
+        self.area_admin.user.save()
 
     def get_share_data(self, member):
         return {'member': member,
@@ -91,28 +140,70 @@ class JuntagricoTestCase(TestCase):
         shares
         """
         self.share_data = self.get_share_data(self.member)
-        Share.objects.create(**self.share_data)
+        self.share = Share.objects.create(**self.share_data)
+        self.share_data4 = self.get_share_data(self.member4)
+        self.share4 = Share.objects.create(**self.share_data4)
+        # create cancelled but not paid back share
+        self.share_data5 = self.get_share_data(self.member5)
+        self.share_data5.update({
+            'booking_date': '2017-12-27',
+            'cancelled_date': '2017-12-27',
+            'termination_date': '2017-12-27',
+        })
+        self.share5 = Share.objects.create(**self.share_data5)
 
     def set_up_area(self):
         """
         area
         """
         area_data = {'name': 'name',
-                     'coordinator': self.member}
+                     'coordinator': self.area_admin,
+                     'auto_add_new_members': True}
         area_data2 = {'name': 'name2',
-                      'coordinator': self.member,
+                      'coordinator': self.area_admin,
                       'hidden': True}
         self.area = ActivityArea.objects.create(**area_data)
         self.area2 = ActivityArea.objects.create(**area_data2)
+        self.member.areas.add(self.area)
+        self.member.save()
+
+    def set_up_location(self):
+        """
+        location
+        """
+        location_data = {'name': 'location1',
+                         'latitude': '12.513',
+                         'longitude': '1.314',
+                         'addr_street': 'Fakestreet 123',
+                         'addr_zipcode': '1000',
+                         'addr_location': 'Faketown',
+                         'description': 'Place to be'}
+        location_data2 = {'name': 'location2'}
+        self.location = Location.objects.create(**location_data)
+        self.location2 = Location.objects.create(**location_data2)
+        location_data_depot = {'name': 'Depot location',
+                               'latitude': '12.513',
+                               'longitude': '1.314',
+                               'addr_street': 'Fakestreet 123',
+                               'addr_zipcode': '1000',
+                               'addr_location': 'Faketown',
+                               'description': 'Place to be'}
+        self.location_depot = Location.objects.create(**location_data_depot)
 
     def set_up_job(self):
         """
         job_type
         """
-        job_type_data = {'name': 'name',
+        job_type_data = {'name': 'nameot',
                          'activityarea': self.area,
-                         'default_duration': 2}
+                         'default_duration': 2,
+                         'location': self.location}
         self.job_type = JobType.objects.create(**job_type_data)
+        job_type_data2 = {'name': 'nameot2',
+                          'activityarea': self.area2,
+                          'default_duration': 4,
+                          'location': self.location2}
+        self.job_type2 = JobType.objects.create(**job_type_data2)
         """
         job_extra
         """
@@ -138,6 +229,11 @@ class JuntagricoTestCase(TestCase):
         self.job3 = RecuringJob.objects.create(**job_data)
         self.job4 = RecuringJob.objects.create(**job_data2)
         self.job5 = RecuringJob.objects.create(**job_data)
+        self.infinite_job = RecuringJob.objects.create(**{
+            'infinite_slots': True,
+            'time': time,
+            'type': self.job_type
+        })
         """
         one time jobs
         """
@@ -146,7 +242,8 @@ class JuntagricoTestCase(TestCase):
                              'activityarea': self.area,
                              'default_duration': 2,
                              'slots': 1,
-                             'time': time}
+                             'time': time,
+                             'location': self.location2}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
         """
         assignment
@@ -154,23 +251,23 @@ class JuntagricoTestCase(TestCase):
         assignment_data = {'job': self.job2,
                            'member': self.member,
                            'amount': 1}
-        Assignment.objects.create(**assignment_data)
+        self.assignment = Assignment.objects.create(**assignment_data)
 
     def set_up_depots(self):
         """
         depots
         """
         depot_data = {
-            'code': 'c1',
             'name': 'depot',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot = Depot.objects.create(**depot_data)
         depot_data = {
-            'code': 'c2',
             'name': 'depot2',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot2 = Depot.objects.create(**depot_data)
 
     def set_up_sub_types(self):
@@ -218,7 +315,7 @@ class JuntagricoTestCase(TestCase):
         """
         sub_data = {'depot': self.depot,
                     'future_depot': None,
-                    'activation_date': '2017-03-27',
+                    'activation_date': timezone.now().date(),
                     'deactivation_date': None,
                     'creation_date': '2017-03-27',
                     'start_date': '2018-01-01',
@@ -232,37 +329,76 @@ class JuntagricoTestCase(TestCase):
                      }
         self.sub = Subscription.objects.create(**sub_data)
         self.sub2 = Subscription.objects.create(**sub_data2)
-        self.member.subscription = self.sub
-        self.member.save()
+        self.member.join_subscription(self.sub)
         self.sub.primary_member = self.member
         self.sub.save()
-        self.member3.subscription = self.sub
-        self.member3.save()
-        self.member2.future_subscription = self.sub2
-        self.member2.save()
+        self.member3.join_subscription(self.sub)
+        self.member2.join_subscription(self.sub2)
         self.sub2.primary_member = self.member2
         self.sub2.save()
         SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+
+    def set_up_extra_sub_types(self):
+        """
+        subscription product, size and types
+        """
+        extrasub_product_data = {
+            'name': 'extraproduct',
+            'is_extra': True
+        }
+        self.extrasub_product = SubscriptionProduct.objects.create(**extrasub_product_data)
+        extrasub_size_data = {
+            'name': 'extrasub_name',
+            'long_name': 'sub_long_name',
+            'units': 1,
+            'visible': True,
+            'depot_list': True,
+            'product': self.extrasub_product,
+            'description': 'sub_desc'
+        }
+        self.extrasub_size = SubscriptionSize.objects.create(**extrasub_size_data)
+        extrasub_type_data = {
+            'name': 'extrasub_type_name',
+            'long_name': 'sub_type_long_name',
+            'size': self.extrasub_size,
+            'shares': 0,
+            'visible': True,
+            'required_assignments': 10,
+            'price': 1000,
+            'description': 'sub_type_desc'}
+        self.extrasub_type = SubscriptionType.objects.create(**extrasub_type_data)
 
     def set_up_extra_sub(self):
         '''
         extra subscription
         '''
-        esub_cat_data = {'name': 'Extrasub_Category'}
-        self.esub_cat = ExtraSubscriptionCategory.objects.create(**esub_cat_data)
-        esub_type_data = {'name': 'Extrasub_Type',
-                          'description': 'desc',
-                          'category': self.esub_cat}
-        self.esub_type = ExtraSubscriptionType.objects.create(**esub_type_data)
+        esub_data = {'subscription': self.sub2,
+                     'type': self.extrasub_type}
+        self.esub = SubscriptionPart.objects.create(**esub_data)
+        self.esub2 = SubscriptionPart.objects.create(**esub_data)
+
+    def set_up_mail_template(self):
+        mail_template_data = {'name': 'MailTemplate'}
+        self.mail_template = MailTemplate.objects.create(**mail_template_data)
+
+    def set_up_deliveries(self):
+        delivery_data = {'delivery_date': '2017-03-27',
+                         'subscription_size': self.sub_size}
+        self.delivery1 = Delivery.objects.create(**delivery_data)
+        delivery_data['delivery_date'] = '2017-03-28'
+        self.delivery2 = Delivery.objects.create(**delivery_data)
+        DeliveryItem.objects.create(delivery=self.delivery1)
 
     def assertGet(self, url, code=200, member=None):
         login_member = member or self.member
         self.client.force_login(login_member.user)
         response = self.client.get(url)
         self.assertEqual(response.status_code, code)
+        return response
 
     def assertPost(self, url, data=None, code=200, member=None):
         login_member = member or self.member
         self.client.force_login(login_member.user)
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, code)
+        return response

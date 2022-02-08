@@ -13,6 +13,7 @@ class JobTests(JuntagricoTestCase):
 
     def testJob(self):
         self.assertGet(reverse('job', args=[self.job1.pk]))
+        self.assertGet(reverse('job', args=[self.one_time_job1.pk]))
 
     def testPastJob(self):
         self.assertGet(reverse('memberjobs'))
@@ -37,6 +38,14 @@ class JobTests(JuntagricoTestCase):
         self.assertPost(reverse('job', args=[self.job4.pk]), {'jobs': 3}, 302)
         self.assertEqual(self.job4.assignment_set.count(), 5)
         self.assertGet(reverse('job', args=[self.job4.pk]))
+
+    def testInfiniteSlots(self):
+        self.assertPost(reverse('job', args=[self.infinite_job.pk]), {'jobs': 3}, 302)
+        self.assertEqual(self.infinite_job.assignment_set.count(), 3)
+        self.assertGet(reverse('job', args=[self.infinite_job.pk]))
+
+    def testOverassignement(self):
+        self.assertPost(reverse('job', args=[self.job4.pk]), {'jobs': 1000})
 
     def testHours(self):
         with self.settings(ASSIGNMENT_UNIT='HOURS'):

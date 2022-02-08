@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load config %}
+{% load juntagrico.config %}
 {% block page_title %}
     <h3>
         {% trans "Exporte" %}
@@ -10,6 +10,7 @@
     {% vocabulary "member_pl" as v_member_pl %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
     <div class="row mb-4">
         <div class="col-md-3">
             {{ v_member_pl }}
@@ -36,6 +37,16 @@
         </div>
         <div class="col-md-9">
             <a href="{% url 'export-shares' %}">
+                {% trans "exportieren" %}
+            </a>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            {{ v_subscription_pl }}
+        </div>
+        <div class="col-md-9">
+            <a href="{% url 'export-subscriptions' %}">
                 {% trans "exportieren" %}
             </a>
         </div>
