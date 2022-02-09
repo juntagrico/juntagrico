@@ -1,4 +1,4 @@
-from django.urls import re_path
+from django.urls import path, reverse
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
@@ -23,7 +23,6 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     exclude = ['reminder_sent']
     inlines = [ContactInline, AssignmentInline]
     readonly_fields = ['free_slots']
-    JOB_COPY_PATH = 'copy_job'
 
     def has_change_permission(self, request, obj=None):
         return (self.is_copy_view(request) or obj is None or obj.can_modify(request)
@@ -47,7 +46,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     @single_element_action('Genau 1 Job auswählen!')
     def mass_copy_job(self, request, queryset):
         inst, = queryset.all()
-        return HttpResponseRedirect(self.JOB_COPY_PATH + '/%s/' % inst.id)
+        return HttpResponseRedirect(reverse('admin:action-mass-copy-job', args=[inst.id]))
 
     @admin.action(description=_('Jobs kopieren'))
     def copy_job(self, request, queryset):
@@ -57,24 +56,24 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
             newjob.save()
 
     def get_form(self, request, obj=None, **kwds):
-        if self.JOB_COPY_PATH in request.path:
+        if self.is_copy_view(request):
             return JobCopyForm
         return super().get_form(request, obj, **kwds)
 
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            re_path(rf'^{self.JOB_COPY_PATH}/(?P<jobid>.*?)/$',
-                    self.admin_site.admin_view(self.copy_job_view))
+            path('mass_copy_job/<str:jobid>/',
+                 self.admin_site.admin_view(self.copy_job_view), name='action-mass-copy-job')
         ]
         return my_urls + urls
 
-    def is_copy_view(self, request):
-        return self.JOB_COPY_PATH in request.path
+    @staticmethod
+    def is_copy_view(request):
+        return request.resolver_match.url_name == 'action-mass-copy-job'
 
     def copy_job_view(self, request, jobid):
-        res = self.change_view(request, jobid, extra_context={
-            'title': 'Copy job'})
+        res = self.change_view(request, jobid, extra_context={'title': 'Copy job'})
         return res
 
     def get_queryset(self, request):
