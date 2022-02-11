@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Dev
+---
+
+Fixes
+^^^^^
+* Fix datepicker in management lists
+
 1.5.0
 -----
 
