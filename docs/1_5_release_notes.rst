@@ -1,12 +1,13 @@
 Release Notes
 =============
 
-Dev
+1.5.1
 ---
 
 Fixes
 ^^^^^
 * Fix datepicker in management lists
+* Fix problem with manifest static storage during startup
 
 1.5.0
 -----
