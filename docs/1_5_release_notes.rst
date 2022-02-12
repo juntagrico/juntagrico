@@ -40,6 +40,7 @@ Features & Improvements
     * depot description is now optional
     * price is now a decimal value
     * Areas, jobs and job types can now have a list of contacts
+    * Locations in jobs and depots are now entities
 
 * Developer Features:
     * ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` are removed in favor of the sites app. See upgrade instructions.
