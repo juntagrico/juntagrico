@@ -12,7 +12,8 @@ Upgrade Instructions
     * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
 * Add ``'polymorphic'`` to the ``INSTALLED_APPS`` setting.
 * Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}``
-* Add the Setting STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+* The method ``url`` from ``django.conf.urls`` use either ``path`` or ``repath`` from ``django.urls``
+* Add the Setting ``STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'``
 * The option ``Telefonnummer von KoordinatorIn anzeigen`` on activity areas was previously only used to show the
   phone number of the area coordinator in job reminder emails and has been removed.
   Use to new contact field to show a phone number consistently in all places where the area contact is displayed.
