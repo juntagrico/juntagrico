@@ -13,8 +13,9 @@ from juntagrico.admins.member_admin import MemberAdmin, MemberAdminWithShares
 from juntagrico.admins.one_time_job_admin import OneTimeJobAdmin
 from juntagrico.admins.share_admin import ShareAdmin
 from juntagrico.admins.subscription_admin import SubscriptionAdmin
-from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin, SubscriptionSizeAdmin, \
-    SubscriptionProductAdmin
+from juntagrico.admins.subscription_product_admin import SubscriptionProductAdmin
+from juntagrico.admins.subscription_size_admin import SubscriptionSizeAdmin
+from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin
 from juntagrico.config import Config
 from juntagrico.entity.billing import BillingPeriod
 from juntagrico.entity.delivery import Delivery
