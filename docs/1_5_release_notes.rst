@@ -1,8 +1,14 @@
 Release Notes
 =============
 
-1.5.1
+Dev
 ---
+
+* Admin Features
+    *Auto complete fields for locations, areas, job types, depots, subcription tpye, subscription size and subscription product
+
+1.5.1
+-----
 
 Fixes
 ^^^^^
