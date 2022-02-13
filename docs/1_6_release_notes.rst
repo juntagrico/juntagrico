@@ -9,6 +9,7 @@ Upgrade Instructions
 
 Fixes
 ^^^^^
+* Make locations sortable
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
