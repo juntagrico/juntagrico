@@ -3,6 +3,13 @@
 from django.db import migrations
 
 
+def set_location_sort_order(apps, schema_editor):
+    location = apps.get_model('juntagrico', 'Location')
+    for idx, item in enumerate(location.objects.all()):
+        item.sort_order = idx + 1
+        item.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -10,4 +17,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(set_location_sort_order),
     ]
