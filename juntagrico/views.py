@@ -359,11 +359,12 @@ def cancel_membership(request):
         if form.is_valid():
             now = timezone.now().date()
             end_date = next_membership_end_date()
-            message = request.POST.get('message')
+            message = form.cleaned_data['message']
             member = request.user.member
             member.end_date = end_date
-            member.cancelation_date = now
+            member.cancellation_date = now
             if member.is_cooperation_member:
+                member.iban = form.cleaned_data['iban']
                 adminnotification.member_canceled(member, end_date, message)
             else:
                 member.deactivation_date = now

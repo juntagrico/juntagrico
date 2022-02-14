@@ -40,15 +40,17 @@ class PasswordForm(Form):
 
 class MemberCancellationForm(Form):
     message = CharField(label=_('Mitteilung'), widget=Textarea)
-    iban = CharField(label=_('IBAN')
-                     , help_text=_('Bitte hinterlege oder überprüfe deine IBAN, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')))
+    iban = CharField(label=_('IBAN'),
+                     help_text=_('Bitte hinterlege oder überprüfe deine IBAN, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')))
 
     def __init__(self, member, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.member = member
-        self.fields['iban'].visible = member.is_cooperation_member
+        self.fields['iban'].initial = member.iban
+        self.fields['iban'].required = member.is_cooperation_member
 
         self.helper = FormHelper()
+        self.helper.attrs = {'onSubmit': "return confirm('" + _('Möchtest du sicher deine Mitgliedschaft verbindlich künden?') + "')"}
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
@@ -59,7 +61,6 @@ class MemberCancellationForm(Form):
                 Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
             ),
         )
-
 
     def clean_iban(self):
         if self.member.is_cooperation_member:

@@ -1,8 +1,15 @@
 Release Notes
 =============
 
-1.5.1
+Dev
 ---
+
+*Member Features:
+    * Cancellation form asks for IBAN
+
+
+1.5.1
+-----
 
 Fixes
 ^^^^^
