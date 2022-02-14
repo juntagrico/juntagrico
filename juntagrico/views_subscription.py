@@ -14,9 +14,9 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
@@ -24,7 +24,7 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm
-from juntagrico.mailer import membernotification
+from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.management import cancel_sub, create_subscription_parts
@@ -42,8 +42,6 @@ def subscription(request, subscription_id=None):
     '''
     member = request.user.member
     future_subscription = member.subscription_future is not None
-    can_order = member.subscription_future is None and (
-        member.subscription_current is None or member.subscription_current.cancellation_date is not None)
     if subscription_id is None:
         subscription = member.subscription_current
     else:
@@ -64,7 +62,6 @@ def subscription(request, subscription_id=None):
             'subscription': subscription,
             'co_members': subscription.co_members(member),
             'primary': subscription.primary_member.email == member.email,
-            'next_extra_subscription_date': Subscription.next_extra_change_date(),
             'next_size_date': Subscription.next_size_change_date(),
             'has_extra_subscriptions': SubscriptionProductDao.all_extra_products().count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
@@ -73,7 +70,7 @@ def subscription(request, subscription_id=None):
     renderdict.update({
         'no_subscription': subscription is None,
         'end_date': end_date,
-        'can_order': can_order,
+        'can_order': member.can_order_subscription,
         'future_subscription': future_subscription,
         'member': request.user.member,
         'shares': request.user.member.active_shares.count(),
@@ -88,14 +85,10 @@ def subscription_change(request, subscription_id):
     change an subscription
     '''
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now().date()
-    can_change = not (temporal.cancelation_date() <= now < temporal.start_of_next_business_year())
     renderdict = {
         'subscription': subscription,
         'member': request.user.member,
-        'change_size': can_change,
         'next_cancel_date': temporal.next_cancelation_date(),
-        'next_extra_subscription_date': Subscription.next_extra_change_date(),
         'next_business_year': temporal.start_of_next_business_year(),
         'sub_change_addons': addons.config.get_sub_changes(),
     }
@@ -118,16 +111,12 @@ def depot_change(request, subscription_id):
                 Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
-    depots = DepotDao.all_visible_depots()
-    requires_map = False
-    for depot in depots:
-        requires_map = requires_map or depot.has_geo
+    depots = DepotDao.all_visible_depots_with_map_info()
     renderdict = {
         'subscription': subscription,
         'saved': saved,
         'member': request.user.member,
         'depots': depots,
-        'requires_map': requires_map,
     }
     return render(request, 'depot_change.html', renderdict)
 
@@ -168,7 +157,7 @@ def size_change(request, subscription_id):
                                   format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST)
         if form.is_valid():
-            create_subscription_parts(subscription, form.get_selected())
+            create_subscription_parts(subscription, form.get_selected(), True)
             return return_to_previous_location(request)
     else:
         form = SubscriptionPartOrderForm()
@@ -196,7 +185,7 @@ def extra_change(request, subscription_id):
         form = SubscriptionPartOrderForm(subscription, request.POST,
                                          product_method=SubscriptionProductDao.all_visible_extra_products)
         if form.is_valid():
-            create_subscription_parts(subscription, form.get_selected())
+            create_subscription_parts(subscription, form.get_selected(), True)
             return return_to_previous_location(request)
     else:
         form = SubscriptionPartOrderForm(product_method=SubscriptionProductDao.all_visible_extra_products)
@@ -221,13 +210,6 @@ class SignupView(FormView, ModelFormMixin):
     def get_form_class(self):
         return EditMemberForm if self.cs_session.edit else RegisterMemberForm
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(
-            **{},
-            menu={'join': 'active'},
-            **kwargs
-        )
-
     @method_decorator(create_subscription_session)
     def dispatch(self, request, cs_session, *args, **kwargs):
         if Config.enable_registration() is False:
@@ -243,10 +225,9 @@ class SignupView(FormView, ModelFormMixin):
 
     def form_valid(self, form):
         self.cs_session.main_member = form.instance
+        # monkey patch comment field into main_member
+        self.cs_session.main_member.comment = form.cleaned_data.get('comment', '')
         return redirect(self.cs_session.next_page())
-
-    def render(self, **kwargs):
-        return self.render_to_response(self.get_context_data(**kwargs))
 
 
 def confirm(request, member_hash):
@@ -322,9 +303,14 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
+        add_subscription_member_to_activity_area(subscription)
     except ValidationError as e:
         return error_page(request, e.message)
     return return_to_previous_location(request)
+
+
+def add_subscription_member_to_activity_area(subscription):
+    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -338,22 +324,6 @@ def deactivate_subscription(request, subscription_id):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.is_operations_group')
-def activate_future_types(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    changedate = request.session.get('changedate', timezone.now().date())
-    try:
-        for part in SubscriptionPartDao.get_canceled_for_subscription(subscription):
-            part.deactivation_date = changedate
-            part.save()
-        for part in SubscriptionPartDao.get_waiting_for_subscription(subscription):
-            part.activation_date = changedate
-            part.save()
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
-
-
 @primary_member_of_subscription
 def cancel_part(request, part_id, subscription_id):
     part = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=part_id)
@@ -361,6 +331,7 @@ def cancel_part(request, part_id, subscription_id):
         part.delete()
     else:
         part.cancel()
+        adminnotification.subpart_canceled(part)
     return return_to_previous_location(request)
 
 
@@ -396,31 +367,21 @@ def leave_subscription(request, subscription_id):
     return render(request, 'leavesubscription.html', {})
 
 
-@permission_required('juntagrico.is_operations_group')
-def activate_extra(request, extra_id):
-    extra = get_object_or_404(SubscriptionPart, id=extra_id)
+@permission_required('juntagrico.change_subscriptionpart')
+def activate_part(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
     change_date = request.session.get('changedate', None)
-    if extra.activation_date is None and extra.deactivation_date is None:
-        extra.activate(change_date)
+    if part.activation_date is None and part.deactivation_date is None:
+        part.activate(change_date)
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.is_operations_group')
-def deactivate_extra(request, extra_id):
-    extra = get_object_or_404(SubscriptionPart, id=extra_id)
+@permission_required('juntagrico.change_subscriptionpart')
+def deactivate_part(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
     change_date = request.session.get('changedate', None)
-    if extra.activation_date is not None:
-        extra.deactivate(change_date)
-    return return_to_previous_location(request)
-
-
-@primary_member_of_subscription
-def cancel_extra(request, extra_id, subscription_id):
-    extra = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=extra_id)
-    if extra.activation_date is None:
-        extra.delete()
-    else:
-        extra.cancel()
+    if part.activation_date is not None:
+        part.deactivate(change_date)
     return return_to_previous_location(request)
 
 
@@ -457,20 +418,14 @@ def manage_shares(request):
     member = request.user.member
     shares = member.share_set.order_by('cancelled_date', '-paid_date')
 
-    # calculate required shares backwards to account for shared subscriptions
-    not_canceled_share_count = member.usable_shares_count
-    overflow_list = [not_canceled_share_count]
-    if member.subscription_future is not None:
-        overflow_list.append(member.subscription_future.share_overflow)
-    if member.subscription_current is not None:
-        overflow_list.append(member.subscription_current.share_overflow)
     active_share_years = member.active_share_years
-    if active_share_years:
-        active_share_years.remove(timezone.now().year)
+    current_year = timezone.now().year
+    if active_share_years and current_year in active_share_years:
+        active_share_years.remove(current_year)
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
-        'required': not_canceled_share_count - min(overflow_list),
+        'required': member.required_shares_count,
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)
@@ -500,9 +455,11 @@ def share_certificate(request):
 
 @login_required
 def cancel_share(request, share_id):
-    share = get_object_or_404(Share, id=share_id, member=request.user.member)
-    share.cancelled_date = timezone.now().date()
-    share.save()
+    member = request.user.member
+    if member.cancellable_shares_count > 0:
+        share = get_object_or_404(Share, id=share_id, member=member)
+        share.cancelled_date = timezone.now().date()
+        share.save()
     return return_to_previous_location(request)
 
 
@@ -513,6 +470,6 @@ def payout_share(request, share_id):
     share.save()
     member = share.member
     if member.active_shares_count == 0 and member.canceled is True:
-        member.inactive = True
+        member.deactivation_date = timezone.now().date()
         member.save()
     return return_to_previous_location(request)

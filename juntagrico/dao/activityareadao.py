@@ -16,5 +16,9 @@ class ActivityAreaDao:
         return ActivityArea.objects.filter(hidden=False).order_by('-core', 'name')
 
     @staticmethod
+    def all_auto_add_members_areas():
+        return ActivityArea.objects.filter(auto_add_new_members=True)
+
+    @staticmethod
     def all_core_areas():
         return ActivityArea.objects.filter(core=True)

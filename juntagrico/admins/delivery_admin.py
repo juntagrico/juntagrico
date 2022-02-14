@@ -1,9 +1,10 @@
-from django.conf.urls import url
-from django.contrib import messages
+from django.urls import re_path
+from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin
+from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.forms.delivery_copy_form import DeliveryCopyForm
 from juntagrico.admins.inlines.delivery_inline import DeliveryInline
 
@@ -16,16 +17,11 @@ class DeliveryAdmin(BaseAdmin):
     inlines = [DeliveryInline]
     save_as = True
 
+    @admin.action(description=_('Lieferung kopieren...'))
+    @single_element_action('Genau 1 Lieferung auswählen!')
     def copy_delivery(self, request, queryset):
-        if queryset.count() != 1:
-            self.message_user(
-                request, _('Genau 1 Lieferung auswählen!'), level=messages.ERROR)
-            return HttpResponseRedirect('')
-
         inst, = queryset.all()
         return HttpResponseRedirect('copy_delivery/%s/' % inst.id)
-
-    copy_delivery.short_description = _('Lieferung kopieren...')
 
     def get_form(self, request, obj=None, **kwds):
         if 'copy_delivery' in request.path:
@@ -35,8 +31,8 @@ class DeliveryAdmin(BaseAdmin):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            url(r'^copy_delivery/(?P<deliveryid>.*?)/$',
-                self.admin_site.admin_view(self.copy_delivery_view))
+            re_path(r'^copy_delivery/(?P<deliveryid>.*?)/$',
+                    self.admin_site.admin_view(self.copy_delivery_view))
         ]
         return my_urls + urls
 

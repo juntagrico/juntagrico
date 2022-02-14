@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
@@ -92,7 +93,7 @@
                             {% endfor %}
                         </td>
                         <td>
-                            {% if member.subscription_current != None and member.subscription_current.active %}
+                            {% if member.subscription_current != None %}
                                 {{ member.subscription_current.depot.name }}
                             {% else %}
                                 Kein {% vocabulary "depot" %}
@@ -108,7 +109,7 @@
                             {{ member.mobile_phone }}
                         </td>
                         <td>
-                            {% if member.subscription_current != None and member.subscription_current.active %}
+                            {% if member.subscription_current != None %}
                                 {{ member.subscription_current.size }}
                             {% else %}
                                 Kein {% vocabulary "subscription" %}
@@ -123,8 +124,8 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initMembers.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initMembers.js' %}">
     </script>
 {% endblock %}

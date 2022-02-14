@@ -19,7 +19,7 @@ jobs:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     strategy:
       matrix:
-        python-version: [3.8]
+        python-version: [3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -38,8 +38,9 @@ jobs:
         ./cc-test-reporter before-build
     - name: run tests
       run: |
-        django-admin.py makemigrations --noinput
+        python -m django makemigrations --noinput
         coverage run -m manage test
+        python -m manage test test.test_deploy --settings="deploytestsettings"
     - name: publish code coverage
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |

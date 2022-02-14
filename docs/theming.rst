@@ -5,7 +5,7 @@ Custom CSS
 ----------
 
 1. Add your custom CSS file e.g. ``{app}/static/css/{app}.css``
-2. Adjust the ``STYLE_SHEET`` setting to point to that file
+2. Adjust the ``STYLES`` setting to point to that file: ``STYLES = {'static': ['css/{app}.css']}``
 
 Note that the setting is specified without the ``{app}`` folder,
 as django will collect all static files into a single location.

@@ -1,6 +1,4 @@
-import datetime
-import time
-
+from django.contrib import admin
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -165,11 +163,10 @@ class Subscription(Billable, SimpleStateModel):
             result += part.type.shares
         return result
 
+    @admin.display(description='{}-BezieherInnen'.format(Config.vocabulary('subscription')))
     def recipients_names(self):
         members = self.recipients
         return ', '.join(str(member) for member in members)
-
-    recipients_names.short_description = '{}-BezieherInnen'.format(Config.vocabulary('subscription'))
 
     def co_members(self, member):
         qs = self.recipients_qs
@@ -223,11 +220,10 @@ class Subscription(Billable, SimpleStateModel):
             return self.subscriptionmembership_set.filter(q_joined_subscription(),
                                                           ~q_left_subscription(), member_active).prefetch_related('member')
 
+    @admin.display(description=primary_member.verbose_name)
     def primary_member_nullsave(self):
         member = self.primary_member
         return str(member) if member is not None else ''
-
-    primary_member_nullsave.short_description = primary_member.verbose_name
 
     @property
     def extra_subscriptions(self):
@@ -247,17 +243,6 @@ class Subscription(Billable, SimpleStateModel):
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
-
-    @staticmethod
-    def next_extra_change_date():
-        month = int(time.strftime('%m'))
-        if month >= 7:
-            next_extra = datetime.date(
-                day=1, month=1, year=timezone.now().today().year + 1)
-        else:
-            next_extra = datetime.date(
-                day=1, month=7, year=timezone.now().today().year)
-        return next_extra
 
     @staticmethod
     def next_size_change_date():

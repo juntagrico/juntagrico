@@ -31,7 +31,8 @@ def new_signup(signup_data):
     # create subscription for member
     subscription = None
     if sum(signup_data.subscriptions.values()) > 0:
-        subscription = create_subscription(signup_data.start_date, signup_data.depot, signup_data.subscriptions, member)
+        subscription = create_subscription(signup_data.start_date, signup_data.depot, signup_data.subscriptions,
+                                           member, signup_data.main_member.comment)
 
     # add co-members
     for co_member in signup_data.co_members:
@@ -77,7 +78,7 @@ def create_share(member, amount=1):
         membernotification.shares_created(member, shares)
 
 
-def create_subscription(start_date, depot, subscription_types, member):
+def create_subscription(start_date, depot, subscription_types, member, comment=''):
     # create instance
     subscription = Subscription.objects.create(start_date=start_date, depot=depot)
     # add member
@@ -86,6 +87,7 @@ def create_subscription(start_date, depot, subscription_types, member):
     subscription.save()
     # set types
     create_subscription_parts(subscription, subscription_types)
+    adminnotification.subscription_created(subscription, comment)
     return subscription
 
 
@@ -93,10 +95,12 @@ def add_recipient_to_subscription(subscription, recipient):
     recipient.join_subscription(subscription)
 
 
-def create_subscription_parts(subscription, selected_types):
-    SubscriptionPart.objects.bulk_create(
+def create_subscription_parts(subscription, selected_types, notify=False):
+    parts = SubscriptionPart.objects.bulk_create(
         itertools.chain(*[[SubscriptionPart(subscription=subscription, type=sub_type)] * amount
                           for sub_type, amount in selected_types.items()]))
+    if notify:
+        adminnotification.subparts_created(parts, subscription)
 
 
 def cancel_sub(subscription, end_date, message):

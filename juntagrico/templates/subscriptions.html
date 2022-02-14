@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
@@ -107,8 +108,8 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initSubscriptions.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}"data-main="{% static 'juntagrico/js/initSubscriptions.js' %}">
     </script>
 {% endblock %}

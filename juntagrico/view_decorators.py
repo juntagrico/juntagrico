@@ -44,9 +44,12 @@ def create_subscription_session(view):
         som = SessionObjectManager(request, 'create_subscription', CSSessionObject)
         session_object = som.data
         # check if main member information is given. If not forward to first signup page.
+        is_signup = request.resolver_match.url_name == 'signup'
         if request.user.is_authenticated:
+            if not request.user.member.can_order_subscription and not is_signup:
+                return redirect('sub-detail')
             session_object.main_member = request.user.member
-        if session_object.main_member is None and request.resolver_match.url_name != 'signup':
+        if session_object.main_member is None and not is_signup:
             return redirect('signup')
         response = view(request, som.data, *args, **kwargs)
         som.store()

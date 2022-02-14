@@ -3,16 +3,16 @@ Permissions
 
 Overview
 --------
-juntagrico relies heavily on the Django permission mechanism to customize the system for different users. In this chapter we will explain which permissions can be used for customization and how they work
+juntagrico relies heavily on the Django permission mechanism to customize the system for different users. In this chapter we will explain which permissions can be used for customization and how they work.
 
 Grant Permissions
 -----------------
-Permissions are granted in the admin part of juntagrico, which in fact is the admin part of Django. To grant soeone a Permission, the persons ``User`` has to be edited.
+Permissions are granted in the admin part of juntagrico, which in fact is the admin part of Django. To grant someone a permission, the persons ``User`` has to be edited.
 You find a link to a members user instance in the member admin form.
 There you can search for a permission and add it to the user using the little right arrow next to it. Do not forget to save the user in order for the permissions to take effect.
 You can also create groups of permissions which can be assigned to single users. If you need more information on that check out the Django documentation concerning permissions.
 
-Area and Dept Admins
+Area and Depot Admins
 --------------------
 juntagrico.is_depot_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -24,15 +24,15 @@ Search Hints:
 juntagrico.is_area_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Should be assigned to members which are administator of an activity area, so that they can filter and communicate with the members in their area.
-Also it allows the to create new jobs and comunicate with the members participatin in one of the jobs of their area.
+Also it allows them to create new jobs and comunicate with the members participating in one of the jobs of their area.
 
 Search Hints:
     * German: Benutzer ist Tätigkeitsbereichskoordinator
 
 Notifications
 -------------
-Some entities send a notification email when thei are created or cancelled. Should a member be notified on a certain event it has to have the corresponding
-permission for that entity type and event
+Some entities send a notification email when they are created or cancelled. Should a member be notified on a certain event it has to have the corresponding
+permission for that entity type and event.
 
 juntagrico.notified_on_share_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -85,7 +85,7 @@ Search Hints:
 
 Administrator Menu
 ------------------
-Which entries can be seen on the administration menu depepend on a set of permissions
+Which entries can be seen on the administration menu depepend on a set of permissions.
 
 juntagrico.change_subscription
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -108,12 +108,12 @@ Member sees the member entry in the administration menu.
 Search Hints:
     * German: Mitglied
 
-juntagrico.change_assingment
+juntagrico.change_assignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Member sees the assignment entry in the administration menu.
 
 Search Hints:
-    * German: Arbeitseins
+    * German: Arbeitseinsatz
 
 juntagrico.change_share
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -161,7 +161,7 @@ Email Permissions
 -----------------
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the email adress specified in the setting :ref:`INFO_EMAIL` as sender in the mail form.
+Member can use the email address specified in the setting :ref:`INFO_EMAIL` as sender in the mail form.
 
 Search Hints:
     * German: General Email
@@ -184,12 +184,12 @@ Search Hints:
 
 Dependent Permissions
 ---------------------
-In order to be able to edit some types of entites not only the ``change`` permission od this entity type has to be granted to a member but also
+In order to be able to edit some types of entites not only the ``change`` permission of this entity type has to be granted to a member but also
 some dependent permissions.
 
 Subscription
 ^^^^^^^^^^^^
-Also requres change permissions for subscription parts and subscription membership.
+Also requires change permissions for subscription parts and subscription membership.
 
 Jobs
 ^^^^

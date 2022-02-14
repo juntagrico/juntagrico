@@ -1,12 +1,11 @@
 $(function () {
-    var additionalFile = function () {
-        var $file = $(this);
-        var $fileButton = $file.closest(".file-upload-button");
-        var $fileUpload = $file.closest(".file-upload");
-        var $attachements = $file.closest("#attachements");
+    let additionalFile = function () {
+        let $file = $(this);
+        let $fileButton = $file.closest(".file-upload-button");
+        let $fileUpload = $file.closest(".file-upload");
 
         // add a second one
-        var $clone = $fileUpload.clone();
+        let $clone = $fileUpload.clone();
         $clone.find("button").text("Weitere Datei anhängen");
         $clone.find("input[type=file]").remove();
         $clone.find(".file-upload-button").append("<input type=\"file\">")
@@ -15,8 +14,16 @@ $(function () {
 
         // change the current to show the name instead of the button
         $fileButton.find("button").remove().end().find("input").hide();
-        $fileButton.append($file.val().split('\\').pop());
+        $fileButton.append($file.val().split('\\').pop() + ' ');
+        let $removeButton = $("<a href='#'><i class='far fa-times-circle'></i></a>")
+        $removeButton.on('click', removeFile)
+        $fileButton.append($removeButton)
     };
+
+    let removeFile = function () {
+        $(this).closest(".file-upload").remove();
+        return false
+    }
 
     $("#attachements input[type=file]").change(additionalFile);
 });

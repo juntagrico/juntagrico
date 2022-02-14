@@ -15,7 +15,7 @@ def member_joined_activityarea(area, member):
         _('Soeben hat sich {0} {1} in den Taetigkeitsbereich {2} eingetragen').format(
             member.first_name, member.last_name, area.name
         ),
-    ).send_to(area.get_email())
+    ).send_to(area.get_emails())
 
 
 def member_left_activityarea(area, member):
@@ -25,11 +25,11 @@ def member_left_activityarea(area, member):
           'Bitte lösche seine Kontaktdaten aus allen deinen Privaten Adressbüchern').format(
             member.first_name, member.last_name, area.name
         ),
-    ).send_to(area.get_email())
+    ).send_to(area.get_emails())
 
 
 @requires_someone_with_perm('notified_on_subscription_creation')
-def subscription_created(subscription, **kwargs):
+def subscription_created(subscription, comment='', **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {} erstellt').format(Config.vocabulary('subscription'))),
         get_email_content('n_sub', base_dict(locals())),
@@ -46,6 +46,24 @@ def subscription_canceled(subscription, message, **kwargs):
     ).send()
 
 
+@requires_someone_with_perm('notified_on_subscriptionpart_creation')
+def subparts_created(parts, subscription, **kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('Neuer Bestandteil erstellt')),
+        get_email_content('a_subpart_created', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_subscriptionpart_cancellation')
+def subpart_canceled(part, **kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('Bestandteil gekündigt')),
+        get_email_content('a_subpart_canceled', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
 @requires_someone_with_perm('notified_on_share_creation')
 def share_created(share, **kwargs):
     EmailSender.get_sender(
@@ -55,8 +73,19 @@ def share_created(share, **kwargs):
     ).send()
 
 
+@requires_someone_with_perm('notified_on_share_cancellation')
+def share_canceled(share, **kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('{} gekündigt').format(Config.vocabulary('share'))),
+        get_email_content('a_share_canceled', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
 @requires_someone_with_perm('notified_on_member_creation')
 def member_created(member, **kwargs):
+    if not hasattr(member, 'comment'):
+        member.comment = ''
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
         get_email_content('a_member_created', base_dict(locals())),

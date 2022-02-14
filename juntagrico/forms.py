@@ -159,8 +159,16 @@ class MemberBaseForm(ModelForm):
                             'addr_street', 'addr_zipcode', 'addr_location',
                             'phone', 'mobile_phone', 'email', 'birthday')
 
+    @staticmethod
+    def duplicate_email_message():
+        return mark_safe(
+            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + '<a href="' + reverse(
+                "home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
+        )
+
 
 class RegisterMemberForm(MemberBaseForm):
+    comment = CharField(required=False, max_length=4000, label='Kommentar', widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
 
     def __init__(self, *args, **kwargs):
@@ -168,27 +176,49 @@ class RegisterMemberForm(MemberBaseForm):
         self.fields['agb'].label = self.agb_label()
         self.helper.layout = Layout(
             *self.base_layout,
+            'comment',
             'agb',
             FormActions(
                 Submit('submit', _('Anmelden'), css_class='btn-success'),
             )
         )
-        self.fields['email'].error_messages['unique'] = mark_safe(
-            escape(_('Diese E-Mail-Adresse existiert bereits im System.')) + '<a href="' + reverse("home") + '">' + escape(_('Hier geht\'s zum Login.')) + '</a>'
-        )
+        self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
 
     @staticmethod
     def agb_label():
-        return _('Ich habe {}{}{} gelesen und erkläre meinen Willen, "{}" beizutreten.\
-            Hiermit beantrage ich meine Aufnahme.').format(
-            '<a target="_blank" href="{}">{}</a>'.format(Config.bylaws(), _('die Statuten')),
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.business_regulations(), _('das Betriebsreglement')
-            ) if Config.business_regulations().strip() else '',
-            ' ' + _('und') + ' <a target="_blank" href="{}">{}</a>'.format(
-                Config.gdpr_info(), _('die DSGVO Infos')
-            ) if Config.gdpr_info().strip() else '',
-            Config.organisation_long_name()
+        documents = {
+            'die Statuten': Config.bylaws,
+            'das Betriebsreglement': Config.business_regulations,
+            'die DSGVO Infos': Config.gdpr_info,
+        }
+        documents_html = []
+        for text, link in documents.items():
+            if link().strip():
+                documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
+        if documents_html:
+            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(
+                (' ' + _('und') + ' ').join(documents_html),
+                Config.organisation_long_name()
+            )
+        else:
+            return _('Ich erkläre meinen Willen, "{}" beizutreten. '
+                     'Hiermit beantrage ich meine Aufnahme.').format(Config.organisation_long_name())
+
+
+class RegisterSummaryForm(Form):
+    comment = CharField(required=False, max_length=4000, label='',
+                        widget=Textarea(attrs={"rows": 3, "class": "textarea form-control"}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'comment',
+            FormActions(
+                Submit('submit', _('Verbindlich bestellen'), css_class='btn btn-success'),
+                HTML('<a href="{0}" class="btn">{1}</a>'.format(reverse('cs-cancel'), _("Abbrechen")))
+            )
         )
 
 
@@ -210,7 +240,7 @@ class CoMemberBaseForm(MemberBaseForm):
         self.existing_emails = existing_emails or []  # list of emails that can not be used
 
     def clean_email(self):
-        email = self.cleaned_data['email']
+        email = self.cleaned_data['email'].lower()
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
                                             .format(Config.vocabulary('co_member_pl'))))
@@ -230,6 +260,7 @@ class CoMemberBaseForm(MemberBaseForm):
         return email
 
     def clean(self):
+        # disable default uniqueness check
         return self.cleaned_data
 
     @staticmethod

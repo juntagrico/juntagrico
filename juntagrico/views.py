@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -34,15 +36,16 @@ def home(request):
     '''
     Overview on juntagrico
     '''
-
-    next_jobs = set(JobDao.get_current_jobs()[:7])
-    pinned_jobs = set(JobDao.get_pinned_jobs())
-    next_promotedjobs = set(JobDao.get_promoted_jobs())
+    start = timezone.now()
+    end = start + timedelta(14)
+    next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
+    pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
+    next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
     messages = getattr(request, 'member_messages', []) or []
     messages.extend(home_messages(request))
     request.member_messages = messages
     renderdict = {
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda job: job.time),
+        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
     }
 
@@ -142,10 +145,10 @@ def depot(request, depot_id):
     Details for a Depot
     '''
     depot = get_object_or_404(Depot, id=int(depot_id))
-
     renderdict = {
         'depot': depot,
-        'requires_map': depot.has_geo
+        'show_access': request.user.member.subscriptionmembership_set.filter(
+            subscription__depot=depot).count() > 0
     }
     return render(request, 'depot.html', renderdict)
 
@@ -157,21 +160,14 @@ def areas(request):
     Details for all areas a member can participate
     '''
     member = request.user.member
-    my_areas = []
+    areas = ActivityAreaDao.all_visible_areas_ordered()
     last_was_core = True
-    for area in ActivityAreaDao.all_visible_areas_ordered():
-        my_areas.append({
-            'name': area.name,
-            'checked': member in area.members.all(),
-            'id': area.id,
-            'core': area.core,
-            'coordinator': area.coordinator,
-            'email': area.email,
-            'first_non_core': not area.core and last_was_core
-        })
+    for area in areas:
+        area.checked = member in area.members.all()
+        area.first_non_core = not area.core and last_was_core
         last_was_core = area.core
     renderdict = {
-        'areas': my_areas,
+        'areas': areas,
     }
     return render(request, 'areas.html', renderdict)
 

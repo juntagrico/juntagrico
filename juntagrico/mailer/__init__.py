@@ -2,6 +2,7 @@ import logging
 import re
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.utils.module_loading import import_string
@@ -14,7 +15,7 @@ log = logging.getLogger('juntagrico.mailer')
 
 def base_dict(add=None):
     add = add or {}
-    add['serverurl'] = 'http://' + Config.adminportal_server_url()
+    add['serverurl'] = 'http://' + Site.objects.get_current().domain
     return add
 
 

@@ -1,69 +1,8 @@
-{% extends "management_lists/man_list_base.html" %}
+{% extends "management_lists/part_waitinglist.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% block page_title %}
     <h3>
-        {% trans "Zusatz-Abo Warteliste" %}
+        {% trans "Warteliste der Zusatz-Abos" %}
     </h3>
-{% endblock %}
-{% block list %}
-    {% vocabulary "subscription" as v_subscription %}
-    <table id="filter-table" class="list table" style="display: table;">
-        <thead>
-            <tr>
-                <th class="filter">
-                    {% trans "Typ" %}
-                </th>
-                <th class="filter">
-                    {% trans "Kontakt" %}
-                </th>
-                <th class="filter">
-                    {% trans "Email" %}
-                </th>
-                <th class="filter">
-                    {% trans "Bestelldatum" %}
-                </th>
-                <th>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for extrasubscription in management_list %}
-                <tr>
-                    <td>
-                        {{ extrasubscription.type.display_name }}
-                    </td>
-                    <td>
-                        {{ extrasubscription.subscription.primary_member.first_name }} {{ extrasubscription.subscription.primary_member.last_name }}
-                    </td>
-                    <td>
-                        <form id="extrasubscription{{ extrasubscription.id }}" method="post" action="{% url 'mail' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="recipients"value="{{ extrasubscription.subscription.primary_member.email }}"/>
-                            <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#"onclick="$('#extrasubscription{{ extrasubscription.id }}').submit();" class="email">
-                                {{ extrasubscription.subscription.primary_member.email }}
-                            </a>
-                        </form>
-                    </td>
-                    <td>
-                        {{ extrasubscription.creation_date|date:"Y-m-d" }}
-                    </td>
-                    <td>
-                        {% if extrasubscription.activation_date %}
-                        {% trans "Wurde bereits aktiviert" %} {{ extrasubscription.activation_date }}
-                        {% elif extrasubscription.subscription.state == 'waiting' %}
-                            {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist noch nicht aktiv {% endblocktrans %}
-                        {% elif extrasubscription.subscription.state == 'inactive' %}
-                            {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist deaktiviert {% endblocktrans %}
-                        {% else %}
-                        <a href="{% url 'extra-activate' extrasubscription.id %}"class="btn btn-success">
-                            {% trans "aktivieren" %}
-                        </a>
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 {% endblock %}

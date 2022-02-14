@@ -20,7 +20,7 @@
         <a class="nav-link {{ request|activemenu:"jobs" }}" href="{% url 'jobs' %}">
             {% trans "Einsätze" %}
         </a>
-        {% if menu.jobs == 'active' %}
+        {% if request|activemenu:"jobs" == 'active' %}
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'memberjobs' %}">

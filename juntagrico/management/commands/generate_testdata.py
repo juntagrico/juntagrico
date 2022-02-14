@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -44,12 +45,21 @@ class Command(BaseCommand):
                           'visible': True, 'required_assignments': 10, 'price': 1000,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.'}
         subtype = SubscriptionType.objects.create(**subtype_fields)
-        depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'latitude': '47.379308',
-                         'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
-                         'addr_location': 'Zürich', 'description': 'Hinter dem Migros', 'contact': member_2}
-        depot2_fields = {'name': 'Siemens', 'weekday': 4, 'latitude': '47.379173',
-                         'longitude': '8.495392', 'addr_street': 'Albisriederstrasse 207', 'addr_zipcode': '8047',
-                         'addr_location': 'Zürich', 'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
+        depot1_location_fields = {'name': 'Depot Toblerplatz', 'latitude': '47.379308',
+                                  'longitude': '8.559405', 'addr_street': 'Toblerstrasse 73', 'addr_zipcode': '8044',
+                                  'addr_location': 'Zürich'}
+        depot1_location = Location.objects.create(**depot1_location_fields)
+        depot1_location.save()
+        depot2_location_fields = {'name': 'Depot Siemens', 'latitude': '47.379173',
+                                  'longitude': '8.495392', 'addr_street': 'Albisriederstrasse 207',
+                                  'addr_zipcode': '8047',
+                                  'addr_location': 'Zürich'}
+        depot2_location = Location.objects.create(**depot2_location_fields)
+        depot2_location.save()
+        depot1_fields = {'name': 'Toblerplatz', 'weekday': 2, 'location': depot1_location,
+                         'description': 'Hinter dem Migros', 'contact': member_2}
+        depot2_fields = {'name': 'Siemens', 'weekday': 4, 'location': depot2_location,
+                         'description': 'Hinter dem Restaurant Cube', 'contact': member_1}
         depot1 = Depot.objects.create(**depot1_fields)
         depot2 = Depot.objects.create(**depot2_fields)
         sub_1_fields = {'depot': depot1, 'future_depot': None,
@@ -70,19 +80,26 @@ class Command(BaseCommand):
         SubscriptionPart.objects.create(subscription=subscription_2, type=subtype, activation_date=datetime.datetime.strptime('27/03/17', '%d/%m/%y').date())
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
-                        'hidden': False, 'coordinator': member_1, 'show_coordinator_phonenumber': False}
+                        'hidden': False, 'coordinator': member_1,
+                        'auto_add_new_members': True}
         area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
-                        'hidden': False, 'coordinator': member_2, 'show_coordinator_phonenumber': False}
+                        'hidden': False, 'coordinator': member_2,
+                        'auto_add_new_members': False}
         area_1 = ActivityArea.objects.create(**area1_fields)
         area_1.members.set([member_2])
         area_1.save()
         area_2 = ActivityArea.objects.create(**area2_fields)
         area_2.members.set([member_1])
         area_2.save()
+
+        location_1_fields = {'name': 'auf dem Hof'}
+        location_1 = Location.objects.create(**location_1_fields)
+        location_1.save()
+
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type_1 = JobType.objects.create(**type1_fields)
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,

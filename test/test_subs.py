@@ -14,8 +14,10 @@ class SubscriptionTests(JuntagricoTestCase):
     def testSubActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()
+        self.area.refresh_from_db()
         self.assertIsNone(self.member2.subscription_future)
         self.assertEqual(self.member2.subscription_current, self.sub2)
+        self.assertTrue(self.member2 in self.area.members.all())
 
     def testSubChange(self):
         self.assertGet(reverse('sub-change', args=[self.sub.pk]))
@@ -44,6 +46,7 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testDepot(self):
         self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
+        self.assertGet(reverse('depot-landing'))
 
     def testNicknameChange(self):
         test_nickname = 'My Nickname'
@@ -108,8 +111,8 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
-        self.assertGet(reverse('extra-activate', args=[self.esub.pk]), 302)
-        self.assertGet(reverse('extra-activate', args=[self.esub2.pk]), 302)
+        self.assertGet(reverse('part-activate', args=[self.esub.pk]), 302)
+        self.assertGet(reverse('part-activate', args=[self.esub2.pk]), 302)
         self.assertEqual(len(self.member2.subscriptions_old), 0)
         self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
         self.member2.refresh_from_db()

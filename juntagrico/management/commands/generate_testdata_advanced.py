@@ -6,6 +6,7 @@ from faker import Faker
 
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
@@ -18,10 +19,13 @@ class Command(BaseCommand):
     members = []
 
     def generate_member_dict(self, props):
+        checked_email = fake.email()
+        while 0 != Member.objects.filter(email=checked_email).count():
+            checked_email = fake.email()
         result = {
             'birthday': fake.date(),
             'confirmed': True,
-            'email': fake.email(),
+            'email': checked_email,
             'first_name': fake.first_name(),
             'last_name': fake.last_name(),
             'mobile_phone': '',
@@ -51,6 +55,15 @@ class Command(BaseCommand):
             Share.objects.create(**share_dict)
 
     def generate_depot(self, props, member, i):
+        location_dict = {
+            'name': fake.company(),
+            'addr_street': '{} {}'.format(props['strasselang'], props['hnr']),
+            'addr_zipcode': props['plz'],
+            'addr_location': props['ort'],
+            'latitude': fake.latitude(),
+            'longitude': fake.longitude(),
+        }
+        location, _ = Location.objects.update_or_create(**location_dict)
         depot_dict = {
             'contact': member,
             'description': fake.random_element(elements=[
@@ -60,14 +73,8 @@ class Command(BaseCommand):
             ]),
             'name': fake.company(),
             'weekday': fake.random_int(0, 6),
-            'latitude': fake.latitude(),
-            'longitude': fake.longitude(),
+            'location': location
         }
-        depot_dict.update({
-            'addr_street': '{} {}'.format(props['strasselang'], props['hnr']),
-            'addr_zipcode': props['plz'],
-            'addr_location': props['ort'],
-        })
         depot, _ = Depot.objects.update_or_create(**depot_dict)
         return depot
 
@@ -162,9 +169,11 @@ class Command(BaseCommand):
                 self.generate_depot_sub(depot, options['sub_shares'], type)
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
-                        'hidden': False, 'coordinator': self.members[0], 'show_coordinator_phonenumber': False}
+                        'hidden': False, 'coordinator': self.members[0],
+                        'auto_add_new_members': True}
         area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
-                        'hidden': False, 'coordinator': self.members[1], 'show_coordinator_phonenumber': False}
+                        'hidden': False, 'coordinator': self.members[1],
+                        'auto_add_new_members': False}
         area_1, _ = ActivityArea.objects.get_or_create(
             name=area1_fields['name'],
             defaults=area1_fields
@@ -184,10 +193,13 @@ class Command(BaseCommand):
         else:
             area_2.members.set(self.members)
         area_2.save()
+        location_1_fields = {'name': 'auf dem Hof'}
+        location_1 = Location.objects.create(**location_1_fields)
+        location_1.save()
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
-                        'default_duration': 2, 'location': 'auf dem Hof'}
+                        'default_duration': 2, 'location': location_1}
         type_1 = JobType.objects.create(**type1_fields)
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,

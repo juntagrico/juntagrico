@@ -1,15 +1,104 @@
-Release Notes
-=============
+1.4 Release Notes
+=================
 
-1.4.1
+Dev
+---
+
+1.4.7
 -----
+Fixes
+^^^^^
+* Fix job table on activity area page
+* Only include members with active shares, when mailing to all members with shares
+* Fix: Cancelled, but still active subscriptions are now shown in the member list
 
+1.4.6
+-----
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * Bylaws are now optional
+    * Member address now visible and searchable in data administration
+* Developer Features:
+    * Jobs table is now responsive
+    * Deprecated setting ADMINPORTAL_NAME
+    * Fixed site issue in password reset email
+
+
+1.4.5
+-----
+Fixes
+^^^^^
+* Fix membership cancellation date
+
+1.4.4
+-----
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Admin Features:
+    * More filter options in assignment management list
+* Member Features:
+    * Show minimum subscription duration in share order process
+    * Option to enter a comment that is sent with the admin notification in the sign up and share order process
+
+Fixes
+^^^^^
+* Fix export of share payment file (pain.001)
+* Fix past job editing limitation for one time jobs
+* Fix unauthorized share cancellation
+* Fix mailtext command for password reset text
+* Fix minor template issues
+
+1.4.3
+-----
+Fixes
+^^^^^
+* Fix: Allow editing of assignments via admin
+* Fix link in admin main page from "show" to "edit" where it was wrong
+
+1.4.2
+-----
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 * Member Features:
-    * Added IBAN Field at membership cancellation
+    * Misleading extra change dates have been removed
+    * Parts can now be ordered all year round
+    * Parts can be canceled all year round
+    * Filter for free slots on jobs
+    * Show less and clearer messages on job page
+    * Clarify some texts
+* Developer Features:
+    * Support for Python 3.9 and dropped support for python 3.6 and 3.7
+    * Refactor: Using new Django 3.2 features
+
+Fixes
+^^^^^
+* Fix editing limitations for past jobs and deactivated subs
+* Made email uniqueness check case-insensitive
+* Only show depot access information for current depot
+* Use informal language consistently in password reset process
+* Menu fixes:
+    * Make assignment admin menu entry visible as documented
+    * Highlight jobs menu entry when page is active
+    * Fix view access to match menu visibility
+* Fix membership cancellation
+* Upgraded datatables.js to fix issue with search builder on Safari
+
+
+1.4.1
+-----
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Better password reset process
 * Admin Features:
+    * Subscription parts now also have a waiting list and cancelled list
+    * Notifications on subscription parts are implemented
+    * Notification on share cancellation is implemented
     * Documentation on :doc:`Permissions`
+* Fixes:
+    * Fix in share payout
+
 
 
 1.4.0
@@ -21,7 +110,7 @@ Features & Improvements
 * Upgrade Instructions:
     * Added django-admin-sortable2, therefore add 'adminsortable2' to the INSTALLED_APPS setting
     * You may have to add permissions to users to restore their admin menu visibility and ability to edit some entities. See below.
-    * If you overrode templates, wou will have to move and update them
+    * If you overrode templates, you will have to move and update them
         * Template tags are now namespaced in juntagrico. For example former ``{% load config %}`` becomes ``{% load juntagrico.config %}``
         * All juntagrico static files are now namespaced and can be found in ''static/juntagrico''
         * Menu dict method eliminated for easier view creation and performance improvements

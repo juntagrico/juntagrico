@@ -1,5 +1,6 @@
 {% extends "no_menu_base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block all_page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -51,8 +52,8 @@
                     <br/>
                 {% endif %}
                 {% if co_members|length > 0 %}
-                    {% blocktrans trimmed %}
-                    Teile die restlichen benötigten {{ shares.remaining_required }} {{ v_share_pl }} unter dir und
+                    {% blocktrans trimmed with shares.remaining_required as sr %}
+                    Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
                     deinen {{ v_co_member_pl }} auf.
                     {% endblocktrans %}
                 {% endif %}
@@ -108,8 +109,8 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/bootstrap-input-spinner.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initChangeExtra.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initChangeExtra.js' %}">
     </script>
 {% endblock %}
