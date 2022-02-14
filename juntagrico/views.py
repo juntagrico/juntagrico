@@ -369,7 +369,7 @@ def cancel_membership(request):
             else:
                 member.deactivation_date = now
             member.save()
-            map(lambda s: cancel_share(s, now, end_date), member.active_shares.all())
+            [cancel_share(s, now, end_date) for s in member.active_shares]
             return redirect('profile')
     else:
         form = MemberCancellationForm(member)

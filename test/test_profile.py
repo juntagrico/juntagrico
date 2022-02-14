@@ -22,12 +22,20 @@ class ProfileTests(JuntagricoTestCase):
         self.assertGet(reverse('cancel-membership'))
 
     def testCancelMembershipPost(self):
-        self.assertPost(reverse('cancel-membership'), code=302)
+        data = {
+            'message': 'message',
+            'iban': 'CH61 0900 0000 1900 0012 6'
+        }
+        self.assertPost(reverse('cancel-membership'), code=302, data=data)
         self.member.refresh_from_db()
         self.assertTrue(self.member.canceled)
 
     def testCancelMembershipNonCoopPost(self):
-        self.assertPost(reverse('cancel-membership'), code=302, member=self.member3)
+        data = {
+            'message': 'message',
+            'iban': ''
+        }
+        self.assertPost(reverse('cancel-membership'), code=302, member=self.member3, data=data)
         self.member3.refresh_from_db()
         self.assertTrue(self.member3.inactive)
 
