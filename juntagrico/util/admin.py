@@ -23,19 +23,6 @@ def queryset_for_coordinator(model_admin, request, field):
     return qs
 
 
-def extra_context_for_past_jobs(request, job_type, object_id, extra_context):
-    job = get_object_or_404(job_type, pk=object_id)
-    job_is_in_past = job.end_time() < timezone.now()
-    job_is_running = job.start_time() < timezone.now()
-    job_canceled = job.canceled
-    job_read_only = job_canceled or job_is_running or job_is_in_past
-    if job_read_only and (
-            not (request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs'))):
-        extra_context = extra_context or {}
-        extra_context['readonly'] = True
-    return extra_context
-
-
 class MyHTMLWidget(forms.widgets.Widget):
     '''
     Widget that display (non-editably) arbitrary html.
