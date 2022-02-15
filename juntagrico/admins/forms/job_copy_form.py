@@ -19,7 +19,7 @@ class JobCopyForm(forms.ModelForm):
     weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
 
-    time = forms.TimeField(label=_('Zeit'), required=False,
+    time = forms.TimeField(label=_('Zeit'), required=True,
                            widget=admin.widgets.AdminTimeWidget)
 
     start_date = forms.DateField(label=_('Anfangsdatum'), required=True,
