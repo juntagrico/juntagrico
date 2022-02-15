@@ -12,7 +12,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity.jobs import JobType, RecuringJob, OneTimeJob
 from juntagrico.entity.location import Location
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
