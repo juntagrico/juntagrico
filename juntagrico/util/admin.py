@@ -1,8 +1,6 @@
 from django import forms
 from django.contrib import admin
-from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.html import format_html
 
 from juntagrico.entity.jobs import OneTimeJob, RecuringJob
