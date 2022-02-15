@@ -50,7 +50,7 @@ class MemberCancellationForm(Form):
         self.fields['iban'].required = member.is_cooperation_member
 
         self.helper = FormHelper()
-        self.helper.attrs = {'onSubmit': "return confirm('" + _('Möchtest du sicher deine Mitgliedschaft verbindlich künden?') + "')"}
+        self.helper.attrs = {'onSubmit': "return confirm('" + _('Möchtest du deine Mitgliedschaft verbindlich künden?') + "')"}
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
