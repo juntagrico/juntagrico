@@ -1,18 +1,36 @@
+from datetime import timedelta, datetime
+
+from django import forms
+from django.core.exceptions import ValidationError
 from django.urls import path, reverse
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
-from juntagrico.admins.forms.job_copy_form import JobCopyForm
+from juntagrico.admins.forms.job_copy_form import JobCopyForm, JobCopyToFutureForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob, JobType
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
+
+
+def can_edit_past_jobs(request):
+    return request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs')
+
+
+class OnlyFutureJobAdminForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data['time'] <= timezone.now():
+            raise ValidationError(
+                _('Neue Jobs können nicht in der Vergangenheit liegen.'))
+        return cleaned_data
 
 
 class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
@@ -51,13 +69,20 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     @admin.action(description=_('Jobs kopieren'))
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = RecuringJob(
-                type=inst.type, slots=inst.slots, time=inst.time)
+            time = inst.time
+            if not can_edit_past_jobs(request) and time <= timezone.now():
+                # create copy in future if job is in past and member can't edit past jobs
+                time = datetime.combine(timezone.now().date() + timedelta(7), time)
+            newjob = RecuringJob(type=inst.type, slots=inst.slots, time=time)
             newjob.save()
 
     def get_form(self, request, obj=None, **kwds):
         if self.is_copy_view(request):
-            return JobCopyForm
+            if can_edit_past_jobs(request):
+                return JobCopyForm
+            return JobCopyToFutureForm
+        elif not can_edit_past_jobs(request):
+            kwds['form'] = OnlyFutureJobAdminForm
         return super().get_form(request, obj, **kwds)
 
     def get_urls(self):
