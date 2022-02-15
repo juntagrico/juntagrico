@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+1.5.1
+---
+
+Fixes
+^^^^^
+* Fix datepicker in management lists
+* Fix problem with manifest static storage during startup
+
 1.5.0
 -----
 
@@ -12,7 +20,8 @@ Upgrade Instructions
     * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
 * Add ``'polymorphic'`` to the ``INSTALLED_APPS`` setting.
 * Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}``
-* Add the Setting STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+* The method ``url`` from ``django.conf.urls`` use either ``path`` or ``repath`` from ``django.urls``
+* Add the Setting ``STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'``
 * The option ``Telefonnummer von KoordinatorIn anzeigen`` on activity areas was previously only used to show the
   phone number of the area coordinator in job reminder emails and has been removed.
   Use to new contact field to show a phone number consistently in all places where the area contact is displayed.
@@ -32,6 +41,7 @@ Features & Improvements
     * depot description is now optional
     * price is now a decimal value
     * Areas, jobs and job types can now have a list of contacts
+    * Locations in jobs and depots are now entities
 
 * Developer Features:
     * ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` are removed in favor of the sites app. See upgrade instructions.
