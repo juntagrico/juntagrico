@@ -5,7 +5,7 @@ from juntagrico.admins.area_admin import AreaAdmin
 from juntagrico.admins.assignment_admin import AssignmentAdmin
 from juntagrico.admins.delivery_admin import DeliveryAdmin
 from juntagrico.admins.depot_admin import DepotAdmin
-from juntagrico.admins.job_admin import JobAdmin
+from juntagrico.admins.job_admin import JobAdmin, AbstractJobAdmin
 from juntagrico.admins.job_type_admin import JobTypeAdmin
 from juntagrico.admins.list_message_admin import ListMessageAdmin
 from juntagrico.admins.location_admin import LocationAdmin
@@ -20,7 +20,8 @@ from juntagrico.entity.billing import BillingPeriod
 from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.location import Location
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import Assignment, ActivityArea, JobExtra, JobExtraType, JobType, RecuringJob, OneTimeJob
+from juntagrico.entity.jobs import Assignment, ActivityArea, JobExtra, JobExtraType, JobType, RecuringJob, OneTimeJob, \
+    Job
 from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member, SubscriptionMembership
@@ -47,6 +48,7 @@ admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(JobExtra, BaseAdmin)
 admin.site.register(JobExtraType, BaseAdmin)
 admin.site.register(JobType, JobTypeAdmin)
+admin.site.register(Job, AbstractJobAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
 admin.site.register(ListMessage, ListMessageAdmin)
