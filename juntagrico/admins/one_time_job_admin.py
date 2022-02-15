@@ -10,9 +10,9 @@ from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity.jobs import JobType, RecuringJob, OneTimeJob
+from juntagrico.entity.jobs import JobType, RecuringJob
 from juntagrico.entity.location import Location
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
@@ -68,7 +68,3 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                                            'juntagrico.is_area_admin',
                                            ActivityAreaDao.areas_by_coordinator)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        extra_context = extra_context_for_past_jobs(request, OneTimeJob, object_id, extra_context)
-        return super().change_view(request, object_id, extra_context=extra_context)
