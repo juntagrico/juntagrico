@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Dev
+---
+
+Fixes
+^^^^^
+* Fix read-only admin view of one time job
+
 1.5.1
 ---
 

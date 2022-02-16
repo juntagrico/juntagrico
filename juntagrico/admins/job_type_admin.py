@@ -51,7 +51,8 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
         form = super().get_form(request, obj, **kwds)
         # only include visible and current locations in choices
         # filter queryset here, because here the obj is available
-        form.base_fields['location'].queryset = Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
+        if 'location' in form.base_fields:  # not there if read-only
+            form.base_fields['location'].queryset = Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
         return form
 
     def get_queryset(self, request):

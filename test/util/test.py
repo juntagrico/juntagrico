@@ -229,6 +229,11 @@ class JuntagricoTestCase(TestCase):
         self.job3 = RecuringJob.objects.create(**job_data)
         self.job4 = RecuringJob.objects.create(**job_data2)
         self.job5 = RecuringJob.objects.create(**job_data)
+        self.past_job = RecuringJob.objects.create(
+            slots=1,
+            time=timezone.now() - timezone.timedelta(hours=2),
+            type=self.job_type
+        )
         self.infinite_job = RecuringJob.objects.create(**{
             'infinite_slots': True,
             'time': time,
@@ -245,6 +250,8 @@ class JuntagricoTestCase(TestCase):
                              'time': time,
                              'location': self.location2}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
+        one_time_job_data.update(name='name2', time=timezone.now() - timezone.timedelta(hours=2))
+        self.past_one_time_job = OneTimeJob.objects.create(**one_time_job_data)
         """
         assignment
         """

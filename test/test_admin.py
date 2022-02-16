@@ -33,6 +33,12 @@ class AdminTests(JuntagricoTestCase):
         self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
 
+    def testPastJobAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin)
+
     def testDeliveryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
         url = reverse('admin:juntagrico_delivery_changelist')
