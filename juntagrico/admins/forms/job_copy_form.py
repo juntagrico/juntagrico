@@ -66,8 +66,7 @@ class JobCopyForm(forms.ModelForm):
 
     @staticmethod
     def cleaned(cleaned_data):
-        return 'start_date' in cleaned_data and 'end_date' in cleaned_data \
-               and 'weekdays' in cleaned_data and 'weekly' in cleaned_data
+        return all(k in cleaned_data for k in ('start_date', 'end_date', 'weekdays', 'weekly', 'time'))
 
     @staticmethod
     def get_datetimes(cleaned_data):
