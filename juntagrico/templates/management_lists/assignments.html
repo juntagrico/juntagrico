@@ -53,15 +53,26 @@
             {% for subscription in management_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.subscription.id %}">
-                            {{ subscription.subscription.recipients_names }}
-                        </a>
+                        {% spaceless %}
+                            <a href="{% url 'admin:juntagrico_member_change' subscription.subscription.primary_member.id %}">
+                                <strong>{{ subscription.subscription.primary_member }}</strong>
+                            </a>
+                        {% endspaceless %}
+                        {{ subscription.subscription.primary_member.get_phone }}
+                        <br>
+                        {% for recipient in subscription.subscription.other_recipients %}
+                            <a href="{% url 'admin:juntagrico_member_change' recipient.id %}">{{ recipient }}</a>
+                            {{ recipient.get_phone }}
+                            <br>
+                        {% endfor %}
                     </td>
                     <td>
                         {{ subscription.subscription.activation_date|date:"Y-m-d" }}
                     </td>
                     <td>
-                        {{ subscription.subscription.state_text }}
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.subscription.id %}">
+                            {{ subscription.subscription.state_text }}
+                        </a>
                     </td>
                     <td>
                         {{ subscription.assignments|floatformat }}

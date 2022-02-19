@@ -185,9 +185,7 @@ class Member(JuntagricoBaseModel):
         return '%s %s' % (self.first_name, self.last_name)
 
     def get_phone(self):
-        if self.mobile_phone != '':
-            return self.mobile_phone
-        return self.phone
+        return self.mobile_phone or self.phone
 
     def get_hash(self):
         return hashlib.sha1((str(self.email) + str(self.pk)).encode('utf8')).hexdigest()
