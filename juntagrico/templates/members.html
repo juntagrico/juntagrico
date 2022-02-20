@@ -74,49 +74,53 @@
                 </tr>
             </tfoot>
             <tbody>
-                {% for member in members %}
-                    <tr>
-                        <td>
-                            {% if perms.juntagrico.is_operations_group %}
-                                <a href="/impersonate/{{ member.user.id }}" target="__blank">
-                                {% endif %}
-                                {{ member.first_name }} {{ member.last_name }}
-                                {% if perms.juntagrico.is_operations_group %}
-                                </a>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% for area in member.areas.all %}
-                                {{ area.name }},
-                                {% empty %}
-                                -Kein Tätigkeitsbereich-
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% if member.subscription_current != None %}
-                                {{ member.subscription_current.depot.name }}
-                            {% else %}
-                                Kein {% vocabulary "depot" %}
-                            {% endif %}
-                        </td>
-                        <td class="email">
-                            {{ member.email }}
-                        </td>
-                        <td>
-                            {{ member.phone }}
-                        </td>
-                        <td>
-                            {{ member.mobile_phone }}
-                        </td>
-                        <td>
-                            {% if member.subscription_current != None %}
-                                {{ member.subscription_current.size }}
-                            {% else %}
-                                Kein {% vocabulary "subscription" %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
+                {% with b_impersonate=perms.juntagrico.is_operations_group %}
+                    {% for member in members %}
+                        {% with sub=member.current_subscriptionmembership.0 %}
+                            <tr>
+                                <td>
+                                    {% if b_impersonate %}
+                                        <a href="{% url 'impersonate-start' member.userid %}" target="_blank">
+                                        {% endif %}
+                                        {{ member.first_name }} {{ member.last_name }}
+                                        {% if b_impersonate %}
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% for area in member.areas.all %}
+                                        {{ area.name }},
+                                    {% empty %}
+                                        -Kein Tätigkeitsbereich-
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% if sub.depot_name != None %}
+                                        {{ sub.depot_name }}
+                                    {% else %}
+                                        Kein {% vocabulary "depot" %}
+                                    {% endif %}
+                                </td>
+                                <td class="email">
+                                    {{ member.email }}
+                                </td>
+                                <td>
+                                    {{ member.phone }}
+                                </td>
+                                <td>
+                                    {{ member.mobile_phone }}
+                                </td>
+                                <td>
+                                    {% if sub.subscription != None %}
+                                        {{ sub.subscription.size }}
+                                    {% else %}
+                                        Kein {% vocabulary "subscription" %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endwith %}
+                    {% endfor %}
+                {% endwith %}
             </tbody>
         </table>
     </div>

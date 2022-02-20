@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -10,6 +10,7 @@ from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
@@ -90,16 +91,18 @@ class Subscription(Billable, SimpleStateModel):
     def size(self):
         delimiter = Config.sub_overview_format('delimiter')
         sformat = Config.sub_overview_format('format')
-        sizes = {}
-        for part in self.active_parts.all() or self.future_parts.all():
-            sizes[part.type] = part.type.size.units + sizes.get(part.type, 0)
+        types = SubscriptionType.objects.filter(subscription_parts__in=self.active_and_future_parts).annotate(
+            size_sum=Sum('size__units'),
+            size_name=F('size__name'),
+            product_name=F('size__product__name')
+        )
         return delimiter.join(
             [sformat.format(
-                product=key.size.product.name,
-                size=key.size.name,
-                type=key.name,
-                amount=value,
-            ) for key, value in sizes.items()]
+                product=t.product_name,
+                size=t.size_name,
+                type=t.name,
+                amount=t.size_sum,
+            ) for t in types]
         )
 
     @property
