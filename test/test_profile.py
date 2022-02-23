@@ -33,7 +33,7 @@ class ProfileTests(JuntagricoTestCase):
 
     def testDeactivateMembership(self):
         # must first cancel and pay back the shares
-        for share in self.member.active_shares:
+        for share in self.member.shares.active():
             share.cancelled_date = timezone.now().date()
             share.termination_date = timezone.now().date()
             share.payback_date = timezone.now().date()

@@ -22,7 +22,7 @@ class MemberAdminForm(forms.ModelForm):
             self.fields['future_subscription_link'].initial = link
             old_links = [self.get_subscription_link(member, old_sub) for old_sub in member.old_subscriptions.all()]
             self.fields['old_subscription_link'].initial = '<br>'.join(old_links)
-            share_link = [self.get_share_link(share) for share in member.share_set.all()]
+            share_link = [self.get_share_link(share) for share in member.shares.all()]
             self.fields['share_link'].initial = '<br>'.join(share_link)
 
     @staticmethod

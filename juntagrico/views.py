@@ -366,13 +366,13 @@ def cancel_membership(request):
         else:
             member.deactivation_date = now
         member.save()
-        for share in member.active_shares:
+        for share in member.shares.usable():
             cancel_share(share, now, end_date)
         return redirect('profile')
 
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
-    asc = member.usable_shares_count
+    asc = member.shares.usable().count()
     sub = member.subscription_current
     f_sub = member.subscription_future
     future_active = f_sub is not None and (f_sub.state == 'active' or f_sub.state == 'waiting')
