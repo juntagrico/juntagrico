@@ -541,11 +541,13 @@ DEFAULT_MAILER
 
 FROM_FILTER
 ^^^^^^^^^^^
-  Consisting of a regular expression and a default replacement. If the regular expression does not match the default replacement is used, and the orogonal from is set as reply to
+  Allows overriding the "from" field of outgoing emails. This can be used to prevent sending emails with a sender of different domain than the SMTP server, which triggers most spam filters.
+  The setting consists of a regular expression and a default replacement. If the regular expression does NOT match the default replacement is used as "from", and the origonal "from" is set as "reply to"
 
   default value
 
   .. code-block:: python
+
     {
         'filter_expression': '.*',
         'replacement_from': ''
