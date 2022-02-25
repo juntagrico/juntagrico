@@ -12,13 +12,13 @@ from xlsxwriter import Workbook
 from juntagrico import version
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
-from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
@@ -176,7 +176,7 @@ def filters_area(request, area_id):
 @any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
 def subscriptions(request):
     renderdict = {
-        'subscriptions': SubscriptionDao.all_active_subscritions(),
+        'subscriptions': Subscription.objects.active(),
         'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
     }
 
@@ -188,7 +188,7 @@ def filter_subscriptions_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
     renderdict = {
         'can_send_mails': True,
-        'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
+        'subscriptions': Subscription.objects.in_depot(depot).active(),
         'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
     }
@@ -222,12 +222,12 @@ def future(request):
             'future': 0,
             'now': 0
         }
-    for subscription in SubscriptionDao.all_active_subscritions():
+    for subscription in Subscription.objects.active():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
                 subscription_size)
 
-    for subscription in SubscriptionDao.future_subscriptions():
+    for subscription in Subscription.objects.future():
         for subscription_size in subscriptionsizes:
             subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
                 subscription_size)
@@ -322,7 +322,7 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
     worksheet_s.write_string(0, 14, str(_('Preis')))
 
-    subs = subscriptions_with_assignments(SubscriptionDao.all_subscritions())
+    subs = subscriptions_with_assignments(Subscription.objects.all())
 
     row = 1
     for sub in subs:
@@ -407,14 +407,14 @@ def export(request):
 @permission_required('juntagrico.change_subscription')
 def waitinglist(request):
     render_dict = get_changedate(request)
-    return subscription_management_list(SubscriptionDao.not_started_subscriptions(), render_dict,
+    return subscription_management_list(Subscription.objects.waiting(), render_dict,
                                         'management_lists/waitinglist.html', request)
 
 
 @permission_required('juntagrico.change_subscription')
 def canceledlist(request):
     render_dict = get_changedate(request)
-    return subscription_management_list(SubscriptionDao.canceled_subscriptions(), render_dict,
+    return subscription_management_list(Subscription.objects.cancelled(), render_dict,
                                         'management_lists/canceledlist.html', request)
 
 
@@ -488,7 +488,7 @@ def unset_change_date(request):
 @permission_required('juntagrico.change_subscription')
 def sub_inconsistencies(request):
     management_list = []
-    for sub in SubscriptionDao.all_subscritions():
+    for sub in Subscription.objects.all():
         try:
             sub.clean()
             for part in sub.parts.all():
@@ -507,7 +507,7 @@ def sub_inconsistencies(request):
 
 @permission_required('juntagrico.change_assignment')
 def assignments(request):
-    management_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
+    management_list = subscriptions_with_assignments(Subscription.objects.active())
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)

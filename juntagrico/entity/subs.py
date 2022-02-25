@@ -9,6 +9,7 @@ from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
+from juntagrico.queryset.subscription import SubscriptionQuerySet
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, \
     calculate_remaining_days_percentage
@@ -38,6 +39,8 @@ class Subscription(Billable, SimpleStateModel):
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     types = models.ManyToManyField('SubscriptionType', through='SubscriptionPart', related_name='subscriptions')
+
+    objects = SubscriptionQuerySet.as_manager()
 
     def __str__(self):
         return _('Abo ({1}) {0}').format(self.size, self.id)

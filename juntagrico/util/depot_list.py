@@ -3,8 +3,8 @@ from django.utils import timezone
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
-from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import adminnotification
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.subs import activate_future_depots
@@ -24,7 +24,7 @@ def default_depot_list_generation(*args, **options):
         print('future depots ignored, use --future to override')
 
     depot_dict = {
-        'subscriptions': SubscriptionDao.all_active_subscritions(),
+        'subscriptions': Subscription.objects.active(),
         'products': SubscriptionProductDao.get_all_for_depot_list(),
         'depots': DepotDao.all_depots_for_list(),
 
