@@ -1,8 +1,8 @@
-from django.db.models import QuerySet
+from polymorphic.query import PolymorphicQuerySet
 from juntagrico.util.models import q_deactivated, q_activated, q_cancelled, q_isactive
 
 
-class SubscriptionQuerySet(QuerySet):
+class SubscriptionQuerySet(PolymorphicQuerySet):
     def waiting(self):
         return self.filter(~q_activated()).order_by('start_date')
 

@@ -1,8 +1,9 @@
-from django.db.models import QuerySet, Q, Min, Max
+from django.db.models import Q, Min, Max
 from django.utils import timezone
+from polymorphic.query import PolymorphicQuerySet
 
 
-class ShareQuerySet(QuerySet):
+class ShareQuerySet(PolymorphicQuerySet):
     def unpaid(self):
         return self.filter(paid_date__isnull=True)
 
