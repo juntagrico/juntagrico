@@ -1,6 +1,5 @@
 from django import forms
 
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.subs import Subscription
 
 
@@ -16,4 +15,4 @@ class SubscriptionAdminForm(forms.ModelForm):
     def __init__(self, *a, **k):
         forms.ModelForm.__init__(self, *a, **k)
         if 'primary_member' in self.fields.keys():
-            self.fields['primary_member'].queryset = MemberDao.members_in_subscription(self.instance)
+            self.fields['primary_member'].queryset = self.instance.members

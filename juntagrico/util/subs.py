@@ -1,4 +1,3 @@
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.mailer import membernotification
 
@@ -8,8 +7,7 @@ def subscriptions_with_assignments(subscriptions):
     for subscription in subscriptions:
         assignments = 0
         core_assignments = 0
-        members = MemberDao.members_with_assignments_count_in_subscription(
-            subscription)
+        members = subscription.members.annotate_assignment_count()
         for member in members:
             assignments += member.assignment_count \
                 if member.assignment_count is not None else 0

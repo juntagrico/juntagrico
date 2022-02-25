@@ -35,9 +35,8 @@ def get_emails_by_permission(permission_code):
     """
     Get all email addresses of members by permission of user
     """
-    from juntagrico.dao.memberdao import MemberDao
-    emails = MemberDao.members_by_permission(permission_code).values_list('email', flat=True)
-    return emails
+    from juntagrico.entity.member import Member
+    return Member.objects.by_permission(permission_code).values_list('email', flat=True)
 
 
 def requires_someone_with_perm(perm):

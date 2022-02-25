@@ -1,11 +1,9 @@
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, Count
-from django.utils import timezone
+from django.db.models import Count
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
@@ -205,19 +203,16 @@ class Subscription(Billable, SimpleStateModel):
     def future_members(self):
         if getattr(self, 'override_future_members', False):
             return self.override_future_members
-        return set(self.members.filter(~MemberDao.q_left_subscription()))
+        return set(self.members.joining_subscription())
 
     @property
     def members_for_state(self):
-        now = timezone.now().date()
-        member_active = ~Q(deactivation_date__isnull=False, deactivation_date__lte=now)
         if self.state == 'waiting':
-            return self.members.filter(member_active)
+            return self.members.active()
         elif self.state == 'inactive':
             return self.members
         else:
-            return self.members.filter(MemberDao.q_joined_subscription(),
-                                       ~MemberDao.q_left_subscription(), member_active)
+            return self.members.joined_subscription().active()
 
     @admin.display(description=primary_member.verbose_name)
     def primary_member_nullsave(self):

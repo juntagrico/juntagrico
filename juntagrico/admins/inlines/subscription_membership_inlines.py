@@ -5,8 +5,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.admins.forms.subscriptionmembership_admin_form import SubscriptionMembershipAdminForm
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
-from juntagrico.entity.member import SubscriptionMembership
+from juntagrico.entity.member import SubscriptionMembership, Member
 
 
 class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
@@ -46,11 +45,11 @@ class SubscriptionMembershipInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'member':
             if self.parent_obj is None:
-                kwargs['queryset'] = MemberDao.members_for_create_subscription()
+                kwargs['queryset'] = Member.objects.available_for_future_subscription()
             elif self.parent_obj.state == 'waiting':
-                kwargs['queryset'] = MemberDao.members_for_future_subscription(self.parent_obj)
+                kwargs['queryset'] = Member.objects.available_for_future_subscription(self.parent_obj)
             elif self.parent_obj.state == 'inactive':
-                kwargs['queryset'] = MemberDao.all_members()
+                kwargs['queryset'] = Member.objects.all()
             else:
-                kwargs['queryset'] = MemberDao.members_for_subscription(self.parent_obj)
+                kwargs['queryset'] = Member.objects.available_for_subscription(self.parent_obj)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

@@ -1,7 +1,7 @@
 from django.template.loader import get_template
 from django.utils import timezone
 
-from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.member import Member
 
 
 def home_messages(request):
@@ -25,10 +25,10 @@ def home_messages(request):
 def job_messages(request, job):
     result = []
     member = request.user.member
-    all_participants = list(MemberDao.members_by_job(job))
-    if member in all_participants:
+    assignments = Member.objects.in_job(job).filter(pk=member.pk).count()
+    if assignments:
         render_dict = {
-            'amount': all_participants.count(member) - 1,
+            'amount': assignments - 1,
         }
         result = [get_template('messages/job_assigned.html').render(render_dict)]
     elif job.canceled:

@@ -16,7 +16,6 @@ from django.views.generic.edit import ModelFormMixin
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
@@ -235,7 +234,7 @@ def confirm(request, member_hash):
     Confirm from a user that has been added as a co_subscription member
     """
 
-    for member in MemberDao.all_members().filter(confirmed=False):
+    for member in Member.objects.all().filter(confirmed=False):
         if member_hash == member.get_hash():
             member.confirmed = True
             member.save()

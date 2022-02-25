@@ -12,7 +12,6 @@ from xlsxwriter import Workbook
 from juntagrico import version
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
@@ -59,15 +58,11 @@ def send_email_intern(request):
     emails = set()
     sender = request.POST.get('sender')
     if request.POST.get('allsubscription') == 'on':
-        m_emails = MemberDao.members_for_email_with_subscription().values_list('email',
-                                                                               flat=True)
-        emails.update(m_emails)
+        emails.update(Member.objects.with_subscription().active().values_list('email', flat=True))
     if request.POST.get('allshares') == 'on':
-        emails.update(MemberDao.members_for_email_with_shares(
-        ).values_list('email', flat=True))
+        emails.update(Share.objects.valid().values_list('member__email', flat=True))
     if request.POST.get('all') == 'on':
-        emails.update(MemberDao.members_for_email(
-        ).values_list('email', flat=True))
+        emails.update(Member.objects.active().values_list('email', flat=True))
     if request.POST.get('recipients'):
         emails.update(re.split(r'[\s,;]+', request.POST.get('recipients')))
     if request.POST.get('allsingleemail'):
@@ -138,9 +133,8 @@ def my_mails_intern(request, mail_url, error_message=None):
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters_active(request):
-    members = MemberDao.active_members()
     renderdict = {
-        'members': members,
+        'members': Member.objects.active(),
         'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
     }
     return render(request, 'members.html', renderdict)
@@ -148,9 +142,8 @@ def filters_active(request):
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters(request):
-    members = MemberDao.all_members()
     renderdict = {
-        'members': members,
+        'members': Member.objects.all(),
         'title': _('Alle {}').format(Config.vocabulary('member_pl'))
     }
     return render(request, 'members.html', renderdict)
@@ -159,10 +152,9 @@ def filters(request):
 @permission_required('juntagrico.is_depot_admin')
 def filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
-    members = MemberDao.member_with_active_subscription_for_depot(depot)
     renderdict = {
         'can_send_mails': True,
-        'members': members,
+        'members': Member.objects.in_depot(depot),
         'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
     }
@@ -172,10 +164,9 @@ def filters_depot(request, depot_id):
 @permission_required('juntagrico.is_area_admin')
 def filters_area(request, area_id):
     area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
-    members = MemberDao.members_in_area(area)
     renderdict = {
         'can_send_mails': True,
-        'members': members,
+        'members': area.members.active(),
         'mail_url': 'mail-area',
         'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
     }
@@ -276,7 +267,7 @@ def excel_export_members_filter(request):
     worksheet_s.write_string(0, 5, str(_('Email')))
     worksheet_s.write_string(0, 6, str(_('Telefon')))
     worksheet_s.write_string(0, 7, str(_('Mobile')))
-    members = MemberDao.members_with_assignments_count()
+    members = Member.objects.all().annotate_assignment_count()
 
     row = 1
     for member in members:
@@ -465,7 +456,7 @@ def share_canceledlist(request):
 @permission_required('juntagrico.change_member')
 def member_canceledlist(request):
     render_dict = {'change_date_disabled': True}
-    return subscription_management_list(MemberDao.canceled_members(), render_dict,
+    return subscription_management_list(Member.objects.canceled(), render_dict,
                                         'management_lists/member_canceledlist.html', request)
 
 

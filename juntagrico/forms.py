@@ -10,7 +10,6 @@ from django.utils.translation import gettext as _
 from schwifty import IBAN
 
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.models import Member, Subscription
@@ -212,7 +211,7 @@ class CoMemberBaseForm(MemberBaseForm):
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
                                             .format(Config.vocabulary('co_member_pl'))))
-        existing_member = MemberDao.member_by_email(email)
+        existing_member = Member.objects.get_by_email(email)
         if existing_member:
             if existing_member.blocked:
                 raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktiv\

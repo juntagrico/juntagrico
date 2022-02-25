@@ -19,6 +19,11 @@ class ShareQuerySet(QuerySet):
         """
         return self.paid().filter(payback_date__isnull=True)
 
+    def valid(self):
+        """ ordered and not terminated yet
+        """
+        return self.filter(Q(termination_date__isnull=True) | Q(termination_date__gt=timezone.now()))
+
     def active_on(self, date=None):
         date = date or timezone.now()
         return self.filter(paid_date__lte=date).filter(Q(payback_date__isnull=True) | Q(payback_date__gte=date))

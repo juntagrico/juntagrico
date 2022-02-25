@@ -15,7 +15,6 @@ from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
@@ -93,8 +92,8 @@ def job(request, job_id):
         messages.extend(error_message(request))
         request.member_messages = messages
 
-    all_participants = MemberDao.members_by_job(job)
-    number_of_participants = len(all_participants)
+    all_participants = Member.objects.in_job(job)
+    number_of_participants = all_participants.count()
     unique_participants = all_participants.annotate(
         assignment_for_job=Count('id')).distinct()
 

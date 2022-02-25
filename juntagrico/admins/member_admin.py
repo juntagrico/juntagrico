@@ -7,7 +7,8 @@ from django.utils.translation import gettext as _
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
+
+from juntagrico.entity.member import Member
 from juntagrico.entity.subs import Subscription
 
 
@@ -36,13 +37,13 @@ class MemberAdmin(BaseAdmin):
         name = request.GET.pop('qs_name', ['all'])[0]
         subscription_id = request.GET.pop('sub_id', ['0'])[0]
         if name == 'cs':
-            return MemberDao.members_for_create_subscription()
+            return Member.objects.available_for_future_subscription()
         elif name == 'fs':
             subscription = Subscription.objects.get(id=int(subscription_id))
-            return MemberDao.members_for_future_subscription(subscription)
+            return Member.objects.available_for_future_subscription(subscription)
         elif name == 's':
             subscription = Subscription.objects.get(id=int(subscription_id))
-            return MemberDao.members_for_subscription(subscription)
+            return Member.objects.available_for_subscription(subscription)
         return queryset
 
     @admin.display(
