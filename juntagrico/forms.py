@@ -11,7 +11,7 @@ from schwifty import IBAN
 
 from juntagrico.config import Config
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Subscription
 
 
@@ -325,6 +325,7 @@ class SubscriptionPartBaseForm(Form):
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
         self._product_method = product_method
+        self.orderable_types = set()
 
     def _collect_type_fields(self):
         containers = []
@@ -333,6 +334,7 @@ class SubscriptionPartBaseForm(Form):
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
                 for subscription_type in subscription_size.types.filter(visible=True):
+                    self.orderable_types.add(subscription_type)
                     field_name = f'amount[{subscription_type.id}]'
                     self.fields[field_name] = IntegerField(label=subscription_type.name, min_value=0,
                                                            initial=self._get_initial(subscription_type))
@@ -348,7 +350,7 @@ class SubscriptionPartBaseForm(Form):
     def get_selected(self):
         return {
             sub_type: getattr(self, 'cleaned_data', {}).get('amount[' + str(sub_type.id) + ']', 0)
-            for sub_type in SubscriptionTypeDao.get_all()
+            for sub_type in self.orderable_types
         }
 
 

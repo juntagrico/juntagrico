@@ -8,7 +8,7 @@ from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
 
@@ -32,7 +32,7 @@ def show_core():
 
 @register.simple_tag
 def requires_core():
-    return SubscriptionTypeDao.get_with_core().count() > 0
+    return SubscriptionType.objects.filter(required_core_assignments__gt=0).count() > 0
 
 
 @register.simple_tag
