@@ -4,6 +4,7 @@ from django.db.models import Count
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.queryset.subscriptionpart import SubscriptionPartQuerySet, NormalSubscriptionPartManager, ExtraSubscriptionPartManager
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
@@ -255,6 +256,10 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
                                      verbose_name=Config.vocabulary('subscription'))
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
                              verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+
+    objects = SubscriptionPartQuerySet.as_manager()
+    normals = NormalSubscriptionPartManager.from_queryset(SubscriptionPartQuerySet)()
+    extras = ExtraSubscriptionPartManager.from_queryset(SubscriptionPartQuerySet)()
 
     @property
     def can_cancel(self):

@@ -1,8 +1,8 @@
 from juntagrico.entity.member import SubscriptionMembership, q_joined_subscription, q_left_subscription
 
 
+# TODO: remove these, by rewriting the consistency checks
 class SubscriptionMembershipDao:
-
     @staticmethod
     def get_other_waiting_for_member(member, subscription):
         return SubscriptionMembership.objects.exclude(subscription=subscription) \
@@ -14,7 +14,3 @@ class SubscriptionMembershipDao:
         return SubscriptionMembership.objects.exclude(subscription=subscription) \
             .filter(q_joined_subscription() & ~q_left_subscription(asof)) \
             .filter(member=member)
-
-    @staticmethod
-    def get_all_for_subscription(subscription):
-        return SubscriptionMembership.objects.filter(subscription=subscription)

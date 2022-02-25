@@ -12,13 +12,12 @@ from xlsxwriter import Workbook
 from juntagrico import version
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
-from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionSize
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
@@ -215,7 +214,7 @@ def amount_overview(request):
 def future(request):
     subscriptionsizes = []
     subscription_lines = dict({})
-    for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
+    for subscription_size in SubscriptionSize.objects.order_by('product', 'units'):
         subscriptionsizes.append(subscription_size.id)
         subscription_lines[subscription_size.id] = {
             'name': subscription_size.product.name + '-' + subscription_size.name,
@@ -421,28 +420,28 @@ def canceledlist(request):
 @permission_required('juntagrico.change_subscriptionpart')
 def part_waitinglist(request):
     render_dict = get_changedate(request)
-    changedlist = SubscriptionPartDao.waiting_parts_for_active_subscriptions()
+    changedlist = SubscriptionPart.normals.waiting().in_active_subscription()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_waitinglist.html', request)
 
 
 @permission_required('juntagrico.change_subscriptionpart')
 def part_canceledlist(request):
     render_dict = get_changedate(request)
-    changedlist = SubscriptionPartDao.canceled_parts_for_active_subscriptions()
+    changedlist = SubscriptionPart.normals.cancelled().in_active_subscription()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
 
 
 @permission_required('juntagrico.change_subscriptionpart')
 def extra_waitinglist(request):
     render_dict = get_changedate(request)
-    return subscription_management_list(SubscriptionPartDao.waiting_extra_subs(), render_dict,
+    return subscription_management_list(SubscriptionPart.extras.waiting(), render_dict,
                                         'management_lists/extra_waitinglist.html', request)
 
 
 @permission_required('juntagrico.change_subscriptionpart')
 def extra_canceledlist(request):
     render_dict = get_changedate(request)
-    return subscription_management_list(SubscriptionPartDao.canceled_extra_subs(), render_dict,
+    return subscription_management_list(SubscriptionPart.extras.cancelled(), render_dict,
                                         'management_lists/extra_canceledlist.html', request)
 
 
