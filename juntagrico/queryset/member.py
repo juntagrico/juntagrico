@@ -1,8 +1,7 @@
-from datetime import datetime, time
+from datetime import date
 
-from django.db.models import QuerySet, Sum, Case, When, Q
+from django.db.models import QuerySet, Sum, Case, When, Q, DecimalField
 from django.utils import timezone
-from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.util.models import PropertyQuerySet, q_deactivated
 from juntagrico.util.models import q_cancelled
@@ -38,7 +37,7 @@ class MemberQuerySet(QuerySet):
         return self.active().with_subscription().filter(subscription__depot=depot)
 
     def in_job(self, job):
-        return self.filter(assignment__job=job)
+        return self.filter(assignments__job=job)
 
     def available_for_subscription(self, subscription):
         result = PropertyQuerySet.from_qs(self.filter(
@@ -65,18 +64,22 @@ class MemberQuerySet(QuerySet):
             Q(user__groups__permissions__codename=permission_codename) | Q(user__user_permissions__codename=permission_codename)
         ).distinct()
 
-    def annotate_assignment_count(self):
-        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
-        end = datetime.combine(end_of_business_year(), time.min, tzinfo=gdtz())
+    def annotate_assignment_count(self, until=None):
+        until = until or end_of_business_year()
+        if isinstance(until, date):
+            until = {'assignments__job__time__date__lte': until}
+        else:
+            until = {'assignments__job__time__lte': until}
         cond = dict(
-            assignment__job__time__gte=start,
-            assignment__job__time__lt=end,
-            then='assignment__amount'
+            assignments__job__time__date__gte=start_of_business_year(),
+            **until,
+            then='assignments__amount'
         )
+        default = dict(default=0, output_field=DecimalField())
         return self.annotate(
-            assignment_count=Sum(Case(When(**cond)))
+            assignment_count=Sum(Case(When(**cond), **default))
         ).annotate(
-            core_assignment_count=Sum(Case(When(**cond, assignment__core_cache=True)))
+            core_assignment_count=Sum(Case(When(**cond, assignments__core_cache=True), **default))
         )
 
 

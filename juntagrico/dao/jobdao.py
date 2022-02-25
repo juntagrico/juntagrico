@@ -77,4 +77,4 @@ class JobDao:
 
     @staticmethod
     def upcomming_jobs_for_member(member):
-        return Job.objects.filter(time__gte=timezone.now(), assignment__member=member).distinct()
+        return Job.objects.filter(time__gte=timezone.now(), assignments__member=member).distinct()

@@ -213,7 +213,7 @@ class Subscription(Billable, SimpleStateModel):
         if self.state == 'waiting':
             return self.members.active()
         elif self.state == 'inactive':
-            return self.members
+            return self.members.all()
         else:
             return self.members.joined_subscription().active()
 

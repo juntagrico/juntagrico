@@ -9,7 +9,6 @@ from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity.jobs import JobType, RecuringJob
 from juntagrico.entity.location import Location
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
@@ -44,7 +43,7 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
             t.save()
             rj.type = t
             rj.save()
-            for b in AssignmentDao.assignments_for_job(inst.id):
+            for b in inst.assignments.all():
                 b.job = rj
                 b.save()
             inst.delete()

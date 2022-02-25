@@ -7,7 +7,6 @@ from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
@@ -85,8 +84,8 @@ class JobExtra(JuntagricoBaseModel):
     per_member = models.BooleanField(
         _('jeder kann Extra auswählen'), default=False)
 
-    def empty(self, assignment_set):
-        ids = [assignment.id for assignment in assignment_set]
+    def empty(self, assignments):
+        ids = [assignment.id for assignment in assignments]
         return self.assignments.filter(id__in=ids).count() == 0
 
     @property
@@ -191,7 +190,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def occupied_slots(self):
-        return self.assignment_set.count()
+        return self.assignments.count()
 
     @property
     def duration(self):
@@ -204,10 +203,9 @@ class Job(JuntagricoBasePoly):
         return self.time
 
     def status_percentage(self):
-        assignments = AssignmentDao.assignments_for_job(self.id)
         if self.slots < 1:
             return 100
-        return assignments.count() * 100 / self.slots
+        return self.assignments.count() * 100 / self.slots
 
     def is_core(self):
         return self.type.activityarea.core
@@ -222,7 +220,7 @@ class Job(JuntagricoBasePoly):
     def extras(self):
         extras_result = []
         for extra in self.type.job_extras_set.all():
-            if extra.empty(self.assignment_set.all()):
+            if extra.empty(self.assignments.all()):
                 extras_result.append(extra.extra_type.display_empty)
             else:
                 extras_result.append(extra.extra_type.display_full)
@@ -231,14 +229,14 @@ class Job(JuntagricoBasePoly):
     def empty_per_job_extras(self):
         extras_result = []
         for extra in self.type.job_extras_set.filter(per_member=False):
-            if extra.empty(self.assignment_set.all()):
+            if extra.empty(self.assignments.all()):
                 extras_result.append(extra)
         return extras_result
 
     def full_per_job_extras(self):
         extras_result = []
         for extra in self.type.job_extras_set.filter(per_member=False):
-            if not extra.empty(self.assignment_set.all()):
+            if not extra.empty(self.assignments.all()):
                 extras_result.append(extra)
         return extras_result
 
@@ -247,7 +245,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def participants(self):
-        return [a.member for a in self.assignment_set.all().prefetch_related('member') if a.member]
+        return [a.member for a in self.assignments.all().prefetch_related('member') if a.member]
 
     @property
     def participant_names(self):
@@ -334,8 +332,9 @@ class Assignment(JuntagricoBaseModel):
     '''
     Single assignment (work unit).
     '''
-    job = models.ForeignKey(Job, on_delete=models.PROTECT)
-    member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
+    job = models.ForeignKey(Job, on_delete=models.PROTECT, related_name='assignments')
+    member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'),
+                               related_name='assignments')
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
     job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True, verbose_name=_('Job Extras'))
     amount = models.FloatField(_('Wert'))

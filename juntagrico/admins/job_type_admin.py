@@ -7,7 +7,6 @@ from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.entity.jobs import OneTimeJob
@@ -39,7 +38,7 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                     je.onetime_type = oj
                     je.pk = None
                     je.save()
-                for b in AssignmentDao.assignments_for_job(rj.id):
+                for b in rj.assignments.all():
                     b.job = oj
                     b.save()
                 rj.delete()

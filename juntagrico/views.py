@@ -11,7 +11,6 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
@@ -107,7 +106,7 @@ def job(request, job_id):
             name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
         contact_url = reverse('contact-member', args=[participant.id])
         extras = []
-        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
+        for assignment in job.assignments.filter(member=participant):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
         reachable = participant.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == participant
@@ -177,12 +176,7 @@ def memberjobs(request):
     '''
     All jobs of current user
     '''
-    member = request.user.member
-    allassignments = AssignmentDao.assignments_for_member(member)
-    renderdict = {
-        'assignments': allassignments,
-    }
-    return render(request, 'memberjobs.html', renderdict)
+    return render(request, 'memberjobs.html')
 
 
 @login_required

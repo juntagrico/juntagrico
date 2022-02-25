@@ -1,6 +1,8 @@
-from django import template
+import math
 
-from juntagrico.dao.assignmentdao import AssignmentDao
+from django import template
+from django.utils import timezone
+
 from juntagrico.dao.jobdao import JobDao
 
 register = template.Library()
@@ -14,36 +16,31 @@ def next_jobs(request):
 @register.simple_tag
 def assignment_data(request):
     member = request.user.member
-    if member.subscription_current is None:
+    current_sub = member.subscription_current
+    if current_sub is None:
         return None
 
     # collect assignments
-    member_assignments = AssignmentDao.assignments_for_member_current_business_year(member)
-    partner_assignments = []
-    for subscription_member in member.subscription_current.co_members(member):
-        partner_assignments.extend(
-            AssignmentDao.assignments_for_member_current_business_year(subscription_member)
-        )
+    recipients = current_sub.members_for_state.annotate_assignment_count(timezone.now())
 
-    # count assignments
-    assignments = {
-        'member_core': int(sum(a.amount for a in member_assignments if a.is_core())),
-        'member': int(sum(a.amount for a in member_assignments)),
-        'partner_core': int(sum(a.amount for a in partner_assignments if a.is_core())),
-        'partner': int(sum(a.amount for a in partner_assignments)),
-    }
+    a = dict(partner_core=0, partner=0)
+    for recipient in recipients:
+        if recipient == member:
+            a['member_core'] = recipient.core_assignment_count
+            a['member'] = recipient.assignment_count
+        else:
+            a['partner_core'] += recipient.core_assignment_count
+            a['partner'] += recipient.assignment_count
 
     # calculate remaining assignments
-    remaining = member.subscription_current.required_assignments -\
-        assignments['member'] - assignments['partner']
-    remaining_core = member.subscription_current.required_core_assignments -\
-        assignments['member_core'] - assignments['partner_core']
+    remaining = current_sub.required_assignments - a['member'] - a['partner']
+    remaining_core = current_sub.required_core_assignments - a['member_core'] - a['partner_core']
 
     # for displaying
-    total = assignments['member'] + assignments['partner'] + max(remaining, remaining_core)
-    assignments.update({
-        'partner_core_bound': assignments['member'] + assignments['partner_core'],
-        'partner_bound': assignments['member'] + assignments['partner'],
-        'total': list(range(total)),
+    total = a['member'] + a['partner'] + max(remaining, remaining_core)
+    a.update({
+        'partner_core_bound': a['member'] + a['partner_core'],
+        'partner_bound': a['member'] + a['partner'],
+        'total': list(range(math.ceil(total))),
     })
-    return assignments
+    return a
