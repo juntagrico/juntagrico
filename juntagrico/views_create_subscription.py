@@ -5,7 +5,7 @@ from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.depotdao import DepotDao
+from juntagrico.entity.depot import Depot
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm
 from juntagrico.util import temporal
@@ -34,13 +34,12 @@ def cs_select_subscription(request, cs_session):
 @create_subscription_session
 def cs_select_depot(request, cs_session):
     if request.method == 'POST':
-        cs_session.depot = DepotDao.depot_by_id(request.POST.get('depot'))
+        cs_session.depot = Depot.objects.get(id=request.POST.get('depot'))
         return redirect(cs_session.next_page())
 
-    depots = DepotDao.all_visible_depots_with_map_info()
     render_dict = {
         'member': cs_session.main_member,
-        'depots': depots,
+        'depots': Depot.objects.visible(),
         'selected': cs_session.depot,
     }
     return render(request, 'createsubscription/select_depot.html', render_dict)

@@ -15,7 +15,6 @@ from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.depotdao import DepotDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
@@ -110,12 +109,11 @@ def depot_change(request, subscription_id):
                 Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
-    depots = DepotDao.all_visible_depots_with_map_info()
     renderdict = {
         'subscription': subscription,
         'saved': saved,
         'member': request.user.member,
-        'depots': depots,
+        'depots': Depot.objects.visible(),
     }
     return render(request, 'depot_change.html', renderdict)
 

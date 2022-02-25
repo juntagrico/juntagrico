@@ -1,14 +1,13 @@
 from django.utils import timezone
 
 from juntagrico.config import Config
-from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.listmessagedao import ListMessageDao
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionProduct
 from juntagrico.mailer import adminnotification
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.subs import activate_future_depots
-from juntagrico.util.temporal import weekdays
 
 
 def default_depot_list_generation(*args, **options):
@@ -26,11 +25,8 @@ def default_depot_list_generation(*args, **options):
     depot_dict = {
         'subscriptions': Subscription.objects.active(),
         'products': SubscriptionProduct.objects.for_depot_list(),
-        'depots': DepotDao.all_depots_for_list(),
-
-        'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in
-                     DepotDao.distinct_weekdays_for_depot_list()},
-        'messages': ListMessageDao.all_active()
+        'depots': Depot.objects.for_depot_list(),
+        'messages': ListMessage.objects.filter(active=True)
     }
 
     render_to_pdf_storage('exports/depotlist.html',

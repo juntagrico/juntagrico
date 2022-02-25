@@ -33,7 +33,7 @@
                 {% endfor %}
             {% endfor %}
         </tr>
-        {% for weekday_name, weekday_id in weekdays.items %}
+        {% for weekday_name, weekday_id in depots.weekdays.items %}
             <tr>
                 <td>{{ weekday_name }}</td>
                 <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|count_units|floatformat }}</td>

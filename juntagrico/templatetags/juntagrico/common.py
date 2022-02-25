@@ -5,7 +5,6 @@ from django.template.defaultfilters import urlize, linebreaksbr
 from juntagrico import version
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionProduct
 
@@ -65,7 +64,7 @@ def view_name(request):
 @register.simple_tag
 def depot_admin(request):
     if hasattr(request.user, 'member'):
-        return DepotDao.depots_for_contact(request.user.member)
+        return request.user.member.depot_set
     return []
 
 
