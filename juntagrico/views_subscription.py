@@ -16,11 +16,11 @@ from django.views.generic.edit import ModelFormMixin
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionProduct
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm
 from juntagrico.mailer import membernotification, adminnotification
@@ -62,7 +62,7 @@ def subscription(request, subscription_id=None):
             'co_members': subscription.co_members(member),
             'primary': subscription.primary_member.email == member.email,
             'next_size_date': start_of_next_business_year(),
-            'has_extra_subscriptions': SubscriptionProductDao.all_extra_products().count() > 0,
+            'has_extra_subscriptions': SubscriptionProduct.extras.count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
             'can_leave': can_leave,
         })
@@ -177,17 +177,17 @@ def extra_change(request, subscription_id):
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     extra_order_allowed = subscription.waiting or subscription.active
+    products = SubscriptionProduct.extras.visible()
     if request.method == 'POST':
         if not extra_order_allowed:
             raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
                                   format(Config.vocabulary('subscription_pl')), code='invalid')
-        form = SubscriptionPartOrderForm(subscription, request.POST,
-                                         product_method=SubscriptionProductDao.all_visible_extra_products)
+        form = SubscriptionPartOrderForm(subscription, request.POST, products=products)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected(), True)
             return return_to_previous_location(request)
     else:
-        form = SubscriptionPartOrderForm(product_method=SubscriptionProductDao.all_visible_extra_products)
+        form = SubscriptionPartOrderForm(products=products)
     renderdict = {
         'form': form,
         'extras': subscription.active_and_future_extra_subscriptions.all(),

@@ -10,8 +10,7 @@ from django.utils.translation import gettext as _
 from schwifty import IBAN
 
 from juntagrico.config import Config
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionProduct
 from juntagrico.models import Member, Subscription
 
 
@@ -318,18 +317,18 @@ class SubscriptionTypeField(Field):
 
 
 class SubscriptionPartBaseForm(Form):
-    def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
+    def __init__(self, *args, products=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
-        self._product_method = product_method
+        self.products = products or SubscriptionProduct.normals.visible()
         self.orderable_types = set()
 
     def _collect_type_fields(self):
         containers = []
-        for product in self._product_method().all():
+        for product in self.products:
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)

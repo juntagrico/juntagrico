@@ -7,8 +7,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.jobextradao import JobExtraDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionType, SubscriptionProduct
 
 register = template.Library()
 
@@ -22,7 +21,7 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def has_extra_subscriptions():
-    return SubscriptionProductDao.all_extra_products().count() > 0
+    return SubscriptionProduct.extras.count() > 0
 
 
 @register.simple_tag

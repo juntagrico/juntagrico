@@ -3,8 +3,8 @@ from django.utils import timezone
 from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subtypes import SubscriptionProduct
 from juntagrico.mailer import adminnotification
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.subs import activate_future_depots
@@ -25,7 +25,7 @@ def default_depot_list_generation(*args, **options):
 
     depot_dict = {
         'subscriptions': Subscription.objects.active(),
-        'products': SubscriptionProductDao.get_all_for_depot_list(),
+        'products': SubscriptionProduct.objects.for_depot_list(),
         'depots': DepotDao.all_depots_for_list(),
 
         'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in

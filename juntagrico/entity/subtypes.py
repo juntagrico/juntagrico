@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.queryset.subscriptionproduct import ProductQuerySet, NormalProductManager, ExtraProductManager
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.util import temporal
 
@@ -15,6 +16,10 @@ class SubscriptionProduct(JuntagricoBaseModel):
         _('Beschreibung'), max_length=1000, blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     is_extra = models.BooleanField(_('Ist Zusatzabo Produkt'), default=False)
+
+    objects = ProductQuerySet.as_manager()
+    normals = NormalProductManager.from_queryset(ProductQuerySet)()
+    extras = ExtraProductManager.from_queryset(ProductQuerySet)()
 
     def __str__(self):
         return self.name
