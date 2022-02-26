@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.queryset.delivery import DeliveryQuerySet
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.entity.subtypes import SubscriptionSize
 from juntagrico.util.temporal import weekday_short
@@ -15,6 +16,8 @@ class Delivery(JuntagricoBaseModel):
     subscription_size = models.ForeignKey(SubscriptionSize,
                                           verbose_name=_('{0}-Grösse').format(Config.vocabulary('subscription')),
                                           on_delete=models.PROTECT)
+
+    objects = DeliveryQuerySet.as_manager()
 
     def __str__(self):
         return u"%s - %s" % (self.delivery_date,

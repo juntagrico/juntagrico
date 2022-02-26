@@ -3,7 +3,7 @@ from django.conf import settings
 from django.template.defaultfilters import urlize, linebreaksbr
 
 from juntagrico import version
-from juntagrico.dao.deliverydao import DeliveryDao
+from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionProduct
@@ -20,12 +20,12 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def has_extra_subscriptions():
-    return SubscriptionProduct.extras.count() > 0
+    return SubscriptionProduct.extras.exists()
 
 
 @register.simple_tag
 def show_core():
-    return ActivityArea.objects.core().count() > 0
+    return ActivityArea.objects.core().exists()
 
 
 @register.simple_tag
@@ -35,12 +35,12 @@ def requires_core():
 
 @register.simple_tag
 def show_job_extras():
-    return JobExtra.objects.count() > 0
+    return JobExtra.objects.exists()
 
 
 @register.simple_tag
 def show_deliveries(request):
-    return len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0
+    return Delivery.objects.by_subscription(request.user.member.subscription_current).exists()
 
 
 @register.filter

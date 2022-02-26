@@ -19,9 +19,8 @@ def q_joined_subscription():
 
 
 def q_left_subscription(asof=None):
-    if asof is not None:
-        return Q(leave_date__isnull=False, leave_date__lte=asof)
-    return Q(leave_date__isnull=False, leave_date__lte=timezone.now().date())
+    asof = asof or timezone.now().date()
+    return Q(leave_date__isnull=False, leave_date__lte=asof)
 
 
 class Member(JuntagricoBaseModel):

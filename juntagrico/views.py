@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.deliverydao import DeliveryDao
+from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
@@ -238,7 +238,7 @@ def deliveries(request):
     '''
     All deliveries to be sorted etc.
     '''
-    deliveries = DeliveryDao.deliveries_by_subscription(
+    deliveries = Delivery.objects.by_subscription(
         request.user.member.subscription_current)
     renderdict = {
         'deliveries': deliveries

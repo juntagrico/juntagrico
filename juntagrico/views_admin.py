@@ -11,9 +11,9 @@ from xlsxwriter import Workbook
 
 from juntagrico import version
 from juntagrico.config import Config
-from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -123,7 +123,7 @@ def my_mails_intern(request, mail_url, error_message=None):
         'mail_url': mail_url,
         'email': request.user.member.email,
         'error_message': error_message,
-        'templates': MailTemplateDao.all_templates(),
+        'templates': MailTemplate.objects.all(),
         'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email'),
         'can_load_templates': request.user.has_perm('juntagrico.can_load_templates')
     }
@@ -241,7 +241,7 @@ def future(request):
 @permission_required('juntagrico.can_load_templates')
 def get_mail_template(request, template_id):
     renderdict = {}
-    template = MailTemplateDao.template_by_id(template_id)
+    template = MailTemplate.objects.get(id=template_id)
     exec(template.code)
     t = Template(template.template)
     c = Context(renderdict)
