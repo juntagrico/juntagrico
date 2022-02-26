@@ -51,12 +51,12 @@ class SubAdminTests(JuntagricoTestCase):
                 'extra_subscription_set-__prefix__-activation_date': '',
                 'extra_subscription_set-__prefix__-cancellation_date': '',
                 'extra_subscription_set-__prefix__-deactivation_date': '',
-                'extra_subscription_set-__prefix__-type': ''}     
+                'extra_subscription_set-__prefix__-type': ''}
         self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
         """
         # Test adding a started subscription with waiting member and unstarted part. Assert that it works
         data = {'depot': str(self.depot.id),
-                                'start_date': '01.01.2021',
+                'start_date': '01.01.2021',
                 'initial-start_date': '01.01.2021',
                 'notes': '',
                 'subscriptionmembership_set-TOTAL_FORMS': '1',
