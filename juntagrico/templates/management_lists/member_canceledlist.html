@@ -51,8 +51,8 @@
                         {{ member.end_date |date:"Y-m-d" }}
                     </td>
                     <td>
-                        {{ member.active_shares_count }}
-                        {% if member.active_shares_count > 0 %}
+                        {{ member.shares.active.count }}
+                        {% if member.shares.active.count > 0 %}
                             {% trans "(J)" %}
                         {% else %}
                             {% trans "(N)" %}

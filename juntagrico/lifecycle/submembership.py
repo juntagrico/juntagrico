@@ -49,15 +49,15 @@ def check_sub_membership_consistency(instance):
 
 
 def check_sub_membership_consistency_ms(member, subscription, asof):
-    from juntagrico.dao.subscriptionmembershipdao import SubscriptionMembershipDao
-    if subscription.state == 'waiting' and SubscriptionMembershipDao.get_other_waiting_for_member(member,
-                                                                                                  subscription).count() > 0:
+    from juntagrico.entity.member import SubscriptionMembership, q_joined_subscription, q_left_subscription
+    memberships = SubscriptionMembership.objects.exclude(subscription=subscription).filter(member=member)
+    if subscription.state == 'waiting' and memberships.filter(~q_joined_subscription()).exists():
         raise ValidationError(
             _('Diese/r/s {} hat bereits ein/e/n zukünftige/n/s {}').format(Config.vocabulary('member'),
                                                                            Config.vocabulary('subscription')),
             code='invalid')
-    if subscription.state == 'active' and SubscriptionMembershipDao.get_other_active_for_member(member,
-                                                                                                subscription, asof).count() > 0:
+    memberships.filter(q_joined_subscription() & ~q_left_subscription(asof))
+    if subscription.state == 'active' and memberships.filter(q_joined_subscription() & ~q_left_subscription(asof)).exists():
         raise ValidationError(
             _('Diese/r/s {} hat bereits ein/e/n {}').format(Config.vocabulary('member'),
                                                             Config.vocabulary('subscription')),

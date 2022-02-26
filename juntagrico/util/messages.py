@@ -1,8 +1,7 @@
 from django.template.loader import get_template
 from django.utils import timezone
 
-from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.sharedao import ShareDao
+from juntagrico.entity.member import Member
 
 
 def home_messages(request):
@@ -12,9 +11,10 @@ def home_messages(request):
         result.append(get_template('messages/not_confirmed.html').render())
     if member.subscription_current is None and member.subscription_future is None:
         result.append(get_template('messages/no_subscription.html').render())
-    if len(ShareDao.unpaid_shares(member)) > 0:
+    unpaid_shares = member.shares.unpaid().count()
+    if unpaid_shares > 0:
         render_dict = {
-            'amount': len(ShareDao.unpaid_shares(member)),
+            'amount': unpaid_shares,
         }
         template = get_template('messages/unpaid_shares.html')
         render_result = template.render(render_dict)
@@ -25,10 +25,10 @@ def home_messages(request):
 def job_messages(request, job):
     result = []
     member = request.user.member
-    all_participants = list(MemberDao.members_by_job(job))
-    if member in all_participants:
+    assignments = Member.objects.in_job(job).filter(pk=member.pk).count()
+    if assignments:
         render_dict = {
-            'amount': all_participants.count(member) - 1,
+            'amount': assignments - 1,
         }
         result = [get_template('messages/job_assigned.html').render(render_dict)]
     elif job.canceled:

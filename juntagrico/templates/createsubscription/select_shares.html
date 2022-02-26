@@ -74,7 +74,7 @@
                         Du brauchst als HauptbezieherIn mindestens 1 {{ v_share }}.
                         {% endblocktrans %}
                     {% else %}
-                        {% blocktrans trimmed with msc=member.active_shares.count%}
+                        {% blocktrans trimmed with msc=member.shares.usable.count%}
                         Du hast bereits {{ msc }} {{ v_share_pl }}
                         {% endblocktrans %}
                     {% endif %}
@@ -89,7 +89,7 @@
                         <input type="number" name="{{ co_member.email }}" class="form-control" value="{{ co_member.new_shares|default:0 }}" min="0"/>
                     </div>
                     <label class="col-md-6 col-form-label">
-                        {% blocktrans trimmed with cac=co_member.active_shares.count %}
+                        {% blocktrans trimmed with cac=co_member.shares.usable.count %}
                         besitzt bereits {{ cac }} {{ v_share_pl }}
                         {% endblocktrans %}
                     </label>

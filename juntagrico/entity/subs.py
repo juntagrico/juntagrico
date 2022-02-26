@@ -1,17 +1,16 @@
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q
-from django.utils import timezone
+from django.db.models import Count
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.sharedao import ShareDao
+from juntagrico.queryset.subscriptionpart import SubscriptionPartQuerySet, NormalSubscriptionPartManager, ExtraSubscriptionPartManager
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
+from juntagrico.queryset.subscription import SubscriptionQuerySet
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, \
     calculate_remaining_days_percentage
@@ -22,7 +21,7 @@ class Subscription(Billable, SimpleStateModel):
     One Subscription that may be shared among several people.
     '''
     depot = models.ForeignKey(
-        'Depot', on_delete=models.PROTECT, related_name='subscription_set')
+        Depot, on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
         verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
@@ -40,6 +39,9 @@ class Subscription(Billable, SimpleStateModel):
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+    types = models.ManyToManyField('SubscriptionType', through='SubscriptionPart', related_name='subscriptions')
+
+    objects = SubscriptionQuerySet.as_manager()
 
     def __str__(self):
         return _('Abo ({1}) {0}').format(self.size, self.id)
@@ -146,11 +148,12 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def all_shares(self):
-        return ShareDao.all_shares_subscription(self).count()
+        return self.members_for_state.filter(shares__cancelled_date__isnull=True).aggregate(total=Count('shares'))['total']
 
     @property
     def paid_shares(self):
-        return ShareDao.paid_shares(self).count()
+        return self.members_for_state.filter(shares__cancelled_date__isnull=True,
+                                             shares__paid_date__isnull=False).aggregate(total=Count('shares'))['total']
 
     @property
     def share_overflow(self):
@@ -171,8 +174,8 @@ class Subscription(Billable, SimpleStateModel):
     def co_members(self, member):
         qs = self.recipients_qs
         if member is not None:
-            qs = qs.exclude(member__email=member.email)
-        return [m.member for m in qs.all()]
+            qs = qs.exclude(pk=member.pk)
+        return list(qs)
 
     def recipients_display_name(self):
         if self.nickname:
@@ -190,35 +193,30 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def recipients_qs(self):
-        return self.memberships_for_state.order_by(
-            'member__first_name', 'member__last_name')
+        return self.members_for_state.order_by('first_name', 'last_name')
 
     @property
     def recipients(self):
-        return [m.member for m in self.recipients_qs.all()]
+        return list(self.recipients_qs)
 
     @property
     def recipients_all(self):
-        return [m.member for m in self.memberships_for_state.all()]
+        return list(self.members_for_state.all())
 
     @property
     def future_members(self):
         if getattr(self, 'override_future_members', False):
             return self.override_future_members
-        qs = self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member')
-        return set([m.member for m in qs])
+        return set(self.members.joining_subscription())
 
     @property
-    def memberships_for_state(self):
-        now = timezone.now().date()
-        member_active = ~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)
+    def members_for_state(self):
         if self.state == 'waiting':
-            return self.subscriptionmembership_set.prefetch_related('member').filter(member_active)
+            return self.members.active()
         elif self.state == 'inactive':
-            return self.subscriptionmembership_set.prefetch_related('member')
+            return self.members.all()
         else:
-            return self.subscriptionmembership_set.filter(q_joined_subscription(),
-                                                          ~q_left_subscription(), member_active).prefetch_related('member')
+            return self.members.joined_subscription().active()
 
     @admin.display(description=primary_member.verbose_name)
     def primary_member_nullsave(self):
@@ -241,13 +239,6 @@ class Subscription(Billable, SimpleStateModel):
     def extrasubscriptions_changed(self):
         return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
 
-    def extra_subscription_amount(self, extra_sub_type):
-        return self.extra_subscriptions.filter(type=extra_sub_type).count()
-
-    @staticmethod
-    def next_size_change_date():
-        return start_of_next_business_year()
-
     def clean(self):
         check_sub_consistency(self)
 
@@ -265,6 +256,10 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
                                      verbose_name=Config.vocabulary('subscription'))
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
                              verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+
+    objects = SubscriptionPartQuerySet.as_manager()
+    normals = NormalSubscriptionPartManager.from_queryset(SubscriptionPartQuerySet)()
+    extras = ExtraSubscriptionPartManager.from_queryset(SubscriptionPartQuerySet)()
 
     @property
     def can_cancel(self):

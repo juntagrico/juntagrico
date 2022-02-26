@@ -107,7 +107,7 @@
                     <ul>
                         {% for co_member in  co_members %}
                             <li>
-                                {% blocktrans trimmed with csc=co_member.share_set.count fn=co_member.first_name ln=co_member.last_name %}
+                                {% blocktrans trimmed with csc=co_member.shares.count fn=co_member.first_name ln=co_member.last_name %}
                                 {{ csc }} von {{ fn }}
                                 {{ ln }}
                                 {% endblocktrans %}

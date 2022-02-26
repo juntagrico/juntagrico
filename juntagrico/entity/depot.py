@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, absolute_url
 from juntagrico.entity.location import Location
+from juntagrico.queryset.depot import DepotQueryset
 from juntagrico.util.models import q_isactive
 from juntagrico.util.temporal import weekday_choices, weekdays
 
@@ -26,6 +27,8 @@ class Depot(JuntagricoBaseModel):
     depot_list = models.BooleanField(_('Sichtbar auf Depotliste'), default=True)
     visible = models.BooleanField(_('Sichtbar'), default=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    objects = DepotQueryset.as_manager()
 
     overview_cache = None
     subscription_cache = None

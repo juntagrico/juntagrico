@@ -14,14 +14,12 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
-from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.depotdao import DepotDao
-from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionProduct
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm
 from juntagrico.mailer import membernotification, adminnotification
@@ -31,7 +29,7 @@ from juntagrico.util.management import cancel_sub, create_subscription_parts
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date
+    cancelation_date, start_of_next_business_year
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
 
 
@@ -54,7 +52,7 @@ def subscription(request, subscription_id=None):
         cancellation_date = subscription.cancellation_date
         if cancellation_date is not None and cancellation_date <= next_cancelation_date():
             end_date = end_of_business_year()
-        asc = member.usable_shares_count
+        asc = member.shares.usable().count()
         share_error = subscription.share_overflow - asc < 0
         primary = subscription.primary_member.id == member.id
         can_leave = member.is_cooperation_member and not share_error and not primary
@@ -62,8 +60,8 @@ def subscription(request, subscription_id=None):
             'subscription': subscription,
             'co_members': subscription.co_members(member),
             'primary': subscription.primary_member.email == member.email,
-            'next_size_date': Subscription.next_size_change_date(),
-            'has_extra_subscriptions': SubscriptionProductDao.all_extra_products().count() > 0,
+            'next_size_date': start_of_next_business_year(),
+            'has_extra_subscriptions': SubscriptionProduct.extras.count() > 0,
             'sub_overview_addons': addons.config.get_sub_overviews(),
             'can_leave': can_leave,
         })
@@ -72,9 +70,9 @@ def subscription(request, subscription_id=None):
         'end_date': end_date,
         'can_order': member.can_order_subscription,
         'future_subscription': future_subscription,
-        'member': request.user.member,
-        'shares': request.user.member.active_shares.count(),
-        'shares_unpaid': request.user.member.share_set.filter(paid_date=None).count(),
+        'member': member,
+        'shares': member.shares.active().count(),
+        'shares_unpaid': member.shares.unpaid().count(),
     })
     return render(request, 'subscription.html', renderdict)
 
@@ -111,12 +109,11 @@ def depot_change(request, subscription_id):
                 Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
-    depots = DepotDao.all_visible_depots_with_map_info()
     renderdict = {
         'subscription': subscription,
         'saved': saved,
         'member': request.user.member,
-        'depots': depots,
+        'depots': Depot.objects.visible(),
     }
     return render(request, 'depot_change.html', renderdict)
 
@@ -178,17 +175,17 @@ def extra_change(request, subscription_id):
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     extra_order_allowed = subscription.waiting or subscription.active
+    products = SubscriptionProduct.extras.visible()
     if request.method == 'POST':
         if not extra_order_allowed:
             raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
                                   format(Config.vocabulary('subscription_pl')), code='invalid')
-        form = SubscriptionPartOrderForm(subscription, request.POST,
-                                         product_method=SubscriptionProductDao.all_visible_extra_products)
+        form = SubscriptionPartOrderForm(subscription, request.POST, products=products)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected(), True)
             return return_to_previous_location(request)
     else:
-        form = SubscriptionPartOrderForm(product_method=SubscriptionProductDao.all_visible_extra_products)
+        form = SubscriptionPartOrderForm(products=products)
     renderdict = {
         'form': form,
         'extras': subscription.active_and_future_extra_subscriptions.all(),
@@ -235,7 +232,7 @@ def confirm(request, member_hash):
     Confirm from a user that has been added as a co_subscription member
     """
 
-    for member in MemberDao.all_members().filter(confirmed=False):
+    for member in Member.objects.all().filter(confirmed=False):
         if member_hash == member.get_hash():
             member.confirmed = True
             member.save()
@@ -303,14 +300,11 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
-        add_subscription_member_to_activity_area(subscription)
+        for area in ActivityArea.objects.auto_added():
+            area.members.add(*subscription.members_for_state.values_list('pk', flat=True))
     except ValidationError as e:
         return error_page(request, e.message)
     return return_to_previous_location(request)
-
-
-def add_subscription_member_to_activity_area(subscription):
-    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -353,7 +347,7 @@ def cancel_subscription(request, subscription_id):
 def leave_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     member = request.user.member
-    asc = member.usable_shares_count
+    asc = member.shares.usable().count()
     share_error = subscription.share_overflow - asc < 0
     primary = subscription.primary_member.id == member.id
     can_leave = member.is_cooperation_member and not share_error and not primary
@@ -416,17 +410,13 @@ def manage_shares(request):
     else:
         shareerror = False
     member = request.user.member
-    shares = member.share_set.order_by('cancelled_date', '-paid_date')
+    shares = member.shares.order_by('cancelled_date', '-paid_date')
 
-    active_share_years = member.active_share_years
-    current_year = timezone.now().year
-    if active_share_years and current_year in active_share_years:
-        active_share_years.remove(current_year)
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
         'required': member.required_shares_count,
-        'certificate_years': active_share_years,
+        'certificate_years': member.shares.years(until=timezone.now().year - 1),
     }
     return render(request, 'manage_shares.html', renderdict)
 
@@ -435,20 +425,16 @@ def manage_shares(request):
 def share_certificate(request):
     year = int(request.GET['year'])
     member = request.user.member
-    active_share_years = member.active_share_years
-    if year >= timezone.now().year or year not in active_share_years:
+    if year >= timezone.now().year or year not in member.shares.years():
         return error_page(request, _('{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden.').format(Config.vocabulary('share')))
     shares_date = date(year, 12, 31)
-    shares = member.active_shares_for_date(date=shares_date).values('value').annotate(count=Count('value')).annotate(total=Sum('value')).order_by('value')
-    shares_total = 0
-    for share in shares:
-        shares_total = shares_total + share['total']
+    shares = member.shares.active_on(date=shares_date).values('value').annotate(count=Count('value')).annotate(total=Sum('value')).order_by('value')
     renderdict = {
         'member': member,
         'cert_date': timezone.now().date(),
         'shares_date': shares_date,
         'shares': shares,
-        'shares_total': shares_total,
+        'shares_total': shares.aggregate(Sum('total'))['total__sum'],
     }
     return render_to_pdf_http('exports/share_certificate.html', renderdict, _('Bescheinigung') + str(year) + '.pdf')
 
@@ -469,7 +455,7 @@ def payout_share(request, share_id):
     share.payback_date = timezone.now().date()
     share.save()
     member = share.member
-    if member.active_shares_count == 0 and member.canceled is True:
+    if member.shares.active().count() == 0 and member.canceled is True:
         member.deactivation_date = timezone.now().date()
         member.save()
     return return_to_previous_location(request)

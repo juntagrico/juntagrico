@@ -10,7 +10,6 @@ from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
-from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob, JobType
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 
@@ -73,17 +72,17 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'type':
-            kwargs['queryset'] = JobTypeDao.visible_types()
+            kwargs['queryset'] = JobType.objects.visible()
             kwargs = formfield_for_coordinator(request,
                                                db_field.name,
                                                'type',
                                                'juntagrico.is_area_admin',
-                                               JobTypeDao.visible_types_by_coordinator,
+                                               JobType.objects.visible().of_coordinator,
                                                **kwargs)
             # show jobtype even if invisible to be able to edit and save this job with the same type
             # HACK: get instance via url argument
             instance_pk = request.resolver_match.kwargs.get('object_id')
             if instance_pk is not None:
-                kwargs['queryset'] |= JobType.objects.filter(recuringjob__pk=instance_pk)
+                kwargs['queryset'] |= JobType.objects.filter(recuring_jobs__pk=instance_pk)
                 kwargs['queryset'] = kwargs['queryset'].distinct()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

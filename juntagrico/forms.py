@@ -10,9 +10,7 @@ from django.utils.translation import gettext as _
 from schwifty import IBAN
 
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.entity.subtypes import SubscriptionProduct
 from juntagrico.models import Member, Subscription
 
 
@@ -212,7 +210,7 @@ class CoMemberBaseForm(MemberBaseForm):
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
                                             .format(Config.vocabulary('co_member_pl'))))
-        existing_member = MemberDao.member_by_email(email)
+        existing_member = Member.objects.get_by_email(email)
         if existing_member:
             if existing_member.blocked:
                 raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktiv\
@@ -319,21 +317,23 @@ class SubscriptionTypeField(Field):
 
 
 class SubscriptionPartBaseForm(Form):
-    def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
+    def __init__(self, *args, products=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
-        self._product_method = product_method
+        self.products = products or SubscriptionProduct.normals.visible()
+        self.orderable_types = set()
 
     def _collect_type_fields(self):
         containers = []
-        for product in self._product_method().all():
+        for product in self.products:
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
                 for subscription_type in subscription_size.types.filter(visible=True):
+                    self.orderable_types.add(subscription_type)
                     field_name = f'amount[{subscription_type.id}]'
                     self.fields[field_name] = IntegerField(label=subscription_type.name, min_value=0,
                                                            initial=self._get_initial(subscription_type))
@@ -349,7 +349,7 @@ class SubscriptionPartBaseForm(Form):
     def get_selected(self):
         return {
             sub_type: getattr(self, 'cleaned_data', {}).get('amount[' + str(sub_type.id) + ']', 0)
-            for sub_type in SubscriptionTypeDao.get_all()
+            for sub_type in self.orderable_types
         }
 
 

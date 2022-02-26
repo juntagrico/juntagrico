@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -10,12 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.memberdao import MemberDao
+from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
@@ -36,17 +29,22 @@ def home(request):
     '''
     Overview on juntagrico
     '''
-    start = timezone.now()
-    end = start + timedelta(14)
-    next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
-    pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
-    next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
+    # get jobs
+    upcoming = Job.objects.next(days=14).with_free_slots()
+    future = Job.objects.next().with_free_slots()
+    job_qs = (upcoming | future.pinned())
+    if future.promoted():
+        # workaround, if promoted is unioned empty, it would empty the entire result.
+        # Probably because it is sliced
+        job_qs |= future.promoted()
+    job_qs = job_qs.distinct()
+    # get messages
     messages = getattr(request, 'member_messages', []) or []
     messages.extend(home_messages(request))
     request.member_messages = messages
     renderdict = {
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
-        'areas': ActivityAreaDao.all_visible_areas_ordered(),
+        'jobs': job_qs,
+        'areas': ActivityArea.objects.visible().sorted(),
     }
 
     return render(request, 'home.html', renderdict)
@@ -80,7 +78,7 @@ def job(request, job_id):
             for i in range(num):
                 assignment = Assignment.objects.create(
                     member=member, job=job, amount=amount)
-            for extra in job.type.job_extras_set.all():
+            for extra in job.type.job_extras.all():
                 if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
                     assignment.job_extras.add(extra)
             assignment.save()
@@ -93,8 +91,8 @@ def job(request, job_id):
         messages.extend(error_message(request))
         request.member_messages = messages
 
-    all_participants = MemberDao.members_by_job(job)
-    number_of_participants = len(all_participants)
+    all_participants = Member.objects.in_job(job)
+    number_of_participants = all_participants.count()
     unique_participants = all_participants.annotate(
         assignment_for_job=Count('id')).distinct()
 
@@ -108,7 +106,7 @@ def job(request, job_id):
             name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
         contact_url = reverse('contact-member', args=[participant.id])
         extras = []
-        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
+        for assignment in job.assignments.filter(member=participant):
             for extra in assignment.job_extras.all():
                 extras.append(extra.extra_type.display_full)
         reachable = participant.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == participant
@@ -159,15 +157,8 @@ def areas(request):
     '''
     Details for all areas a member can participate
     '''
-    member = request.user.member
-    areas = ActivityAreaDao.all_visible_areas_ordered()
-    last_was_core = True
-    for area in areas:
-        area.checked = member in area.members.all()
-        area.first_non_core = not area.core and last_was_core
-        last_was_core = area.core
     renderdict = {
-        'areas': areas,
+        'areas': ActivityArea.objects.visible().sorted(),
     }
     return render(request, 'areas.html', renderdict)
 
@@ -178,12 +169,7 @@ def memberjobs(request):
     '''
     All jobs of current user
     '''
-    member = request.user.member
-    allassignments = AssignmentDao.assignments_for_member(member)
-    renderdict = {
-        'assignments': allassignments,
-    }
-    return render(request, 'memberjobs.html', renderdict)
+    return render(request, 'memberjobs.html')
 
 
 @login_required
@@ -192,18 +178,9 @@ def show_area(request, area_id):
     Details for an area
     '''
     area = get_object_or_404(ActivityArea, id=int(area_id))
-    job_types = JobTypeDao.types_by_area(area_id)
-    otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
-    rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
-    jobs = list(rjobs)
-    if len(otjobs) > 0:
-        jobs.extend(list(otjobs))
-        jobs.sort(key=lambda job: job.time)
-    area_checked = request.user.member in area.members.all()
     renderdict = {
         'area': area,
-        'jobs': jobs,
-        'area_checked': area_checked,
+        'jobs': Job.objects.next().in_area(area),
     }
     return render(request, 'area.html', renderdict)
 
@@ -234,9 +211,9 @@ def jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    jobs = JobDao.get_jobs_for_current_day()
     renderdict = {
-        'jobs': jobs,
+        # get all jobs of same day and future
+        'jobs': Job.objects.next(timezone.now().date()),
         'show_all': True,
     }
     return render(request, 'jobs.html', renderdict)
@@ -248,9 +225,8 @@ def all_jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    jobs = JobDao.jobs_ordered_by_time()
     renderdict = {
-        'jobs': jobs
+        'jobs': Job.objects.sorted()
     }
 
     return render(request, 'jobs.html', renderdict)
@@ -262,7 +238,7 @@ def deliveries(request):
     '''
     All deliveries to be sorted etc.
     '''
-    deliveries = DeliveryDao.deliveries_by_subscription(
+    deliveries = Delivery.objects.by_subscription(
         request.user.member.subscription_current)
     renderdict = {
         'deliveries': deliveries
@@ -366,13 +342,13 @@ def cancel_membership(request):
         else:
             member.deactivation_date = now
         member.save()
-        for share in member.active_shares:
+        for share in member.shares.usable():
             cancel_share(share, now, end_date)
         return redirect('profile')
 
     missing_iban = member.iban == ''
     coop_member = member.is_cooperation_member
-    asc = member.usable_shares_count
+    asc = member.shares.usable().count()
     sub = member.subscription_current
     f_sub = member.subscription_future
     future_active = f_sub is not None and (f_sub.state == 'active' or f_sub.state == 'waiting')

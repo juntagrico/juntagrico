@@ -1,5 +1,4 @@
 import hashlib
-from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -11,6 +10,7 @@ from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
+from juntagrico.queryset.member import MemberQuerySet
 from juntagrico.util.users import make_username
 
 
@@ -19,9 +19,8 @@ def q_joined_subscription():
 
 
 def q_left_subscription(asof=None):
-    if asof is not None:
-        return Q(leave_date__isnull=False, leave_date__lte=asof)
-    return Q(leave_date__isnull=False, leave_date__lte=timezone.now().date())
+    asof = asof or timezone.now().date()
+    return Q(leave_date__isnull=False, leave_date__lte=asof)
 
 
 class Member(JuntagricoBaseModel):
@@ -61,6 +60,9 @@ class Member(JuntagricoBaseModel):
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
+    subscription = models.ManyToManyField('Subscription', through='SubscriptionMembership', related_name='members')
+
+    objects = MemberQuerySet.as_manager()
 
     @property
     def canceled(self):
@@ -71,56 +73,13 @@ class Member(JuntagricoBaseModel):
         return self.deactivation_date is not None and self.deactivation_date <= timezone.now().date()
 
     @property
-    def active_shares(self):
-        """ :return: shares that have been paid by member and not cancelled AND paid back yet
-        """
-        return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
-
-    def active_shares_for_date(self, date=timezone.now):
-        return self.share_set.filter(paid_date__lte=date).filter(Q(payback_date__isnull=True) | Q(payback_date__gte=date))
-
-    @property
-    def active_share_years(self):
-        """ :return: list of years spanning member's first to last active share in the past
-        """
-        shares = self.share_set.filter(paid_date__isnull=False).order_by('paid_date')
-        years = []
-        if shares:
-            first_share_date = timezone.now().date()
-            last_share_date = date.min
-            for share in shares:
-                first_share_date = min(first_share_date, share.paid_date)
-                if share.payback_date:
-                    last_share_date = max(last_share_date, share.payback_date)
-                else:
-                    last_share_date = timezone.now().date()
-                last_share_date = max(last_share_date, first_share_date)
-            years = list(range(first_share_date.year, last_share_date.year + 1))
-            years = [y for y in years if y <= timezone.now().year]
-        return years
-
-    @property
-    def active_shares_count(self):
-        return self.active_shares.count()
-
-    @property
     def is_cooperation_member(self):
-        return self.active_shares_count > 0
-
-    @property
-    def usable_shares(self):
-        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
-        """
-        return self.share_set.filter(cancelled_date__isnull=True)
-
-    @property
-    def usable_shares_count(self):
-        return self.usable_shares.count()
+        return self.shares.active().count() > 0
 
     @property
     def required_shares_count(self):
         # calculate required shares backwards to account for shared subscriptions
-        not_canceled_share_count = self.usable_shares_count
+        not_canceled_share_count = self.shares.usable().count()
         overflow_list = [not_canceled_share_count]
         if self.subscription_future is not None:
             overflow_list.append(self.subscription_future.share_overflow)
@@ -130,7 +89,7 @@ class Member(JuntagricoBaseModel):
 
     @property
     def cancellable_shares_count(self):
-        return self.usable_shares_count - max(self.required_shares_count, 1)
+        return self.shares.usable().count() - max(self.required_shares_count, 1)
 
     @property
     def subscription_future(self):

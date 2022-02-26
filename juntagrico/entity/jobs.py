@@ -7,11 +7,13 @@ from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.assignmentdao import AssignmentDao
+from juntagrico.queryset.jobtype import JobTypeQuerySet
+from juntagrico.queryset.activityarea import ActivityAreaQuerySet
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.queryset.job import JobQuerySet
 from juntagrico.util.temporal import weekday_short
 
 
@@ -24,7 +26,8 @@ class ActivityArea(JuntagricoBaseModel):
     hidden = models.BooleanField(
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
-    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
+    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'),
+                                    related_name='coordinating_areas')
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
@@ -33,6 +36,8 @@ class ActivityArea(JuntagricoBaseModel):
                                                    'Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.'))
 
     contact_set = GenericRelation(Contact)
+
+    objects = ActivityAreaQuerySet.as_manager()
 
     def __str__(self):
         return '%s' % self.name
@@ -76,17 +81,17 @@ class JobExtra(JuntagricoBaseModel):
     '''
     Actual Extras mapping
     '''
-    recuring_type = models.ForeignKey('JobType', related_name='job_extras_set', null=True, blank=True,
+    recuring_type = models.ForeignKey('JobType', related_name='job_extras', null=True, blank=True,
                                       on_delete=models.PROTECT)
-    onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras_set', null=True, blank=True,
+    onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras', null=True, blank=True,
                                      on_delete=models.PROTECT)
-    extra_type = models.ForeignKey('JobExtraType', related_name='job_types_set', null=False, blank=False,
+    extra_type = models.ForeignKey('JobExtraType', related_name='job_extras', null=False, blank=False,
                                    on_delete=models.PROTECT)
     per_member = models.BooleanField(
         _('jeder kann Extra auswählen'), default=False)
 
-    def empty(self, assignment_set):
-        ids = [assignment.id for assignment in assignment_set]
+    def empty(self, assignments):
+        ids = [assignment.id for assignment in assignments]
         return self.assignments.filter(id__in=ids).count() == 0
 
     @property
@@ -138,6 +143,8 @@ class JobType(AbstractJobType):
 
     contact_set = GenericRelation(Contact)
 
+    objects = JobTypeQuerySet.as_manager()
+
     @property
     def contacts(self):
         if self.contact_set.count():
@@ -166,6 +173,8 @@ class Job(JuntagricoBasePoly):
 
     contact_set = GenericRelation(Contact)
 
+    objects = JobQuerySet.as_manager()
+
     @property
     def type(self):
         raise NotImplementedError
@@ -191,7 +200,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def occupied_slots(self):
-        return self.assignment_set.count()
+        return self.assignments.count()
 
     @property
     def duration(self):
@@ -204,10 +213,9 @@ class Job(JuntagricoBasePoly):
         return self.time
 
     def status_percentage(self):
-        assignments = AssignmentDao.assignments_for_job(self.id)
         if self.slots < 1:
             return 100
-        return assignments.count() * 100 / self.slots
+        return self.assignments.count() * 100 / self.slots
 
     def is_core(self):
         return self.type.activityarea.core
@@ -221,8 +229,8 @@ class Job(JuntagricoBasePoly):
 
     def extras(self):
         extras_result = []
-        for extra in self.type.job_extras_set.all():
-            if extra.empty(self.assignment_set.all()):
+        for extra in self.type.job_extras.all():
+            if extra.empty(self.assignments.all()):
                 extras_result.append(extra.extra_type.display_empty)
             else:
                 extras_result.append(extra.extra_type.display_full)
@@ -230,24 +238,24 @@ class Job(JuntagricoBasePoly):
 
     def empty_per_job_extras(self):
         extras_result = []
-        for extra in self.type.job_extras_set.filter(per_member=False):
-            if extra.empty(self.assignment_set.all()):
+        for extra in self.type.job_extras.filter(per_member=False):
+            if extra.empty(self.assignments.all()):
                 extras_result.append(extra)
         return extras_result
 
     def full_per_job_extras(self):
         extras_result = []
-        for extra in self.type.job_extras_set.filter(per_member=False):
-            if not extra.empty(self.assignment_set.all()):
+        for extra in self.type.job_extras.filter(per_member=False):
+            if not extra.empty(self.assignments.all()):
                 extras_result.append(extra)
         return extras_result
 
     def per_member_extras(self):
-        return self.type.job_extras_set.filter(per_member=True)
+        return self.type.job_extras.filter(per_member=True)
 
     @property
     def participants(self):
-        return [a.member for a in self.assignment_set.all().prefetch_related('member') if a.member]
+        return [a.member for a in self.assignments.all().prefetch_related('member') if a.member]
 
     @property
     def participant_names(self):
@@ -275,7 +283,7 @@ class Job(JuntagricoBasePoly):
 
 
 class RecuringJob(Job):
-    type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
+    type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'), related_name='recuring_jobs')
     additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
     duration_override = models.FloatField(
         _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None, validators=[MinValueValidator(0)],
@@ -334,8 +342,9 @@ class Assignment(JuntagricoBaseModel):
     '''
     Single assignment (work unit).
     '''
-    job = models.ForeignKey(Job, on_delete=models.PROTECT)
-    member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'))
+    job = models.ForeignKey(Job, on_delete=models.PROTECT, related_name='assignments')
+    member = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=Config.vocabulary('member'),
+                               related_name='assignments')
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
     job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True, verbose_name=_('Job Extras'))
     amount = models.FloatField(_('Wert'))

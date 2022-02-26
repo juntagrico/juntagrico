@@ -6,6 +6,7 @@ from juntagrico.config import Config
 from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
+from juntagrico.queryset.share import ShareQuerySet
 
 reason_for_acquisition_choices = ((1, _('Gründungsmitglied')),
                                   (2, _('Beitrittserklärung')),
@@ -22,7 +23,7 @@ def share_value_default():
 
 
 class Share(Billable):
-    member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT)
+    member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT, related_name='shares')
     value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, default=share_value_default)
     creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=timezone.now)
     paid_date = models.DateField(_('Bezahlt am'), null=True, blank=True)
@@ -43,6 +44,8 @@ class Share(Billable):
     notes = models.TextField(
         _('Notizen'), max_length=1000, default='', blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+
+    objects = ShareQuerySet.as_manager()
 
     __state_text_dict = {0: _('unbezahlt'),
                          1: _('bezahlt'),

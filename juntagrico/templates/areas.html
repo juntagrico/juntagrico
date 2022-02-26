@@ -30,45 +30,48 @@
 
     <div class="row">
         <div class="col-md-12 activity-area-list">
-            {% for area in areas %}
-                {% if forloop.first or area.first_non_core %}
-                    <br/>
-                    <div class="row activity-area-list-header">
-                        <div class="col-md-4">
-                            {% if area.core %}
-                                {% trans "Kernbereiche" %}:
-                                <img alt="core_area" title="core_area" src="{% images "core" %}"/>
-                            {% elif area.first_non_core %}
-                                {% trans "Weitere Bereiche" %}:
-                            {% else %}
-                                {% trans "Tätigkeitsbereiche" %}:
-                            {% endif %}
+            {% with selected_areas=request.user.member.areas.all %}
+                {% for area in areas %}
+                    {% ifchanged area.core %}
+                        <br/>
+                        <div class="row activity-area-list-header">
+                            <div class="col-md-4">
+                                {% if area.core %}
+                                    {% trans "Kernbereiche" %}:
+                                    <img alt="core_area" title="core_area" src="{% images "core" %}"/>
+                                {% elif not forloop.first %}
+                                    {% trans "Weitere Bereiche" %}:
+                                {% else %}
+                                    {% trans "Tätigkeitsbereiche" %}:
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                {% trans "Kontaktperson" %}:
+                            </div>
+                        </div>
+                        <div class="row separator">
+                        </div>
+                    {% endifchanged %}
+                    <div class="row align-items-center activity-area-list-element">
+                        <div class="col-md-1">
+                            <span class="switch switch-sm">
+                                <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}"
+                                       name="area{{ area.id }}"{% if area in selected_areas %} checked="checked"{% endif %}/>
+                                <label for="area{{ area.id }}">
+                                </label>
+                            </span>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'area' area.id %}">{{ area.name }}</a>
                         </div>
                         <div class="col-md-8">
-                            {% trans "Kontaktperson" %}:
+                            {% for contact in area.contacts %}
+                                {{ contact.to_html }}
+                            {% endfor %}
                         </div>
                     </div>
-                    <div class="row separator">
-                    </div>
-                {% endif %}
-                <div class="row align-items-center activity-area-list-element">
-                    <div class="col-md-1">
-                        <span class="switch switch-sm">
-                            <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area.checked %} checked="checked"{% endif %}/>
-                            <label for="area{{ area.id }}">
-                            </label>
-                        </span>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="{% url 'area' area.id %}">{{ area.name }}</a>
-                    </div>
-                    <div class="col-md-8">
-                        {% for contact in area.contacts %}
-                            {{ contact.to_html }}
-                        {% endfor %}
-                    </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% endwith %}
         </div>
     </div>
 {% endblock %}

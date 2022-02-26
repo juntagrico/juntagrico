@@ -6,10 +6,6 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
-from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.entity.jobs import OneTimeJob
 from juntagrico.entity.location import Location
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
@@ -27,24 +23,23 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     def transform_job_type(self, request, queryset):
         for inst in queryset.all():
             i = 0
-            for rj in JobDao.recurings_by_type(inst.id):
+            for rj in inst.recuring_jobs.all():
                 oj = OneTimeJob()
                 attribute_copy(inst, oj)
                 attribute_copy(rj, oj)
                 oj.name += str(i)
                 i += 1
                 oj.save()
-                for je in JobExtraDao.by_type(inst.id):
+                for je in inst.job_extras.all():
                     je.recuring_type = None
                     je.onetime_type = oj
                     je.pk = None
                     je.save()
-                for b in AssignmentDao.assignments_for_job(rj.id):
+                for b in rj.assignments.all():
                     b.job = oj
                     b.save()
                 rj.delete()
-            for je in JobExtraDao.by_type(inst.id):
-                je.delete()
+            inst.job_extras.all().delete()
             inst.delete()
 
     def get_form(self, request, obj=None, **kwds):
@@ -63,5 +58,5 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                                            db_field.name,
                                            'activityarea',
                                            'juntagrico.is_area_admin',
-                                           ActivityAreaDao.areas_by_coordinator)
+                                           lambda m: m.coordinating_areas)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
