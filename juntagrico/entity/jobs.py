@@ -7,6 +7,7 @@ from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.queryset.activityarea import ActivityAreaQuerySet
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
@@ -23,7 +24,8 @@ class ActivityArea(JuntagricoBaseModel):
     hidden = models.BooleanField(
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
-    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
+    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'),
+                                    related_name='coordinating_areas')
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
@@ -32,6 +34,8 @@ class ActivityArea(JuntagricoBaseModel):
                                                    'Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.'))
 
     contact_set = GenericRelation(Contact)
+
+    objects = ActivityAreaQuerySet.as_manager()
 
     def __str__(self):
         return '%s' % self.name

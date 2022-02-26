@@ -3,9 +3,10 @@ from django.conf import settings
 from django.template.defaultfilters import urlize, linebreaksbr
 
 from juntagrico import version
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobextradao import JobExtraDao
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionProduct
 
 register = template.Library()
@@ -25,7 +26,7 @@ def has_extra_subscriptions():
 
 @register.simple_tag
 def show_core():
-    return ActivityAreaDao.all_core_areas().count() > 0
+    return ActivityArea.objects.core().count() > 0
 
 
 @register.simple_tag
@@ -65,14 +66,14 @@ def view_name(request):
 def depot_admin(request):
     if hasattr(request.user, 'member'):
         return request.user.member.depot_set
-    return []
+    return Depot.objects.none()
 
 
 @register.simple_tag
 def area_admin(request):
     if hasattr(request.user, 'member'):
-        return ActivityAreaDao.areas_by_coordinator(request.user.member)
-    return []
+        return request.user.member.coordinating_areas.all()
+    return ActivityArea.objects.none()
 
 
 @register.simple_tag

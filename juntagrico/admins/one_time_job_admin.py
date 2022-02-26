@@ -8,7 +8,6 @@ from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.entity.jobs import JobType, RecuringJob
 from juntagrico.entity.location import Location
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
@@ -65,5 +64,5 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                                            db_field.name,
                                            'activityarea',
                                            'juntagrico.is_area_admin',
-                                           ActivityAreaDao.areas_by_coordinator)
+                                           lambda m: m.coordinating_areas)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

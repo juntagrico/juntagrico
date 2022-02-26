@@ -14,8 +14,8 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
@@ -300,14 +300,11 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
-        add_subscription_member_to_activity_area(subscription)
+        for area in ActivityArea.objects.auto_added():
+            area.members.add(*subscription.members_for_state.values_list('pk', flat=True))
     except ValidationError as e:
         return error_page(request, e.message)
     return return_to_previous_location(request)
-
-
-def add_subscription_member_to_activity_area(subscription):
-    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')

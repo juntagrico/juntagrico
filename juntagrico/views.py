@@ -10,7 +10,6 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
@@ -44,7 +43,7 @@ def home(request):
     request.member_messages = messages
     renderdict = {
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
-        'areas': ActivityAreaDao.all_visible_areas_ordered(),
+        'areas': ActivityArea.objects.visible().sorted(),
     }
 
     return render(request, 'home.html', renderdict)
@@ -157,15 +156,8 @@ def areas(request):
     '''
     Details for all areas a member can participate
     '''
-    member = request.user.member
-    areas = ActivityAreaDao.all_visible_areas_ordered()
-    last_was_core = True
-    for area in areas:
-        area.checked = member in area.members.all()
-        area.first_non_core = not area.core and last_was_core
-        last_was_core = area.core
     renderdict = {
-        'areas': areas,
+        'areas': ActivityArea.objects.visible().sorted(),
     }
     return render(request, 'areas.html', renderdict)
 

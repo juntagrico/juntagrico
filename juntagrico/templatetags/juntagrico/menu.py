@@ -1,6 +1,5 @@
 from django import template
 
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.util import addons
 
 register = template.Library()
@@ -23,7 +22,7 @@ def show_admin_menu(request):
              'juntagrico.can_view_exports',
              'can_view_exports']
     has_perm = set(user.get_all_permissions()) & set(perms)
-    is_area_admin = ActivityAreaDao.areas_by_coordinator(user.member).count() > 0
+    is_area_admin = user.member.coordinating_areas.count() > 0
     is_depot_admin = user.member.depot_set.count() > 0
     return user.is_staff or has_perm or is_area_admin or is_depot_admin or addons.config.show_admin_menu(user)
 

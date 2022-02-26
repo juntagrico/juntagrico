@@ -6,7 +6,6 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
-from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.entity.jobs import OneTimeJob
@@ -62,5 +61,5 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                                            db_field.name,
                                            'activityarea',
                                            'juntagrico.is_area_admin',
-                                           ActivityAreaDao.areas_by_coordinator)
+                                           lambda m: m.coordinating_areas)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
