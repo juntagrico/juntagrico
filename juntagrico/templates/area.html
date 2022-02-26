@@ -33,7 +33,8 @@
     <div class="row mb-3 no-gutters">
         <div class="offset-md-3 col-md-9">
             <span class="switch switch-sm">
-                <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area_checked %}checked="checked"{% endif %}/>
+                <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}"
+                       name="area{{ area.id }}"{% if area in request.user.member.areas.all %}checked="checked"{% endif %}/>
                 <label for="area{{ area.id }}">
                     {% trans "Mitmachen" %}
                 </label>

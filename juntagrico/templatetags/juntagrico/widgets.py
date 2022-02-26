@@ -3,14 +3,14 @@ import math
 from django import template
 from django.utils import timezone
 
-from juntagrico.dao.jobdao import JobDao
+from juntagrico.entity.jobs import Job
 
 register = template.Library()
 
 
 @register.simple_tag
 def next_jobs(request):
-    return JobDao.upcomming_jobs_for_member(request.user.member)
+    return Job.objects.next().of_member(request.user.member)
 
 
 @register.simple_tag

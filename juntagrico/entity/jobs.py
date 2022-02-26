@@ -7,11 +7,13 @@ from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
+from juntagrico.queryset.jobtype import JobTypeQuerySet
 from juntagrico.queryset.activityarea import ActivityAreaQuerySet
 from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.queryset.job import JobQuerySet
 from juntagrico.util.temporal import weekday_short
 
 
@@ -79,11 +81,11 @@ class JobExtra(JuntagricoBaseModel):
     '''
     Actual Extras mapping
     '''
-    recuring_type = models.ForeignKey('JobType', related_name='job_extras_set', null=True, blank=True,
+    recuring_type = models.ForeignKey('JobType', related_name='job_extras', null=True, blank=True,
                                       on_delete=models.PROTECT)
-    onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras_set', null=True, blank=True,
+    onetime_type = models.ForeignKey('OneTimeJob', related_name='job_extras', null=True, blank=True,
                                      on_delete=models.PROTECT)
-    extra_type = models.ForeignKey('JobExtraType', related_name='job_types_set', null=False, blank=False,
+    extra_type = models.ForeignKey('JobExtraType', related_name='job_extras', null=False, blank=False,
                                    on_delete=models.PROTECT)
     per_member = models.BooleanField(
         _('jeder kann Extra auswählen'), default=False)
@@ -141,6 +143,8 @@ class JobType(AbstractJobType):
 
     contact_set = GenericRelation(Contact)
 
+    objects = JobTypeQuerySet.as_manager()
+
     @property
     def contacts(self):
         if self.contact_set.count():
@@ -168,6 +172,8 @@ class Job(JuntagricoBasePoly):
     canceled = models.BooleanField(_('abgesagt'), default=False)
 
     contact_set = GenericRelation(Contact)
+
+    objects = JobQuerySet.as_manager()
 
     @property
     def type(self):
@@ -223,7 +229,7 @@ class Job(JuntagricoBasePoly):
 
     def extras(self):
         extras_result = []
-        for extra in self.type.job_extras_set.all():
+        for extra in self.type.job_extras.all():
             if extra.empty(self.assignments.all()):
                 extras_result.append(extra.extra_type.display_empty)
             else:
@@ -232,20 +238,20 @@ class Job(JuntagricoBasePoly):
 
     def empty_per_job_extras(self):
         extras_result = []
-        for extra in self.type.job_extras_set.filter(per_member=False):
+        for extra in self.type.job_extras.filter(per_member=False):
             if extra.empty(self.assignments.all()):
                 extras_result.append(extra)
         return extras_result
 
     def full_per_job_extras(self):
         extras_result = []
-        for extra in self.type.job_extras_set.filter(per_member=False):
+        for extra in self.type.job_extras.filter(per_member=False):
             if not extra.empty(self.assignments.all()):
                 extras_result.append(extra)
         return extras_result
 
     def per_member_extras(self):
-        return self.type.job_extras_set.filter(per_member=True)
+        return self.type.job_extras.filter(per_member=True)
 
     @property
     def participants(self):
@@ -277,7 +283,7 @@ class Job(JuntagricoBasePoly):
 
 
 class RecuringJob(Job):
-    type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
+    type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'), related_name='recuring_jobs')
     additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
     duration_override = models.FloatField(
         _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None, validators=[MinValueValidator(0)],

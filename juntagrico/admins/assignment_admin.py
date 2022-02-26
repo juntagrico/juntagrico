@@ -1,5 +1,5 @@
 from juntagrico.admins import BaseAdmin
-from juntagrico.dao.jobdao import JobDao
+from juntagrico.entity.jobs import Job
 from juntagrico.util.admin import formfield_for_coordinator
 
 
@@ -18,7 +18,7 @@ class AssignmentAdmin(BaseAdmin):
         qs = super().get_queryset(request)
         if request.user.has_perm('juntagrico.is_area_admin') and (
                 not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-            return qs.filter(job__id__in=JobDao.ids_for_area_by_contact(request.user.member))
+            return qs.filter(job__in=Job.objects.of_coordinator(request.user.member))
         return qs
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -26,5 +26,5 @@ class AssignmentAdmin(BaseAdmin):
                                            db_field.name,
                                            'job',
                                            'juntagrico.is_area_admin',
-                                           JobDao.for_area_by_contact)
+                                           Job.objects.of_coordinator)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)

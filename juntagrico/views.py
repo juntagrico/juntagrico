@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -11,8 +9,6 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.jobdao import JobDao
-from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
@@ -33,16 +29,21 @@ def home(request):
     '''
     Overview on juntagrico
     '''
-    start = timezone.now()
-    end = start + timedelta(14)
-    next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
-    pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
-    next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
+    # get jobs
+    upcoming = Job.objects.next(days=14).with_free_slots()
+    future = Job.objects.next().with_free_slots()
+    job_qs = (upcoming | future.pinned())
+    if future.promoted():
+        # workaround, if promoted is unioned empty, it would empty the entire result.
+        # Probably because it is sliced
+        job_qs |= future.promoted()
+    job_qs = job_qs.distinct()
+    # get messages
     messages = getattr(request, 'member_messages', []) or []
     messages.extend(home_messages(request))
     request.member_messages = messages
     renderdict = {
-        'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
+        'jobs': job_qs,
         'areas': ActivityArea.objects.visible().sorted(),
     }
 
@@ -77,7 +78,7 @@ def job(request, job_id):
             for i in range(num):
                 assignment = Assignment.objects.create(
                     member=member, job=job, amount=amount)
-            for extra in job.type.job_extras_set.all():
+            for extra in job.type.job_extras.all():
                 if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
                     assignment.job_extras.add(extra)
             assignment.save()
@@ -177,18 +178,9 @@ def show_area(request, area_id):
     Details for an area
     '''
     area = get_object_or_404(ActivityArea, id=int(area_id))
-    job_types = JobTypeDao.types_by_area(area_id)
-    otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
-    rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
-    jobs = list(rjobs)
-    if len(otjobs) > 0:
-        jobs.extend(list(otjobs))
-        jobs.sort(key=lambda job: job.time)
-    area_checked = request.user.member in area.members.all()
     renderdict = {
         'area': area,
-        'jobs': jobs,
-        'area_checked': area_checked,
+        'jobs': Job.objects.next().in_area(area),
     }
     return render(request, 'area.html', renderdict)
 
@@ -219,9 +211,9 @@ def jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    jobs = JobDao.get_jobs_for_current_day()
     renderdict = {
-        'jobs': jobs,
+        # get all jobs of same day and future
+        'jobs': Job.objects.next(timezone.now().date()),
         'show_all': True,
     }
     return render(request, 'jobs.html', renderdict)
@@ -233,9 +225,8 @@ def all_jobs(request):
     '''
     All jobs to be sorted etc.
     '''
-    jobs = JobDao.jobs_ordered_by_time()
     renderdict = {
-        'jobs': jobs
+        'jobs': Job.objects.sorted()
     }
 
     return render(request, 'jobs.html', renderdict)

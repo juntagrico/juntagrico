@@ -4,9 +4,8 @@ from django.template.defaultfilters import urlize, linebreaksbr
 
 from juntagrico import version
 from juntagrico.dao.deliverydao import DeliveryDao
-from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.jobs import ActivityArea, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionProduct
 
 register = template.Library()
@@ -36,7 +35,7 @@ def requires_core():
 
 @register.simple_tag
 def show_job_extras():
-    return JobExtraDao.all_job_extras().count() > 0
+    return JobExtra.objects.count() > 0
 
 
 @register.simple_tag
