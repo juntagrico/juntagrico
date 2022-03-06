@@ -19,13 +19,13 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
-from juntagrico.forms import MemberProfileForm, PasswordForm, MemberCancellationForm
+from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
+    CoopMemberCancellationForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.management import cancel_share
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
@@ -354,26 +354,18 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
+    coop_member = member.is_cooperation_member
+    if coop_member:
+        form_type = CoopMemberCancellationForm
+    else:
+        form_type = NonCoopMemberCancellationForm
     if request.method == 'POST':
-        form = MemberCancellationForm(member, request.POST)
+        form = form_type(request.POST, instance=member)
         if form.is_valid():
-            now = timezone.now().date()
-            end_date = next_membership_end_date()
-            message = form.cleaned_data['message']
-            member = request.user.member
-            member.end_date = end_date
-            member.cancellation_date = now
-            if member.is_cooperation_member:
-                member.iban = form.cleaned_data['iban']
-                adminnotification.member_canceled(member, end_date, message)
-            else:
-                member.deactivation_date = now
-            member.save()
-            [cancel_share(s, now, end_date) for s in member.active_shares]
+            form.save()
             return redirect('profile')
     else:
-        form = MemberCancellationForm(member)
-    coop_member = member.is_cooperation_member
+        form = form_type(instance=member)
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future
