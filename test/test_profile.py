@@ -24,7 +24,10 @@ class ProfileTests(JuntagricoTestCase):
     def testCancelMembershipPost(self):
         data = {
             'message': 'message',
-            'iban': 'CH61 0900 0000 1900 0012 6'
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location'
         }
         self.assertPost(reverse('cancel-membership'), code=302, data=data)
         self.member.refresh_from_db()
