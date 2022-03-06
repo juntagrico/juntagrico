@@ -3,6 +3,7 @@ from django.contrib import admin
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.area_admin import AreaAdmin
 from juntagrico.admins.assignment_admin import AssignmentAdmin
+from juntagrico.admins.billing_period_admin import BillingPeriodAdmin
 from juntagrico.admins.delivery_admin import DeliveryAdmin
 from juntagrico.admins.depot_admin import DepotAdmin
 from juntagrico.admins.job_admin import JobAdmin
@@ -51,6 +52,6 @@ admin.site.register(JobType, JobTypeAdmin)
 admin.site.register(RecuringJob, JobAdmin)
 admin.site.register(OneTimeJob, OneTimeJobAdmin)
 admin.site.register(ListMessage, ListMessageAdmin)
-admin.site.register(BillingPeriod, BaseAdmin)
+admin.site.register(BillingPeriod, BillingPeriodAdmin)
 if Config.enable_shares():
     admin.site.register(Share, ShareAdmin)
