@@ -1,5 +1,12 @@
 Release Notes
 =============
+1.5.2
+-----
+
+Fixes
+^^^^^
+* fix reportlab requirement
+
 
 Dev
 ---
