@@ -1,11 +1,22 @@
 Release Notes
 =============
-
 Dev
 ---
 
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+*Member Features:
+    * Cancellation form asks for IBAN
 * Admin Features
     *Auto complete fields for locations, areas, job types, depots, subcription tpye, subscription size and subscription product
+
+
+1.5.2
+-----
+
+Fixes
+^^^^^
+* fix reportlab requirement
 
 1.5.1
 -----
