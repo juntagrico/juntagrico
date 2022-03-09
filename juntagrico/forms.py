@@ -1,9 +1,10 @@
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Submit, HTML, Div
+from crispy_forms.layout import Layout, Field, Submit, HTML, Div, Fieldset
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
@@ -13,7 +14,10 @@ from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
+from juntagrico.mailer import adminnotification
 from juntagrico.models import Member, Subscription
+from juntagrico.util.management import cancel_share
+from juntagrico.util.temporal import next_membership_end_date
 
 
 class Slider(Field):
@@ -36,6 +40,80 @@ class PasswordForm(Form):
         if self.data['password'] != self.data['passwordRepeat']:
             raise ValidationError(_('Passwörter stimmen nicht überein'))
         return self.data['passwordRepeat']
+
+
+class AbstractMemberCancellationForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.attrs = {
+            'onSubmit': "return confirm('" + _('Möchtest du deine Mitgliedschaft verbindlich künden?') + "')"}
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-3'
+        self.helper.field_class = 'col-md-9'
+
+
+class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
+    class Meta:
+        model = Member
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            FormActions(
+                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
+            ),
+        )
+
+    def save(self, commit=True):
+        now = timezone.now().date()
+        self.instance.end_date = now
+        self.instance.cancellation_date = now
+        self.instance.deactivation_date = now
+        if (sub := self.instance.subscription_current) is not None:
+            self.instance.leave_subscription(sub)
+        if (sub := self.instance.subscription_future) is not None:
+            self.instance.leave_subscription(sub)
+        super().save()
+
+
+class CoopMemberCancellationForm(AbstractMemberCancellationForm):
+    message = CharField(label=_('Mitteilung'), widget=Textarea, required=False)
+
+    class Meta:
+        model = Member
+        fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
+        labels = {
+            "addr_street": _("Strasse/Nr.")
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'message', Fieldset(
+                _('Bitte hinterlege oder überprüfe deine Daten, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')),
+                'iban', 'addr_street', 'addr_zipcode', 'addr_location'),
+            FormActions(
+                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
+            ),
+        )
+
+    def clean_iban(self):
+        try:
+            IBAN(self.data['iban'])
+        except ValueError:
+            raise ValidationError(_('IBAN ist nicht gültig'))
+        return self.data['iban']
+
+    def save(self, commit=True):
+        now = timezone.now().date()
+        end_date = next_membership_end_date()
+        self.instance.end_date = end_date
+        self.instance.cancellation_date = now
+        adminnotification.member_canceled(self.instance, end_date, self.data['message'])
+        [cancel_share(s, now, end_date) for s in self.instance.active_shares]
+        super().save(commit)
 
 
 class MemberProfileForm(ModelForm):

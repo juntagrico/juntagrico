@@ -1,8 +1,22 @@
 Release Notes
 =============
+1.5.2
+-----
+
+Fixes
+^^^^^
+* fix reportlab requirement
+
+
+Dev
+---
+
+*Member Features:
+    * Cancellation form asks for IBAN
+
 
 1.5.1
----
+-----
 
 Fixes
 ^^^^^
