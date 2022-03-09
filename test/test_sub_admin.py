@@ -12,10 +12,11 @@ class SubAdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
-        """
+        # Test adding a started subscription without parts and a member that joined before subscription start. Assert that it fails
+        """ needs fix in django admin https://code.djangoproject.com/ticket/33547#ticket
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',
-                'initial-start_date': '2021-01-01',
+                'initial-start_date': '01.01.2021',
                 'notes': '',
                 'subscriptionmembership_set-TOTAL_FORMS': '1',
                 'subscriptionmembership_set-INITIAL_FORMS': '0',
@@ -25,13 +26,11 @@ class SubAdminTests(JuntagricoTestCase):
                 'subscriptionmembership_set-0-subscription': '',
                 'subscriptionmembership_set-0-member': str(self.member4.id),
                 'subscriptionmembership_set-0-join_date': '17.08.2020',
-                'initial-subscriptionmembership_set-0-join_date': '2020-08-17+08%3A26%3A43%2B00%3A00',
                 'subscriptionmembership_set-0-leave_date': '',
                 'subscriptionmembership_set-__prefix__-id': '',
                 'subscriptionmembership_set-__prefix__-subscription': '',
                 'subscriptionmembership_set-__prefix__-member': '',
                 'subscriptionmembership_set-__prefix__-join_date': '17.08.2020',
-                'initial-subscriptionmembership_set-__prefix__-join_date': '2020-08-17+08%3A26%3A43%2B00%3A00',
                 'subscriptionmembership_set-__prefix__-leave_date': '',
                 'parts-TOTAL_FORMS': '0',
                 'parts-INITIAL_FORMS': '0',
@@ -52,14 +51,13 @@ class SubAdminTests(JuntagricoTestCase):
                 'extra_subscription_set-__prefix__-activation_date': '',
                 'extra_subscription_set-__prefix__-cancellation_date': '',
                 'extra_subscription_set-__prefix__-deactivation_date': '',
-                'extra_subscription_set-__prefix__-type': '', }
-                """
-        # self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
-        # TODO issue #311
+                'extra_subscription_set-__prefix__-type': ''}
+        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
         """
+        # Test adding a started subscription with waiting member and unstarted part. Assert that it works
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',
-                'initial-start_date': '2021-01-01',
+                'initial-start_date': '01.01.2021',
                 'notes': '',
                 'subscriptionmembership_set-TOTAL_FORMS': '1',
                 'subscriptionmembership_set-INITIAL_FORMS': '0',
@@ -69,13 +67,11 @@ class SubAdminTests(JuntagricoTestCase):
                 'subscriptionmembership_set-0-subscription': '',
                 'subscriptionmembership_set-0-member': str(self.member4.id),
                 'subscriptionmembership_set-0-join_date': '',
-                'initial-subscriptionmembership_set-0-join_date': '',
                 'subscriptionmembership_set-0-leave_date': '',
                 'subscriptionmembership_set-__prefix__-id': '',
                 'subscriptionmembership_set-__prefix__-subscription': '',
                 'subscriptionmembership_set-__prefix__-member': '',
                 'subscriptionmembership_set-__prefix__-join_date': '',
-                'initial-subscriptionmembership_set-__prefix__-join_date': '',
                 'subscriptionmembership_set-__prefix__-leave_date': '',
                 'parts-TOTAL_FORMS': '1',
                 'parts-INITIAL_FORMS': '0',
@@ -103,6 +99,4 @@ class SubAdminTests(JuntagricoTestCase):
                 'extra_subscription_set-__prefix__-cancellation_date': '',
                 'extra_subscription_set-__prefix__-deactivation_date': '',
                 'extra_subscription_set-__prefix__-type': '', }
-        """
-        # self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
-        # TODO issue #311
+        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
