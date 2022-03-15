@@ -11,7 +11,7 @@ Features & Improvements
 Fixes
 ^^^^^
 * upgrade django to fix bug that affects saving subscriptions in admin: https://code.djangoproject.com/ticket/33547
-
+* fix page error when trying to delete job with assignment
 
 1.5.2
 -----
