@@ -13,7 +13,6 @@ class SubAdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_subscription_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
         # Test adding a started subscription without parts and a member that joined before subscription start. Assert that it fails
-        """ needs fix in django admin https://code.djangoproject.com/ticket/33547#ticket
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',
                 'initial-start_date': '01.01.2021',
@@ -53,7 +52,6 @@ class SubAdminTests(JuntagricoTestCase):
                 'extra_subscription_set-__prefix__-deactivation_date': '',
                 'extra_subscription_set-__prefix__-type': ''}
         self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
-        """
         # Test adding a started subscription with waiting member and unstarted part. Assert that it works
         data = {'depot': str(self.depot.id),
                 'start_date': '01.01.2021',

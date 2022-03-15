@@ -1,18 +1,24 @@
 Release Notes
 =============
+Dev
+---
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+*Member Features:
+    * Cancellation form asks for IBAN
+
+Fixes
+^^^^^
+* upgrade django to fix bug that affects saving subscriptions in admin: https://code.djangoproject.com/ticket/33547
+
+
 1.5.2
 -----
 
 Fixes
 ^^^^^
 * fix reportlab requirement
-
-
-Dev
----
-
-*Member Features:
-    * Cancellation form asks for IBAN
 
 
 1.5.1
