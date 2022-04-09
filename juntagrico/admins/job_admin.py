@@ -21,6 +21,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
+    autocomplete_fields = ['type']
     inlines = [ContactInline, AssignmentInline]
     readonly_fields = ['free_slots']
 

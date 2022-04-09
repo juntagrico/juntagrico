@@ -11,6 +11,7 @@ from juntagrico.admins.forms.location_replace_form import LocationReplaceForm
 class LocationAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['name', 'addr_street', 'addr_zipcode', 'addr_location', 'latitude', 'longitude', 'visible']
     actions = ['replace']
+    search_fields = ['name', 'addr_street', 'addr_zipcode', 'addr_location']
     fieldsets = (
         (None, {
             'fields': ('name', 'description', 'visible')

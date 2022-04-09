@@ -17,6 +17,7 @@ class SubscriptionAdmin(BaseAdmin):
                      'subscriptionmembership__member__first_name',
                      'subscriptionmembership__member__last_name',
                      'depot__name', 'nickname']
+    autocomplete_fields = ['depot', 'future_depot']
 
     inlines = [SubscriptionMembershipInline, SubscriptionPartInline]
 

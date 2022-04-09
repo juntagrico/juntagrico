@@ -20,6 +20,8 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
     list_display = ['__str__', 'activityarea',
                     'default_duration', 'location', 'visible']
     list_filter = ('activityarea', 'visible')
+    autocomplete_fields = ['activityarea', 'location']
+    search_fields = ['name', 'activityarea__name']
     actions = ['transform_job_type']
     inlines = [ContactInline, JobExtraInline]
 

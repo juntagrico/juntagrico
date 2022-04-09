@@ -36,3 +36,4 @@ class SubscriptionPartInline(admin.TabularInline):
     verbose_name = _('{} Bestandteil').format(Config.vocabulary('subscription'))
     verbose_name_plural = _('{} Bestandteile').format(Config.vocabulary('subscription'))
     extra = 0
+    autocomplete_fields = ['type']

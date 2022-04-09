@@ -1,5 +1,25 @@
 Release Notes
 =============
+Dev
+---
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Cancellation form asks for IBAN
+* Admin Features
+    * Auto complete fields for locations, areas, job types, depots, subcription tpye, subscription size and subscription product
+
+Fixes
+^^^^^
+* upgrade django to fix bug that affects saving subscriptions in admin: https://code.djangoproject.com/ticket/33547
+
+1.5.2
+-----
+
+Fixes
+^^^^^
+* fix reportlab requirement
 
 Dev
 ---
@@ -9,7 +29,7 @@ Fixes
 * Fix read-only admin view of one time job
 
 1.5.1
----
+-----
 
 Fixes
 ^^^^^
@@ -26,7 +46,7 @@ Upgrade Instructions
     * Remove these settings.
     * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
 * Add ``'polymorphic'`` to the ``INSTALLED_APPS`` setting.
-* Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}``
+* Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}`` removing ``/static/`` from the beginning of the path.
 * The method ``url`` from ``django.conf.urls`` use either ``path`` or ``repath`` from ``django.urls``
 * Add the Setting ``STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'``
 * The option ``Telefonnummer von KoordinatorIn anzeigen`` on activity areas was previously only used to show the
