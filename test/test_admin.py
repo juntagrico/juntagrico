@@ -32,6 +32,10 @@ class AdminTests(JuntagricoTestCase):
         selected_items = [self.job1.pk, self.job2.pk]
         self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
+        # delete job without assignment
+        self.assertGet(reverse('admin:juntagrico_recuringjob_delete', args=(self.job1.pk,)), member=self.admin)
+        # delete job with assignment (will show a page, that assignments must be deleted first)
+        self.assertGet(reverse('admin:juntagrico_recuringjob_delete', args=(self.job2.pk,)), member=self.admin)
 
     def testDeliveryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
