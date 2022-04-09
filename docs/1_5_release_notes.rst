@@ -1,7 +1,7 @@
 Release Notes
 =============
-Dev
----
+1.5.3
+-----
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
