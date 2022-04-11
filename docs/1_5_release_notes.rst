@@ -1,5 +1,12 @@
 Release Notes
 =============
+1.5.4
+-----
+
+Fixes
+^^^^^
+* Hide job types in job admin that can not be selected
+
 1.5.3
 -----
 
