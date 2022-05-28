@@ -59,9 +59,9 @@ def check_sub_membership_consistency_ms(member, subscription, join_date, leave_d
         check = Q(leave_date__isnull=True) | Q(leave_date__gte=join_date)
     else:
         check = Q(join_date__lte=leave_date, leave_date__gte=leave_date) | \
-                Q(join_date__lte=join_date, leave_date__gte=join_date)
+            Q(join_date__lte=join_date, leave_date__gte=join_date)
     if memberships.filter(check).exists():
         raise ValidationError(
             _('Diese/r/s {} hat ein/e/n zeitlich überlappende/n/s {}').format(Config.vocabulary('member'),
-                                                                     Config.vocabulary('subscription')),
+                                                                              Config.vocabulary('subscription')),
             code='invalid')
