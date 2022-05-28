@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -45,20 +46,22 @@ def check_sub_membership_consistency(instance):
         raise ValidationError(
             _('Kein/e/n gültige/n/s {} angegeben').format(Config.vocabulary('member')),
             code='invalid')
-    check_sub_membership_consistency_ms(member, subscription, instance.join_date)
+    check_sub_membership_consistency_ms(member, subscription, instance.join_date, instance.leave_date)
 
 
-def check_sub_membership_consistency_ms(member, subscription, asof):
-    from juntagrico.dao.subscriptionmembershipdao import SubscriptionMembershipDao
-    if subscription.state == 'waiting' and SubscriptionMembershipDao.get_other_waiting_for_member(member,
-                                                                                                  subscription).count() > 0:
+def check_sub_membership_consistency_ms(member, subscription, join_date, leave_date):
+    from juntagrico.entity.member import SubscriptionMembership
+    # check for subscription membership overlaps
+    memberships = SubscriptionMembership.objects.exclude(subscription=subscription).filter(member=member)
+    if join_date is None:
+        check = Q(leave_date__isnull=True)
+    elif leave_date is None:
+        check = Q(leave_date__isnull=True) | Q(leave_date__gte=join_date)
+    else:
+        check = Q(join_date__lte=leave_date, leave_date__gte=leave_date) | \
+                Q(join_date__lte=join_date, leave_date__gte=join_date)
+    if memberships.filter(check).exists():
         raise ValidationError(
-            _('Diese/r/s {} hat bereits ein/e/n zukünftige/n/s {}').format(Config.vocabulary('member'),
-                                                                           Config.vocabulary('subscription')),
-            code='invalid')
-    if subscription.state == 'active' and SubscriptionMembershipDao.get_other_active_for_member(member,
-                                                                                                subscription, asof).count() > 0:
-        raise ValidationError(
-            _('Diese/r/s {} hat bereits ein/e/n {}').format(Config.vocabulary('member'),
-                                                            Config.vocabulary('subscription')),
+            _('Diese/r/s {} hat ein/e/n zeitlich überlappende/n/s {}').format(Config.vocabulary('member'),
+                                                                     Config.vocabulary('subscription')),
             code='invalid')
