@@ -427,7 +427,7 @@ def manage_shares(request):
         'shareerror': shareerror,
         'required': member.required_shares_count,
         'ibanempty': not member.iban,
-        'canceldate': next_membership_end_date,
+        'canceldate': next_membership_end_date(),
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)
