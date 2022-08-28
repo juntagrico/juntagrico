@@ -1,10 +1,9 @@
 {% load i18n %}
 {% load juntagrico.common %}
-
+{% load juntagrico.config %}
 {% show_core as b_show_core %}
 {% show_job_extras as b_show_job_extras %}
-{% vocabulary "member_type" as v_member_type %}
-{% use_job_status_images as b_use_job_status_images %}
+{% config "use_job_status_images" as use_job_status_images %}
 <table id="filter-table" class="list table" style="width: 100%">
     <thead>
         <tr>
@@ -81,7 +80,7 @@
                         {% endif %}
                     </td>
                 {% endif %}
-                {% if not b_use_job_status_images %}
+                {% if not use_job_status_images %}
                 <td class="
                     {% if job.status_percentage < 25 %}
                         text-danger
@@ -93,7 +92,7 @@
                     {% if job.free_slots > -1 %}
                     {{ job.occupied_slots }} / {{ job.slots }}
                     {% endif %}
-                    Use job status images: {{ b_use_job_status_images }}
+                    
                 </td>
                 {% else %}
                 <td>
