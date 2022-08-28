@@ -1,3 +1,5 @@
+import math
+
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
@@ -208,6 +210,12 @@ class Job(JuntagricoBasePoly):
         if self.slots < 1:
             return 100
         return assignments.count() * 100 / self.slots
+
+    def get_status_img(self):
+        percent = self.status_percentage()
+        status_number = min(100, int(25 * math.floor(float(percent) / 25)))
+        result = 'status_' + str(status_number)
+        return result
 
     def is_core(self):
         return self.type.activityarea.core
