@@ -8,7 +8,7 @@
         <tr>
             <th class="job-description"></th>
             <th class="align-top table-search job-date">
-                {% trans "Datum" %} Tudeluu
+                {% trans "Datum" %}
             </th>
             <th class="align-top table-search job-name">
                 {% trans "Job" %}
@@ -79,7 +79,8 @@
                         {% endif %}
                     </td>
                 {% endif %}
-                <!-- <td class="
+                {% if not use_job_status_images %}
+                <td class="
                     {% if job.status_percentage < 25 %}
                         text-danger
                     {% elif job.status_percentage < 100%}
@@ -90,12 +91,14 @@
                     {% if job.free_slots > -1 %}
                     {{ job.occupied_slots }} / {{ job.slots }}
                     {% endif %}
-                </td> -->
+                </td>
+                {% else %}
                 <td>
                     {% if job.free_slots > -1 %}
                         <img alt="{{ job.occupied_slots }} / {{ job.slots }}" src="{% images job.get_status_img %}"/>
                     {% endif %}
                 </td>
+                {% endif %}
                 {% if show_free_slot_filter %}
                     <td>
                         {{ job.free_slots }}
