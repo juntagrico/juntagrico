@@ -171,4 +171,4 @@ class Config:
     demopwd = _get_setting('DEMO_PWD')
 
     # job status display option
-    use_job_status_images = _get_setting('USE_JOB_STATUS_IMAGES', True)
+    use_job_status_images = _get_setting('USE_JOB_STATUS_IMAGES', False)
