@@ -46,7 +46,7 @@ def subscription(request, subscription_id=None):
         subscription = member.subscription_current
     else:
         subscription = get_object_or_404(Subscription, id=subscription_id)
-        future_subscription = future_subscription and not(
+        future_subscription = future_subscription and not (
             subscription == member.subscription_future)
     end_date = end_of_next_business_year()
     renderdict = {}
