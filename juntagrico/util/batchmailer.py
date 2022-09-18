@@ -16,11 +16,6 @@ class Mailer:
         # use default mail strategy if num of recipients is below batchsize
         if num_recipients <= email_batch_size:
             msg.send()
-            batch = {'timestamp': str(timezone.now()),
-                     'to': tos,
-                     'cc': ccs,
-                     'bcc': bccs}
-            recipients_batches.append(batch)
             return
 
         plain_msg = copy.copy(msg)
@@ -69,7 +64,6 @@ class Mailer:
 
         send_batch_email_admin_message = \
             getattr(settings, 'EMAIL_SEND_BATCH_ADMIN_MESSAGE', False)
-        # print(f'Send Admin Mail: {send_batch_email_admin_message}')
 
         # Send admin message to emails specified in ADMINS
         if send_batch_email_admin_message:
@@ -86,28 +80,16 @@ class Mailer:
         admin_msg.body = admin_body
         admin_msg.subject = f'[JUNTAGRICO] Email Recipients: {msg.subject}'
 
-        admins = getattr(settings, 'ADMINS', False)
+        admins = getattr(settings, 'ADMINS', [])
         if not admins:
             return
-        admin_emails = []
-        for adm in admins:
-            email = adm[1]
-            if email is not None:
-                admin_emails.append(email)
-
-        # print('Admin Emails')
-        # print(admin_emails)
+        admin_emails = [adm[1] for adm in admins if adm[1]]
         admin_msg.to = admin_emails
-
         admin_msg.send()
 
     def send(msg):
-
         email_batch_size = getattr(settings, 'EMAIL_BATCH_SIZE', 39)
         wait_time_batch = getattr(settings, 'EMAIL_WAIT_BETWEEN_BATCHES', 65)
-        # print(f'Batch Size: {email_batch_size}')
-        # print(f'Wait Time: {wait_time_batch}')
-
         t = threading.Thread(target=Mailer._send_batches,
                              args=[msg, email_batch_size, wait_time_batch],
                              daemon=True)
