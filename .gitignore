@@ -16,3 +16,4 @@ my_settings_local.py
 .coverage
 testsettings2.py
 *.bat
+*.vscode

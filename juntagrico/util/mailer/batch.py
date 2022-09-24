@@ -4,8 +4,9 @@ from django.conf import settings
 import time
 import threading
 
+
 class Mailer:
- 
+
     def _send_batches(msg, email_batch_size, wait_time_batch):
         tos = msg.to
         ccs = msg.cc
