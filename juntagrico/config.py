@@ -90,6 +90,7 @@ class Config:
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
     business_year_cancelation_month = _get_setting('BUSINESS_YEAR_CANCELATION_MONTH', 12)
     membership_end_month = _get_setting('MEMBERSHIP_END_MONTH', 6)
+    membership_end_notice_period = _get_setting('MEMBERSHIP_END_NOTICE_PERIOD', 0)
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
         lambda: {
