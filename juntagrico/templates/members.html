@@ -95,7 +95,7 @@
                                     {% endfor %}
                                 </td>
                                 <td>
-                                    {% if sub.depot_name != None %}
+                                    {% if sub %}
                                         {{ sub.depot_name }}
                                     {% else %}
                                         Kein {% vocabulary "depot" %}
@@ -111,7 +111,7 @@
                                     {{ member.mobile_phone }}
                                 </td>
                                 <td>
-                                    {% if sub.subscription != None %}
+                                    {% if sub %}
                                         {{ sub.subscription.size }}
                                     {% else %}
                                         Kein {% vocabulary "subscription" %}
