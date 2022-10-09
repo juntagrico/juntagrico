@@ -14,6 +14,7 @@ class DeliveryAdmin(BaseAdmin):
     ordering = ('-delivery_date', 'subscription_size')
     actions = ['copy_delivery']
     search_fields = ['delivery_date', 'subscription_size']
+    autocomplete_fields = ['subscription_size']
     inlines = [DeliveryInline]
     save_as = True
 
