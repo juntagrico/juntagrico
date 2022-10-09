@@ -46,8 +46,7 @@ def subscription(request, subscription_id=None):
         subscription = member.subscription_current
     else:
         subscription = get_object_or_404(Subscription, id=subscription_id)
-        future_subscription = future_subscription and not(
-            subscription == member.subscription_future)
+        future_subscription = future_subscription and subscription != member.subscription_future
     end_date = end_of_next_business_year()
     renderdict = {}
     if subscription is not None:
@@ -427,7 +426,7 @@ def manage_shares(request):
         'shareerror': shareerror,
         'required': member.required_shares_count,
         'ibanempty': not member.iban,
-        'canceldate': next_membership_end_date(),
+        'next_membership_end_date': next_membership_end_date(),
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)

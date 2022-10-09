@@ -34,5 +34,5 @@ def check_share_consistency(instance):
         raise ValidationError(_('Bitte "Gekündigt am" ausfüllen'), code='invalid')
     if is_payed_back and not is_terminated:
         raise ValidationError(_('Bitte "Gekündigt auf" ausfüllen'), code='invalid')
-    if not(paid_date <= cancelled_date <= termination_date <= payback_date):
+    if not (paid_date <= cancelled_date <= termination_date <= payback_date):
         raise ValidationError(_('Daten Reihenfolge stimm nicht.'), code='invalid')

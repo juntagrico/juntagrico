@@ -69,7 +69,7 @@
                                     <a href="{% url 'profile' %}">{% blocktrans %}Kann gekündigt werden, sobald eine IBAN hinterlegt ist{% endblocktrans %}</a>
                                 {% elif  share.cancelled_date is None and share.paid_date is not None %}
                                     <a href="{% url 'share-cancel' share.id %}"class="btn btn-success"
-                                       onclick="return confirm('{% blocktrans %} Möchtest du diese/s/n {{ v_share }} verbindlich zum {{ canceldate }} kündigen? {% endblocktrans%}')">
+                                       onclick="return confirm('{% blocktrans %} Möchtest du diese/s/n {{ v_share }} verbindlich zum {{ next_membership_end_date }} kündigen? {% endblocktrans%}')">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}
