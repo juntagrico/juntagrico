@@ -9,3 +9,4 @@ reportlab==3.6.6 # rq.filter: !=3.6.8
 schwifty==2021.10.2
 xhtml2pdf==0.2.4 # rq.filter: !=0.2.5
 XlsxWriter==3.0.2
+python-dateutil==2.8.2
