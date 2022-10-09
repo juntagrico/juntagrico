@@ -1,5 +1,15 @@
 Release Notes
 =============
+
+dev
+---
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Batch mailer sends mass emails in smaller batches.
+   * Set ``DEFAULT_MAILER = 'juntagrico.util.mailer.batch.Mailer'`` to enable the batch mailer
+   * The option ``juntagrico.util.defaultmailer.Mailer`` is deprecated, use ``juntagrico.util.mailer.default.Mailer`` instead.
+
 1.5.4
 -----
 
