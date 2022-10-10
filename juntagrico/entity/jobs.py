@@ -211,11 +211,9 @@ class Job(JuntagricoBasePoly):
             return 100
         return assignments.count() * 100 / self.slots
 
-    def get_status_img(self):
+    def status_quartile(self):
         percent = self.status_percentage()
-        status_number = min(100, int(25 * math.floor(float(percent) / 25)))
-        result = 'status_' + str(status_number)
-        return result
+        return min(100, int(25 * math.floor(float(percent) / 25)))
 
     def is_core(self):
         return self.type.activityarea.core
