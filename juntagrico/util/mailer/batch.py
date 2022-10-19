@@ -1,96 +1,64 @@
 import copy
-from django.utils import timezone
-from django.conf import settings
+
+from django.core import mail
+from django.dispatch import Signal
 import time
 import threading
 
+from juntagrico.config import Config
+
+batch_mail_sent = Signal()
+
 
 class Mailer:
+    @staticmethod
+    def send(msg):
+        t = threading.Thread(
+            target=Mailer._send_batches,
+            args=[msg, Config.batch_mailer('batch_size'), Config.batch_mailer('wait_time')],
+            daemon=True
+        )
+        t.start()
 
-    def _send_batches(msg, email_batch_size, wait_time_batch):
-        tos = msg.to
-        ccs = msg.cc
-        bccs = msg.bcc
-        num_recipients = len(bccs) + len(tos) + len(ccs)
-        recipients_batches = []
-        # use default mail strategy if num of recipients is below batchsize
-        if num_recipients <= email_batch_size:
+    @staticmethod
+    def _send_batches(msg, batch_size, wait_time):
+        # use default mail strategy if num of recipients is below batch size
+        if len(msg.recipients()) <= batch_size:
             msg.send()
             return
 
-        plain_msg = copy.copy(msg)
-        plain_msg.bcc = []
-
-        t_wait = 0
         # First send to all To and CC recipients without BCC
-        if tos or ccs:
-            starttime = time.time()
-            plain_msg.send()
+        messages = []
+        if msg.to or msg.cc:
+            plain_msg = copy.copy(msg)
+            plain_msg.bcc = []
+            messages.append(plain_msg)
 
-            plain_msg.to = []
-            plain_msg.cc = []
+        # Send BCC recipients in batches of size email_batch_size
+        if msg.bcc:
+            bcc_message = copy.copy(msg)
+            bcc_message.to = []
+            bcc_message.cc = []
+            bcc_message.bcc = []
+            method = 'to' if batch_size == 1 else 'bcc'  # if emails are sent out individually, receiver can be explicit
+            for i in range(0, len(msg.bcc), batch_size):
+                new_message = copy.copy(bcc_message)
+                setattr(new_message, method, msg.bcc[i:i + batch_size])
+                messages.append(new_message)
 
-            batch = {'timestamp': str(timezone.now()),
-                     'to': tos,
-                     'cc': ccs,
-                     'bcc': []}
-            recipients_batches.append(batch)
+        # send emails in batches with a wait time in between
+        connection = mail.get_connection()
+        connection.open()  # use a single connection if there is no wait time
+        for message in messages:
+            start_time = time.time()
+            message.connection = connection
+            message.send()
 
-            t_wait = wait_time_batch - (time.time() - starttime)
+            batch_mail_sent.send(Mailer, message=message, original_message=msg, done=message is messages[-1])
 
-        if t_wait > 0:
-            time.sleep(t_wait)
-
-        # Send BCC recipients in batches of size email_batch_size with
-        # a wait time inbetween wait_time_batch
-        for i in range(0, len(bccs), email_batch_size):
-            starttime = time.time()
-            batch_bccs = bccs[i:i + email_batch_size]
-
-            new_message = copy.copy(plain_msg)
-            new_message.bcc = batch_bccs
-            new_message.send()
-
-            batch = {'timestamp': str(timezone.now()),
-                     'to': [],
-                     'cc': [],
-                     'bcc': batch_bccs}
-
-            recipients_batches.append(batch)
-
-            t_wait = wait_time_batch - (time.time() - starttime)
+            t_wait = wait_time - (time.time() - start_time)
             if t_wait > 0:
+                connection.close()
                 time.sleep(t_wait)
-
-        send_batch_email_admin_message = \
-            getattr(settings, 'EMAIL_SEND_BATCH_ADMIN_MESSAGE', False)
-
-        # Send admin message to emails specified in ADMINS
-        if send_batch_email_admin_message:
-            Mailer._send_admin_msg(msg, recipients_batches)
-
-    def _send_admin_msg(msg, recipients_batches):
-        admin_msg = copy.copy(msg)
-        admin_msg.alternatives = []
-        admin_msg.cc = []
-        admin_msg.bcc = []
-        admin_body = ''
-        for batch in recipients_batches:
-            admin_body = admin_body + str(batch) + ',\n\n'
-        admin_msg.body = admin_body
-        admin_msg.subject = f'[JUNTAGRICO] Email Recipients: {msg.subject}'
-
-        admins = getattr(settings, 'ADMINS', [])
-        if not admins:
-            return
-        admin_emails = [adm[1] for adm in admins if adm[1]]
-        admin_msg.to = admin_emails
-        admin_msg.send()
-
-    def send(msg):
-        email_batch_size = getattr(settings, 'EMAIL_BATCH_SIZE', 39)
-        wait_time_batch = getattr(settings, 'EMAIL_WAIT_BETWEEN_BATCHES', 65)
-        t = threading.Thread(target=Mailer._send_batches,
-                             args=[msg, email_batch_size, wait_time_batch],
-                             daemon=True)
-        t.start()
+                connection.open()
+        connection.close()
