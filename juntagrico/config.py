@@ -154,6 +154,11 @@ class Config:
     images = _get_setting_with_key(
         'IMAGES',
         {
+            'status_100': fallback_static('juntagrico/img/status_100.png'),
+            'status_75': fallback_static('juntagrico/img/status_75.png'),
+            'status_50': fallback_static('juntagrico/img/status_50.png'),
+            'status_25': fallback_static('juntagrico/img/status_25.png'),
+            'status_0': fallback_static('juntagrico/img/status_0.png'),
             'single_full': fallback_static('juntagrico/img/single_full.png'),
             'single_empty': fallback_static('juntagrico/img/single_empty.png'),
             'single_core': fallback_static('juntagrico/img/single_core.png'),
