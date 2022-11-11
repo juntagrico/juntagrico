@@ -66,7 +66,7 @@ class Share(Billable):
         check_share_consistency(self)
 
     def __str__(self):
-        return _('Anteilschein {0}').format(self.id)
+        return _('Anteilschein {0} ({1})').format(self.id, self.state_text)
 
     @notifiable
     class Meta:
