@@ -10,6 +10,7 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
+from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import OneTimeJob
 from juntagrico.entity.location import Location
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
@@ -20,6 +21,8 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     list_display = ['__str__', 'activityarea',
                     'default_duration', 'location', 'visible']
     list_filter = ('activityarea', 'visible')
+    autocomplete_fields = ['activityarea', 'location']
+    search_fields = ['name', 'activityarea__name']
     actions = ['transform_job_type']
     inlines = [ContactInline, JobExtraInline]
 
@@ -57,6 +60,16 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
         return qs
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        if 'autocomplete' in request.path and request.GET.get('model_name') == 'recuringjob' and request.GET.get(
+                'field_name') == 'type':
+            queryset = JobTypeDao.visible_types()
+            if request.user.has_perm('juntagrico.is_area_admin') and (
+                    not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
+                queryset = JobTypeDao.visible_types_by_coordinator(request.user.member)
+        return queryset, use_distinct
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,

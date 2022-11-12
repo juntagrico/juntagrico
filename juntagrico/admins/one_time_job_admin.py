@@ -22,6 +22,7 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
     exclude = ['reminder_sent']
+    autocomplete_fields = ['activityarea', 'location']
 
     inlines = [ContactInline, AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
