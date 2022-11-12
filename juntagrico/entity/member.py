@@ -185,7 +185,7 @@ class Member(JuntagricoBaseModel):
         return '%s %s' % (self.first_name, self.last_name)
 
     def get_phone(self):
-        if self.mobile_phone != '':
+        if self.mobile_phone and self.mobile_phone.strip('0- '):
             return self.mobile_phone
         return self.phone
 
