@@ -354,7 +354,9 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
-    coop_member = member.is_cooperation_member
+    # considering unpaid shares as well, as they might have been paid but not yet updated in the system.
+    # Then IBAN is needed to pay it back.
+    coop_member = member.usable_shares_count > 0
     if coop_member:
         form_type = CoopMemberCancellationForm
     else:

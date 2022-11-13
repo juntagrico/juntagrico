@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
-from juntagrico.admins import RichTextAdmin
+from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.forms.job_copy_form import JobCopyForm, JobCopyToFutureForm
@@ -33,9 +33,9 @@ class OnlyFutureJobAdminForm(forms.ModelForm):
         return cleaned_data
 
 
-class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
+class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
-    list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
+    list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
@@ -107,19 +107,10 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'type__activityarea__coordinator')
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'type':
-            kwargs['queryset'] = JobTypeDao.visible_types()
-            kwargs = formfield_for_coordinator(request,
-                                               db_field.name,
-                                               'type',
-                                               'juntagrico.is_area_admin',
-                                               JobTypeDao.visible_types_by_coordinator,
-                                               **kwargs)
-            # show jobtype even if invisible to be able to edit and save this job with the same type
-            # HACK: get instance via url argument
-            instance_pk = request.resolver_match.kwargs.get('object_id')
-            if instance_pk is not None:
-                kwargs['queryset'] |= JobType.objects.filter(recuringjob__pk=instance_pk)
-                kwargs['queryset'] = kwargs['queryset'].distinct()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    def get_type_queryset(self, request, obj):
+        visible_by_coordinator = formfield_for_coordinator(
+            request, None, None, 'juntagrico.is_area_admin',
+            JobTypeDao.visible_types_by_coordinator,
+            queryset=JobTypeDao.visible_types()
+        )['queryset']
+        return (JobType.objects.filter(recuringjob=obj) | visible_by_coordinator).distinct()
