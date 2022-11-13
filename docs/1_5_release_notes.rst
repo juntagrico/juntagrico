@@ -10,6 +10,10 @@ Features & Improvements
    * Set ``DEFAULT_MAILER = 'juntagrico.util.mailer.batch.Mailer'`` to enable the batch mailer
    * The option ``juntagrico.util.defaultmailer.Mailer`` is deprecated, use ``juntagrico.util.mailer.default.Mailer`` instead.
 
+Fixes
+^^^^^
+* Fix links to old subscriptions on member in django admin
+
 1.5.4
 -----
 
@@ -38,6 +42,13 @@ Fixes
 Fixes
 ^^^^^
 * fix reportlab requirement
+
+Dev
+---
+
+Fixes
+^^^^^
+* Fix read-only admin view of one time job
 
 1.5.1
 -----
