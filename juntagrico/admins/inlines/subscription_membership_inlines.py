@@ -35,7 +35,7 @@ class SubscriptionMembershipInline(admin.TabularInline):
     verbose_name_plural = _('{} Mitgliedschaften').format(Config.vocabulary('subscription'))
     extra = 0
 
-    @admin.display(description=Config.vocabulary('share_pl'))
+    @admin.display(description=_('Verwendbare {}').format(Config.vocabulary('share_pl')))
     def share_count(self, instance):
         return instance.member.usable_shares_count
 
