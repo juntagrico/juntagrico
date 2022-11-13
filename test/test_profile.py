@@ -32,6 +32,20 @@ class ProfileTests(JuntagricoTestCase):
         self.assertPost(reverse('cancel-membership'), code=302, data=data)
         self.member.refresh_from_db()
         self.assertTrue(self.member.canceled)
+        self.assertEqual(self.member.usable_shares_count, 0)
+
+    def testCancelMembershipPostWithUnpaidShares(self):
+        data = {
+            'message': 'message',
+            'iban': 'CH61 0900 0000 1900 0012 6',
+            'addr_street': 'addr_street',
+            'addr_zipcode': ' 1234',
+            'addr_location': 'addr_location'
+        }
+        self.assertPost(reverse('cancel-membership'), code=302, member=self.member6, data=data)
+        self.member6.refresh_from_db()
+        self.assertTrue(self.member6.canceled)
+        self.assertEqual(self.member6.usable_shares_count, 0)
 
     def testCancelMembershipNonCoopPost(self):
         data = {

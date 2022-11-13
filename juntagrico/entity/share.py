@@ -46,6 +46,7 @@ class Share(Billable):
 
     __state_text_dict = {0: _('unbezahlt'),
                          1: _('bezahlt'),
+                         2: _('storniert'),
                          3: _('gekündigt'),
                          7: _('zurückerstattet')}
 

@@ -59,6 +59,7 @@ class JuntagricoTestCase(TestCase):
         self.member3 = self.create_member('email3@email.org')
         self.member4 = self.create_member('email4@email.org')
         self.member5 = self.create_member('email5@email.org')
+        self.member6 = self.create_member('email6@email.org')
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
@@ -151,6 +152,8 @@ class JuntagricoTestCase(TestCase):
             'termination_date': '2017-12-27',
         })
         self.share5 = Share.objects.create(**self.share_data5)
+        # create ordered but not paid share
+        self.share6 = Share.objects.create(member=self.member6)
 
     def set_up_area(self):
         """
