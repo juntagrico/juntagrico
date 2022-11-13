@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
-from juntagrico.admins import RichTextAdmin
+from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
@@ -17,10 +17,10 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 from juntagrico.util.models import attribute_copy
 
 
-class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
+class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     list_display = ['__str__', 'activityarea',
                     'default_duration', 'location', 'visible']
-    list_filter = ('activityarea', 'visible')
+    list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), 'visible')
     autocomplete_fields = ['activityarea', 'location']
     search_fields = ['name', 'activityarea__name']
     actions = ['transform_job_type']
@@ -50,12 +50,8 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                 je.delete()
             inst.delete()
 
-    def get_form(self, request, obj=None, **kwds):
-        form = super().get_form(request, obj, **kwds)
-        # only include visible and current locations in choices
-        # filter queryset here, because here the obj is available
-        form.base_fields['location'].queryset = Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
-        return form
+    def get_location_queryset(self, request, obj):
+        return Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
@@ -65,10 +61,10 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         if 'autocomplete' in request.path and request.GET.get('model_name') == 'recuringjob' and request.GET.get(
                 'field_name') == 'type':
-            queryset = JobTypeDao.visible_types()
+            queryset = queryset.filter(visible=True)
             if request.user.has_perm('juntagrico.is_area_admin') and (
                     not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-                queryset = JobTypeDao.visible_types_by_coordinator(request.user.member)
+                queryset = queryset.intersection(JobTypeDao.visible_types_by_coordinator(request.user.member))
         return queryset, use_distinct
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
