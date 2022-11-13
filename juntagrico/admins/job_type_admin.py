@@ -20,7 +20,7 @@ from juntagrico.util.models import attribute_copy
 class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     list_display = ['__str__', 'activityarea',
                     'default_duration', 'location', 'visible']
-    list_filter = ('activityarea', 'visible')
+    list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), 'visible')
     autocomplete_fields = ['activityarea', 'location']
     search_fields = ['name', 'activityarea__name']
     actions = ['transform_job_type']
@@ -61,10 +61,10 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         if 'autocomplete' in request.path and request.GET.get('model_name') == 'recuringjob' and request.GET.get(
                 'field_name') == 'type':
-            queryset = JobTypeDao.visible_types()
+            queryset = queryset.filter(visible=True)
             if request.user.has_perm('juntagrico.is_area_admin') and (
                     not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
-                queryset = JobTypeDao.visible_types_by_coordinator(request.user.member)
+                queryset = queryset.intersection(JobTypeDao.visible_types_by_coordinator(request.user.member))
         return queryset, use_distinct
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

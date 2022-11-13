@@ -17,7 +17,7 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 
 class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
-    list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
+    list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
