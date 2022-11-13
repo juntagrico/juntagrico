@@ -97,15 +97,21 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='notified_on_share_creation'))
         self.member.user.save()
 
-    def set_up_admin(self):
+    def set_up_superuser(self):
         """
-        admin members
+        superuser with member (admin)
         """
         self.admin = self.create_member('admin@email.org')
         self.admin.user.set_password("123456")
         self.admin.user.is_staff = True
         self.admin.user.is_superuser = True
         self.admin.user.save()
+
+    def set_up_admin(self):
+        """
+        admin members
+        """
+        self.set_up_superuser()
         self.area_admin = self.create_member('areaadmin@email.org')
         self.area_admin.user.set_password("123456")
         self.area_admin.user.is_staff = True
@@ -123,34 +129,32 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='change_onetimejob'))
         self.area_admin.user.save()
 
-    def get_share_data(self, member):
-        return {'member': member,
-                'paid_date': '2017-03-27',
-                'issue_date': '2017-03-27',
-                'booking_date': None,
-                'cancelled_date': None,
-                'termination_date': None,
-                'payback_date': None,
-                'number': None,
-                'notes': ''
-                }
+    @staticmethod
+    def create_paid_share(member, **kwargs):
+        return Share.objects.create(
+            member=member,
+            paid_date='2017-03-27',
+            issue_date='2017-03-27',
+            **kwargs
+        )
+
+    @classmethod
+    def create_paid_and_cancelled_share(cls, member, **kwargs):
+        return cls.create_paid_share(
+            member=member,
+            booking_date='2017-12-27',
+            cancelled_date='2017-12-27',
+            termination_date='2017-12-27',
+            **kwargs
+        )
 
     def set_up_shares(self):
         """
         shares
         """
-        self.share_data = self.get_share_data(self.member)
-        self.share = Share.objects.create(**self.share_data)
-        self.share_data4 = self.get_share_data(self.member4)
-        self.share4 = Share.objects.create(**self.share_data4)
-        # create cancelled but not paid back share
-        self.share_data5 = self.get_share_data(self.member5)
-        self.share_data5.update({
-            'booking_date': '2017-12-27',
-            'cancelled_date': '2017-12-27',
-            'termination_date': '2017-12-27',
-        })
-        self.share5 = Share.objects.create(**self.share_data5)
+        self.share = self.create_paid_share(self.member)
+        self.share4 = self.create_paid_share(self.member4)
+        self.share5 = self.create_paid_and_cancelled_share(self.member5)
 
     def set_up_area(self):
         """
