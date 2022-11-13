@@ -28,7 +28,17 @@ class AdminTests(JuntagricoTestCase):
                         code=302)
         response = self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items},
                                    member=self.admin, code=302)
-        self.assertGet(url + response.url, member=self.admin)
+        self.assertGet(response.url, member=self.admin)
+        self.assertPost(response.url,
+                        data={'type': self.job1.type.pk,
+                              'slots': self.job1.slots,
+                              'multiplier': self.job1.multiplier,
+                              'time': '12:00',
+                              'start_date': '22.01.2022',
+                              'end_date': '30.01.2022',
+                              'weekdays': ['1'],
+                              'weekly': '7'},
+                        member=self.admin, code=302)
         selected_items = [self.job1.pk, self.job2.pk]
         self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
