@@ -78,10 +78,12 @@ class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
             newjob.save()
 
     def get_form(self, request, obj=None, **kwds):
+        # return forms for mass copy
         if self.is_copy_view(request):
             if can_edit_past_jobs(request):
                 return JobCopyForm
             return JobCopyToFutureForm
+        # or return normal edit forms
         elif not can_edit_past_jobs(request):
             kwds['form'] = OnlyFutureJobAdminForm
         return super().get_form(request, obj, **kwds)
