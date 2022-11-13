@@ -32,8 +32,8 @@ jobs:
         pip install --upgrade -r requirements-local.txt
     - name: flake 8
       run: |
-        flake8 --count --ignore E501 juntagrico
-        flake8 --count --ignore E501 test
+        flake8 --count --extend-ignore E501 juntagrico
+        flake8 --count --extend-ignore E501 test
     - name: install CodeClimate reporter
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |
