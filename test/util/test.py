@@ -129,19 +129,6 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='change_onetimejob'))
         self.area_admin.user.save()
 
-    def get_share_data(self, member):
-        print('DEPRECATED: Use create_paid_share instead of get_share_data.')
-        return {'member': member,
-                'paid_date': '2017-03-27',
-                'issue_date': '2017-03-27',
-                'booking_date': None,
-                'cancelled_date': None,
-                'termination_date': None,
-                'payback_date': None,
-                'number': None,
-                'notes': ''
-                }
-
     @staticmethod
     def create_paid_share(member, **kwargs):
         return Share.objects.create(
