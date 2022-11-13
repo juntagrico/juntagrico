@@ -90,6 +90,7 @@ class Config:
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
     business_year_cancelation_month = _get_setting('BUSINESS_YEAR_CANCELATION_MONTH', 12)
     membership_end_month = _get_setting('MEMBERSHIP_END_MONTH', 6)
+    membership_end_notice_period = _get_setting('MEMBERSHIP_END_NOTICE_PERIOD', 0)
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
         lambda: {
@@ -111,7 +112,13 @@ class Config:
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.defaultmailer.Mailer')
+    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
+    batch_mailer = _get_setting_with_key(
+        'BATCH_MAILER',
+        {
+            'batch_size': 39,
+            'wait_time': 65
+        })
     from_filter = _get_setting_with_key('FROM_FILTER',
                                         {
                                             'filter_expression': '.*',

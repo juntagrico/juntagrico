@@ -75,7 +75,7 @@ class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
             self.instance.leave_subscription(sub)
         if (sub := self.instance.subscription_future) is not None:
             self.instance.leave_subscription(sub)
-        super().save()
+        super().save(commit)
 
 
 class CoopMemberCancellationForm(AbstractMemberCancellationForm):
@@ -112,7 +112,7 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         self.instance.end_date = end_date
         self.instance.cancellation_date = now
         adminnotification.member_canceled(self.instance, end_date, self.data['message'])
-        [cancel_share(s, now, end_date) for s in self.instance.active_shares]
+        [cancel_share(s, now, end_date) for s in self.instance.share_set.all()]
         super().save(commit)
 
 

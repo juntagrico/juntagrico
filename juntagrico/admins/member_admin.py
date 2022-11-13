@@ -71,7 +71,7 @@ class MemberAdmin(BaseAdmin):
 
     @admin.display(description=_('Alte {}').format(Config.vocabulary('subscription_pl')))
     def old_subscription_link(self, obj):
-        return self._get_multi_link(obj.subscriptions_old.all(), 'juntagrico_subscription_change') \
+        return self._get_multi_link(obj.subscriptions_old, 'juntagrico_subscription_change') \
             or _('Keine alten {}').format(Config.vocabulary('subscription_pl'))
 
     @staticmethod
