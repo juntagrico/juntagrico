@@ -233,6 +233,11 @@ class JuntagricoTestCase(TestCase):
         self.job3 = RecuringJob.objects.create(**job_data)
         self.job4 = RecuringJob.objects.create(**job_data2)
         self.job5 = RecuringJob.objects.create(**job_data)
+        self.past_job = RecuringJob.objects.create(
+            slots=1,
+            time=timezone.now() - timezone.timedelta(hours=2),
+            type=self.job_type
+        )
         self.infinite_job = RecuringJob.objects.create(**{
             'infinite_slots': True,
             'time': time,
@@ -249,6 +254,8 @@ class JuntagricoTestCase(TestCase):
                              'time': time,
                              'location': self.location2}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
+        one_time_job_data.update(name='name2', time=timezone.now() - timezone.timedelta(hours=2))
+        self.past_one_time_job = OneTimeJob.objects.create(**one_time_job_data)
         """
         assignment
         """
@@ -299,6 +306,7 @@ class JuntagricoTestCase(TestCase):
             'shares': 1,
             'visible': True,
             'required_assignments': 10,
+            'required_core_assignments': 3,
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type = SubscriptionType.objects.create(**sub_type_data)
@@ -309,6 +317,7 @@ class JuntagricoTestCase(TestCase):
             'shares': 2,
             'visible': True,
             'required_assignments': 10,
+            'required_core_assignments': 3,
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
@@ -340,7 +349,7 @@ class JuntagricoTestCase(TestCase):
         self.member2.join_subscription(self.sub2)
         self.sub2.primary_member = self.member2
         self.sub2.save()
-        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type, activation_date=timezone.now().date())
 
     def set_up_extra_sub_types(self):
         """
