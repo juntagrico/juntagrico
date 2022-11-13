@@ -37,6 +37,12 @@ class AdminTests(JuntagricoTestCase):
         # delete job with assignment (will show a page, that assignments must be deleted first)
         self.assertGet(reverse('admin:juntagrico_recuringjob_delete', args=(self.job2.pk,)), member=self.admin)
 
+    def testPastJobAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin)
+
     def testDeliveryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
         url = reverse('admin:juntagrico_delivery_changelist')
