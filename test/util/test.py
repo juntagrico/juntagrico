@@ -260,6 +260,7 @@ class JuntagricoTestCase(TestCase):
             'shares': 1,
             'visible': True,
             'required_assignments': 10,
+            'required_core_assignments': 3,
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type = SubscriptionType.objects.create(**sub_type_data)
@@ -270,6 +271,7 @@ class JuntagricoTestCase(TestCase):
             'shares': 2,
             'visible': True,
             'required_assignments': 10,
+            'required_core_assignments': 3,
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
@@ -301,7 +303,7 @@ class JuntagricoTestCase(TestCase):
         self.member2.join_subscription(self.sub2)
         self.sub2.primary_member = self.member2
         self.sub2.save()
-        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type, activation_date=timezone.now().date())
 
     def set_up_extra_sub_types(self):
         """

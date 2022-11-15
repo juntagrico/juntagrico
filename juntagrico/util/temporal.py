@@ -2,6 +2,7 @@ import calendar
 import datetime
 from datetime import timedelta
 
+from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -91,14 +92,16 @@ def next_membership_end_date():
     """
     :return: end date of membership when canceling now
     """
+    endmonth = Config.membership_end_month()
+    noticemonths = (12 + endmonth - Config.business_year_cancelation_month()) % 12
     now = timezone.now().date()
-    month = Config.membership_end_month()
-    if now <= cancelation_date():
-        offset = end_of_business_year()
+    nowplusnotice = now + relativedelta(months=noticemonths)
+    if nowplusnotice.month <= endmonth:
+        endyear = nowplusnotice.year
     else:
-        offset = end_of_next_business_year()
-    day = days_in_month(offset.year, month)
-    return datetime.date(offset.year, month, day)
+        endyear = nowplusnotice.year + 1
+    day = days_in_month(endyear, endmonth)
+    return datetime.date(endyear, endmonth, day)
 
 
 def calculate_next(day, month):
