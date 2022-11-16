@@ -83,8 +83,6 @@ class AdminTests(JuntagricoTestCase):
                        member=self.area_admin)
 
     def testMemberAdmin(self):
-        def raw_id_url(url, name, subscription_id):
-            return '{}?qs_name={}&sub_id={}'.format(url, name, str(subscription_id))
         self.assertGet(reverse('admin:juntagrico_member_change', args=(self.member.pk,)), member=self.admin)
         url = reverse('admin:juntagrico_member_changelist')
         self.assertGet(url, member=self.admin)
@@ -94,14 +92,6 @@ class AdminTests(JuntagricoTestCase):
         selected_items = [self.member.pk, self.member2.pk]
         self.assertPost(url, data={'action': 'impersonate_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
-        cs_url = raw_id_url(url, 'cs', '')
-        self.assertGet(cs_url, member=self.admin)
-        s_url = raw_id_url(url, 's', self.sub.pk)
-        self.assertGet(s_url, member=self.admin)
-        fs_url = raw_id_url(url, 'fs', self.sub.pk)
-        self.assertGet(fs_url, member=self.admin)
-        all_url = raw_id_url(url, 'all', '')
-        self.assertGet(all_url, member=self.admin)
 
     def testSubtypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
