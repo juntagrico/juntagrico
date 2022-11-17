@@ -29,9 +29,29 @@
                             </option>
                         {% endfor %}
                     {% endfor %}
-                    {% if can_use_general_email %}
+                    {% if perms.juntagrico.can_use_general_email %}
                         <option value="{% contacts "general" %}">
                             {% contacts "general" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_for_members_email %}
+                        <option value="{% contacts "for_members" %}">
+                            {% contacts "for_members" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_for_subscriptions_email %}
+                        <option value="{% contacts "for_subscriptions" %}">
+                            {% contacts "for_subscriptions" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_for_shares_email %}
+                        <option value="{% contacts "for_shares" %}">
+                            {% contacts "for_shares" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_technical_email %}
+                        <option value="{% contacts "technical" %}">
+                            {% contacts "technical" %}
                         </option>
                     {% endif %}
                     <option value="{{ email }}">
@@ -142,7 +162,7 @@
                 <input type="hidden" id="textMessage" name="textMessage"/>
             </div>
         </div>
-        {% if can_load_templates and templates %}
+        {% if perms.juntagrico.can_load_templates and templates %}
             <div class="form-group row">
                 <label for="templates" class="col-md-2">
                     {% trans "Templates" %}

@@ -131,8 +131,6 @@ def my_mails_intern(request, mail_url, error_message=None):
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
-        'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email'),
-        'can_load_templates': request.user.has_perm('juntagrico.can_load_templates')
     }
     return render(request, 'mail_sender.html', renderdict)
 
