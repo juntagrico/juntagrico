@@ -78,6 +78,10 @@ class EmailSender:
         return EmailSender(email)
 
     @staticmethod
+    def get_sender_for_contact(contact, *args, **kwargs):
+        return EmailSender.get_sender(*args, from_email=Config.contacts(contact), **kwargs)
+
+    @staticmethod
     def get_sender_from_email(email):
         return EmailSender(email)
 
