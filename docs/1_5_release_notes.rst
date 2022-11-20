@@ -27,6 +27,12 @@ Fixes
     * Fix autocomplete field search for job types
     * Hide filter options in job type list, that admin doesn't have access to
 
+Modified Templates
+^^^^^^^^^^^^^^^^^^
+* manage_shares.html
+* snippets/snippet_jobs.html
+* snippets/snippet_subscription_change_extra_sub.html
+
 1.5.4
 -----
 
