@@ -1,18 +1,31 @@
 Release Notes
 =============
 
-dev
----
+1.5.5
+-----
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
-* Batch mailer sends mass emails in smaller batches.
+* Batch mailer sends mass emails in smaller batches
    * Set ``DEFAULT_MAILER = 'juntagrico.util.mailer.batch.Mailer'`` to enable the batch mailer
-   * The option ``juntagrico.util.defaultmailer.Mailer`` is deprecated, use ``juntagrico.util.mailer.default.Mailer`` instead.
+   * The option ``juntagrico.util.defaultmailer.Mailer`` is deprecated, use ``juntagrico.util.mailer.default.Mailer`` instead
+* Simplified overriding job status field in job list in frontend
+* Modify requirements.txt to allow early security updates
 
 Fixes
 ^^^^^
-* Fix links to old subscriptions on member in django admin
+* Fix required assignment count for under year subscriptions
+* Handle unpaid shares correctly, during cancellation of membership
+* Show correct phone number in email notification on depot change
+* Use clearer language and descriptions in some places
+* Fixes in Django Admin
+    * Fix subscription validation in cases where member rejoins another subscription
+    * Fix mass copy of past jobs if admin can't edit past jobs
+    * Fix links to old subscriptions on member
+    * Fix subscription type and subscription size search
+    * Fix read-only admin view of one time job
+    * Fix autocomplete field search for job types
+    * Hide filter options in job type list, that admin doesn't have access to
 
 1.5.4
 -----
@@ -42,13 +55,6 @@ Fixes
 Fixes
 ^^^^^
 * fix reportlab requirement
-
-Dev
----
-
-Fixes
-^^^^^
-* Fix read-only admin view of one time job
 
 1.5.1
 -----
