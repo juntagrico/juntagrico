@@ -31,7 +31,7 @@ from juntagrico.util.management import cancel_sub, create_subscription_parts
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date
+    cancelation_date, next_membership_end_date
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
 
 
@@ -46,8 +46,7 @@ def subscription(request, subscription_id=None):
         subscription = member.subscription_current
     else:
         subscription = get_object_or_404(Subscription, id=subscription_id)
-        future_subscription = future_subscription and not(
-            subscription == member.subscription_future)
+        future_subscription = future_subscription and subscription != member.subscription_future
     end_date = end_of_next_business_year()
     renderdict = {}
     if subscription is not None:
@@ -426,6 +425,8 @@ def manage_shares(request):
         'shares': shares.all(),
         'shareerror': shareerror,
         'required': member.required_shares_count,
+        'ibanempty': not member.iban,
+        'next_membership_end_date': next_membership_end_date(),
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)
@@ -459,6 +460,7 @@ def cancel_share(request, share_id):
     if member.cancellable_shares_count > 0:
         share = get_object_or_404(Share, id=share_id, member=member)
         share.cancelled_date = timezone.now().date()
+        share.termination_date = next_membership_end_date()
         share.save()
     return return_to_previous_location(request)
 

@@ -8,6 +8,8 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['__str__', 'price', 'required_assignments',
                     'required_core_assignments', 'visible']
     exclude = ['trial']
+    search_fields = ['name', 'long_name', 'size__name', 'size__long_name', 'size__product__name']
+    autocomplete_fields = ['size']
 
     def get_exclude(self, request, obj=None):
         if not Config.enable_shares():
@@ -17,11 +19,3 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
 
 if Config.enable_shares():
     SubscriptionTypeAdmin.list_display.insert(2, 'shares')
-
-
-class SubscriptionSizeAdmin(RichTextAdmin):
-    list_display = ['__str__', 'units', 'product', 'visible', 'depot_list']
-
-
-class SubscriptionProductAdmin(SortableAdminMixin, RichTextAdmin):
-    pass

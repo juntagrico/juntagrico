@@ -24,15 +24,15 @@ def check_share_consistency(instance):
     is_canceled = instance.cancelled_date is not None
     is_terminated = instance.termination_date is not None
     is_payed_back = instance.payback_date is not None
-    paid_date = instance.paid_date or timezone.now().date()
+    paid_date = instance.paid_date or instance.cancelled_date or timezone.now().date()
     cancelled_date = instance.cancelled_date or paid_date
     termination_date = instance.termination_date or cancelled_date
     payback_date = instance.payback_date or termination_date
-    if (is_canceled or is_terminated or is_payed_back) and not is_paid:
+    if is_payed_back and not is_paid:
         raise ValidationError(_('Bitte "Bezahlt am" ausfüllen'), code='invalid')
     if (is_terminated or is_payed_back) and not is_canceled:
         raise ValidationError(_('Bitte "Gekündigt am" ausfüllen'), code='invalid')
     if is_payed_back and not is_terminated:
         raise ValidationError(_('Bitte "Gekündigt auf" ausfüllen'), code='invalid')
-    if not(paid_date <= cancelled_date <= termination_date <= payback_date):
-        raise ValidationError(_('Daten Reihenfolge stimm nicht.'), code='invalid')
+    if not (paid_date <= cancelled_date <= termination_date <= payback_date):
+        raise ValidationError(_('Daten Reihenfolge stimmt nicht.'), code='invalid')

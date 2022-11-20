@@ -46,6 +46,7 @@ class Share(Billable):
 
     __state_text_dict = {0: _('unbezahlt'),
                          1: _('bezahlt'),
+                         2: _('storniert'),
                          3: _('gekündigt'),
                          7: _('zurückerstattet')}
 
@@ -66,7 +67,7 @@ class Share(Billable):
         check_share_consistency(self)
 
     def __str__(self):
-        return _('Anteilschein {0}').format(self.id)
+        return _('Anteilschein {0} ({1})').format(self.id, self.state_text)
 
     @notifiable
     class Meta:

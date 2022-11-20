@@ -30,6 +30,10 @@ jobs:
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements-local.txt
+    - name: flake 8
+      run: |
+        flake8 --count --extend-ignore E501 juntagrico
+        flake8 --count --extend-ignore E501 test
     - name: install CodeClimate reporter
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |
@@ -48,10 +52,6 @@ jobs:
         coverage xml
         ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
         ./cc-test-reporter upload-coverage -i coverageupload
-    - name: flake 8
-      run: |
-        flake8 --count --ignore E501 juntagrico
-        flake8 --count --ignore E501 test
     - name: Slack notification
       if: ${{  env.SLACK_WEBHOOK != null && github.event_name == 'push' && always()}}
       env:

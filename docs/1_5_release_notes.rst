@@ -1,8 +1,69 @@
 1.5 Release Notes
 =============
 
+1.5.5
+-----
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Batch mailer sends mass emails in smaller batches
+   * Set ``DEFAULT_MAILER = 'juntagrico.util.mailer.batch.Mailer'`` to enable the batch mailer
+   * The option ``juntagrico.util.defaultmailer.Mailer`` is deprecated, use ``juntagrico.util.mailer.default.Mailer`` instead
+* Simplified overriding job status field in job list in frontend
+* Modify requirements.txt to allow early security updates
+
+Fixes
+^^^^^
+* Fix required assignment count for under year subscriptions
+* Handle unpaid shares correctly, during cancellation of membership
+* Show correct phone number in email notification on depot change
+* Use clearer language and descriptions in some places
+* Fixes in Django Admin
+    * Fix subscription validation in cases where member rejoins another subscription
+    * Fix mass copy of past jobs if admin can't edit past jobs
+    * Fix links to old subscriptions on member
+    * Fix subscription type and subscription size search
+    * Fix read-only admin view of one time job
+    * Fix autocomplete field search for job types
+    * Hide filter options in job type list, that admin doesn't have access to
+
+Modified Templates
+^^^^^^^^^^^^^^^^^^
+* manage_shares.html
+* snippets/snippet_jobs.html
+* snippets/snippet_subscription_change_extra_sub.html
+
+1.5.4
+-----
+
+Fixes
+^^^^^
+* Hide job types in job admin that can not be selected
+
+1.5.3
+-----
+
+Features & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+* Member Features:
+    * Cancellation form asks for IBAN
+* Admin Features
+    * Auto complete fields for locations, areas, job types, depots, subcription tpye, subscription size and subscription product
+
+Fixes
+^^^^^
+* upgrade django to fix bug that affects saving subscriptions in admin: https://code.djangoproject.com/ticket/33547
+* fix page error when trying to delete job with assignment
+
+1.5.2
+-----
+
+Fixes
+^^^^^
+* fix reportlab requirement
+
 1.5.1
----
+-----
 
 Fixes
 ^^^^^
@@ -19,7 +80,7 @@ Upgrade Instructions
     * Remove these settings.
     * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
 * Add ``'polymorphic'`` to the ``INSTALLED_APPS`` setting.
-* Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}``
+* Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}`` removing ``/static/`` from the beginning of the path.
 * The method ``url`` from ``django.conf.urls`` use either ``path`` or ``repath`` from ``django.urls``
 * Add the Setting ``STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'``
 * The option ``Telefonnummer von KoordinatorIn anzeigen`` on activity areas was previously only used to show the
