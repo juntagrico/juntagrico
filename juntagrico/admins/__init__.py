@@ -21,3 +21,12 @@ class RichTextAdmin(BaseAdmin):
             self.formfield_overrides = self.formfield_overrides or {}
             self.formfield_overrides.update({TextField: {'widget': RichTextWidget}})
         super().__init__(model, admin_site)
+
+
+class OverrideFieldQuerySetMixin:
+    def get_form(self, request, obj=None, **kwds):
+        form = super().get_form(request, obj, **kwds)
+        for field in form.base_fields:
+            if hasattr(self, f"get_{field}_queryset"):
+                form.base_fields[field].queryset = getattr(self, f"get_{field}_queryset")(request, obj)
+        return form

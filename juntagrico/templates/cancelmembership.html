@@ -1,6 +1,7 @@
-{% extends "base.html" %}
+ {% extends "base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
+{% load crispy_forms_tags %}
 {% block page_title %}
     <h3>
         {% trans "Künde deine Mitgliedschaft" %}
@@ -47,6 +48,9 @@
                     <li>
                         {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}
                     </li>
+                    <li>
+                        {% trans "Dein Zugang wird deaktiviert" %}
+                    </li>
                 </ul>
             {% endif %}
         </div>
@@ -54,30 +58,13 @@
     <div class="row mb-3">
         <div class="col-md-12">
             {% if can_cancel %}
-                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du sicher deine Mitgliedschaft verbindlich künden?" %}')">
-                    {% csrf_token %}
-                    <div class="form-group row">
-                        <label class="col-md-3" for="message">
-                            {% trans "Mitteilung" %}
-                        </label>
-                        <div class="col-md-9">
-                            <textarea name="message" id="message" class="form-control" rows="12"placeholder="{% trans "Hier Nachricht eingeben" %}"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="offset-md-3 col-md-9">
-                            <button type="submit" class="btn btn-success">
-                                {% trans "Mitgliedschaft künden" %}
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            {% elif missing_iban and enable_shares and coop_member%}
+               {%  crispy form %}
+            {% elif share_error%}
                 {% blocktrans trimmed %}
-                Du musst zuerst deine IBAN hinterlegen, damit deine {{ v_share_pl }} ausbezahlt werden können.
+                Deine {{ v_share_pl }} werden noch benötigt in einem Abo.
                 {% endblocktrans %}
             {% else %}
-                {% blocktrans%}Du bist noch in eine/r/m  {{ v_subscription }} als BezieherIn eingetragen.{% endblocktrans %}
+                {% blocktrans%}Du bist noch in eine/r/m {{ v_subscription }} als BezieherIn eingetragen.{% endblocktrans %}
             {% endif %}
         </div>
     </div>

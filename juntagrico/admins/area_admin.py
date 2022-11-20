@@ -13,6 +13,7 @@ class AreaAdmin(PolymorphicInlineSupportMixin, SortableAdminMixin, RichTextAdmin
     filter_horizontal = ['members']
     raw_id_fields = ['coordinator']
     list_display = ['name', 'core', 'hidden', 'coordinator', 'auto_add_new_members', 'contacts_text']
+    search_fields = ['name']
     inlines = [ContactInline]
 
     @admin.display(description=_('Kontakt'))
