@@ -1,11 +1,12 @@
+from typing import Any
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
 from django.utils.translation import gettext as _
 
 
-def _get_setting(setting_key, default=None):
-    default = default or ''
+def _get_setting(setting_key, default: Any = ''):
     return lambda: getattr(settings, setting_key, default() if callable(default) else default)
 
 
