@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.utils import timezone
 
 from juntagrico.entity.jobs import Assignment
 from test.util.test import JuntagricoTestCase
@@ -48,6 +49,27 @@ class AdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_recuringjob_delete', args=(self.job2.pk,)), member=self.admin)
 
     def testPastJobAdmin(self):
+        add_url = reverse('admin:juntagrico_recuringjob_add')
+        self.assertGet(add_url, member=self.area_admin)
+        # post shows error if no time is passed
+        self.assertPost(add_url,
+                        data={'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
+                              'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0},
+                        member=self.area_admin)
+        # post shows error if past time is passed
+        past = timezone.now() - timezone.timedelta(days=2)
+        self.assertPost(add_url,
+                        data={'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
+                              'time_0': past.date(), 'time_1': past.time(),
+                              'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0},
+                        member=self.area_admin)
+        # post works for future time
+        future = timezone.now() + timezone.timedelta(days=2)
+        self.assertPost(add_url,
+                        data={'type': self.job1.type.pk, 'slots': 1, 'multiplier': 1,
+                              'time_0': future.date(), 'time_1': future.time(),
+                              'assignment_set-TOTAL_FORMS': 0, 'assignment_set-INITIAL_FORMS': 0},
+                        member=self.area_admin, code=302)
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.admin)

@@ -25,12 +25,11 @@ def can_edit_past_jobs(request):
 
 
 class OnlyFutureJobAdminForm(forms.ModelForm):
-    def clean(self):
-        cleaned_data = super().clean()
-        if cleaned_data['time'] <= timezone.now():
-            raise ValidationError(
-                _('Neue Jobs können nicht in der Vergangenheit liegen.'))
-        return cleaned_data
+    def clean_time(self):
+        time = self.cleaned_data['time']
+        if time <= timezone.now():
+            raise ValidationError(_('Neue Jobs können nicht in der Vergangenheit liegen.'))
+        return time
 
 
 class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
