@@ -263,6 +263,19 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
                              verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
 
+    def __str__(self):
+        try:
+            return Config.sub_overview_format('part_format').format(
+                product=self.type.size.product.name,
+                size=self.type.size.name,
+                size_long=self.type.size.long_name,
+                type=self.type.name,
+                type_long=self.type.long_name,
+                price=self.type.price
+            )
+        except KeyError as k:
+            return _(f'Fehler in der Einstellung SUB_OVERVIEW_FORMAT.part_format. {k} kann nicht aufgelöst werden.')
+
     @property
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
