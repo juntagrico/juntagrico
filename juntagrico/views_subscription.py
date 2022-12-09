@@ -14,6 +14,7 @@ from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
@@ -32,7 +33,7 @@ from juntagrico.util.management import cancel_sub, create_subscription_parts
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date
+    cancelation_date, next_membership_end_date
 from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session, \
     primary_member_of_subscription_of_part
 
@@ -48,8 +49,7 @@ def subscription(request, subscription_id=None):
         subscription = member.subscription_current
     else:
         subscription = get_object_or_404(Subscription, id=subscription_id)
-        future_subscription = future_subscription and not(
-            subscription == member.subscription_future)
+        future_subscription = future_subscription and subscription != member.subscription_future
     end_date = end_of_next_business_year()
     renderdict = {}
     if subscription is not None:
@@ -113,16 +113,12 @@ def depot_change(request, subscription_id):
                 Depot, id=int(request.POST.get('depot')))
         subscription.save()
         saved = True
-    depots = DepotDao.all_visible_depots()
-    requires_map = False
-    for depot in depots:
-        requires_map = requires_map or depot.has_geo
+    depots = DepotDao.all_visible_depots_with_map_info()
     renderdict = {
         'subscription': subscription,
         'saved': saved,
         'member': request.user.member,
         'depots': depots,
-        'requires_map': requires_map,
     }
     return render(request, 'depot_change.html', renderdict)
 
@@ -299,7 +295,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = [m.email.lower() for m in self.subscription.recipients]
+        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
         return form_kwargs
 
     def get_initial(self):
@@ -342,9 +338,14 @@ def activate_subscription(request, subscription_id):
     change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
+        add_subscription_member_to_activity_area(subscription)
     except ValidationError as e:
         return error_page(request, e.message)
     return return_to_previous_location(request)
+
+
+def add_subscription_member_to_activity_area(subscription):
+    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')
@@ -453,12 +454,15 @@ def manage_shares(request):
     shares = member.share_set.order_by('cancelled_date', '-paid_date')
 
     active_share_years = member.active_share_years
-    if active_share_years:
-        active_share_years.remove(timezone.now().year)
+    current_year = timezone.now().year
+    if active_share_years and current_year in active_share_years:
+        active_share_years.remove(current_year)
     renderdict = {
         'shares': shares.all(),
         'shareerror': shareerror,
         'required': member.required_shares_count,
+        'ibanempty': not member.iban,
+        'next_membership_end_date': next_membership_end_date(),
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)
@@ -492,6 +496,7 @@ def cancel_share(request, share_id):
     if member.cancellable_shares_count > 0:
         share = get_object_or_404(Share, id=share_id, member=member)
         share.cancelled_date = timezone.now().date()
+        share.termination_date = next_membership_end_date()
         share.save()
     return return_to_previous_location(request)
 

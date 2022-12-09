@@ -6,8 +6,7 @@ from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz
 
 from juntagrico.entity.member import Member
-from juntagrico.util.models import PropertyQuerySet, q_deactivated
-from juntagrico.util.models import q_cancelled
+from juntagrico.util.models import q_deactivated, q_cancelled
 from juntagrico.util.temporal import start_of_business_year, end_of_business_year
 
 
@@ -63,10 +62,7 @@ class MemberDao:
 
     @staticmethod
     def all_members():
-        result = PropertyQuerySet.from_qs(Member.objects.all())
-        result.set_property('name', 'all')
-        result.set_property('subscription_id', '')
-        return result
+        return Member.objects.all()
 
     @staticmethod
     def canceled_members():
@@ -78,7 +74,8 @@ class MemberDao:
 
     @staticmethod
     def members_with_shares():
-        return Member.objects.filter(share__isnull=False)
+        return Member.objects.filter(Q(share__isnull=False) & (
+            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=timezone.now())))
 
     @staticmethod
     def members_by_job(job):
@@ -87,32 +84,6 @@ class MemberDao:
     @staticmethod
     def members_in_subscription(subscription):
         return Member.objects.filter(subscriptionmembership__subscription=subscription)
-
-    @staticmethod
-    def members_for_subscription(subscription):
-        result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription() & ~MemberDao.has_cancelled_subscription() & ~MemberDao.has_future_subscription()) | Q(
-                subscriptionmembership__subscription=subscription)).distinct())
-        result.set_property('name', 's')
-        result.set_property('subscription_id', str(subscription.pk))
-        return result
-
-    @staticmethod
-    def members_for_future_subscription(subscription):
-        result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription() | Q(
-                subscriptionmembership__subscription=subscription)).distinct())
-        result.set_property('name', 'fs')
-        result.set_property('subscription_id', str(subscription.pk))
-        return result
-
-    @staticmethod
-    def members_for_create_subscription():
-        result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription()).distinct())
-        result.set_property('name', 'cs')
-        result.set_property('subscription_id', '')
-        return result
 
     @staticmethod
     def members_for_email():
@@ -125,7 +96,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_shares():
-        return Member.objects.filter(share__isnull=False).exclude(q_deactivated())
+        return MemberDao.members_with_shares().exclude(q_deactivated())
 
     @staticmethod
     def member_with_active_subscription_for_depot(depot):
@@ -151,8 +122,8 @@ class MemberDao:
 
     @staticmethod
     def annotate_members_with_assignemnt_count(members):
-        start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
-        end = gdtz().localize(datetime.combine(end_of_business_year(), time.max))
+        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
+        end = datetime.combine(end_of_business_year(), time.min, tzinfo=gdtz())
         return members.annotate(assignment_count=Sum(
             Case(When(assignment__job__time__gte=start,
                       assignment__job__time__lt=end,

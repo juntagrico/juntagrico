@@ -22,14 +22,18 @@ jobs:
         python-version: [3.8, 3.9]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements-local.txt
+    - name: flake 8
+      run: |
+        flake8 --count --extend-ignore E501 juntagrico
+        flake8 --count --extend-ignore E501 test
     - name: install CodeClimate reporter
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |
@@ -38,8 +42,9 @@ jobs:
         ./cc-test-reporter before-build
     - name: run tests
       run: |
-        django-admin.py makemigrations --noinput
+        python -m django makemigrations --noinput
         coverage run -m manage test
+        python -m manage test test.test_deploy --settings="deploytestsettings"
     - name: publish code coverage
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |
@@ -47,10 +52,6 @@ jobs:
         coverage xml
         ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
         ./cc-test-reporter upload-coverage -i coverageupload
-    - name: flake 8
-      run: |
-        flake8 --count --ignore E501 juntagrico
-        flake8 --count --ignore E501 test
     - name: Slack notification
       if: ${{  env.SLACK_WEBHOOK != null && github.event_name == 'push' && always()}}
       env:

@@ -4,6 +4,7 @@ from django.views.generic import TemplateView, FormView
 from django.views.generic.edit import ModelFormMixin
 
 from juntagrico.config import Config
+from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
     RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm
@@ -36,13 +37,11 @@ def cs_select_depot(request, cs_session):
         cs_session.depot = DepotDao.depot_by_id(request.POST.get('depot'))
         return redirect(cs_session.next_page())
 
-    depots = DepotDao.all_visible_depots()
-    requires_map = any(depot.has_geo for depot in depots)
+    depots = DepotDao.all_visible_depots_with_map_info()
     render_dict = {
         'member': cs_session.main_member,
         'depots': depots,
         'selected': cs_session.depot,
-        'requires_map': requires_map,
     }
     return render(request, 'createsubscription/select_depot.html', render_dict)
 
@@ -202,9 +201,11 @@ class CSSummaryView(FormView):
         return {'comment': getattr(self.cs_session.main_member, 'comment', '')}
 
     def get_context_data(self, **kwargs):
+        args = self.cs_session.to_dict()
+        args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return super().get_context_data(
             **{},
-            **self.cs_session.to_dict(),
+            **args,
             **kwargs
         )
 

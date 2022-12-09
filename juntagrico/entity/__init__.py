@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.models import PolymorphicModel
@@ -95,7 +96,7 @@ class SimpleStateModel(models.Model):
         activation_date = self.activation_date or now
         cancellation_date = self.cancellation_date or activation_date  # allow future activation date
         deactivation_date = self.deactivation_date or cancellation_date
-        if(is_cancelled or is_deactivated) and not is_active:
+        if (is_cancelled or is_deactivated) and not is_active:
             raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='invalid')
         if is_deactivated and not is_cancelled:
             raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
@@ -108,6 +109,20 @@ class SimpleStateModel(models.Model):
         abstract = True
 
 
+class LowercaseEmailField(models.EmailField):
+    """
+    Override EmailField to convert emails to lowercase before saving.
+    """
+    def get_prep_value(self, value):
+        """
+        Convert email to lowercase.
+        """
+        # Value can be None so check that it's a string before lowercasing.
+        if isinstance(value, str):
+            return value.lower()
+        return value
+
+
 def notifiable(cls):
     entity_name = cls.__qualname__.split('.')[0].lower()
     new_permissions = list(getattr(cls, 'permissions', [])) + [
@@ -116,3 +131,12 @@ def notifiable(cls):
     ]
     cls.permissions = new_permissions
     return cls
+
+
+def absolute_url(*args, **kwargs):
+    def wrapper(cls):
+        def get_absolute_url(self):
+            return reverse(kwargs['name'], args=[self.pk])
+        setattr(cls, 'get_absolute_url', get_absolute_url)
+        return cls
+    return wrapper

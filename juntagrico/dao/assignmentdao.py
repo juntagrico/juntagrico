@@ -23,7 +23,7 @@ class AssignmentDao:
 
     @staticmethod
     def assignments_for_member_current_business_year(member):
-        start = gdtz().localize(datetime.combine(start_of_business_year(), time.min))
+        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
         return juntagrico.entity.jobs.Assignment.objects.filter(member=member).\
             filter(job__time__gte=start, job__time__lt=timezone.now())
 

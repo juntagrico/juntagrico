@@ -19,13 +19,13 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, Assignment, ActivityArea
 from juntagrico.entity.member import Member
-from juntagrico.forms import MemberProfileForm, PasswordForm
+from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
+    CoopMemberCancellationForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.management import cancel_share
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
@@ -145,10 +145,8 @@ def depot(request, depot_id):
     Details for a Depot
     '''
     depot = get_object_or_404(Depot, id=int(depot_id))
-
     renderdict = {
         'depot': depot,
-        'requires_map': depot.has_geo,
         'show_access': request.user.member.subscriptionmembership_set.filter(
             subscription__depot=depot).count() > 0
     }
@@ -162,21 +160,14 @@ def areas(request):
     Details for all areas a member can participate
     '''
     member = request.user.member
-    my_areas = []
+    areas = ActivityAreaDao.all_visible_areas_ordered()
     last_was_core = True
-    for area in ActivityAreaDao.all_visible_areas_ordered():
-        my_areas.append({
-            'name': area.name,
-            'checked': member in area.members.all(),
-            'id': area.id,
-            'core': area.core,
-            'coordinator': area.coordinator,
-            'email': area.email,
-            'first_non_core': not area.core and last_was_core
-        })
+    for area in areas:
+        area.checked = member in area.members.all()
+        area.first_non_core = not area.core and last_was_core
         last_was_core = area.core
     renderdict = {
-        'areas': my_areas,
+        'areas': areas,
     }
     return render(request, 'areas.html', renderdict)
 
@@ -363,24 +354,20 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
+    # considering unpaid shares as well, as they might have been paid but not yet updated in the system.
+    # Then IBAN is needed to pay it back.
+    coop_member = member.usable_shares_count > 0
+    if coop_member:
+        form_type = CoopMemberCancellationForm
+    else:
+        form_type = NonCoopMemberCancellationForm
     if request.method == 'POST':
-        now = timezone.now().date()
-        end_date = next_membership_end_date()
-        message = request.POST.get('message')
-        member = request.user.member
-        member.end_date = end_date
-        member.cancellation_date = now
-        if member.is_cooperation_member:
-            adminnotification.member_canceled(member, end_date, message)
-        else:
-            member.deactivation_date = now
-        member.save()
-        for share in member.active_shares:
-            cancel_share(share, now, end_date)
-        return redirect('profile')
-
-    missing_iban = member.iban == ''
-    coop_member = member.is_cooperation_member
+        form = form_type(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = form_type(instance=member)
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future
@@ -389,13 +376,14 @@ def cancel_membership(request):
     future = future_active and f_sub.share_overflow - asc < 0
     current = current_active and sub.share_overflow - asc < 0
     share_error = future or current
-    can_cancel = ((not missing_iban and not share_error) or not coop_member) and not future_active and not current_active
+    can_cancel = not share_error and not future_active and not current_active
     renderdict = {
         'coop_member': coop_member,
         'end_date': next_membership_end_date(),
         'member': member,
         'can_cancel': can_cancel,
-        'missing_iban': missing_iban,
+        'share_error': share_error,
+        'form': form
     }
     return render(request, 'cancelmembership.html', renderdict)
 

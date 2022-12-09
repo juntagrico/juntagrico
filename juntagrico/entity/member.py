@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel, notifiable
+from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.util.users import make_username
@@ -36,7 +36,7 @@ class Member(JuntagricoBaseModel):
 
     first_name = models.CharField(_('Vorname'), max_length=30)
     last_name = models.CharField(_('Nachname'), max_length=30)
-    email = models.EmailField(unique=True)
+    email = LowercaseEmailField(unique=True)
 
     addr_street = models.CharField(_('Strasse'), max_length=100)
     addr_zipcode = models.CharField(_('PLZ'), max_length=10)
@@ -60,6 +60,7 @@ class Member(JuntagricoBaseModel):
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+    number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
 
     @property
     def canceled(self):
@@ -152,7 +153,7 @@ class Member(JuntagricoBaseModel):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = timezone.now().date() if subscription.active else None
+            join_date = None if subscription.waiting else timezone.now().date()
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
 
     def leave_subscription(self, subscription, changedate=None):
@@ -184,7 +185,7 @@ class Member(JuntagricoBaseModel):
         return '%s %s' % (self.first_name, self.last_name)
 
     def get_phone(self):
-        if self.mobile_phone != '':
+        if self.mobile_phone and self.mobile_phone.strip('0- '):
             return self.mobile_phone
         return self.phone
 

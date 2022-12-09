@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -62,11 +63,13 @@
                                     {% blocktrans %}Du brauchst mindestens 1 {{ v_share }}{% endblocktrans %}
                                 {% elif forloop.counter <=  required %}
                                     {% blocktrans %}Diese/s/r {{ v_share }} wird in einem/r {{ v_subscription }} benötigt{% endblocktrans %}
-                                {% elif  share.cancelled_date is None and share.paid_date is None %}
+                                {% elif share.cancelled_date is None and share.paid_date is None %}
                                     {% blocktrans %}Diese/s/r {{ v_share }} wurde noch nicht als bezahlt verbucht{% endblocktrans %}
+                                {% elif ibanempty %}
+                                    <a href="{% url 'profile' %}">{% blocktrans %}Kann gekündigt werden, sobald eine IBAN hinterlegt ist{% endblocktrans %}</a>
                                 {% elif  share.cancelled_date is None and share.paid_date is not None %}
                                     <a href="{% url 'share-cancel' share.id %}"class="btn btn-success"
-                                       onclick="return confirm('{% blocktrans %} Möchtest du sicher diese/s/n {{ v_share }} verbindlich kündigen? {% endblocktrans%}')">
+                                       onclick="return confirm('{% blocktrans %} Möchtest du diese/s/n {{ v_share }} verbindlich zum {{ next_membership_end_date }} kündigen? {% endblocktrans%}')">
                                         {% trans "kündigen" %}
                                     </a>
                                 {% endif %}
@@ -107,8 +110,8 @@
     </script>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/bootstrap-input-spinner.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initChangeExtra.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initChangeExtra.js' %}">
     </script>
 {% endblock %}

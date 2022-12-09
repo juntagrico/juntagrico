@@ -6,6 +6,7 @@ from django.core import mail
 from juntagrico.entity.delivery import Delivery, DeliveryItem
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
+from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
@@ -21,6 +22,7 @@ class JuntagricoTestCase(TestCase):
         self.set_up_admin()
         self.set_up_shares()
         self.set_up_area()
+        self.set_up_location()
         self.set_up_job()
         self.set_up_depots()
         self.set_up_sub_types()
@@ -56,6 +58,7 @@ class JuntagricoTestCase(TestCase):
         self.member2 = self.create_member('email2@email.org')
         self.member3 = self.create_member('email3@email.org')
         self.member4 = self.create_member('email4@email.org')
+        self.member5 = self.create_member('email5@email.org')
         self.member.user.user_permissions.add(
             Permission.objects.get(codename='is_depot_admin'))
         self.member.user.user_permissions.add(
@@ -94,15 +97,21 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='notified_on_share_creation'))
         self.member.user.save()
 
-    def set_up_admin(self):
+    def set_up_superuser(self):
         """
-        admin members
+        superuser with member (admin)
         """
         self.admin = self.create_member('admin@email.org')
         self.admin.user.set_password("123456")
         self.admin.user.is_staff = True
         self.admin.user.is_superuser = True
         self.admin.user.save()
+
+    def set_up_admin(self):
+        """
+        admin members
+        """
+        self.set_up_superuser()
         self.area_admin = self.create_member('areaadmin@email.org')
         self.area_admin.user.set_password("123456")
         self.area_admin.user.is_staff = True
@@ -120,33 +129,40 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='change_onetimejob'))
         self.area_admin.user.save()
 
-    def get_share_data(self, member):
-        return {'member': member,
-                'paid_date': '2017-03-27',
-                'issue_date': '2017-03-27',
-                'booking_date': None,
-                'cancelled_date': None,
-                'termination_date': None,
-                'payback_date': None,
-                'number': None,
-                'notes': ''
-                }
+    @staticmethod
+    def create_paid_share(member, **kwargs):
+        return Share.objects.create(
+            member=member,
+            paid_date='2017-03-27',
+            issue_date='2017-03-27',
+            **kwargs
+        )
+
+    @classmethod
+    def create_paid_and_cancelled_share(cls, member, **kwargs):
+        return cls.create_paid_share(
+            member=member,
+            booking_date='2017-12-27',
+            cancelled_date='2017-12-27',
+            termination_date='2017-12-27',
+            **kwargs
+        )
 
     def set_up_shares(self):
         """
         shares
         """
-        self.share_data = self.get_share_data(self.member)
-        self.share = Share.objects.create(**self.share_data)
-        self.share_data4 = self.get_share_data(self.member4)
-        self.share4 = Share.objects.create(**self.share_data4)
+        self.share = self.create_paid_share(self.member)
+        self.share4 = self.create_paid_share(self.member4)
+        self.share5 = self.create_paid_and_cancelled_share(self.member5)
 
     def set_up_area(self):
         """
         area
         """
         area_data = {'name': 'name',
-                     'coordinator': self.area_admin}
+                     'coordinator': self.area_admin,
+                     'auto_add_new_members': True}
         area_data2 = {'name': 'name2',
                       'coordinator': self.area_admin,
                       'hidden': True}
@@ -155,14 +171,43 @@ class JuntagricoTestCase(TestCase):
         self.member.areas.add(self.area)
         self.member.save()
 
+    def set_up_location(self):
+        """
+        location
+        """
+        location_data = {'name': 'location1',
+                         'latitude': '12.513',
+                         'longitude': '1.314',
+                         'addr_street': 'Fakestreet 123',
+                         'addr_zipcode': '1000',
+                         'addr_location': 'Faketown',
+                         'description': 'Place to be'}
+        location_data2 = {'name': 'location2'}
+        self.location = Location.objects.create(**location_data)
+        self.location2 = Location.objects.create(**location_data2)
+        location_data_depot = {'name': 'Depot location',
+                               'latitude': '12.513',
+                               'longitude': '1.314',
+                               'addr_street': 'Fakestreet 123',
+                               'addr_zipcode': '1000',
+                               'addr_location': 'Faketown',
+                               'description': 'Place to be'}
+        self.location_depot = Location.objects.create(**location_data_depot)
+
     def set_up_job(self):
         """
         job_type
         """
         job_type_data = {'name': 'nameot',
                          'activityarea': self.area,
-                         'default_duration': 2}
+                         'default_duration': 2,
+                         'location': self.location}
         self.job_type = JobType.objects.create(**job_type_data)
+        job_type_data2 = {'name': 'nameot2',
+                          'activityarea': self.area2,
+                          'default_duration': 4,
+                          'location': self.location2}
+        self.job_type2 = JobType.objects.create(**job_type_data2)
         """
         job_extra
         """
@@ -188,6 +233,11 @@ class JuntagricoTestCase(TestCase):
         self.job3 = RecuringJob.objects.create(**job_data)
         self.job4 = RecuringJob.objects.create(**job_data2)
         self.job5 = RecuringJob.objects.create(**job_data)
+        self.past_job = RecuringJob.objects.create(
+            slots=1,
+            time=timezone.now() - timezone.timedelta(hours=2),
+            type=self.job_type
+        )
         self.infinite_job = RecuringJob.objects.create(**{
             'infinite_slots': True,
             'time': time,
@@ -201,8 +251,11 @@ class JuntagricoTestCase(TestCase):
                              'activityarea': self.area,
                              'default_duration': 2,
                              'slots': 1,
-                             'time': time}
+                             'time': time,
+                             'location': self.location2}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
+        one_time_job_data.update(name='name2', time=timezone.now() - timezone.timedelta(hours=2))
+        self.past_one_time_job = OneTimeJob.objects.create(**one_time_job_data)
         """
         assignment
         """
@@ -218,12 +271,14 @@ class JuntagricoTestCase(TestCase):
         depot_data = {
             'name': 'depot',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot = Depot.objects.create(**depot_data)
         depot_data = {
             'name': 'depot2',
             'contact': self.member,
-            'weekday': 1}
+            'weekday': 1,
+            'location': self.location_depot}
         self.depot2 = Depot.objects.create(**depot_data)
 
     def set_up_sub_types(self):
@@ -251,6 +306,7 @@ class JuntagricoTestCase(TestCase):
             'shares': 1,
             'visible': True,
             'required_assignments': 10,
+            'required_core_assignments': 3,
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type = SubscriptionType.objects.create(**sub_type_data)
@@ -261,6 +317,7 @@ class JuntagricoTestCase(TestCase):
             'shares': 2,
             'visible': True,
             'required_assignments': 10,
+            'required_core_assignments': 3,
             'price': 1000,
             'description': 'sub_type_desc'}
         self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
@@ -292,7 +349,7 @@ class JuntagricoTestCase(TestCase):
         self.member2.join_subscription(self.sub2)
         self.sub2.primary_member = self.member2
         self.sub2.save()
-        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type, activation_date=timezone.now().date())
 
     def set_up_extra_sub_types(self):
         """

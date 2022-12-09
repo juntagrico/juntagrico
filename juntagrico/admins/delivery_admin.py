@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext as _
@@ -14,6 +14,7 @@ class DeliveryAdmin(BaseAdmin):
     ordering = ('-delivery_date', 'subscription_size')
     actions = ['copy_delivery']
     search_fields = ['delivery_date', 'subscription_size']
+    autocomplete_fields = ['subscription_size']
     inlines = [DeliveryInline]
     save_as = True
 
@@ -31,8 +32,8 @@ class DeliveryAdmin(BaseAdmin):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            url(r'^copy_delivery/(?P<deliveryid>.*?)/$',
-                self.admin_site.admin_view(self.copy_delivery_view))
+            re_path(r'^copy_delivery/(?P<deliveryid>.*?)/$',
+                    self.admin_site.admin_view(self.copy_delivery_view))
         ]
         return my_urls + urls
 

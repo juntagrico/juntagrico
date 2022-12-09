@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'adminsortable2',
     'djrichtextfield',
+    'polymorphic',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'impersonate.middleware.ImpersonateMiddleware',
 ]
 
@@ -118,7 +120,7 @@ TEMPLATES = [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader'
             ],
-            'string_if_invalid': InvalidTemplateVariable("%s"),
+            # 'string_if_invalid': InvalidTemplateVariable("%s"),
             'debug': True
         },
     },

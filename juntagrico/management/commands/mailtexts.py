@@ -1,7 +1,7 @@
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import RecuringJob
@@ -9,10 +9,6 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import get_email_content, base_dict
-
-
-def get_server():
-    return 'http://' + Config.adminportal_server_url()
 
 
 class Command(BaseCommand):
@@ -77,6 +73,7 @@ class Command(BaseCommand):
             'email': 'email@email.org',
             'password': 'password',
             'protocol': 'https',
+            'domain': Site.objects.get_current().domain,
             'uid': 'uid',
             'token': 'token'
         })))
@@ -84,9 +81,7 @@ class Command(BaseCommand):
 
         print('*** j_reminder ***')
 
-        contact = job.type.activityarea.coordinator.get_name() + ': ' + job.type.activityarea.contact()
         print(get_email_content('j_reminder', base_dict({
-            'contact': contact,
             'job': job
         })))
         print()
