@@ -107,7 +107,6 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
-
     def testLeave(self):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
         self.create_paid_share(self.member3)
