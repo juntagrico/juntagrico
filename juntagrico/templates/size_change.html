@@ -42,21 +42,22 @@
                             {{ part.state_text }}
                         </td>
                         <td>
-                            {% if part.can_cancel %}
-                                <a href="{% url 'part-cancel' part.id subscription.id %}"class="btn btn-success"
-                                onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
-                                    {% trans "kündigen" %}
-                                </a>
-                            {% elif part.subscription.future_parts.count == 1  and  part.cancellation_date is None %}
+                            {% if part.cancellation_date is None %}
                                 {% if can_change_part %}
-                                    <a href="{% url 'part-change' part.id %}"class="btn btn-success">
+                                    <a href="{% url 'part-change' part.id %}" class="btn btn-primary">
                                         {% trans "ändern" %}
                                     </a>
-                                {% else %}
+                                {% elif part.subscription.future_parts.count == 1 %}
                                     {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
                                     {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
                                         <br/><a href="{% url 'sub-cancel' subscription.id %}">{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}</a>
                                     {% endif %}
+                                {% endif %}
+                                {% if part.subscription.future_parts.count > 1 %}
+                                    <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
+                                    onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
+                                        {% trans "kündigen" %}
+                                    </a>
                                 {% endif %}
                             {% endif %}
                         </td>
