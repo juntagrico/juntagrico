@@ -2,9 +2,11 @@ import re
 from io import BytesIO
 
 from django.contrib.auth.decorators import permission_required
+from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from xlsxwriter import Workbook
@@ -21,7 +23,8 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.mailer import append_attachements
+from juntagrico.entity.subs import Subscription
+from juntagrico.mailer import append_attachements, membernotification
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate
@@ -455,6 +458,19 @@ def extra_canceledlist(request):
     return subscription_management_list(SubscriptionPartDao.canceled_extra_subs(), render_dict,
                                         'management_lists/extra_canceledlist.html', request)
 
+@permission_required('juntagrico.can_view_lists')
+def depot_changes(request):
+    render_dict = {'change_date_disabled': True}
+    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), render_dict,
+                                        'manage/subscription/depot/changes.html', request)
+
+
+@permission_required('juntagrico.can_view_lists')
+def depot_change_confirm(request, subscription_id):
+    sub = get_object_or_404(Subscription, id=subscription_id)
+    sub.activate_future_depot()
+    return return_to_previous_location(request)
+
 
 @permission_required('juntagrico.change_share')
 def share_canceledlist(request):
@@ -521,6 +537,17 @@ def assignments(request):
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)
+
+
+@permission_required('juntagrico.can_view_lists')
+def manage_list(request, success=False):
+    return render(request, 'manage/list.html', {'success': success})
+
+
+@permission_required('juntagrico.can_view_lists')
+def manage_list_generate(request, future=False):
+    call_command('generate_depot_list', force=True, future=future)
+    return redirect(reverse('manage-list-success'))
 
 
 def versions(request):

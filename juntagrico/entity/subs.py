@@ -12,6 +12,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
+from juntagrico.mailer import membernotification
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, end_of_business_year
 
@@ -244,6 +245,15 @@ class Subscription(Billable, SimpleStateModel):
     @staticmethod
     def next_size_change_date():
         return start_of_next_business_year()
+
+    def activate_future_depot(self):
+        self.depot = self.future_depot
+        self.future_depot = None
+        self.save()
+        emails = []
+        for member in self.recipients:
+            emails.append(member.email)
+        membernotification.depot_changed(emails, self.depot)
 
     def clean(self):
         check_sub_consistency(self)

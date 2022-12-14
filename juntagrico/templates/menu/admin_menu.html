@@ -73,6 +73,13 @@
                     {% endif %}
                     {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-sub-depot-changes' %}">
+                                {% blocktrans %}{{ v_depot }}-Änderungen{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscription %}
+                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'future' %}">
                                 {% trans "Zukunftsblick" %}
                             </a>
@@ -247,6 +254,11 @@
             </a>
             <div class="collapse" id="lists">
                 <ul class="nav flex-column admin-menu subadmin-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-list' %}">
+                            {% trans "Erzeugen" %}
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'lists-depot-amountoverview' %}">
                             {% trans "Mengen Übersicht" %}
