@@ -21,7 +21,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='future',
             default=False,
-            help='when forced do not ignore future depots',
+            help='apply all depot changes before generation',
         )
 
     # entry point used by manage.py

@@ -17,10 +17,9 @@ def default_depot_list_generation(*args, **options):
             'not the specified day for depot list generation, use --force to override')
         return
 
-    if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
+    if options['future']:
         activate_future_depots()
-
-    if options['force'] and not options['future']:
+    else:
         print('future depots ignored, use --future to override')
 
     depot_dict = {
