@@ -24,7 +24,7 @@ from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.mailer import append_attachements, membernotification
+from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate
@@ -457,6 +457,7 @@ def extra_canceledlist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionPartDao.canceled_extra_subs(), render_dict,
                                         'management_lists/extra_canceledlist.html', request)
+
 
 @permission_required('juntagrico.can_view_lists')
 def depot_changes(request):
