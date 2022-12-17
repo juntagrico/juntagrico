@@ -2,8 +2,6 @@ from datetime import date
 
 from django.utils import timezone
 
-from juntagrico.entity.subs import SubscriptionPart, Subscription
-from juntagrico.entity.subtypes import SubscriptionType
 from test.util.test import JuntagricoTestCase
 
 
@@ -11,64 +9,24 @@ class AssignmentTests(JuntagricoTestCase):
 
     def setUp(self):
         super().setUp()
-        sub_type_data = {
-            'name': 'sub_trial_type',
-            'long_name': 'sub_type_long_name',
-            'size': self.sub_size,
-            'shares': 2,
-            'visible': True,
-            'required_assignments': 10,
-            'required_core_assignments': 3,
-            'price': 1000,
-            'description': 'sub_type_desc'}
-        self.sub_trial_type = SubscriptionType.objects.create(trial_days=30, **sub_type_data)
+        self.sub_trial_type = self.create_sub_type(self.sub_size, trial_days=30)
 
         # sub in second half of the year
         year = timezone.now().year
-        activation_date = date(day=1, month=7, year=year)
-        self.sub2.activation_date = activation_date
-        SubscriptionPart.objects.create(subscription=self.sub2, type=self.sub_type, activation_date=activation_date)
-        activation_date = date(day=1, month=1, year=year)
-        deactivation_date = date(day=30, month=6, year=year)
-        sub_data = {
-            'depot': self.depot,
-            'future_depot': None,
-            'creation_date': '2017-03-27',
-            'start_date': '2018-01-01'
-        }
-        dates = {
-            'activation_date': activation_date,
-            'cancellation_date': activation_date,
-            'deactivation_date': deactivation_date,
-        }
-        sub_data3 = {**sub_data, **dates}
+        self.sub2 = self.create_sub(self.depot, date(day=1, month=7, year=year), parts=[self.sub_type])
         # sub in first half of the year
-        self.sub3 = Subscription.objects.create(**sub_data3)
-        SubscriptionPart.objects.create(subscription=self.sub3, type=self.sub_type, **dates)
+        activation_date = date(day=1, month=1, year=year)
+        self.sub3 = self.create_sub(self.depot, activation_date, deactivation_date=date(day=30, month=6, year=year), parts=[self.sub_type])
         # trial sub ongoing
-        sub_data4 = {**sub_data, 'activation_date': activation_date}
-        self.sub41 = Subscription.objects.create(**sub_data4)
-        SubscriptionPart.objects.create(subscription=self.sub41, type=self.sub_trial_type, activation_date=activation_date)
+        self.sub41 = self.create_sub(self.depot, activation_date, [self.sub_trial_type])
         # trial sub shorter than planned
-        self.sub42 = Subscription.objects.create(**sub_data3)
-        dates_short = {**dates, 'deactivation_date': date(day=15, month=1, year=year)}
-        SubscriptionPart.objects.create(subscription=self.sub42, type=self.sub_trial_type, **dates_short)
+        self.sub42 = self.create_sub(self.depot, activation_date, deactivation_date=date(day=15, month=1, year=year), parts=[self.sub_trial_type])
         # trial sub at the end of the year
-        dates_year_end = {
-            'activation_date': date(day=15, month=12, year=year),
-            'cancellation_date': date(day=15, month=12, year=year),
-        }
-        sub_data43 = {**sub_data, **dates_year_end}
-        self.sub43 = Subscription.objects.create(**sub_data43)
-        SubscriptionPart.objects.create(subscription=self.sub43, type=self.sub_trial_type, **dates_year_end)
+        self.sub43 = self.create_sub(self.depot, date(day=15, month=12, year=year), [self.sub_trial_type])
         # trial sub starting last year
-        dates_year_last = {'activation_date': date(day=15, month=12, year=year - 1)}
-        sub_data44 = {**sub_data, **dates_year_last}
-        self.sub44 = Subscription.objects.create(**sub_data44)
-        SubscriptionPart.objects.create(subscription=self.sub44, type=self.sub_trial_type, **dates_year_last)
+        self.sub44 = self.create_sub(self.depot, date(day=15, month=12, year=year - 1), [self.sub_trial_type])
         # ordered, not activated sub
-        self.sub5 = Subscription.objects.create(**sub_data)
-        SubscriptionPart.objects.create(subscription=self.sub5, type=self.sub_type)
+        self.sub5 = self.create_sub(self.depot, parts=[self.sub_type])
 
     def testRequiredAssignments(self):
         # sub in second half of the year
