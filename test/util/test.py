@@ -286,8 +286,10 @@ class JuntagricoTestCase(TestCase):
         self.depot2 = Depot.objects.create(**depot_data)
 
     @staticmethod
-    def create_sub_type(size, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, name=None, long_name='sub_type_long_name', **kwargs):
+    def create_sub_type(size, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
         JuntagricoTestCase._count_sub_types += 1
+        name = kwargs.get('name', None)
+        long_name = kwargs.get('long_name', 'sub_type_long_name')
         return SubscriptionType.objects.create(
             name=name or 'sub_type_name' + str(JuntagricoTestCase._count_sub_types),
             long_name=long_name,
