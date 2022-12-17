@@ -126,6 +126,8 @@ class JuntagricoTestCase(TestCase):
         self.area_admin.user.user_permissions.add(
             Permission.objects.get(codename='change_recuringjob'))
         self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='add_recuringjob'))
+        self.area_admin.user.user_permissions.add(
             Permission.objects.get(codename='change_onetimejob'))
         self.area_admin.user.save()
 
