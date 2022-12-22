@@ -1,6 +1,7 @@
 {% extends "management_lists/man_list_base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
+{% load juntagrico.common %}
 {% block page_title %}
     {% vocabulary "depot_pl" as v_depot_pl %}
     <h3>
@@ -24,10 +25,10 @@
                 <th class="filter">
                     {% blocktrans %}{{ v_depot }} Neu{% endblocktrans %}
                 </th>
+                <th></th>
                 <th class="d-none">
                     {% trans "E-Mail" %}
                 </th>
-                <th></th>
                 <th>
                     {% trans "Notizen" %}
                 </th>
@@ -56,12 +57,7 @@
                         </a>
                     </td>
                     <td class="email d-none">
-                        {% for recipient in subscription.subscription.recipients %}
-                            {{ recipient.email }}
-                            {% if not forloop.last %}
-                                ,
-                            {% endif %}
-                        {% endfor %}
+                        {{ subscription.recipients_qs|values_list:'member__email'|join:', ' }}
                     </td>
                     <td>
                         {{ subscription.notes }}

@@ -84,13 +84,8 @@
                         </th>
                     {% endif %}
                     <td class="email d-none">
-                            {% for recipient in subscription.subscription.recipients %}
-                                {{ recipient.email }}
-                                {% if not forloop.last %}
-                                    ,
-                                {% endif %}
-                            {% endfor %}
-                        </td>
+                        {{ subscription.subscription.recipients_qs|values_list:'member__email'|join:', ' }}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
