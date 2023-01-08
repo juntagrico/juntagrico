@@ -326,7 +326,7 @@ class JuntagricoTestCase(TestCase):
     @staticmethod
     def create_sub(depot, activation_date=None, parts=None, **kwargs):
         if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
-            kwargs['cancellation_date'] = kwargs['deactivation_date']
+            kwargs['cancellation_date'] = activation_date
         sub = Subscription.objects.create(
             depot=depot,
             activation_date=activation_date,
