@@ -3,25 +3,26 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
-from juntagrico.admins import RichTextAdmin
+from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity.jobs import JobType, RecuringJob, OneTimeJob
+from juntagrico.entity.jobs import JobType, RecuringJob
 from juntagrico.entity.location import Location
-from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator, extra_context_for_past_jobs
+from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
-class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
+class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     list_display = ['__str__', 'time', 'slots', 'free_slots']
     list_filter = ('activityarea', ('time', FutureDateTimeFilter))
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
     exclude = ['reminder_sent']
+    autocomplete_fields = ['activityarea', 'location']
 
     inlines = [ContactInline, AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
@@ -51,12 +52,8 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
             t.name = name
             t.save()
 
-    def get_form(self, request, obj=None, **kwds):
-        form = super().get_form(request, obj, **kwds)
-        # only include visible and current locations in choices
-        # filter queryset here, because here the obj is available
-        form.base_fields['location'].queryset = Location.objects.exclude(Q(visible=False), ~Q(onetimejob=obj))
-        return form
+    def get_location_queryset(self, request, obj):
+        return Location.objects.exclude(Q(visible=False), ~Q(onetimejob=obj))
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'activityarea__coordinator')
@@ -68,7 +65,3 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                                            'juntagrico.is_area_admin',
                                            ActivityAreaDao.areas_by_coordinator)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        extra_context = extra_context_for_past_jobs(request, OneTimeJob, object_id, extra_context)
-        return super().change_view(request, object_id, extra_context=extra_context)

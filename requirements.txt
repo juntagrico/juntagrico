@@ -1,10 +1,12 @@
-Django==4.0.2
-django-admin-sortable2==1.0.4
-django-crispy-forms==1.14.0
-django-impersonate==1.7.3
-django-polymorphic==3.1.0
-django-richtextfield==1.6.1
-icalendar==4.0.9
+Django~=4.0.8
+django-admin-sortable2~=1.0.4
+django-crispy-forms~=1.14.0
+django-impersonate~=1.7.3
+django-polymorphic~=3.1.0
+django-richtextfield~=1.6.1
+icalendar~=4.0.9
+reportlab==3.6.6 # rq.filter: !=3.6.8
 schwifty==2021.10.2
 xhtml2pdf==0.2.4 # rq.filter: !=0.2.5
 XlsxWriter==3.0.2
+python-dateutil~=2.8.2

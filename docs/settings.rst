@@ -271,6 +271,17 @@ MEMBERSHIP_END_MONTH
 
     6
 
+MEMBERSHIP_END_NOTICE_PERIOD
+^^^^^^^^^^^^^^^^^^^^
+  The notice period in months a member needs to account for when cancelling the membership
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    0
 
 Shares
 ------
@@ -531,21 +542,44 @@ MAIL_TEMPLATE
 DEFAULT_MAILER
 ^^^^^^^^^^^^^^
   The code to send mails. for more info see the code specified in the default value
+  The setting ``'juntagrico.util.mailer.batch.Mailer'`` uses a built in batch mailer,
+  that sends the emails to the "bcc" recipients in separate emails.
+  See ``BATCH_MAILER`` to configure it.
 
   default value
 
   .. code-block:: python
 
-    'juntagrico.util.defaultmailer.Mailer'
+    'juntagrico.util.mailer.default.Mailer'
+
+
+BATCH_MAILER
+^^^^^^^^^^^^^^
+  Configuration for the batch mailer. These are only effective, if
+  DEFAULT_MAILER is set to ``'juntagrico.util.mailer.batch.Mailer'``.
+  ``batch_size`` is the number of emails, that is sent in one batch.
+  When set to 1, all emails are sent using "to" instead of "bcc".
+  ``wait_time`` is the interval in which the batches are sent.
+
+  default value
+
+  .. code-block:: python
+
+    {
+        'batch_size': 39,
+        'wait_time': 65
+    }
 
 
 FROM_FILTER
 ^^^^^^^^^^^
-  Consisting of a regular expression and a default replacement. If the regular expression does not match the default replacement is used, and the orogonal from is set as reply to
+  Allows overriding the "from" field of outgoing emails. This can be used to prevent sending emails with a sender of different domain than the SMTP server, which triggers most spam filters.
+  The setting consists of a regular expression and a default replacement. If the regular expression does NOT match the default replacement is used as "from", and the origonal "from" is set as "reply to"
 
   default value
 
   .. code-block:: python
+
     {
         'filter_expression': '.*',
         'replacement_from': ''
