@@ -12,16 +12,19 @@
     {% vocabulary "assignment_pl" as v_assignment_pl %}
     {% if success %}
         <div class="alert alert-success">
-            {% trans "Listen erstellt:" %}<br>
-            <a href="{% url 'lists-depot-amountoverview' %}">
-                {% trans "Mengen Übersicht" %}
-            </a><br>
-            <a href="{% url 'lists-depotlist' %}">
-                {% vocabulary "depot" %}-{% trans "Listen" %}
-            </a><br>
-            <a href="{% url 'lists-depot-overview' %}">
-                {% vocabulary "depot" %} {% trans "Übersicht" %}
-            </a>
+            {% trans "Listen erstellt" %}
+            {% if perms.juntagrico.can_view_lists %}
+                <br>
+                <a href="{% url 'lists-depot-amountoverview' %}">
+                    {% trans "Mengen Übersicht" %}
+                </a><br>
+                <a href="{% url 'lists-depotlist' %}">
+                    {% vocabulary "depot" %}-{% trans "Listen" %}
+                </a><br>
+                <a href="{% url 'lists-depot-overview' %}">
+                    {% vocabulary "depot" %} {% trans "Übersicht" %}
+                </a>
+            {% endif %}
         </div>
     {% endif %}
     <div class="row mb-4">
@@ -34,17 +37,19 @@
             </a>
         </div>
     </div>
-    <div class="row mb-4">
-        <div class="col-md-6">
-            {% vocabulary "depot" as v_depot %}
-            {% blocktrans %}
-                Änderungen am {{ v_depot }} einzeln bestätigen.
-            {% endblocktrans %}
+    {% if perms.juntagrico.change_subscription %}
+        <div class="row mb-4">
+            <div class="col-md-6">
+                {% vocabulary "depot" as v_depot %}
+                {% blocktrans %}
+                    Änderungen am {{ v_depot }} einzeln bestätigen.
+                {% endblocktrans %}
+            </div>
+            <div class="col-md-6">
+                <a href="{% url 'manage-sub-depot-changes' %}">
+                    {% trans "Zur Änderungsliste" %}
+                </a>
+            </div>
         </div>
-        <div class="col-md-6">
-            <a href="{% url 'manage-sub-depot-changes' %}">
-                {% trans "Zur Änderungsliste" %}
-            </a>
-        </div>
-    </div>
+    {% endif %}
 {% endblock %}
