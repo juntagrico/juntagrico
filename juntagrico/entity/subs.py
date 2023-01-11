@@ -261,6 +261,7 @@ class SubscriptionPartQuerySet(QuerySet):
     def is_normal(self):
         return self.filter(type__size__product__is_extra=False)
 
+
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     subscription = models.ForeignKey('Subscription', related_name='parts', on_delete=models.CASCADE,
                                      verbose_name=Config.vocabulary('subscription'))
