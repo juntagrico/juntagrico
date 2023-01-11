@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -257,11 +257,17 @@ class Subscription(Billable, SimpleStateModel):
             ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),)
 
 
+class SubscriptionPartQuerySet(QuerySet):
+    def is_normal(self):
+        return self.filter(type__size__product__is_extra=False)
+
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     subscription = models.ForeignKey('Subscription', related_name='parts', on_delete=models.CASCADE,
                                      verbose_name=Config.vocabulary('subscription'))
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
                              verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+
+    objects = SubscriptionPartQuerySet.as_manager()
 
     def __str__(self):
         try:

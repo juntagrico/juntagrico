@@ -33,7 +33,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for part in subscription.active_and_future_parts.all %}
+                {% for part in subscription.active_and_future_parts.is_normal %}
                     <tr>
                         <td>
                             {{ part }}
@@ -47,13 +47,13 @@
                                     <a href="{% url 'part-change' part.id %}" class="btn btn-primary">
                                         {% trans "ändern" %}
                                     </a>
-                                {% elif part.subscription.future_parts.count == 1 %}
+                                {% elif part.subscription.future_parts.is_normal.count == 1 %}
                                     {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
                                     {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
                                         <br/><a href="{% url 'sub-cancel' subscription.id %}">{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}</a>
                                     {% endif %}
                                 {% endif %}
-                                {% if part.subscription.future_parts.count > 1 %}
+                                {% if part.subscription.future_parts.is_normal.count > 1 %}
                                     <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
                                     onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
                                         {% trans "kündigen" %}

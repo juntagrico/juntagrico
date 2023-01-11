@@ -432,7 +432,7 @@ class SubscriptionPartBaseForm(Form):
         containers = []
         for product in self._product_method().all():
             product_container = CategoryContainer(instance=product)
-            for subscription_size in product.sizes.filter(visible=True):
+            for subscription_size in product.sizes.filter(visible=True).exclude(types=None):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
                 for subscription_type in subscription_size.types.filter(visible=True):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
