@@ -12,6 +12,16 @@
     {% requires_core as b_requires_core %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
     {% vocabulary "subscription" as v_subscription %}
+    <div>
+        <span class="switch switch-sm">
+            <input class="switch" type="checkbox" id="show_co_members" checked="checked">
+            <label for="show_co_members">{% trans "MitabonnentInnen anzeigen" %}</label>
+        </span>
+        <span class="switch switch-sm">
+            <input class="switch" type="checkbox" id="show_phone_numbers" checked="checked">
+            <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
+        </span>
+    </div>
     <table id="filter-table" class="list table" style="display: table;">
         <thead>
             <tr>
@@ -52,18 +62,22 @@
         <tbody>
             {% for subscription in management_list %}
                 <tr>
-                    <td>
+                    <td class="members">
                         {% spaceless %}
                             <a href="{% url 'admin:juntagrico_member_change' subscription.subscription.primary_member.id %}">
                                 <strong>{{ subscription.subscription.primary_member }}</strong>
                             </a>
                         {% endspaceless %}
-                        {{ subscription.subscription.primary_member.get_phone }}
-                        <br>
+                        {% with phone=subscription.subscription.primary_member.get_phone %}
+                            <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
+                        {% endwith %}
                         {% for recipient in subscription.subscription.other_recipients %}
+                            <div class="co-member">
                             <a href="{% url 'admin:juntagrico_member_change' recipient.id %}">{{ recipient }}</a>
-                            {{ recipient.get_phone }}
-                            <br>
+                            {% with phone=recipient.get_phone %}
+                                <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
+                            {% endwith %}
+                            </div>
                         {% endfor %}
                     </td>
                     <td>
