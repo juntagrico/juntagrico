@@ -28,10 +28,30 @@ class AdminTests(JuntagricoTestCase):
                         code=302)
         response = self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items},
                                    member=self.admin, code=302)
-        self.assertGet(url + response.url, member=self.admin)
+        self.assertGet(response.url, member=self.admin)
+        self.assertPost(response.url,
+                        data={'type': self.job1.type.pk,
+                              'slots': self.job1.slots,
+                              'multiplier': self.job1.multiplier,
+                              'time': '12:00',
+                              'start_date': '22.01.2022',
+                              'end_date': '30.01.2022',
+                              'weekdays': ['1'],
+                              'weekly': '7'},
+                        member=self.admin, code=302)
         selected_items = [self.job1.pk, self.job2.pk]
         self.assertPost(url, data={'action': 'mass_copy_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
+        # delete job without assignment
+        self.assertGet(reverse('admin:juntagrico_recuringjob_delete', args=(self.job1.pk,)), member=self.admin)
+        # delete job with assignment (will show a page, that assignments must be deleted first)
+        self.assertGet(reverse('admin:juntagrico_recuringjob_delete', args=(self.job2.pk,)), member=self.admin)
+
+    def testPastJobAdmin(self):
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin)
 
     def testDeliveryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
@@ -63,8 +83,6 @@ class AdminTests(JuntagricoTestCase):
                        member=self.area_admin)
 
     def testMemberAdmin(self):
-        def raw_id_url(url, name, subscription_id):
-            return '{}?qs_name={}&sub_id={}'.format(url, name, str(subscription_id))
         self.assertGet(reverse('admin:juntagrico_member_change', args=(self.member.pk,)), member=self.admin)
         url = reverse('admin:juntagrico_member_changelist')
         self.assertGet(url, member=self.admin)
@@ -74,14 +92,6 @@ class AdminTests(JuntagricoTestCase):
         selected_items = [self.member.pk, self.member2.pk]
         self.assertPost(url, data={'action': 'impersonate_job', '_selected_action': selected_items}, member=self.admin,
                         code=302)
-        cs_url = raw_id_url(url, 'cs', '')
-        self.assertGet(cs_url, member=self.admin)
-        s_url = raw_id_url(url, 's', self.sub.pk)
-        self.assertGet(s_url, member=self.admin)
-        fs_url = raw_id_url(url, 'fs', self.sub.pk)
-        self.assertGet(fs_url, member=self.admin)
-        all_url = raw_id_url(url, 'all', '')
-        self.assertGet(all_url, member=self.admin)
 
     def testSubtypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)

@@ -22,6 +22,7 @@ It provides the basic functionality like
    theming.rst
    rich_text_editor.rst
    addons.rst
+   1_6_release_notes.rst
    1_5_release_notes.rst
    1_4_release_notes.rst
    1_3_release_notes.rst
