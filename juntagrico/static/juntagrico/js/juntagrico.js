@@ -73,8 +73,8 @@ function member_phone_toggle() {
     let show_co_members = $("#show_co_members")
     let show_phone_numbers = $("#show_phone_numbers")
     // initialize correct value after reload
-    $('.co-member').toggle(show_co_members.checked);
-    $('.phone-number').toggle(show_phone_numbers.checked);
+    $('.co-member').toggle(show_co_members.is(':checked'));
+    $('.phone-number').toggle(show_phone_numbers.is(':checked'));
     // change on click
     show_co_members.change(function() {
         $('.co-member').toggle(this.checked);
