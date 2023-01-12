@@ -415,3 +415,11 @@ a.phone-number {
     color: #606560;
     text-decoration: underline;
 }
+
+/* impersonate link */
+
+.impersonate-action {
+    color: #606560;
+    float: right;
+    display: inline-block;
+}

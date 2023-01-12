@@ -80,7 +80,7 @@
                             {% blocktrans trimmed with fn=request.user.member.first_name ln=request.user.member.last_name %}
                             Du imitierst derzeit den Benutzer “{{ fn }} {{ ln }}”.
                             {% endblocktrans %}
-                            <a href="/impersonate/stop">
+                            <a href="{% url 'impersonate-stop' %}">
                                 {% trans "Beende dies hier" %}
                             </a>
                             .

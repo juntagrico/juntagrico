@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "member_pl" as v_member_pl %}
@@ -77,13 +78,10 @@
                 {% for member in members %}
                     <tr>
                         <td>
-                            {% if perms.juntagrico.is_operations_group %}
-                                <a href="/impersonate/{{ member.user.id }}" target="__blank">
-                                {% endif %}
-                                {{ member.first_name }} {{ member.last_name }}
-                                {% if perms.juntagrico.is_operations_group %}
-                                </a>
-                            {% endif %}
+                            {% impersonate_start request member %}
+                            <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                                {{ member.get_name }}
+                            </a>
                         </td>
                         <td>
                             {% for area in member.areas.all %}
