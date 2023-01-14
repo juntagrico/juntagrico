@@ -20,5 +20,7 @@ define([], function () {
 
     email_submit();
 
+    member_phone_toggle();
+
     $('[data-toggle="datepicker"]').datepicker();
 });

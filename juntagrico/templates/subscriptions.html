@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
@@ -71,13 +72,10 @@
                 {% for subscription in subscriptions %}
                     <tr>
                         <td>
-                            {% if perms.juntagrico.is_operations_group %}
-                                <a href="/impersonate/{{ subscription.primary_member.user.id }}"target="__blank">
-                                {% endif %}
-                                {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
-                                {% if perms.juntagrico.is_operations_group %}
-                                </a>
-                            {% endif %}
+                            {% impersonate_start request subscription.primary_member %}
+                            <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
+                                {{ subscription.primary_member.get_name }}
+                            </a>
                         </td>
                         <td>
                             {{ subscription.other_recipients_names }}
