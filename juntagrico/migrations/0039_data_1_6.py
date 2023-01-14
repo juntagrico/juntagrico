@@ -3,6 +3,13 @@
 from django.db import migrations
 
 
+def set_location_sort_order(apps, schema_editor):
+    location = apps.get_model('juntagrico', 'Location')
+    for idx, item in enumerate(location.objects.all()):
+        item.sort_order = idx + 1
+        item.save()
+
+
 def make_name_product_unique(apps, schema_editor):
     SubscriptionSize = apps.get_model('juntagrico', 'SubscriptionSize')
     taken = set()
@@ -20,5 +27,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(set_location_sort_order),
         migrations.RunPython(make_name_product_unique),
     ]
