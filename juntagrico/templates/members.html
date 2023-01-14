@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "member_pl" as v_member_pl %}
@@ -74,53 +75,48 @@
                 </tr>
             </tfoot>
             <tbody>
-                {% with b_impersonate=perms.juntagrico.is_operations_group %}
-                    {% for member in members %}
-                        {% with sub=member.current_subscriptionmembership.0 %}
-                            <tr>
-                                <td>
-                                    {% if b_impersonate %}
-                                        <a href="{% url 'impersonate-start' member.userid %}" target="_blank">
-                                        {% endif %}
-                                        {{ member.first_name }} {{ member.last_name }}
-                                        {% if b_impersonate %}
-                                        </a>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% for area in member.areas.all %}
-                                        {{ area.name }},
+                {% for member in members %}
+                    {% with sub=member.current_subscriptionmembership.0 %}
+                        <tr>
+                            <td>
+                                {% impersonate_start request member %}
+                                <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                                    {{ member.get_name }}
+                                </a>
+                            </td>
+                            <td>
+                                {% for area in member.areas.all %}
+                                    {{ area.name }},
                                     {% empty %}
-                                        -Kein Tätigkeitsbereich-
-                                    {% endfor %}
-                                </td>
-                                <td>
-                                    {% if sub %}
-                                        {{ sub.depot_name }}
-                                    {% else %}
-                                        Kein {% vocabulary "depot" %}
-                                    {% endif %}
-                                </td>
-                                <td class="email">
-                                    {{ member.email }}
-                                </td>
-                                <td>
-                                    {{ member.phone }}
-                                </td>
-                                <td>
-                                    {{ member.mobile_phone }}
-                                </td>
-                                <td>
-                                    {% if sub %}
-                                        {{ sub.subscription.size }}
-                                    {% else %}
-                                        Kein {% vocabulary "subscription" %}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endwith %}
-                    {% endfor %}
-                {% endwith %}
+                                    -Kein Tätigkeitsbereich-
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if sub %}
+                                    {{ sub.depot_name }}
+                                {% else %}
+                                    Kein {% vocabulary "depot" %}
+                                {% endif %}
+                            </td>
+                            <td class="email">
+                                {{ member.email }}
+                            </td>
+                            <td>
+                                {{ member.phone }}
+                            </td>
+                            <td>
+                                {{ member.mobile_phone }}
+                            </td>
+                            <td>
+                                {% if sub %}
+                                    {{ sub.subscription.size }}
+                                {% else %}
+                                    Kein {% vocabulary "subscription" %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endwith %}
+                {% endfor %}
             </tbody>
         </table>
     </div>

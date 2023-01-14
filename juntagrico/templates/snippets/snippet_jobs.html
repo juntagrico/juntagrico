@@ -87,9 +87,11 @@
                         text-success
                     {% endif %}
                 ">
-                    {% if job.free_slots > -1 %}
-                    {{ job.occupied_slots }} / {{ job.slots }}
-                    {% endif %}
+                    {% block job_status %}
+                        {% if job.free_slots > -1 %}
+                        {{ job.occupied_slots }} / {{ job.slots }}
+                        {% endif %}
+                    {% endblock %}
                 </td>
                 {% if show_free_slot_filter %}
                     <td>

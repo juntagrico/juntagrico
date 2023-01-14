@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, F, Sum
+from django.db.models import Q, QuerySet, F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -14,8 +14,7 @@ from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
-from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, \
-    calculate_remaining_days_percentage
+from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, end_of_business_year
 
 
 class Subscription(Billable, SimpleStateModel):
@@ -81,6 +80,11 @@ class Subscription(Billable, SimpleStateModel):
         return self.parts.filter(~q_deactivated())
 
     @property
+    def parts_in_business_year(self):
+        return self.parts.filter(Q(activation_date__isnull=False, activation_date__lte=end_of_business_year()) &
+                                 ~Q(deactivation_date__isnull=False, deactivation_date__lt=start_of_business_year()))
+
+    @property
     def part_change_date(self):
         order_dates = list(self.future_parts.values_list('creation_date', flat=True).order_by('creation_date'))
         cancel_dates = list(self.active_parts.values_list('cancellation_date', flat=True).order_by('cancellation_date'))
@@ -124,21 +128,14 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def required_assignments(self):
-        result = 0
-        for part in self.active_parts.all():
-            result += part.type.required_assignments
-        if self.activation_date is not None and self.activation_date > start_of_business_year():
-            result = round(result * calculate_remaining_days_percentage(self.activation_date))
-        return result
+        return self.get_required_assignments()
 
     @property
     def required_core_assignments(self):
-        result = 0
-        for part in self.active_parts.all():
-            result += part.type.required_core_assignments
-        if self.activation_date is not None and self.activation_date > start_of_business_year():
-            result = round(result * calculate_remaining_days_percentage(self.activation_date))
-        return result
+        return self.get_required_assignments(True)
+
+    def get_required_assignments(self, core=False):
+        return round(sum([part.get_required_assignments(core) for part in self.parts_in_business_year.select_related('type')]))
 
     @property
     def price(self):
@@ -263,11 +260,31 @@ class Subscription(Billable, SimpleStateModel):
             ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),)
 
 
+class SubscriptionPartQuerySet(QuerySet):
+    def is_normal(self):
+        return self.filter(type__size__product__is_extra=False)
+
+
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     subscription = models.ForeignKey('Subscription', related_name='parts', on_delete=models.CASCADE,
                                      verbose_name=Config.vocabulary('subscription'))
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
                              verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+
+    objects = SubscriptionPartQuerySet.as_manager()
+
+    def __str__(self):
+        try:
+            return Config.sub_overview_format('part_format').format(
+                product=self.type.size.product.name,
+                size=self.type.size.name,
+                size_long=self.type.size.long_name,
+                type=self.type.name,
+                type_long=self.type.long_name,
+                price=self.type.price
+            )
+        except KeyError as k:
+            return _(f'Fehler in der Einstellung SUB_OVERVIEW_FORMAT.part_format. {k} kann nicht aufgelöst werden.')
 
     @property
     def can_cancel(self):
@@ -276,6 +293,23 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     @property
     def is_extra(self):
         return self.type.size.product.is_extra
+
+    def get_required_assignments(self, core=False):
+        if not self.activation_date:
+            return 0
+        nominal_required = self.type.required_core_assignments if core else self.type.required_assignments
+        # on trial subs no discount applies
+        if self.type.trial_days:
+            return nominal_required
+        # since when part is active in current business year
+        start_business = start_of_business_year()
+        start = max(self.activation_date, start_business)
+        # when (if at all) part will be inactive in current business year
+        end_business = end = end_of_business_year()
+        if self.deactivation_date:
+            end = min(self.deactivation_date, end_business)
+        # percentage of business year, where part is active. Do not round here.
+        return nominal_required * (end - start) / (end_business - start_business)
 
     def clean(self):
         check_sub_part_consistency(self)
