@@ -50,8 +50,10 @@ class SubscriptionSize(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Grösse').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
-        unique_together = ('name', 'product',)
-        unique_together = ('units', 'product',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='unique_name_product'),
+            models.UniqueConstraint(fields=['units', 'product'], name='unique_units_product'),
+        ]
 
 
 class SubscriptionType(JuntagricoBaseModel):
