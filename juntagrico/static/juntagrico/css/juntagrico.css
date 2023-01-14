@@ -365,7 +365,12 @@ th {
 
 #filter table {
     width: 100%;
-    font-size: 10px;
+    font-size: 12pt;
+}
+
+#filter a:not(.btn) {
+    color: #408040;
+    text-decoration: underline;
 }
 
 #managementlist {
@@ -374,12 +379,17 @@ th {
 
 #managementlist table {
     width: 100%;
-    font-size: 14px;
+    font-size: 12pt;
 }
 
 #managementlist table th {
     vertical-align: top;
     padding-left: 0;
+}
+
+#managementlist a:not(.btn) {
+    color: #408040;
+    text-decoration: underline;
 }
 
 /* deliveries stuff checked */

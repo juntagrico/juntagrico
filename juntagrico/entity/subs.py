@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib import admin
 from django.db import models
 from django.db.models import Q, QuerySet, F, Sum
@@ -298,9 +300,6 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         if not self.activation_date:
             return 0
         nominal_required = self.type.required_core_assignments if core else self.type.required_assignments
-        # on trial subs no discount applies
-        if self.type.trial_days:
-            return nominal_required
         # since when part is active in current business year
         start_business = start_of_business_year()
         start = max(self.activation_date, start_business)
@@ -308,8 +307,11 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         end_business = end = end_of_business_year()
         if self.deactivation_date:
             end = min(self.deactivation_date, end_business)
-        # percentage of business year, where part is active. Do not round here.
-        return nominal_required * (end - start) / (end_business - start_business)
+        elif self.type.trial_days:
+            end = min(self.activation_date + timedelta(self.type.trial_days - 1), end_business)
+        # percentage of business year (or trial period), where part is active. Do not round here.
+        period = timedelta(self.type.trial_days) or (end_business - start_business + timedelta(1))
+        return nominal_required * (end - start + timedelta(1)) / period
 
     def clean(self):
         check_sub_part_consistency(self)
