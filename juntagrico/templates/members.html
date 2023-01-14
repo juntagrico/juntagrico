@@ -76,44 +76,46 @@
             </tfoot>
             <tbody>
                 {% for member in members %}
-                    <tr>
-                        <td>
-                            {% impersonate_start request member %}
-                            <a href="{% url 'admin:juntagrico_member_change' member.id %}">
-                                {{ member.get_name }}
-                            </a>
-                        </td>
-                        <td>
-                            {% for area in member.areas.all %}
-                                {{ area.name }},
-                                {% empty %}
-                                -Kein Tätigkeitsbereich-
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% if member.subscription_current != None %}
-                                {{ member.subscription_current.depot.name }}
-                            {% else %}
-                                Kein {% vocabulary "depot" %}
-                            {% endif %}
-                        </td>
-                        <td class="email">
-                            {{ member.email }}
-                        </td>
-                        <td>
-                            {{ member.phone }}
-                        </td>
-                        <td>
-                            {{ member.mobile_phone }}
-                        </td>
-                        <td>
-                            {% if member.subscription_current != None %}
-                                {{ member.subscription_current.size }}
-                            {% else %}
-                                Kein {% vocabulary "subscription" %}
-                            {% endif %}
-                        </td>
-                    </tr>
+                    {% with sub=member.current_subscriptionmembership.0 %}
+                        <tr>
+                            <td>
+                                {% impersonate_start request member %}
+                                <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                                    {{ member.get_name }}
+                                </a>
+                            </td>
+                            <td>
+                                {% for area in member.areas.all %}
+                                    {{ area.name }},
+                                    {% empty %}
+                                    -Kein Tätigkeitsbereich-
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if sub %}
+                                    {{ sub.depot_name }}
+                                {% else %}
+                                    Kein {% vocabulary "depot" %}
+                                {% endif %}
+                            </td>
+                            <td class="email">
+                                {{ member.email }}
+                            </td>
+                            <td>
+                                {{ member.phone }}
+                            </td>
+                            <td>
+                                {{ member.mobile_phone }}
+                            </td>
+                            <td>
+                                {% if sub %}
+                                    {{ sub.subscription.size }}
+                                {% else %}
+                                    Kein {% vocabulary "subscription" %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endwith %}
                 {% endfor %}
             </tbody>
         </table>
