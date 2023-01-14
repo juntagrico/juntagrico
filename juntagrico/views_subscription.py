@@ -18,12 +18,14 @@ from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
-    NicknameForm
+    NicknameForm, SubscriptionPartChangeForm
 from juntagrico.mailer import membernotification, adminnotification
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
@@ -31,8 +33,9 @@ from juntagrico.util.management import cancel_sub, create_subscription_parts
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
-    cancelation_date
-from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session
+    cancelation_date, next_membership_end_date
+from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session, \
+    primary_member_of_subscription_of_part
 
 
 @login_required
@@ -46,8 +49,7 @@ def subscription(request, subscription_id=None):
         subscription = member.subscription_current
     else:
         subscription = get_object_or_404(Subscription, id=subscription_id)
-        future_subscription = future_subscription and not(
-            subscription == member.subscription_future)
+        future_subscription = future_subscription and subscription != member.subscription_future
     end_date = end_of_next_business_year()
     renderdict = {}
     if subscription is not None:
@@ -167,8 +169,41 @@ def size_change(request, subscription_id):
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
         'parts_order_allowed': parts_order_allowed,
+        'can_change_part': SubscriptionTypeDao.get_normal_visible().count() > 1
     }
     return render(request, 'size_change.html', renderdict)
+
+
+@primary_member_of_subscription_of_part
+def part_change(request, part):
+    """
+    change part of a subscription
+    """
+    if part.subscription.canceled or part.subscription.inactive:
+        raise Http404("Can't change subscription part of cancelled subscription")
+    if SubscriptionTypeDao.get_normal_visible().count() <= 1:
+        raise Http404("Can't change subscription part if there is only one subscription type")
+    if request.method == 'POST':
+        form = SubscriptionPartChangeForm(part, request.POST)
+        if form.is_valid():
+            subscription_type = get_object_or_404(SubscriptionType, id=form.cleaned_data['part_type'])
+            if part.activation_date is None:
+                # just change type of waiting part
+                part.type = subscription_type
+                part.save()
+            else:
+                # cancel existing part and create new waiting one
+                SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
+                part.cancel()
+            return redirect(reverse('size-change', args=[part.subscription.id]))
+    else:
+        form = SubscriptionPartChangeForm(part)
+    renderdict = {
+        'form': form,
+        'subscription': subscription,
+        'hours_used': Config.assignment_unit() == 'HOURS',
+    }
+    return render(request, 'part_change.html', renderdict)
 
 
 @primary_member_of_subscription
@@ -426,6 +461,8 @@ def manage_shares(request):
         'shares': shares.all(),
         'shareerror': shareerror,
         'required': member.required_shares_count,
+        'ibanempty': not member.iban,
+        'next_membership_end_date': next_membership_end_date(),
         'certificate_years': active_share_years,
     }
     return render(request, 'manage_shares.html', renderdict)
@@ -459,6 +496,7 @@ def cancel_share(request, share_id):
     if member.cancellable_shares_count > 0:
         share = get_object_or_404(Share, id=share_id, member=member)
         share.cancelled_date = timezone.now().date()
+        share.termination_date = next_membership_end_date()
         share.save()
     return return_to_previous_location(request)
 

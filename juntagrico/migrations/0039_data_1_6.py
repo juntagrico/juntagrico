@@ -10,6 +10,16 @@ def set_location_sort_order(apps, schema_editor):
         item.save()
 
 
+def make_name_product_unique(apps, schema_editor):
+    SubscriptionSize = apps.get_model('juntagrico', 'SubscriptionSize')
+    taken = set()
+    for size in SubscriptionSize.objects.all():
+        while (size.name, size.product) in taken:
+            size.name += str(size.id)
+        size.save()
+        taken.add((size.name, size.product))
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -18,4 +28,5 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(set_location_sort_order),
+        migrations.RunPython(make_name_product_unique),
     ]

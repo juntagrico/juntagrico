@@ -17,6 +17,13 @@ def _get_setting_with_key(setting_key, default):
     return inner
 
 
+def fallback_static(path):
+    try:
+        return static(path)
+    except ValueError:
+        return path
+
+
 class Config:
     # organisation settings
     vocabulary = _get_setting_with_key(
@@ -83,6 +90,7 @@ class Config:
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
     business_year_cancelation_month = _get_setting('BUSINESS_YEAR_CANCELATION_MONTH', 12)
     membership_end_month = _get_setting('MEMBERSHIP_END_MONTH', 6)
+    membership_end_notice_period = _get_setting('MEMBERSHIP_END_NOTICE_PERIOD', 0)
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
         lambda: {
@@ -97,14 +105,21 @@ class Config:
         'SUB_OVERVIEW_FORMAT',
         lambda: {
             'delimiter': '|',
-            'format': '{product}:{size}:{type}={amount}'
+            'format': '{product}:{size}:{type}={amount}',
+            'part_format': '{size}'
         }
     )
 
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.defaultmailer.Mailer')
+    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
+    batch_mailer = _get_setting_with_key(
+        'BATCH_MAILER',
+        {
+            'batch_size': 39,
+            'wait_time': 65
+        })
     from_filter = _get_setting_with_key('FROM_FILTER',
                                         {
                                             'filter_expression': '.*',
@@ -139,22 +154,22 @@ class Config:
             'm_canceled': 'mails/admin/member_canceled.txt',
         }
     )
-    favicon = _get_setting('FAVICON', static('juntagrico/img/favicon.ico'))
-    bootstrap = _get_setting('BOOTSTRAP', static('juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css'))
+    favicon = _get_setting('FAVICON', fallback_static('juntagrico/img/favicon.ico'))
+    bootstrap = _get_setting('BOOTSTRAP', fallback_static('juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css'))
     styles = _get_setting_with_key('STYLES', {'template': '', 'static': []})
     scripts = _get_setting_with_key('SCRIPTS', {'template': '', 'static': []})
     images = _get_setting_with_key(
         'IMAGES',
         {
-            'status_100': static('juntagrico/img/status_100.png'),
-            'status_75': static('juntagrico/img/status_75.png'),
-            'status_50': static('juntagrico/img/status_50.png'),
-            'status_25': static('juntagrico/img/status_25.png'),
-            'status_0': static('juntagrico/img/status_0.png'),
-            'single_full': static('juntagrico/img/single_full.png'),
-            'single_empty': static('juntagrico/img/single_empty.png'),
-            'single_core': static('juntagrico/img/single_core.png'),
-            'core': static('juntagrico/img/core.png')
+            'status_100': fallback_static('juntagrico/img/status_100.png'),
+            'status_75': fallback_static('juntagrico/img/status_75.png'),
+            'status_50': fallback_static('juntagrico/img/status_50.png'),
+            'status_25': fallback_static('juntagrico/img/status_25.png'),
+            'status_0': fallback_static('juntagrico/img/status_0.png'),
+            'single_full': fallback_static('juntagrico/img/single_full.png'),
+            'single_empty': fallback_static('juntagrico/img/single_empty.png'),
+            'single_core': fallback_static('juntagrico/img/single_core.png'),
+            'core': fallback_static('juntagrico/img/core.png')
         }
     )
     mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
