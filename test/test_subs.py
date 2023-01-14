@@ -72,6 +72,41 @@ class SubscriptionTests(JuntagricoTestCase):
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
             self.assertEqual(self.sub.future_parts.count(), 1)
 
+    def testTypeChange(self):
+        # change type, with unsufficient shares
+        part = self.sub.parts.all()[0]
+        self.assertGet(reverse('part-change', args=[part.pk]))
+        post_data = {'part_type': self.sub_type2.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data)
+        self.sub.refresh_from_db()
+        # check: type and amount unchanged
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+
+        # add a shares for type2
+        self.create_paid_share(self.member)
+        # change active type
+        part = self.sub.parts.all()[0]
+        self.assertGet(reverse('part-change', args=[part.pk]))
+        post_data = {'part_type': self.sub_type2.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
+        self.sub.refresh_from_db()
+        # check: has only one uncancelled part with new type
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
+        # check: previous part was cancelled
+        part.refresh_from_db()
+        self.assertTrue(part.canceled)
+
+        # change future type
+        part = self.sub.future_parts.all()[0]
+        post_data = {'part_type': self.sub_type.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
+        self.sub.refresh_from_db()
+        # check: has only one uncancelled part with first type
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+
     def testLeave(self):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
         self.create_paid_share(self.member3)

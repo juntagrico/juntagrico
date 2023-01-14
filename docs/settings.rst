@@ -414,14 +414,15 @@ VOCABULARY
     
 SUB_OVERVIEW_FORMAT
 ^^^^^^^^^^^^^^^^^^^
-  Template and delimiter for formatting the subscription overview.
+  Templates and delimiter for formatting the subscription overview.
 
   default value
 
   .. code-block:: python
 
     {'delimiter': '|',
-     'format': '{product}:{size}:{type}={amount}'
+     'format': '{product}:{size}:{type}={amount}',
+     'part_format': '{size}'
     }
 
 STYLES

@@ -3,6 +3,7 @@ from functools import wraps
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, redirect
 
+from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.models import Subscription
 from juntagrico.util.sessions import SessionObjectManager, CSSessionObject
 
@@ -21,6 +22,22 @@ def primary_member_of_subscription(view):
         else:
             return redirect('login')
 
+    return wrapper
+
+
+def primary_member_of_subscription_of_part(view):
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            member = request.user.member
+            part = get_object_or_404(
+                SubscriptionPart, id=kwargs.pop('part_id'))
+            if part.subscription.primary_member.id == member.id:
+                return view(request, *args, part=part, **kwargs)
+            else:
+                return redirect('sub-detail')
+        else:
+            return redirect('login')
     return wrapper
 
 
