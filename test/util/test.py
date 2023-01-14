@@ -17,6 +17,8 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
 
+    _count_sub_types = 0
+
     def setUp(self):
         self.set_up_member()
         self.set_up_admin()
@@ -125,6 +127,8 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='change_jobtype'))
         self.area_admin.user.user_permissions.add(
             Permission.objects.get(codename='change_recuringjob'))
+        self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='add_recuringjob'))
         self.area_admin.user.user_permissions.add(
             Permission.objects.get(codename='change_onetimejob'))
         self.area_admin.user.save()
@@ -281,6 +285,23 @@ class JuntagricoTestCase(TestCase):
             'location': self.location_depot}
         self.depot2 = Depot.objects.create(**depot_data)
 
+    @staticmethod
+    def create_sub_type(size, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
+        JuntagricoTestCase._count_sub_types += 1
+        name = kwargs.get('name', None)
+        long_name = kwargs.get('long_name', 'sub_type_long_name')
+        return SubscriptionType.objects.create(
+            name=name or 'sub_type_name' + str(JuntagricoTestCase._count_sub_types),
+            long_name=long_name,
+            size=size,
+            shares=shares,
+            visible=visible,
+            required_assignments=required_assignments,
+            required_core_assignments=required_core_assignments,
+            price=price,
+            **kwargs
+        )
+
     def set_up_sub_types(self):
         """
         subscription product, size and types
@@ -299,56 +320,44 @@ class JuntagricoTestCase(TestCase):
             'description': 'sub_desc'
         }
         self.sub_size = SubscriptionSize.objects.create(**sub_size_data)
-        sub_type_data = {
-            'name': 'sub_type_name',
-            'long_name': 'sub_type_long_name',
-            'size': self.sub_size,
-            'shares': 1,
-            'visible': True,
-            'required_assignments': 10,
-            'required_core_assignments': 3,
-            'price': 1000,
-            'description': 'sub_type_desc'}
-        self.sub_type = SubscriptionType.objects.create(**sub_type_data)
-        sub_type_data = {
-            'name': 'sub_type_name2',
-            'long_name': 'sub_type_long_name',
-            'size': self.sub_size,
-            'shares': 2,
-            'visible': True,
-            'required_assignments': 10,
-            'required_core_assignments': 3,
-            'price': 1000,
-            'description': 'sub_type_desc'}
-        self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
+        self.sub_type = self.create_sub_type(self.sub_size)
+        self.sub_type2 = self.create_sub_type(self.sub_size, shares=2)
+
+    @staticmethod
+    def create_sub(depot, activation_date=None, parts=None, **kwargs):
+        if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
+            kwargs['cancellation_date'] = activation_date
+        sub = Subscription.objects.create(
+            depot=depot,
+            activation_date=activation_date,
+            creation_date='2017-03-27',
+            start_date='2018-01-01',
+            **kwargs
+        )
+        if parts:
+            for part in parts:
+                SubscriptionPart.objects.create(
+                    subscription=sub,
+                    type=part,
+                    activation_date=activation_date,
+                    cancellation_date=kwargs.get('cancellation_date', None),
+                    deactivation_date=kwargs.get('deactivation_date', None)
+                )
+        return sub
+
+    @classmethod
+    def create_sub_now(cls, depot, **kwargs):
+        return cls.create_sub(depot, timezone.now().date(), **kwargs)
 
     def set_up_sub(self):
         """
         subscription
         """
-        sub_data = {'depot': self.depot,
-                    'future_depot': None,
-                    'activation_date': timezone.now().date(),
-                    'deactivation_date': None,
-                    'creation_date': '2017-03-27',
-                    'start_date': '2018-01-01',
-                    }
-        sub_data2 = {'depot': self.depot,
-                     'future_depot': None,
-                     'activation_date': None,
-                     'deactivation_date': None,
-                     'creation_date': '2017-03-27',
-                     'start_date': '2018-01-01'
-                     }
-        self.sub = Subscription.objects.create(**sub_data)
-        self.sub2 = Subscription.objects.create(**sub_data2)
-        self.member.join_subscription(self.sub)
-        self.sub.primary_member = self.member
-        self.sub.save()
+        self.sub = self.create_sub_now(self.depot)
+        self.sub2 = self.create_sub(self.depot)
+        self.member.join_subscription(self.sub, True)
         self.member3.join_subscription(self.sub)
-        self.member2.join_subscription(self.sub2)
-        self.sub2.primary_member = self.member2
-        self.sub2.save()
+        self.member2.join_subscription(self.sub2, True)
         SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type, activation_date=timezone.now().date())
 
     def set_up_extra_sub_types(self):

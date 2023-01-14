@@ -27,7 +27,7 @@ from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
-from juntagrico.util.management_list import get_changedate
+from juntagrico.util.management_list import get_changedate, prefetch_for_list
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.subs import subscriptions_with_assignments
 from juntagrico.util.views_admin import subscription_management_list
@@ -142,7 +142,7 @@ def my_mails_intern(request, mail_url, error_message=None):
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters_active(request):
-    members = MemberDao.active_members()
+    members = prefetch_for_list(MemberDao.active_members())
     renderdict = {
         'members': members,
         'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
@@ -152,7 +152,7 @@ def filters_active(request):
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters(request):
-    members = MemberDao.all_members()
+    members = prefetch_for_list(MemberDao.all_members())
     renderdict = {
         'members': members,
         'title': _('Alle {}').format(Config.vocabulary('member_pl'))
@@ -163,7 +163,7 @@ def filters(request):
 @permission_required('juntagrico.is_depot_admin')
 def filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
-    members = MemberDao.member_with_active_subscription_for_depot(depot)
+    members = prefetch_for_list(MemberDao.member_with_active_subscription_for_depot(depot))
     renderdict = {
         'can_send_mails': True,
         'members': members,
@@ -176,7 +176,7 @@ def filters_depot(request, depot_id):
 @permission_required('juntagrico.is_area_admin')
 def filters_area(request, area_id):
     area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
-    members = MemberDao.members_in_area(area)
+    members = prefetch_for_list(MemberDao.members_in_area(area))
     renderdict = {
         'can_send_mails': True,
         'members': members,

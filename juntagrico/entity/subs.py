@@ -1,6 +1,8 @@
+from datetime import timedelta
+
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, QuerySet, F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -10,6 +12,7 @@ from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.mailer import membernotification
@@ -95,16 +98,18 @@ class Subscription(Billable, SimpleStateModel):
     def size(self):
         delimiter = Config.sub_overview_format('delimiter')
         sformat = Config.sub_overview_format('format')
-        sizes = {}
-        for part in self.active_parts.all() or self.future_parts.all():
-            sizes[part.type] = part.type.size.units + sizes.get(part.type, 0)
+        types = SubscriptionType.objects.filter(subscription_parts__in=self.active_and_future_parts).annotate(
+            size_sum=Sum('size__units'),
+            size_name=F('size__name'),
+            product_name=F('size__product__name')
+        )
         return delimiter.join(
             [sformat.format(
-                product=key.size.product.name,
-                size=key.size.name,
-                type=key.name,
-                amount=value,
-            ) for key, value in sizes.items()]
+                product=t.product_name,
+                size=t.size_name,
+                type=t.name,
+                amount=t.size_sum,
+            ) for t in types]
         )
 
     @property
@@ -267,11 +272,31 @@ class Subscription(Billable, SimpleStateModel):
             ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),)
 
 
+class SubscriptionPartQuerySet(QuerySet):
+    def is_normal(self):
+        return self.filter(type__size__product__is_extra=False)
+
+
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     subscription = models.ForeignKey('Subscription', related_name='parts', on_delete=models.CASCADE,
                                      verbose_name=Config.vocabulary('subscription'))
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
                              verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
+
+    objects = SubscriptionPartQuerySet.as_manager()
+
+    def __str__(self):
+        try:
+            return Config.sub_overview_format('part_format').format(
+                product=self.type.size.product.name,
+                size=self.type.size.name,
+                size_long=self.type.size.long_name,
+                type=self.type.name,
+                type_long=self.type.long_name,
+                price=self.type.price
+            )
+        except KeyError as k:
+            return _(f'Fehler in der Einstellung SUB_OVERVIEW_FORMAT.part_format. {k} kann nicht aufgelöst werden.')
 
     @property
     def can_cancel(self):
@@ -285,9 +310,6 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         if not self.activation_date:
             return 0
         nominal_required = self.type.required_core_assignments if core else self.type.required_assignments
-        # on trial subs no discount applies
-        if self.type.trial_days:
-            return nominal_required
         # since when part is active in current business year
         start_business = start_of_business_year()
         start = max(self.activation_date, start_business)
@@ -295,8 +317,11 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         end_business = end = end_of_business_year()
         if self.deactivation_date:
             end = min(self.deactivation_date, end_business)
-        # percentage of business year, where part is active. Do not round here.
-        return nominal_required * (end - start) / (end_business - start_business)
+        elif self.type.trial_days:
+            end = min(self.activation_date + timedelta(self.type.trial_days - 1), end_business)
+        # percentage of business year (or trial period), where part is active. Do not round here.
+        period = timedelta(self.type.trial_days) or (end_business - start_business + timedelta(1))
+        return nominal_required * (end - start + timedelta(1)) / period
 
     def clean(self):
         check_sub_part_consistency(self)

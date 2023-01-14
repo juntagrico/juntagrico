@@ -40,7 +40,7 @@ class MemberAdmin(BaseAdmin):
     @single_element_action('Genau 1 ' + Config.vocabulary('member') + ' auswählen!')
     def impersonate_job(self, request, queryset):
         inst, = queryset.all()
-        return HttpResponseRedirect('/impersonate/%s/' % inst.user.id)
+        return HttpResponseRedirect(reverse('impersonate-start', args=(inst.user.id,)))
 
     @admin.display(description=Config.vocabulary('subscription'))
     def subscription_link(self, obj):
