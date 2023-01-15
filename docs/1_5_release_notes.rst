@@ -1,6 +1,20 @@
 Release Notes
 =============
 
+1.5.6
+-----
+
+Fixes
+^^^^^
+* Fix text readability of filter and management lists
+* Fix admin error on adding job without time without past jobs edit permission
+* Fix required assignment count for trial subs
+* Fix some typos
+
+Modified Templates
+^^^^^^^^^^^^^^^^^^
+* juntagrico/templates/cancelmembership.html
+
 1.5.5
 -----
 
