@@ -216,7 +216,7 @@ class CSSummaryView(FormView):
         # remember that user reached summary to come back here after editing
         cs_session.edit = True
         return super().dispatch(request, *args, **kwargs)
-    
+
     @transaction.atomic
     def form_valid(self, form):
         self.cs_session.main_member.comment = form.cleaned_data["comment"]
