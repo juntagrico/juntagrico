@@ -1,6 +1,6 @@
 from django import template
+from django.utils import timezone
 
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 
 register = template.Library()
@@ -17,33 +17,21 @@ def assignment_data(request):
     if member.subscription_current is None:
         return None
 
-    # collect assignments
-    member_assignments = AssignmentDao.assignments_for_member_current_business_year(member)
-    partner_assignments = []
-    for subscription_member in member.subscription_current.co_members(member):
-        partner_assignments.extend(
-            AssignmentDao.assignments_for_member_current_business_year(subscription_member)
-        )
-
-    # count assignments
-    assignments = {
-        'member_core': int(sum(a.amount for a in member_assignments if a.is_core())),
-        'member': int(sum(a.amount for a in member_assignments)),
-        'partner_core': int(sum(a.amount for a in partner_assignments if a.is_core())),
-        'partner': int(sum(a.amount for a in partner_assignments)),
-    }
-
-    # calculate remaining assignments
-    remaining = member.subscription_current.required_assignments -\
-        assignments['member'] - assignments['partner']
-    remaining_core = member.subscription_current.required_core_assignments -\
-        assignments['member_core'] - assignments['partner_core']
+    # calculate assignments
+    sub = member.subscription_current.get_with_assignments(of_member=member, count_jobs_until=timezone.now().date())
+    sub.remaining_assignments = max(
+        sub.required_assignments - sub.assignment_count,
+        sub.required_core_assignments - sub.core_assignment_count
+    )
 
     # for displaying
-    total = assignments['member'] + assignments['partner'] + max(remaining, remaining_core)
-    assignments.update({
-        'partner_core_bound': assignments['member'] + assignments['partner_core'],
-        'partner_bound': assignments['member'] + assignments['partner'],
-        'total': list(range(total)),
-    })
+    assignments = {
+        'member_core': int(sub.member_core_assignment_count),
+        'member': int(sub.member_assignment_count),
+        'partner_core': int(sub.core_assignment_count - sub.member_core_assignment_count),
+        'partner': int(sub.assignment_count - sub.member_assignment_count),
+        'partner_core_bound': int(sub.member_assignment_count + sub.core_assignment_count - sub.member_core_assignment_count),
+        'partner_bound': int(sub.assignment_count),
+        'total': list(range(int(sub.assignment_count + sub.remaining_assignments))),
+    }
     return assignments

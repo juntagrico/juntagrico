@@ -64,14 +64,14 @@
                 <tr>
                     <td class="members">
                         {% spaceless %}
-                            <a href="{% url 'admin:juntagrico_member_change' subscription.subscription.primary_member.id %}">
-                                <strong>{{ subscription.subscription.primary_member }}</strong>
+                            <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
+                                <strong>{{ subscription.primary_member }}</strong>
                             </a>
                         {% endspaceless %}
-                        {% with phone=subscription.subscription.primary_member.get_phone %}
+                        {% with phone=subscription.primary_member.get_phone %}
                             <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
                         {% endwith %}
-                        {% for recipient in subscription.subscription.other_recipients %}
+                        {% for recipient in subscription.other_recipients %}
                             <div class="co-member">
                             <a href="{% url 'admin:juntagrico_member_change' recipient.id %}">{{ recipient }}</a>
                             {% with phone=recipient.get_phone %}
@@ -81,35 +81,35 @@
                         {% endfor %}
                     </td>
                     <td>
-                        {{ subscription.subscription.activation_date|date:"Y-m-d" }}
+                        {{ subscription.activation_date|date:"Y-m-d" }}
                     </td>
                     <td>
-                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.subscription.id %}">
-                            {{ subscription.subscription.state_text }}
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
+                            {{ subscription.state_text }}
                         </a>
                     </td>
                     <td>
-                        {{ subscription.assignments|floatformat }}
+                        {{ subscription.assignment_count|floatformat }}
                     </td>
                     <td>
-                        {{ subscription.subscription.required_assignments }}
+                        {{ subscription.required_assignments|floatformat:0 }}
                     </td>
                     <td>
                         {{ subscription.assignments_progress|floatformat:0 }}%
                     </td>
                     {% if b_show_core and b_requires_core %}
-                        <th>
-                            {{ subscription.core_assignments|floatformat:0 }}
-                        </th>
-                        <th>
-                            {{ subscription.subscription.required_core_assignments }}
-                        </th>
-                        <th>
+                        <td>
+                            {{ subscription.core_assignment_count|floatformat }}
+                        </td>
+                        <td>
+                            {{ subscription.required_core_assignments|floatformat:0 }}
+                        </td>
+                        <td>
                             {{ subscription.core_assignments_progress|floatformat:0 }}%
-                        </th>
+                        </td>
                     {% endif %}
                     <td class="email d-none">
-                            {% for recipient in subscription.subscription.recipients %}
+                            {% for recipient in subscription.recipients %}
                                 {{ recipient.email }}
                                 {% if not forloop.last %}
                                     ,

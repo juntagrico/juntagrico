@@ -21,12 +21,12 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate, prefetch_for_list
 from juntagrico.util.pdf import return_pdf_http
-from juntagrico.util.subs import subscriptions_with_assignments
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
 from juntagrico.view_decorators import any_permission_required
@@ -332,11 +332,11 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
     worksheet_s.write_string(0, 14, str(_('Preis')))
 
-    subs = subscriptions_with_assignments(SubscriptionDao.all_subscritions())
+    subs = SubscriptionDao.all_subscritions().annotate_assignments()
 
     row = 1
     for sub in subs:
-        primary_member = sub['subscription'].primary_member
+        primary_member = sub.primary_member
         if primary_member is not None:
             name = primary_member.get_name()
             email = primary_member.email
@@ -348,21 +348,21 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
-        worksheet_s.write_string(row, 0, sub['subscription'].size)
+        worksheet_s.write_string(row, 0, sub.size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
         worksheet_s.write_string(row, 3, phone)
         worksheet_s.write_string(row, 4, mobile)
-        worksheet_s.write_string(row, 5, sub['subscription'].other_recipients_names)
-        worksheet_s.write_string(row, 6, sub['subscription'].state_text)
-        worksheet_s.write_string(row, 7, sub['subscription'].depot.name)
-        worksheet_s.write(row, 8, sub.get('assignments'))
-        worksheet_s.write(row, 9, sub['subscription'].required_assignments)
-        worksheet_s.write(row, 10, sub.get('assignments_progress'))
-        worksheet_s.write(row, 11, sub.get('core_assignments'))
-        worksheet_s.write(row, 12, sub['subscription'].required_core_assignments)
-        worksheet_s.write(row, 13, sub.get('core_assignments_progress'))
-        worksheet_s.write(row, 14, sub['subscription'].price)
+        worksheet_s.write_string(row, 5, sub.other_recipients_names)
+        worksheet_s.write_string(row, 6, sub.state_text)
+        worksheet_s.write_string(row, 7, sub.depot.name)
+        worksheet_s.write(row, 8, sub.assignment_count)
+        worksheet_s.write(row, 9, sub.required_assignments)
+        worksheet_s.write(row, 10, sub.assignments_progress)
+        worksheet_s.write(row, 11, sub.core_assignment_count)
+        worksheet_s.write(row, 12, sub.required_core_assignments)
+        worksheet_s.write(row, 13, sub.core_assignments_progress)
+        worksheet_s.write(row, 14, sub.price)
         row += 1
 
     workbook.close()
@@ -517,7 +517,7 @@ def sub_inconsistencies(request):
 
 @permission_required('juntagrico.change_assignment')
 def assignments(request):
-    management_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
+    management_list = Subscription.objects.annotate_assignments()
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)

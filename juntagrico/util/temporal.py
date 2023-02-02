@@ -144,3 +144,12 @@ month_choices = ((1, _('Januar')),
                  (10, _('Oktober')),
                  (11, _('November')),
                  (12, _('Dezember')))
+
+
+def default_to_business_year(func):
+    """
+    decorator: defaults the first 2 arguments to start and end of current business year.
+    """
+    def wrapper(start=None, end=None, *args, **kwargs):
+        return func(start or start_of_business_year(), end or end_of_business_year(), *args, **kwargs)
+    return wrapper
