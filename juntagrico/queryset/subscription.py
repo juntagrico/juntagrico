@@ -1,7 +1,7 @@
 import datetime
 
 from django.db import connection
-from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, OuterRef, IntegerField
+from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, OuterRef
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
