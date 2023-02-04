@@ -21,11 +21,12 @@ def assignment_data(request):
     sub = member.subscription_current.get_with_assignments(of_member=member, count_jobs_until=timezone.now().date())
     sub.remaining_assignments = max(
         sub.required_assignments - sub.assignment_count,
-        sub.required_core_assignments - sub.core_assignment_count
+        sub.required_core_assignments - sub.core_assignment_count,
+        0  # negative values would hide additionally made assignments
     )
 
     # for displaying
-    assignments = {
+    return {
         'member_core': int(sub.member_core_assignment_count),
         'member': int(sub.member_assignment_count),
         'partner_core': int(sub.core_assignment_count - sub.member_core_assignment_count),
@@ -34,4 +35,3 @@ def assignment_data(request):
         'partner_bound': int(sub.assignment_count),
         'total': list(range(int(sub.assignment_count + sub.remaining_assignments))),
     }
-    return assignments

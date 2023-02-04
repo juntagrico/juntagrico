@@ -27,6 +27,8 @@ class AssignmentTests(JuntagricoTestCase):
             self.create_sub(self.depot, date(day=15, month=12, year=self.year - 1), [self.sub_trial_type]),
             # ordered, not activated sub
             self.create_sub(self.depot, parts=[self.sub_type]),
+            # multiple parts
+            self.create_sub(self.depot, self.activation_date, parts=[self.sub_type, self.sub_type]),
         ]
 
     def testRequiredAssignments(self):
@@ -53,4 +55,6 @@ class AssignmentTests(JuntagricoTestCase):
         # ordered, not activated sub
         self.assertEqual(subs[6].required_assignments, 0)
         self.assertEqual(subs[6].required_core_assignments, 0)
-        # TODO: test subscriptions with multiple parts
+        # multiple parts
+        self.assertEqual(subs[7].required_assignments, 20)
+        self.assertEqual(subs[7].required_core_assignments, 6)
