@@ -16,7 +16,7 @@ class MemberAdmin(BaseAdmin):
     search_fields = ['first_name', 'last_name', 'email', 'phone', 'mobile_phone',
                      'addr_street', 'addr_zipcode', 'addr_location', 'id']
     readonly_fields = ['user']
-    inlines = [ SubscriptionMembershipInline ]
+    inlines = [SubscriptionMembershipInline]
     fieldsets = [
         (None, {'fields': ['first_name', 'last_name', 'birthday']}),
         (_('Kontakt'), {'fields': ['email', 'confirmed', 'reachable_by_email', 'phone', 'mobile_phone']}),
