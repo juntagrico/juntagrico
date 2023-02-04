@@ -113,7 +113,6 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
                 default=F('parts__duration_in_period_float') / F('parts__reference_duration')
             )
         ).annotate(  # annotate the final results
-            parts_type_trial_duration=F('parts__type__trial_duration'),
             required_assignments=Round(Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)),
             required_core_assignments=Round(Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)),
         )
