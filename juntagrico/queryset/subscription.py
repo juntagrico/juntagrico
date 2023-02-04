@@ -33,7 +33,7 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
 
 class SubscriptionQuerySet(PolymorphicQuerySet):
     microseconds_in_day = 24 * 3600 * 10 ** 6
-    days_in_year = 365,  # ignore leap years
+    days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)
 
     @method_decorator(default_to_business_year)
@@ -72,7 +72,7 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
         """
         return self.alias(
             # convert trial days into duration. Minus 1 to end up at the end of the last trial day, e.g., 1. + 30 days = 30. (not 31.)
-            parts__type__trial_duration=ExpressionWrapper(F('parts__type__trial_days') * self.one_day - self.one_day, DurationField()),
+            parts__type__trial_duration=ExpressionWrapper(F('parts__type__trial_days') * self.one_day, DurationField()) - self.one_day,
             # find (assumed) deactivation date of part
             parts__forecast_final_date=Least(
                 end,  # limit final date to period of interest
@@ -95,7 +95,7 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
                 # Tested on postgres (ExtractDay) and SQLite (Cast)
                 ExtractDay('parts__duration_in_period')
                 if connection.features.has_native_duration_field else
-                Cast('parts__duration_in_period', IntegerField()) / self.microseconds_in_day,
+                Cast('parts__duration_in_period', FloatField()) / self.microseconds_in_day,
                 output_field=FloatField()
             ),
             # number of days within which the assignments are required
@@ -113,6 +113,7 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
                 default=F('parts__duration_in_period_float') / F('parts__reference_duration')
             )
         ).annotate(  # annotate the final results
+            parts_type_trial_duration=F('parts__type__trial_duration'),
             required_assignments=Round(Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)),
             required_core_assignments=Round(Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)),
         )
