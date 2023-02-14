@@ -1,5 +1,4 @@
 -r requirements.txt
-psycopg2
 coverage
 django-coverage-plugin
 faker

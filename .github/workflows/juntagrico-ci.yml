@@ -35,6 +35,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+          MYSQL_DATABASE: mysql
+        ports: ['3306:3306']
 
     steps:
     - uses: actions/checkout@v3
@@ -45,6 +51,7 @@ jobs:
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements-local.txt
+        pip install psycopg2 mysqlclient
     - name: flake 8
       run: |
         flake8 --count --extend-ignore E501 juntagrico
@@ -67,6 +74,11 @@ jobs:
         coverage xml
         ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
         ./cc-test-reporter upload-coverage -i coverageupload
+    - name: run tests on mysql
+      run: |
+        python -m manage test
+      env:
+        GITHUB_MYSQL: 1
     - name: Slack notification
       if: ${{  env.SLACK_WEBHOOK != null && github.event_name == 'push' && always()}}
       env:
