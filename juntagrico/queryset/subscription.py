@@ -79,7 +79,7 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
             return self
         else:
             raise ValueError('required assignments can not be assigned twice with 2 different date ranges.')
-        #if self.query.annotations.keys():
+
         return self.alias(
             # convert trial days into duration. Minus 1 to end up at the end of the last trial day, e.g., 1. + 30 days = 30. (not 31.)
             parts__type__trial_duration=ExpressionWrapper(F('parts__type__trial_days') * self.one_day, DurationField()) - self.one_day,
