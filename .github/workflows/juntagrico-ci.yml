@@ -34,6 +34,12 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+          MYSQL_DATABASE: mysql
+        ports: ['3306:3306']
 
     steps:
     - uses: actions/checkout@v3
@@ -44,6 +50,7 @@ jobs:
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements.txt
+        pip install psycopg2 mysqlclient
     - name: ruff
       run: |
         ruff check juntagrico
@@ -53,6 +60,11 @@ jobs:
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
         ./cc-test-reporter before-build
+    - name: run tests on mysql
+      run: |
+        python -m manage test
+      env:
+        GITHUB_MYSQL: 1
     - name: run tests on postgres
       run: |
         python -m django makemigrations --noinput
