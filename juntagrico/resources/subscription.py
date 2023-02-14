@@ -26,7 +26,7 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
     price = Field('price', widget=DecimalWidget())
 
     def update_queryset(self, queryset):
-        return Subscription.objects.annotate_assignments(self.start_date, self.end_date)
+        return Subscription.objects.annotate_assignments_progress(self.start_date, self.end_date)
 
     class Meta:
         model = Subscription
