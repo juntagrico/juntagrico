@@ -36,30 +36,17 @@ DATABASES = {
     }
 }
 
-# settings for CI
 if os.environ.get('GITHUB_WORKFLOW'):
-    if os.environ.get('GITHUB_MYSQL'):
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME': 'mysql',
-                'USER': 'root',
-                'PASSWORD': 'mysql',
-                'HOST': '127.0.0.1',
-                'PORT': '3306',
-            }
+    DATABASES = {
+        'default': {
+           'ENGINE': 'django.db.backends.postgresql',
+           'NAME': 'testdb',
+           'USER': 'postgres',
+           'PASSWORD': 'postgres',
+           'HOST': '127.0.0.1',
+           'PORT': '5432',
         }
-    else:
-        DATABASES = {
-            'default': {
-               'ENGINE': 'django.db.backends.postgresql',
-               'NAME': 'testdb',
-               'USER': 'postgres',
-               'PASSWORD': 'postgres',
-               'HOST': '127.0.0.1',
-               'PORT': '5432',
-            }
-        }
+    }
 
 ROOT_URLCONF = 'testurls'
 
