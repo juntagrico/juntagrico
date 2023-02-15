@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+Dev
+-----
+
+Fixes
+^^^^^
+* Signup call to db now in one transaction to prevent user creation without member creation
+
 1.5.6
 -----
 
