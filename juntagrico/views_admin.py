@@ -332,7 +332,7 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
     worksheet_s.write_string(0, 14, str(_('Preis')))
 
-    subs = SubscriptionDao.all_subscritions().annotate_assignments()
+    subs = SubscriptionDao.all_subscritions().annotate_assignments_progress().select_related('primary_member')
 
     row = 1
     for sub in subs:
@@ -517,7 +517,7 @@ def sub_inconsistencies(request):
 
 @permission_required('juntagrico.change_assignment')
 def assignments(request):
-    management_list = Subscription.objects.annotate_assignments()
+    management_list = Subscription.objects.annotate_assignments_progress().select_related('primary_member')
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)

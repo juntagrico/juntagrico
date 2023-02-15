@@ -124,13 +124,6 @@ class Subscription(Billable, SimpleStateModel):
     def subscription_amount_future(self, size):
         return self.calc_subscription_amount(self.future_parts, size)
 
-    def get_with_assignments(self, *args, **kwargs):
-        """
-        calculate assignments of this sub and write result into properties.
-        If applying this on multiple elements use `annotate_assignments()` on queryset instead.
-        """
-        return Subscription.objects.annotate_assignments(*args, **kwargs).get(pk=self)
-
     @property
     def price(self):
         result = 0
