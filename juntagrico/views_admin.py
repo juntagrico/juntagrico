@@ -547,7 +547,7 @@ def manage_list(request, success=False):
 
 @permission_required('juntagrico.can_generate_lists')
 def manage_list_generate(request, future=False):
-    call_command('generate_depot_list', force=True, future=future)
+    call_command('generate_depot_list', force=True, future=future, no_future=not future)
     return redirect(reverse('manage-list-success'))
 
 
