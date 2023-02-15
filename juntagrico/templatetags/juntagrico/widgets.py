@@ -60,16 +60,17 @@ def assignments(member, future=None, start=None, end=None, subscription=None):
     sub = subscription or member.subscription_current
     if sub:
         today = timezone.now().date()
-        # annotate done assignments
-        subs = Subscription.objects.annotate_assignments(start, end, member,
-                                                         count_jobs_until=None if future is None else today)
+        count_jobs_until = None if future is None else today
+        # annotate assignments of subscription with progress
+        subs = Subscription.objects.annotate_assignments_progress(start, end, count_jobs_until=count_jobs_until)
+        # annotate member assignment count and progress
+        subs = subs.annotate_assignments_progress(start, end, member, count_jobs_until, prefix='member_')
         if future is True:
-            # annotate future assignments separately
-            subs = subs.annotate_assignment_counts(today + datetime.timedelta(1), end, member, prefix='future_')
-            # annotate future progress
-            subs = subs.annotate_assignments_progress('future_').annotate_assignments_progress('future_member_')
-        # annotate member progress
-        subs = subs.annotate_assignments_progress('member_')
+            count_jobs_from = today + datetime.timedelta(1)
+            # annotate future assignment count and progress of subscription separately
+            subs = subs.annotate_assignments_progress(start, end, count_jobs_from=count_jobs_from, prefix='future_')
+            # annotate future member assignment count and progress
+            subs = subs.annotate_assignments_progress(start, end, member, count_jobs_from=count_jobs_from, prefix='future_member_')
         # get result
         sub = subs.get(pk=sub)
 
