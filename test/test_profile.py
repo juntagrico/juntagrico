@@ -13,6 +13,8 @@ class ProfileTests(JuntagricoTestCase):
         self.member_without_shares = self.create_member('member_without_shares@email.org')
         self.member_with_unpaid_share = self.create_member('member_with_unpaid_share@email.org')
         self.unpaid_share = Share.objects.create(member=self.member_with_unpaid_share)
+        self.member_with_cancelled_share = self.create_member('member_with_cancelled_share@email.org')
+        self.cancelled_share = self.create_paid_and_cancelled_share(self.member_with_cancelled_share)
         self.set_up_superuser()
 
     def testProfile(self):
@@ -71,6 +73,16 @@ class ProfileTests(JuntagricoTestCase):
         self.member_without_shares.refresh_from_db()
         self.assertTrue(self.member_without_shares.inactive)
         self._testDeactivateMembership(self.member_without_shares)
+
+    def testCancelMembershipWithCancelledShares(self):
+        self.assertPost(reverse('cancel-membership'), code=302, member=self.member_with_cancelled_share)
+        self.member_with_cancelled_share.refresh_from_db()
+        self.assertTrue(self.member_with_cancelled_share.canceled)
+        # pay back the share
+        self.cancelled_share.refresh_from_db()
+        self.cancelled_share.payback_date = self.cancelled_share.termination_date
+        self.cancelled_share.save()
+        self._testDeactivateMembership(self.member_with_cancelled_share)
 
     def _testDeactivateMembership(self, member):
         self.assertPost(reverse('member-deactivate', args=(member.pk,)), member=self.admin, code=302)
