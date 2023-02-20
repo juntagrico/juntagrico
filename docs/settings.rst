@@ -80,6 +80,8 @@ ORGANISATION_PHONE
 
 INFO_EMAIL
 ^^^^^^^^^^
+  DEPRECATED: Use the CONTACTS setting instead
+
   The general email of your organisation
 
   Type: String
@@ -89,6 +91,36 @@ INFO_EMAIL
   .. code-block:: python
 
     "info@juntagrico.juntagrico"
+
+CONTACTS
+^^^^^^^^
+
+  Specifies the email addresses at which members can contact your organisation.
+
+  The setting takes a dictionary of key email pairs, where each key represents the topic for which the email is shown.
+  e.g. the email address in ``'for_members'`` is used in places that regard the membership.
+  For keys without a specified email address, the ``'general'`` email address is shown.
+
+  example value
+
+  .. code-block:: python
+
+        {
+            'general': "info@juntagrico.juntagrico",
+            'for_members': "member@juntagrico.juntagrico",
+            'for_subscriptions': "subscription@juntagrico.juntagrico",
+            'for_shares': "share@juntagrico.juntagrico",
+            'technical': "it@juntagrico.juntagrico",
+        }
+
+  default value
+
+  .. code-block:: python
+
+        {
+            'general': "info@juntagrico.juntagrico",
+        }
+
 
 SERVER_URL
 ^^^^^^^^^^
