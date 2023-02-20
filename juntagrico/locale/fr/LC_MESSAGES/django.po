@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-20 07:09-0600\n"
+"POT-Creation-Date: 2023-01-14 22:31-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,7 +120,7 @@ msgid "Kein neuer Job fällt zwischen Anfangs- und Enddatum"
 msgstr ""
 
 #: juntagrico/admins/forms/job_copy_form.py:97
-#: juntagrico/admins/job_admin.py:32
+#: juntagrico/admins/job_admin.py:31
 msgid "Neue Jobs können nicht in der Vergangenheit liegen."
 msgstr ""
 
@@ -155,20 +155,20 @@ msgid ""
 msgstr ""
 
 #: juntagrico/admins/inlines/subscription_part_inlines.py:36
-#: juntagrico/entity/subs.py:296
+#: juntagrico/entity/subs.py:298
 msgid "{} Bestandteil"
 msgstr ""
 
 #: juntagrico/admins/inlines/subscription_part_inlines.py:37
-#: juntagrico/entity/subs.py:297
+#: juntagrico/entity/subs.py:299
 msgid "{} Bestandteile"
 msgstr ""
 
-#: juntagrico/admins/job_admin.py:64
+#: juntagrico/admins/job_admin.py:63
 msgid "Job mehrfach kopieren..."
 msgstr ""
 
-#: juntagrico/admins/job_admin.py:70
+#: juntagrico/admins/job_admin.py:69
 msgid "Jobs kopieren"
 msgstr ""
 
@@ -909,7 +909,7 @@ msgid ""
 msgstr ""
 
 #: juntagrico/entity/member.py:61 juntagrico/entity/share.py:44
-#: juntagrico/entity/subs.py:40
+#: juntagrico/entity/subs.py:42
 #: juntagrico/templates/management_lists/canceledlist.html:28
 #: juntagrico/templates/management_lists/member_canceledlist.html:35
 #: juntagrico/templates/management_lists/share_canceledlist.html:54
@@ -918,7 +918,7 @@ msgid "Notizen"
 msgstr ""
 
 #: juntagrico/entity/member.py:62 juntagrico/entity/share.py:45
-#: juntagrico/entity/subs.py:41
+#: juntagrico/entity/subs.py:43
 msgid "Notizen für Administration. Nicht sichtbar für {}"
 msgstr ""
 
@@ -926,24 +926,24 @@ msgstr ""
 msgid "Mitglieder-Nummer"
 msgstr ""
 
-#: juntagrico/entity/member.py:220 juntagrico/entity/subs.py:256
+#: juntagrico/entity/member.py:223 juntagrico/entity/subs.py:258
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
 msgstr ""
 
-#: juntagrico/entity/member.py:226
+#: juntagrico/entity/member.py:229
 msgid "Beitrittsdatum"
 msgstr ""
 
-#: juntagrico/entity/member.py:227
+#: juntagrico/entity/member.py:230
 msgid "Austrittsdatum"
 msgstr ""
 
-#: juntagrico/entity/member.py:234
+#: juntagrico/entity/member.py:237
 msgid "{}-Mitgliedschaft"
 msgstr ""
 
-#: juntagrico/entity/member.py:235
+#: juntagrico/entity/member.py:238
 msgid "{}-Mitgliedschaften"
 msgstr ""
 
@@ -1021,44 +1021,44 @@ msgstr ""
 msgid "Anteilschein {0} ({1})"
 msgstr ""
 
-#: juntagrico/entity/subs.py:27
+#: juntagrico/entity/subs.py:29
 msgid "Zukünftiges {}"
 msgstr ""
 
-#: juntagrico/entity/subs.py:31
+#: juntagrico/entity/subs.py:33
 msgid "Haupt-{}-BezieherIn"
 msgstr ""
 
-#: juntagrico/entity/subs.py:32
+#: juntagrico/entity/subs.py:34
 #: juntagrico/templates/snippets/snippet_subscription_change_nickname.html:7
 msgid "Spitzname"
 msgstr ""
 
-#: juntagrico/entity/subs.py:33
+#: juntagrico/entity/subs.py:35
 msgid "Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste."
 msgstr ""
 
-#: juntagrico/entity/subs.py:36
+#: juntagrico/entity/subs.py:38
 #: juntagrico/templates/createsubscription/select_start_date.html:30
 #: juntagrico/templates/createsubscription/summary.html:66
 msgid "Gewünschtes Startdatum"
 msgstr ""
 
-#: juntagrico/entity/subs.py:38
+#: juntagrico/entity/subs.py:40
 msgid "Gewünschtes Enddatum"
 msgstr ""
 
-#: juntagrico/entity/subs.py:44
+#: juntagrico/entity/subs.py:46
 #, python-brace-format
 msgid "Abo ({1}) {0}"
 msgstr ""
 
-#: juntagrico/entity/subs.py:257
+#: juntagrico/entity/subs.py:259
 #, python-brace-format
 msgid "Benutzer kann deaktivierte {0} ändern"
 msgstr ""
 
-#: juntagrico/entity/subs.py:264 juntagrico/entity/subtypes.py:105
+#: juntagrico/entity/subs.py:266 juntagrico/entity/subtypes.py:105
 #, python-brace-format
 msgid "{0}-Typ"
 msgstr ""
@@ -1639,7 +1639,7 @@ msgid "Beende dies hier"
 msgstr ""
 
 #: juntagrico/templates/cancelmembership.html:7
-msgid "Künde deine Mitgliedschaft"
+msgid "Kündige deine Mitgliedschaft"
 msgstr ""
 
 #: juntagrico/templates/cancelmembership.html:18
@@ -1656,7 +1656,7 @@ msgstr ""
 
 #: juntagrico/templates/cancelmembership.html:33
 #: juntagrico/templates/cancelmembership.html:47
-msgid "Du erhälst keine Emails mehr"
+msgid "Du erhältst keine Emails mehr"
 msgstr ""
 
 #: juntagrico/templates/cancelmembership.html:36
