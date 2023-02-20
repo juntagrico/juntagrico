@@ -73,9 +73,13 @@ class EmailSender:
 
     @staticmethod
     def get_sender(*args, **kwargs):
-        kwargs.setdefault("from_email", Config.info_email())
+        kwargs.setdefault("from_email", Config.contacts('general'))
         email = EmailMultiAlternatives(*args, **kwargs)
         return EmailSender(email)
+
+    @staticmethod
+    def get_sender_for_contact(contact, *args, **kwargs):
+        return EmailSender.get_sender(*args, from_email=Config.contacts(contact), **kwargs)
 
     @staticmethod
     def get_sender_from_email(email):

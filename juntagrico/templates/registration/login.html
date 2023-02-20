@@ -29,6 +29,11 @@
                             {{ ferror|safe }}
                         {% endfor %}
                     {% endfor %}
+                    <br>
+                    {% translate 'Brauchst du Hilfe? Melde dich bei' %}
+                    <a href="mailto:{% contacts "technical" %}?subject={% trans "Ich kann mich nicht einloggen" %} {% config "server_url" %}">
+                        {% contacts "technical" %}
+                    </a>
                 </div>
             {% endif %}
             <div class="form-group row">
