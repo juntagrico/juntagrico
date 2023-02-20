@@ -89,7 +89,7 @@
                         </a>
                     </td>
                     <td>
-                        {{ subscription.assignments|floatformat }}
+                        {{ subscription.assignments|floatformat:-2 }}
                     </td>
                     <td>
                         {{ subscription.subscription.required_assignments }}
@@ -99,7 +99,7 @@
                     </td>
                     {% if b_show_core and b_requires_core %}
                         <th>
-                            {{ subscription.core_assignments|floatformat:0 }}
+                            {{ subscription.core_assignments|floatformat:-2 }}
                         </th>
                         <th>
                             {{ subscription.subscription.required_core_assignments }}
