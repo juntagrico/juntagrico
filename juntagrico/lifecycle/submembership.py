@@ -62,6 +62,6 @@ def check_sub_membership_consistency_ms(member, subscription, join_date, leave_d
             Q(join_date__lte=join_date, leave_date__gte=join_date)
     if memberships.filter(check).exists():
         raise ValidationError(
-            _('Diese/r/s {} hat ein/e/n zeitlich überlappende/n/s {}').format(Config.vocabulary('member'),
-                                                                              Config.vocabulary('subscription')),
+            _('{} kann nur 1 {} gleichzeitig haben.').format(Config.vocabulary('member'),
+                                                             Config.vocabulary('subscription')),
             code='invalid')
