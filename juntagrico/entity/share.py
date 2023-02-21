@@ -9,7 +9,10 @@ from juntagrico.lifecycle.share import check_share_consistency
 
 reason_for_acquisition_choices = ((1, _('Gründungsmitglied')),
                                   (2, _('Beitrittserklärung')),
-                                  (3, _('Beitritts- und Übertragungserklärung')))
+                                  (3, _('Beitritts- und Übertragungserklärung')),
+                                  (4, _('Übertragungserklärung')),
+                                  (5, _('Erhöhung der Anteile')),
+                                  (6, _('Betriebsbeteiligung - Lohn')))
 
 reason_for_cancellation_choices = ((1, _('Kündigung')),
                                    (2, _('Kündigung und Übertragungserklärung')),
