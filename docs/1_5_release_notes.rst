@@ -1,12 +1,16 @@
 Release Notes
 =============
 
-Dev
+1.5.7
 -----
 
 Fixes
 ^^^^^
+* Redirect to login page when opening versions page instead of returning a 500 error page
+* Fix memeber cancellation if memebr has cancelled but not paid back share(s)
+* Fix display of special characters in plain text emails
 * Signup call to db now in one transaction to prevent user creation without member creation
+* Fix typo in share certificate
 
 1.5.6
 -----
