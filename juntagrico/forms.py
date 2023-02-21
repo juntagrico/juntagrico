@@ -73,7 +73,9 @@ class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
         now = timezone.now().date()
         self.instance.end_date = now
         self.instance.cancellation_date = now
-        self.instance.deactivation_date = now
+        # if member has cancelled but not yet paid back share, can't deactivate member yet.
+        if not self.instance.is_cooperation_member:
+            self.instance.deactivation_date = now
         if (sub := self.instance.subscription_current) is not None:
             self.instance.leave_subscription(sub)
         if (sub := self.instance.subscription_future) is not None:
@@ -163,7 +165,7 @@ class MemberProfileForm(ModelForm):
         return mark_safe(
             escape(
                 text
-            ).format('<a href="mailto:{0}">{0}</a>'.format(Config.info_email()))
+            ).format('<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members')))
         )
 
     def clean_iban(self):
@@ -299,7 +301,7 @@ class CoMemberBaseForm(MemberBaseForm):
                 raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktiv\
                  {}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
                     Config.vocabulary('subscription'),
-                    '<a href="mailto:{0}">{0}</a>'.format(Config.info_email()),
+                    '<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
                     Config.vocabulary('member_type_pl'),
                     Config.vocabulary('co_member_pl')
                 )))

@@ -9,7 +9,6 @@
 {% endblock %}
 {% block content %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
-    {% config "info_email" as c_info_email %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% config "enable_shares" as enable_shares %}
@@ -44,7 +43,7 @@
             {% else %}
                 <ul>
                     <li>
-                        {% trans "Du erhälst keine Emails mehr" %}
+                        {% trans "Du erhältst keine Emails mehr" %}
                     </li>
                     <li>
                         {% blocktrans %}Du wirst bei deinem/r {{ v_subscription }} ausgetragen{% endblocktrans %}

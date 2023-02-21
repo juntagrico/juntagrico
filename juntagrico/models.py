@@ -28,10 +28,16 @@ class SpecialRoles(models.Model):
     '''
 
     class Meta:
+        managed = False
+        default_permissions = ()
         permissions = (('is_operations_group', _('Benutzer ist in der BG')),
                        ('is_book_keeper', _('Benutzer ist Buchhalter')),
-                       ('can_send_mails', _('Benutzer kann im System Emails versenden')),
-                       ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),
+                       ('can_send_mails', _('Benutzer kann im System E-Mails versenden')),
+                       ('can_use_general_email', _('Benutzer kann allgemeine E-Mail-Adresse verwenden')),
+                       ('can_use_for_members_email', _('Benutzer kann E-Mail-Adresse "for_members" verwenden')),
+                       ('can_use_for_subscriptions_email', _('Benutzer kann E-Mail-Adresse "for_subscription" verwenden')),
+                       ('can_use_for_shares_email', _('Benutzer kann E-Mail-Adresse "for_shares" verwenden')),
+                       ('can_use_technical_email', _('Benutzer kann technische E-Mail-Adresse verwenden')),
                        ('depot_list_notification',
                         _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),
                        ('can_view_exports', _('Benutzer kann Exporte öffnen')),
