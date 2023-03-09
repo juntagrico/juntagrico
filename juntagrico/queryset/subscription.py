@@ -35,6 +35,11 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
     days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._start_required = False
+        self._end_required = False
+
     @method_decorator(default_to_business_year)
     def annotate_assignment_counts(self, start=None, end=None, of_member=None, prefix=''):
         """
@@ -46,19 +51,14 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
         :return: the queryset of subscriptions with annotations `assignment_count` and `core_assignment_count`.
         """
         # Using subquery as otherwise the sum would be wrong when used in combination with the annotations of annotate_required_assignments
-        qs = self
-        if of_member:
-            qs = qs.annotate(**{
-                prefix + 'member_assignment_count': Coalesce(Subquery(assignments_in_subscription_membership(start, end, member=of_member)), 0.0),
-                prefix + 'member_core_assignment_count': Coalesce(Subquery(assignments_in_subscription_membership(
-                    start, end,
-                    member=of_member,
-                    member__assignment__core_cache=True
-                )), 0.0)
-            })
-        return qs.annotate(**{
-            prefix + 'assignment_count': Coalesce(Subquery(assignments_in_subscription_membership(start, end)), 0.0),
-            prefix + 'core_assignment_count': Coalesce(Subquery(assignments_in_subscription_membership(start, end, member__assignment__core_cache=True)), 0.0),
+        member = {'member': of_member} if of_member else {}
+        return self.annotate(**{
+            prefix + 'assignment_count': Coalesce(Subquery(assignments_in_subscription_membership(start, end, **member)), 0.0),
+            prefix + 'core_assignment_count': Coalesce(Subquery(assignments_in_subscription_membership(
+                start, end,
+                member__assignment__core_cache=True,
+                **member
+            )), 0.0)
         })
 
     @method_decorator(default_to_business_year)
@@ -69,6 +69,16 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
         :param end: end of period of interest, default: end of current business year.
         :return: the queryset of subscriptions with annotations `required_assignments` and `required_core_assignments`.
         """
+        if self._start_required is False and self._end_required is False:
+            # first run: remember date range and apply annotations
+            self._start_required = start
+            self._end_required = end
+        elif self._start_required == start and self._end_required == end:
+            # not first run and date range matches. No need to reapply annotations.
+            return self
+        else:
+            raise ValueError('required assignments can not be assigned twice with 2 different date ranges.')
+
         return self.alias(
             # convert trial days into duration. Minus 1 to end up at the end of the last trial day, e.g., 1. + 30 days = 30. (not 31.)
             parts__type__trial_duration=ExpressionWrapper(F('parts__type__trial_days') * self.one_day, DurationField()) - self.one_day,
@@ -116,14 +126,24 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
             required_core_assignments=Round(Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)),
         )
 
-    def annotate_assignments_progress(self, prefix=''):
+    @method_decorator(default_to_business_year)
+    def annotate_assignments_progress(self, start=None, end=None, of_member=None, count_jobs_until=None, prefix=''):
         """
-        Calculate progress, i.e. percentage of done vs. required assignments
-        can only be applied in combination with `annotate_required_assignments` and `annotate_assignment_counts`
-        :param prefix: prefix to be used on the `assignment_count` and `core_assignment_count`. Use it to match the prefix applied with `annotate_assignment_counts`. default=''
-        :return: the queryset of subscriptions with annotations `assignments_progress` and `core_assignments_progress`
+        annotate required and made assignments and calculated progress for core and in general
+        count_jobs_until: only account for jobs until this date.
+        :param start: beginning of period of interest, default: start of current business year.
+        :param end: end of period of interest, default: end of current business year.
+        :param of_member: if set, assignments of the given member are also counted and stored in `member_assignment_count` and `member_core_assignment_count`.
+        :param count_jobs_until: if set, `annotate_assignment_counts` will only count until this date instead of end.
+        :return: the queryset of subscriptions with annotations `assignment_count`, `core_assignment_count`, `required_assignments`, `required_core_assignments`,
+        `assignments_progress` and `core_assignments_progress`.
+        :param prefix: prefix for the resulting attribute names `assignment_count`, `core_assignment_count`, `assignments_progress`, `core_assignments_progress`. default=''
+        :return: the queryset of subscriptions with annotations `assignments_progress`, `core_assignments_progress`, `assignments_progress`,
+        `core_assignments_progress`, `assignments_progress` and `core_assignments_progress`
         """
-        return self.annotate(**{
+        return self.annotate_required_assignments(start, end).annotate_assignment_counts(
+            start, count_jobs_until or end, of_member, prefix
+        ).annotate(**{
             prefix + 'assignments_progress': Case(
                 When(required_assignments=0,
                      then=100),
@@ -137,18 +157,3 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
                 output_field=FloatField()
             )
         })
-
-    @method_decorator(default_to_business_year)
-    def annotate_assignments(self, start=None, end=None, of_member=None, count_jobs_until=None):
-        """
-        annotate required and made assignments and calculated progress for core and in general
-        count_jobs_until: only account for jobs until this date.
-        :param start: beginning of period of interest, default: start of current business year.
-        :param end: end of period of interest, default: end of current business year.
-        :param of_member: if set, assignments of the given member are also counted and stored in `member_assignment_count` and `member_core_assignment_count`.
-        :param count_jobs_until: if set, `annotate_assignment_counts` will only count until this date instead of end.
-        :return: the queryset of subscriptions with annotations `assignment_count`, `core_assignment_count`, `required_assignments`, `required_core_assignments`,
-        `assignments_progress` and `core_assignments_progress`.
-        """
-        return self.annotate_assignment_counts(start, count_jobs_until or end, of_member).\
-            annotate_required_assignments(start, end).annotate_assignments_progress()

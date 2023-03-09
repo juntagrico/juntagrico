@@ -1,7 +1,7 @@
 import re
 from io import BytesIO
 
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
@@ -131,8 +131,6 @@ def my_mails_intern(request, mail_url, error_message=None):
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
-        'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email'),
-        'can_load_templates': request.user.has_perm('juntagrico.can_load_templates')
     }
     return render(request, 'mail_sender.html', renderdict)
 
@@ -331,7 +329,7 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
     worksheet_s.write_string(0, 14, str(_('Preis')))
 
-    subs = SubscriptionDao.all_subscritions().annotate_assignments()
+    subs = SubscriptionDao.all_subscritions().annotate_assignments_progress().select_related('primary_member')
 
     row = 1
     for sub in subs:
@@ -516,12 +514,13 @@ def sub_inconsistencies(request):
 
 @permission_required('juntagrico.change_assignment')
 def assignments(request):
-    management_list = Subscription.objects.annotate_assignments()
+    management_list = Subscription.objects.annotate_assignments_progress().select_related('primary_member')
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)
 
 
+@login_required
 def versions(request):
     versions = {'juntagrico': version}
     versions.update(addons.config.get_versions())

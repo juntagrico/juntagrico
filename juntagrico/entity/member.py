@@ -228,10 +228,17 @@ class Member(JuntagricoBaseModel):
 
 
 class SubscriptionMembership(JuntagricoBaseModel):
-    member = models.ForeignKey('Member', on_delete=models.CASCADE)
-    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
-    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True)
-    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=Config.vocabulary('member'))
+    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, verbose_name=Config.vocabulary('subscription'))
+    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True, help_text=_('Erster Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
+    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True, help_text=_('Letzter Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
+
+    def __str__(self):
+        if not self.join_date:
+            extra = _('Beitritt ausstehend')
+        else:
+            extra = f"{self.join_date} - {self.leave_date or _('Heute')}"
+        return f"{self.member} - {self.subscription}: " + extra
 
     def clean(self):
         return check_sub_membership_consistency(self)
