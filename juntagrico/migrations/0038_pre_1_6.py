@@ -3,6 +3,7 @@
 import django.db.models.deletion
 import django.core.validators
 from django.db import migrations, models
+import juntagrico.entity
 
 
 class Migration(migrations.Migration):
@@ -46,5 +47,39 @@ class Migration(migrations.Migration):
         migrations.AlterModelOptions(
             name='specialroles',
             options={'default_permissions': (), 'managed': False, 'permissions': (('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'), ('can_send_mails', 'Benutzer kann im System E-Mails versenden'), ('can_use_general_email', 'Benutzer kann allgemeine E-Mail-Adresse verwenden'), ('can_use_for_members_email', 'Benutzer kann E-Mail-Adresse "for_members" verwenden'), ('can_use_for_subscriptions_email', 'Benutzer kann E-Mail-Adresse "for_subscription" verwenden'), ('can_use_for_shares_email', 'Benutzer kann E-Mail-Adresse "for_shares" verwenden'), ('can_use_technical_email', 'Benutzer kann technische E-Mail-Adresse verwenden'), ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'), ('can_view_exports', 'Benutzer kann Exporte öffnen'), ('can_view_lists', 'Benutzer kann Listen öffnen'))},
+        ),
+        migrations.CreateModel(
+            name='Tour',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=100, unique=True, verbose_name='Name')),
+                ('description', models.TextField(blank=True, default='', max_length=1000, verbose_name='Beschreibung')),
+                ('visible_on_list', models.BooleanField(default=True, verbose_name='Sichtbar auf Listen')),
+                ('sort_order', models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')),
+            ],
+            options={
+                'verbose_name': 'Ausfahrt',
+                'verbose_name_plural': 'Ausfahrten',
+                'ordering': ['sort_order'],
+            },
+            bases=(models.Model, juntagrico.entity.OldHolder),
+        ),
+        migrations.AlterUniqueTogether(
+            name='delivery',
+            unique_together=set(),
+        ),
+        migrations.AddField(
+            model_name='delivery',
+            name='tour',
+            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.PROTECT, to='juntagrico.tour', verbose_name='Ausfahrt'),
+        ),
+        migrations.AddField(
+            model_name='depot',
+            name='tour',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='depots', to='juntagrico.tour', verbose_name='Ausfahrt'),
+        ),
+        migrations.AddConstraint(
+            model_name='delivery',
+            constraint=models.UniqueConstraint(fields=('delivery_date', 'tour', 'subscription_size'), name='unique_delivery'),
         ),
     ]

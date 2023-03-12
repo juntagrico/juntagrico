@@ -3,7 +3,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
-from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -12,7 +11,6 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.util.temporal import weekday_short
 
 
 @absolute_url(name='area')
@@ -173,13 +171,6 @@ class Job(JuntagricoBasePoly):
 
     def __str__(self):
         return _('Job {0}').format(self.id)
-
-    def weekday_name(self):
-        day = self.time.isoweekday()
-        return weekday_short(day, 2)
-
-    def time_stamp(self):
-        return int(time.mktime(self.time.timetuple()) * 1000)
 
     @property
     @admin.display(description=_('Freie Plätze'))
