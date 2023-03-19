@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, F, Sum
+from django.db.models import Q, F, Sum, ExpressionWrapper, PositiveIntegerField
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -265,6 +265,13 @@ class Subscription(Billable, SimpleStateModel):
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
         return self.filter(type__size__product__is_extra=False)
+
+    def active_on(self, date=None):
+        date = date or datetime.date.today()
+        current_week_number = date.isocalendar()[1] - 1
+        return (self.filter(activation_date__lte=date).exclude(deactivation_date__lt=date)
+                .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
+                                                     output_field=PositiveIntegerField())).filter(week_mod=0))
 
 
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):

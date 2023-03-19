@@ -74,6 +74,9 @@ class SubscriptionType(JuntagricoBaseModel):
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
     description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    # Interval of the subscription (e.g 2 for every 2 weeks)
+    interval = models.PositiveIntegerField(_('Intervall'), default=1, blank=False, null=False)
+    offset = models.PositiveIntegerField(_('Versatz'), default=0, blank=False, null=False)
 
     @property
     def has_periods(self):
