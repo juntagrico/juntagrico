@@ -56,7 +56,7 @@ class Member(JuntagricoBaseModel):
     deactivation_date = models.DateField(
         _('Deaktivierungsdatum'), null=True, blank=True, help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
     end_date = models.DateField(
-        _('Enddatum'), null=True, blank=True, help_text=_('Voraususchtliches Datum an dem die Mitgliedschaft enden wird. Hat keinen Effekt im System'))
+        _('Enddatum'), null=True, blank=True, help_text=_('Voraussichtliches Datum an dem die Mitgliedschaft enden wird. Hat keinen Effekt im System'))
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
