@@ -168,7 +168,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def type(self):
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def __str__(self):
         return _('Job {0}').format(self.id)
