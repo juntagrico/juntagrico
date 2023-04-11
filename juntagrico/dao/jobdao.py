@@ -76,7 +76,7 @@ class JobDao:
                                           time__gte=timezone.now()).order_by('time')[:Config.promomted_jobs_amount()]
 
     @staticmethod
-    def upcomming_jobs_for_member(member):
+    def upcoming_jobs_ordered_by_time_ascending_for_member(member):
         upcoming_jobs = Job.objects\
             .filter(time__gte=timezone.now(), assignment__member=member)\
             .distinct()\
