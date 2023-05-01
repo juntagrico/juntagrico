@@ -19,7 +19,7 @@ Then install the requirements with :command:`pip`:
 
 Further the database and email connection need to be configured using environment variables or directly in the `settings.py`. Refer to the generated `settings.py` and the django documentation.
 
-Continue with `Initial Django setup <Initial Django setup>`_.
+Continue with :ref:`Initial Django setup <intro-initial-django-setup>`.
 
 Manual Installation
 -------------------
@@ -108,6 +108,9 @@ Add the juntagrico urls to you urls.py e.g.:
         path(r'', include('juntagrico.urls')),
         path(r'', juntagrico.views.home),
     ]
+
+
+.. _intro-initial-django-setup:
 
 Initial Django setup
 --------------------
