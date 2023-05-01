@@ -1,10 +1,10 @@
-.. _intro-first-steps:
+.. _intro-basic-setup:
 
-First Steps
+Basic Setup
 ===========
 
 Recommended Settings
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 These settings, in the ``settings.py`` are ideally set, before the instance is used for production,
 as changing these settings likely require manual changes on the production data when done later.

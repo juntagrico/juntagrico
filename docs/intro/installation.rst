@@ -2,7 +2,7 @@ Installation
 ============
 
 .. note:: If your instance runs on the hosted Juntagrico PaaS this installation is done for you.
-    Continue with the :ref:`first steps <intro-first-steps>`.
+    Continue with the :ref:`basic setup <intro-basic-setup>`.
 
 
 Installation using Cookie Cutter

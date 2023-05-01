@@ -17,7 +17,7 @@ It provides the basic functionality like
    :hidden:
 
    intro/installation.rst
-   intro/first-steps.rst
+   intro/basic.rst
    intro/advanced.rst
    theming.rst
    rich_text_editor.rst
