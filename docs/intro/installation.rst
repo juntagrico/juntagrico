@@ -1,7 +1,9 @@
-If your instance runs on the hosted Juntagrico PaaS this installation is done for you. Continue with the :ref:`first steps <intro-first-steps>`.
-
 Installation
 ============
+
+.. note:: If your instance runs on the hosted Juntagrico PaaS this installation is done for you.
+    Continue with the :ref:`first steps <intro-first-steps>`.
+
 
 Installation using Cookie Cutter
 --------------------------------
@@ -11,10 +13,13 @@ See `Cookiecutter <https://pypi.org/project/cookiecutter/>`_ for usage.
 
 Then install the requirements with :command:`pip`:
 
+.. code-block:: bash
+
     $ pip install -r requirements.txt
 
 Further the database and email connection need to be configured using environment variables or directly in the `settings.py`. Refer to the generated `settings.py` and the django documentation.
 
+Continue with `Initial Django setup <Initial Django setup>`_.
 
 Manual Installation
 -------------------
@@ -23,6 +28,8 @@ Juntagrico is an reusable django app. You should create your own django app and 
 See the `demo app <https://github.com/juntagrico/juntagrico-demo>`_ for reference.
 
 Juntagrico can be installed via :command:`pip`:
+
+.. code-block:: bash
 
     $ pip install juntagrico
 
@@ -81,7 +88,7 @@ Since we use session we need a serializer
     SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 Further settings need to be configured to send emails and to access a database.
-If you need more helping points see the testsettings in the juntagrico project folder or refer to the `demo application settings<https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_.
+If you need more helping points see the testsettings in the juntagrico project folder or refer to the `demo application settings <https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_.
 
 
 Hook URLs in URLconf
@@ -89,7 +96,8 @@ Hook URLs in URLconf
 
 Add the juntagrico urls to you urls.py e.g.:
 
-    .. code-block:: python
+.. code-block:: python
+
     # urls.py
     from django.contrib import admin
     from django.urls import path
@@ -102,40 +110,54 @@ Add the juntagrico urls to you urls.py e.g.:
     ]
 
 Initial Django setup
-====================
+--------------------
 
 Use the django commands to set up the database e.g.:
+
+.. code-block:: bash
 
     $ python -m manage migrate
 
 In production (``DEBUG=False``) the static files must be collected e.g.:
 
+.. code-block:: bash
+
     $ python -m manage collectstatic
 
 Create a superuser to login into your instance. e.g.:
+
+.. code-block:: bash
 
     $ python -m manage createsuperuser
 
 For juntagrico a member needs to be created for the super user using
 
+.. code-block:: bash
+
     $ python -m manage create_member_for_superusers
 
 Create Test Data (optional)
-===========================
+---------------------------
 
 If you want to test juntagrico, these commands will populate your new instance with some example data. Do not do this in production!
 
 Simple example data
 
+.. code-block:: bash
+
     $ python -m manage generate_testdata
 
 More complex example data
 
+.. code-block:: bash
+
     $ python -m manage generate_testdata_advanced
 
 Run the Server
-==============
+--------------
 
 You should now be able to start the django server and open the instance in the browser e.g.:
+
+.. code-block:: bash
 
     $ python -m manage runserver
