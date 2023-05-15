@@ -47,7 +47,7 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
         count assignments of the subscription members for the jobs they did within their subscription membership and in the period of interest.
         :param start: beginning of period of interest, default: start of current business year.
         :param end: end of period of interest, default: end of current business year.
-        :param of_member: if set, assignments of the given member are also counted and stored in `member_assignment_count` and `member_core_assignment_count`.
+        :param of_member: if set, only assignments of the given member are counted.
         :param prefix: prefix for the resulting attribute names, default=''.
         :return: the queryset of subscriptions with annotations `assignment_count` and `core_assignment_count`.
         """
@@ -128,22 +128,20 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
         )
 
     @method_decorator(default_to_business_year)
-    def annotate_assignments_progress(self, start=None, end=None, of_member=None, count_jobs_until=None, prefix=''):
+    def annotate_assignments_progress(self, start=None, end=None, of_member=None, count_jobs_from=None, count_jobs_until=None, prefix=''):
         """
         annotate required and made assignments and calculated progress for core and in general
-        count_jobs_until: only account for jobs until this date.
         :param start: beginning of period of interest, default: start of current business year.
         :param end: end of period of interest, default: end of current business year.
-        :param of_member: if set, assignments of the given member are also counted and stored in `member_assignment_count` and `member_core_assignment_count`.
+        :param of_member: if set, assignments are only counted for the given member.
+        :param count_jobs_from: if set, `annotate_assignment_counts` will only count starting from this date instead of start.
         :param count_jobs_until: if set, `annotate_assignment_counts` will only count until this date instead of end.
+        :param prefix: prefix for the resulting attribute names `assignment_count`, `core_assignment_count`, `assignments_progress`, `core_assignments_progress`. default=''
         :return: the queryset of subscriptions with annotations `assignment_count`, `core_assignment_count`, `required_assignments`, `required_core_assignments`,
         `assignments_progress` and `core_assignments_progress`.
-        :param prefix: prefix for the resulting attribute names `assignment_count`, `core_assignment_count`, `assignments_progress`, `core_assignments_progress`. default=''
-        :return: the queryset of subscriptions with annotations `assignments_progress`, `core_assignments_progress`, `assignments_progress`,
-        `core_assignments_progress`, `assignments_progress` and `core_assignments_progress`
         """
         return self.annotate_required_assignments(start, end).annotate_assignment_counts(
-            start, count_jobs_until or end, of_member, prefix
+            count_jobs_from or start, count_jobs_until or end, of_member, prefix
         ).annotate(**{
             prefix + 'assignments_progress': Case(
                 When(required_assignments=0,
