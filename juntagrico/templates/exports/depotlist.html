@@ -21,12 +21,12 @@
 
 {% for depot in depots %}
     {% include "./snippets/snippet_depotlist_header.html" with first=True %}
-    {% for subscription in depot.active_subscriptions %}
+    {% for sub in subscriptions|by_depot:depot %}
         <tr class="bottom-border">
-            <td class="namecol top-border left-border horz-left">{{ subscription.recipients_display_name }}</td>
+            <td class="namecol top-border left-border horz-left">{{ sub.recipients_display_name }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
-                    <td class="top-border left-border">{{ subscription|get_types_by_size:size|count|default:'' }}</td>
+                    <td class="top-border left-border">{{ sub|parts_by_size:size|active_on:date|count|default:'' }}</td>
                 {% empty %}
                     <td class="top-border left-border"></td>
                 {% endfor %}

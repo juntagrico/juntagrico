@@ -2,13 +2,15 @@ from datetime import timedelta
 
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, QuerySet, F, Sum
+from django.db.models import Q, F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from polymorphic.managers import PolymorphicManager
+from polymorphic.query import PolymorphicQuerySet
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
+from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel, SimpleStateModelQuerySet
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
@@ -17,6 +19,10 @@ from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, end_of_business_year
+
+
+class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
+    pass
 
 
 class Subscription(Billable, SimpleStateModel):
@@ -42,6 +48,8 @@ class Subscription(Billable, SimpleStateModel):
     notes = models.TextField(
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+
+    objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()
 
     def __str__(self):
         return _('Abo ({1}) {0}').format(self.size, self.id)
@@ -262,7 +270,7 @@ class Subscription(Billable, SimpleStateModel):
             ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),)
 
 
-class SubscriptionPartQuerySet(QuerySet):
+class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
         return self.filter(type__size__product__is_extra=False)
 

@@ -15,13 +15,20 @@ class Command(BaseCommand):
             default=False,
             help='force generation of depot list',
         )
-        # Named (optional) arguments
+
         parser.add_argument(
             '--future',
             action='store_true',
             dest='future',
             default=False,
             help='when forced do not ignore future depots',
+        )
+
+        parser.add_argument(
+            '--days',
+            default=0,
+            type=int,
+            help='produce lists for subscriptions that will be active this number of days in the future',
         )
 
     # entry point used by manage.py
