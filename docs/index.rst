@@ -15,12 +15,13 @@ It provides the basic functionality like
    :maxdepth: 2
    :hidden:
 
-   instalation.rst
+   installation.rst
    first_steps.rst
    settings.rst
    permissions.rst
    theming.rst
    rich_text_editor.rst
+   extensions.rst
    addons.rst
    development.rst
    1_5_release_notes.rst
