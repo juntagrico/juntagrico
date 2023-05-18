@@ -53,4 +53,13 @@ class Migration(migrations.Migration):
             field=models.PositiveIntegerField(blank=True, choices=[(1, 'Gründungsmitglied'), (2, 'Beitrittserklärung'), (3, 'Beitritts- und Übertragungserklärung'), (4, 'Übertragungserklärung'),
                                                                    (5, 'Erhöhung der Anteile'), (6, 'Betriebsbeteiligung - Lohn')], null=True, verbose_name='Grund des Erwerbs'),
         ),
+        migrations.AlterModelOptions(
+            name='subscription',
+            options={'permissions': [('can_filter_subscriptions', 'Benutzer kann Abo filtern'),
+                                     ('can_change_deactivated_subscriptions', 'Benutzer kann deaktivierte Abo ändern'),
+                                     ('notified_on_depot_change', 'Wird bei Depot-Änderung informiert'),
+                                     ('notified_on_subscription_creation', 'Wird bei Abo Erstellung informiert'),
+                                     ('notified_on_subscription_cancellation', 'Wird bei Abo Kündigung informiert')],
+                     'verbose_name': 'Abo', 'verbose_name_plural': 'Abos'},
+        ),
     ]
