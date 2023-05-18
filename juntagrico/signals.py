@@ -18,6 +18,9 @@ extra_sub_deactivated = Signal()
 sub_part_activated = Signal()
 sub_part_deactivated = Signal()
 
+''' depot signals '''
+depot_changed = Signal()
+
 ''' share signals '''
 share_created = Signal()
 share_canceled = Signal()
