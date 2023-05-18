@@ -16,15 +16,15 @@ Area and Depot Admins
 --------------------
 juntagrico.is_depot_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administator of a depot, so that they can filter and communicate with the members in their depot.
+Should be assigned to members which are administrator of a depot, so that they can filter and communicate with the members in their depot.
 
 Search Hints:
     * German: Benutzer ist Depot Admin
 
 juntagrico.is_area_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administator of an activity area, so that they can filter and communicate with the members in their area.
-Also it allows them to create new jobs and comunicate with the members participating in one of the jobs of their area.
+Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
+Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
 
 Search Hints:
     * German: Benutzer ist Tätigkeitsbereichskoordinator
@@ -85,7 +85,7 @@ Search Hints:
 
 Administrator Menu
 ------------------
-Which entries can be seen on the administration menu depepend on a set of permissions.
+Which entries can be seen on the administration menu depend on a set of permissions.
 
 juntagrico.change_subscription
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -184,7 +184,7 @@ Search Hints:
 
 Dependent Permissions
 ---------------------
-In order to be able to edit some types of entites not only the ``change`` permission of this entity type has to be granted to a member but also
+In order to be able to edit some types of entities not only the ``change`` permission of this entity type has to be granted to a member but also
 some dependent permissions.
 
 Subscription
