@@ -461,7 +461,7 @@ def extra_canceledlist(request):
 def depot_changes(request):
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), render_dict,
-                                        'manage/subscription/depot/changes.html', request)
+                                        'juntagrico/manage/subscription/depot/changes.html', request)
 
 
 @permission_required('juntagrico.change_subscription')
@@ -540,7 +540,7 @@ def assignments(request):
 
 @permission_required('juntagrico.can_generate_lists')
 def manage_list(request, success=False):
-    return render(request, 'manage/list.html', {'success': success})
+    return render(request, 'juntagrico/manage/list.html', {'success': success})
 
 
 @permission_required('juntagrico.can_generate_lists')

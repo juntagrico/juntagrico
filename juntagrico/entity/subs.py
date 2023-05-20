@@ -252,13 +252,14 @@ class Subscription(Billable, SimpleStateModel):
         return start_of_next_business_year()
 
     def activate_future_depot(self):
-        self.depot = self.future_depot
-        self.future_depot = None
-        self.save()
-        emails = []
-        for member in self.recipients:
-            emails.append(member.email)
-        membernotification.depot_changed(emails, self.depot)
+        if self.future_depot is not None:
+            self.depot = self.future_depot
+            self.future_depot = None
+            self.save()
+            emails = []
+            for member in self.recipients:
+                emails.append(member.email)
+            membernotification.depot_changed(emails, self.depot)
 
     def clean(self):
         check_sub_consistency(self)
