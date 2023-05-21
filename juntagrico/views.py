@@ -214,7 +214,7 @@ def area_join(request, area_id):
     new_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     new_area.members.add(member)
-    area_joined.send(ActivityArea, new_area, member)
+    area_joined.send(ActivityArea, area=new_area, member=member)
     adminnotification.member_joined_activityarea(new_area, member)
     new_area.save()
     return HttpResponse()
@@ -225,7 +225,7 @@ def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     old_area.members.remove(member)
-    area_left.send(ActivityArea, old_area, member)
+    area_left.send(ActivityArea, area=old_area, member=member)
     adminnotification.member_left_activityarea(old_area, member)
     old_area.save()
     return HttpResponse()
