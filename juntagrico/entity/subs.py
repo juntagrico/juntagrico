@@ -36,6 +36,8 @@ class Subscription(Billable, SimpleStateModel):
                                     Config.vocabulary('subscription'), Config.vocabulary('depot'))))
     start_date = models.DateField(
         _('Gewünschtes Startdatum'), null=False, default=start_of_next_business_year)
+    paid_date = models.DateField(
+        _('Bezahlt am'), null=True, blank=True)
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(
