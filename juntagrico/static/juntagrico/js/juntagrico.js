@@ -116,6 +116,7 @@ function default_data_table() {
             updateSendEmailButton(fetch_emails().length);
         },
         "language": {
+            "decimal": decimal_symbol[1],
             "search": search_field,
             searchBuilder: sb_lang
         },
