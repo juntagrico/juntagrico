@@ -61,57 +61,62 @@
         </thead>
         <tbody>
             {% for subscription in management_list %}
-                <tr>
-                    <td class="members">
-                        {% spaceless %}
-                            <a href="{% url 'admin:juntagrico_member_change' subscription.subscription.primary_member.id %}">
-                                <strong>{{ subscription.subscription.primary_member }}</strong>
-                            </a>
-                        {% endspaceless %}
-                        {% with phone=subscription.subscription.primary_member.get_phone %}
-                            <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
-                        {% endwith %}
-                        {% for recipient in subscription.subscription.other_recipients %}
-                            <div class="co-member">
-                            <a href="{% url 'admin:juntagrico_member_change' recipient.id %}">{{ recipient }}</a>
-                            {% with phone=recipient.get_phone %}
+                {% with other_recipients=subscription.other_recipients %}
+                    <tr>
+                        <td class="members">
+                            {% spaceless %}
+                                <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
+                                    <strong>{{ subscription.primary_member }}</strong>
+                                </a>
+                            {% endspaceless %}
+                            {% with phone=subscription.primary_member.get_phone %}
                                 <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
                             {% endwith %}
-                            </div>
-                        {% endfor %}
-                    </td>
-                    <td>
-                        {{ subscription.subscription.activation_date|date:"Y-m-d" }}
-                    </td>
-                    <td>
-                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.subscription.id %}">
-                            {{ subscription.subscription.state_text }}
-                        </a>
-                    </td>
-                    <td>
-                        {{ subscription.assignments|floatformat:-2 }}
-                    </td>
-                    <td>
-                        {{ subscription.subscription.required_assignments }}
-                    </td>
-                    <td>
-                        {{ subscription.assignments_progress|floatformat:0 }}%
-                    </td>
-                    {% if b_show_core and b_requires_core %}
-                        <th>
-                            {{ subscription.core_assignments|floatformat:-2 }}
-                        </th>
-                        <th>
-                            {{ subscription.subscription.required_core_assignments }}
-                        </th>
-                        <th>
-                            {{ subscription.core_assignments_progress|floatformat:0 }}%
-                        </th>
-                    {% endif %}
-                    <td class="email d-none">
-                        {{ subscription.subscription.recipients_qs|values_list:'member__email'|join:', ' }}
-                    </td>
-                </tr>
+                            {% for recipient in other_recipients %}
+                                <div class="co-member">
+                                <a href="{% url 'admin:juntagrico_member_change' recipient.id %}">{{ recipient }}</a>
+                                {% with phone=recipient.get_phone %}
+                                    <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
+                                {% endwith %}
+                                </div>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {{ subscription.activation_date|date:"Y-m-d" }}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
+                                {{ subscription.state_text }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ subscription.assignment_count|floatformat:-2 }}
+                        </td>
+                        <td>
+                            {{ subscription.required_assignments|floatformat:0 }}
+                        </td>
+                        <td>
+                            {{ subscription.assignments_progress|floatformat:0 }}%
+                        </td>
+                        {% if b_show_core and b_requires_core %}
+                            <td>
+                                {{ subscription.core_assignment_count|floatformat:-2 }}
+                            </td>
+                            <td>
+                                {{ subscription.required_core_assignments|floatformat:0 }}
+                            </td>
+                            <td>
+                                {{ subscription.core_assignments_progress|floatformat:0 }}%
+                            </td>
+                        {% endif %}
+                        <td class="email d-none">
+                            {% for recipient in other_recipients %}
+                                {{ recipient.email }},
+                            {% endfor %}
+                            {{ subscription.primary_member.email }}
+                        </td>
+                    </tr>
+                {% endwith %}
             {% endfor %}
         </tbody>
     </table>

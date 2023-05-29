@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -137,7 +138,7 @@ class Member(JuntagricoBaseModel):
         sub_membership = self.subscriptionmembership_set.filter(~q_joined_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
 
-    @property
+    @cached_property
     def subscription_current(self):
         sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
