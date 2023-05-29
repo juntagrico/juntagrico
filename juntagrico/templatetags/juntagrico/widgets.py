@@ -2,13 +2,14 @@ from django import template
 from django.utils import timezone
 
 from juntagrico.dao.jobdao import JobDao
+from juntagrico.entity.subs import Subscription
 
 register = template.Library()
 
 
 @register.simple_tag
 def next_jobs(request):
-    return JobDao.upcomming_jobs_for_member(request.user.member)
+    return JobDao.upcoming_jobs_for_member(request.user.member)
 
 
 @register.simple_tag
@@ -18,7 +19,11 @@ def assignment_data(request):
         return None
 
     # calculate assignments
-    sub = member.subscription_current.get_with_assignments(of_member=member, count_jobs_until=timezone.now().date())
+    sub = Subscription.objects.annotate_assignment_counts(
+        of_member=member,
+        end=timezone.now().date(),
+        prefix='member_'
+    ).annotate_assignments_progress().get(pk=member.subscription_current)
     sub.remaining_assignments = max(
         sub.required_assignments - sub.assignment_count,
         sub.required_core_assignments - sub.core_assignment_count,

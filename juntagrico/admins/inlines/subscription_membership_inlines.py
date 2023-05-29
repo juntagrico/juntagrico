@@ -25,13 +25,19 @@ class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
 
 class SubscriptionMembershipInline(admin.TabularInline):
     model = SubscriptionMembership
-    formset = SubscriptionMembershipInlineFormset
-    fields = ['member', 'join_date', 'leave_date', 'share_count']
-    raw_id_fields = ['member']
-    readonly_fields = ['share_count']
+    fields = ['member', 'subscription', 'join_date', 'leave_date']
+    autocomplete_fields = ['member', 'subscription']
+    ordering = ['join_date']
+
     verbose_name = _('{} Mitgliedschaft').format(Config.vocabulary('subscription'))
     verbose_name_plural = _('{} Mitgliedschaften').format(Config.vocabulary('subscription'))
     extra = 0
+
+
+class SubscriptionMembershipInlineWithShareCount(SubscriptionMembershipInline):
+    formset = SubscriptionMembershipInlineFormset
+    fields = SubscriptionMembershipInline.fields + ['share_count']
+    readonly_fields = ['share_count']
 
     @admin.display(description=_('Verwendbare {}').format(Config.vocabulary('share_pl')))
     def share_count(self, instance):

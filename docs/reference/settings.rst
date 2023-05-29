@@ -78,8 +78,12 @@ ORGANISATION_PHONE
 
     ""
 
+.. _reference-settings-info-email:
+
 INFO_EMAIL
 ^^^^^^^^^^
+  DEPRECATED: Use the CONTACTS setting instead
+
   The general email of your organisation
 
   Type: String
@@ -89,6 +93,36 @@ INFO_EMAIL
   .. code-block:: python
 
     "info@juntagrico.juntagrico"
+
+CONTACTS
+^^^^^^^^
+
+  Specifies the email addresses at which members can contact your organisation.
+
+  The setting takes a dictionary of key email pairs, where each key represents the topic for which the email is shown.
+  e.g. the email address in ``'for_members'`` is used in places that regard the membership.
+  For keys without a specified email address, the ``'general'`` email address is shown.
+
+  example value
+
+  .. code-block:: python
+
+        {
+            'general': "info@juntagrico.juntagrico",
+            'for_members': "member@juntagrico.juntagrico",
+            'for_subscriptions': "subscription@juntagrico.juntagrico",
+            'for_shares': "share@juntagrico.juntagrico",
+            'technical': "it@juntagrico.juntagrico",
+        }
+
+  default value
+
+  .. code-block:: python
+
+        {
+            'general': "info@juntagrico.juntagrico",
+        }
+
 
 SERVER_URL
 ^^^^^^^^^^
@@ -272,7 +306,7 @@ MEMBERSHIP_END_MONTH
     6
 
 MEMBERSHIP_END_NOTICE_PERIOD
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   The notice period in months a member needs to account for when cancelling the membership
 
   Type: Integer
@@ -350,8 +384,13 @@ PROMOTED_JOBS_AMOUNT
 
     2
 
+
+.. _settings-depot:
+
 Depot
 -----
+
+.. _settings-depot-list-generation-days:
 
 DEPOT_LIST_GENERATION_DAYS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -366,6 +405,7 @@ DEPOT_LIST_GENERATION_DAYS
     [0,1,2,3,4,5,6]
 
 
+.. _settings-default-depotlist-generators:
 
 DEFAULT_DEPOTLIST_GENERATORS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -411,7 +451,10 @@ VOCABULARY
         'depot_pl' : 'Depots',
         'package': 'Tasche',
     }
-    
+
+
+.. _settings-sub-overview-format:
+
 SUB_OVERVIEW_FORMAT
 ^^^^^^^^^^^^^^^^^^^
   Templates and delimiter for formatting the subscription overview.
@@ -427,9 +470,11 @@ SUB_OVERVIEW_FORMAT
 
 STYLES
 ^^^^^^
-  Define styles to be included on all pages.
-  If the template key is set, the specified template will be loaded in the header of the page.
-  In the static key a list of css files can be defined to be included.
+  Define styles to be included on all pages. The setting takes a dictionary with two keys:
+
+  - ``static``: A list of css files to be included. These are included using the ``static`` template tag, i.e. the path to the css files must be given, omitting the ``{app}/static/`` part.
+  - ``template``: The path to a template file that will be included in the ``<head>`` section on all pages. This can be used to create dynamic css.
+
   If both keys are defined the template is included before the static css files.
 
   default value

@@ -1,7 +1,7 @@
 import re
 from io import BytesIO
 
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
@@ -130,8 +130,6 @@ def my_mails_intern(request, mail_url, error_message=None):
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
-        'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email'),
-        'can_load_templates': request.user.has_perm('juntagrico.can_load_templates')
     }
     return render(request, 'mail_sender.html', renderdict)
 
@@ -331,7 +329,7 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
     worksheet_s.write_string(0, 14, str(_('Preis')))
 
-    subs = SubscriptionDao.all_subscritions().annotate_assignments()
+    subs = SubscriptionDao.all_subscritions().annotate_assignments_progress().select_related('primary_member')
 
     row = 1
     for sub in subs:
@@ -520,12 +518,13 @@ def assignments(request, start=None, end=None,
                 template_name='management_lists/assignments.html',
                 context=None,
                 subscription_queryset=None):
-    management_list = (subscription_queryset or SubscriptionDao.subscriptions_by_date(start, end)).annotate_assignments(start, end)
+    management_list = (subscription_queryset or SubscriptionDao.subscriptions_by_date(start, end)).annotate_assignments_progress(start, end).select_related('primary_member')
     context = context or {}
     context.update({'change_date_disabled': True})
     return subscription_management_list(management_list, context, template_name, request)
 
 
+@login_required
 def versions(request):
     versions = {'juntagrico': version}
     versions.update(addons.config.get_versions())

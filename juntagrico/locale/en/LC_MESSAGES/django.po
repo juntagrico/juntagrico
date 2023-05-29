@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-20 07:09-0600\n"
+"POT-Creation-Date: 2023-02-21 10:37-0600\n"
 "PO-Revision-Date: 2020-02-03 11:42+0000\n"
 "Last-Translator: Weblate Admin <weblate@example.com>\n"
 "Language-Team: English <http://weblate.juntagrico.science/projects/"
@@ -129,7 +129,7 @@ msgid "Kein neuer Job fällt zwischen Anfangs- und Enddatum"
 msgstr "No new job falls between start and end date"
 
 #: juntagrico/admins/forms/job_copy_form.py:97
-#: juntagrico/admins/job_admin.py:32
+#: juntagrico/admins/job_admin.py:31
 msgid "Neue Jobs können nicht in der Vergangenheit liegen."
 msgstr ""
 
@@ -170,20 +170,20 @@ msgid ""
 msgstr ""
 
 #: juntagrico/admins/inlines/subscription_part_inlines.py:36
-#: juntagrico/entity/subs.py:296
+#: juntagrico/entity/subs.py:298
 msgid "{} Bestandteil"
 msgstr ""
 
 #: juntagrico/admins/inlines/subscription_part_inlines.py:37
-#: juntagrico/entity/subs.py:297
+#: juntagrico/entity/subs.py:299
 msgid "{} Bestandteile"
 msgstr ""
 
-#: juntagrico/admins/job_admin.py:64
+#: juntagrico/admins/job_admin.py:63
 msgid "Job mehrfach kopieren..."
 msgstr "Copy job multiple times ..."
 
-#: juntagrico/admins/job_admin.py:70
+#: juntagrico/admins/job_admin.py:69
 msgid "Jobs kopieren"
 msgstr "Copy jobs"
 
@@ -530,7 +530,7 @@ msgstr "E-mail"
 
 #: juntagrico/entity/contact.py:51 juntagrico/entity/contact.py:113
 #: juntagrico/entity/contact.py:122 juntagrico/entity/contact.py:123
-#: juntagrico/forms.py:126 juntagrico/forms.py:191
+#: juntagrico/forms.py:128 juntagrico/forms.py:193
 #, fuzzy
 #| msgid "Telefonnr"
 msgid "Telefonnummer"
@@ -549,7 +549,7 @@ msgid "Anzeige"
 msgstr "Display name"
 
 #: juntagrico/entity/contact.py:108 juntagrico/entity/contact.py:109
-#: juntagrico/forms.py:127 juntagrico/forms.py:192
+#: juntagrico/forms.py:129 juntagrico/forms.py:194
 #: juntagrico/templates/registration/password_reset_form_cust.html:17
 #, fuzzy
 #| msgid "E-Mail Adresse"
@@ -686,7 +686,7 @@ msgstr "Unknown"
 msgid "Benutzer ist Depot Admin"
 msgstr "User is Depot Admin"
 
-#: juntagrico/entity/jobs.py:23 juntagrico/entity/jobs.py:342
+#: juntagrico/entity/jobs.py:23 juntagrico/entity/jobs.py:339
 #: juntagrico/templates/snippets/snippet_jobs.html:78
 #: juntagrico/templates/widgets/assignements.html:14
 #: juntagrico/templates/widgets/assignements.html:15
@@ -773,90 +773,86 @@ msgstr "Display name"
 msgid "Dauer in Stunden"
 msgstr "Duration in hours"
 
-#: juntagrico/entity/jobs.py:151
-msgid " (Archiv)"
-msgstr ""
-
-#: juntagrico/entity/jobs.py:154 juntagrico/entity/jobs.py:281
+#: juntagrico/entity/jobs.py:151 juntagrico/entity/jobs.py:278
 msgid "Jobart"
 msgstr "Job Type"
 
-#: juntagrico/entity/jobs.py:155
+#: juntagrico/entity/jobs.py:152
 msgid "Jobarten"
 msgstr "Jobtypes"
 
-#: juntagrico/entity/jobs.py:160
+#: juntagrico/entity/jobs.py:157
 #, fuzzy
 #| msgid "Einsätze"
 msgid "Plätze"
 msgstr "Jobs"
 
-#: juntagrico/entity/jobs.py:161
+#: juntagrico/entity/jobs.py:158
 #, fuzzy
 #| msgid "Unendlich Plaetze"
 msgid "Unendlich Plätze"
 msgstr "Infinite slots"
 
-#: juntagrico/entity/jobs.py:162 juntagrico/templates/job.html:23
+#: juntagrico/entity/jobs.py:159 juntagrico/templates/job.html:23
 msgid "Zeitpunkt"
 msgstr "Time"
 
-#: juntagrico/entity/jobs.py:164
+#: juntagrico/entity/jobs.py:161
 #, fuzzy, python-brace-format
 #| msgid "{0}) vielfaches"
 msgid "{0} vielfaches"
 msgstr "{0}) multiplication"
 
-#: juntagrico/entity/jobs.py:167
+#: juntagrico/entity/jobs.py:164
 msgid "Reminder verschickt"
 msgstr "Reminder sent"
 
-#: juntagrico/entity/jobs.py:168
+#: juntagrico/entity/jobs.py:165
 msgid "abgesagt"
 msgstr "canceled"
 
-#: juntagrico/entity/jobs.py:177
+#: juntagrico/entity/jobs.py:174
 #, python-brace-format
 msgid "Job {0}"
 msgstr "Job {0}"
 
-#: juntagrico/entity/jobs.py:187
+#: juntagrico/entity/jobs.py:184
 #: juntagrico/templates/snippets/snippet_jobs.html:35
 #, fuzzy
 #| msgid "Meine Einsätze"
 msgid "Freie Plätze"
 msgstr "My jobs"
 
-#: juntagrico/entity/jobs.py:275
+#: juntagrico/entity/jobs.py:272
 msgid "AbstractJob"
 msgstr "Abstract job"
 
-#: juntagrico/entity/jobs.py:276
+#: juntagrico/entity/jobs.py:273
 msgid "AbstractJobs"
 msgstr "Abstract jobs"
 
-#: juntagrico/entity/jobs.py:277
+#: juntagrico/entity/jobs.py:274
 msgid "kann vergangene Jobs editieren"
 msgstr "can edit past jobs"
 
-#: juntagrico/entity/jobs.py:282
+#: juntagrico/entity/jobs.py:279
 #, fuzzy
 #| msgid "Beschreibung"
 msgid "Zusätzliche Beschreibung"
 msgstr "Description"
 
-#: juntagrico/entity/jobs.py:284
+#: juntagrico/entity/jobs.py:281
 #, fuzzy
 #| msgid "Dauer in Stunden"
 msgid "Dauer in Stunden (Überschreibend)"
 msgstr "Duration in hours"
 
-#: juntagrico/entity/jobs.py:285
+#: juntagrico/entity/jobs.py:282
 msgid ""
 "Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen."
 msgstr ""
 
-#: juntagrico/entity/jobs.py:302
+#: juntagrico/entity/jobs.py:299
 #: juntagrico/templates/mails/member/job_canceled.txt:13
 #: juntagrico/templates/mails/member/job_reminder.txt:14
 #: juntagrico/templates/mails/member/job_signup.txt:14
@@ -865,25 +861,25 @@ msgstr ""
 msgid "Job"
 msgstr "Job"
 
-#: juntagrico/entity/jobs.py:303
+#: juntagrico/entity/jobs.py:300
 msgid "Jobs"
 msgstr "Jobs"
 
-#: juntagrico/entity/jobs.py:332
+#: juntagrico/entity/jobs.py:329
 msgid "EinzelJob"
 msgstr "One time job"
 
-#: juntagrico/entity/jobs.py:333
+#: juntagrico/entity/jobs.py:330
 msgid "EinzelJobs"
 msgstr "One time Jobs"
 
-#: juntagrico/entity/jobs.py:343
+#: juntagrico/entity/jobs.py:340
 #, fuzzy
 #| msgid "JobExtras"
 msgid "Job Extras"
 msgstr "Job extras"
 
-#: juntagrico/entity/jobs.py:344 juntagrico/entity/share.py:26
+#: juntagrico/entity/jobs.py:341 juntagrico/entity/share.py:26
 #: juntagrico/templates/exports/share_certificate.html:111
 #: juntagrico/templates/js/i18n.js:64
 msgid "Wert"
@@ -994,7 +990,7 @@ msgid ""
 msgstr ""
 
 #: juntagrico/entity/member.py:61 juntagrico/entity/share.py:44
-#: juntagrico/entity/subs.py:40
+#: juntagrico/entity/subs.py:42
 #: juntagrico/templates/management_lists/canceledlist.html:28
 #: juntagrico/templates/management_lists/member_canceledlist.html:35
 #: juntagrico/templates/management_lists/share_canceledlist.html:54
@@ -1003,7 +999,7 @@ msgid "Notizen"
 msgstr "Notes"
 
 #: juntagrico/entity/member.py:62 juntagrico/entity/share.py:45
-#: juntagrico/entity/subs.py:41
+#: juntagrico/entity/subs.py:43
 msgid "Notizen für Administration. Nicht sichtbar für {}"
 msgstr ""
 
@@ -1013,30 +1009,30 @@ msgstr ""
 msgid "Mitglieder-Nummer"
 msgstr "Members"
 
-#: juntagrico/entity/member.py:220 juntagrico/entity/subs.py:256
+#: juntagrico/entity/member.py:223 juntagrico/entity/subs.py:258
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
 msgstr "User can filter {0}"
 
-#: juntagrico/entity/member.py:226
+#: juntagrico/entity/member.py:229
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Beitrittsdatum"
 msgstr "Date of birth"
 
-#: juntagrico/entity/member.py:227
+#: juntagrico/entity/member.py:230
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Austrittsdatum"
 msgstr "Date of birth"
 
-#: juntagrico/entity/member.py:234
+#: juntagrico/entity/member.py:237
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaft"
 msgstr "Cancel membership"
 
-#: juntagrico/entity/member.py:235
+#: juntagrico/entity/member.py:238
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaften"
@@ -1131,50 +1127,50 @@ msgstr "Repaid on"
 msgid "Anteilschein {0} ({1})"
 msgstr "Share {0}"
 
-#: juntagrico/entity/subs.py:27
+#: juntagrico/entity/subs.py:29
 #, fuzzy
 #| msgid "Zukünftige/r/s {0}"
 msgid "Zukünftiges {}"
 msgstr "Future {0}"
 
-#: juntagrico/entity/subs.py:31
+#: juntagrico/entity/subs.py:33
 #, fuzzy
 #| msgid "Hauptbezieher"
 msgid "Haupt-{}-BezieherIn"
 msgstr "Main recipient"
 
-#: juntagrico/entity/subs.py:32
+#: juntagrico/entity/subs.py:34
 #: juntagrico/templates/snippets/snippet_subscription_change_nickname.html:7
 msgid "Spitzname"
 msgstr ""
 
-#: juntagrico/entity/subs.py:33
+#: juntagrico/entity/subs.py:35
 msgid "Ersetzt die Mit-{}-BezieherInnen auf der {}-Liste."
 msgstr ""
 
-#: juntagrico/entity/subs.py:36
+#: juntagrico/entity/subs.py:38
 #: juntagrico/templates/createsubscription/select_start_date.html:30
 #: juntagrico/templates/createsubscription/summary.html:66
 msgid "Gewünschtes Startdatum"
 msgstr "Desired start date"
 
-#: juntagrico/entity/subs.py:38
+#: juntagrico/entity/subs.py:40
 msgid "Gewünschtes Enddatum"
 msgstr "Desired end date"
 
-#: juntagrico/entity/subs.py:44
+#: juntagrico/entity/subs.py:46
 #, fuzzy, python-brace-format
 #| msgid "Abo ({0}) {0}"
 msgid "Abo ({1}) {0}"
 msgstr "Subscription ({0}) {0}"
 
-#: juntagrico/entity/subs.py:257
+#: juntagrico/entity/subs.py:259
 #, fuzzy, python-brace-format
 #| msgid "Benutzer kann {0} filtern"
 msgid "Benutzer kann deaktivierte {0} ändern"
 msgstr "User can filter {0}"
 
-#: juntagrico/entity/subs.py:264 juntagrico/entity/subtypes.py:105
+#: juntagrico/entity/subs.py:266 juntagrico/entity/subtypes.py:105
 #, python-brace-format
 msgid "{0}-Typ"
 msgstr "{0} type"
@@ -1271,23 +1267,23 @@ msgstr "Passwords do not match"
 msgid "Möchtest du deine Mitgliedschaft verbindlich künden?"
 msgstr "Would you like to register for this job?"
 
-#: juntagrico/forms.py:65 juntagrico/forms.py:98
+#: juntagrico/forms.py:65 juntagrico/forms.py:100
 #: juntagrico/templates/profile.html:43
 msgid "Mitgliedschaft künden"
 msgstr "Cancel membership"
 
-#: juntagrico/forms.py:82 juntagrico/templates/cancelsubscription.html:27
+#: juntagrico/forms.py:84 juntagrico/templates/cancelsubscription.html:27
 #: juntagrico/templates/contact.html:45
 #: juntagrico/templates/contact_member.html:49
 #: juntagrico/templates/mail_sender.html:134
 msgid "Mitteilung"
 msgstr "Message"
 
-#: juntagrico/forms.py:88 juntagrico/forms.py:129 juntagrico/forms.py:194
+#: juntagrico/forms.py:90 juntagrico/forms.py:131 juntagrico/forms.py:196
 msgid "Strasse/Nr."
 msgstr "Street / Nr"
 
-#: juntagrico/forms.py:95
+#: juntagrico/forms.py:97
 #, fuzzy
 #| msgid ""
 #| "Du musst zuerst deine IBAN hinterlegen, damit deine %(v_share_pl)s "
@@ -1298,17 +1294,17 @@ msgid ""
 msgstr ""
 "You must first deposit your IBAN so that your %(v_share_pl)s can be paid out."
 
-#: juntagrico/forms.py:106 juntagrico/forms.py:171
+#: juntagrico/forms.py:108 juntagrico/forms.py:173
 msgid "IBAN ist nicht gültig"
 msgstr "IBAN is not valid"
 
-#: juntagrico/forms.py:128 juntagrico/forms.py:193
+#: juntagrico/forms.py:130 juntagrico/forms.py:195
 #: juntagrico/templates/createsubscription/summary.html:33
 #: juntagrico/templates/createsubscription/summary.html:79
 msgid "Geburtstag"
 msgstr "Birthday"
 
-#: juntagrico/forms.py:131
+#: juntagrico/forms.py:133
 #, fuzzy
 #| msgid ""
 #| "sollen andere %(v_member_pl)s dich via Kontaktformular erreichen k&ouml;"
@@ -1319,38 +1315,38 @@ msgid ""
 msgstr ""
 "other %(v_member_pl)s can reach you via contact form (Email not visible)"
 
-#: juntagrico/forms.py:140
+#: juntagrico/forms.py:142
 msgid "Kontaktiere {} um den Namen zu ändern."
 msgstr "Contact {} to change the name."
 
-#: juntagrico/forms.py:141
+#: juntagrico/forms.py:143
 #, fuzzy
 #| msgid "{0} - Email Adresse ändern"
 msgid "Kontaktiere {} um die E-Mail-Adresse zu ändern."
 msgstr "{0} - change email address"
 
-#: juntagrico/forms.py:154 juntagrico/templates/profile.html:7
+#: juntagrico/forms.py:156 juntagrico/templates/profile.html:7
 msgid "Personalien ändern"
 msgstr "Change personal data"
 
-#: juntagrico/forms.py:211
+#: juntagrico/forms.py:213
 #, fuzzy
 #| msgid "Diese Email-Adresse existiert bereits im System."
 msgid "Diese E-Mail-Adresse existiert bereits im System."
 msgstr "This email address is already in the system."
 
-#: juntagrico/forms.py:212
+#: juntagrico/forms.py:214
 #, fuzzy
 #| msgid "Hier gehts zum Login"
 msgid "Hier geht's zum Login."
 msgstr "This way to the login"
 
-#: juntagrico/forms.py:228 juntagrico/templates/registration/login.html:37
+#: juntagrico/forms.py:230 juntagrico/templates/registration/login.html:37
 #: juntagrico/templates/registration/password_reset_complete_cust.html:9
 msgid "Anmelden"
 msgstr "Log In"
 
-#: juntagrico/forms.py:245
+#: juntagrico/forms.py:247
 #, fuzzy
 #| msgid ""
 #| "gelesen und erkläre meinen Willen, '%(c_organisation_long_name)s' "
@@ -1360,11 +1356,11 @@ msgid ""
 "beantrage ich meine Aufnahme."
 msgstr "read and declare my will to join %(c_organisation_long_name)s."
 
-#: juntagrico/forms.py:247 juntagrico/templates/js/i18n.js:60
+#: juntagrico/forms.py:249 juntagrico/templates/js/i18n.js:60
 msgid "und"
 msgstr "and"
 
-#: juntagrico/forms.py:251
+#: juntagrico/forms.py:253
 #, fuzzy
 #| msgid ""
 #| "gelesen und erkläre meinen Willen, '%(c_organisation_long_name)s' "
@@ -1374,27 +1370,27 @@ msgid ""
 "Aufnahme."
 msgstr "read and declare my will to join %(c_organisation_long_name)s."
 
-#: juntagrico/forms.py:265
+#: juntagrico/forms.py:267
 msgid "Verbindlich bestellen"
 msgstr "Order"
 
-#: juntagrico/forms.py:266 juntagrico/forms.py:329 juntagrico/forms.py:342
-#: juntagrico/forms.py:371 juntagrico/forms.py:448
+#: juntagrico/forms.py:268 juntagrico/forms.py:331 juntagrico/forms.py:344
+#: juntagrico/forms.py:373 juntagrico/forms.py:450
 #: juntagrico/templates/createsubscription/select_depot.html:51
 #: juntagrico/templates/createsubscription/select_shares.html:104
 #: juntagrico/templates/createsubscription/select_start_date.html:53
 msgid "Abbrechen"
 msgstr "Cancel"
 
-#: juntagrico/forms.py:278 juntagrico/forms.py:370
+#: juntagrico/forms.py:280 juntagrico/forms.py:372
 msgid "Ändern"
 msgstr "Change"
 
-#: juntagrico/forms.py:291
+#: juntagrico/forms.py:293
 msgid "Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet."
 msgstr "This email address is already in use by you or your {}."
 
-#: juntagrico/forms.py:296
+#: juntagrico/forms.py:298
 #, fuzzy
 #| msgid ""
 #| "Die Person mit dieser Email-Adresse ist bereits aktive %(v_subscription)s-"
@@ -1410,64 +1406,64 @@ msgstr ""
 "Please contact <a href=\"mailto:%(c_info_email)s\">%(c_info_email)s</a>, if "
 "you would like to add existing %(v_member_type_pl)s as %(v_co_member_pl)s."
 
-#: juntagrico/forms.py:314
+#: juntagrico/forms.py:316
 msgid "{} hinzufügen"
 msgstr "add {}"
 
-#: juntagrico/forms.py:347
+#: juntagrico/forms.py:349
 #, fuzzy
 #| msgid "Keine weiteren %(v_co_member_pl)s hinzufügen"
 msgid "Keine weiteren {} hinzufügen"
 msgstr "No more %(v_co_member_pl)s"
 
-#: juntagrico/forms.py:352
+#: juntagrico/forms.py:354
 msgid "Überspringen"
 msgstr "Skip"
 
-#: juntagrico/forms.py:440
+#: juntagrico/forms.py:442
 #, fuzzy
 #| msgid "Kein/e/n {0}"
 msgid "Kein {}"
 msgstr "No {0}"
 
-#: juntagrico/forms.py:447
+#: juntagrico/forms.py:449
 #: juntagrico/templates/createsubscription/select_depot.html:48
 #: juntagrico/templates/createsubscription/select_shares.html:101
 #: juntagrico/templates/createsubscription/select_start_date.html:50
 msgid "Weiter"
 msgstr "Continue"
 
-#: juntagrico/forms.py:465
+#: juntagrico/forms.py:467
 #, fuzzy
 #| msgid "Verbindlich bestellen"
 msgid "{}-Bestandteile bestellen"
 msgstr "Order"
 
-#: juntagrico/forms.py:480
+#: juntagrico/forms.py:482
 #, fuzzy
 #| msgid "Es sind zu wenig %(v_share_pl)s vorhanden für diese Grösse!"
 msgid "Es sind zu wenig {} vorhanden für diese Bestandteile!{}"
 msgstr "There are not enough %(v_share_pl)s available for this size!"
 
-#: juntagrico/forms.py:483
+#: juntagrico/forms.py:485
 #, fuzzy
 #| msgid "Bestelle hier mehr Anteilscheine."
 msgid "&rarr; Bestelle hier mehr {}"
 msgstr "Order more shares here."
 
-#: juntagrico/forms.py:488
+#: juntagrico/forms.py:490
 msgid "Wähle mindestens 1 {} aus.{}"
 msgstr ""
 
-#: juntagrico/forms.py:492
+#: juntagrico/forms.py:494
 msgid "&rarr; Oder {} komplett künden"
 msgstr ""
 
-#: juntagrico/forms.py:499
+#: juntagrico/forms.py:501
 msgid "{}-Spitzname"
 msgstr ""
 
-#: juntagrico/forms.py:504
+#: juntagrico/forms.py:506
 msgid "Speichern"
 msgstr ""
 
@@ -1858,7 +1854,9 @@ msgid "Beende dies hier"
 msgstr "End this by clicking here"
 
 #: juntagrico/templates/cancelmembership.html:7
-msgid "Künde deine Mitgliedschaft"
+#, fuzzy
+#| msgid "Künde deine Mitgliedschaft"
+msgid "Kündige deine Mitgliedschaft"
 msgstr "Cancel your membership"
 
 #: juntagrico/templates/cancelmembership.html:18
@@ -1875,7 +1873,9 @@ msgstr "The next regular termination date is %(ed)s."
 
 #: juntagrico/templates/cancelmembership.html:33
 #: juntagrico/templates/cancelmembership.html:47
-msgid "Du erhälst keine Emails mehr"
+#, fuzzy
+#| msgid "Du erhälst keine Emails mehr"
+msgid "Du erhältst keine Emails mehr"
 msgstr "You will no longer receive emails"
 
 #: juntagrico/templates/cancelmembership.html:36
@@ -2444,7 +2444,7 @@ msgstr ""
 #: juntagrico/templates/exports/share_certificate.html:139
 msgid ""
 "\n"
-"    Bitte bewahren Sie diese Bescheigung für Ihre Steuererklärung auf.\n"
+"    Bitte bewahren Sie diese Bescheinigung für Ihre Steuererklärung auf.\n"
 "    "
 msgstr ""
 
@@ -4823,6 +4823,170 @@ msgstr ""
 msgid "{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden."
 msgstr ""
 
+#~ msgid "Du erhälst keine Emails mehr"
+#~ msgstr "You will no longer receive emails"
+
+#, fuzzy
+#~| msgid "und"
+#~ msgid "and"
+#~ msgstr "and"
+
+#, fuzzy
+#~| msgid "Email-Adresse"
+#~ msgid "Email address"
+#~ msgstr "E-mail address"
+
+#, fuzzy
+#~| msgid "Bitte positive Zahl eingeben"
+#~ msgid "Positive small integer"
+#~ msgstr "Please enter positive number"
+
+#, fuzzy
+#~| msgid "des"
+#~ msgid "Yes"
+#~ msgstr "the"
+
+#, fuzzy
+#~| msgid "Montag"
+#~ msgid "Mon"
+#~ msgstr "Monday"
+
+#, fuzzy
+#~| msgid "Wartend"
+#~ msgid "Wed"
+#~ msgstr "Waiting"
+
+#, fuzzy
+#~| msgid "Fertig"
+#~ msgid "Fri"
+#~ msgstr "Finished"
+
+#, fuzzy
+#~| msgid "Start"
+#~ msgid "Sat"
+#~ msgstr "Start"
+
+#, fuzzy
+#~| msgid "und"
+#~ msgid "Sun"
+#~ msgstr "and"
+
+#, fuzzy
+#~| msgid "Januar"
+#~ msgid "January"
+#~ msgstr "January"
+
+#, fuzzy
+#~| msgid "Februar"
+#~ msgid "February"
+#~ msgstr "February"
+
+#, fuzzy
+#~| msgid "Mai"
+#~ msgid "May"
+#~ msgstr "May"
+
+#, fuzzy
+#~| msgid "Oktober"
+#~ msgid "October"
+#~ msgstr "October"
+
+#, fuzzy
+#~| msgid "Dezember"
+#~ msgid "December"
+#~ msgstr "December"
+
+#, fuzzy
+#~| msgid "und"
+#~ msgid "jun"
+#~ msgstr "and"
+
+#, fuzzy
+#~| msgid "Tag"
+#~ msgid "aug"
+#~ msgstr "Day"
+
+#, fuzzy
+#~| msgid "der"
+#~ msgid "dec"
+#~ msgstr "the"
+
+#, fuzzy
+#~| msgid "April"
+#~ msgctxt "abbrev. month"
+#~ msgid "April"
+#~ msgstr "April"
+
+#, fuzzy
+#~| msgid "Mai"
+#~ msgctxt "abbrev. month"
+#~ msgid "May"
+#~ msgstr "May"
+
+#, fuzzy
+#~| msgid "Januar"
+#~ msgctxt "alt. month"
+#~ msgid "January"
+#~ msgstr "January"
+
+#, fuzzy
+#~| msgid "Februar"
+#~ msgctxt "alt. month"
+#~ msgid "February"
+#~ msgstr "February"
+
+#, fuzzy
+#~| msgid "April"
+#~ msgctxt "alt. month"
+#~ msgid "April"
+#~ msgstr "April"
+
+#, fuzzy
+#~| msgid "Mai"
+#~ msgctxt "alt. month"
+#~ msgid "May"
+#~ msgstr "May"
+
+#, fuzzy
+#~| msgid "August"
+#~ msgctxt "alt. month"
+#~ msgid "August"
+#~ msgstr "August"
+
+#, fuzzy
+#~| msgid "September"
+#~ msgctxt "alt. month"
+#~ msgid "September"
+#~ msgstr "September"
+
+#, fuzzy
+#~| msgid "Oktober"
+#~ msgctxt "alt. month"
+#~ msgid "October"
+#~ msgstr "October"
+
+#, fuzzy
+#~| msgid "November"
+#~ msgctxt "alt. month"
+#~ msgid "November"
+#~ msgstr "November"
+
+#, fuzzy
+#~| msgid "Dezember"
+#~ msgctxt "alt. month"
+#~ msgid "December"
+#~ msgstr "December"
+
+#, fuzzy
+#~| msgid "Vorname"
+#~ msgid "or"
+#~ msgstr "First name"
+
+#, fuzzy
+#~| msgid "Daten Administration"
+#~ msgid "Django Documentation"
+#~ msgstr "Data admin"
+
 #, python-brace-format
 #~ msgid "Kein/e/n {0}"
 #~ msgstr "No {0}"
@@ -4947,9 +5111,6 @@ msgstr ""
 #~ msgid "Alle %(v_member_pl)s im Überblick"
 #~ msgstr "Overview of all %(v_member_pl)s"
 
-#~ msgid "Daten Administration"
-#~ msgstr "Data admin"
-
 #~ msgid "%(v_subscription)s Management"
 #~ msgstr "%(v_subscription)s management"
 
@@ -4983,9 +5144,6 @@ msgstr ""
 
 #~ msgid "Weitere Bezieher"
 #~ msgstr "Other recipients"
-
-#~ msgid "Wartend"
-#~ msgstr "Waiting"
 
 #, fuzzy
 #~| msgid "Kündigüngssdatum"
@@ -5152,9 +5310,6 @@ msgstr ""
 #~ msgid "Geburtstag ungültig"
 #~ msgstr "Birthday invalid"
 
-#~ msgid "Bitte positive Zahl eingeben"
-#~ msgstr "Please enter positive number"
-
 #~ msgid "Abo künden"
 #~ msgstr "Cancel subscription"
 
@@ -5163,9 +5318,6 @@ msgstr ""
 
 #~ msgid "Hier die aktuelle Rechnung für dein Zusatzabo"
 #~ msgstr "Here is the current invoice for your extra subscription"
-
-#~ msgid "Start"
-#~ msgstr "Start"
 
 #~ msgid "Kontonummer"
 #~ msgstr "account number"
