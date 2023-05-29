@@ -1,3 +1,5 @@
+.. _reference-permissions:
+
 Permissions
 ===========
 
@@ -13,7 +15,7 @@ There you can search for a permission and add it to the user using the little ri
 You can also create groups of permissions which can be assigned to single users. If you need more information on that check out the Django documentation concerning permissions.
 
 Area and Depot Admins
---------------------
+---------------------
 juntagrico.is_depot_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Should be assigned to members which are administrator of a depot, so that they can filter and communicate with the members in their depot.
@@ -161,7 +163,7 @@ Email Permissions
 -----------------
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the email address specified in the setting :ref:`INFO_EMAIL` as sender in the mail form.
+Member can use the email address specified in the setting :ref:`INFO_EMAIL <reference-settings-info-email>` as sender in the mail form.
 
 Search Hints:
     * German: General Email

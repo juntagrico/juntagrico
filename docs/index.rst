@@ -12,15 +12,13 @@ It provides the basic functionality like
 
 
 .. toctree::
-   :caption: First Steps
+   :caption: Setup
    :maxdepth: 2
    :hidden:
 
    intro/installation.rst
    intro/basic.rst
    intro/advanced.rst
-   theming.rst
-   rich_text_editor.rst
 
 
 .. toctree::
@@ -30,14 +28,9 @@ It provides the basic functionality like
 
    reference/settings.rst
    reference/permissions.rst
-
-
-.. toctree::
-   :caption: Extending Juntagrico
-   :maxdepth: 2
-   :hidden:
-
-   addons.rst
+   reference/signals.rst
+   reference/hooks.rst
+   reference/commands.rst
 
 
 .. toctree::

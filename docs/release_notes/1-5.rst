@@ -1,5 +1,5 @@
 1.5 Release Notes
-=============
+=================
 
 Dev
 -----
@@ -96,10 +96,12 @@ Fixes
 
 Upgrade Instructions
 ^^^^^^^^^^^^^^^^^^^^
-* Configure the website name and domain as specified in the :doc:`First Steps <first_steps>`
+* Configure the website name and domain as specified in the :ref:`Basic Setup <configure-website-name-and-domain>`
   using the values from your ``ADMINPORTAL_NAME`` and ``ADMINPORTAL_SERVER_URL`` settings.
-    * Remove these settings.
-    * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
+
+  * Remove these settings.
+  * Add ``'django.contrib.sites.middleware.CurrentSiteMiddleware'`` to the ``MIDDLEWARE`` setting.
+
 * Add ``'polymorphic'`` to the ``INSTALLED_APPS`` setting.
 * Replace the ``STYLE_SHEET`` setting with ``STYLES = {'static': ['your.css']}`` removing ``/static/`` from the beginning of the path.
 * The method ``url`` from ``django.conf.urls`` use either ``path`` or ``repath`` from ``django.urls``
