@@ -89,30 +89,13 @@ And it will allow them to do their tasks with more confidence, as the risk of ch
 
 Juntagrico does not assume any specific organisation structure.
 Instead permissions can be distributed with a high level of granularity.
-Follow these steps to define admin permissions:
+Read :ref:`Permissions <reference-permissions>` on how to set permissions.
 
-1. Login with the super admin user.
-2. Open the data management ("Datenverwaltung") -> Groups -> Add to create a new group.
-3. Set a name for the group, e.g. "share management".
-4. Select the permission that you want to give to this group:
-   Note that the permissions are named in the language of your instance and use your terminology.
-   There are 4 basic permissions for each entity: View, Add, Change, Delete.
-   Note that also the permissions for related entities need to be given, e.g. as shares are linked to a member
-   those who can edit shares also need at least the "view" permission for "members".
-   There are additional permissions, e.g. to get email notifications on certain actions.
-   Read about these :ref:`special permissions <reference-permissions>` and set them accordingly.
-5. Open the data management ("Datenverwaltung") -> User ("Benutzer") and edit the user of the member you want to give the permissions to.
-6. If the user needs access to the data management, tick coworker access ("Mitarbeiter-Status").
-7. Add the relevant groups for this user and save the user. When you now update the permissions of the group, this users permissions are also updated.
-
-.. note::
-    When impersonating the user, e.g. to try their access rights, by default the data management is excluded from impersonation.
-    If you want to check their permissions there as well, set the ``IMPERSONATE_URI_EXCLUSIONS`` setting to an empty list. `Read more <https://code.netlandish.com/~petersanchez/django-impersonate/#settings>`_.
 
 Configure Admin Notifications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Email notifications for admins are configured using permissions. See above.
+Email notifications for admins are also configured :ref:`using permissions <reference-notifications>`.
 
 
 Text Adjustments

@@ -11,7 +11,8 @@ The rich text editor allows formatting text of most descriptions, like the job d
 This feature is disabled by default. Use the steps below to enable it.
 
 .. warning::
-    When the rich text editor is enabled, text, when saved, will be saved as HTML. Disabling the rich text editor will not convert back the text back. The HTML has to be converted back manually.
+    When the rich text editor is enabled, text, when saved, will be saved as HTML.
+    Disabling the rich text editor will not convert the text back. The HTML has to be converted back manually.
 
 .. note::
     When text from rich text fields is used in plain text emails the HTML tags need to be removed using the ``striptags`` filter.
