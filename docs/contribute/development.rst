@@ -1,8 +1,11 @@
 Development
 ===========
 
-The following list of commands provides an easy way of getting started
-with juntagrico. It was tested on macOS 13 and Linux. Contributions for
+.. warning::
+    This are the instructions for juntagrico developers. If you want to use juntagrico, follow the :ref:`installation instructions <intro-installation>` instead.
+
+The following list of commands provides an easy way of getting started with the development in juntagrico.
+It was tested on macOS 13 and Linux. Contributions for
 getting it setup and running under Windows are welcome.
 
 Installing Python and dependencies

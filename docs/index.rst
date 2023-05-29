@@ -31,7 +31,7 @@ It provides the basic functionality like
    reference/signals.rst
    reference/hooks.rst
    reference/commands.rst
-   extensions.rst
+   reference/extensions.rst
 
 
 .. toctree::
@@ -39,7 +39,7 @@ It provides the basic functionality like
    :maxdepth: 2
    :hidden:
 
-   development.rst
+   contribute/development.rst
 
 
 .. toctree::
