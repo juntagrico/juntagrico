@@ -31,6 +31,15 @@ It provides the basic functionality like
    reference/signals.rst
    reference/hooks.rst
    reference/commands.rst
+   extensions.rst
+
+
+.. toctree::
+   :caption: Contribute
+   :maxdepth: 2
+   :hidden:
+
+   development.rst
 
 
 .. toctree::
