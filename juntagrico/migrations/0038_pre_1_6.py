@@ -12,6 +12,16 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AlterModelOptions(
+            name='specialroles',
+            options={'default_permissions': (), 'managed': False, 'permissions': (
+                ('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'), ('can_send_mails', 'Benutzer kann im System E-Mails versenden'),
+                ('can_use_general_email', 'Benutzer kann allgemeine E-Mail-Adresse verwenden'), ('can_use_for_members_email', 'Benutzer kann E-Mail-Adresse "for_members" verwenden'),
+                ('can_use_for_subscriptions_email', 'Benutzer kann E-Mail-Adresse "for_subscription" verwenden'), ('can_use_for_shares_email', 'Benutzer kann E-Mail-Adresse "for_shares" verwenden'),
+                ('can_use_technical_email', 'Benutzer kann technische E-Mail-Adresse verwenden'), ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'),
+                ('can_view_exports', 'Benutzer kann Exporte öffnen'), ('can_view_lists', 'Benutzer kann Listen öffnen'), ('can_generate_lists', 'Benutzer kann Listen erzeugen')
+            )},
+        ),
         migrations.AlterField(
             model_name='subscriptionmembership',
             name='join_date',
@@ -44,7 +54,12 @@ class Migration(migrations.Migration):
                                                                    (5, 'Erhöhung der Anteile'), (6, 'Betriebsbeteiligung - Lohn')], null=True, verbose_name='Grund des Erwerbs'),
         ),
         migrations.AlterModelOptions(
-            name='specialroles',
-            options={'default_permissions': (), 'managed': False, 'permissions': (('is_operations_group', 'Benutzer ist in der BG'), ('is_book_keeper', 'Benutzer ist Buchhalter'), ('can_send_mails', 'Benutzer kann im System E-Mails versenden'), ('can_use_general_email', 'Benutzer kann allgemeine E-Mail-Adresse verwenden'), ('can_use_for_members_email', 'Benutzer kann E-Mail-Adresse "for_members" verwenden'), ('can_use_for_subscriptions_email', 'Benutzer kann E-Mail-Adresse "for_subscription" verwenden'), ('can_use_for_shares_email', 'Benutzer kann E-Mail-Adresse "for_shares" verwenden'), ('can_use_technical_email', 'Benutzer kann technische E-Mail-Adresse verwenden'), ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'), ('can_view_exports', 'Benutzer kann Exporte öffnen'), ('can_view_lists', 'Benutzer kann Listen öffnen'))},
+            name='subscription',
+            options={'permissions': [('can_filter_subscriptions', 'Benutzer kann Abo filtern'),
+                                     ('can_change_deactivated_subscriptions', 'Benutzer kann deaktivierte Abo ändern'),
+                                     ('notified_on_depot_change', 'Wird bei Depot-Änderung informiert'),
+                                     ('notified_on_subscription_creation', 'Wird bei Abo Erstellung informiert'),
+                                     ('notified_on_subscription_cancellation', 'Wird bei Abo Kündigung informiert')],
+                     'verbose_name': 'Abo', 'verbose_name_plural': 'Abos'},
         ),
     ]

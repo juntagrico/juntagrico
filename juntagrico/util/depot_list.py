@@ -13,17 +13,20 @@ from juntagrico.util.subs import activate_future_depots
 from juntagrico.util.temporal import weekdays
 
 
-def default_depot_list_generation(*args, days=0, force=False, future=False, **options):
+def default_depot_list_generation(*args, days=0, force=False, future=False, no_future=False, **options):
     if not force and timezone.now().weekday() not in Config.depot_list_generation_days():
         print(
             'not the specified day for depot list generation, use --force to override')
         return
 
-    if future or timezone.now().weekday() in Config.depot_list_generation_days():
-        activate_future_depots()
-
-    if force and not future:
-        print('future depots ignored, use --future to override')
+    if not no_future or future:
+        if not future:
+            print('DEPRECATION WARNING: Running depot list generation without --future flag will change behaviour in an upcoming release. '
+                  'See release notes of Juntagrico version 1.6.0. Run this command with --future or with --no-future to remove this warning.')
+        if future or timezone.now().weekday() in Config.depot_list_generation_days():
+            activate_future_depots()
+        else:
+            print('future depots ignored, use --future to override')
 
     date = datetime.date.today() + datetime.timedelta(days)
 

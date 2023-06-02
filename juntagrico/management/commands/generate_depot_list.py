@@ -21,7 +21,15 @@ class Command(BaseCommand):
             action='store_true',
             dest='future',
             default=False,
-            help='when forced do not ignore future depots',
+            help='apply all depot changes before generation',
+        )
+
+        parser.add_argument(
+            '--no-future',
+            action='store_true',
+            dest='no_future',
+            default=False,
+            help='prevent automatic depot changes. Ignored if --future is set',
         )
 
         parser.add_argument(

@@ -117,10 +117,6 @@ class MemberDao:
         return area.members.all().filter(~q_deactivated())
 
     @staticmethod
-    def members_with_assignments_count_in_subscription(subscription):
-        return MemberDao.annotate_members_with_assignemnt_count(MemberDao.members_in_subscription(subscription))
-
-    @staticmethod
     def annotate_members_with_assignemnt_count(members):
         start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
         end = datetime.combine(end_of_business_year(), time.min, tzinfo=gdtz())

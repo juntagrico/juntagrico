@@ -68,7 +68,7 @@ Has migrations
 * Main member can be changed by Members themselfes
 * Non share holders are deactivated when subscription is deactivated
 * Better gender texts
-* Billing stubs are remoived to extension
+* Billing stubs are moved to addon
 * Fix in upcoming jobs widget
 * Fix in cancelation date calculation
 * Fix in Co Member adding

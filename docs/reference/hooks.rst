@@ -1,15 +1,7 @@
-Addon Config
-============
+.. _reference-hooks:
 
-You can use the following methods to modify juntagrico from an Addon or from your app.
-
-Create a ``juntagricoapp.py`` in your apps or addons main folder.
-Then register modifications like this:
-
-  .. code-block:: python
-
-    from juntagrico.util import addons
-    addons.config.register_user_menu('my_user_menu.html')
+Hooks
+=====
 
 Template Hooks
 --------------
@@ -62,8 +54,8 @@ register_sub_change
 
   - template: String
 
-Admin
------
+Admin Hooks
+-----------
 
 register_model_inline
 ^^^^^^^^^^^^^^^^^^^^^
@@ -74,8 +66,8 @@ register_model_inline
   - model: String
   - inline: InlineModelAdmin
 
-Config
-------
+Config Hooks
+------------
 
 register_config_class
 ^^^^^^^^^^^^^^^^^^^^^
