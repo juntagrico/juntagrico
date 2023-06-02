@@ -13,7 +13,8 @@
 <body>
 {% for weekday_name, weekday_id in weekdays.items %}
 <div id="header_content" style="text-align:right">
-    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
+    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %},
+    {% trans "Stichtag" %} {{ date|date:"d.m.Y" }}
 </div>
     <h2 style="font-size: 18px;">{{ weekday_name }}</h2>
 <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">

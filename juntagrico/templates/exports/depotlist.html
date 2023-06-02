@@ -11,7 +11,8 @@
 
 <body>
 <div id="header_content" class="gendate">
-    {% now "d.m.Y H:i" %}
+    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %},
+    {% trans "Stichtag" %} {{ date|date:"d.m.Y" }}
 </div>
 <div id="footer_content">
     {% for message in messages %}

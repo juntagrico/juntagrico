@@ -1,3 +1,4 @@
+import datetime
 import re
 from io import BytesIO
 
@@ -6,7 +7,6 @@ from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from xlsxwriter import Workbook
@@ -24,6 +24,7 @@ from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
+from juntagrico.forms import GenerateListForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
@@ -538,14 +539,19 @@ def assignments(request):
 
 
 @permission_required('juntagrico.can_generate_lists')
-def manage_list(request, success=False):
-    return render(request, 'juntagrico/manage/list.html', {'success': success})
-
-
-@permission_required('juntagrico.can_generate_lists')
-def manage_list_generate(request, future=False):
-    call_command('generate_depot_list', force=True, future=future, no_future=not future)
-    return redirect(reverse('manage-list-success'))
+def manage_list(request):
+    success = False
+    can_change_subscription = request.user.has_perm('juntagrico.change_subscription')
+    if request.method == 'POST':
+        form = GenerateListForm(request.POST, show_future=can_change_subscription)
+        if form.is_valid():
+            # generate list
+            f = can_change_subscription and form.cleaned_data['future']
+            call_command('generate_depot_list', force=True, future=f, no_future=not f, days=(form.cleaned_data['for_date'] - datetime.date.today()).days)
+            success = True
+    else:
+        form = GenerateListForm(show_future=can_change_subscription)
+    return render(request, 'juntagrico/manage/list.html', {'form': form, 'success': success})
 
 
 @login_required

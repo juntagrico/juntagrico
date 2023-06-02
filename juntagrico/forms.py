@@ -1,14 +1,17 @@
+import datetime
+
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML, Div, Fieldset
 from crispy_forms.utils import TEMPLATE_PACK
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
 from schwifty import IBAN
 
@@ -26,6 +29,17 @@ from juntagrico.util.temporal import next_membership_end_date
 class Slider(Field):
     def __init__(self, *args, **kwargs):
         super().__init__(template='forms/slider.html', css_class='slider', *args, **kwargs)
+
+
+class JuntagricoDateWidget(DateInput):
+    """ Widget using browsers date picker
+    """
+    input_type = 'date'
+
+    def format_value(self, value):
+        if isinstance(value, str):
+            return value
+        return value.strftime('%Y-%m-%d')
 
 
 class LinkButton(HTML):
@@ -567,3 +581,17 @@ class NicknameForm(Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', _('Speichern')))
+
+
+class GenerateListForm(Form):
+    for_date = DateField(initial=datetime.date.today, label=_('Stichtag'), widget=JuntagricoDateWidget)
+    future = BooleanField(label=_('Akzeptiere alle Depot-Änderungen'), required=False,
+                          help_text=format_lazy('<a href="{}">{}</a>', reverse_lazy("manage-sub-depot-changes"), _('Änderungen stattdessen einzeln prüfen und akzeptieren')))
+
+    def __init__(self, *args, **kwargs):
+        show_future = kwargs.pop('show_future', False)
+        super().__init__(*args, **kwargs)
+        if not show_future:
+            del self.fields['future']
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', _('Listen Erzeugen')))
