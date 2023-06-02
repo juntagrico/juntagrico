@@ -2,9 +2,11 @@ import re
 from io import BytesIO
 
 from django.contrib.auth.decorators import permission_required, login_required
+from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from xlsxwriter import Workbook
@@ -454,6 +456,20 @@ def extra_canceledlist(request):
                                         'management_lists/extra_canceledlist.html', request)
 
 
+@permission_required('juntagrico.change_subscription')
+def depot_changes(request):
+    render_dict = {'change_date_disabled': True}
+    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), render_dict,
+                                        'juntagrico/manage/subscription/depot/changes.html', request)
+
+
+@permission_required('juntagrico.change_subscription')
+def depot_change_confirm(request, subscription_id):
+    sub = get_object_or_404(Subscription, id=subscription_id)
+    sub.activate_future_depot()
+    return return_to_previous_location(request)
+
+
 @permission_required('juntagrico.change_share')
 def share_canceledlist(request):
     render_dict = {'change_date_disabled': True}
@@ -519,6 +535,17 @@ def assignments(request):
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)
+
+
+@permission_required('juntagrico.can_generate_lists')
+def manage_list(request, success=False):
+    return render(request, 'juntagrico/manage/list.html', {'success': success})
+
+
+@permission_required('juntagrico.can_generate_lists')
+def manage_list_generate(request, future=False):
+    call_command('generate_depot_list', force=True, future=future, no_future=not future)
+    return redirect(reverse('manage-list-success'))
 
 
 @login_required

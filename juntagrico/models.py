@@ -41,7 +41,9 @@ class SpecialRoles(models.Model):
                        ('depot_list_notification',
                         _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),
                        ('can_view_exports', _('Benutzer kann Exporte öffnen')),
-                       ('can_view_lists', _('Benutzer kann Listen öffnen')),)
+                       ('can_view_lists', _('Benutzer kann Listen öffnen')),
+                       ('can_generate_lists', _('Benutzer kann Listen erzeugen')),
+                       )
 
 
 ''' non lifecycle related signals '''

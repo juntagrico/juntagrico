@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+{% load juntagrico.common %}
 {% load juntagrico.snippets %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
@@ -90,12 +91,7 @@
                             {{ subscription.activation_date|date:"Y-m-d" }}
                         </td>
                         <td class="email">
-                            {% for recipient in subscription.recipients %}
-                                {{ recipient.email }}
-                                {% if not forloop.last %}
-                                    ,
-                                {% endif %}
-                            {% endfor %}
+                            {{ subscription.recipients_qs|values_list:'member__email'|join:', ' }}
                         </td>
                     </tr>
                 {% endfor %}

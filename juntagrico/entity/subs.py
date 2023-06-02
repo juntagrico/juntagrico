@@ -14,6 +14,7 @@ from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.queryset.subscription import SubscriptionQuerySet
+from juntagrico.mailer import membernotification
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
 
@@ -235,6 +236,16 @@ class Subscription(Billable, SimpleStateModel):
     def next_size_change_date():
         return start_of_next_business_year()
 
+    def activate_future_depot(self):
+        if self.future_depot is not None:
+            self.depot = self.future_depot
+            self.future_depot = None
+            self.save()
+            emails = []
+            for member in self.recipients:
+                emails.append(member.email)
+            membernotification.depot_changed(emails, self.depot)
+
     def clean(self):
         check_sub_consistency(self)
 
@@ -244,7 +255,9 @@ class Subscription(Billable, SimpleStateModel):
         verbose_name_plural = Config.vocabulary('subscription_pl')
         permissions = (
             ('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),
-            ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),)
+            ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),
+            ('notified_on_depot_change', _('Wird bei {0}-Änderung informiert').format(Config.vocabulary('depot'))),
+        )
 
 
 class SubscriptionPartQuerySet(QuerySet):

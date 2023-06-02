@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block page_title %}
+    <h3>
+        {% trans "Manuelle Listenerzeugung" %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% vocabulary "member_pl" as v_member_pl %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% if success %}
+        <div class="alert alert-success">
+            {% trans "Listen erstellt" %}
+            {% if perms.juntagrico.can_view_lists %}
+                <br>
+                <a href="{% url 'lists-depot-amountoverview' %}">
+                    {% trans "Mengen Übersicht" %}
+                </a><br>
+                <a href="{% url 'lists-depotlist' %}">
+                    {% vocabulary "depot" %}-{% trans "Listen" %}
+                </a><br>
+                <a href="{% url 'lists-depot-overview' %}">
+                    {% vocabulary "depot" %} {% trans "Übersicht" %}
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            {% trans "Nur liste neu erzeugen." %}
+        </div>
+        <div class="col-md-6">
+            <a class="btn btn-primary" href="{% url 'manage-list-generate' %}">
+                {% trans "Erzeugen" %}
+            </a>
+        </div>
+    </div>
+    {% if perms.juntagrico.change_subscription %}
+        <div class="row mb-4">
+            <div class="col-md-6">
+                {% vocabulary "depot" as v_depot %}
+                {% blocktrans %}
+                    Änderungen am {{ v_depot }} einzeln bestätigen.
+                {% endblocktrans %}
+            </div>
+            <div class="col-md-6">
+                <a href="{% url 'manage-sub-depot-changes' %}">
+                    {% trans "Zur Änderungsliste" %}
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
