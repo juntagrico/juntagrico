@@ -4,7 +4,6 @@ from django.db.models import Q, F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
-from polymorphic.query import PolymorphicQuerySet
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
@@ -19,10 +18,6 @@ from juntagrico.queryset.subscription import SubscriptionQuerySet
 from juntagrico.mailer import membernotification
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
-
-
-class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
-    pass
 
 
 class Subscription(Billable, SimpleStateModel):
