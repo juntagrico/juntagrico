@@ -30,6 +30,7 @@ class AssignmentTests(JuntagricoTestCase):
             # multiple parts
             self.create_sub(self.depot, self.activation_date, parts=[self.sub_type, self.sub_type]),
         ]
+        print(self.subs[7])  # troubleshoot
 
     def testRequiredAssignments(self):
         # get assignments for entire year.
@@ -56,5 +57,6 @@ class AssignmentTests(JuntagricoTestCase):
         self.assertEqual(subs[6].required_assignments, 0)
         self.assertEqual(subs[6].required_core_assignments, 0)
         # multiple parts
+        print(subs[7])  # troubleshoot
         self.assertEqual(subs[7].required_assignments, 20)
         self.assertEqual(subs[7].required_core_assignments, 6)
