@@ -23,7 +23,6 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
@@ -31,7 +30,7 @@ from juntagrico.util.management_list import get_changedate, prefetch_for_list
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
-from juntagrico.view_decorators import any_permission_required
+from juntagrico.view_decorators import any_permission_required, date_range_view
 from juntagrico.views_subscription import error_page
 
 
@@ -530,11 +529,15 @@ def sub_inconsistencies(request):
 
 
 @permission_required('juntagrico.change_assignment')
-def assignments(request):
-    management_list = Subscription.objects.annotate_assignments_progress().select_related('primary_member')
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(management_list, render_dict,
-                                        'management_lists/assignments.html', request)
+@date_range_view
+def assignments(request, start=None, end=None,
+                template_name='management_lists/assignments.html',
+                context=None,
+                subscription_queryset=None):
+    management_list = (subscription_queryset or SubscriptionDao.subscriptions_by_date(start, end)).annotate_assignments_progress(start, end).select_related('primary_member')
+    context = context or {}
+    context.update({'change_date_disabled': True})
+    return subscription_management_list(management_list, context, template_name, request)
 
 
 @permission_required('juntagrico.can_generate_lists')

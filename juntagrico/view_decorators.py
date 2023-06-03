@@ -5,7 +5,9 @@ from django.shortcuts import get_object_or_404, redirect
 
 from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.models import Subscription
+from juntagrico.util import temporal
 from juntagrico.util.sessions import SessionObjectManager, CSSessionObject
+from juntagrico.util.views_admin import date_from_get
 
 
 def primary_member_of_subscription(view):
@@ -84,3 +86,23 @@ def any_permission_required(*perms):
             return True
         return False
     return user_passes_test(check_perms)
+
+
+def date_range_view(view):
+    """
+    view_decorator:
+    Sets the first two arguments, start and end, after request as follows:
+    * arguments passed directly, e.g. from urls.py
+    * GET variables `start_date` and `end_date`
+    * Business year containing the GET variable `ref_date`, defaults to today
+    """
+    @wraps(view)
+    def wrapper(request, start=None, end=None, *args, **kwargs):
+        ref_date = date_from_get(request, 'ref_date')
+        return view(
+            request,
+            start or date_from_get(request, 'start_date') or temporal.start_of_specific_business_year(ref_date),
+            end or date_from_get(request, 'end_date') or temporal.end_of_specific_business_year(ref_date),
+            *args, **kwargs
+        )
+    return wrapper
