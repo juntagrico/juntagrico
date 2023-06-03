@@ -88,3 +88,8 @@ def richtext(value):
         value = urlize(value)
         value = linebreaksbr(value)
     return value
+
+
+@register.filter
+def values_list(queryset, keys):
+    return queryset.values_list(keys, flat=isinstance(keys, str))

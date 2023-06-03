@@ -27,6 +27,7 @@ from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm, SubscriptionPartChangeForm
 from juntagrico.mailer import membernotification, adminnotification
+from juntagrico.signals import depot_changed
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.management import cancel_sub, create_subscription_parts
@@ -41,7 +42,7 @@ from juntagrico.view_decorators import primary_member_of_subscription, create_su
 @login_required
 def subscription(request, subscription_id=None):
     '''
-    Details for an subscription of a member
+    Details for a subscription of a member
     '''
     member = request.user.member
     future_subscription = member.subscription_future is not None
@@ -102,22 +103,28 @@ def depot_change(request, subscription_id):
     '''
     change a depot
     '''
+    member = request.user.member
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     if request.method == 'POST':
         if subscription.state == 'waiting':
+            old_depot = subscription.depot
             subscription.depot = get_object_or_404(
                 Depot, id=int(request.POST.get('depot')))
+            depot_changed.send(Subscription, subscription=subscription, member=member, old_depot=old_depot,
+                               new_depot=subscription.depot, immediate=True)
         else:
             subscription.future_depot = get_object_or_404(
                 Depot, id=int(request.POST.get('depot')))
+            depot_changed.send(Subscription, subscription=subscription, member=member, old_depot=subscription.depot,
+                               new_depot=subscription.future_depot, immediate=False)
         subscription.save()
         saved = True
     depots = DepotDao.all_visible_depots_with_map_info()
     renderdict = {
         'subscription': subscription,
         'saved': saved,
-        'member': request.user.member,
+        'member': member,
         'depots': depots,
     }
     return render(request, 'depot_change.html', renderdict)

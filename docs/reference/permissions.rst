@@ -32,7 +32,7 @@ There are 4 basic permissions for each entity which are self explanatory:
 
 .. hint::
     If a user should be able to change an entity, they also need access to at least view the related entities.
-    See `Dependent Permissions <reference-dependent-permissions>` below.
+    See :ref:`Dependent Permissions <reference-dependent-permissions>` below.
 
 Juntagrico provides some additional permissions, that are described in the sections below.
 

@@ -31,7 +31,6 @@ It provides the basic functionality like
    reference/signals.rst
    reference/hooks.rst
    reference/commands.rst
-   reference/extensions.rst
 
 
 .. toctree::

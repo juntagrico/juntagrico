@@ -1,0 +1,69 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% block page_title %}
+    {% vocabulary "depot_pl" as v_depot_pl %}
+    <h3>
+        {% blocktrans %}{{ v_depot_pl }}-Änderungsliste{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block list %}
+    {% vocabulary "depot" as v_depot %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
+                <th class="filter">
+                    {% blocktrans %}{{ v_depot }} Bisher{% endblocktrans %}
+                </th>
+                <th class="filter">
+                    {% blocktrans %}{{ v_depot }} Neu{% endblocktrans %}
+                </th>
+                <th></th>
+                <th class="d-none">
+                    {% trans "E-Mail" %}
+                </th>
+                <th>
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in management_list %}
+                <tr>
+                    <td class="share_id">
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
+                            {{ subscription }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ subscription.primary_member }}
+                    </td>
+                    <td>
+                        {{ subscription.depot }}
+                    </td>
+                    <td>
+                        {{ subscription.future_depot }}
+                    </td>
+                    <td>
+                        <a href="{% url 'manage-sub-depot-change-confirm' subscription.id %}" class="btn btn-success">
+                            {% trans "Ändern" %}
+                        </a>
+                    </td>
+                    <td class="email d-none">
+                        {{ subscription.recipients_qs|values_list:'member__email'|join:', ' }}
+                    </td>
+                    <td>
+                        {{ subscription.notes }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
