@@ -25,8 +25,16 @@ Arguments:
 .. note::
     When using a :ref:`custom depot list generator <settings-default-depotlist-generators>`, the arguments have the effect, that you implement.
 
-* --force: If set, the list will be generated even on weekdays that are not specified in the :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>` setting.
-* --future: If set, the pending depot changes, i.e. members wanting to change the depot, will be applied, even on on weekdays that are not specified in the :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>` setting.
+.. warning::
+    Currently all pending depot changes are applied, when executing the command on a weekday specified in :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>`.
+    This behaviour will be DEPRECATED. Use ``--future`` explicitly, to apply the depot changes. Use ``--no-future`` to prevent depot changes in that case.
+
+* ``--force``: If set, the list will be generated even on weekdays that are not specified in the :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>` setting.
+* ``--future``: If set, the pending depot changes, i.e. members wanting to change the depot, will be applied, even on on weekdays that are not specified in the :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>` setting.
+* ``--no-future``: Prevent applying depot changes, even on weekdays that are specified in the :ref:`DEPOT_LIST_GENERATION_DAYS <settings-depot-list-generation-days>` setting.
+* ``--days <number>``:  Specify the reference date, as number of days relative to today. 1 will use tomorrow as reference day, -1 uses yesterday. Default is 0, i.e., today.
+  The lists will be generated using all active subscription parts for that reference date, i.e. it can be used to consider future activation dates that are already set.
+
 
 remind_members
 --------------
