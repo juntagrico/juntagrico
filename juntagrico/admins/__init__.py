@@ -57,3 +57,9 @@ class DateRangeExportMixin(ExportMixin):
         start_date = request.POST.get('start_date_year') + '-' + request.POST.get('start_date_month') + '-' + request.POST.get('start_date_day')
         end_date = request.POST.get('end_date_year') + '-' + request.POST.get('end_date_month') + '-' + request.POST.get('end_date_day')
         return f'{super().get_export_filename(request, queryset, file_format)[:-len(ext)-1]}--{start_date}--{end_date}.{ext}'
+
+
+class SortableExportMixin(ExportMixin):
+    """ Fix to make import-export and sortable admin work together.
+    """
+    change_list_template = 'adminsortable2/change_list.html'

@@ -95,9 +95,11 @@ Roughly these are the steps to override a template:
 Custom Code
 -----------
 
-You can modify juntagrico through the provided :ref:`Hooks <reference-hooks>`.
-You may also apply monkey patching, but be aware, that juntagrico may change in the future and you will have to maintain your changes accordingly.
-It is best practise to report features that you are adding this way, to either get them included in juntagrico or at least get an official hook to do your changes.
+You can modify juntagrico with your own code. Use the provided :ref:`Hooks <reference-hooks>`, link to the emitted :ref:`Signals <reference-signals>` or create your own :ref:`Exports <reference-exports>`.
+
+.. Warning::
+    juntagrico may change in the future and you will have to maintain your changes accordingly.
+    Instead of making complex modifications, try opening a feature request, to either get your modifications included in juntagrico or at least get an official hook to do your changes.
 
 Modifications can be made, once all django apps have been loaded,
 i.e. in the ``ready`` method of your app config in ``apps.py`` in the main folder of your project or addon:
