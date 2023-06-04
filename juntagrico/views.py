@@ -67,7 +67,7 @@ def job(request, job_id):
     job_is_running = job.start_time() < timezone.now()
     job_canceled = job.canceled
     can_subscribe = job.infinite_slots or not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
-    can_unsubscribe = job.allow_unsubscribe and AssignmentDao.assignments_for_job_and_member(job_id, member)
+    can_unsubscribe = job.allow_unsubscribe and len(AssignmentDao.assignments_for_job_and_member(job_id, member)) > 0
 
     if request.method == 'POST' and can_subscribe:
         if request.POST.get('subscribe'):
