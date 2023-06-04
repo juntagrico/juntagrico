@@ -164,6 +164,7 @@ class Job(JuntagricoBasePoly):
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
+    allow_unsubscribe = models.BooleanField(_('Abmelden erlauben'), default=False)
 
     contact_set = GenericRelation(Contact)
 
