@@ -58,8 +58,8 @@ class JobTests(JuntagricoTestCase):
         self.assertEqual(self.job6.occupied_slots, 1)
         self.assertPost(reverse('job', args=[self.job6.pk]), {'unsubscribe': True}, 302)
         self.assertEqual(self.job6.occupied_slots, 0)
-        
-        # now we have no sign ups, so a repeated unsubscribe should return 200 
+
+        # now we have no sign ups, so a repeated unsubscribe should return 200
         self.assertPost(reverse('job', args=[self.job6.pk]), {'unsubscribe': True})
 
         # subscribe for multiple slots and unsubscribe for all
