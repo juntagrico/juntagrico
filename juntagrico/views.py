@@ -87,14 +87,16 @@ def job(request, job_id):
                         assignment.job_extras.add(extra)
                 assignment.save()
                 membernotification.job_signup(member.email, job)
+                # redirect to same page such that refresh in the browser or back
+                # button does not trigger a resubmission of the form
+                return redirect('job', job_id=job_id)
 
         elif request.POST.get('unsubscribe'):
             assignment = Assignment.objects.filter(member=member, job=job)
             assignment.delete()
-
-        # redirect to same page such that refresh in the browser or back
-        # button does not trigger a resubmission of the form
-        return redirect('job', job_id=job_id)
+            # redirect to same page such that refresh in the browser or back
+            # button does not trigger a resubmission of the form
+            return redirect('job', job_id=job_id)
 
     if request.method == 'POST':
         messages = getattr(request, 'member_messages', []) or []
