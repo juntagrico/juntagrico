@@ -17,11 +17,14 @@ def default_depot_list_generation(*args, **options):
             'not the specified day for depot list generation, use --force to override')
         return
 
-    if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
-        activate_future_depots()
-
-    if options['force'] and not options['future']:
-        print('future depots ignored, use --future to override')
+    if not options['no_future'] or options['future']:
+        if not options['future']:
+            print('DEPRECATION WARNING: Running depot list generation without --future flag will change behaviour in an upcoming release. '
+                  'See release notes of Juntagrico version 1.6.0. Run this command with --future or with --no-future to remove this warning.')
+        if options['future'] or timezone.now().weekday() in Config.depot_list_generation_days():
+            activate_future_depots()
+        else:
+            print('future depots ignored, use --future to override')
 
     depot_dict = {
         'subscriptions': SubscriptionDao.all_active_subscritions(),

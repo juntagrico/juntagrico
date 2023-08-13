@@ -1,5 +1,7 @@
 from django.dispatch import Signal
 
+from juntagrico.mailer import adminnotification
+
 ''' job related signals'''
 job_canceled = Signal()
 job_time_changed = Signal()
@@ -18,6 +20,9 @@ extra_sub_deactivated = Signal()
 sub_part_activated = Signal()
 sub_part_deactivated = Signal()
 
+''' depot signals '''
+depot_changed = Signal()
+
 ''' share signals '''
 share_created = Signal()
 share_canceled = Signal()
@@ -26,3 +31,10 @@ share_canceled = Signal()
 member_created = Signal()
 member_canceled = Signal()
 member_deactivated = Signal()
+
+
+''' Signal Receivers '''
+
+
+def on_depot_changed(sender, **kwargs):
+    adminnotification.member_changed_depot(**kwargs)

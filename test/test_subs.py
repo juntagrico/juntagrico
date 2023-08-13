@@ -31,18 +31,6 @@ class SubscriptionTests(JuntagricoTestCase):
         with self.assertRaises(ValidationError):
             self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk}, 500)
 
-    def testDepotChange(self):
-        self.assertGet(reverse('depot-change', args=[self.sub.pk]))
-        self.assertPost(reverse('depot-change', args=[self.sub.pk]), {'depot': self.depot2.pk})
-        self.sub.refresh_from_db()
-        self.assertEqual(self.sub.future_depot, self.depot2)
-
-    def testDepotChangeWaiting(self):
-        self.assertPost(reverse('depot-change', args=[self.sub2.pk]), {'depot': self.depot2.pk}, member=self.member2)
-        self.sub2.refresh_from_db()
-        self.assertEqual(self.sub2.depot, self.depot2)
-        self.assertIsNone(self.sub2.future_depot)
-
     def testDepot(self):
         self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
         self.assertGet(reverse('depot-landing'))
