@@ -11,7 +11,8 @@
 
 <body>
 <div id="header_content">
-    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
+    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %},
+    {% trans "Stichtag" %} {{ date|date:"d.m.Y" }}
 </div>
 
 <div>
@@ -36,20 +37,20 @@
         {% for tour in tours %}
             <tr>
                 <td>{{ tour.name }}</td>
-                <td style="text-align:right">{{ subscriptions|by_tour:tour|count_units|floatformat }}</td>
+                <td style="text-align:right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
                 {% for product in products %}
                     {% for size in product.sizes_for_depot_list %}
-                        <td style="text-align:right">{{ subscriptions|by_tour:tour|get_types_by_size:size|count|floatformat }}</td>
+                        <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_size:size|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
         {% endfor %}
         <tr>
             <td><b>{% trans "Alle" %}</b></td>
-            <td style="text-align:right">{{ subscriptions|count_units|floatformat }}</td>
+            <td style="text-align:right">{{ subscriptions|count_units:date|floatformat }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
-                    <td style="text-align:right">{{ subscriptions|get_types_by_size:size|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|parts_by_size:size|active_on:date|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
         </tr>

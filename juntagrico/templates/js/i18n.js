@@ -7,6 +7,7 @@ var email_multi_string = "{% trans "E-Mail an diese" %}";
 var member_string = "{% vocabulary "member" %}";
 var members_string = "{% vocabulary "member_pl" %}";
 var search_field = "{% trans "Suchen: " %}";
+var decimal_symbol = "{{ 0.0 }}";  {# let django render this as float to take the decimal symbol from here #}
 var sb_lang = {
        "add":"{% trans "Suchkriterium hinzufügen" %}",
         "clearAll":"{% trans "Leeren" %}",

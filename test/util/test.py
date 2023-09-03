@@ -41,7 +41,7 @@ class JuntagricoTestCase(TestCase):
                        'last_name': 'last_name',
                        'email': email,
                        'addr_street': 'addr_street',
-                       'addr_zipcode': 'addr_zipcode',
+                       'addr_zipcode': '1234',
                        'addr_location': 'addr_location',
                        'phone': 'phone',
                        'mobile_phone': 'phone',

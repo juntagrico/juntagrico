@@ -136,6 +136,9 @@ urlpatterns = [
     # /manage/subscription/extra
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),
     path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
+    # /manage/subscription/depot
+    path('manage/subscription/depot/changes', juntagrico_admin.depot_changes, name='manage-sub-depot-changes'),
+    path('manage/subscription/depot/change/confirm/<int:subscription_id>', juntagrico_admin.depot_change_confirm, name='manage-sub-depot-change-confirm'),
     # /manage/member
     path('my/member/canceledlist', juntagrico_admin.member_canceledlist, name='member-mgmt-canceledlist'),
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
@@ -173,6 +176,9 @@ urlpatterns = [
     path('my/pdf/depotlist', juntagrico_admin.depotlist, name='lists-depotlist'),
     path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
     path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
+
+    # /manage/list
+    path('manage/list', juntagrico_admin.manage_list, name='manage-list'),
 
     # /export
     path('my/export', juntagrico_admin.export, name='export'),

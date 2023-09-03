@@ -95,7 +95,7 @@ Features & Improvements
     * Subscription parts now also have a waiting list and cancelled list
     * Notifications on subscription parts are implemented
     * Notification on share cancellation is implemented
-    * Documentation on :doc:`Permissions`
+    * Documentation on :ref:`Permissions <reference-permissions>`
 * Fixes:
     * Fix in share payout
 
@@ -128,7 +128,7 @@ Features & Improvements
         * The old `can_filter_[entity]` permissions are still in place and valid.
     * Added possibility to hide depots from depot list
     * Added sorting in the data administration for depot, area, extrasubscription type and category, list messages as well as subscription type and product
-    * New setting :ref:`SUB_OVERVIEW_FORMAT` for the formatting of the subscription overview
+    * New setting :ref:`SUB_OVERVIEW_FORMAT <settings-sub-overview-format>` for the formatting of the subscription overview
     * Added special role for notification on depot list generation
     * Added value field for shares
     * Job duration is now a floating point value
@@ -136,12 +136,12 @@ Features & Improvements
     * Deactivated subscription can only be edited if the user has the `can_change_deactivated_subscriptions` permission
     * Past jobs can only be edited if the user has `the can_edit_past_jobs` permission
     * Depot has now a special field for access information that is only shown to members of that depot
-    * New Setting :ref:`DEFAULT_DEPOTLIST_GENERATORS`
+    * New Setting :ref:`DEFAULT_DEPOTLIST_GENERATORS <settings-default-depotlist-generators>`
 
 * Developer Features:
     * Moved to BigAutofield for ids
     * Upgraded TyniMCE to version 5.7.1
-    * Added possibility to enable rich text fields in description fields. For configuration see :ref:`Rich Text Editor`
+    * Added possibility to enable rich text fields in description fields. For configuration see :ref:`Rich Text Editor <intro-rich-text-editor>`
 
 Fixes
 ^^^^^

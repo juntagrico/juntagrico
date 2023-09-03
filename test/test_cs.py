@@ -2,6 +2,8 @@ from django.contrib import auth
 from django.core import mail
 from django.urls import reverse
 
+from juntagrico.entity.depot import Depot
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Share, Subscription
 from test.util.test import JuntagricoTestCase
 
@@ -46,18 +48,20 @@ class CreateSubscriptionTests(JuntagricoTestCase):
 
     def commonAddSub(self, member_email, comment='', comment_in=0):
         initial_share_count = Share.objects.filter(member__email=member_email).count()
+        sub_types_id = SubscriptionType.objects.values_list('id', flat=True)
         response = self.client.post(
             reverse('cs-subscription'),
             {
-                'amount[1]': 1,
-                'amount[2]': 0,
+                f'amount[{sub_types_id[0]}]': 1,
+                f'amount[{sub_types_id[1]}]': 0,
             }
         )
         self.assertRedirects(response, reverse('cs-depot'))
+        depot_id = Depot.objects.values_list('id', flat=True)
         response = self.client.post(
             reverse('cs-depot'),
             {
-                'depot': 1,
+                'depot': depot_id[0],
             }
         )
         self.assertRedirects(response, reverse('cs-start'))
