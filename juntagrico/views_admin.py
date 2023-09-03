@@ -278,10 +278,9 @@ def excel_export_members_filter(request):
     worksheet_s.write_string(0, 5, str(_('Email')))
     worksheet_s.write_string(0, 6, str(_('Telefon')))
     worksheet_s.write_string(0, 7, str(_('Mobile')))
-    members = MemberDao.members_with_assignments_count()
 
     row = 1
-    for member in members:
+    for member in Member.objects.annotate_all_assignment_count():
         member.all_areas = ''
         for area in member.areas.all():
             member.all_areas = member.all_areas + area.name + ' '

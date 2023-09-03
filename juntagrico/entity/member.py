@@ -12,6 +12,7 @@ from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
+from juntagrico.queryset.member import MemberQuerySet
 from juntagrico.util.users import make_username
 
 
@@ -62,6 +63,8 @@ class Member(JuntagricoBaseModel):
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
+
+    objects = MemberQuerySet.as_manager()
 
     @property
     def canceled(self):

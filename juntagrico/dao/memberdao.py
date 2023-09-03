@@ -1,13 +1,10 @@
-from datetime import datetime, time
-
 from django.contrib.auth.models import Permission
-from django.db.models import Sum, Case, When, Q
+from django.db.models import Q
 from django.utils import timezone
-from django.utils.timezone import get_default_timezone as gdtz
+
 
 from juntagrico.entity.member import Member
 from juntagrico.util.models import q_deactivated, q_cancelled
-from juntagrico.util.temporal import start_of_business_year, end_of_business_year
 
 
 class MemberDao:
@@ -105,30 +102,12 @@ class MemberDao:
             .exclude(q_deactivated())
 
     @staticmethod
-    def members_with_assignments_count():
-        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.all())
-
-    @staticmethod
     def active_members():
         return Member.objects.filter(~q_deactivated())
 
     @staticmethod
     def members_in_area(area):
         return area.members.all().filter(~q_deactivated())
-
-    @staticmethod
-    def annotate_members_with_assignemnt_count(members):
-        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
-        end = datetime.combine(end_of_business_year(), time.min, tzinfo=gdtz())
-        return members.annotate(assignment_count=Sum(
-            Case(When(assignment__job__time__gte=start,
-                      assignment__job__time__lt=end,
-                      then='assignment__amount')))).annotate(
-            core_assignment_count=Sum(Case(
-                When(assignment__job__time__gte=start,
-                     assignment__job__time__lt=end,
-                     assignment__core_cache=True,
-                     then='assignment__amount'))))
 
     @staticmethod
     def members_by_permission(permission_codename):

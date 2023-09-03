@@ -24,8 +24,7 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
         Q(leave_date__isnull=True) |
         Q(leave_date__gte=F('member__assignment__job__time__date')),
         join_date__lte=F('member__assignment__job__time__date'),
-        member__assignment__job__time__date__gte=start,
-        member__assignment__job__time__date__lte=end,
+        member__assignment__job__time__date__range=(start, end),
         **extra_filters
     ).order_by().values('subscription').annotate(
         total=Sum('member__assignment__amount', default=0.0),

@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'adminsortable2',
     'djrichtextfield',
     'polymorphic',
+    'import_export',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -158,3 +159,5 @@ DJRICHTEXTFIELD_CONFIG = {
         'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
     }
 }
+
+IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
