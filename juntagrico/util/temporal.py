@@ -23,11 +23,6 @@ def is_date_in_cancelation_period(date):
     return start_of_business_year() <= date <= cancelation_date()
 
 
-def weekday_short(day, num):
-    weekday = weekdays[day]
-    return weekday[:num]
-
-
 def days_in_month(year, month):
     return calendar.monthrange(year, month)[1]
 

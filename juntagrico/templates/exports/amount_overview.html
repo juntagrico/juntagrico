@@ -26,7 +26,7 @@
             {% endfor %}
         </tr>
         <tr>
-            <td class="small bottom-border left-border right-border">{% trans "Einheiten" %}</td>
+            <td class="small bottom-border left-border right-border">{% trans "Ausfahrt" %}</td>
             <td class="small bottom-border  right-border">{% trans "Total" %}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
@@ -34,13 +34,13 @@
                 {% endfor %}
             {% endfor %}
         </tr>
-        {% for weekday_name, weekday_id in weekdays.items %}
+        {% for tour in tours %}
             <tr>
-                <td>{{ weekday_name }}</td>
-                <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|count_units:date|floatformat }}</td>
+                <td>{{ tour.name }}</td>
+                <td style="text-align:right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
                 {% for product in products %}
                     {% for size in product.sizes_for_depot_list %}
-                        <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|parts_by_size:size|active_on:date|count|floatformat }}</td>
+                        <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_size:size|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>

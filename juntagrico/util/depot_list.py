@@ -6,11 +6,11 @@ from juntagrico.config import Config
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.dao.listmessagedao import ListMessageDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
+from juntagrico.entity.depot import Tour
 from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import adminnotification
 from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.subs import activate_future_depots
-from juntagrico.util.temporal import weekdays
 
 
 def default_depot_list_generation(*args, days=0, force=False, future=False, no_future=False, **options):
@@ -35,8 +35,7 @@ def default_depot_list_generation(*args, days=0, force=False, future=False, no_f
         'products': SubscriptionProductDao.get_all_for_depot_list(),
         'depots': DepotDao.all_depots_for_list(),
         'date': date,
-        'weekdays': {weekdays[weekday['weekday']]: weekday['weekday'] for weekday in
-                     DepotDao.distinct_weekdays_for_depot_list()},
+        'tours': Tour.objects.filter(visible_on_list=True),
         'messages': ListMessageDao.all_active()
     }
 

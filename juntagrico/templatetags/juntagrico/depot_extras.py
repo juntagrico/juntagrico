@@ -48,14 +48,12 @@ def parts_by_size(subscriptions, size):
 
 
 @register.filter
-def by_weekday(queryset_or_sub, weekday_id):
+def by_tour(subscriptions, tour):
     # case 1: single subscription object is passed
-    if isinstance(queryset_or_sub, Subscription):
-        return queryset_or_sub if queryset_or_sub.depot.weekday == weekday_id else None
-    # case 2: queryset of subscriptions or depots is passed
-    if queryset_or_sub.model == Subscription:
-        return queryset_or_sub.filter(depot__weekday=weekday_id)
-    return queryset_or_sub.filter(weekday=weekday_id)
+    if isinstance(subscriptions, Subscription):
+        return subscriptions if subscriptions.depot.tour == tour else None
+    # case 2: queryset of subscriptions is passed
+    return subscriptions.filter(depot__tour=tour)
 
 
 @register.filter

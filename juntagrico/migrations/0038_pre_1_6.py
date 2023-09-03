@@ -3,6 +3,7 @@
 import django.db.models.deletion
 import django.core.validators
 from django.db import migrations, models
+import juntagrico.entity
 
 
 class Migration(migrations.Migration):
@@ -61,5 +62,39 @@ class Migration(migrations.Migration):
                                      ('notified_on_subscription_creation', 'Wird bei Abo Erstellung informiert'),
                                      ('notified_on_subscription_cancellation', 'Wird bei Abo Kündigung informiert')],
                      'verbose_name': 'Abo', 'verbose_name_plural': 'Abos'},
+        ),
+        migrations.CreateModel(
+            name='Tour',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=100, unique=True, verbose_name='Name')),
+                ('description', models.TextField(blank=True, default='', max_length=1000, verbose_name='Beschreibung')),
+                ('visible_on_list', models.BooleanField(default=True, verbose_name='Sichtbar auf Listen')),
+                ('sort_order', models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')),
+            ],
+            options={
+                'verbose_name': 'Ausfahrt',
+                'verbose_name_plural': 'Ausfahrten',
+                'ordering': ['sort_order'],
+            },
+            bases=(models.Model, juntagrico.entity.OldHolder),
+        ),
+        migrations.AlterUniqueTogether(
+            name='delivery',
+            unique_together=set(),
+        ),
+        migrations.AddField(
+            model_name='delivery',
+            name='tour',
+            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.PROTECT, to='juntagrico.tour', verbose_name='Ausfahrt'),
+        ),
+        migrations.AddField(
+            model_name='depot',
+            name='tour',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='depots', to='juntagrico.tour', verbose_name='Ausfahrt'),
+        ),
+        migrations.AddConstraint(
+            model_name='delivery',
+            constraint=models.UniqueConstraint(fields=('delivery_date', 'tour', 'subscription_size'), name='unique_delivery'),
         ),
     ]
