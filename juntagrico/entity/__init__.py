@@ -1,5 +1,8 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -21,6 +24,12 @@ class JuntagricoBasePoly(PolymorphicModel, OldHolder):
 
     class Meta:
         abstract = True
+
+
+class SimpleStateModelQuerySet(QuerySet):
+    def active_on(self, date=None):
+        date = date or datetime.date.today()
+        return self.filter(activation_date__lte=date).exclude(deactivation_date__lt=date)
 
 
 class SimpleStateModel(models.Model):

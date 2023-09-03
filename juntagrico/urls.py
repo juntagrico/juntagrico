@@ -179,9 +179,6 @@ urlpatterns = [
 
     # /manage/list
     path('manage/list', juntagrico_admin.manage_list, name='manage-list'),
-    path('manage/list/success', juntagrico_admin.manage_list, {'success': True}, name='manage-list-success'),
-    path('manage/list/generate', juntagrico_admin.manage_list_generate, name='manage-list-generate'),
-    path('manage/list/generate/future', juntagrico_admin.manage_list_generate, {'future': True}, name='manage-list-generate-future'),
 
     # /export
     path('my/export', juntagrico_admin.export, name='export'),

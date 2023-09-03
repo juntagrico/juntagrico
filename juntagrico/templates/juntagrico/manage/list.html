@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% block page_title %}
@@ -29,27 +30,7 @@
     {% endif %}
     <div class="row mb-4">
         <div class="col-md-6">
-            {% trans "Nur liste neu erzeugen." %}
-        </div>
-        <div class="col-md-6">
-            <a class="btn btn-primary" href="{% url 'manage-list-generate' %}">
-                {% trans "Erzeugen" %}
-            </a>
+            {% crispy form %}
         </div>
     </div>
-    {% if perms.juntagrico.change_subscription %}
-        <div class="row mb-4">
-            <div class="col-md-6">
-                {% vocabulary "depot" as v_depot %}
-                {% blocktrans %}
-                    Änderungen am {{ v_depot }} einzeln bestätigen.
-                {% endblocktrans %}
-            </div>
-            <div class="col-md-6">
-                <a href="{% url 'manage-sub-depot-changes' %}">
-                    {% trans "Zur Änderungsliste" %}
-                </a>
-            </div>
-        </div>
-    {% endif %}
 {% endblock %}

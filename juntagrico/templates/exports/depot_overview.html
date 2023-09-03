@@ -13,7 +13,8 @@
 <body>
 {% for weekday_name, weekday_id in weekdays.items %}
 <div id="header_content" style="text-align:right">
-    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %}
+    {% trans "Erstellt am" %} {% now "d.m.Y H:i" %},
+    {% trans "Stichtag" %} {{ date|date:"d.m.Y" }}
 </div>
     <h2 style="font-size: 18px;">{{ weekday_name }}</h2>
 <table cellpadding="5" cellspacing="0" style="width:100%; margin-bottom:5px;" class="bottom-border">
@@ -37,7 +38,7 @@
             <td style="width:360px;">{{ depot.name }}</td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
-                    <td style="text-align:right">{{ subscriptions|by_depot:depot|get_types_by_size:size|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|by_depot:depot|parts_by_size:size|active_on:date|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
         </tr>
@@ -46,7 +47,7 @@
         <td>{% trans "Total" %}</td>
         {% for product in products %}
             {% for size in product.sizes_for_depot_list %}
-                <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|get_types_by_size:size|count|floatformat }}</td>
+                <td style="text-align:right">{{ subscriptions|by_weekday:weekday_id|parts_by_size:size|active_on:date|count|floatformat }}</td>
             {% endfor %}
         {% endfor %}
     </tr>

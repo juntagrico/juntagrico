@@ -15,6 +15,7 @@ class Command(BaseCommand):
             default=False,
             help='force generation of depot list',
         )
+
         parser.add_argument(
             '--future',
             action='store_true',
@@ -22,12 +23,20 @@ class Command(BaseCommand):
             default=False,
             help='apply all depot changes before generation',
         )
+
         parser.add_argument(
             '--no-future',
             action='store_true',
             dest='no_future',
             default=False,
             help='prevent automatic depot changes. Ignored if --future is set',
+        )
+
+        parser.add_argument(
+            '--days',
+            default=0,
+            type=int,
+            help='produce lists for subscriptions that will be active this number of days in the future',
         )
 
     # entry point used by manage.py

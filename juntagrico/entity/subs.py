@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, QuerySet, F, Sum
+from django.db.models import Q, F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
+from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel, SimpleStateModelQuerySet
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
@@ -43,7 +44,7 @@ class Subscription(Billable, SimpleStateModel):
         _('Notizen'), max_length=1000, blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
-    objects = SubscriptionQuerySet.as_manager()
+    objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()
 
     def __str__(self):
         return _('Abo ({1}) {0}').format(self.size, self.id)
@@ -260,7 +261,7 @@ class Subscription(Billable, SimpleStateModel):
         )
 
 
-class SubscriptionPartQuerySet(QuerySet):
+class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
         return self.filter(type__size__product__is_extra=False)
 
