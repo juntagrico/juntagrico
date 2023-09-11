@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
@@ -347,7 +349,7 @@ class JuntagricoTestCase(TestCase):
 
     @classmethod
     def create_sub_now(cls, depot, **kwargs):
-        return cls.create_sub(depot, timezone.now().date(), **kwargs)
+        return cls.create_sub(depot, datetime.date.today(), **kwargs)
 
     def set_up_sub(self):
         """
@@ -358,7 +360,8 @@ class JuntagricoTestCase(TestCase):
         self.member.join_subscription(self.sub, True)
         self.member3.join_subscription(self.sub)
         self.member2.join_subscription(self.sub2, True)
-        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type, activation_date=timezone.now().date())
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type,
+                                        activation_date=datetime.date.today())
 
     def set_up_extra_sub_types(self):
         """

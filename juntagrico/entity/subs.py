@@ -1,7 +1,8 @@
+import datetime
+
 from django.contrib import admin
 from django.db import models
 from django.db.models import Q, F, Sum
-from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -25,7 +26,7 @@ class Subscription(Billable, SimpleStateModel):
     One Subscription that may be shared among several people.
     '''
     depot = models.ForeignKey(
-        'Depot', on_delete=models.PROTECT, related_name='subscription_set')
+        Depot, on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
         verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
@@ -199,8 +200,8 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def memberships_for_state(self):
-        now = timezone.now().date()
-        member_active = ~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)
+        member_active = ~Q(member__deactivation_date__isnull=False,
+                           member__deactivation_date__lte=datetime.date.today())
         if self.state == 'waiting':
             return self.subscriptionmembership_set.prefetch_related('member').filter(member_active)
         elif self.state == 'inactive':

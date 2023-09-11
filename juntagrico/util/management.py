@@ -1,8 +1,7 @@
+import datetime
 import itertools
 import random
 import string
-
-from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.entity.share import Share
@@ -120,7 +119,7 @@ def cancel_extra_sub(extra):
         extra.delete()
 
 
-def cancel_share(share, now, end_date):
-    share.cancelled_date = share.cancelled_date or now or timezone.now().date()
+def cancel_share(share, date, end_date):
+    share.cancelled_date = share.cancelled_date or date or datetime.date.today()
     share.termination_date = share.termination_date or end_date or next_membership_end_date()
     share.save()

@@ -1,5 +1,6 @@
+import datetime
+
 from django.db.models import Q, F
-from django.utils import timezone
 
 from juntagrico.entity.member import SubscriptionMembership, q_joined_subscription, q_left_subscription
 
@@ -8,11 +9,11 @@ class SubscriptionMembershipDao:
 
     @staticmethod
     def q_joined():
-        return Q(join_date__isnull=False, join_date__lte=timezone.now().date())
+        return Q(join_date__isnull=False, join_date__lte=datetime.date.today())
 
     @staticmethod
     def q_left():
-        return Q(leave_date__isnull=False, leave_date__lte=timezone.now().date())
+        return Q(leave_date__isnull=False, leave_date__lte=datetime.date.today())
 
     @staticmethod
     def get_other_waiting_for_member(member, subscription):

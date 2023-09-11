@@ -1,5 +1,6 @@
+import datetime
+
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -27,7 +28,7 @@ def share_value_default():
 class Share(Billable):
     member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT)
     value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, default=share_value_default)
-    creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=timezone.now)
+    creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=datetime.date.today)
     paid_date = models.DateField(_('Bezahlt am'), null=True, blank=True)
     issue_date = models.DateField(_('Ausgestellt am'), null=True, blank=True)
     booking_date = models.DateField(_('Eingebucht am'), null=True, blank=True)
@@ -55,10 +56,10 @@ class Share(Billable):
 
     @property
     def state_text(self):
-        now = timezone.now().date()
-        paid = (self.paid_date is not None and self.paid_date <= now) << 0
-        cancelled = (self.cancelled_date is not None and self.cancelled_date <= now) << 1
-        paid_back = (self.payback_date is not None and self.payback_date <= now) << 2
+        today = datetime.date.today()
+        paid = (self.paid_date is not None and self.paid_date <= today) << 0
+        cancelled = (self.cancelled_date is not None and self.cancelled_date <= today) << 1
+        paid_back = (self.payback_date is not None and self.payback_date <= today) << 2
         state_code = paid + cancelled + paid_back
         return Share.__state_text_dict.get(state_code, _('Fehler!'))
 

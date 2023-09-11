@@ -1,6 +1,7 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -11,10 +12,9 @@ def sub_membership_pre_save(sender, instance, **kwargs):
 
 
 def check_submembership_dates(instance):
-    now = timezone.now().date()
     has_joined = instance.join_date is not None
     has_left = instance.leave_date is not None
-    join_date = instance.join_date or now
+    join_date = instance.join_date or datetime.date.today()
     leave_date = instance.leave_date or join_date  # allow future join dates
     if has_left and not has_joined:
         raise ValidationError(_('Bitte "Beitrittsdatum" ausfüllen'), code='invalid')

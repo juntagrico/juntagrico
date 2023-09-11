@@ -487,7 +487,7 @@ def member_canceledlist(request):
 @permission_required('juntagrico.change_member')
 def deactivate_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-    member.deactivation_date = timezone.now().date()
+    member.deactivation_date = datetime.date.today()
     member.save()
     return return_to_previous_location(request)
 

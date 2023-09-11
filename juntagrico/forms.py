@@ -84,12 +84,12 @@ class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
         )
 
     def save(self, commit=True):
-        now = timezone.now().date()
-        self.instance.end_date = now
-        self.instance.cancellation_date = now
+        today = datetime.date.today()
+        self.instance.end_date = today
+        self.instance.cancellation_date = today
         # if member has cancelled but not yet paid back share, can't deactivate member yet.
         if not self.instance.is_cooperation_member:
-            self.instance.deactivation_date = now
+            self.instance.deactivation_date = today
         if (sub := self.instance.subscription_current) is not None:
             self.instance.leave_subscription(sub)
         if (sub := self.instance.subscription_future) is not None:
@@ -126,12 +126,12 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         return self.data['iban']
 
     def save(self, commit=True):
-        now = timezone.now().date()
+        today = datetime.date.today()
         end_date = next_membership_end_date()
         self.instance.end_date = end_date
-        self.instance.cancellation_date = now
+        self.instance.cancellation_date = today
         adminnotification.member_canceled(self.instance, end_date, self.data['message'])
-        [cancel_share(s, now, end_date) for s in self.instance.share_set.all()]
+        [cancel_share(s, today, end_date) for s in self.instance.share_set.all()]
         super().save(commit)
 
 
