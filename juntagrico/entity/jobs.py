@@ -16,8 +16,7 @@ from juntagrico.lifecycle.job import check_job_consistency
 @absolute_url(name='area')
 class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), default='')
     core = models.BooleanField(_('Kernbereich'), default=False)
     hidden = models.BooleanField(
         _('versteckt'), default=False,
@@ -109,7 +108,7 @@ class AbstractJobType(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True,
                             help_text='Eindeutiger Name des Einsatzes')
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
     default_duration = models.FloatField(_('Dauer in Stunden'),
                                          help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
@@ -268,7 +267,7 @@ class Job(JuntagricoBasePoly):
 
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
-    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
+    additional_description = models.TextField(_('Zusätzliche Beschreibung'), blank=True, default='')
     duration_override = models.FloatField(
         _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None, validators=[MinValueValidator(0)],
         help_text=_('Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.')

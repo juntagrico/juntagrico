@@ -14,7 +14,7 @@ class Tour(JuntagricoBaseModel):
     Delivery Tour to depots
     """
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='', blank=True)
+    description = models.TextField(_('Beschreibung'), default='', blank=True)
     visible_on_list = models.BooleanField(_('Sichtbar auf Listen'), default=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
@@ -43,8 +43,8 @@ class Depot(JuntagricoBaseModel):
                              verbose_name=_('Ausfahrt'), blank=True, null=True)
     capacity = models.PositiveIntegerField(_('Kapazität'), default=0)
     location = models.ForeignKey(Location, on_delete=models.PROTECT, verbose_name=_('Ort'))
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='', blank=True)
-    access_information = models.TextField(_('Zugangsbeschreibung'), max_length=1000, default='',
+    description = models.TextField(_('Beschreibung'), default='', blank=True)
+    access_information = models.TextField(_('Zugangsbeschreibung'), default='',
                                           help_text=_('Nur für {0} des/r {1} sichtbar')
                                           .format(Config.vocabulary('member_pl'),
                                                   Config.vocabulary('depot')))
