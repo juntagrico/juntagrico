@@ -5,7 +5,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML, Div, Fieldset
 from crispy_forms.utils import TEMPLATE_PACK
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField, FloatField, \
+    DateTimeField
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.html import escape
@@ -594,3 +595,14 @@ class GenerateListForm(Form):
             del self.fields['future']
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', _('Listen Erzeugen')))
+
+
+class ShiftTimeForm(Form):
+    hours = FloatField(label=_('Stunden'))
+    start = DateTimeField(label=_('Ab'), required=False, help_text='YYYY-MM-DD HH:MM')
+    end = DateTimeField(label=_('Bis'), required=False, help_text='YYYY-MM-DD HH:MM')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', _('Zeiten verschieben')))

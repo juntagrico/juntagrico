@@ -2,13 +2,16 @@ import datetime
 import re
 from io import BytesIO
 
-from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
+from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
+from django.views.generic import FormView
 from xlsxwriter import Workbook
 
 from juntagrico import version
@@ -24,7 +27,7 @@ from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.forms import GenerateListForm
+from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
@@ -559,3 +562,19 @@ def versions(request):
     versions.update(addons.config.get_versions())
     render_dict = {'versions': versions}
     return render(request, 'versions.html', render_dict)
+
+
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name="dispatch")
+class ShiftTimeFormView(FormView):
+    """
+    Show form to call the management command `shift_time`
+    """
+    success = False
+    template_name = "commands/shift_time.html"
+    form_class = ShiftTimeForm
+    success_url = reverse_lazy('command-shifttime-success')
+
+    def form_valid(self, form):
+        call_command('shift_time', form.cleaned_data['hours'],
+                     start=form.cleaned_data['start'] or None, end=form.cleaned_data['end'] or None)
+        return super().form_valid(form)
