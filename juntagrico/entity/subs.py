@@ -41,7 +41,7 @@ class Subscription(Billable, SimpleStateModel):
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(
-        _('Notizen'), max_length=1000, blank=True,
+        _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
     objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()

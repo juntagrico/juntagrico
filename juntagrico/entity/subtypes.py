@@ -11,8 +11,7 @@ class SubscriptionProduct(JuntagricoBaseModel):
     Product of subscription
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, blank=True)
+    description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     is_extra = models.BooleanField(_('Ist Zusatzabo Produkt'), default=False)
 
@@ -39,8 +38,7 @@ class SubscriptionSize(JuntagricoBaseModel):
     depot_list = models.BooleanField(
         _('Sichtbar auf Depotliste'), default=True)
     visible = models.BooleanField(_('Sichtbar'), default=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, blank=True)
+    description = models.TextField(_('Beschreibung'), blank=True)
     product = models.ForeignKey('SubscriptionProduct', on_delete=models.PROTECT,
                                 related_name='sizes', verbose_name=_('Produkt'))
 
@@ -74,8 +72,7 @@ class SubscriptionType(JuntagricoBaseModel):
     visible = models.BooleanField(_('Sichtbar'), default=True)
     trial = models.BooleanField(_('Probe-Abo'), default=False)
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, blank=True)
+    description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     @property

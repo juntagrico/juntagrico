@@ -44,7 +44,7 @@ class Share(Billable):
     reason_for_cancellation = models.PositiveIntegerField(
         _('Grund der Kündigung'), null=True, blank=True, choices=reason_for_cancellation_choices)
     notes = models.TextField(
-        _('Notizen'), max_length=1000, default='', blank=True,
+        _('Notizen'), default='', blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
 
     __state_text_dict = {0: _('unbezahlt'),

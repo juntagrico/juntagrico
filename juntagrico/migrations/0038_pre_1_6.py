@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True, verbose_name='Name')),
-                ('description', models.TextField(blank=True, default='', max_length=1000, verbose_name='Beschreibung')),
+                ('description', models.TextField(blank=True, default='', verbose_name='Beschreibung')),
                 ('visible_on_list', models.BooleanField(default=True, verbose_name='Sichtbar auf Listen')),
                 ('sort_order', models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')),
             ],
@@ -96,5 +96,90 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name='delivery',
             constraint=models.UniqueConstraint(fields=('delivery_date', 'tour', 'subscription_size'), name='unique_delivery'),
+        ),
+        migrations.AlterField(
+            model_name='activityarea',
+            name='description',
+            field=models.TextField(default='', verbose_name='Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='billingperiod',
+            name='code',
+            field=models.TextField(blank=True, default='', verbose_name='Code für Teilabrechnung'),
+        ),
+        migrations.AlterField(
+            model_name='depot',
+            name='access_information',
+            field=models.TextField(default='', help_text='Nur für Mitglieder des/r Depot sichtbar',
+                                   verbose_name='Zugangsbeschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='depot',
+            name='description',
+            field=models.TextField(blank=True, default='', verbose_name='Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='jobtype',
+            name='description',
+            field=models.TextField(default='', verbose_name='Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='location',
+            name='description',
+            field=models.TextField(blank=True, default='', verbose_name='Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='mailtemplate',
+            name='code',
+            field=models.TextField(default='', verbose_name='Code'),
+        ),
+        migrations.AlterField(
+            model_name='mailtemplate',
+            name='template',
+            field=models.TextField(default='', verbose_name='Template'),
+        ),
+        migrations.AlterField(
+            model_name='member',
+            name='notes',
+            field=models.TextField(blank=True, help_text='Notizen für Administration. Nicht sichtbar für Mitglied',
+                                   verbose_name='Notizen'),
+        ),
+        migrations.AlterField(
+            model_name='onetimejob',
+            name='description',
+            field=models.TextField(default='', verbose_name='Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='recuringjob',
+            name='additional_description',
+            field=models.TextField(blank=True, default='', verbose_name='Zusätzliche Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='share',
+            name='notes',
+            field=models.TextField(blank=True, default='',
+                                   help_text='Notizen für Administration. Nicht sichtbar für Mitglied',
+                                   verbose_name='Notizen'),
+        ),
+        migrations.AlterField(
+            model_name='subscription',
+            name='notes',
+            field=models.TextField(blank=True, help_text='Notizen für Administration. Nicht sichtbar für Mitglied',
+                                   verbose_name='Notizen'),
+        ),
+        migrations.AlterField(
+            model_name='subscriptionproduct',
+            name='description',
+            field=models.TextField(blank=True, verbose_name='Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='subscriptionsize',
+            name='description',
+            field=models.TextField(blank=True, verbose_name='Beschreibung'),
+        ),
+        migrations.AlterField(
+            model_name='subscriptiontype',
+            name='description',
+            field=models.TextField(blank=True, verbose_name='Beschreibung'),
         ),
     ]

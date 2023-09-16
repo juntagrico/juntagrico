@@ -32,8 +32,7 @@ class BillingPeriod(JuntagricoBaseModel):
     cancel_day = models.PositiveIntegerField(_('Kündigungs Tag'))
     cancel_month = models.PositiveIntegerField(
         _('Kündigungs Monat'), choices=month_choices)
-    code = models.TextField(_('Code für Teilabrechnung'),
-                            max_length=1000, default='', blank=True)
+    code = models.TextField(_('Code für Teilabrechnung'), default='', blank=True)
 
     def get_actual_start(self, activation_date=None):
         start = calculate_last(self.start_day, self.start_month)
