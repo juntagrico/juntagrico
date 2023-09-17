@@ -46,6 +46,21 @@ This can be used e.g. with a cronjob.
 
 Arguments: None
 
+shift_time
+----------
+
+When changing the ``TIMEZONE`` setting on an existing installation,
+you will have to adapt the times of all existing jobs. This command helps you with that task.
+
+.. warning::
+No notification emails will be sent, when changing the job time with this command.
+
+This command is also available to super users under the hidden url ``/command/shifttime``.
+
+* ``hours``: Required: Amount of hours the time should be shifted to the future. May be negative and a float.
+* ``--start -s``: If set, only the times after this date and time will be modified. Use and ISO format e.g. ``YYYY-MM-DDTHH:MM``.
+* ``--end -e``: If set, only the times before this date and time will be modified. Use and ISO format e.g. ``YYYY-MM-DDTHH:MM``.
+
 
 mailtexts
 ---------

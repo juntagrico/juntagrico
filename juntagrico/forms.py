@@ -5,10 +5,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Submit, HTML, Div, Fieldset
 from crispy_forms.utils import TEMPLATE_PACK
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
-    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField
+    ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField, FloatField, \
+    DateTimeField
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
@@ -84,12 +84,12 @@ class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
         )
 
     def save(self, commit=True):
-        now = timezone.now().date()
-        self.instance.end_date = now
-        self.instance.cancellation_date = now
+        today = datetime.date.today()
+        self.instance.end_date = today
+        self.instance.cancellation_date = today
         # if member has cancelled but not yet paid back share, can't deactivate member yet.
         if not self.instance.is_cooperation_member:
-            self.instance.deactivation_date = now
+            self.instance.deactivation_date = today
         if (sub := self.instance.subscription_current) is not None:
             self.instance.leave_subscription(sub)
         if (sub := self.instance.subscription_future) is not None:
@@ -126,12 +126,12 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         return self.data['iban']
 
     def save(self, commit=True):
-        now = timezone.now().date()
+        today = datetime.date.today()
         end_date = next_membership_end_date()
         self.instance.end_date = end_date
-        self.instance.cancellation_date = now
+        self.instance.cancellation_date = today
         adminnotification.member_canceled(self.instance, end_date, self.data['message'])
-        [cancel_share(s, now, end_date) for s in self.instance.share_set.all()]
+        [cancel_share(s, today, end_date) for s in self.instance.share_set.all()]
         super().save(commit)
 
 
@@ -595,3 +595,14 @@ class GenerateListForm(Form):
             del self.fields['future']
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', _('Listen Erzeugen')))
+
+
+class ShiftTimeForm(Form):
+    hours = FloatField(label=_('Stunden'))
+    start = DateTimeField(label=_('Ab'), required=False, help_text='YYYY-MM-DD HH:MM')
+    end = DateTimeField(label=_('Bis'), required=False, help_text='YYYY-MM-DD HH:MM')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', _('Zeiten verschieben')))

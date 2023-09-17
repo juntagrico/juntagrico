@@ -8,6 +8,7 @@ from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
 from juntagrico.config import Config
+from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
 # 1. Add the url to the section that matches best and start the url as the section title says
@@ -186,6 +187,10 @@ urlpatterns = [
     path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),
     path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),
     path('my/export/subscriptions', juntagrico_admin.excel_export_subscriptions, name='export-subscriptions'),
+
+    # /command
+    path('command/shifttime', ShiftTimeFormView.as_view(), name='command-shifttime'),
+    path('command/shifttime/success', ShiftTimeFormView.as_view(success=True), name='command-shifttime-success'),
 
     # /api
     # /api/share

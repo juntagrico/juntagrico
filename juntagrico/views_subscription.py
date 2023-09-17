@@ -1,3 +1,4 @@
+import datetime
 from datetime import date
 
 from django.contrib.auth import logout
@@ -7,7 +8,6 @@ from django.db.models import Count, Sum
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic import FormView
@@ -380,8 +380,7 @@ def cancel_part(request, part_id, subscription_id):
 @primary_member_of_subscription
 def cancel_subscription(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    now = timezone.now().date()
-    end_date = end_of_business_year() if now <= cancelation_date() else end_of_next_business_year()
+    end_date = end_of_business_year() if datetime.date.today() <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
         return redirect('sub-detail')
@@ -461,7 +460,7 @@ def manage_shares(request):
     shares = member.share_set.order_by('cancelled_date', '-paid_date')
 
     active_share_years = member.active_share_years
-    current_year = timezone.now().year
+    current_year = datetime.date.today().year
     if active_share_years and current_year in active_share_years:
         active_share_years.remove(current_year)
     renderdict = {
@@ -480,7 +479,7 @@ def share_certificate(request):
     year = int(request.GET['year'])
     member = request.user.member
     active_share_years = member.active_share_years
-    if year >= timezone.now().year or year not in active_share_years:
+    if year >= datetime.date.today().year or year not in active_share_years:
         return error_page(request, _('{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden.').format(Config.vocabulary('share')))
     shares_date = date(year, 12, 31)
     shares = member.active_shares_for_date(date=shares_date).values('value').annotate(count=Count('value')).annotate(total=Sum('value')).order_by('value')
@@ -489,7 +488,7 @@ def share_certificate(request):
         shares_total = shares_total + share['total']
     renderdict = {
         'member': member,
-        'cert_date': timezone.now().date(),
+        'cert_date': datetime.date.today(),
         'shares_date': shares_date,
         'shares': shares,
         'shares_total': shares_total,
@@ -502,7 +501,7 @@ def cancel_share(request, share_id):
     member = request.user.member
     if member.cancellable_shares_count > 0:
         share = get_object_or_404(Share, id=share_id, member=member)
-        share.cancelled_date = timezone.now().date()
+        share.cancelled_date = datetime.date.today()
         share.termination_date = next_membership_end_date()
         share.save()
     return return_to_previous_location(request)
@@ -511,10 +510,11 @@ def cancel_share(request, share_id):
 @permission_required('juntagrico.is_operations_group')
 def payout_share(request, share_id):
     share = get_object_or_404(Share, id=share_id)
-    share.payback_date = timezone.now().date()
+    today = datetime.date.today()
+    share.payback_date = today
     share.save()
     member = share.member
     if member.active_shares_count == 0 and member.canceled is True:
-        member.deactivation_date = timezone.now().date()
+        member.deactivation_date = today
         member.save()
     return return_to_previous_location(request)

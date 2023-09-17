@@ -3,7 +3,6 @@ import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -64,7 +63,7 @@ def next_cancelation_date():
     """
     :return: next cancelation deadline from today
     """
-    return next_cancelation_date_from(timezone.now())
+    return next_cancelation_date_from(datetime.date.today())
 
 
 def cancelation_date():
@@ -89,8 +88,7 @@ def next_membership_end_date():
     """
     endmonth = Config.membership_end_month()
     noticemonths = Config.membership_end_notice_period()
-    now = timezone.now().date()
-    nowplusnotice = now + relativedelta(months=noticemonths)
+    nowplusnotice = datetime.date.today() + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
         endyear = nowplusnotice.year
     else:
@@ -100,11 +98,11 @@ def next_membership_end_date():
 
 
 def calculate_next(day, month):
-    return calculate_next_offset(day, month, timezone.now())
+    return calculate_next_offset(day, month, datetime.date.today())
 
 
 def calculate_last(day, month):
-    return calculate_last_offset(day, month, timezone.now())
+    return calculate_last_offset(day, month, datetime.date.today())
 
 
 def calculate_next_offset(day, month, offset):
