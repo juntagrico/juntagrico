@@ -269,7 +269,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def active_on(self, date=None):
         date = date or datetime.date.today()
         current_week_number = date.isocalendar()[1] - 1
-        return (self.filter(activation_date__lte=date).exclude(deactivation_date__lt=date)
+        return (super().active_on(date)
                 .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
                                                      output_field=PositiveIntegerField())).filter(week_mod=0))
 
