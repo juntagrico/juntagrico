@@ -45,20 +45,6 @@
                     {% endif %}
                     {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
-                                {% trans "Warteliste" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if perms.juntagrico.change_subscription %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
-                                {% trans "Kündigungsliste" %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if perms.juntagrico.change_subscription %}
-                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'sub-mgmt-part-waitinglist' %}">
                                 {% trans "Bestandteile Warteliste" %}
                             </a>

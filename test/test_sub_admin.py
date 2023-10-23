@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.urls import reverse
 
 from test.util.test import JuntagricoTestCase
@@ -5,11 +7,16 @@ from test.util.test import JuntagricoTestCase
 
 class SubAdminTests(JuntagricoTestCase):
 
+    def setUp(self):
+        super().setUp()
+        self.inactive_sub = self.create_sub(self.depot, date(day=1, month=7, year=2018),
+                                            deactivation_date=date(day=15, month=1, year=2019),
+                                            parts=[self.sub_type])
+
     def testSubAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub2.pk,)), member=self.admin)
-        self.sub.deactivate()
-        self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)
+        self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.inactive_sub.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
         # Test adding a started subscription without parts and a member that joined before subscription start. Assert that it fails

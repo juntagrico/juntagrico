@@ -21,18 +21,19 @@ class MemberDao:
 
     @staticmethod
     def q_subscription_activated():
-        return Q(subscriptionmembership__subscription__activation_date__isnull=False,
-                 subscriptionmembership__subscription__activation_date__lte=datetime.date.today())
+        # TODO: check if now "distinct" is needed on members
+        return Q(subscriptionmembership__subscription__parts__activation_date__isnull=False,
+                 subscriptionmembership__subscription__parts__activation_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_cancelled():
-        return Q(subscriptionmembership__subscription__cancellation_date__isnull=False,
-                 subscriptionmembership__subscription__cancellation_date__lte=datetime.date.today())
+        return Q(subscriptionmembership__subscription__parts__cancellation_date__isnull=False,
+                 subscriptionmembership__subscription__parts__cancellation_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_deactivated():
-        return Q(subscriptionmembership__subscription__deactivation_date__isnull=False,
-                 subscriptionmembership__subscription__deactivation_date__lte=datetime.date.today())
+        return Q(subscriptionmembership__subscription__parts__deactivation_date__isnull=False,
+                 subscriptionmembership__subscription__parts__deactivation_date__lte=datetime.date.today())
 
     @staticmethod
     def has_subscription():

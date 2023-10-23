@@ -1,12 +1,12 @@
 import datetime
 
 from django.db import connection
-from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, OuterRef
+from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, \
+    OuterRef, Exists
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
 
-from juntagrico.entity import SimpleStateModelQuerySet
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.util.temporal import default_to_business_year
 
@@ -31,7 +31,7 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
     ).values('total')
 
 
-class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
+class SubscriptionQuerySet(PolymorphicQuerySet):
     microseconds_in_day = 24 * 3600 * 10 ** 6
     days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)
@@ -40,6 +40,14 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         super().__init__(*args, **kwargs)
         self._start_required = False
         self._end_required = False
+
+    def active_on(self, date=None):
+        from juntagrico.entity.subs import SubscriptionPart
+        date = date or datetime.date.today()
+        return self.filter(Exists(
+            SubscriptionPart.objects.filter(subscription=OuterRef("pk"), activation_date__lte=date)
+            .exclude(deactivation_date__lt=date))
+        )
 
     @method_decorator(default_to_business_year)
     def annotate_assignment_counts(self, start=None, end=None, of_member=None, prefix=''):

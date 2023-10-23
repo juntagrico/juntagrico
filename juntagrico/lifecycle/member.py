@@ -40,4 +40,6 @@ def check_member_consistency(instance):
 
 
 def handle_member_created(sender, instance, **kwargs):
+    from juntagrico.dao.activityareadao import ActivityAreaDao
+    instance.areas.add(ActivityAreaDao.all_auto_add_members_areas())
     adminnotification.member_created(instance)

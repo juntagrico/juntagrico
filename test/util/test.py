@@ -326,15 +326,12 @@ class JuntagricoTestCase(TestCase):
         self.sub_type2 = self.create_sub_type(self.sub_size, shares=2)
 
     @staticmethod
-    def create_sub(depot, activation_date=None, parts=None, **kwargs):
-        if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
-            kwargs['cancellation_date'] = activation_date
+    def create_sub(depot, activation_date=None, parts=None, cancellation_date=None, deactivation_date=None):
+        if deactivation_date is not None and cancellation_date is None:
+            cancellation_date = activation_date
         sub = Subscription.objects.create(
             depot=depot,
-            activation_date=activation_date,
-            creation_date='2017-03-27',
-            start_date='2018-01-01',
-            **kwargs
+            start_date='2018-01-01'
         )
         if parts:
             for part in parts:
@@ -342,8 +339,8 @@ class JuntagricoTestCase(TestCase):
                     subscription=sub,
                     type=part,
                     activation_date=activation_date,
-                    cancellation_date=kwargs.get('cancellation_date', None),
-                    deactivation_date=kwargs.get('deactivation_date', None)
+                    cancellation_date=cancellation_date,
+                    deactivation_date=deactivation_date
                 )
         return sub
 

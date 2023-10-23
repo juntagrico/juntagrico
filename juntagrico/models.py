@@ -14,8 +14,7 @@ from juntagrico.lifecycle.member import member_pre_save, member_post_save, handl
     handle_member_created
 from juntagrico.lifecycle.share import share_post_save, handle_share_created, share_pre_save
 from juntagrico.lifecycle.simplestate import handle_simple_deactivated, handle_simple_activated
-from juntagrico.lifecycle.sub import sub_pre_save, handle_sub_canceled, handle_sub_deactivated, handle_sub_activated, \
-    sub_post_save, handle_sub_created
+from juntagrico.lifecycle.sub import sub_pre_save
 from juntagrico.lifecycle.submembership import sub_membership_pre_save
 from juntagrico.lifecycle.subpart import sub_part_pre_save
 from juntagrico.util.signals import register_entities_for_post_init_and_save
@@ -61,11 +60,6 @@ juntagrico.signals.job_time_changed.connect(handle_job_time_changed, sender=OneT
 juntagrico.signals.job_time_changed.connect(handle_job_time_changed, sender=RecuringJob)
 ''' subscription signal handling '''
 signals.pre_save.connect(sub_pre_save, sender=Subscription)
-signals.post_save.connect(sub_post_save, sender=Subscription)
-juntagrico.signals.sub_created.connect(handle_sub_created, sender=Subscription)
-juntagrico.signals.sub_activated.connect(handle_sub_activated, sender=Subscription)
-juntagrico.signals.sub_deactivated.connect(handle_sub_deactivated, sender=Subscription)
-juntagrico.signals.sub_canceled.connect(handle_sub_canceled, sender=Subscription)
 ''' subscription part handling'''
 signals.pre_save.connect(sub_part_pre_save, sender=SubscriptionPart)
 juntagrico.signals.extra_sub_activated.connect(handle_simple_activated, sender=SubscriptionPart)

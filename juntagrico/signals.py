@@ -6,12 +6,6 @@ from juntagrico.mailer import adminnotification
 job_canceled = Signal()
 job_time_changed = Signal()
 
-'''subscription related signals'''
-sub_created = Signal()
-sub_activated = Signal()
-sub_deactivated = Signal()
-sub_canceled = Signal()
-
 ''' extra subscription signals '''
 extra_sub_activated = Signal()
 extra_sub_deactivated = Signal()
