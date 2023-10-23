@@ -11,7 +11,6 @@ from juntagrico.resources.subscription import SubscriptionResource
 
 class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
     form = SubscriptionAdminForm
-    readonly_fields = ('creation_date',)
     list_display = ['__str__', 'recipients_names',
                     'primary_member_nullsave', 'depot', 'text_state']
     search_fields = ['subscriptionmembership__member__user__username',
@@ -25,14 +24,12 @@ class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
     fieldsets = [
         (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'nickname']}),
         (Config.vocabulary('depot'), {'fields': ['depot', 'future_depot']}),
-        (_('Status'), {'fields': ['creation_date', 'start_date', 'activation_date',
-                                  'cancellation_date', 'end_date', 'deactivation_date']}),
+        (_('Status'), {'fields': ['start_date', 'end_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]
     add_fieldsets = [
         (Config.vocabulary('depot'), {'fields': ['depot']}),
-        (_('Status'), {'fields': ['creation_date', 'start_date', 'activation_date',
-                                  'cancellation_date', 'end_date', 'deactivation_date']}),
+        (_('Status'), {'fields': ['start_date', 'end_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]
 

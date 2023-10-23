@@ -82,20 +82,20 @@ class Command(BaseCommand):
         sub_dict = {
             'depot': depot,
             'future_depot': None,
-            'creation_date': fake.date_between(start_date='-10y', end_date='-1m')
         }
-        sub_dict['activation_date'] = sub_dict['creation_date']
         subscription = Subscription.objects.create(**sub_dict)
         subscription.primary_member = main_member
+        join_date = fake.date_between(start_date='-10y', end_date='-1m')
         subscription.subscriptionmembership_set.create(
             member=main_member,
-            join_date=sub_dict['creation_date'])
+            join_date=join_date)
         subscription.subscriptionmembership_set.create(
             member=co_member,
-            join_date=sub_dict['creation_date'])
+            join_date=join_date)
         subscription.save()
         self.members.append(main_member)
         self.members.append(co_member)
+        # TODO: Create parts
 
     def get_random_props(self):
         return {

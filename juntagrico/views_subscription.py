@@ -54,6 +54,7 @@ def subscription(request, subscription_id=None):
     end_date = end_of_next_business_year()
     renderdict = {}
     if subscription is not None:
+        # TODO: Think of a good way to display sub status
         cancellation_date = subscription.cancellation_date
         if cancellation_date is not None and cancellation_date <= next_cancelation_date():
             end_date = end_of_business_year()
@@ -107,7 +108,7 @@ def depot_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     if request.method == 'POST':
-        if subscription.state == 'waiting':
+        if subscription.waiting:
             old_depot = subscription.depot
             subscription.depot = get_object_or_404(
                 Depot, id=int(request.POST.get('depot')))
@@ -337,33 +338,6 @@ class AddCoMemberView(FormView, ModelFormMixin):
 def error_page(request, error_message):
     renderdict = {'error_message': error_message}
     return render(request, 'error.html', renderdict)
-
-
-@permission_required('juntagrico.is_operations_group')
-def activate_subscription(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
-    try:
-        subscription.activate(change_date)
-        add_subscription_member_to_activity_area(subscription)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
-
-
-def add_subscription_member_to_activity_area(subscription):
-    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
-
-
-@permission_required('juntagrico.is_operations_group')
-def deactivate_subscription(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
-    try:
-        subscription.deactivate(change_date)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
 
 
 @primary_member_of_subscription

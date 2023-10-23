@@ -15,10 +15,12 @@ from juntagrico.queryset.member import MemberQuerySet
 from juntagrico.util.users import make_username
 
 
+# TODO: Check usage
 def q_joined_subscription():
     return Q(join_date__isnull=False, join_date__lte=datetime.date.today())
 
 
+# TODO: Check usage
 def q_left_subscription(asof=None):
     if asof is not None:
         return Q(leave_date__isnull=False, leave_date__lte=asof)
@@ -184,7 +186,7 @@ class Member(JuntagricoBaseModel):
     @property
     def can_order_subscription(self):
         return self.subscription_future is None and (
-            self.subscription_current is None or self.subscription_current.cancellation_date is not None)
+            self.subscription_current is None or self.subscription_current.cancelled)
 
     @property
     def blocked(self):

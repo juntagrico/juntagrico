@@ -11,7 +11,8 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-detail-id', args=[self.sub.pk]))
 
     def testSubActivation(self):
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
+        # TODO decide if member join is not part of activation anymore.
+        self.assertGet(reverse('part-activate', args=[self.esub.pk]), 302)
         self.member2.refresh_from_db()
         self.area.refresh_from_db()
         self.assertIsNone(self.member2.subscription_future)
@@ -129,20 +130,22 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
         self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)
         self.sub.refresh_from_db()
-        self.assertIsNotNone(self.sub.cancellation_date)
+        self.assertTrue(self.sub.cancelled)
 
     def testSubDeActivation(self):
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.assertGet(reverse('part-activate', args=[self.esub.pk]), 302)
         self.assertGet(reverse('part-activate', args=[self.esub2.pk]), 302)
+        # TODO: subscription_old is only used for this test. Try to remove the method.
         self.assertEqual(len(self.member2.subscriptions_old), 0)
-        self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
+        self.assertGet(reverse('part-deactivate', args=[self.esub.pk]), 302)
+        self.assertGet(reverse('part-deactivate', args=[self.esub2.pk]), 302)
         self.member2.refresh_from_db()
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
         self.assertIsNone(self.member2.subscription_current)
+        # TODO: Also fails, because join/leave is not part of part activation/deactivation.
         self.assertEqual(len(self.member2.subscriptions_old), 1)
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
+        self.assertGet(reverse('part-activate', args=[self.esub2.pk]), 302)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
 

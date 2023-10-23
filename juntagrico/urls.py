@@ -118,14 +118,8 @@ urlpatterns = [
     path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),
     # /manage/subscription
     path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),
-    path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),
-    path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),
     path('my/future', juntagrico_admin.future, name='future'),
     path('my/sub/inconsistencies', juntagrico_admin.sub_inconsistencies, name='sub-mgmt-inconsistencies'),
-    path('my/subscription/activate/<int:subscription_id>/', juntagrico_subscription.activate_subscription,
-         name='sub-activate'),
-    path('my/subscription/deactivate/<int:subscription_id>/', juntagrico_subscription.deactivate_subscription,
-         name='sub-deactivate'),
     # /manage/subscription/part
     path('manage/subscription/part/waitinglist', juntagrico_admin.part_waitinglist, name='sub-mgmt-part-waitinglist'),
     path('manage/subscription/part/canceledlist', juntagrico_admin.part_canceledlist,
