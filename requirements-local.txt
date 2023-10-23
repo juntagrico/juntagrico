@@ -3,4 +3,5 @@ coverage
 django-coverage-plugin
 faker
 flake8
+ruff
 reportlab==3.6.6 # rq.filter: !=3.6.8
