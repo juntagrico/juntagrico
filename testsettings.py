@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'adminsortable2',
     'djrichtextfield',
     'polymorphic',
+    'import_export',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -35,6 +36,18 @@ DATABASES = {
         'NAME':  'yourdatabasename.db',
     }
 }
+
+if os.environ.get('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+           'ENGINE': 'django.db.backends.postgresql',
+           'NAME': 'testdb',
+           'USER': 'postgres',
+           'PASSWORD': 'postgres',
+           'HOST': '127.0.0.1',
+           'PORT': '5432',
+        }
+    }
 
 ROOT_URLCONF = 'testurls'
 
@@ -146,3 +159,5 @@ DJRICHTEXTFIELD_CONFIG = {
         'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
     }
 }
+
+IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'

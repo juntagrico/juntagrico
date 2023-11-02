@@ -1,6 +1,7 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -28,7 +29,7 @@ def sub_pre_save(sender, instance, **kwargs):
 
 
 def handle_sub_activated(sender, instance, **kwargs):
-    activation_date = instance.activation_date or timezone.now().date()
+    activation_date = instance.activation_date or datetime.date.today()
     for member in instance.recipients:
         current_sub = member.subscription_current is not None
         sub_deactivated = current_sub and member.subscription_current.deactivation_date is not None
@@ -47,7 +48,7 @@ def handle_sub_activated(sender, instance, **kwargs):
 
 
 def handle_sub_deactivated(sender, instance, **kwargs):
-    instance.deactivation_date = instance.deactivation_date or timezone.now().date()
+    instance.deactivation_date = instance.deactivation_date or datetime.date.today()
     change_date = instance.deactivation_date
     for part in instance.active_parts.all():
         part.deactivate(change_date)
@@ -58,7 +59,7 @@ def handle_sub_deactivated(sender, instance, **kwargs):
 
 
 def handle_sub_canceled(sender, instance, **kwargs):
-    instance.cancellation_date = instance.cancellation_date or timezone.now().date()
+    instance.cancellation_date = instance.cancellation_date or datetime.date.today()
     for part in instance.parts.filter(q_activated()).all():
         part.cancel()
     for part in instance.parts.filter(~q_activated()).all():

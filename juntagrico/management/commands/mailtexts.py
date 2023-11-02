@@ -1,6 +1,7 @@
+import datetime
+
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
@@ -137,7 +138,7 @@ class Command(BaseCommand):
 
         print(get_email_content('m_canceled', base_dict({
             'member': member,
-            'end_date': timezone.now(),
+            'end_date': datetime.date.today(),
             'message': 'Nachricht'
         })))
         print()

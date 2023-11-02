@@ -1,27 +1,28 @@
+import datetime
 import hashlib
-from datetime import date
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
-from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
+from juntagrico.queryset.member import MemberQuerySet
 from juntagrico.util.users import make_username
 
 
 def q_joined_subscription():
-    return Q(join_date__isnull=False, join_date__lte=timezone.now().date())
+    return Q(join_date__isnull=False, join_date__lte=datetime.date.today())
 
 
 def q_left_subscription(asof=None):
     if asof is not None:
         return Q(leave_date__isnull=False, leave_date__lte=asof)
-    return Q(leave_date__isnull=False, leave_date__lte=timezone.now().date())
+    return Q(leave_date__isnull=False, leave_date__lte=datetime.date.today())
 
 
 class Member(JuntagricoBaseModel):
@@ -58,17 +59,19 @@ class Member(JuntagricoBaseModel):
     end_date = models.DateField(
         _('Enddatum'), null=True, blank=True, help_text=_('Voraususchtliches Datum an dem die Mitgliedschaft enden wird. Hat keinen Effekt im System'))
     notes = models.TextField(
-        _('Notizen'), max_length=1000, blank=True,
+        _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
 
+    objects = MemberQuerySet.as_manager()
+
     @property
     def canceled(self):
-        return self.cancellation_date is not None and self.cancellation_date <= timezone.now().date()
+        return self.cancellation_date is not None and self.cancellation_date <= datetime.date.today()
 
     @property
     def inactive(self):
-        return self.deactivation_date is not None and self.deactivation_date <= timezone.now().date()
+        return self.deactivation_date is not None and self.deactivation_date <= datetime.date.today()
 
     @property
     def active_shares(self):
@@ -76,7 +79,8 @@ class Member(JuntagricoBaseModel):
         """
         return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
 
-    def active_shares_for_date(self, date=timezone.now):
+    def active_shares_for_date(self, date):
+        date = date or datetime.date.today()
         return self.share_set.filter(paid_date__lte=date).filter(Q(payback_date__isnull=True) | Q(payback_date__gte=date))
 
     @property
@@ -86,17 +90,17 @@ class Member(JuntagricoBaseModel):
         shares = self.share_set.filter(paid_date__isnull=False).order_by('paid_date')
         years = []
         if shares:
-            first_share_date = timezone.now().date()
-            last_share_date = date.min
+            first_share_date = datetime.date.today()
+            last_share_date = datetime.date.min
             for share in shares:
                 first_share_date = min(first_share_date, share.paid_date)
                 if share.payback_date:
                     last_share_date = max(last_share_date, share.payback_date)
                 else:
-                    last_share_date = timezone.now().date()
+                    last_share_date = datetime.date.today()
                 last_share_date = max(last_share_date, first_share_date)
             years = list(range(first_share_date.year, last_share_date.year + 1))
-            years = [y for y in years if y <= timezone.now().year]
+            years = [y for y in years if y <= datetime.date.today().year]
         return years
 
     @property
@@ -137,7 +141,7 @@ class Member(JuntagricoBaseModel):
         sub_membership = self.subscriptionmembership_set.filter(~q_joined_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
 
-    @property
+    @cached_property
     def subscription_current(self):
         sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
         return getattr(sub_membership, 'subscription', None)
@@ -153,7 +157,7 @@ class Member(JuntagricoBaseModel):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = None if subscription.waiting else timezone.now().date()
+            join_date = None if subscription.waiting else datetime.date.today()
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
@@ -163,7 +167,7 @@ class Member(JuntagricoBaseModel):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         membership_present = sub_membership and sub_membership.leave_date is None
         if membership_present and sub_membership.join_date is not None:
-            changedate = changedate or timezone.now().date()
+            changedate = changedate or datetime.date.today()
             sub_membership.leave_date = changedate
             sub_membership.save()
         elif membership_present and sub_membership.join_date is None:
@@ -224,10 +228,17 @@ class Member(JuntagricoBaseModel):
 
 
 class SubscriptionMembership(JuntagricoBaseModel):
-    member = models.ForeignKey('Member', on_delete=models.CASCADE)
-    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE)
-    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True)
-    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE, verbose_name=Config.vocabulary('member'))
+    subscription = models.ForeignKey('Subscription', on_delete=models.CASCADE, verbose_name=Config.vocabulary('subscription'))
+    join_date = models.DateField(_('Beitrittsdatum'), null=True, blank=True, help_text=_('Erster Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
+    leave_date = models.DateField(_('Austrittsdatum'), null=True, blank=True, help_text=_('Letzter Tag an dem {0} bezogen wird').format(Config.vocabulary('subscription')))
+
+    def __str__(self):
+        if not self.join_date:
+            extra = _('Beitritt ausstehend')
+        else:
+            extra = f"{self.join_date} - {self.leave_date or _('Heute')}"
+        return f"{self.member} - {self.subscription}: " + extra
 
     def clean(self):
         return check_sub_membership_consistency(self)

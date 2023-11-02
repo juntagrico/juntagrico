@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -11,8 +12,7 @@ class SubscriptionProduct(JuntagricoBaseModel):
     Product of subscription
     '''
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, blank=True)
+    description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
     is_extra = models.BooleanField(_('Ist Zusatzabo Produkt'), default=False)
 
@@ -39,8 +39,7 @@ class SubscriptionSize(JuntagricoBaseModel):
     depot_list = models.BooleanField(
         _('Sichtbar auf Depotliste'), default=True)
     visible = models.BooleanField(_('Sichtbar'), default=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, blank=True)
+    description = models.TextField(_('Beschreibung'), blank=True)
     product = models.ForeignKey('SubscriptionProduct', on_delete=models.PROTECT,
                                 related_name='sizes', verbose_name=_('Produkt'))
 
@@ -50,8 +49,10 @@ class SubscriptionSize(JuntagricoBaseModel):
     class Meta:
         verbose_name = _('{0}-Grösse').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
-        unique_together = ('name', 'product',)
-        unique_together = ('units', 'product',)
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'product'], name='unique_name_product'),
+            models.UniqueConstraint(fields=['units', 'product'], name='unique_units_product'),
+        ]
 
 
 class SubscriptionType(JuntagricoBaseModel):
@@ -72,9 +73,17 @@ class SubscriptionType(JuntagricoBaseModel):
     visible = models.BooleanField(_('Sichtbar'), default=True)
     trial = models.BooleanField(_('Probe-Abo'), default=False)
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, blank=True)
+    description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    # Interval of the subscription (e.g 2 for every 2 weeks)
+    interval = models.PositiveIntegerField(_('Intervall'), default=1, blank=False, null=False,
+                                           validators=[MinValueValidator(1)],
+                                           help_text=_('Intervall der Lieferung in Wochen,'
+                                                       '1 heisst jede Woche, 2 heisst alle 2 Wochen, usw.'))
+    offset = models.PositiveIntegerField(_('Versatz'), default=0, blank=False, null=False,
+                                         help_text=_('Versatz der Lieferung in Wochen, '
+                                                     '0 entspricht einer Lieferung ab der ersten Kalenderwoche, '
+                                                     '1 entspricht einer Lieferung ab der zweiten Kalenderwoche, usw.'))
 
     @property
     def has_periods(self):

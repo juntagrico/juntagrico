@@ -1,14 +1,15 @@
 from django.contrib import admin
 from django.utils.translation import gettext as _
 
-from juntagrico.admins import BaseAdmin
+from juntagrico.admins import BaseAdmin, DateRangeExportMixin
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
-from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInline
+from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInlineWithShareCount
 from juntagrico.admins.inlines.subscription_part_inlines import SubscriptionPartInline
 from juntagrico.config import Config
+from juntagrico.resources.subscription import SubscriptionResource
 
 
-class SubscriptionAdmin(BaseAdmin):
+class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
     form = SubscriptionAdminForm
     readonly_fields = ('creation_date',)
     list_display = ['__str__', 'recipients_names',
@@ -16,10 +17,10 @@ class SubscriptionAdmin(BaseAdmin):
     search_fields = ['subscriptionmembership__member__user__username',
                      'subscriptionmembership__member__first_name',
                      'subscriptionmembership__member__last_name',
-                     'depot__name', 'nickname']
+                     'depot__name', 'nickname', 'id']
     autocomplete_fields = ['depot', 'future_depot']
 
-    inlines = [SubscriptionMembershipInline, SubscriptionPartInline]
+    inlines = [SubscriptionMembershipInlineWithShareCount, SubscriptionPartInline]
 
     fieldsets = [
         (Config.vocabulary('member_pl'), {'fields': ['primary_member', 'nickname']}),
@@ -34,6 +35,8 @@ class SubscriptionAdmin(BaseAdmin):
                                   'cancellation_date', 'end_date', 'deactivation_date']}),
         (_('Administration'), {'fields': ['notes']}),
     ]
+
+    resource_classes = [SubscriptionResource]
 
     @admin.display(description=_('Status'), ordering='activation_date')
     def text_state(self, instance):

@@ -7,7 +7,7 @@ from juntagrico.entity.delivery import Delivery, DeliveryItem
 class DeliveryCopyForm(forms.ModelForm):
     class Meta:
         model = Delivery
-        fields = ['delivery_date', 'subscription_size']
+        fields = ['delivery_date', 'tour', 'subscription_size']
         widgets = {
             'delivery_date': admin.widgets.AdminDateWidget,
         }
@@ -20,8 +20,9 @@ class DeliveryCopyForm(forms.ModelForm):
 
     def save(self, commit=True):
         delivery_date = self.cleaned_data['delivery_date']
+        tour = self.cleaned_data['tour']
         subscription_size = self.cleaned_data['subscription_size']
-        new_delivery = Delivery.objects.create(delivery_date=delivery_date, subscription_size=subscription_size)
+        new_delivery = Delivery.objects.create(delivery_date=delivery_date, tour=tour, subscription_size=subscription_size)
         for item in self.instance.items.all():
             DeliveryItem.objects.create(delivery=new_delivery,
                                         name=item.name,

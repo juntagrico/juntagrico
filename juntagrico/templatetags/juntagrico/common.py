@@ -42,7 +42,7 @@ def show_job_extras():
 
 @register.simple_tag
 def show_deliveries(request):
-    return len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0
+    return DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current).exists()
 
 
 @register.filter
@@ -88,3 +88,8 @@ def richtext(value):
         value = urlize(value)
         value = linebreaksbr(value)
     return value
+
+
+@register.filter
+def values_list(queryset, keys):
+    return queryset.values_list(keys, flat=isinstance(keys, str))

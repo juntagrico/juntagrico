@@ -3,7 +3,6 @@ import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -21,11 +20,6 @@ weekdays = dict(weekday_choices)
 
 def is_date_in_cancelation_period(date):
     return start_of_business_year() <= date <= cancelation_date()
-
-
-def weekday_short(day, num):
-    weekday = weekdays[day]
-    return weekday[:num]
 
 
 def days_in_month(year, month):
@@ -69,7 +63,7 @@ def next_cancelation_date():
     """
     :return: next cancelation deadline from today
     """
-    return next_cancelation_date_from(timezone.now())
+    return next_cancelation_date_from(datetime.date.today())
 
 
 def cancelation_date():
@@ -94,8 +88,7 @@ def next_membership_end_date():
     """
     endmonth = Config.membership_end_month()
     noticemonths = Config.membership_end_notice_period()
-    now = timezone.now().date()
-    nowplusnotice = now + relativedelta(months=noticemonths)
+    nowplusnotice = datetime.date.today() + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
         endyear = nowplusnotice.year
     else:
@@ -105,11 +98,11 @@ def next_membership_end_date():
 
 
 def calculate_next(day, month):
-    return calculate_next_offset(day, month, timezone.now())
+    return calculate_next_offset(day, month, datetime.date.today())
 
 
 def calculate_last(day, month):
-    return calculate_last_offset(day, month, timezone.now())
+    return calculate_last_offset(day, month, datetime.date.today())
 
 
 def calculate_next_offset(day, month, offset):
@@ -144,3 +137,12 @@ month_choices = ((1, _('Januar')),
                  (10, _('Oktober')),
                  (11, _('November')),
                  (12, _('Dezember')))
+
+
+def default_to_business_year(func):
+    """
+    decorator: defaults the first 2 arguments to start and end of current business year.
+    """
+    def wrapper(start=None, end=None, *args, **kwargs):
+        return func(start or start_of_business_year(), end or end_of_business_year(), *args, **kwargs)
+    return wrapper

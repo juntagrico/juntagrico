@@ -417,3 +417,19 @@ th {
     display: block;
     white-space: nowrap;
 }
+
+/* phone number display */
+
+a.phone-number {
+    white-space: nowrap;
+    color: #606560;
+    text-decoration: underline;
+}
+
+/* impersonate link */
+
+.impersonate-action {
+    color: #606560;
+    float: right;
+    display: inline-block;
+}

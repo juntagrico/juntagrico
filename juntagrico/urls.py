@@ -6,8 +6,9 @@ from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
-from juntagrico.util.auth import JuntagricoLoginView
+from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
 from juntagrico.config import Config
+from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
 # 1. Add the url to the section that matches best and start the url as the section title says
@@ -34,7 +35,9 @@ urlpatterns = [
 
     # /accounts (password reset)
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form_cust.html',
-                                                                          email_template_name=Config.emails('password')), name='password_reset'),
+                                                                          email_template_name=Config.emails('password'),
+                                                                          form_class=JuntagricoPasswordResetForm,
+                                                                          from_email=Config.contacts('technical')), name='password_reset'),
     path('accounts/password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done_cust.html'), name='password_reset_done'),
     path('accounts/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm_cust.html'), name='password_reset_confirm'),
     path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete_cust.html'), name='password_reset_complete'),
@@ -73,11 +76,12 @@ urlpatterns = [
          name='sub-cancel'),
     path('my/subscription/leave/<int:subscription_id>/', juntagrico_subscription.leave_subscription,
          name='sub-leave'),
-    # /my/subscription/{id}/extra
+    # /my/subscription/extra/{id}
     path('my/subscription/change/extra/<int:subscription_id>/', juntagrico_subscription.extra_change,
          name='extra-change'),
-    # /my/subscription/{id}/part
+    # /my/subscription/part/{id}
     path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),
+    path('my/subscription/part/<int:part_id>/change', juntagrico_subscription.part_change, name='part-change'),
     path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
          name='part-cancel'),
     # /my/assignments
@@ -133,6 +137,9 @@ urlpatterns = [
     # /manage/subscription/extra
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),
     path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
+    # /manage/subscription/depot
+    path('manage/subscription/depot/changes', juntagrico_admin.depot_changes, name='manage-sub-depot-changes'),
+    path('manage/subscription/depot/change/confirm/<int:subscription_id>', juntagrico_admin.depot_change_confirm, name='manage-sub-depot-change-confirm'),
     # /manage/member
     path('my/member/canceledlist', juntagrico_admin.member_canceledlist, name='member-mgmt-canceledlist'),
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),
@@ -171,12 +178,19 @@ urlpatterns = [
     path('my/pdf/depotoverview', juntagrico_admin.depot_overview, name='lists-depot-overview'),
     path('my/pdf/amountoverview', juntagrico_admin.amount_overview, name='lists-depot-amountoverview'),
 
+    # /manage/list
+    path('manage/list', juntagrico_admin.manage_list, name='manage-list'),
+
     # /export
     path('my/export', juntagrico_admin.export, name='export'),
     path('my/export/membersfilter', juntagrico_admin.excel_export_members_filter, name='export-membersfilter'),
     path('my/export/members', juntagrico_admin.excel_export_members, name='export-members'),
     path('my/export/shares', juntagrico_admin.excel_export_shares, name='export-shares'),
     path('my/export/subscriptions', juntagrico_admin.excel_export_subscriptions, name='export-subscriptions'),
+
+    # /command
+    path('command/shifttime', ShiftTimeFormView.as_view(), name='command-shifttime'),
+    path('command/shifttime/success', ShiftTimeFormView.as_view(success=True), name='command-shifttime-success'),
 
     # /api
     # /api/share

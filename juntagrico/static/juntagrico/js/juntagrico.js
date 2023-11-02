@@ -69,6 +69,21 @@ function move_email_button() {
     });
 }
 
+function member_phone_toggle() {
+    let show_co_members = $("#show_co_members")
+    let show_phone_numbers = $("#show_phone_numbers")
+    // initialize correct value after reload
+    $('.co-member').toggle(show_co_members.is(':checked'));
+    $('.phone-number').toggle(show_phone_numbers.is(':checked'));
+    // change on click
+    show_co_members.change(function() {
+        $('.co-member').toggle(this.checked);
+    });
+    show_phone_numbers.change(function() {
+        $('.phone-number').toggle(this.checked);
+    });
+}
+
 function get_sb_config() {
     var sb_columns = true;
     if(typeof search_builder_enabled !== 'undefined' && search_builder_enabled){
@@ -101,6 +116,7 @@ function default_data_table() {
             updateSendEmailButton(fetch_emails().length);
         },
         "language": {
+            "decimal": decimal_symbol[1],
             "search": search_field,
             searchBuilder: sb_lang
         },

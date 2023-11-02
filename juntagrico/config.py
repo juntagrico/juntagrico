@@ -1,10 +1,12 @@
+from typing import Any
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
 from django.utils.translation import gettext as _
 
 
-def _get_setting(setting_key, default: object = ''):
+def _get_setting(setting_key, default: Any = ''):
     return lambda: getattr(settings, setting_key, default() if callable(default) else default)
 
 
@@ -12,7 +14,8 @@ def _get_setting_with_key(setting_key, default):
     def inner(key):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
-        return (default() if callable(default) else default)[key]
+        d = default[key]
+        return d() if callable(d) else d
 
     return inner
 
@@ -93,8 +96,8 @@ class Config:
     membership_end_notice_period = _get_setting('MEMBERSHIP_END_NOTICE_PERIOD', 0)
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
-        lambda: {
-            'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(
+        {
+            'text': lambda: _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(
                 Site.objects.get_current().name),
             'confirm_text': _('einverstanden'),
             'link_text': _('Hier findest du mehr zum Thema'),
@@ -103,14 +106,25 @@ class Config:
     )
     sub_overview_format = _get_setting_with_key(
         'SUB_OVERVIEW_FORMAT',
-        lambda: {
+        {
             'delimiter': '|',
-            'format': '{product}:{size}:{type}={amount}'
+            'format': '{product}:{size}:{type}={amount}',
+            'part_format': '{size}'
         }
     )
 
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
+    contacts = _get_setting_with_key(
+        'CONTACTS',
+        {
+            'general': lambda: Config.info_email(),
+            'for_members': lambda: Config.contacts('general'),
+            'for_subscriptions': lambda: Config.contacts('general'),
+            'for_shares': lambda: Config.contacts('general'),
+            'technical': lambda: Config.contacts('general'),
+        }
+    )
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
     default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
     batch_mailer = _get_setting_with_key(

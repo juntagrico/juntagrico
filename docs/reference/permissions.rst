@@ -1,33 +1,116 @@
+.. _reference-permissions:
+
 Permissions
 ===========
 
-Overview
---------
-juntagrico relies heavily on the Django permission mechanism to customize the system for different users. In this chapter we will explain which permissions can be used for customization and how they work.
+.. note::
+    Permissions are named in the language of your instance and use your terminology.
+
+juntagrico relies heavily on the Django permission mechanism to customize the system for different users.
+In this chapter we will explain which permissions can be used for customization and how they work.
 
 Grant Permissions
 -----------------
-Permissions are granted in the admin part of juntagrico, which in fact is the admin part of Django. To grant someone a permission, the persons ``User`` has to be edited.
-You find a link to a members user instance in the member admin form.
-There you can search for a permission and add it to the user using the little right arrow next to it. Do not forget to save the user in order for the permissions to take effect.
-You can also create groups of permissions which can be assigned to single users. If you need more information on that check out the Django documentation concerning permissions.
+
+Create a group
+^^^^^^^^^^^^^^
+
+1. Login with a super admin user.
+2. Open the data management ("Datenverwaltung") -> Groups -> Add to create a new group or edit an existing one.
+3. Set a name for the group, e.g. "share management".
+4. Select and add the permissions (using the arrow to the right in the middle) that you want to give to this group and save the group.
+
+What Permissions do I need to set?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are 4 basic permissions for each entity which are self explanatory:
+
+* View
+* Add
+* Change
+* Delete
+
+.. hint::
+    If a user should be able to change an entity, they also need access to at least view the related entities.
+    See :ref:`Dependent Permissions <reference-dependent-permissions>` below.
+
+Juntagrico provides some additional permissions, that are described in the sections below.
+
+Add Users to the group
+^^^^^^^^^^^^^^^^^^^^^^
+
+1. Login with a super admin user.
+2. Open the data management ("Datenverwaltung") -> User ("Benutzer") and edit the user of the member you want to give the permissions to.
+3. If the user needs access to the data management, tick staff status ("Mitarbeiter-Status").
+4. Add the relevant groups for this user and save the user.
+
+You may also give permissions do users directly but this is not recommended as it is then harder to transfer the same permissions to another user.
+
+Testing the user access
+^^^^^^^^^^^^^^^^^^^^^^^
+
+To be sure, that the user can do what you intended them to do, it is best to create a test user and give them the same permissions.
+Try out all actions with the test user, to confirm that they work.
+
+.. note::
+    You can also test the permissions of a user by impersonating them. However, by default the data admin is excluded from impersonation.
+    If you want to check the users permissions in the data admin as well, set the ``IMPERSONATE_URI_EXCLUSIONS`` setting to an empty list.
+    `Read more <https://code.netlandish.com/~petersanchez/django-impersonate/#settings>`_.
+
+
+.. _reference-dependent-permissions:
+
+Dependent Permissions
+---------------------
+In order to be able to edit some types of entities not only the ``change`` permission of this entity type has to be granted to a member but also
+some dependent permissions.
+
+Subscription
+^^^^^^^^^^^^
+Also requires change permissions for subscription parts and subscription membership.
+And view permission for members.
+
+Jobs
+^^^^
+Also requires change permission for assignments and job extras.
+And view permission for job types and members.
+
+Job Types
+^^^^^^^^^
+Also require at least view permission for locations.
+
+Depot
+^^^^^
+Also require at least view permission for locations.
+
+Deliveries
+^^^^^^^^^^
+Also requires change permission for deliver item.
+
+Shares
+^^^^^^
+Also require at least view permission for members.
+
 
 Area and Depot Admins
 ---------------------
 juntagrico.is_depot_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administator of a depot, so that they can filter and communicate with the members in their depot.
+Should be assigned to members which are administrator of a depot, so that they can filter and communicate with the members in their depot.
 
 Search Hints:
     * German: Benutzer ist Depot Admin
 
 juntagrico.is_area_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Should be assigned to members which are administator of an activity area, so that they can filter and communicate with the members in their area.
-Also it allows them to create new jobs and comunicate with the members participating in one of the jobs of their area.
+Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
+Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
 
 Search Hints:
     * German: Benutzer ist Tätigkeitsbereichskoordinator
+
+
+.. _reference-notifications:
 
 Notifications
 -------------
@@ -57,7 +140,7 @@ Search Hints:
 
 juntagrico.notified_on_member_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a member cancels his membership.
+Member gets notified when any member cancels their membership.
 
 Search Hints:
     * German: Kündigung informiert
@@ -83,9 +166,10 @@ Member gets notified when the depot list is generated.
 Search Hints:
     * German: Listen-Erstellung informiert
 
+
 Administrator Menu
 ------------------
-Which entries can be seen on the administration menu depepend on a set of permissions.
+Which entries can be seen on the administration menu depend on a set of permissions.
 
 juntagrico.change_subscription
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -157,14 +241,16 @@ Member sees the subscription filter entry in the administration menu without the
 Search Hints:
     * German: filtern
 
+
 Email Permissions
 -----------------
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the email address specified in the setting :ref:`INFO_EMAIL` as sender in the mail form.
+Member can use the email address specified in the setting :ref:`INFO_EMAIL <reference-settings-info-email>` as sender in the mail form.
 
 Search Hints:
     * German: General Email
+
 
 Edit Permissions
 ----------------
@@ -181,20 +267,3 @@ Member can edit subscriptions which are deactivated.
 
 Search Hints:
     * German: deaktivierte
-
-Dependent Permissions
----------------------
-In order to be able to edit some types of entites not only the ``change`` permission of this entity type has to be granted to a member but also
-some dependent permissions.
-
-Subscription
-^^^^^^^^^^^^
-Also requires change permissions for subscription parts and subscription membership.
-
-Jobs
-^^^^
-Also requires change permission for assignments and job extras.
-
-Deliveries
-^^^^^^^^^^
-Also requires change permission for deliver item.

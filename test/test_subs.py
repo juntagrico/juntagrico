@@ -33,18 +33,6 @@ class SubscriptionTests(JuntagricoTestCase):
         with self.assertRaises(ValidationError):
             self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk}, 500)
 
-    def testDepotChange(self):
-        self.assertGet(reverse('depot-change', args=[self.sub.pk]))
-        self.assertPost(reverse('depot-change', args=[self.sub.pk]), {'depot': self.depot2.pk})
-        self.sub.refresh_from_db()
-        self.assertEqual(self.sub.future_depot, self.depot2)
-
-    def testDepotChangeWaiting(self):
-        self.assertPost(reverse('depot-change', args=[self.sub2.pk]), {'depot': self.depot2.pk}, member=self.member2)
-        self.sub2.refresh_from_db()
-        self.assertEqual(self.sub2.depot, self.depot2)
-        self.assertIsNone(self.sub2.future_depot)
-
     def testDepot(self):
         self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
         self.assertGet(reverse('depot-landing'))
@@ -75,6 +63,41 @@ class SubscriptionTests(JuntagricoTestCase):
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
             self.assertEqual(self.sub.future_parts.count(), 1)
+
+    def testTypeChange(self):
+        # change type, with unsufficient shares
+        part = self.sub.parts.all()[0]
+        self.assertGet(reverse('part-change', args=[part.pk]))
+        post_data = {'part_type': self.sub_type2.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data)
+        self.sub.refresh_from_db()
+        # check: type and amount unchanged
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+
+        # add a shares for type2
+        self.create_paid_share(self.member)
+        # change active type
+        part = self.sub.parts.all()[0]
+        self.assertGet(reverse('part-change', args=[part.pk]))
+        post_data = {'part_type': self.sub_type2.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
+        self.sub.refresh_from_db()
+        # check: has only one uncancelled part with new type
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
+        # check: previous part was cancelled
+        part.refresh_from_db()
+        self.assertTrue(part.canceled)
+
+        # change future type
+        part = self.sub.future_parts.all()[0]
+        post_data = {'part_type': self.sub_type.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
+        self.sub.refresh_from_db()
+        # check: has only one uncancelled part with first type
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
     def testCancelWaitingPart(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):

@@ -1,7 +1,9 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import QuerySet
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.models import PolymorphicModel
 
@@ -23,6 +25,12 @@ class JuntagricoBasePoly(PolymorphicModel, OldHolder):
         abstract = True
 
 
+class SimpleStateModelQuerySet(QuerySet):
+    def active_on(self, date=None):
+        date = date or datetime.date.today()
+        return self.filter(activation_date__lte=date).exclude(deactivation_date__lt=date)
+
+
 class SimpleStateModel(models.Model):
 
     __state_text_dict = {0: _('wartend'),
@@ -38,21 +46,21 @@ class SimpleStateModel(models.Model):
     cancellation_date = models.DateField(_('Kündigungsdatum'), null=True, blank=True)
     deactivation_date = models.DateField(_('Deaktivierungsdatum'), null=True, blank=True)
 
-    def activate(self, time=None):
-        now = time or timezone.now().date()
-        self.activation_date = self.activation_date or now
+    def activate(self, date=None):
+        date = date or datetime.date.today()
+        self.activation_date = self.activation_date or date
         self.save()
 
-    def cancel(self, time=None):
-        now = time or timezone.now().date()
-        self.cancellation_date = self.cancellation_date or now
+    def cancel(self, date=None):
+        date = date or datetime.date.today()
+        self.cancellation_date = self.cancellation_date or date
         self.save()
 
-    def deactivate(self, time=None):
-        now = time or timezone.now().date()
-        self.activation_date = self.activation_date or now  # allows immediate deactivation
-        self.cancellation_date = self.cancellation_date or now
-        self.deactivation_date = self.deactivation_date or now
+    def deactivate(self, date=None):
+        date = date or datetime.date.today()
+        self.activation_date = self.activation_date or date  # allows immediate deactivation
+        self.cancellation_date = self.cancellation_date or date
+        self.deactivation_date = self.deactivation_date or date
         self.save()
 
     @property
@@ -69,9 +77,9 @@ class SimpleStateModel(models.Model):
 
     @property
     def __state_code(self):
-        now = timezone.now().date()
-        active = (self.activation_date is not None and self.activation_date <= now) << 0
-        deactivated = (self.deactivation_date is not None and self.deactivation_date <= now) << 1
+        today = datetime.date.today()
+        active = (self.activation_date is not None and self.activation_date <= today) << 0
+        deactivated = (self.deactivation_date is not None and self.deactivation_date <= today) << 1
         return active + deactivated
 
     @property
@@ -83,12 +91,12 @@ class SimpleStateModel(models.Model):
         return SimpleStateModel.__state_text_dict.get(self.__state_code, _('Fehler!'))
 
     @property
-    def cancelled(self):
+    def canceled(self):
         # Sufficient to check if cancellation date is set, because it can not be in the future
         return self.cancellation_date is not None
 
     def check_date_order(self):
-        now = timezone.now().date()
+        today = datetime.date.today()
         is_active = self.activation_date is not None
         is_cancelled = self.cancellation_date is not None
         is_deactivated = self.deactivation_date is not None
@@ -101,7 +109,7 @@ class SimpleStateModel(models.Model):
                 raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
             elif self.cancellation_date > self.deactivation_date:
                 raise ValidationError(_('"Kündigungsdatum" kann nicht nach "Deaktivierungsdatum liegen"'), code='invalid')
-        if is_cancelled and self.cancellation_date > now:
+        if is_cancelled and self.cancellation_date > today:
             raise ValidationError(_('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
 
     class Meta:
