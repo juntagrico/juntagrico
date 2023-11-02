@@ -236,6 +236,17 @@ class RegisterMemberForm(MemberBaseForm):
     comment = CharField(required=False, max_length=4000, label='Kommentar', widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
 
+    documents = {
+        'die Statuten': Config.bylaws,
+        'das Betriebsreglement': Config.business_regulations,
+        'die DSGVO Infos': Config.gdpr_info,
+    }
+    text = {
+        'accept_with_docs': _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. Hiermit beantrage ich meine Aufnahme.'),
+        'accept_wo_docs': _('Ich erkläre meinen Willen, "{}" beizutreten. Hiermit beantrage ich meine Aufnahme.'),
+        'and': _('und')
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['agb'].label = self.agb_label()
@@ -249,26 +260,19 @@ class RegisterMemberForm(MemberBaseForm):
         )
         self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
 
-    @staticmethod
-    def agb_label():
-        documents = {
-            'die Statuten': Config.bylaws,
-            'das Betriebsreglement': Config.business_regulations,
-            'die DSGVO Infos': Config.gdpr_info,
-        }
+    @classmethod
+    def agb_label(cls):
         documents_html = []
-        for text, link in documents.items():
+        for text, link in cls.documents.items():
             if link().strip():
                 documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
         if documents_html:
-            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. '
-                     'Hiermit beantrage ich meine Aufnahme.').format(
-                (' ' + _('und') + ' ').join(documents_html),
+            return cls.text['accept_with_docs'].format(
+                (' ' + cls.text['and'] + ' ').join(documents_html),
                 Config.organisation_long_name()
             )
         else:
-            return _('Ich erkläre meinen Willen, "{}" beizutreten. '
-                     'Hiermit beantrage ich meine Aufnahme.').format(Config.organisation_long_name())
+            return cls.text['accept_wo_docs'].format(Config.organisation_long_name())
 
 
 class RegisterSummaryForm(Form):
