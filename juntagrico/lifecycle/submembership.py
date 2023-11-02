@@ -42,10 +42,10 @@ def check_sub_membership_consistency(instance):
     subscription = instance.subscription
     try:
         member = instance.member
-    except AttributeError:
+    except AttributeError as e:
         raise ValidationError(
             _('Kein/e/n gültige/n/s {} angegeben').format(Config.vocabulary('member')),
-            code='invalid')
+            code='invalid') from e
     check_sub_membership_consistency_ms(member, subscription, instance.join_date, instance.leave_date)
 
 

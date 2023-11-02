@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from schwifty import IBAN
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
@@ -22,7 +21,7 @@ from juntagrico.util.temporal import next_membership_end_date
 
 class Slider(Field):
     def __init__(self, *args, **kwargs):
-        super().__init__(template='forms/slider.html', css_class='slider', *args, **kwargs)
+        super().__init__(*args, template='forms/slider.html', css_class='slider', **kwargs)
 
 
 class LinkButton(HTML):
@@ -102,9 +101,8 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         )
 
     def clean_iban(self):
-        try:
-            IBAN(self.data['iban'])
-        except ValueError:
+        # require IBAN on cancellation
+        if self.data['iban'] == '':
             raise ValidationError(_('IBAN ist nicht gültig'))
         return self.data['iban']
 
@@ -164,14 +162,6 @@ class MemberProfileForm(ModelForm):
                 text
             ).format('<a href="mailto:{0}">{0}</a>'.format(Config.info_email()))
         )
-
-    def clean_iban(self):
-        if self.data['iban'] != '':
-            try:
-                IBAN(self.data['iban'])
-            except ValueError:
-                raise ValidationError(_('IBAN ist nicht gültig'))
-        return self.data['iban']
 
 
 class SubscriptionForm(ModelForm):
