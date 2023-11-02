@@ -182,4 +182,14 @@ class Migration(migrations.Migration):
             name='description',
             field=models.TextField(blank=True, verbose_name='Beschreibung'),
         ),
+        migrations.AddField(
+            model_name='subscriptiontype',
+            name='interval',
+            field=models.PositiveIntegerField(default=1, verbose_name='Intervall'),
+        ),
+        migrations.AddField(
+            model_name='subscriptiontype',
+            name='offset',
+            field=models.PositiveIntegerField(default=0, verbose_name='Versatz'),
+        ),
     ]

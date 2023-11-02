@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -74,6 +75,15 @@ class SubscriptionType(JuntagricoBaseModel):
     trial_days = models.IntegerField(_('Probe-Abo Dauer in Tagen'), default=0)
     description = models.TextField(_('Beschreibung'), blank=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    # Interval of the subscription (e.g 2 for every 2 weeks)
+    interval = models.PositiveIntegerField(_('Intervall'), default=1, blank=False, null=False,
+                                           validators=[MinValueValidator(1)],
+                                           help_text=_('Intervall der Lieferung in Wochen,'
+                                                       '1 heisst jede Woche, 2 heisst alle 2 Wochen, usw.'))
+    offset = models.PositiveIntegerField(_('Versatz'), default=0, blank=False, null=False,
+                                         help_text=_('Versatz der Lieferung in Wochen, '
+                                                     '0 entspricht einer Lieferung ab der ersten Kalenderwoche, '
+                                                     '1 entspricht einer Lieferung ab der zweiten Kalenderwoche, usw.'))
 
     @property
     def has_periods(self):
