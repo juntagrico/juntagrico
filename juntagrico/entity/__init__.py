@@ -27,13 +27,11 @@ class SimpleStateModel(models.Model):
 
     __state_text_dict = {0: _('wartend'),
                          1: _('aktiv'),
-                         3: _('aktiv - gekündigt'),
-                         7: _('inaktiv-gekündigt')}
+                         3: _('inaktiv')}
 
     __state_dict = {0: 'waiting',
                     1: 'active',
-                    3: 'canceled',
-                    7: 'inactive'}
+                    3: 'inactive'}
 
     creation_date = models.DateField(_('Erstellungsdatum'), null=True, blank=True, auto_now_add=True)
     activation_date = models.DateField(_('Aktivierungsdatum'), null=True, blank=True)
@@ -52,6 +50,7 @@ class SimpleStateModel(models.Model):
 
     def deactivate(self, time=None):
         now = time or timezone.now().date()
+        self.activation_date = self.activation_date or now  # allows immediate deactivation
         self.cancellation_date = self.cancellation_date or now
         self.deactivation_date = self.deactivation_date or now
         self.save()
@@ -65,10 +64,6 @@ class SimpleStateModel(models.Model):
         return self.state == 'active'
 
     @property
-    def canceled(self):
-        return self.state == 'canceled'
-
-    @property
     def inactive(self):
         return self.state == 'inactive'
 
@@ -76,9 +71,8 @@ class SimpleStateModel(models.Model):
     def __state_code(self):
         now = timezone.now().date()
         active = (self.activation_date is not None and self.activation_date <= now) << 0
-        cancelled = (self.cancellation_date is not None and self.cancellation_date <= now) << 1
-        deactivated = (self.deactivation_date is not None and self.deactivation_date <= now) << 2
-        return active + cancelled + deactivated
+        deactivated = (self.deactivation_date is not None and self.deactivation_date <= now) << 1
+        return active + deactivated
 
     @property
     def state(self):
@@ -88,22 +82,27 @@ class SimpleStateModel(models.Model):
     def state_text(self):
         return SimpleStateModel.__state_text_dict.get(self.__state_code, _('Fehler!'))
 
+    @property
+    def cancelled(self):
+        # Sufficient to check if cancellation date is set, because it can not be in the future
+        return self.cancellation_date is not None
+
     def check_date_order(self):
         now = timezone.now().date()
         is_active = self.activation_date is not None
         is_cancelled = self.cancellation_date is not None
         is_deactivated = self.deactivation_date is not None
-        activation_date = self.activation_date or now
-        cancellation_date = self.cancellation_date or activation_date  # allow future activation date
-        deactivation_date = self.deactivation_date or cancellation_date
-        if (is_cancelled or is_deactivated) and not is_active:
-            raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='invalid')
-        if is_deactivated and not is_cancelled:
-            raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
-        if is_cancelled and cancellation_date > now:
+        if is_deactivated:
+            if not is_active:
+                raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='invalid')
+            elif self.activation_date > self.deactivation_date:
+                raise ValidationError(_('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum liegen"'), code='invalid')
+            elif not is_cancelled:
+                raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
+            elif self.cancellation_date > self.deactivation_date:
+                raise ValidationError(_('"Kündigungsdatum" kann nicht nach "Deaktivierungsdatum liegen"'), code='invalid')
+        if is_cancelled and self.cancellation_date > now:
             raise ValidationError(_('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
-        if not (activation_date <= cancellation_date <= deactivation_date):
-            raise ValidationError(_('Datenreihenfolge stimmt nicht.'), code='invalid')
 
     class Meta:
         abstract = True

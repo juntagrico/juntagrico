@@ -102,7 +102,7 @@ def depot_change(request, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
     saved = False
     if request.method == 'POST':
-        if subscription.state == 'waiting':
+        if subscription.waiting:
             subscription.depot = get_object_or_404(
                 Depot, id=int(request.POST.get('depot')))
         else:
@@ -149,7 +149,7 @@ def size_change(request, subscription_id):
     change the size of a subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    parts_order_allowed = subscription.waiting or subscription.active
+    parts_order_allowed = not subscription.cancelled
     if request.method == 'POST':
         if not parts_order_allowed:
             raise ValidationError(_('Für gekündigte {} können keine Bestandteile bestellt werden').
@@ -176,7 +176,7 @@ def extra_change(request, subscription_id):
         change an extra subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    extra_order_allowed = subscription.waiting or subscription.active
+    extra_order_allowed = not subscription.cancelled
     if request.method == 'POST':
         if not extra_order_allowed:
             raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
@@ -326,11 +326,8 @@ def deactivate_subscription(request, subscription_id):
 @primary_member_of_subscription
 def cancel_part(request, part_id, subscription_id):
     part = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=part_id)
-    if part.activation_date is None:
-        part.delete()
-    else:
-        part.cancel()
-        adminnotification.subpart_canceled(part)
+    part.cancel()
+    adminnotification.subpart_canceled(part)
     return return_to_previous_location(request)
 
 
@@ -379,8 +376,7 @@ def activate_part(request, part_id):
 def deactivate_part(request, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
     change_date = request.session.get('changedate', None)
-    if part.activation_date is not None:
-        part.deactivate(change_date)
+    part.deactivate(change_date)
     return return_to_previous_location(request)
 
 
