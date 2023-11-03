@@ -88,6 +88,12 @@
                             <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                                 {{ subscription.state_text }}
                             </a>
+                            {% if subscription.canceled %}
+                                -
+                                {% blocktrans with cd=subscription.cancellation_date|date:"Y-m-d" %}
+                                    Gekündigt am {{cd}}
+                                {% endblocktrans %}
+                            {% endif %}
                         </td>
                         <td>
                             {{ subscription.assignment_count|floatformat:-2 }}
