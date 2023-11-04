@@ -10,7 +10,7 @@ from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, get_language
 from django.views.generic import FormView
 from xlsxwriter import Workbook
 
@@ -33,6 +33,7 @@ from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate, prefetch_for_list
 from juntagrico.util.pdf import return_pdf_http
+from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
 from juntagrico.view_decorators import any_permission_required
@@ -137,6 +138,7 @@ def my_mails_intern(request, mail_url, error_message=None):
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
+        'richtext_language': tinymce_lang(get_language()),
     }
     return render(request, 'mail_sender.html', renderdict)
 

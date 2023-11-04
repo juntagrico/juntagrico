@@ -220,6 +220,7 @@
     </script>
     {% config 'mailer_richtext_options' as c_mailer_richtext_options %}
     {{ c_mailer_richtext_options|json_script:"mailer_richtext_options" }}
+    {{ richtext_language|json_script:"richtext_language" }}
     <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initMailer.js' %}">
     </script>
 {% endblock %}
