@@ -542,7 +542,7 @@ BOOTSTRAP
 
   .. code-block:: python
 
-    "/static/juntagrico/external/bootstrap-3.3.1/css/bootstrap.min.css"
+    "/static/juntagrico/external/bootstrap/css/bootstrap.min.css"
 
 
 Email
