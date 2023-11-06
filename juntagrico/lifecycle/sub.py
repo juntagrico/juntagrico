@@ -29,6 +29,12 @@ def sub_pre_save(sender, instance, **kwargs):
 
 
 def handle_sub_activated(sender, instance, **kwargs):
+    if not instance.pk:
+        # if sub has not been saved yet django 4.1 throws an error.
+        # in django <= 4.0 the activation of parts failed silently
+        # reproducing this behaviour here.
+        # see https://github.com/juntagrico/juntagrico/pull/641
+        return
     activation_date = instance.activation_date or datetime.date.today()
     for member in instance.recipients:
         current_sub = member.subscription_current is not None
