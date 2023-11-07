@@ -8,7 +8,6 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _, get_language
 from django.views.generic import FormView
@@ -502,10 +501,10 @@ def set_change_date(request):
         raise Http404
     raw_date = request.POST.get('date')
     try:
-        date = timezone.datetime.strptime(raw_date, '%m/%d/%Y').date()
+        date = datetime.datetime.fromisoformat(raw_date).date()
         request.session['changedate'] = date
     except ValueError:
-        return error_page(request, _('Bitte gib ein Datum im Format MM/TT/JJJJ ein.'))
+        return error_page(request, _('Bitte gib ein Datum im Format JJJJ-MM-TT ein.'))
     return return_to_previous_location(request)
 
 
