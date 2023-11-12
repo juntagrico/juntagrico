@@ -1,0 +1,10 @@
+{% load juntagrico.config %}
+{% vocabulary "depot" as v_depot %}
+<div class="row mb-5 subscription-single depot-summary">
+    <div class="col-md-3">
+        {{ v_depot }}
+    </div>
+    <div class="col-md-9">
+        {% include 'juntagrico/my/depot/snippets/depot_summary.html' %}
+    </div>
+</div>

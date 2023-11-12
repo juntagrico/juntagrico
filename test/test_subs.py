@@ -7,8 +7,8 @@ from test.util.test import JuntagricoTestCase
 class SubscriptionTests(JuntagricoTestCase):
 
     def testSub(self):
-        self.assertGet(reverse('sub-detail'))
-        self.assertGet(reverse('sub-detail-id', args=[self.sub.pk]))
+        self.assertGet(reverse('subscription-landing'), 302)
+        self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
 
     def testSubActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)

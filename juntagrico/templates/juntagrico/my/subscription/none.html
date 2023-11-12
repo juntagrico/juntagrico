@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load juntagrico.subscription %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% block page_title %}
+    {% vocabulary "subscription" as v_subscription %}
+    <h3>
+        {% blocktrans %}{{ v_subscription }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% include 'juntagrico/my/subscription/snippets/banners/no_subscription.html' %}
+    {% include 'juntagrico/my/share/snippets/subscription_overview.html' %}
+    {% for sub_overview_addon in sub_overview_addons %}
+        {% include sub_overview_addon %}
+    {% endfor %}
+{% endblock %}

@@ -6,6 +6,7 @@ from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
+from juntagrico.views import subscription
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
 from juntagrico.config import Config
 from juntagrico.views_admin import ShiftTimeFormView
@@ -27,6 +28,7 @@ urlpatterns = [
     path('my/create/subscription/cancel/', juntagrico_cs.cs_cancel, name='cs-cancel'),
     path('my/welcome/', juntagrico_cs.cs_welcome, name='welcome'),
     path('my/welcome/with_sub', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
+    path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
 
     # login/
     path('accounts/login/', JuntagricoLoginView.as_view(), name='login'),
@@ -59,10 +61,12 @@ urlpatterns = [
     path('my/share/cancel/<int:share_id>/', juntagrico_subscription.cancel_share, name='share-cancel'),
     path('my/info/unpaidshares', juntagrico.info_unpaid_shares, name='info-unpaid-shares'),
     # /my/subscription
-    path('my/subscription/detail/', juntagrico_subscription.subscription, name='sub-detail'),
-    path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
+    path('my/subscription/', subscription.landing, name='subscription-landing'),
     # /my/subscription/{id}
-    path('my/subscription/detail/<int:subscription_id>/', juntagrico_subscription.subscription, name='sub-detail-id'),
+    path('my/subscription/<int:subscription_id>/', subscription.single, name='subscription-single'),
+    path('my/subscription/<int:subscription_id>/', subscription.single, name='size-change'),  # compatibility
+    path('my/subscription/<int:subscription_id>/order/', subscription.part_order, name='part-order'),
+    path('my/subscription/<int:subscription_id>/order/extra/', subscription.part_order, {'extra': True}, name='extra-order'),
     path('my/subscription/change/overview/<int:subscription_id>/', juntagrico_subscription.subscription_change,
          name='sub-change'),
     path('my/subscription/change/depot/<int:subscription_id>/', juntagrico_subscription.depot_change,
@@ -80,7 +84,6 @@ urlpatterns = [
     path('my/subscription/change/extra/<int:subscription_id>/', juntagrico_subscription.extra_change,
          name='extra-change'),
     # /my/subscription/part/{id}
-    path('my/subscription/change/size/<int:subscription_id>/', juntagrico_subscription.size_change, name='size-change'),
     path('my/subscription/part/<int:part_id>/change', juntagrico_subscription.part_change, name='part-change'),
     path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
          name='part-cancel'),

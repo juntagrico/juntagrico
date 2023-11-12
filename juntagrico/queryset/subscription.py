@@ -1,7 +1,8 @@
 import datetime
 
 from django.db import connection
-from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, OuterRef
+from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, \
+    OuterRef, PositiveIntegerField
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
@@ -158,3 +159,25 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
                 output_field=FloatField()
             )
         })
+
+
+class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
+    def is_normal(self):
+        return self.filter(type__size__product__is_extra=False)
+
+    def waiting_or_active(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=date)
+
+    def active_on(self, date=None):
+        date = date or datetime.date.today()
+        current_week_number = date.isocalendar()[1] - 1
+        return (super().active_on(date)
+                .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
+                                                     output_field=PositiveIntegerField())).filter(week_mod=0))
+
+    def sorted(self):
+        return self.order_by('type__size__product__is_extra', 'type__size__product',
+                             F('deactivation_date').desc(nulls_first=True),
+                             F('cancellation_date').desc(nulls_first=True),
+                             F('activation_date').desc(nulls_first=True))

@@ -140,7 +140,7 @@ def primary_change(request, subscription_id):
         new_primary = get_object_or_404(Member, id=int(request.POST.get('primary')))
         subscription.primary_member = new_primary
         subscription.save()
-        return redirect('sub-detail-id', subscription_id=subscription.id)
+        return redirect('subscription-single', subscription_id=subscription.id)
     if Config.enable_shares():
         co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
     else:
@@ -331,7 +331,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return self._done()
 
     def _done(self):
-        return redirect('sub-detail-id', subscription_id=self.subscription.id)
+        return redirect('subscription-single', subscription_id=self.subscription.id)
 
 
 def error_page(request, error_message):
@@ -383,7 +383,7 @@ def cancel_subscription(request, subscription_id):
     end_date = end_of_business_year() if datetime.date.today() <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
-        return redirect('sub-detail')
+        return redirect('subscription-landing')
     renderdict = {
         'end_date': end_date,
     }
@@ -399,7 +399,7 @@ def leave_subscription(request, subscription_id):
     primary = subscription.primary_member.id == member.id
     can_leave = member.is_cooperation_member and not share_error and not primary
     if not can_leave:
-        return redirect('sub-detail')
+        return redirect('subscription-landing')
     if request.method == 'POST':
         member.leave_subscription(subscription)
         primary_member = subscription.primary_member
@@ -434,7 +434,7 @@ def change_nickname(request, subscription_id):
         if form.is_valid():
             subscription.nickname = form.cleaned_data['nickname']
             subscription.save()
-            return redirect('sub-detail-id', subscription_id=subscription_id)
+            return redirect('subscription-single', subscription_id=subscription_id)
     else:
         form = NicknameForm()
     renderdict = {

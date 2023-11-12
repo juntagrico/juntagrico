@@ -77,7 +77,7 @@ class Member(JuntagricoBaseModel):
     def active_shares(self):
         """ :return: shares that have been paid by member and not cancelled AND paid back yet
         """
-        return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
+        return self.share_set.active()
 
     def active_shares_for_date(self, date):
         date = date or datetime.date.today()
@@ -242,6 +242,28 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     def clean(self):
         return check_sub_membership_consistency(self)
+
+    def can_leave(self):
+        enough_shares_to_leave = self.subscription.share_overflow - self.member.share_set.usable().count() >= 0
+        return self.leave_date is None and self.member.is_cooperation_member and enough_shares_to_leave
+
+    def waiting(self, date=None):
+        return self.join_date is None or self.join_date > (date or datetime.date.today())
+
+    def active(self, date=None):
+        return not self.waiting(date) and not self.left(date)
+
+    def leaves_before_end(self):
+        """ true, if member left or will leave subscription before the subscription ends or ended
+        """
+        return self.leave_date is not None and (self.subscription.deactivation_date is None
+                                                or self.leave_date < self.subscription.deactivation_date)
+
+    def left(self, date=None):
+        return self.leave_date is not None and self.leave_date <= (date or datetime.date.today())
+
+    def co_members(self):
+        return self.subscription.co_members(self.member)
 
     class Meta:
         unique_together = ('member', 'subscription')
