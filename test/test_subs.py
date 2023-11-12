@@ -42,20 +42,20 @@ class SubscriptionTests(JuntagricoTestCase):
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.nickname, test_nickname)
 
-    def testSizeChange(self):
+    def testPartOrder(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
-            self.assertGet(reverse('size-change', args=[self.sub.pk]))
+            self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
                 'amount[' + str(self.sub_type.pk) + ']': 0,
                 'amount[' + str(self.sub_type2.pk) + ']': 1
             }
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
+            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
             self.assertEqual(self.sub.future_parts.count(), 1)
             self.create_paid_share(self.member)
             self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data, code=302)
+            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
             self.assertEqual(self.sub.future_parts.count(), 1)
