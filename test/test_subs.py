@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from juntagrico.entity.share import Share
 from test.util.test import JuntagricoTestCase
 
 
@@ -66,7 +65,7 @@ class SubscriptionTests(JuntagricoTestCase):
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
             self.assertEqual(self.sub.future_parts.count(), 1)
-            Share.objects.create(**self.share_data)
+            self.create_paid_share(self.member)
             self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
             self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
@@ -75,7 +74,7 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testLeave(self):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
-        Share.objects.create(**self.get_share_data(self.member3))
+        self.create_paid_share(self.member3)
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
@@ -96,7 +95,7 @@ class SubscriptionTests(JuntagricoTestCase):
             'addr_location': self.member4.addr_location,
             'phone': self.member4.phone
         }
-        Share.objects.create(**self.get_share_data(self.member4))
+        self.create_paid_share(self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)

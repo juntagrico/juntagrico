@@ -8,7 +8,7 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['__str__', 'price', 'required_assignments',
                     'required_core_assignments', 'visible']
     exclude = ['trial']
-    search_fields = ['name', 'long_name,' 'size__name', 'size__long_name', 'size__product__name']
+    search_fields = ['name', 'long_name', 'size__name', 'size__long_name', 'size__product__name']
     autocomplete_fields = ['size']
 
     def get_exclude(self, request, obj=None):

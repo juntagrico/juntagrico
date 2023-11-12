@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from test.util.test import JuntagricoTestCase
 
@@ -15,9 +14,8 @@ class ListTests(JuntagricoTestCase):
         start = now - timedelta(days=10)
         end = now - timedelta(days=5)
         member = self.create_member('email@email.email')
-        share_data = self.get_share_data(member)
-        Share.objects.create(**share_data)
-        Share.objects.create(**share_data)
+        self.create_paid_share(member)
+        self.create_paid_share(member)
         sub_data = {'depot': self.depot,
                     'future_depot': None,
                     'activation_date': start,

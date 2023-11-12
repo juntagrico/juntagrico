@@ -1,6 +1,8 @@
 {% load juntagrico.config %}
 {% spaceless %}
+{% autoescape off %}
 {% block content %}{% endblock %}
+{% endautoescape %}
 {% endspaceless %}
 ============
 weitere Infos: http://{% config "server_url" %}

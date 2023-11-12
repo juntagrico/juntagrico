@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -297,6 +297,9 @@ def contact_member(request, member_id):
     '''
     member = request.user.member
     contact_member = get_object_or_404(Member, id=int(member_id))
+    if not contact_member.reachable_by_email and not request.user.is_staff and not contact_member.activityarea_set.exists():
+        raise Http404()
+
     is_sent = False
     back_url = request.META.get('HTTP_REFERER') or reverse('home')
 
@@ -354,7 +357,9 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
-    coop_member = member.is_cooperation_member
+    # considering unpaid shares as well, as they might have been paid but not yet updated in the system.
+    # Then IBAN is needed to pay it back.
+    coop_member = member.usable_shares_count > 0
     if coop_member:
         form_type = CoopMemberCancellationForm
     else:

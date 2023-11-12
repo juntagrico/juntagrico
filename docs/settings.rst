@@ -272,7 +272,7 @@ MEMBERSHIP_END_MONTH
     6
 
 MEMBERSHIP_END_NOTICE_PERIOD
-^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   The notice period in months a member needs to account for when cancelling the membership
 
   Type: Integer

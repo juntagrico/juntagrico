@@ -121,11 +121,6 @@ def cancel_extra_sub(extra):
 
 
 def cancel_share(share, now, end_date):
-    now = now or timezone.now().date()
-    end_date = end_date or next_membership_end_date()
-    if share.paid_date is None:
-        share.delete()
-    else:
-        share.cancelled_date = now
-        share.termination_date = end_date
-        share.save()
+    share.cancelled_date = share.cancelled_date or now or timezone.now().date()
+    share.termination_date = share.termination_date or end_date or next_membership_end_date()
+    share.save()

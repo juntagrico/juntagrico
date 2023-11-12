@@ -45,7 +45,7 @@ def subscription(request, subscription_id=None):
     if subscription_id is None:
         subscription = member.subscription_current
     else:
-        subscription = get_object_or_404(Subscription, id=subscription_id)
+        subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
         future_subscription = future_subscription and subscription != member.subscription_future
     end_date = end_of_next_business_year()
     renderdict = {}
@@ -350,8 +350,8 @@ def cancel_subscription(request, subscription_id):
 
 @login_required
 def leave_subscription(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
     member = request.user.member
+    subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
     asc = member.usable_shares_count
     share_error = subscription.share_overflow - asc < 0
     primary = subscription.primary_member.id == member.id

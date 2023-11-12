@@ -4,20 +4,23 @@ Theming
 Custom CSS
 ----------
 
-1. Add your custom CSS file e.g. ``{app}/static/css/{app}.css``
-2. Adjust the ``STYLES`` setting to point to that file: ``STYLES = {'static': ['css/{app}.css']}``
+If you create a new project, a custom css file is already installed.
+Otherwise you can install a custom css file using these steps:
 
-Note that the setting is specified without the ``{app}`` folder,
-as django will collect all static files into a single location.
+1. Add your custom CSS file e.g. ``{app}/static/{app}/css/customize.css``
+2. Adjust the ``STYLES`` setting to point to that file: ``STYLES = {'static': ['{app}/css/customize.css']}``
+
+Note that the setting is specified without the ``{app}/static/`` part in the path.
 
 Change the Logo
 ---------------
-In the custom CSS set your logo as the background image of the ``.juntagrico_logo`` element. e.g.:
+
+1. In the custom CSS set your logo as the background image of the ``.juntagrico_logo`` element. e.g.:
 
 .. code-block:: css
 
     .juntagrico_logo {
-        background: url(/static/img/logo-{app}.png) center center;
+        background: url(/static/{app}/img/logo.png) center center;
         background-size: contain;
         background-repeat: no-repeat;
         display: inline-block;
@@ -25,7 +28,7 @@ In the custom CSS set your logo as the background image of the ``.juntagrico_log
         height: 300px;
     }
 
-Then add the image file to ``{app}/static/img/logo-{app}.png`` or as specified in the css before.
+2. add the image file to ``{app}/static/{app}/img/logo.png`` as specified in the css before.
 
 Custom Templates
 ----------------

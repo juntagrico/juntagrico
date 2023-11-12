@@ -8,7 +8,7 @@ register = template.Library()
 
 @register.simple_tag
 def next_jobs(request):
-    return JobDao.upcomming_jobs_for_member(request.user.member)
+    return JobDao.upcoming_jobs_for_member(request.user.member)
 
 
 @register.simple_tag

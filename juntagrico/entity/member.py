@@ -147,7 +147,7 @@ class Member(JuntagricoBaseModel):
         return [sm.subscription for sm in
                 self.subscriptionmembership_set.filter(q_left_subscription())]
 
-    def join_subscription(self, subscription):
+    def join_subscription(self, subscription, primary=False):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         if sub_membership and sub_membership.leave_date:
             sub_membership.leave_date = None
@@ -155,6 +155,9 @@ class Member(JuntagricoBaseModel):
         else:
             join_date = None if subscription.waiting else timezone.now().date()
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
+        if primary:
+            subscription.primary_member = self
+            subscription.save()
 
     def leave_subscription(self, subscription, changedate=None):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
@@ -185,7 +188,7 @@ class Member(JuntagricoBaseModel):
         return '%s %s' % (self.first_name, self.last_name)
 
     def get_phone(self):
-        if self.mobile_phone != '':
+        if self.mobile_phone and self.mobile_phone.strip('0- '):
             return self.mobile_phone
         return self.phone
 

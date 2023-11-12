@@ -16,6 +16,7 @@ class AdminTests(JuntagricoTestCase):
     def testCopyJobForm(self):
         initial_count = RecuringJob.objects.all().count()
         data = {'type': self.job1.type.pk,
+                'time': '05:04:53',
                 'slots': '2',
                 'weekdays': ['1'],
                 'start_date': '26.07.2020',

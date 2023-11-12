@@ -1,14 +1,67 @@
 Release Notes
 =============
 
-dev
----
+1.5.8
+-----
+
+See https://github.com/juntagrico/juntagrico/releases/tag/1.5.8
+
+1.5.7
+-----
+
+Fixes
+^^^^^
+* Redirect to login page when opening versions page instead of returning a 500 error page
+* Fix memeber cancellation if memebr has cancelled but not paid back share(s)
+* Fix display of special characters in plain text emails
+* Signup call to db now in one transaction to prevent user creation without member creation
+* Fix typo in share certificate
+
+1.5.6
+-----
+
+Fixes
+^^^^^
+* Fix text readability of filter and management lists
+* Fix admin error on adding job without time without past jobs edit permission
+* Fix required assignment count for trial subs
+* Fix some typos
+
+Modified Templates
+^^^^^^^^^^^^^^^^^^
+* juntagrico/templates/cancelmembership.html
+
+1.5.5
+-----
 
 Features & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
-* Batch mailer sends mass emails in smaller batches.
+* Batch mailer sends mass emails in smaller batches
    * Set ``DEFAULT_MAILER = 'juntagrico.util.mailer.batch.Mailer'`` to enable the batch mailer
-   * The option ``juntagrico.util.defaultmailer.Mailer`` is deprecated, use ``juntagrico.util.mailer.default.Mailer`` instead.
+   * The option ``juntagrico.util.defaultmailer.Mailer`` is deprecated, use ``juntagrico.util.mailer.default.Mailer`` instead
+* Simplified overriding job status field in job list in frontend
+* Modify requirements.txt to allow early security updates
+
+Fixes
+^^^^^
+* Fix required assignment count for under year subscriptions
+* Handle unpaid shares correctly, during cancellation of membership
+* Show correct phone number in email notification on depot change
+* Use clearer language and descriptions in some places
+* Fixes in Django Admin
+    * Fix subscription validation in cases where member rejoins another subscription
+    * Fix mass copy of past jobs if admin can't edit past jobs
+    * Fix links to old subscriptions on member
+    * Fix subscription type and subscription size search
+    * Fix read-only admin view of one time job
+    * Fix autocomplete field search for job types
+    * Hide filter options in job type list, that admin doesn't have access to
+
+Modified Templates
+^^^^^^^^^^^^^^^^^^
+* manage_shares.html
+* snippets/snippet_jobs.html
+* snippets/snippet_subscription_change_extra_sub.html
 
 1.5.4
 -----

@@ -1,7 +1,7 @@
 import re
 from io import BytesIO
 
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
@@ -523,6 +523,7 @@ def assignments(request):
                                         'management_lists/assignments.html', request)
 
 
+@login_required
 def versions(request):
     versions = {'juntagrico': version}
     versions.update(addons.config.get_versions())

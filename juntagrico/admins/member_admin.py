@@ -7,8 +7,6 @@ from django.utils.translation import gettext as _
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.config import Config
-from juntagrico.dao.memberdao import MemberDao
-from juntagrico.entity.subs import Subscription
 
 
 class MemberAdmin(BaseAdmin):
@@ -29,21 +27,6 @@ class MemberAdmin(BaseAdmin):
         (_('Administration'), {'fields': ['notes', 'user']}),
     ]
     actions = ['impersonate_job']
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        request.GET = request.GET.copy()
-        name = request.GET.pop('qs_name', ['all'])[0]
-        subscription_id = request.GET.pop('sub_id', ['0'])[0]
-        if name == 'cs':
-            return MemberDao.members_for_create_subscription()
-        elif name == 'fs':
-            subscription = Subscription.objects.get(id=int(subscription_id))
-            return MemberDao.members_for_future_subscription(subscription)
-        elif name == 's':
-            subscription = Subscription.objects.get(id=int(subscription_id))
-            return MemberDao.members_for_subscription(subscription)
-        return queryset
 
     @admin.display(
         boolean=True,
@@ -71,7 +54,7 @@ class MemberAdmin(BaseAdmin):
 
     @admin.display(description=_('Alte {}').format(Config.vocabulary('subscription_pl')))
     def old_subscription_link(self, obj):
-        return self._get_multi_link(obj.subscriptions_old.all(), 'juntagrico_subscription_change') \
+        return self._get_multi_link(obj.subscriptions_old, 'juntagrico_subscription_change') \
             or _('Keine alten {}').format(Config.vocabulary('subscription_pl'))
 
     @staticmethod

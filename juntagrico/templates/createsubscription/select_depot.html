@@ -60,7 +60,7 @@
         {{ selected.name|json_script:'selected_depot' }}
     {% endif %}
     {{ depots.map_info|json_script:'depots' }}
-  <script type="text/javascript" src="{% static 'juntagrico/external/leaflet/leaflet.js' %}"></script>
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}"data-main="{% static 'juntagrico/js/initCreateSubscription.js' %}">
+    {% include 'snippets/scripts/leaflet.html' %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initCreateSubscription.js' %}">
      </script>
 {% endblock %}
