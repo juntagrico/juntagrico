@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+{% load static %}
 {% block page_title %}
     <h3>
         {{ job.type.get_name }}
@@ -14,7 +15,7 @@
     </h3>
 {% endblock %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
@@ -233,7 +234,7 @@
 {% endblock %}
 {% block scripts %}
     {{ job.type.location.map_info|json_script:'location_data' }}
-    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initJob.js">
+    {% include 'snippets/scripts/leaflet.html' %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initJob.js' %}">
     </script>
 {% endblock %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-21 10:37-0600\n"
+"POT-Creation-Date: 2023-11-12 02:10-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 #: juntagrico/entity/contact.py:40 juntagrico/templates/contact.html:6
 #: juntagrico/templates/contact_member.html:7
 #: juntagrico/templates/exports/snippets/snippet_depotlist_header.html:8
-#: juntagrico/templates/job.html:141
+#: juntagrico/templates/job.html:142
 #: juntagrico/templates/mails/member/job_reminder.txt:18
 #: juntagrico/templates/management_lists/canceledlist.html:20
 #: juntagrico/templates/management_lists/part_canceledlist.html:17
@@ -228,7 +228,7 @@ msgstr ""
 #: juntagrico/admins/subscription_admin.py:27
 #: juntagrico/admins/subscription_admin.py:33
 #: juntagrico/admins/subscription_admin.py:38
-#: juntagrico/templates/extra_change.html:25 juntagrico/templates/job.html:40
+#: juntagrico/templates/extra_change.html:25 juntagrico/templates/job.html:41
 #: juntagrico/templates/manage_shares.html:46
 #: juntagrico/templates/size_change.html:29
 #: juntagrico/templates/snippets/snippet_jobs.html:32
@@ -628,7 +628,7 @@ msgstr "Capacità"
 
 #: juntagrico/entity/depot.py:20 juntagrico/entity/jobs.py:118
 #: juntagrico/entity/location.py:21 juntagrico/entity/location.py:85
-#: juntagrico/entity/member.py:43 juntagrico/templates/job.html:96
+#: juntagrico/entity/member.py:43 juntagrico/templates/job.html:97
 #: juntagrico/templates/mails/member/depot_changed.txt:14
 #: juntagrico/templates/mails/member/job_canceled.txt:15
 #: juntagrico/templates/mails/member/job_reminder.txt:16
@@ -642,7 +642,7 @@ msgstr "Posto"
 #: juntagrico/entity/jobs.py:114 juntagrico/entity/location.py:23
 #: juntagrico/entity/subtypes.py:15 juntagrico/entity/subtypes.py:43
 #: juntagrico/entity/subtypes.py:76 juntagrico/templates/area.html:17
-#: juntagrico/templates/depot.html:45 juntagrico/templates/job.html:113
+#: juntagrico/templates/depot.html:45 juntagrico/templates/job.html:114
 #: juntagrico/templates/mails/member/depot_changed.txt:17
 msgid "Beschreibung"
 msgstr "Descrizione"
@@ -783,7 +783,7 @@ msgstr "Missioni"
 msgid "Unendlich Plätze"
 msgstr "Luoghi infiniti"
 
-#: juntagrico/entity/jobs.py:159 juntagrico/templates/job.html:23
+#: juntagrico/entity/jobs.py:159 juntagrico/templates/job.html:24
 msgid "Zeitpunkt"
 msgstr "Data"
 
@@ -2595,7 +2595,7 @@ msgstr "Se avete domande inviate un'e-mail a"
 msgid "Frage zu unbezahltem Anteilsschein"
 msgstr "Domanda sul certificato azionario non pagato"
 
-#: juntagrico/templates/job.html:61
+#: juntagrico/templates/job.html:62
 #, python-format
 msgid ""
 "Du erhälst für diesen Job das %(jm)s fachen an %(v_assignment_pl)s "
@@ -2603,75 +2603,75 @@ msgid ""
 msgstr ""
 "Per questo lavoro, vi verrà accreditato %(jm)s volte %(v_assignment_pl)s."
 
-#: juntagrico/templates/job.html:72
+#: juntagrico/templates/job.html:73
 #, python-format
 msgid "Du erhältst für diesen Event keine %(v_assignment_pl)s gutgeschrieben."
 msgstr "Non vi sarà accreditato %(v_assignment_pl)s per questo evento."
 
-#: juntagrico/templates/job.html:82
+#: juntagrico/templates/job.html:83
 #: juntagrico/templates/snippets/snippet_jobs.html:47
 msgid "Extras"
 msgstr "Extra"
 
-#: juntagrico/templates/job.html:103
+#: juntagrico/templates/job.html:104
 #, fuzzy
 #| msgid "wartend"
 msgid "Karte"
 msgstr "in attesa"
 
-#: juntagrico/templates/job.html:106
+#: juntagrico/templates/job.html:107
 #, fuzzy
 #| msgid "Beschreibung"
 msgid "Wegbeschreibung"
 msgstr "Descrizione"
 
-#: juntagrico/templates/job.html:125
+#: juntagrico/templates/job.html:126
 msgid "Kontaktieren"
 msgstr "Contatto"
 
-#: juntagrico/templates/job.html:133
+#: juntagrico/templates/job.html:134
 msgid "Allen eine Email senden"
 msgstr "Invia un'e-mail a tutti"
 
-#: juntagrico/templates/job.html:151
+#: juntagrico/templates/job.html:152
 msgid "Dabei sind"
 msgstr "Questi sono"
 
-#: juntagrico/templates/job.html:155
+#: juntagrico/templates/job.html:156
 msgid "Noch niemand"
 msgstr "Nessuno ancora"
 
-#: juntagrico/templates/job.html:178
+#: juntagrico/templates/job.html:179
 msgid "Ich trage mich ein"
 msgstr "Accedo"
 
-#: juntagrico/templates/job.html:181
+#: juntagrico/templates/job.html:182
 #, fuzzy
 #| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
 msgid "Möchtest du dich verbindlich für diesen Einsatz eintragen?"
 msgstr "Sei sicuro di volerti iscrivere a questo lavoro?"
 
-#: juntagrico/templates/job.html:189
+#: juntagrico/templates/job.html:190
 msgid "Unbegleitet"
 msgstr "Non accompagnato"
 
-#: juntagrico/templates/job.html:193
+#: juntagrico/templates/job.html:194
 msgid "Zu Zweit"
 msgstr "Noi due"
 
-#: juntagrico/templates/job.html:197
+#: juntagrico/templates/job.html:198
 msgid "Zu Dritt"
 msgstr "In tre"
 
-#: juntagrico/templates/job.html:201
+#: juntagrico/templates/job.html:202
 msgid "Zu Viert"
 msgstr "Quattro di noi"
 
-#: juntagrico/templates/job.html:205
+#: juntagrico/templates/job.html:206
 msgid "weitere Personen und ich"
 msgstr "altre persone e io"
 
-#: juntagrico/templates/job.html:226
+#: juntagrico/templates/job.html:227
 msgid "Bestätigen"
 msgstr "Confermare"
 

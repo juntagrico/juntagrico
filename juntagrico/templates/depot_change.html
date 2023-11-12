@@ -76,7 +76,7 @@
 {% block scripts %}
     {{ subscription.depot.name|json_script:'selected_depot' }}
     {{ depots.map_info|json_script:'depots' }}
-    <script type="text/javascript" src="{% static 'juntagrico/external/leaflet/leaflet.js' %}"></script>
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}"data-main="{% static 'juntagrico/js/initChangeDepot.js' %}">
+    {% include 'snippets/scripts/leaflet.html' %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initChangeDepot.js' %}">
     </script>
 {% endblock %}
