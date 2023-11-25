@@ -1,13 +1,14 @@
-Django~=4.0.8
-django-admin-sortable2~=2.1.4
+Django~=4.0.10
+django-admin-sortable2~=2.1.10
 django-crispy-forms~=1.14.0
-django-impersonate~=1.8.2
+django-impersonate~=1.9.1
 django-polymorphic~=3.1.0
 django-richtextfield~=1.6.1
-django-import-export~=3.2.0
-icalendar~=4.0.9
-reportlab==3.6.6 # rq.filter: !=3.6.8
-schwifty==2021.10.2
-xhtml2pdf==0.2.4 # rq.filter: !=0.2.5
-XlsxWriter==3.0.2
+django-import-export~=3.3.1
+icalendar~=5.0.0
+reportlab==3.6.13
+schwifty==2023.6.0
+xhtml2pdf==0.2.11
+XlsxWriter==3.1.4
 python-dateutil~=2.8.2
+fontawesomefree~=6.4.2

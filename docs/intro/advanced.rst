@@ -40,13 +40,16 @@ To enable the rich text editor you have to do the following:
 * Add the following setting
     .. code-block:: python
 
+        from juntagrico.util.settings import tinymce_lang
+
         DJRICHTEXTFIELD_CONFIG = {
-            'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
+            'js': ['juntagrico/external/tinymce/tinymce.min.js'],
             'init_template': 'djrichtextfield/init/tinymce.js',
             'settings': {
                 'menubar': False,
                 'plugins': 'link  lists',
-                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
+                'language': tinymce_lang(LANGUAGE_CODE)
             }
         }
 
