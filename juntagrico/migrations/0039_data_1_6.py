@@ -34,6 +34,12 @@ def set_tour(apps, schema_editor):
         d.tour = tour.objects.get_or_create(name=weekdays[d.delivery_date.weekday() + 1])[0]
         d.save()
 
+def mail_send_permissions_forward(apps, schema_editor):
+    pass
+
+def mail_send_permissions_backwards(apps, schema_editor):
+    pass
+
 
 class Migration(migrations.Migration):
 
@@ -45,4 +51,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(set_location_sort_order),
         migrations.RunPython(make_name_product_unique),
         migrations.RunPython(set_tour),
+        migrations.RunPython(mail_send_permissions_forward, mail_send_permissions_backwards),
     ]

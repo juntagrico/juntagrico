@@ -81,6 +81,7 @@
                     {% trans "Wähle mindestens eine der folgenden Gruppen" %}:
                 </div>
             </div>
+            {% if perms.juntagrico.can_email_all_with_sub %}
             <div class="form-group row">
                 <div class="offset-md-2 col-md-1">
                     <span class="switch switch-sm">
@@ -95,7 +96,8 @@
                     {% endblocktrans %}
                 </label>
             </div>
-            {% if enable_shares %}
+            {% endif %}
+            {% if enable_shares and perms.juntagrico.can_email_all_with_share %}
                 <div class="form-group row">
                     <div class=" offset-md-2 col-md-1">
                         <span class="switch switch-sm">
@@ -111,6 +113,7 @@
                     </label>
                 </div>
             {% endif %}
+            {% if perms.juntagrico.can_email_all_in_system %}
             <div class="form-group row">
                 <div class="offset-md-2 col-md-1">
                     <span class="switch switch-sm">
@@ -123,6 +126,8 @@
                     {% trans "Alle im System" %}
                 </label>
             </div>
+            {% endif %}
+            {% if perms.juntagrico.can_email_free_address_list %}
             <div class="form-group row">
                 <div class="offset-md-2 col-md-1">
                     <span class="switch switch-sm">
@@ -140,6 +145,7 @@
                     <input type="text" class="form-control" id="singleemail" name="singleemail"placeholder="{% trans "Nur an diese Email" %}" style="display:none"/>
                 </div>
             </div>
+            {% endif %}
         {% endif %}
         <div class="form-group row">
             <label for="subject" class="col-md-2">
