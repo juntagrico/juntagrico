@@ -6,7 +6,7 @@ from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminFor
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInlineWithShareCount
 from juntagrico.admins.inlines.subscription_part_inlines import SubscriptionPartInline
 from juntagrico.config import Config
-from juntagrico.resources.subscription import SubscriptionResource
+from juntagrico.resources.subscription import SubscriptionResource, SubscriptionPartResource
 
 
 class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
@@ -36,7 +36,7 @@ class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
         (_('Administration'), {'fields': ['notes']}),
     ]
 
-    resource_classes = [SubscriptionResource]
+    resource_classes = [SubscriptionResource, SubscriptionPartResource]
 
     @admin.display(description=_('Status'), ordering='activation_date')
     def text_state(self, instance):
