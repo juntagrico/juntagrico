@@ -9,7 +9,7 @@ Add Export
 ----------
 
 Exports are defined in a ``Resource`` class.
-Read the `documentation of django_import_export on how to define resources <https://django-import-export.readthedocs.io/en/stable/advanced_usage.html#customize-resource-options>`.
+Read the `documentation of django_import_export on how to define resources <https://django-import-export.readthedocs.io/en/stable/advanced_usage.html#customize-resource-options>`_.
 
 Example Resources
 ^^^^^^^^^^^^^^^^^
