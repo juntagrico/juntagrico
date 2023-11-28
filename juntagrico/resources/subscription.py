@@ -1,7 +1,7 @@
 from import_export.fields import Field
 from import_export.widgets import DecimalWidget
 
-from ..entity.subs import Subscription
+from ..entity.subs import Subscription, SubscriptionPart
 from ..config import Config
 from . import ModQuerysetModelResource, DateRangeResourceMixin
 
@@ -33,3 +33,18 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
         exclude = ('billable_ptr', 'polymorphic_ctype', 'future_depot', 'primary_member')
         export_order = ('id', 'content', 'status', 'nickname')
         name = Config.vocabulary('subscription_pl')
+
+
+class SubscriptionPartResource(ModQuerysetModelResource):
+    type_name = Field('type__name')
+    subscription_id = Field('subscription__pk')
+    is_extra = Field('type__size__product__is_extra')
+
+    def update_queryset(self, queryset):
+        return SubscriptionPart.objects.filter(subscription__in=queryset)
+
+    class Meta:
+        model = Subscription
+        fields = ('id', 'subscription_id', 'type_name', 'creation_date', 'activation_date', 'cancellation_date', 'deactivation_date', 'is_extra')
+        export_order = ('id', 'subscription_id')
+        name = Config.vocabulary('subscription') + '-Bestandteile'
