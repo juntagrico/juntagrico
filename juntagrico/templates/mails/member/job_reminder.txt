@@ -15,7 +15,7 @@ Am {{ jt }}-{{ jet }} findet dein {{ c_organisation_name }}-Arbeitseinsatz "{{ j
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 {% trans "Ort" %}:             {{ job.type.location }}
 {% trans "Teilnehmer" %}:      {{ job.participant_names }}
-{% trans "Kontakt" %}:         {{ job.contacts|join:"  " }}
+{% trans "Kontakt" %}:         {% for contact in job.contacts %}{{ contact }}{% if not forloop.last %}, {% endif %}{% endfor %}
 {% blocktrans trimmed %}
 Wir freuen uns, dich zu sehen und zählen auf dich!
 {% endblocktrans %}
