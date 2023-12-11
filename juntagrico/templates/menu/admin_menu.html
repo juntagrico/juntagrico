@@ -280,6 +280,8 @@
     {% for menu in l_admin_menus %}
         {% include menu %}
     {% endfor %}
+    {% block extend_admin_menu %}
+    {% endblock %}
     <li class="nav-item">
         <a class="nav-link" href="{% url 'versions' %}">
             {% trans "Version: " %}{% get_version %}
