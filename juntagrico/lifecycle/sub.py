@@ -29,6 +29,12 @@ def sub_pre_save(sender, instance, **kwargs):
 
 
 def handle_sub_activated(sender, instance, **kwargs):
+    if not instance.pk:
+        # if sub has not been saved yet django 4.1 throws an error.
+        # in django <= 4.0 the activation of parts failed silently
+        # reproducing this behaviour here.
+        # see https://github.com/juntagrico/juntagrico/pull/641
+        return
     activation_date = instance.activation_date or datetime.date.today()
     for member in instance.recipients:
         current_sub = member.subscription_current is not None
@@ -85,21 +91,28 @@ def check_sub_reactivation(instance):
 
 
 def check_sub_primary(instance):
-    pm_sub = instance.primary_member in instance.recipients
-    pm_form = instance.future_members and instance.primary_member in instance.future_members
-    if instance.primary_member is not None and not (pm_sub or pm_form):
-        raise ValidationError(
-            _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
-            code='invalid')
-    if instance.parts.count() > 0 and instance.future_parts.count() == 0 and instance.cancellation_date is None:
-        raise ValidationError(
-            _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
-              ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
-                Config.vocabulary('subscription')),
-            code='invalid')
+    if instance.primary_member is not None:
+        # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
+        pm_sub = instance.pk and instance.primary_member in instance.recipients
+        # this check works also for new instances, because future_members is populated with form data, if available
+        pm_form = instance.future_members and instance.primary_member in instance.future_members
+        if not (pm_sub or pm_form):
+            raise ValidationError(
+                _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
+                code='invalid')
+    if instance.pk:  # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
+        if instance.parts.count() > 0 and instance.future_parts.count() == 0 and instance.cancellation_date is None:
+            raise ValidationError(
+                _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
+                  ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
+                    Config.vocabulary('subscription')),
+                code='invalid')
 
 
 def check_children_dates(instance):
+    if not instance.pk:
+        # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
+        return
     reactivation_info = _(' Um die Aktivierung rückgängig zu machen oder in die Zukunft zu legen, ändere (bzw. leere) und speichere die Daten in dieser Reihenfolge:'
                           ' 1. Aktivierungsdaten der Bestandteile & Beitrittsdaten,'
                           ' 2. Aktivierungsdatum vom {0}').format(Config.vocabulary('subscription'))
