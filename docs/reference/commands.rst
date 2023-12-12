@@ -53,7 +53,7 @@ When changing the ``TIMEZONE`` setting on an existing installation,
 you will have to adapt the times of all existing jobs. This command helps you with that task.
 
 .. warning::
-No notification emails will be sent, when changing the job time with this command.
+    No notification emails will be sent, when changing the job time with this command.
 
 This command is also available to super users under the hidden url ``/command/shifttime``.
 

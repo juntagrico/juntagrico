@@ -40,13 +40,16 @@ To enable the rich text editor you have to do the following:
 * Add the following setting
     .. code-block:: python
 
+        from juntagrico.util.settings import tinymce_lang
+
         DJRICHTEXTFIELD_CONFIG = {
-            'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
+            'js': ['juntagrico/external/tinymce/tinymce.min.js'],
             'init_template': 'djrichtextfield/init/tinymce.js',
             'settings': {
                 'menubar': False,
                 'plugins': 'link  lists',
-                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
+                'language': tinymce_lang(LANGUAGE_CODE)
             }
         }
 
@@ -89,6 +92,9 @@ Roughly these are the steps to override a template:
    while preserving the folder structure.
 3. The project will now use your copy of the template instead of the original.
 
+.. Hint::
+    Some texts, e.g. of forms, do not appear in the template. To change these :ref:`see below <intro-modify-text-in-code>`
+
 
 .. _intro-custom-code:
 
@@ -117,3 +123,29 @@ i.e. in the ``ready`` method of your app config in ``apps.py`` in the main folde
             addons.config.register_user_menu('my_user_menu.html')
             # register other hooks
             # Add Monkey-Patches ..
+
+
+.. _intro-modify-text-in-code:
+
+Modifying Text in Code
+^^^^^^^^^^^^^^^^^^^^^^
+
+Some text is written directly into code instead of templates. These texts can be modified with :ref:`Custom Code <intro-custom-code>`.
+
+.. code-block:: python
+
+    def ready(self):
+        # import the form to patch
+        from juntagrico.forms import RegisterMemberForm
+        # modify text variable (check the form implementation to see if this is available)
+        RegisterMemberForm.text['accept_wo_docs']= 'I accept'
+        # modify field labels of a ModelForm
+        RegisterMemberForm.base_fields['phone'].label = 'Tel'
+        # modify the text in a submit button
+        old_init = RegisterMemberForm.__init__
+
+        def my_init(self, *args, **kwargs):
+            old_init(self, *args, **kwargs)
+            self.helper.layout[-1].fields[0].value = 'Go'
+
+        RegisterMemberForm.__init__ = my_init

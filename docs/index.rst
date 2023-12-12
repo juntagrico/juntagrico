@@ -28,6 +28,7 @@ It provides the basic functionality like
 
    reference/settings.rst
    reference/permissions.rst
+   reference/exports.rst
    reference/signals.rst
    reference/hooks.rst
    reference/commands.rst

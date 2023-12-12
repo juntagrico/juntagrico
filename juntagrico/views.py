@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -25,6 +25,7 @@ from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
+from juntagrico.signals import area_joined, area_left
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
@@ -213,9 +214,10 @@ def area_join(request, area_id):
     new_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     new_area.members.add(member)
+    area_joined.send(ActivityArea, area=new_area, member=member)
     adminnotification.member_joined_activityarea(new_area, member)
     new_area.save()
-    return HttpResponse('')
+    return HttpResponse()
 
 
 @login_required
@@ -223,9 +225,10 @@ def area_leave(request, area_id):
     old_area = get_object_or_404(ActivityArea, id=int(area_id))
     member = request.user.member
     old_area.members.remove(member)
+    area_left.send(ActivityArea, area=old_area, member=member)
     adminnotification.member_left_activityarea(old_area, member)
     old_area.save()
-    return HttpResponse('')
+    return HttpResponse()
 
 
 @login_required
@@ -297,6 +300,9 @@ def contact_member(request, member_id):
     '''
     member = request.user.member
     contact_member = get_object_or_404(Member, id=int(member_id))
+    if not contact_member.reachable_by_email and not request.user.is_staff and not contact_member.activityarea_set.exists():
+        raise Http404()
+
     is_sent = False
     back_url = request.META.get('HTTP_REFERER') or reverse('home')
 
