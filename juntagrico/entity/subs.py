@@ -86,13 +86,6 @@ class Subscription(Billable, SimpleStateModel):
         return self.parts.filter(~q_deactivated())
 
     @property
-    def part_change_date(self):
-        order_dates = list(self.future_parts.values_list('creation_date', flat=True).order_by('creation_date'))
-        cancel_dates = list(self.active_parts.values_list('cancellation_date', flat=True).order_by('cancellation_date'))
-        dates = order_dates + cancel_dates
-        return max([date for date in dates if date is not None])
-
-    @property
     def size(self):
         delimiter = Config.sub_overview_format('delimiter')
         sformat = Config.sub_overview_format('format')
@@ -117,9 +110,6 @@ class Subscription(Billable, SimpleStateModel):
     @staticmethod
     def calc_subscription_amount(parts, size):
         return parts.filter(type__size=size).count()
-
-    def future_amount_by_type(self, type):
-        return len(self.future_parts.filter(type__id=type))
 
     def subscription_amount(self, size):
         return self.calc_subscription_amount(self.active_parts, size)
@@ -202,9 +192,9 @@ class Subscription(Billable, SimpleStateModel):
     def memberships_for_state(self):
         member_active = ~Q(member__deactivation_date__isnull=False,
                            member__deactivation_date__lte=datetime.date.today())
-        if self.state == 'waiting':
+        if self.waiting:
             return self.subscriptionmembership_set.prefetch_related('member').filter(member_active)
-        elif self.state == 'inactive':
+        elif self.inactive:
             return self.subscriptionmembership_set.prefetch_related('member')
         else:
             return self.subscriptionmembership_set.filter(q_joined_subscription(),

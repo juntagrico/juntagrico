@@ -327,14 +327,15 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 4, str(_('HauptbezieherInMobile')))
     worksheet_s.write_string(0, 5, str(_('Weitere BezieherInnen')))
     worksheet_s.write_string(0, 6, str(_('Status')))
-    worksheet_s.write_string(0, 7, str(_('Depot')))
-    worksheet_s.write_string(0, 8, str(Config.vocabulary('assignment')))
-    worksheet_s.write_string(0, 9, str(_('{} soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 10, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 11, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 12, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 14, str(_('Preis')))
+    worksheet_s.write_string(0, 7, str(_('Kündigungsdatum')))
+    worksheet_s.write_string(0, 8, str(_('Depot')))
+    worksheet_s.write_string(0, 9, str(Config.vocabulary('assignment')))
+    worksheet_s.write_string(0, 10, str(_('{} soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 11, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 12, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 13, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 14, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 15, str(_('Preis')))
 
     subs = SubscriptionDao.all_subscritions().annotate_assignments_progress().select_related('primary_member')
 
@@ -352,6 +353,10 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
+        c_date = ''
+        if sub.cancellation_date:
+            c_date = sub.cancellation_date.strftime('%d/%m/%y')
+
         worksheet_s.write_string(row, 0, sub.size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
@@ -359,14 +364,15 @@ def excel_export_subscriptions(request):
         worksheet_s.write_string(row, 4, mobile)
         worksheet_s.write_string(row, 5, sub.other_recipients_names)
         worksheet_s.write_string(row, 6, sub.state_text)
-        worksheet_s.write_string(row, 7, sub.depot.name)
-        worksheet_s.write(row, 8, sub.assignment_count)
-        worksheet_s.write(row, 9, sub.required_assignments)
-        worksheet_s.write(row, 10, sub.assignments_progress)
-        worksheet_s.write(row, 11, sub.core_assignment_count)
-        worksheet_s.write(row, 12, sub.required_core_assignments)
-        worksheet_s.write(row, 13, sub.core_assignments_progress)
-        worksheet_s.write(row, 14, sub.price)
+        worksheet_s.write_string(row, 7, c_date)
+        worksheet_s.write_string(row, 8, sub.depot.name)
+        worksheet_s.write(row, 9, sub.assignment_count)
+        worksheet_s.write(row, 10, sub.required_assignments)
+        worksheet_s.write(row, 11, sub.assignments_progress)
+        worksheet_s.write(row, 12, sub.core_assignment_count)
+        worksheet_s.write(row, 13, sub.required_core_assignments)
+        worksheet_s.write(row, 14, sub.core_assignments_progress)
+        worksheet_s.write(row, 15, sub.price)
         row += 1
 
     workbook.close()

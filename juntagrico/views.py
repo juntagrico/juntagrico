@@ -377,8 +377,8 @@ def cancel_membership(request):
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future
-    future_active = f_sub is not None and (f_sub.state == 'active' or f_sub.state == 'waiting')
-    current_active = sub is not None and (sub.state == 'active' or sub.state == 'waiting')
+    future_active = f_sub is not None and (f_sub.active or f_sub.waiting)
+    current_active = sub is not None and (sub.active or sub.waiting)
     future = future_active and f_sub.share_overflow - asc < 0
     current = current_active and sub.share_overflow - asc < 0
     share_error = future or current
