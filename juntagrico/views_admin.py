@@ -8,9 +8,8 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as _, get_language
 from django.views.generic import FormView
 from xlsxwriter import Workbook
 
@@ -33,6 +32,7 @@ from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate, prefetch_for_list
 from juntagrico.util.pdf import return_pdf_http
+from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
 from juntagrico.view_decorators import any_permission_required
@@ -137,6 +137,7 @@ def my_mails_intern(request, mail_url, error_message=None):
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
+        'richtext_language': tinymce_lang(get_language()),
     }
     return render(request, 'mail_sender.html', renderdict)
 
@@ -326,14 +327,15 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 4, str(_('HauptbezieherInMobile')))
     worksheet_s.write_string(0, 5, str(_('Weitere BezieherInnen')))
     worksheet_s.write_string(0, 6, str(_('Status')))
-    worksheet_s.write_string(0, 7, str(_('Depot')))
-    worksheet_s.write_string(0, 8, str(Config.vocabulary('assignment')))
-    worksheet_s.write_string(0, 9, str(_('{} soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 10, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 11, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 12, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 14, str(_('Preis')))
+    worksheet_s.write_string(0, 7, str(_('Kündigungsdatum')))
+    worksheet_s.write_string(0, 8, str(_('Depot')))
+    worksheet_s.write_string(0, 9, str(Config.vocabulary('assignment')))
+    worksheet_s.write_string(0, 10, str(_('{} soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 11, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 12, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 13, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 14, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 15, str(_('Preis')))
 
     subs = SubscriptionDao.all_subscritions().annotate_assignments_progress().select_related('primary_member')
 
@@ -351,6 +353,10 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
+        c_date = ''
+        if sub.cancellation_date:
+            c_date = sub.cancellation_date.strftime('%d/%m/%y')
+
         worksheet_s.write_string(row, 0, sub.size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
@@ -358,14 +364,15 @@ def excel_export_subscriptions(request):
         worksheet_s.write_string(row, 4, mobile)
         worksheet_s.write_string(row, 5, sub.other_recipients_names)
         worksheet_s.write_string(row, 6, sub.state_text)
-        worksheet_s.write_string(row, 7, sub.depot.name)
-        worksheet_s.write(row, 8, sub.assignment_count)
-        worksheet_s.write(row, 9, sub.required_assignments)
-        worksheet_s.write(row, 10, sub.assignments_progress)
-        worksheet_s.write(row, 11, sub.core_assignment_count)
-        worksheet_s.write(row, 12, sub.required_core_assignments)
-        worksheet_s.write(row, 13, sub.core_assignments_progress)
-        worksheet_s.write(row, 14, sub.price)
+        worksheet_s.write_string(row, 7, c_date)
+        worksheet_s.write_string(row, 8, sub.depot.name)
+        worksheet_s.write(row, 9, sub.assignment_count)
+        worksheet_s.write(row, 10, sub.required_assignments)
+        worksheet_s.write(row, 11, sub.assignments_progress)
+        worksheet_s.write(row, 12, sub.core_assignment_count)
+        worksheet_s.write(row, 13, sub.required_core_assignments)
+        worksheet_s.write(row, 14, sub.core_assignments_progress)
+        worksheet_s.write(row, 15, sub.price)
         row += 1
 
     workbook.close()
@@ -500,10 +507,10 @@ def set_change_date(request):
         raise Http404
     raw_date = request.POST.get('date')
     try:
-        date = timezone.datetime.strptime(raw_date, '%m/%d/%Y').date()
+        date = datetime.datetime.fromisoformat(raw_date).date()
         request.session['changedate'] = date
     except ValueError:
-        return error_page(request, _('Bitte gib ein Datum im Format MM/TT/JJJJ ein.'))
+        return error_page(request, _('Bitte gib ein Datum im Format JJJJ-MM-TT ein.'))
     return return_to_previous_location(request)
 
 

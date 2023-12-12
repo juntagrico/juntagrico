@@ -105,6 +105,8 @@ class Member(JuntagricoBaseModel):
 
     @property
     def active_shares_count(self):
+        if self.pk is None:
+            return 0
         return self.active_shares.count()
 
     @property
@@ -119,6 +121,8 @@ class Member(JuntagricoBaseModel):
 
     @property
     def usable_shares_count(self):
+        if self.pk is None:
+            return 0
         return self.usable_shares.count()
 
     @property

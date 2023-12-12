@@ -103,20 +103,10 @@ def create_subscription_parts(subscription, selected_types, notify=False):
 
 
 def cancel_sub(subscription, end_date, message):
-    if subscription.activation_date is not None and subscription.cancellation_date is None:
-        subscription.cancel()
-        subscription.end_date = end_date
-        subscription.save()
-        adminnotification.subscription_canceled(subscription, message)
-    elif subscription.activation_date is None and subscription.deactivation_date is None:
-        subscription.delete()
-
-
-def cancel_extra_sub(extra):
-    if extra.activation_date is not None:
-        extra.cancel()
-    elif extra.activation_date is None and extra.deactivation_date is None:
-        extra.delete()
+    subscription.cancel()
+    subscription.end_date = end_date
+    subscription.save()
+    adminnotification.subscription_canceled(subscription, message)
 
 
 def cancel_share(share, date, end_date):

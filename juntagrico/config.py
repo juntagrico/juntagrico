@@ -168,7 +168,7 @@ class Config:
         }
     )
     favicon = _get_setting('FAVICON', fallback_static('juntagrico/img/favicon.ico'))
-    bootstrap = _get_setting('BOOTSTRAP', fallback_static('juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css'))
+    bootstrap = _get_setting('BOOTSTRAP', fallback_static('juntagrico/external/bootstrap/css/bootstrap.min.css'))
     styles = _get_setting_with_key('STYLES', {'template': '', 'static': []})
     scripts = _get_setting_with_key('SCRIPTS', {'template': '', 'static': []})
     images = _get_setting_with_key(
