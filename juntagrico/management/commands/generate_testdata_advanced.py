@@ -1,7 +1,6 @@
 ﻿import math
 import random
 import itertools
-import datetime
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -144,11 +143,12 @@ class Command(BaseCommand):
 
             subprod_field = {'name': product}
             sub_product, created = SubscriptionProduct.objects.get_or_create(**subprod_field)
-            print("generated", sub_product.name)
-            subsize_fields = {'name': random.choice(['Tasche', 'Portion', '500g']), 'units': size,
-                            'depot_list': True,
-                            'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
-                            'product': sub_product}
+            subsize_fields = {
+                'name': random.choice(['Tasche', 'Portion', '500g']), 'units': size,
+                'depot_list': True,
+                'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
+                'product': sub_product
+            }
             size, _ = SubscriptionSize.objects.get_or_create(**subsize_fields)
 
             subtype_fields = {
@@ -179,7 +179,6 @@ class Command(BaseCommand):
             self.generate_subscription(main_member, co_member, depot, sub_types)
             for _ in range(1, options['subs_per_depot']):
                 random_sub_types = random.choices(sub_types, k=(len(sub_types)+1)//2)
-                print("generate random abos", ", ".join([st.name for st in random_sub_types]))
                 self.generate_depot_sub(depot, options['sub_shares'], random_sub_types)
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
