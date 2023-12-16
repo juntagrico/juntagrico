@@ -16,7 +16,7 @@ class DeliveryDao:
         if subscription is not None:
             member_subscription_size_ids = []
             for part in subscription.active_parts.all():
-                member_subscription_size_ids.append(part.type.size)
+                member_subscription_size_ids.extend(part.type.sizes.all())
             member_subscription_weekday = (subscription.depot.weekday % 7) + 1
             return DeliveryDao.all_deliveries_order_by_delivery_date_desc().\
                 filter(delivery_date__week_day=member_subscription_weekday).\

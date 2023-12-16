@@ -147,12 +147,13 @@ class Command(BaseCommand):
             'required_assignments': options['sub_assignments'],
             'price': options['sub_prize'],
             'description': '',
-            'size': size
         }
         type, _ = SubscriptionType.objects.get_or_create(
             name=subtype_fields['name'],
             defaults=subtype_fields
         )
+        if not type.sizes.all():
+            type.sizes.set([size])
 
         for i in range(0, options['depots']):
             props = self.get_random_props()

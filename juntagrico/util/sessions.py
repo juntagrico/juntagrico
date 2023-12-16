@@ -97,7 +97,12 @@ class CSSessionObject(SessionObject):
         return sum([getattr(co_member, 'new_shares', 0) for co_member in self.co_members])
 
     def subscription_size(self):
-        return sum([sub_type.size.units * (amount or 0) for sub_type, amount in self.subscriptions.items()])
+        # This is not very useful, right ? Adding apples and oranges
+        return sum([
+            size.units * (amount or 0)
+            for sub_type, amount in self.subscriptions.items()
+            for size in sub_type.sizes.all()
+            ])
 
     def required_shares(self):
         return sum([sub_type.shares * (amount or 0) for sub_type, amount in self.subscriptions.items()])

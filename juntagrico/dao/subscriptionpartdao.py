@@ -15,29 +15,29 @@ class SubscriptionPartDao:
 
     @staticmethod
     def all_active_extrasubscritions():
-        return SubscriptionPart.objects.filter(type__size__product__is_extra=True).filter(q_isactive())
+        return SubscriptionPart.objects.filter(type__sizes__product__is_extra=True).filter(q_isactive())
 
     @staticmethod
     def future_extrasubscriptions():
-        return SubscriptionPart.objects.filter(type__size__product__is_extra=True)\
+        return SubscriptionPart.objects.filter(type__sizes__product__is_extra=True)\
             .filter(~q_cancelled() & ~q_deactivated()).filter(deactivation_date=None)
 
     @staticmethod
     def waiting_extra_subs():
-        return SubscriptionPart.objects.filter(type__size__product__is_extra=True).filter(~q_activated())
+        return SubscriptionPart.objects.filter(type__sizes__product__is_extra=True).filter(~q_activated())
 
     @staticmethod
     def canceled_extra_subs():
-        return SubscriptionPart.objects.filter(type__size__product__is_extra=True).filter(q_cancelled() & ~q_deactivated())
+        return SubscriptionPart.objects.filter(type__sizes__product__is_extra=True).filter(q_cancelled() & ~q_deactivated())
 
     @staticmethod
     def waiting_parts_for_active_subscriptions():
-        return SubscriptionPart.objects.filter(type__size__product__is_extra=False).filter(~q_activated()).filter(
+        return SubscriptionPart.objects.filter(type__sizes__product__is_extra=False).filter(~q_activated()).filter(
             subscription__in=SubscriptionDao.all_active_subscritions().filter(~q_cancelled())
         )
 
     @staticmethod
     def canceled_parts_for_active_subscriptions():
-        return SubscriptionPart.objects.filter(type__size__product__is_extra=False).filter(q_cancelled() & ~q_deactivated()).filter(
+        return SubscriptionPart.objects.filter(type__sizes__product__is_extra=False).filter(q_cancelled() & ~q_deactivated()).filter(
             subscription__in=SubscriptionDao.all_active_subscritions().filter(~q_cancelled())
         )

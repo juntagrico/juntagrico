@@ -36,7 +36,7 @@
                 {% for part in subscription.active_and_future_parts.all %}
                     <tr>
                         <td>
-                            {{ part.type.size.name }}
+                            {{ part.type.name }}
                         </td>
                         <td>
                             {{ part.state_text }}

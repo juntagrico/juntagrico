@@ -290,10 +290,9 @@ class JuntagricoTestCase(TestCase):
         JuntagricoTestCase._count_sub_types += 1
         name = kwargs.get('name', None)
         long_name = kwargs.get('long_name', 'sub_type_long_name')
-        return SubscriptionType.objects.create(
+        sub_type = SubscriptionType.objects.create(
             name=name or 'sub_type_name' + str(JuntagricoTestCase._count_sub_types),
             long_name=long_name,
-            size=size,
             shares=shares,
             visible=visible,
             required_assignments=required_assignments,
@@ -301,6 +300,8 @@ class JuntagricoTestCase(TestCase):
             price=price,
             **kwargs
         )
+        sub_type.sizes.set([size])
+        return sub_type
 
     def set_up_sub_types(self):
         """
@@ -382,13 +383,13 @@ class JuntagricoTestCase(TestCase):
         extrasub_type_data = {
             'name': 'extrasub_type_name',
             'long_name': 'sub_type_long_name',
-            'size': self.extrasub_size,
             'shares': 0,
             'visible': True,
             'required_assignments': 10,
             'price': 1000,
             'description': 'sub_type_desc'}
         self.extrasub_type = SubscriptionType.objects.create(**extrasub_type_data)
+        self.extrasub_type.sizes.set([self.extrasub_size])
 
     def set_up_extra_sub(self):
         '''

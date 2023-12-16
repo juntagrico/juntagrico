@@ -60,8 +60,8 @@ class SubscriptionType(JuntagricoBaseModel):
     '''
     name = models.CharField(_('Name'), max_length=100)
     long_name = models.CharField(_('Langer Name'), max_length=100, blank=True)
-    size = models.ForeignKey('SubscriptionSize', on_delete=models.PROTECT,
-                             related_name='types', verbose_name=_('Grösse'))
+    sizes = models.ManyToManyField('SubscriptionSize',
+                                related_name='types', verbose_name=_('Grösse'))
     shares = models.PositiveIntegerField(
         _('Anz benötigter Anteilsscheine'), default=0)
     required_assignments = models.PositiveIntegerField(
@@ -77,6 +77,19 @@ class SubscriptionType(JuntagricoBaseModel):
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
 
     @property
+    def is_extra(self):
+        # all or any ?
+        # Or even better, move the field from product to SubscriptionType,
+        # as a subscription can be extra and not the product
+        return all([size.product.is_extra for size in self.sizes.all()])
+    
+    @property
+    def size(self):
+        # TODO show deprecation warning
+        # added this field to cope with code still using the SubscriptionType.size
+        return self.sizes.all()[0]
+
+    @property
     def has_periods(self):
         return self.periods.count() > 0
 
@@ -90,13 +103,22 @@ class SubscriptionType(JuntagricoBaseModel):
 
     @property
     def display_name(self):
-        name_parts = [self.size.product.name, self.size.name]
+        name_parts = []
+        all_sizes = self.sizes.all()
+        if len(all_sizes) == 1:
+            size = all_sizes[0]
+            name_parts.extend([size.product.name, size.name])
         if self.long_name:
             name_parts.append(self.long_name)
         return '-'.join(name_parts)
 
     def __str__(self):
-        return self.name + ' - ' + _('Grösse') + ': ' + self.size.name + ' - ' + _('Produkt') + ': ' + self.size.product.name
+        name_parts = [self.name]
+        all_sizes = self.sizes.all()
+        if len(all_sizes) == 1:
+            size = all_sizes[0]
+            name_parts.extend(["{}: {}".format(_('Grösse'), size.name), "{}: {}".format(_('Produkt'), size.product.name)])
+        return ' - '.join(name_parts)
 
     def __lt__(self, other):
         return self.pk < other.pk

@@ -50,14 +50,15 @@ class Subscription(Billable, SimpleStateModel):
         # building multi-dimensional dictionary [product_name][size_long_name][(type_name, type_long_name)] -> amount
         result = {}
         for part in parts.all():
-            product_name = part.type.size.product.name
-            product = result.get(product_name, {})
-            size_name = part.type.size.long_name
-            size = product.get(size_name, {})
-            type_name = (part.type.name, part.type.long_name)
-            size[type_name] = 1 + size.get(type_name, 0)
-            product[size_name] = size
-            result[product_name] = product
+            for size in part.type.sizes.all():
+                product_name = size.product.name
+                product = result.setdefault(product_name, {})
+
+                size_name = size.long_name
+                size_dict = product.get(size_name, {})
+                type_name = (part.type.name, part.type.long_name)
+                size_dict[type_name] = 1 + size_dict.get(type_name, 0)
+                product[size_name] = size_dict
         return result
 
     @property
@@ -98,23 +99,26 @@ class Subscription(Billable, SimpleStateModel):
         sformat = Config.sub_overview_format('format')
         sizes = {}
         for part in self.active_parts.all() or self.future_parts.all():
-            sizes[part.type] = part.type.size.units + sizes.get(part.type, 0)
+            for size in part.type.sizes.all():
+                key = (part.type.name, size.product.name, size.name)
+                sizes[key] = sizes.get(key, 0) + size.units
         return delimiter.join(
             [sformat.format(
-                product=key.size.product.name,
-                size=key.size.name,
-                type=key.name,
+                product=product_name,
+                size=size_name,
+                type=type_name,
                 amount=value,
-            ) for key, value in sizes.items()]
+            ) for (type_name, product_name, size_name), value in sizes.items()]
         )
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
+        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(
+            type__sizes__product__is_extra=False).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
-        return parts.filter(type__size=size).count()
+        return parts.filter(type__sizes__in=[size]).count()
 
     def future_amount_by_type(self, type):
         return len(self.future_parts.filter(type__id=type))
@@ -226,19 +230,20 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.active_parts.filter(type__size__product__is_extra=True)
+        return self.active_parts.filter(type__sizes__product__is_extra=True)
 
     @property
     def future_extra_subscriptions(self):
-        return self.future_parts.filter(type__size__product__is_extra=True)
+        return self.future_parts.filter(type__sizes__product__is_extra=True)
 
     @property
     def active_and_future_extra_subscriptions(self):
-        return self.active_and_future_parts.filter(type__size__product__is_extra=True)
+        return self.active_and_future_parts.filter(type__sizes__product__is_extra=True)
 
     @property
     def extrasubscriptions_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
+        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(
+            type__sizes__product__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
@@ -271,7 +276,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @property
     def is_extra(self):
-        return self.type.size.product.is_extra
+        return self.type.is_extra
 
     def get_required_assignments(self, core=False):
         if not self.activation_date:
