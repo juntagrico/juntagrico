@@ -24,7 +24,7 @@ def generate_ical_for_job(job):
     # By giving it a UID the calendar will (hopefully) replace previous versions of this event.
     e.add(name='UID', value=f'{repr(job)}@{Config.server_url()}')
     e['DTSTAMP'] = vDatetime(timezone.now()).to_ical()
-    e.add(name='NAME', value=Config.organisation_name() + ' ' + _('Einsatz') + ': ' + job.type.get_name)
+    e.add(name='SUMMARY', value=Config.organisation_name() + ' ' + _('Einsatz') + ': ' + job.type.get_name)
     e.add(name='LOCATION', value=job.type.location)
     e.add(name='DESCRIPTION', value=job.type.description)
     e['DTSTART'] = vDatetime(job.start_time()).to_ical()
