@@ -125,8 +125,8 @@ class Command(BaseCommand):
         self.generate_subscription(main_member, co_member, depot, sub_types)
 
     def add_arguments(self, parser):
-        parser.add_argument('--products', type=str, help='Products to use', default=["Gemüse"], nargs="+")
-        parser.add_argument('--sub-size', type=int, help='Size of subscription', default=[1], nargs="+")
+        parser.add_argument('--products', type=str, help='Products[/size1,size2,...] to use', default=["Gemüse/1"], nargs="+")
+        parser.add_argument('--sub-size', type=int, help='Default size of subscription', default=1)
         parser.add_argument('--sub-shares', type=int, help='Required shares per subscription', default=2)
         parser.add_argument('--sub-assignments', type=int, help='Required assignment per subscription', default=6)
         parser.add_argument('--sub-price', type=int, help='Price of suscription', default=250)
@@ -138,33 +138,40 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         sub_types = []
-        for product, size in itertools.zip_longest(options['products'], options['sub_size']):
-            size = size or 1
+        default_size = options['sub_size']
+        for product_sizes in options['products']:
+            product_sizes_parts = product_sizes.split('/')
+            product = product_sizes_parts[0]
+            if product_sizes_parts[1:]:
+                product_sizes = map(int, product_sizes_parts[1].split(','))
+            else:
+                product_sizes = [default_size]
 
             subprod_field = {'name': product}
             sub_product, created = SubscriptionProduct.objects.get_or_create(**subprod_field)
-            subsize_fields = {
-                'name': random.choice(['Tasche', 'Portion', '500g']), 'units': size,
-                'depot_list': True,
-                'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
-                'product': sub_product
-            }
-            size, _ = SubscriptionSize.objects.get_or_create(**subsize_fields)
+            for size in product_sizes:
+                subsize_fields = {
+                    'name': random.choice(['Tasche', 'Portion', '500g']), 'units': size,
+                    'depot_list': True,
+                    'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
+                    'product': sub_product
+                }
+                size, _ = SubscriptionSize.objects.get_or_create(**subsize_fields)
 
-            subtype_fields = {
-                'name': 'Abo {}'.format(product),
-                'long_name': 'Ganz Normales {} Abo'.format(product),
-                'shares': options['sub_shares'],
-                'required_assignments': options['sub_assignments'],
-                'price': options['sub_price'],
-                'description': '',
-                'size': size
-            }
-            sub_type, _ = SubscriptionType.objects.get_or_create(
-                name=subtype_fields['name'],
-                defaults=subtype_fields
-            )
-            sub_types.append(sub_type)
+                subtype_fields = {
+                    'name': 'Abo {}'.format(product),
+                    'long_name': 'Ganz Normales {} Abo'.format(product),
+                    'shares': options['sub_shares'],
+                    'required_assignments': options['sub_assignments'],
+                    'price': options['sub_price'],
+                    'description': '',
+                    'size': size
+                }
+                sub_type, _ = SubscriptionType.objects.get_or_create(
+                    name=subtype_fields['name'],
+                    defaults=subtype_fields
+                )
+                sub_types.append(sub_type)
 
         for i in range(0, options['depots']):
             props = self.get_random_props()
