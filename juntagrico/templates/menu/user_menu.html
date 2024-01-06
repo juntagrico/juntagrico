@@ -60,6 +60,8 @@
     {% for user_menu in l_user_menus %}
         {% include user_menu %}
     {% endfor %}
+    {% block extend_user_menu %}
+    {% endblock %}
     <li class="separator">
     </li>
     <li class="nav-item main-menu-small">
