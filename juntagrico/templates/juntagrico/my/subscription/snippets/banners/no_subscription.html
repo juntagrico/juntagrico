@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% vocabulary "subscription" as v_subscription %}
+<div class="alert alert-danger">
+    {% blocktrans %}Du hast kein/e/n {{ v_subscription }}.{% endblocktrans %}
+    {% include 'juntagrico/my/subscription/snippets/buttons/create_subscription.html' %}
+</div>

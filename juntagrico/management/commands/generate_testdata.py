@@ -13,6 +13,7 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 
 
 class Command(BaseCommand):
+    help = "Generate test data for development environments. DO NOT USE IN PRODUCTION."
 
     # entry point used by manage.py
     def handle(self, *args, **options):

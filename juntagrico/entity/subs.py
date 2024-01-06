@@ -1,10 +1,10 @@
-from datetime import timedelta
+import datetime
 
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q
-from django.utils import timezone
+from django.db.models import Q, F, Sum
 from django.utils.translation import gettext as _
+from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
@@ -12,10 +12,13 @@ from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
+from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
+from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
+from juntagrico.mailer import membernotification
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
-from juntagrico.util.temporal import start_of_next_business_year, start_of_business_year, end_of_business_year
+from juntagrico.util.temporal import start_of_next_business_year
 
 
 class Subscription(Billable, SimpleStateModel):
@@ -23,7 +26,7 @@ class Subscription(Billable, SimpleStateModel):
     One Subscription that may be shared among several people.
     '''
     depot = models.ForeignKey(
-        'Depot', on_delete=models.PROTECT, related_name='subscription_set')
+        Depot, on_delete=models.PROTECT, related_name='subscription_set')
     future_depot = models.ForeignKey(
         Depot, on_delete=models.PROTECT, related_name='future_subscription_set', null=True, blank=True,
         verbose_name=_('Zukünftiges {}').format(Config.vocabulary('depot')),
@@ -39,8 +42,10 @@ class Subscription(Billable, SimpleStateModel):
     end_date = models.DateField(
         _('Gewünschtes Enddatum'), null=True, blank=True)
     notes = models.TextField(
-        _('Notizen'), max_length=1000, blank=True,
+        _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+
+    objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()
 
     def __str__(self):
         return _('Abo ({1}) {0}').format(self.size, self.id)
@@ -81,31 +86,21 @@ class Subscription(Billable, SimpleStateModel):
         return self.parts.filter(~q_deactivated())
 
     @property
-    def parts_in_business_year(self):
-        return self.parts.filter(Q(activation_date__isnull=False, activation_date__lte=end_of_business_year()) &
-                                 ~Q(deactivation_date__isnull=False, deactivation_date__lt=start_of_business_year()))
-
-    @property
-    def part_change_date(self):
-        order_dates = list(self.future_parts.values_list('creation_date', flat=True).order_by('creation_date'))
-        cancel_dates = list(self.active_parts.values_list('cancellation_date', flat=True).order_by('cancellation_date'))
-        dates = order_dates + cancel_dates
-        return max([date for date in dates if date is not None])
-
-    @property
     def size(self):
         delimiter = Config.sub_overview_format('delimiter')
         sformat = Config.sub_overview_format('format')
-        sizes = {}
-        for part in self.active_parts.all() or self.future_parts.all():
-            sizes[part.type] = part.type.size.units + sizes.get(part.type, 0)
+        types = SubscriptionType.objects.filter(subscription_parts__in=self.active_and_future_parts).annotate(
+            size_sum=Sum('size__units'),
+            size_name=F('size__name'),
+            product_name=F('size__product__name')
+        )
         return delimiter.join(
             [sformat.format(
-                product=key.size.product.name,
-                size=key.size.name,
-                type=key.name,
-                amount=value,
-            ) for key, value in sizes.items()]
+                product=t.product_name,
+                size=t.size_name,
+                type=t.name,
+                amount=t.size_sum,
+            ) for t in types]
         )
 
     @property
@@ -116,25 +111,11 @@ class Subscription(Billable, SimpleStateModel):
     def calc_subscription_amount(parts, size):
         return parts.filter(type__size=size).count()
 
-    def future_amount_by_type(self, type):
-        return len(self.future_parts.filter(type__id=type))
-
     def subscription_amount(self, size):
         return self.calc_subscription_amount(self.active_parts, size)
 
     def subscription_amount_future(self, size):
         return self.calc_subscription_amount(self.future_parts, size)
-
-    @property
-    def required_assignments(self):
-        return self.get_required_assignments()
-
-    @property
-    def required_core_assignments(self):
-        return self.get_required_assignments(True)
-
-    def get_required_assignments(self, core=False):
-        return round(sum([part.get_required_assignments(core) for part in self.parts_in_business_year.select_related('type')]))
 
     @property
     def price(self):
@@ -209,11 +190,11 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def memberships_for_state(self):
-        now = timezone.now().date()
-        member_active = ~Q(member__deactivation_date__isnull=False, member__deactivation_date__lte=now)
-        if self.state == 'waiting':
+        member_active = ~Q(member__deactivation_date__isnull=False,
+                           member__deactivation_date__lte=datetime.date.today())
+        if self.waiting:
             return self.subscriptionmembership_set.prefetch_related('member').filter(member_active)
-        elif self.state == 'inactive':
+        elif self.inactive:
             return self.subscriptionmembership_set.prefetch_related('member')
         else:
             return self.subscriptionmembership_set.filter(q_joined_subscription(),
@@ -247,6 +228,16 @@ class Subscription(Billable, SimpleStateModel):
     def next_size_change_date():
         return start_of_next_business_year()
 
+    def activate_future_depot(self):
+        if self.future_depot is not None:
+            self.depot = self.future_depot
+            self.future_depot = None
+            self.save()
+            emails = []
+            for member in self.recipients:
+                emails.append(member.email)
+            membernotification.depot_changed(emails, self.depot)
+
     def clean(self):
         check_sub_consistency(self)
 
@@ -256,7 +247,9 @@ class Subscription(Billable, SimpleStateModel):
         verbose_name_plural = Config.vocabulary('subscription_pl')
         permissions = (
             ('can_filter_subscriptions', _('Benutzer kann {0} filtern').format(Config.vocabulary('subscription'))),
-            ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),)
+            ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),
+            ('notified_on_depot_change', _('Wird bei {0}-Änderung informiert').format(Config.vocabulary('depot'))),
+        )
 
 
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
@@ -265,6 +258,21 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     type = models.ForeignKey('SubscriptionType', related_name='subscription_parts', on_delete=models.PROTECT,
                              verbose_name=_('{0}-Typ').format(Config.vocabulary('subscription')))
 
+    objects = SubscriptionPartQuerySet.as_manager()
+
+    def __str__(self):
+        try:
+            return Config.sub_overview_format('part_format').format(
+                product=self.type.size.product.name,
+                size=self.type.size.name,
+                size_long=self.type.size.long_name,
+                type=self.type.name,
+                type_long=self.type.long_name,
+                price=self.type.price
+            )
+        except KeyError as k:
+            return _(f'Fehler in der Einstellung SUB_OVERVIEW_FORMAT.part_format. {k} kann nicht aufgelöst werden.')
+
     @property
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
@@ -272,23 +280,6 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     @property
     def is_extra(self):
         return self.type.size.product.is_extra
-
-    def get_required_assignments(self, core=False):
-        if not self.activation_date:
-            return 0
-        nominal_required = self.type.required_core_assignments if core else self.type.required_assignments
-        # since when part is active in current business year
-        start_business = start_of_business_year()
-        start = max(self.activation_date, start_business)
-        # when (if at all) part will be inactive in current business year
-        end_business = end = end_of_business_year()
-        if self.deactivation_date:
-            end = min(self.deactivation_date, end_business)
-        elif self.type.trial_days:
-            end = min(self.activation_date + timedelta(self.type.trial_days - 1), end_business)
-        # percentage of business year (or trial period), where part is active. Do not round here.
-        period = timedelta(self.type.trial_days) or (end_business - start_business + timedelta(1))
-        return nominal_required * (end - start + timedelta(1)) / period
 
     def clean(self):
         check_sub_part_consistency(self)

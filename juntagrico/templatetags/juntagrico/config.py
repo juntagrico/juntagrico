@@ -41,6 +41,11 @@ def get_config_classes():
 
 
 @register.simple_tag
+def contacts(key):
+    return Config.contacts(key)
+
+
+@register.simple_tag
 def scripts(key):
     return Config.scripts(key)
 

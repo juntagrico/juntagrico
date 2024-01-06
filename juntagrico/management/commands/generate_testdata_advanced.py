@@ -16,6 +16,7 @@ fake = Faker()
 
 
 class Command(BaseCommand):
+    help = "Generate more complex test data for development environments. DO NOT USE IN PRODUCTION."
     members = []
 
     def generate_member_dict(self, props):
