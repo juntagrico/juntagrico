@@ -349,7 +349,7 @@ class AddCoMemberForm(CoMemberBaseForm):
             *fields,
             FormActions(
                 self.get_submit_button(),
-                LinkButton(_("Abbrechen"), reverse("sub-detail")),
+                LinkButton(_("Abbrechen"), reverse("subscription-landing")),
             )
         )
 
@@ -458,7 +458,8 @@ class SubscriptionPartBaseForm(Form):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         size_container.append(type_field)
                 product_container.append(size_container)
-            containers.append(product_container)
+            if len(product_container):
+                containers.append(product_container)
         return containers
 
     def _get_initial(self, subscription_type):

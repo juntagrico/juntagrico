@@ -9,8 +9,8 @@ from test.util.test import JuntagricoTestCase
 class SubscriptionTests(JuntagricoTestCase):
 
     def testSub(self):
-        self.assertGet(reverse('sub-detail'))
-        self.assertGet(reverse('sub-detail-id', args=[self.sub.pk]))
+        self.assertGet(reverse('subscription-landing'), 302)
+        self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
 
     def testSubActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
@@ -44,22 +44,22 @@ class SubscriptionTests(JuntagricoTestCase):
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.nickname, test_nickname)
 
-    def testSizeChange(self):
+    def testPartOrder(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
             # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
-            self.assertGet(reverse('size-change', args=[self.sub.pk]))
+            self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
                 'amount[' + str(self.sub_type.pk) + ']': 0,
                 'amount[' + str(self.sub_type2.pk) + ']': 1
             }
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
+            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
             self.assertEqual(self.sub.future_parts.count(), 1)
             # Add a share and cancel an existing part. Then order a part that requires 2 shares. Should succeed.
             self.create_paid_share(self.member)
             self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data, code=302)
+            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
             self.assertEqual(self.sub.future_parts.count(), 1)

@@ -2,11 +2,13 @@ import datetime
 
 from django.db import models
 from django.utils.translation import gettext as _
+from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
+from juntagrico.queryset.share import ShareQueryset
 
 reason_for_acquisition_choices = ((1, _('Gründungsmitglied')),
                                   (2, _('Beitrittserklärung')),
@@ -47,6 +49,8 @@ class Share(Billable):
     notes = models.TextField(
         _('Notizen'), default='', blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+
+    objects = PolymorphicManager.from_queryset(ShareQueryset)()
 
     __state_text_dict = {0: _('unbezahlt'),
                          1: _('bezahlt'),

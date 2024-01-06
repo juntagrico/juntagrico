@@ -2,20 +2,20 @@ import datetime
 
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, F, Sum, ExpressionWrapper, PositiveIntegerField
+from django.db.models import Q, F, Sum
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel, SimpleStateModelQuerySet
+from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
-from juntagrico.queryset.subscription import SubscriptionQuerySet
+from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.mailer import membernotification
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
@@ -250,18 +250,6 @@ class Subscription(Billable, SimpleStateModel):
             ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),
             ('notified_on_depot_change', _('Wird bei {0}-Änderung informiert').format(Config.vocabulary('depot'))),
         )
-
-
-class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
-    def is_normal(self):
-        return self.filter(type__size__product__is_extra=False)
-
-    def active_on(self, date=None):
-        date = date or datetime.date.today()
-        current_week_number = date.isocalendar()[1] - 1
-        return (super().active_on(date)
-                .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
-                                                     output_field=PositiveIntegerField())).filter(week_mod=0))
 
 
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):

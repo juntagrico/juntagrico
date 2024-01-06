@@ -433,3 +433,9 @@ a.phone-number {
     float: right;
     display: inline-block;
 }
+
+/* co-member separator */
+
+.co-member:not(:last-child)::after {
+    content: ', ';
+}
