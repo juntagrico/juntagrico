@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load juntagrico.subscription %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% block page_title %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
+    <h3>
+        {% blocktrans %}Deine {{ v_subscription_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% for submem in subscription_memberships %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {% with jd=submem.join_date ld=submem.leave_date %}
+                        {% if jd %}
+                            {% if submem.waiting %}
+                                {% blocktrans %}
+                                    Ab {{ jd }}
+                                {% endblocktrans %}
+                            {% else %}
+                                {% if ld %}
+                                    {% blocktrans %}
+                                        {{ jd }} - {{ ld }}
+                                    {% endblocktrans %}
+                                {% else %}
+                                    {% blocktrans %}
+                                        Seit {{ jd }}
+                                    {% endblocktrans %}
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            {% trans "Start ausstehend" %}
+                        {% endif %}
+                    {% endwith %}
+                </h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    {% with co_members=submem.co_members %}
+                        {% if co_members %}
+                            {% blocktrans with cm=co_members|join:", " %}
+                                Geteilt mit {{ cm }}
+                            {% endblocktrans %}
+                        {% endif %}
+                    {% endwith %}
+                </h6>
+                <p class="card-text">
+                    {{ submem.subscription.future_part_overview|overview|safe }}
+                </p>
+                <p class="card-text">
+                    {% blocktrans with d=submem.subscription.depot %}
+                        Depot: {{ d }}
+                    {% endblocktrans %}
+                </p>
+                <a href="{% url 'subscription-single' submem.subscription.id %}" class="card-link">{% trans "Details Anzeigen" %}</a>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

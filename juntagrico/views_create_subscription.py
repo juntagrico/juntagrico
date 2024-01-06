@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
@@ -216,6 +217,7 @@ class CSSummaryView(FormView):
         cs_session.edit = True
         return super().dispatch(request, *args, **kwargs)
 
+    @transaction.atomic
     def form_valid(self, form):
         self.cs_session.main_member.comment = form.cleaned_data["comment"]
         # handle new signup
@@ -237,6 +239,6 @@ def cs_welcome(request, with_sub=False):
 def cs_cancel(request, cs_session):
     cs_session.clear()
     if request.user.is_authenticated:
-        return redirect('sub-detail')
+        return redirect('subscription-landing')
     else:
         return redirect('http://' + Config.server_url())

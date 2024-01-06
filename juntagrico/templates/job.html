@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+{% load static %}
 {% block page_title %}
     <h3>
         {{ job.type.get_name }}
@@ -14,7 +15,7 @@
     </h3>
 {% endblock %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
@@ -52,25 +53,25 @@
         </div>
     </div>
     {% endif %}
-    {% if job.multiplier > 1 %}
+    {% if job.multiplier == 0 %}
         <div class="row pb-4">
             <div class="col-md-3">
                 {% vocabulary "assignment_pl" %}:
             </div>
             <div class="col-md-5">
                 {% blocktrans trimmed with jm=job.multiplier %}
-                Du erhälst für diesen Job das {{ jm }} fachen an {{ v_assignment_pl }} gutgeschrieben.
+                Du erhältst für diese Veranstaltung keine {{ v_assignment_pl }} gutgeschrieben.
                 {% endblocktrans %}
             </div>
         </div>
-    {% elif job.multiplier == 0 %}
+    {% elif job.multiplier != 1 %}
         <div class="row pb-4">
             <div class="col-md-3">
                 {% vocabulary "assignment_pl" %}:
             </div>
             <div class="col-md-5">
                 {% blocktrans trimmed with jm=job.multiplier %}
-                Du erhältst für diesen Event keine {{ v_assignment_pl }} gutgeschrieben.
+                Du erhältst für diesen Einsatz das {{ jm }}-Fache an {{ v_assignment_pl }} gutgeschrieben.
                 {% endblocktrans %}
             </div>
         </div>
@@ -233,7 +234,7 @@
 {% endblock %}
 {% block scripts %}
     {{ job.type.location.map_info|json_script:'location_data' }}
-    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initJob.js">
+    {% include 'snippets/scripts/leaflet.html' %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initJob.js' %}">
     </script>
 {% endblock %}

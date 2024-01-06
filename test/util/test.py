@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
@@ -16,6 +18,8 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
+
+    _count_sub_types = 0
 
     def setUp(self):
         self.set_up_member()
@@ -39,7 +43,7 @@ class JuntagricoTestCase(TestCase):
                        'last_name': 'last_name',
                        'email': email,
                        'addr_street': 'addr_street',
-                       'addr_zipcode': 'addr_zipcode',
+                       'addr_zipcode': '1234',
                        'addr_location': 'addr_location',
                        'phone': 'phone',
                        'mobile_phone': 'phone',
@@ -97,15 +101,21 @@ class JuntagricoTestCase(TestCase):
             Permission.objects.get(codename='notified_on_share_creation'))
         self.member.user.save()
 
-    def set_up_admin(self):
+    def set_up_superuser(self):
         """
-        admin members
+        superuser with member (admin)
         """
         self.admin = self.create_member('admin@email.org')
         self.admin.user.set_password("123456")
         self.admin.user.is_staff = True
         self.admin.user.is_superuser = True
         self.admin.user.save()
+
+    def set_up_admin(self):
+        """
+        admin members
+        """
+        self.set_up_superuser()
         self.area_admin = self.create_member('areaadmin@email.org')
         self.area_admin.user.set_password("123456")
         self.area_admin.user.is_staff = True
@@ -120,37 +130,37 @@ class JuntagricoTestCase(TestCase):
         self.area_admin.user.user_permissions.add(
             Permission.objects.get(codename='change_recuringjob'))
         self.area_admin.user.user_permissions.add(
+            Permission.objects.get(codename='add_recuringjob'))
+        self.area_admin.user.user_permissions.add(
             Permission.objects.get(codename='change_onetimejob'))
         self.area_admin.user.save()
 
-    def get_share_data(self, member):
-        return {'member': member,
-                'paid_date': '2017-03-27',
-                'issue_date': '2017-03-27',
-                'booking_date': None,
-                'cancelled_date': None,
-                'termination_date': None,
-                'payback_date': None,
-                'number': None,
-                'notes': ''
-                }
+    @staticmethod
+    def create_paid_share(member, **kwargs):
+        return Share.objects.create(
+            member=member,
+            paid_date='2017-03-27',
+            issue_date='2017-03-27',
+            **kwargs
+        )
+
+    @classmethod
+    def create_paid_and_cancelled_share(cls, member, **kwargs):
+        return cls.create_paid_share(
+            member=member,
+            booking_date='2017-12-27',
+            cancelled_date='2017-12-27',
+            termination_date='2017-12-27',
+            **kwargs
+        )
 
     def set_up_shares(self):
         """
         shares
         """
-        self.share_data = self.get_share_data(self.member)
-        self.share = Share.objects.create(**self.share_data)
-        self.share_data4 = self.get_share_data(self.member4)
-        self.share4 = Share.objects.create(**self.share_data4)
-        # create cancelled but not paid back share
-        self.share_data5 = self.get_share_data(self.member5)
-        self.share_data5.update({
-            'booking_date': '2017-12-27',
-            'cancelled_date': '2017-12-27',
-            'termination_date': '2017-12-27',
-        })
-        self.share5 = Share.objects.create(**self.share_data5)
+        self.share = self.create_paid_share(self.member)
+        self.share4 = self.create_paid_share(self.member4)
+        self.share5 = self.create_paid_and_cancelled_share(self.member5)
 
     def set_up_area(self):
         """
@@ -229,6 +239,11 @@ class JuntagricoTestCase(TestCase):
         self.job3 = RecuringJob.objects.create(**job_data)
         self.job4 = RecuringJob.objects.create(**job_data2)
         self.job5 = RecuringJob.objects.create(**job_data)
+        self.past_job = RecuringJob.objects.create(
+            slots=1,
+            time=timezone.now() - timezone.timedelta(hours=2),
+            type=self.job_type
+        )
         self.infinite_job = RecuringJob.objects.create(**{
             'infinite_slots': True,
             'time': time,
@@ -245,6 +260,8 @@ class JuntagricoTestCase(TestCase):
                              'time': time,
                              'location': self.location2}
         self.one_time_job1 = OneTimeJob.objects.create(**one_time_job_data)
+        one_time_job_data.update(name='name2', time=timezone.now() - timezone.timedelta(hours=2))
+        self.past_one_time_job = OneTimeJob.objects.create(**one_time_job_data)
         """
         assignment
         """
@@ -270,6 +287,23 @@ class JuntagricoTestCase(TestCase):
             'location': self.location_depot}
         self.depot2 = Depot.objects.create(**depot_data)
 
+    @staticmethod
+    def create_sub_type(size, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
+        JuntagricoTestCase._count_sub_types += 1
+        name = kwargs.get('name', None)
+        long_name = kwargs.get('long_name', 'sub_type_long_name')
+        return SubscriptionType.objects.create(
+            name=name or 'sub_type_name' + str(JuntagricoTestCase._count_sub_types),
+            long_name=long_name,
+            size=size,
+            shares=shares,
+            visible=visible,
+            required_assignments=required_assignments,
+            required_core_assignments=required_core_assignments,
+            price=price,
+            **kwargs
+        )
+
     def set_up_sub_types(self):
         """
         subscription product, size and types
@@ -288,55 +322,46 @@ class JuntagricoTestCase(TestCase):
             'description': 'sub_desc'
         }
         self.sub_size = SubscriptionSize.objects.create(**sub_size_data)
-        sub_type_data = {
-            'name': 'sub_type_name',
-            'long_name': 'sub_type_long_name',
-            'size': self.sub_size,
-            'shares': 1,
-            'visible': True,
-            'required_assignments': 10,
-            'price': 1000,
-            'description': 'sub_type_desc'}
-        self.sub_type = SubscriptionType.objects.create(**sub_type_data)
-        sub_type_data = {
-            'name': 'sub_type_name2',
-            'long_name': 'sub_type_long_name',
-            'size': self.sub_size,
-            'shares': 2,
-            'visible': True,
-            'required_assignments': 10,
-            'price': 1000,
-            'description': 'sub_type_desc'}
-        self.sub_type2 = SubscriptionType.objects.create(**sub_type_data)
+        self.sub_type = self.create_sub_type(self.sub_size)
+        self.sub_type2 = self.create_sub_type(self.sub_size, shares=2)
+
+    @staticmethod
+    def create_sub(depot, activation_date=None, parts=None, **kwargs):
+        if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
+            kwargs['cancellation_date'] = activation_date
+        sub = Subscription.objects.create(
+            depot=depot,
+            activation_date=activation_date,
+            creation_date='2017-03-27',
+            start_date='2018-01-01',
+            **kwargs
+        )
+        if parts:
+            for part in parts:
+                SubscriptionPart.objects.create(
+                    subscription=sub,
+                    type=part,
+                    activation_date=activation_date,
+                    cancellation_date=kwargs.get('cancellation_date', None),
+                    deactivation_date=kwargs.get('deactivation_date', None)
+                )
+        return sub
+
+    @classmethod
+    def create_sub_now(cls, depot, **kwargs):
+        return cls.create_sub(depot, datetime.date.today(), **kwargs)
 
     def set_up_sub(self):
         """
         subscription
         """
-        sub_data = {'depot': self.depot,
-                    'future_depot': None,
-                    'activation_date': timezone.now().date(),
-                    'deactivation_date': None,
-                    'creation_date': '2017-03-27',
-                    'start_date': '2018-01-01',
-                    }
-        sub_data2 = {'depot': self.depot,
-                     'future_depot': None,
-                     'activation_date': None,
-                     'deactivation_date': None,
-                     'creation_date': '2017-03-27',
-                     'start_date': '2018-01-01'
-                     }
-        self.sub = Subscription.objects.create(**sub_data)
-        self.sub2 = Subscription.objects.create(**sub_data2)
-        self.member.join_subscription(self.sub)
-        self.sub.primary_member = self.member
-        self.sub.save()
+        self.sub = self.create_sub_now(self.depot)
+        self.sub2 = self.create_sub(self.depot)
+        self.member.join_subscription(self.sub, True)
         self.member3.join_subscription(self.sub)
-        self.member2.join_subscription(self.sub2)
-        self.sub2.primary_member = self.member2
-        self.sub2.save()
-        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        self.member2.join_subscription(self.sub2, True)
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type,
+                                        activation_date=datetime.date.today())
 
     def set_up_extra_sub_types(self):
         """

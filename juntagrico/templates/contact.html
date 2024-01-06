@@ -29,7 +29,7 @@
                     {% trans "Empfänger" %}
                 </label>
                 <div class="col-md-9">
-                    {% config "info_email" %}
+                    {% contacts "general" %}
                 </div>
             </div>
             <div class="form-group row">
@@ -79,7 +79,7 @@
             <br/>
             {{ organisation_address.zip }} {{ organisation_address.city }}
             <br/>
-            {% config "info_email" %}
+            {% contacts "general" %}
             <br/>
             {% config "organisation_phone" %}
         </div>

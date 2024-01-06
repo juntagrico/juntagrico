@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% vocabulary "subscription" as v_subscription %}
+<div class="alert alert-danger">
+    <div>
+        {% blocktrans with cd=subscription.cancellation_date %}
+            {{ v_subscription }} wurde am {{ cd }} gekündigt.
+        {% endblocktrans %}
+    </div>
+    {% if subscription.deactivation_date %}
+        <div>
+            {% blocktrans with dd=subscription.cancellation_date %}
+                Deaktivierung erfolgt per {{ dd }}.
+            {% endblocktrans %}
+        </div>
+    {% else %}
+        <div>
+            {% blocktrans %}
+                Deaktivierung ist ausstehend.
+            {% endblocktrans %}
+        </div>
+    {% endif %}
+    {% include 'juntagrico/my/subscription/snippets/buttons/create_subscription.html' %}
+</div>

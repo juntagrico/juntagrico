@@ -2,12 +2,9 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
-{% block styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'juntagrico/external/datatables.min.css' %}"/>
-{% endblock %}
 {% block content %}
     <h3>
-        {% trans "Aktuelle Arbeitseinsätze" %}
+        {% trans "Offene Arbeitseinsätze" %}
     </h3>
     <div class="row mb-3">
         <div class="col-md-12">
@@ -39,7 +36,7 @@
     {% endfor %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
     <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initHomeJobs.js' %}">
     </script>

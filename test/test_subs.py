@@ -1,15 +1,16 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from juntagrico.entity.share import Share
 from test.util.test import JuntagricoTestCase
 
 
 class SubscriptionTests(JuntagricoTestCase):
 
     def testSub(self):
-        self.assertGet(reverse('sub-detail'))
-        self.assertGet(reverse('sub-detail-id', args=[self.sub.pk]))
+        self.assertGet(reverse('subscription-landing'), 302)
+        self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
 
     def testSubActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
@@ -32,18 +33,6 @@ class SubscriptionTests(JuntagricoTestCase):
         with self.assertRaises(ValidationError):
             self.assertPost(reverse('primary-change', args=[self.sub.pk]), {'primary': self.member2.pk}, 500)
 
-    def testDepotChange(self):
-        self.assertGet(reverse('depot-change', args=[self.sub.pk]))
-        self.assertPost(reverse('depot-change', args=[self.sub.pk]), {'depot': self.depot2.pk})
-        self.sub.refresh_from_db()
-        self.assertEqual(self.sub.future_depot, self.depot2)
-
-    def testDepotChangeWaiting(self):
-        self.assertPost(reverse('depot-change', args=[self.sub2.pk]), {'depot': self.depot2.pk}, member=self.member2)
-        self.sub2.refresh_from_db()
-        self.assertEqual(self.sub2.depot, self.depot2)
-        self.assertIsNone(self.sub2.future_depot)
-
     def testDepot(self):
         self.assertGet(reverse('depot', args=[self.sub.depot.pk]))
         self.assertGet(reverse('depot-landing'))
@@ -55,27 +44,74 @@ class SubscriptionTests(JuntagricoTestCase):
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.nickname, test_nickname)
 
-    def testSizeChange(self):
+    def testPartOrder(self):
         with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
-            self.assertGet(reverse('size-change', args=[self.sub.pk]))
+            # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
+            self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
                 'amount[' + str(self.sub_type.pk) + ']': 0,
                 'amount[' + str(self.sub_type2.pk) + ']': 1
             }
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data)
+            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
             self.assertEqual(self.sub.future_parts.count(), 1)
-            Share.objects.create(**self.share_data)
+            # Add a share and cancel an existing part. Then order a part that requires 2 shares. Should succeed.
+            self.create_paid_share(self.member)
             self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
-            self.assertPost(reverse('size-change', args=[self.sub.pk]), post_data, code=302)
+            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
             self.assertEqual(self.sub.future_parts.count(), 1)
 
+    def testTypeChange(self):
+        # change type, with unsufficient shares
+        part = self.sub.parts.all()[0]
+        self.assertGet(reverse('part-change', args=[part.pk]))
+        post_data = {'part_type': self.sub_type2.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data)
+        self.sub.refresh_from_db()
+        # check: type and amount unchanged
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+
+        # add a shares for type2
+        self.create_paid_share(self.member)
+        # change active type
+        part = self.sub.parts.all()[0]
+        self.assertGet(reverse('part-change', args=[part.pk]))
+        post_data = {'part_type': self.sub_type2.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
+        self.sub.refresh_from_db()
+        # check: has only one uncancelled part with new type
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
+        # check: previous part was cancelled
+        part.refresh_from_db()
+        self.assertTrue(part.canceled)
+
+        # change future type
+        part = self.sub.future_parts.all()[0]
+        post_data = {'part_type': self.sub_type.pk}
+        self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
+        self.sub.refresh_from_db()
+        # check: has only one uncancelled part with first type
+        self.assertEqual(self.sub.future_parts.count(), 1)
+        self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
+
+    def testCancelWaitingPart(self):
+        with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
+            # activate part with future date
+            part = self.sub.parts.all()[0]
+            part.activate(datetime.date.today() + datetime.timedelta(3))
+            # should be able to cancel part today
+            self.assertGet(reverse('part-cancel', args=[part.id, self.sub.pk]), code=302)
+            self.sub.refresh_from_db()
+            self.assertEqual(self.sub.future_parts.count(), 0)
+
     def testLeave(self):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
-        Share.objects.create(**self.get_share_data(self.member3))
+        self.create_paid_share(self.member3)
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
@@ -96,7 +132,7 @@ class SubscriptionTests(JuntagricoTestCase):
             'addr_location': self.member4.addr_location,
             'phone': self.member4.phone
         }
-        Share.objects.create(**self.get_share_data(self.member4))
+        self.create_paid_share(self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
@@ -108,6 +144,12 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)
         self.sub.refresh_from_db()
         self.assertIsNotNone(self.sub.cancellation_date)
+
+    def testCancelWaiting(self):
+        self.assertGet(reverse('sub-cancel', args=[self.sub2.pk]), 200, member=self.member2)
+        self.assertPost(reverse('sub-cancel', args=[self.sub2.pk]), code=302, member=self.member2)
+        self.sub2.refresh_from_db()
+        self.assertIsNotNone(self.sub2.cancellation_date)
 
     def testSubDeActivation(self):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)

@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "subscription_pl" as v_subscription_pl %}
@@ -71,13 +73,10 @@
                 {% for subscription in subscriptions %}
                     <tr>
                         <td>
-                            {% if perms.juntagrico.is_operations_group %}
-                                <a href="/impersonate/{{ subscription.primary_member.user.id }}"target="__blank">
-                                {% endif %}
-                                {{ subscription.primary_member.first_name }} {{ subscription.primary_member.last_name }}
-                                {% if perms.juntagrico.is_operations_group %}
-                                </a>
-                            {% endif %}
+                            {% impersonate_start request subscription.primary_member %}
+                            <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
+                                {{ subscription.primary_member.get_name }}
+                            </a>
                         </td>
                         <td>
                             {{ subscription.other_recipients_names }}
@@ -92,12 +91,7 @@
                             {{ subscription.activation_date|date:"Y-m-d" }}
                         </td>
                         <td class="email">
-                            {% for recipient in subscription.recipients %}
-                                {{ recipient.email }}
-                                {% if not forloop.last %}
-                                    ,
-                                {% endif %}
-                            {% endfor %}
+                            {{ subscription.recipients_qs|values_list:'member__email'|join:', ' }}
                         </td>
                     </tr>
                 {% endfor %}
@@ -108,7 +102,7 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
     <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}"data-main="{% static 'juntagrico/js/initSubscriptions.js' %}">
     </script>

@@ -14,6 +14,8 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 
 
 class Command(BaseCommand):
+    help = "Generate test data for development environments. DO NOT USE IN PRODUCTION."
+
     @staticmethod
     def create_subscription(depot, member, subtype, activation_date=None,):
         sub_fields = {'depot': depot, 'future_depot': None,

@@ -1,0 +1,6 @@
+{% load static %}
+<script type="text/javascript" src="{% static 'juntagrico/external/leaflet/leaflet.js' %}"></script>
+<script type="text/javascript">
+    // Fix icon when using ManifestStaticFileStorage https://github.com/juntagrico/juntagrico/issues/618
+    L.Icon.Default.prototype.options.imagePath = "{% static 'juntagrico/external/leaflet/images/' %}";
+</script>

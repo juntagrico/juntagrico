@@ -1,9 +1,7 @@
-from datetime import timedelta
+import datetime
 
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 
-from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from test.util.test import JuntagricoTestCase
 
@@ -11,13 +9,12 @@ from test.util.test import JuntagricoTestCase
 class ListTests(JuntagricoTestCase):
 
     def testSubDeactivation(self):
-        now = timezone.now().date()
-        start = now - timedelta(days=10)
-        end = now - timedelta(days=5)
+        today = datetime.date.today()
+        start = today - datetime.timedelta(days=10)
+        end = today - datetime.timedelta(days=5)
         member = self.create_member('email@email.email')
-        share_data = self.get_share_data(member)
-        Share.objects.create(**share_data)
-        Share.objects.create(**share_data)
+        self.create_paid_share(member)
+        self.create_paid_share(member)
         sub_data = {'depot': self.depot,
                     'future_depot': None,
                     'activation_date': start,
@@ -30,7 +27,8 @@ class ListTests(JuntagricoTestCase):
         sub.primary_member = member
         sub.save()
         partone = SubscriptionPart.objects.create(subscription=sub, type=self.sub_type, activation_date=start)
-        SubscriptionPart.objects.create(subscription=sub, type=self.sub_type, activation_date=start, cancellation_date=now, deactivation_date=now)
+        SubscriptionPart.objects.create(subscription=sub, type=self.sub_type, activation_date=start,
+                                        cancellation_date=today, deactivation_date=today)
         try:
             sub.deactivate(end)
         except ValidationError:
@@ -39,7 +37,7 @@ class ListTests(JuntagricoTestCase):
         self.assertIsNone(sub.deactivation_date)
         partone.refresh_from_db()
         self.assertIsNone(partone.deactivation_date)
-        sub.deactivate(now)
+        sub.deactivate(today)
         sub.refresh_from_db()
         self.assertIsNotNone(sub.deactivation_date)
         partone.refresh_from_db()

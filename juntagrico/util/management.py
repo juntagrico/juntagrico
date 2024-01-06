@@ -1,8 +1,7 @@
+import datetime
 import itertools
 import random
 import string
-
-from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.entity.share import Share
@@ -104,28 +103,13 @@ def create_subscription_parts(subscription, selected_types, notify=False):
 
 
 def cancel_sub(subscription, end_date, message):
-    if subscription.activation_date is not None and subscription.cancellation_date is None:
-        subscription.cancel()
-        subscription.end_date = end_date
-        subscription.save()
-        adminnotification.subscription_canceled(subscription, message)
-    elif subscription.activation_date is None and subscription.deactivation_date is None:
-        subscription.delete()
+    subscription.cancel()
+    subscription.end_date = end_date
+    subscription.save()
+    adminnotification.subscription_canceled(subscription, message)
 
 
-def cancel_extra_sub(extra):
-    if extra.activation_date is not None:
-        extra.cancel()
-    elif extra.activation_date is None and extra.deactivation_date is None:
-        extra.delete()
-
-
-def cancel_share(share, now, end_date):
-    now = now or timezone.now().date()
-    end_date = end_date or next_membership_end_date()
-    if share.paid_date is None:
-        share.delete()
-    else:
-        share.cancelled_date = now
-        share.termination_date = end_date
-        share.save()
+def cancel_share(share, date, end_date):
+    share.cancelled_date = share.cancelled_date or date or datetime.date.today()
+    share.termination_date = share.termination_date or end_date or next_membership_end_date()
+    share.save()
