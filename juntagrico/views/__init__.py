@@ -78,7 +78,7 @@ def job(request, job_id):
                 amount = job.multiplier
             elif Config.assignment_unit() == 'HOURS':
                 amount = job.multiplier * job.duration
-            for i in range(num):
+            for _i in range(num):
                 assignment = Assignment.objects.create(
                     member=member, job=job, amount=amount)
             for extra in job.type.job_extras_set.all():

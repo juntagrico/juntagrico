@@ -72,7 +72,7 @@ def create_or_update_member(member):
 def create_share(member, amount=1):
     if amount and Config.enable_shares():
         shares = []
-        for i in range(amount):
+        for _ in range(amount):
             shares.append(Share.objects.create(member=member))
         membernotification.shares_created(member, shares)
 

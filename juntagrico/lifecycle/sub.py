@@ -119,15 +119,15 @@ def check_children_dates(instance):
     try:
         for part in instance.parts.all():
             check_subpart_parent_dates(part, instance)
-    except ValidationError:
+    except ValidationError as e:
         raise ValidationError(
             _(
                 'Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Aktivierungs- oder Deaktivierungsdatum.' + reactivation_info),
-            code='invalid')
+            code='invalid') from e
     try:
         for membership in instance.subscriptionmembership_set.all():
             check_submembership_parent_dates(membership)
-    except ValidationError:
+    except ValidationError as e:
         raise ValidationError(
             _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum.' + reactivation_info),
-            code='invalid')
+            code='invalid') from e
