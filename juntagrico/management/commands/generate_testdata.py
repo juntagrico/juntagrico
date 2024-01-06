@@ -76,12 +76,11 @@ class Command(BaseCommand):
                           'product': subproduct,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen '
                                          'Zwei personen Haushalt für eine Woche.'}
-        subsize, _ = SubscriptionSize.objects.filter(
-            Q(units=subsize_fields['units']) | Q(name=subsize_name)
-        ).get_or_create(
-            product=subsize_fields['product'],
-            defaults=subsize_fields
-        )
+        subsize = SubscriptionSize.objects.filter(
+            Q(units=subsize_fields['units']) | Q(name=subsize_name), product=subsize_fields['product']
+        ).first()
+        if not subsize:
+            subsize = SubscriptionSize.objects.create(**subsize_fields)
         subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': subsize, 'shares': 2,
                           'visible': True, 'required_assignments': 10, 'price': 1000,
                           'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen '
@@ -129,12 +128,12 @@ class Command(BaseCommand):
         location_1, _ = Location.objects.get_or_create(**location_1_fields)
         location_1.save()
 
-        type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
-                        'default_duration': 2, 'location': location_1}
-        type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_2,
-                        'default_duration': 2, 'location': location_1}
-        type_1, _ = JobType.objects.get_or_create(**type1_fields)
-        type_2, _ = JobType.objects.get_or_create(**type2_fields)
+        type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'Ein Einsatz auf dem Feld',
+                        'activityarea': area_1, 'default_duration': 2, 'location': location_1}
+        type2_fields = {'name': 'Jäten', 'displayed_name': '', 'description': 'Ein Einsatz auf dem Feld',
+                        'activityarea': area_2, 'default_duration': 2, 'location': location_1}
+        type_1, _ = JobType.objects.get_or_create(name=type1_fields['name'], defaults=type1_fields)
+        type_2, _ = JobType.objects.get_or_create(name=type2_fields['name'], defaults=type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,
                            'canceled': False, 'type': type_1}
         for x in range(0, 10):
