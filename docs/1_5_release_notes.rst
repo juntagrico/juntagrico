@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+1.5.8
+-----
+
+See https://github.com/juntagrico/juntagrico/releases/tag/1.5.8
+
 1.5.7
 -----
 

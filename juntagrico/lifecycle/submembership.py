@@ -54,7 +54,7 @@ def check_sub_membership_consistency_ms(member, subscription, join_date, leave_d
     # check for subscription membership overlaps
     memberships = SubscriptionMembership.objects.exclude(subscription=subscription).filter(member=member)
     if join_date is None:
-        check = Q(leave_date__isnull=True)
+        check = Q(join_date__isnull=True)
     elif leave_date is None:
         check = Q(leave_date__isnull=True) | Q(leave_date__gte=join_date)
     else:
