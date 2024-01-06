@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField
+from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField, validate_iban
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.util.users import make_username
@@ -46,7 +46,7 @@ class Member(JuntagricoBaseModel):
     mobile_phone = models.CharField(
         _('Mobile'), max_length=50, null=True, blank=True)
 
-    iban = models.CharField('IBAN', max_length=100, blank=True, default='')
+    iban = models.CharField('IBAN', max_length=100, blank=True, default='', validators=[validate_iban])
 
     confirmed = models.BooleanField(_('E-Mail-Adresse bestätigt'), default=False)
     reachable_by_email = models.BooleanField(
