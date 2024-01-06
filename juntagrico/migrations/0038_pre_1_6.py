@@ -220,4 +220,10 @@ class Migration(migrations.Migration):
                                               help_text='Versatz der Lieferung in Wochen, 0 entspricht einer Lieferung ab der ersten Kalenderwoche, 1 entspricht einer Lieferung ab der zweiten Kalenderwoche, usw.',
                                               verbose_name='Versatz'),
         ),
+        migrations.AlterField(
+            model_name='member',
+            name='iban',
+            field=models.CharField(blank=True, default='', max_length=100, validators=[juntagrico.entity.validate_iban],
+                                   verbose_name='IBAN'),
+        ),
     ]
