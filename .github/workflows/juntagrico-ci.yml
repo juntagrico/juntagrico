@@ -44,10 +44,10 @@ jobs:
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements-local.txt
-    - name: flake 8
+    - name: ruff
       run: |
-        flake8 --count --extend-ignore E501 juntagrico
-        flake8 --count --extend-ignore E501 test
+        ruff check juntagrico
+        ruff check test
     - name: install CodeClimate reporter
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |

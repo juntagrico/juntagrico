@@ -6,6 +6,7 @@ from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from polymorphic.models import PolymorphicModel
+from schwifty import IBAN
 
 
 class OldHolder:
@@ -144,6 +145,11 @@ def absolute_url(*args, **kwargs):
     def wrapper(cls):
         def get_absolute_url(self):
             return reverse(kwargs['name'], args=[self.pk])
-        setattr(cls, 'get_absolute_url', get_absolute_url)
+        cls.get_absolute_url = get_absolute_url
         return cls
     return wrapper
+
+
+def validate_iban(value):
+    if value != '' and not IBAN(value, True).is_valid:
+        raise ValidationError(_('IBAN ist nicht gültig'))

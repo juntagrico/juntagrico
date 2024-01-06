@@ -105,12 +105,12 @@ class Command(BaseCommand):
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,
                            'canceled': False, 'type': type_1}
-        for x in range(0, 10):
+        for _ in range(0, 10):
             job1_all_fields['time'] += timezone.timedelta(days=7)
             RecuringJob.objects.create(**job1_all_fields)
 
         job2_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,
                            'canceled': False, 'type': type_2}
-        for x in range(0, 10):
+        for _ in range(0, 10):
             job1_all_fields['time'] += timezone.timedelta(days=7)
             RecuringJob.objects.create(**job2_all_fields)

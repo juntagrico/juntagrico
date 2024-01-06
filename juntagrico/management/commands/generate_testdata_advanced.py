@@ -51,7 +51,7 @@ class Command(BaseCommand):
 
     def generate_shares(self, member, sub_share):
         amount = int(math.ceil(float(sub_share) / 2.0))
-        for i in range(0, amount):
+        for _ in range(0, amount):
             share_dict = self.generate_share_dict(member)
             Share.objects.create(**share_dict)
 
@@ -205,12 +205,12 @@ class Command(BaseCommand):
         type_2 = JobType.objects.create(**type2_fields)
         job1_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,
                            'canceled': False, 'type': type_1}
-        for x in range(0, options['job_amount']):
+        for _ in range(0, options['job_amount']):
             job1_all_fields['time'] += timezone.timedelta(days=7)
             RecuringJob.objects.create(**job1_all_fields)
 
         job2_all_fields = {'slots': 10, 'time': timezone.now(), 'pinned': False, 'reminder_sent': False,
                            'canceled': False, 'type': type_2}
-        for x in range(0, options['job_amount']):
+        for _ in range(0, options['job_amount']):
             job1_all_fields['time'] += timezone.timedelta(days=7)
             RecuringJob.objects.create(**job2_all_fields)
