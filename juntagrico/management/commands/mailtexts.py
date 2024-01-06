@@ -1,6 +1,7 @@
+import datetime
+
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
@@ -12,6 +13,8 @@ from juntagrico.mailer import get_email_content, base_dict
 
 
 class Command(BaseCommand):
+    help = "Prints the text of all notification emails using real data from the database, but without sending any emails."
+
     # entry point used by manage.py
     def handle(self, *args, **options):
         subscription = Subscription.objects.all()[0]
@@ -137,7 +140,7 @@ class Command(BaseCommand):
 
         print(get_email_content('m_canceled', base_dict({
             'member': member,
-            'end_date': timezone.now(),
+            'end_date': datetime.date.today(),
             'message': 'Nachricht'
         })))
         print()

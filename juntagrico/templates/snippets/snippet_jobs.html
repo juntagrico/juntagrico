@@ -56,7 +56,7 @@
                     {{ job.type.description }}
                 </td>
                 <td>
-                    {{ job.weekday_name }}&nbsp;{{ job.time |date:"d." }}{{ job.time |date:"m." }}{{ job.time |date:"Y" }}
+                    {{ job.time|date:"D d.m.Y" }}
                 </td>
                 <td>
                     <a href="{% url 'job' job.id %}" class="{{ job.get_css_classes }}">

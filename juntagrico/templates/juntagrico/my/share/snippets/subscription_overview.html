@@ -1,0 +1,55 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% config "enable_shares" as c_enable_shares %}
+{% if c_enable_shares %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <div class="row mb-5">
+        <div class="col-md-3">
+            {{ v_share_pl }}
+        </div>
+        <div class="col-md-9">
+            {% if subscription %}
+                <div class="mb-3">
+                    {% vocabulary "subscription" as v_subscription %}
+                    {% blocktrans with rs=subscription.required_shares %}
+                        Benötigt für diese/n/s {{ v_subscription }}: {{ rs }}
+                    {% endblocktrans %}
+                </div>
+            {% endif %}
+            <div class="mb-3">
+                {% blocktrans with asc=member.share_set.active.count %}
+                    Du hast {{ asc }}
+                {% endblocktrans %}
+                {% with unpaid=member.share_set.unpaid.count %}
+                    {% if unpaid > 0 %}
+                        <br>
+                        {% blocktrans %}sowie {{ unpaid }} noch nicht bezahlte{% endblocktrans %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div class="mb-3">
+                <a href="{% url 'manage-shares' %}" class="btn btn-outline-primary">
+                    {% blocktrans %}{{ v_share_pl }} verwalten{% endblocktrans %}
+                </a>
+            </div>
+            {% if co_members %}
+                <div>
+                    {% vocabulary "co_member_pl" as v_co_member_pl %}
+                    {% blocktrans %}{{ v_share_pl }} von {{ v_co_member_pl }}{% endblocktrans %}:
+                    <ul>
+                        {% for co_member in co_members %}
+                            <li>
+                                {% blocktrans trimmed with csc=co_member.share_set.count cm=co_member %}
+                                {{ csc }} von {{ cm }}
+                                {% endblocktrans %}
+                                {% if not co_member.confirmed %}
+                                    ({% trans "E-Mail-Adresse nicht bestätigt" %})
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

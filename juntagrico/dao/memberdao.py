@@ -1,7 +1,7 @@
+import datetime
+
 from django.contrib.auth.models import Permission
 from django.db.models import Q
-from django.utils import timezone
-
 
 from juntagrico.entity.member import Member
 from juntagrico.util.models import q_deactivated, q_cancelled
@@ -12,27 +12,27 @@ class MemberDao:
     @staticmethod
     def q_joined_subscription():
         return Q(subscriptionmembership__join_date__isnull=False,
-                 subscriptionmembership__join_date__lte=timezone.now().date())
+                 subscriptionmembership__join_date__lte=datetime.date.today())
 
     @staticmethod
     def q_left_subscription():
         return Q(subscriptionmembership__leave_date__isnull=False,
-                 subscriptionmembership__leave_date__lte=timezone.now().date())
+                 subscriptionmembership__leave_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_activated():
         return Q(subscriptionmembership__subscription__activation_date__isnull=False,
-                 subscriptionmembership__subscription__activation_date__lte=timezone.now().date())
+                 subscriptionmembership__subscription__activation_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_cancelled():
         return Q(subscriptionmembership__subscription__cancellation_date__isnull=False,
-                 subscriptionmembership__subscription__cancellation_date__lte=timezone.now().date())
+                 subscriptionmembership__subscription__cancellation_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_deactivated():
         return Q(subscriptionmembership__subscription__deactivation_date__isnull=False,
-                 subscriptionmembership__subscription__deactivation_date__lte=timezone.now().date())
+                 subscriptionmembership__subscription__deactivation_date__lte=datetime.date.today())
 
     @staticmethod
     def has_subscription():
@@ -72,7 +72,7 @@ class MemberDao:
     @staticmethod
     def members_with_shares():
         return Member.objects.filter(Q(share__isnull=False) & (
-            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=timezone.now())))
+            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=datetime.date.today())))
 
     @staticmethod
     def members_by_job(job):

@@ -3,32 +3,16 @@
 {% load static %}
 {% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
-{% block styles %}
-    <link href="{% static 'juntagrico/external/datepicker/datepicker.min.css' %}" rel="stylesheet"/>
-{% endblock %}
 {% block content %}
     {% config "enable_shares" as enable_shares %}
     {% if not change_date_disabled %}
         {% if can_change_date %}
-            <form action="{% url 'changedate-set' %}" method="POST">
+            <form action="{% url 'changedate-set' %}" method="POST" class="form-inline">
                 {% csrf_token %}
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <input type="text" class="form-control docs-date" name="date" data-toggle="datepicker" placeholder="{% trans "Lege das Datum für die Änderung fest." %}" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary docs-datepicker-trigger" disabled="">
-                                        <i class="fa fa-calendar" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-success">
-                            {% trans "ändern" %}
-                        </button>
-                    </div>
-                </div>
+                <input type="date" class="form-control docs-date mb-4 mr-sm-2" name="date" value="{% now "Y-m-d" %}">
+                <button type="submit" class="btn btn-primary mb-4">
+                    {% trans "Änderungsdatum einstellen" %}
+                </button>
             </form>
         {% else %}
             <div class="alert alert-warning">
@@ -69,9 +53,7 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
-    </script>
-    <script type="text/javascript" src="{% static 'juntagrico/external/datepicker/datepicker.min.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
     <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initManList.js' %}">
     </script>

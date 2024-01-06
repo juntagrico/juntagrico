@@ -1,5 +1,6 @@
+import datetime
+
 from django import template
-from django.utils import timezone
 
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.subs import Subscription
@@ -21,7 +22,7 @@ def assignment_data(request):
     # calculate assignments
     sub = Subscription.objects.annotate_assignment_counts(
         of_member=member,
-        end=timezone.now().date(),
+        end=datetime.date.today(),
         prefix='member_'
     ).annotate_assignments_progress().get(pk=member.subscription_current)
     sub.remaining_assignments = max(

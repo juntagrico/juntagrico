@@ -1,0 +1,9 @@
+<div class="form-group row">
+    <div class="col-md-12">
+        {% include 'bootstrap4/layout/field_errors_block.html' %}
+        <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" name="{{ option.name }}" value="{{ option.value }}" id="type{{ option.value }}" required="">
+            {% include 'forms/subscription_type_label.html' with class='custom-control-label' %}
+        </div>
+    </div>
+</div>

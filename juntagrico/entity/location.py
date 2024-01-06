@@ -20,7 +20,7 @@ class Location(JuntagricoBaseModel):
                                     null=True, blank=True)
     addr_location = models.CharField(_('Ort'), max_length=50,
                                      null=True, blank=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='', blank=True)
+    description = models.TextField(_('Beschreibung'), default='', blank=True)
     visible = models.BooleanField(_('Sichtbar'), default=True,
                                   help_text=_('Ort steht bei Einsatz und {} zur Auswahl').format(
                                       Config.vocabulary('depot')))

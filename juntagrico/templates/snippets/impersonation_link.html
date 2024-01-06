@@ -1,0 +1,6 @@
+{% load i18n %}
+{% if can_impersonate %}
+    <a class="impersonate-action" href="{% url 'impersonate-start' user.id %}" target="_blank">
+        <i class="fas fa-street-view" title="{% trans "Mitglied imitieren" %}"></i>
+    </a>
+{% endif %}

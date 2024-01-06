@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import Permission
 from django.test import TestCase, override_settings
 from django.utils import timezone
@@ -16,7 +18,6 @@ from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, Su
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
 class JuntagricoTestCase(TestCase):
-    _count_sub_types = 0
 
     _count_sub_types = 0
 
@@ -348,29 +349,7 @@ class JuntagricoTestCase(TestCase):
 
     @classmethod
     def create_sub_now(cls, depot, **kwargs):
-        return cls.create_sub(depot, timezone.now().date(), **kwargs)
-
-    @staticmethod
-    def create_sub(depot, activation_date=None, parts=None, **kwargs):
-        if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
-            kwargs['cancellation_date'] = activation_date
-        sub = Subscription.objects.create(
-            depot=depot,
-            activation_date=activation_date,
-            creation_date='2017-03-27',
-            start_date='2018-01-01',
-            **kwargs
-        )
-        if parts:
-            for part in parts:
-                SubscriptionPart.objects.create(
-                    subscription=sub,
-                    type=part,
-                    activation_date=activation_date,
-                    cancellation_date=kwargs.get('cancellation_date', None),
-                    deactivation_date=kwargs.get('deactivation_date', None)
-                )
-        return sub
+        return cls.create_sub(depot, datetime.date.today(), **kwargs)
 
     def set_up_sub(self):
         """
@@ -381,7 +360,8 @@ class JuntagricoTestCase(TestCase):
         self.member.join_subscription(self.sub, True)
         self.member3.join_subscription(self.sub)
         self.member2.join_subscription(self.sub2, True)
-        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type, activation_date=timezone.now().date())
+        SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type,
+                                        activation_date=datetime.date.today())
 
     def set_up_extra_sub_types(self):
         """

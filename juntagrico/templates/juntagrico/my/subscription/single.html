@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.subscription %}
+{% block page_title %}
+    {% vocabulary "subscription" as v_subscription %}
+    <h3>
+        {% blocktrans %}{{ v_subscription }} Details{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% with co_members=subscription_membership.co_members %}
+        {# Banners #}
+        {% if subscription_membership.left %}
+            {% include 'juntagrico/my/subscription/snippets/banners/left_membership.html' %}
+        {% elif subscription.inactive %}
+            {% include 'juntagrico/my/subscription/snippets/banners/inactive.html' %}
+        {% elif subscription.canceled %}
+            {% include 'juntagrico/my/subscription/snippets/banners/canceled.html' %}
+        {% elif subscription.waiting %}
+            {% include 'juntagrico/my/subscription/snippets/banners/waiting_banner.html' %}
+        {% elif subscription_membership.waiting %}
+            {% include 'juntagrico/my/subscription/snippets/banners/waiting_membership.html' %}
+        {% endif %}
+        {% if subscription_membership.leaves_before_end %}
+            {% include 'juntagrico/my/subscription/snippets/banners/leaving_membership.html' %}
+        {% endif %}
+        {# Depot #}
+        {% include 'juntagrico/my/depot/snippets/subscription_overview.html' %}
+        {# Subscription #}
+        <div class="row mb-5 part-list">
+            <div class="col-md-3">
+                {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
+            </div>
+            <div class="col-md-9">
+                {% include 'juntagrico/my/subscription/snippets/part_list.html' with parts=subscription.parts.waiting_or_active %}
+            </div>
+        </div>
+        {# Co-members #}
+        <div class="row mb-5 co-members">
+            <div class="col-md-3">
+                {% blocktrans %}{{ v_subscription }} geteilt mit{% endblocktrans %}
+            </div>
+            <div class="col-md-9">
+                {% include 'juntagrico/my/subscription/snippets/co_members.html' %}
+            </div>
+        </div>
+        {# Assignments #}
+        {% include 'juntagrico/my/assignment/snippets/subscription_overview.html' %}
+        {# Share #}
+        {% include 'juntagrico/my/share/snippets/subscription_overview.html' %}
+        {# From Addons #}
+        {% for sub_overview_addon in sub_overview_addons %}
+            {% include sub_overview_addon %}
+        {% endfor %}
+    {% endwith %}
+{% endblock %}

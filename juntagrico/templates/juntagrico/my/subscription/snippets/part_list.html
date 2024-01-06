@@ -1,0 +1,95 @@
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load juntagrico.subscription %}
+
+{% if parts.exists %}
+    <table class="table subscription-table">
+        <thead>
+            <tr>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for part in parts.sorted %}
+            <tr>
+                <td>{{ part }}</td>
+                <td>{{ part.state_text }}</td>
+                <td>
+                    {% if part.cancellation_date %}
+                        {% blocktrans with cd=part.cancellation_date %}
+                            Gekündigt am {{ cd }}
+                        {% endblocktrans %}
+                        {% if part.deactivation_date %}
+                            <br>
+                            {% blocktrans with dd=part.deactivation_date %}
+                                Noch aktiv bis am {{ dd }}
+                            {% endblocktrans %}
+                        {% endif %}
+                    {% else %}
+                        {% with ad=part.activation_date %}
+                            {% if part.active %}
+                                {% blocktrans %}
+                                    Aktiv seit {{ ad }}
+                                {% endblocktrans %}
+                                <br>
+                            {% elif ad %}
+                                {% blocktrans %}
+                                    Wird aktiv am {{ ad }}
+                                {% endblocktrans %}
+                                <br>
+                            {% endif %}
+                        {% endwith %}
+                        {% if subscription.primary_member == member %}
+                            {% if can_change_part %}
+                                <a href="{% url 'part-change' part.id %}" class="btn btn-primary">
+                                    {% trans "ändern" %}
+                                </a>
+                            {% elif part.subscription.future_parts.is_normal.count == 1 %}
+                                {% blocktrans %} Dein/e {{ v_subscription }} braucht mindestens 1 Bestandteil{% endblocktrans %}
+                                {% if part.subscription.state != 'canceled' and  part.subscription.state != 'inactive' %}
+                                    <br/><a href="{% url 'sub-cancel' subscription.id %}">{% blocktrans %}{{ v_subscription }} komplett künden{% endblocktrans %}</a>
+                                {% endif %}
+                            {% endif %}
+                            {% if part.subscription.future_parts.is_normal.count > 1 %}
+                                <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
+                                onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
+                                    {% trans "kündigen" %}
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div>
+        {% trans "Keine" %}
+    </div>
+{% endif %}
+
+{% if not subscription.inactive %}
+    <div class="mt-3">
+        {% if subscription.primary_member == member %}
+            {% if not subscription.canceled %}
+                <a href="{% url 'part-order' subscription.id %}" class="btn btn-primary mb-3">
+                    {% trans "Weitere Bestandteile bestellen" %}
+                </a>
+                {% if has_extra %}
+                    <a href="{% url 'extra-order' subscription.id %}" class="btn btn-outline-primary mb-3">
+                        {% trans "Zusatzabos bestellen" %}
+                    </a>
+                {% endif %}
+            {% else %}
+                {% vocabulary "subscription_pl" as v_subscription_pl %}
+                <i>{% blocktrans %}Für gekündigte {{ v_subscription_pl }} können keine Bestandteile bestellt werden.{% endblocktrans %}</i>
+            {% endif %}
+        {% else %}
+            <i>{% blocktrans %}Nur {{ v_subscription }}-VerwalterIn kann Bestandteile bestellen.{% endblocktrans %}</i>
+        {% endif %}
+    </div>
+{% endif %}

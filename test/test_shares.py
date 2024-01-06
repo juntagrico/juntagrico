@@ -1,5 +1,6 @@
+import datetime
+
 from django.urls import reverse
-from django.utils import timezone
 
 from test.util.test import JuntagricoTestCase
 
@@ -21,8 +22,8 @@ class ShareTests(JuntagricoTestCase):
 
     def testSharePayout(self):
         share = self.member.share_set.first()
-        share.cancelled_date = timezone.now().date()
-        share.termination_date = timezone.now().date()
+        share.cancelled_date = datetime.date.today()
+        share.termination_date = datetime.date.today()
         share.save()
         self.assertGet(reverse('share-payout', args=[share.pk]), 302)
         self.assertEqual(self.member2.active_shares.count(), 0)

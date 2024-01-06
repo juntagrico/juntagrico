@@ -11,7 +11,8 @@ Member notification emails
 
 
 def welcome(member, password):
-    EmailSender.get_sender(
+    EmailSender.get_sender_for_contact(
+        'for_members',
         _('Willkommen bei {0}').format(enriched_organisation('D')),
         get_email_content('welcome', base_dict(locals())),
     ).send_to(member.email)
@@ -20,14 +21,16 @@ def welcome(member, password):
 def welcome_co_member(co_member, password, new_shares, new=True):
     # sends either welcome mail or just information mail to new/added co-member
     sub = co_member.subscription_future or co_member.subscription_current
-    EmailSender.get_sender(
+    EmailSender.get_sender_for_contact(
+        'for_members',
         _('Willkommen bei {0}').format(enriched_organisation('D')),
         get_email_content('co_welcome' if new else 'co_added', base_dict(locals())),
     ).send_to(co_member.email)
 
 
 def shares_created(member, shares):
-    EmailSender.get_sender(
+    EmailSender.get_sender_for_contact(
+        'for_shares',
         organisation_subject(_('Dein neuer Anteilschein')),
         get_email_content('s_created', base_dict(locals())),
     ).send_to(member.email)
@@ -35,14 +38,16 @@ def shares_created(member, shares):
 
 def email_confirmation(member):
     d = {'hash': member.get_hash()}
-    EmailSender.get_sender(
+    EmailSender.get_sender_for_contact(
+        'technical',
         organisation_subject(_('E-Mail-Adresse bestätigen')),
         get_email_content('confirm', base_dict(d)),
     ).send_to(member.email)
 
 
 def depot_changed(emails, depot):
-    EmailSender.get_sender(
+    EmailSender.get_sender_for_contact(
+        'for_subscriptions',
         organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
         get_email_content('d_changed', base_dict(locals())),
         bcc=emails
@@ -50,7 +55,8 @@ def depot_changed(emails, depot):
 
 
 def co_member_left_subscription(primary_member, co_member, message):
-    EmailSender.get_sender(
+    EmailSender.get_sender_for_contact(
+        'for_subscriptions',
         organisation_subject(_('Austritt aus {}').format(Config.vocabulary('subscription'))),
         get_email_content('m_left_subscription', base_dict(locals())),
         to=[primary_member.email]

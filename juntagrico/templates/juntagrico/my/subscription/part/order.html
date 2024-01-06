@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load crispy_forms_tags %}
+{% block page_title %}
+    <h3>
+        {% if extra %}
+            {% trans "Zusatzabos bestellen" %}
+        {% else %}
+            {% vocabulary "subscription" as v_subscription %}
+            {% blocktrans %}{{ v_subscription }}-Bestandteile bestellen{% endblocktrans %}
+        {% endif %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% crispy form %}
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}"></script>
+    <script>
+        $("input[type='number']").inputSpinner();
+    </script>
+{% endblock %}

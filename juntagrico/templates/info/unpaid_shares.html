@@ -31,8 +31,8 @@
     <br/>
     <br/>
     {% trans "Solltest du Fragen dazu haben sende eine Email an" %}
-    <a href="mailto:{% config "info_email" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">
-        {% config "info_email" %}
+    <a href="mailto:{% contacts "for_shares" %}?subject={% trans "Frage zu unbezahltem Anteilsschein" %} {% config "server_url" %}">
+        {% contacts "for_shares" %}
     </a>
     .
 {% endblock %}

@@ -1,3 +1,4 @@
+from django.template.loader import get_template
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -107,5 +108,14 @@ def depot_list_generated(**kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Neue {}-Liste generiert').format(Config.vocabulary('depot'))),
         get_email_content('a_depot_list_generated', base_dict(locals())),
+        bcc=kwargs['emails']
+    ).send()
+
+
+@requires_someone_with_perm('notified_on_depot_change')
+def member_changed_depot(**kwargs):
+    EmailSender.get_sender(
+        organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
+        get_template('juntagrico/mails/admin/depot_changed.txt').render(base_dict(kwargs)),
         bcc=kwargs['emails']
     ).send()

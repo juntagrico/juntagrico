@@ -81,7 +81,7 @@ class JobCopyForm(forms.ModelForm):
             if skip_even_weeks and delta % 14 >= 7:
                 continue
             date = start + datetime.timedelta(delta)
-            if not date.isoweekday() in weekdays:
+            if date.isoweekday() not in weekdays:
                 continue
             dt = datetime.datetime.combine(date, time)
             if is_naive(dt):

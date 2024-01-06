@@ -239,6 +239,6 @@ def cs_welcome(request, with_sub=False):
 def cs_cancel(request, cs_session):
     cs_session.clear()
     if request.user.is_authenticated:
-        return redirect('sub-detail')
+        return redirect('subscription-landing')
     else:
         return redirect('http://' + Config.server_url())

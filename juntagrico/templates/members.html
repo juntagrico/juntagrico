@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 {% block body_extra_classes %}wide-layout{% endblock %}
 {% block page_title %}
     {% vocabulary "member_pl" as v_member_pl %}
@@ -75,47 +76,46 @@
             </tfoot>
             <tbody>
                 {% for member in members %}
-                    <tr>
-                        <td>
-                            {% if perms.juntagrico.is_operations_group %}
-                                <a href="/impersonate/{{ member.user.id }}" target="__blank">
-                                {% endif %}
-                                {{ member.first_name }} {{ member.last_name }}
-                                {% if perms.juntagrico.is_operations_group %}
+                    {% with sub=member.current_subscriptionmembership.0 %}
+                        <tr>
+                            <td>
+                                {% impersonate_start request member %}
+                                <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                                    {{ member.get_name }}
                                 </a>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% for area in member.areas.all %}
-                                {{ area.name }},
-                                {% empty %}
-                                -Kein Tätigkeitsbereich-
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% if member.subscription_current != None %}
-                                {{ member.subscription_current.depot.name }}
-                            {% else %}
-                                Kein {% vocabulary "depot" %}
-                            {% endif %}
-                        </td>
-                        <td class="email">
-                            {{ member.email }}
-                        </td>
-                        <td>
-                            {{ member.phone }}
-                        </td>
-                        <td>
-                            {{ member.mobile_phone }}
-                        </td>
-                        <td>
-                            {% if member.subscription_current != None %}
-                                {{ member.subscription_current.size }}
-                            {% else %}
-                                Kein {% vocabulary "subscription" %}
-                            {% endif %}
-                        </td>
-                    </tr>
+                            </td>
+                            <td>
+                                {% for area in member.areas.all %}
+                                    {{ area.name }},
+                                    {% empty %}
+                                    -Kein Tätigkeitsbereich-
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if sub %}
+                                    {{ sub.depot_name }}
+                                {% else %}
+                                    Kein {% vocabulary "depot" %}
+                                {% endif %}
+                            </td>
+                            <td class="email">
+                                {{ member.email }}
+                            </td>
+                            <td>
+                                {{ member.phone }}
+                            </td>
+                            <td>
+                                {{ member.mobile_phone }}
+                            </td>
+                            <td>
+                                {% if sub %}
+                                    {{ sub.subscription.size }}
+                                {% else %}
+                                    Kein {% vocabulary "subscription" %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endwith %}
                 {% endfor %}
             </tbody>
         </table>
@@ -124,7 +124,7 @@
     <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/datatables.min.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
     <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initMembers.js' %}">
     </script>

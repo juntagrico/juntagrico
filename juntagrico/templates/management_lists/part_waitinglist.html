@@ -52,12 +52,12 @@
                     <td>
                         {% if part.activation_date %}
                         {% trans "Wurde bereits aktiviert" %} {{ part.activation_date }}
-                        {% elif part.subscription.state == 'waiting' %}
+                        {% elif part.subscription.waiting %}
                             {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist noch nicht aktiv {% endblocktrans %}
-                        {% elif part.subscription.state == 'inactive' %}
+                        {% elif part.subscription.inactive %}
                             {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist deaktiviert {% endblocktrans %}
                         {% else %}
-                        <a href="{% url 'part-activate' part.id %}"class="btn btn-success">
+                        <a href="{% url 'part-activate' part.id %}" class="btn btn-success">
                             {% trans "aktivieren" %}
                         </a>
                         {% endif %}

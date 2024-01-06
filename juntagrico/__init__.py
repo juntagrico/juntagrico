@@ -1,1 +1,1 @@
-version = '1.5.8preview'
+version = '1.6.0preview'

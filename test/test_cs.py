@@ -42,9 +42,9 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse(url), code)
         self.assertPost(reverse(url), code)
 
-    def assertGetAndRedirects(self, get, redirect='sub-detail'):
+    def assertGetAndRedirects(self, get, redirect='subscription-landing'):
         response = self.client.get(reverse(get))
-        self.assertRedirects(response, reverse(redirect))
+        self.assertRedirects(response, reverse(redirect), fetch_redirect_response=False)
 
     def commonAddSub(self, member_email, comment='', comment_in=0):
         initial_share_count = Share.objects.filter(member__email=member_email).count()

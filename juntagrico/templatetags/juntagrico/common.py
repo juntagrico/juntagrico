@@ -42,7 +42,7 @@ def show_job_extras():
 
 @register.simple_tag
 def show_deliveries(request):
-    return len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0
+    return DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current).exists()
 
 
 @register.filter

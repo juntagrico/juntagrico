@@ -11,7 +11,6 @@ class AssignmentTests(JuntagricoTestCase):
     def setUp(self):
         super().setUp()
         self.sub_trial_type = self.create_sub_type(self.sub_size, trial_days=30)
-
         self.subs = [
             # sub in second half of the year
             self.create_sub(self.depot, date(day=1, month=7, year=self.year), parts=[self.sub_type]),
@@ -33,7 +32,7 @@ class AssignmentTests(JuntagricoTestCase):
 
     def testRequiredAssignments(self):
         # get assignments for entire year.
-        subs = Subscription.objects.annotate_required_assignments(self.activation_date, date(self.year, 12, 31)).filter(pk__in=self.subs)
+        subs = Subscription.objects.annotate_required_assignments(self.activation_date, date(self.year, 12, 31)).filter(pk__in=self.subs).distinct()
         # sub in second half of the year
         self.assertEqual(subs[0].required_assignments, 5)
         self.assertEqual(subs[0].required_core_assignments, 2)
