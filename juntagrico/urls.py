@@ -45,7 +45,8 @@ urlpatterns = [
     path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete_cust.html'), name='password_reset_complete'),
 
     # /home
-    path('my/home', juntagrico.home, name='home'),
+    path('my/home', juntagrico.home, name='home'),  # for backwards compatibility since 1.6.0
+    path('', juntagrico.home, name='home'),
 
     # /my (personal stuff)
     # /my/password

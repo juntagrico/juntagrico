@@ -46,7 +46,7 @@
             </div>
             <div class="row d-md-none">
                 <nav class="navbar navbar-expand-md col-sm-12">
-                      <a class="navbar-brand" href="/my/home">{{ request.site.name }}</a>
+                      <a class="navbar-brand" href="{% url 'home' %}">{{ request.site.name }}</a>
 
                 {% block small_menu_content %}
                       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
