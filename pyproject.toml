@@ -9,6 +9,7 @@ authors = [
     {name = "juntagrico", email = "python@juntagrico.org"},
 ]
 readme = "README.md"
+license = { file = "LICENSE.txt" }
 requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
