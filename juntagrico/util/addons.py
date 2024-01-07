@@ -1,3 +1,5 @@
+from importlib import metadata
+
 from django.utils.functional import LazyObject
 from django.utils.module_loading import autodiscover_modules
 
@@ -69,7 +71,10 @@ class AddonsConfig:
     def get_config_classes(self):
         return self._config_classes
 
-    def register_version(self, name, version):
+    def register_version(self, name, version=None):
+        if version is None:
+            # get actually installed version
+            version = metadata.version(name)
         self._versions[name] = version
 
     def get_versions(self):
