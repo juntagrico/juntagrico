@@ -13,7 +13,7 @@ from django.utils.translation import gettext as _, get_language
 from django.views.generic import FormView
 from xlsxwriter import Workbook
 
-from juntagrico import version
+from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
@@ -565,7 +565,7 @@ def manage_list(request):
 
 @login_required
 def versions(request):
-    versions = {'juntagrico': version}
+    versions = {'juntagrico': __version__}
     versions.update(addons.config.get_versions())
     render_dict = {'versions': versions}
     return render(request, 'versions.html', render_dict)

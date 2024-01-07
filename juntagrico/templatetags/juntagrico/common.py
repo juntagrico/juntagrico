@@ -2,7 +2,7 @@ from django import template
 from django.conf import settings
 from django.template.defaultfilters import urlize, linebreaksbr
 
-from juntagrico import version
+from juntagrico import __version__
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
@@ -79,7 +79,7 @@ def area_admin(request):
 
 @register.simple_tag
 def get_version():
-    return version
+    return __version__
 
 
 @register.filter

@@ -66,4 +66,7 @@ generate_testdata_advanced
 .. warning::
     Do not use this command in production
 
-Like ``generate_testdata`` but produces a much bigger set of test data using faker (to be installed from the requirements-local.txt).
+.. note::
+    This command requires ``faker``. Install it via pip.
+
+Like ``generate_testdata`` but produces a much bigger set of test data.
