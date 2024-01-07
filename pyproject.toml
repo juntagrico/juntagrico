@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta:__legacy__"
+
+[project]
+name = "juntagrico"
+description = "juntagrico is a management platform for community gardens and vegetable cooperatives."
+authors = [
+    {name = "juntagrico", email = "python@juntagrico.org"},
+]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8 ",
+    "Programming Language :: Python :: 3.9 ",
+    "Programming Language :: Python :: 3.10 ",
+    "Programming Language :: Python :: 3.11 ",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://www.juntagrico.org"
+Issues = "https://github.com/juntagrico/juntagrico/issues"
+Documentation = "https://juntagrico.readthedocs.io"
