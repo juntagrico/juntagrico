@@ -50,8 +50,8 @@ Homepage = "https://www.juntagrico.org"
 Issues = "https://github.com/juntagrico/juntagrico/issues"
 Documentation = "https://juntagrico.readthedocs.io"
 
-[tool.setuptools]
-packages = ["juntagrico"]
+[tool.setuptools.packages.find]
+include = ['juntagrico', 'juntagrico.*']
 
 [tool.setuptools.dynamic]
 version = {attr = "juntagrico.__version__"}
