@@ -20,11 +20,11 @@ from django.urls import path
 from juntagrico import views
 
 urlpatterns = [
-    path(r'admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 
-    path(r'impersonate/', include('impersonate.urls')),
-    path(r'djrichtextfield/', include('djrichtextfield.urls')),
+    path('impersonate/', include('impersonate.urls')),
+    path('djrichtextfield/', include('djrichtextfield.urls')),
 
-    path(r'', include('juntagrico.urls')),
-    path(r'', views.home),
+    path('', include('juntagrico.urls')),
+    path('', views.home),
 ]
