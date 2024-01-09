@@ -51,9 +51,8 @@
         {% include 'juntagrico/my/assignment/snippets/subscription_overview.html' %}
         {# Share #}
         {% include 'juntagrico/my/share/snippets/subscription_overview.html' %}
-        {# From Addons #}
-        {% for sub_overview_addon in sub_overview_addons %}
-            {% include sub_overview_addon %}
-        {% endfor %}
+        {# Additional #}
+        {% block extend %}
+        {% endblock %}
     {% endwith %}
 {% endblock %}

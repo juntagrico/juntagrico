@@ -52,10 +52,10 @@
                             <i class="fa-solid fa-bars">
                             </i>
                         </button>
-                        
+
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            {% include "menu/user_menu.html" %}
-                            {% include "menu/admin_menu.html" %}
+                            {% include "juntagrico/menu/user.html" %}
+                            {% include "juntagrico/menu/admin.html" %}
                         </div>
                     {% endblock %}
                 </nav>
@@ -96,8 +96,8 @@
             <div class="allcontent row">
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
-                        {% include "menu/user_menu.html" %}
-                        {% include "menu/admin_menu.html" %}
+                        {% include "juntagrico/menu/user.html" %}
+                        {% include "juntagrico/menu/admin.html" %}
                         {% include "widgets/assignements.html" %}
                         {% include "widgets/jobs.html" %}
                     </div>

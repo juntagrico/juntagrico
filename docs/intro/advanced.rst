@@ -64,37 +64,8 @@ More information on django-richtextfield you can find here https://pypi.org/proj
 Custom Templates
 ----------------
 
-.. Note::
-    Changing the templates will increase your maintenance work.
-    If you think the changes you want to make could also benefit other juntagrico users, consider opening an issue, suggesting your changes to juntagrico directly.
-    If you need your changes quickly, you may still want to override the templates as described here.
-
-Read `the official documentation <https://docs.djangoproject.com/en/4.2/howto/overriding-templates/>`_ on how to override templates in django.
-
-Roughly these are the steps to override a template:
-
-1. Either ensure, that your ``INSTALLED_APPS`` are in the desired order
-   or add ``DIRS`` to your ``TEMPLATES`` settings in ``{app}/settings.py``, e.g.:
-
-.. code-block:: python
-
-    TEMPLATES = [
-        {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [os.path.join(BASE_DIR, 'templates')],  # location of your overriding templates
-            'APP_DIRS': True,
-            # ...
-        },
-    ]
-
-2. Copy the juntagrico template that you want to override from ``juntagrico/templates``
-   (in the juntagrico source code) to your ``templates`` folder (in your app or in the project root, depending on the above setting),
-   while preserving the folder structure.
-3. The project will now use your copy of the template instead of the original.
-
-.. Hint::
-    Some texts, e.g. of forms, do not appear in the template. To change these :ref:`see below <intro-modify-text-in-code>`
-
+Templates can be modified, e.g., to change texts or menu entries.
+:ref:`See Templates Reference <reference-templates>`.
 
 .. _intro-custom-code:
 

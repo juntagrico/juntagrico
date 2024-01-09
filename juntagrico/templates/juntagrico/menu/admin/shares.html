@@ -1,0 +1,21 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% config "enable_shares" as c_enable_shares %}
+{% if perms.juntagrico.change_share and c_enable_shares %}
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#shareman">
+            {% blocktrans %}{{ v_share_pl }}{% endblocktrans %}
+            <i class="fas fa-angle-right">
+            </i>
+        </a>
+        <div class="collapse" id="shareman">
+            <ul class="nav flex-column subadmin-menu">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'share-mgmt-canceledlist' %}">
+                         {% blocktrans %}Kündigungsliste{% endblocktrans %}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+{% endif %}
