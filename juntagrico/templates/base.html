@@ -46,22 +46,22 @@
             </div>
             <div class="row d-md-none">
                 <nav class="navbar navbar-expand-md col-sm-12">
-                      <a class="navbar-brand" href="{% url 'home' %}">{{ request.site.name }}</a>
+                    <a class="navbar-brand" href="{% url 'home' %}">{{ request.site.name }}</a>
 
-                {% block small_menu_content %}
-                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="mdi mdi-menu">
-                        </i>
-                      </button>
-
-                      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    {% block small_menu_content %}
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="fa-solid fa-bars">
+                            </i>
+                        </button>
+                        
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             {% include "menu/user_menu.html" %}
                             {% if b_show_admin_menu %}
                                 {% include "menu/admin_menu.html" %}
                             {% endif %}
-                      </div>
-                {% endblock %}
-                    </nav>
+                        </div>
+                    {% endblock %}
+                </nav>
             </div>
             <div class="logo-row row d-none d-md-block">
                 <div class="logo-col col-md-12">
