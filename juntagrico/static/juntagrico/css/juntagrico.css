@@ -171,6 +171,17 @@ div.all-page-title.row {
     font-size: 14px;
 }
 
+.admin-menu-title h5 {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.admin-menu-title:first-child:last-child {
+    /* hide admin menu title if no admin menu entries */
+    display: none;
+}
+
 .version {
     margin-top: 6px;
     font-size: 12px;

@@ -15,11 +15,12 @@
 {% vocabulary "assignment_pl" as v_assignment_pl %}
 {% vocabulary "depot" as v_depot %}
 {% vocabulary "depot_pl" as v_depot_pl %}
-<hr/>
-<h5>
-    {% trans "Administration" %}
-</h5>
 <ul class="admin-menu nav flex-column">
+    <li class="admin-menu-title">
+        <h5>
+            {% trans "Administration" %}
+        </h5>
+    </li>
     {% block admin %}
         {% if request.user.is_staff %}
             <li class="nav-item">
@@ -298,9 +299,11 @@
     {% endfor %}
     {% block extend_admin_menu %}
     {% endblock %}
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'versions' %}">
-            {% trans "Version: " %}{% get_version %}
-        </a>
-    </li>
+    {% if request.user.is_staff %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'versions' %}">
+                {% trans "Version: " %}{% get_version %}
+            </a>
+        </li>
+    {% endif %}
 </ul>

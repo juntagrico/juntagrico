@@ -24,11 +24,12 @@ register_admin_subscription_menu
 
 register_show_admin_menu_method
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  If the added function returns true, the admin menu will be displayed
 
-  Arguments:
+.. warning::
+    Removed in juntagrico 1.6.0. Now it is enough to not add any HTML to the admin menu,
+    for users without access. I.e. Add an if condition in your menu template to only show
+    it to users who should have access.
 
-  - function: Function that takes user as first argument
 
 register_user_menu
 ^^^^^^^^^^^^^^^^^^

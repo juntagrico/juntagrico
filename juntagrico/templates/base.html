@@ -6,7 +6,6 @@
 {% depot_admin request as qs_depot_admin %}
 {% area_admin request as qs_area_admin %}
 {% messages request as l_messages %}
-{% show_admin_menu request as b_show_admin_menu %}
 
 <!DOCTYPE html>
 <html lang="de">
@@ -56,9 +55,7 @@
                         
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             {% include "menu/user_menu.html" %}
-                            {% if b_show_admin_menu %}
-                                {% include "menu/admin_menu.html" %}
-                            {% endif %}
+                            {% include "menu/admin_menu.html" %}
                         </div>
                     {% endblock %}
                 </nav>
@@ -100,9 +97,7 @@
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
                         {% include "menu/user_menu.html" %}
-                        {% if b_show_admin_menu %}
-                            {% include "menu/admin_menu.html" %}
-                        {% endif %}
+                        {% include "menu/admin_menu.html" %}
                         {% include "widgets/assignements.html" %}
                         {% include "widgets/jobs.html" %}
                     </div>
