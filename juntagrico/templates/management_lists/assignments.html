@@ -130,3 +130,12 @@
         </tbody>
     </table>
 {% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(function(){
+            $("#show_co_members").ToggleButton('.co-member')
+            $("#show_phone_numbers").ToggleButton('.phone-number')
+        })
+    </script>
+{% endblock %}

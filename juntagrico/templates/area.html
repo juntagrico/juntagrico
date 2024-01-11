@@ -56,6 +56,10 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initArea.js' %}">
+    <script type="text/javascript">
+        $(function() {
+            $("#filter-table").DataTable({"searching": false});
+        })
     </script>
+    {% include 'snippets/scripts/area_slider.html' %}
 {% endblock %}

@@ -38,6 +38,10 @@
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initHomeJobs.js' %}">
-    </script>
+    <script type="text/javascript">
+        // Assuming default ids
+        $(function(){
+            $("#filter-table").DataTable({"searching": false});
+        })
+        </script>
 {% endblock %}

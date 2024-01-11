@@ -18,11 +18,14 @@ $(function() {
             "zeroRecords": zero_records_string,
             searchBuilder: sb_lang
         },
-        "initComplete": function() {
+        "initComplete": function(settings) {
+            let api = new $.fn.dataTable.Api( settings )
             // activate column search inputs
-            $("th.filter:not(:has(> input))", this).each(function () {
-                $(this).append("<input type='text' placeholder='' class='form-control form-control-sm' />");
-            });
+            if (api.init().searching !== false) {
+                $("th.filter:not(:has(> input))", this).each(function () {
+                    $(this).append("<input type='text' placeholder='' class='form-control form-control-sm' />");
+                });
+            }
             this.api().columns().every(function () {
                 let that = this;
                 $("input", this.header()).on("keyup change", function () {
@@ -51,7 +54,8 @@ $.fn.EmailButton = function(tables, selector='.email') {
     }
 
     // Move the button (and the corresponding form) to the same level as the filter input
-    form.appendTo("#filter-table_wrapper .row:first-child > div:first-child")
+    if(tables.length === 1)
+        form.appendTo($(".row:first-child > div:first-child", $(tables[0].table().node()).parent().parent().parent()))
     // On submit collect emails from table and first.
     form.submit(function (event) {
         let emails = fetch_emails()
@@ -71,29 +75,24 @@ $.fn.EmailButton = function(tables, selector='.email') {
     return this;
 };
 
-function member_phone_toggle() {
-    let show_co_members = $("#show_co_members")
-    let show_phone_numbers = $("#show_phone_numbers")
+$.fn.ToggleButton = function(selector) {
+    let button = $(this)
     // initialize correct value after reload
-    $('.co-member').toggle(show_co_members.is(':checked'));
-    $('.phone-number').toggle(show_phone_numbers.is(':checked'));
+    $(selector).toggle(button.is(':checked'));
     // change on click
-    show_co_members.change(function () {
-        $('.co-member').toggle(this.checked);
-    });
-    show_phone_numbers.change(function () {
-        $('.phone-number').toggle(this.checked);
+    button.change(function () {
+        $(selector).toggle(this.checked);
     });
 }
 
-function area_slider() {
-    $("input.switch").change(function () {
-        if ($(this).is(':checked')) {
-            $.get("/my/area/" + $(this).attr('value') + "/join");
+$.fn.AjaxSlider = function(activate_url, disable_url, placeholder='{value}') {
+    $(this).change(function () {
+        let slider = $(this)
+        if (slider.is(':checked')) {
+            $.get(activate_url.replace(placeholder, slider.val()));
         } else {
-            $.get("/my/area/" + $(this).attr('value') + "/leave");
+            $.get(disable_url.replace(placeholder, slider.val()));
         }
-
     })
 }
 
