@@ -8,6 +8,7 @@
     </h3>
 {% endblock %}
 {% block management_cmd %}
+    {% include 'management_lists/snippets/email_sender.html' %}
     <div class="row mt-3">
         <div class="col-md-12">
             <form id="payoutfile-creator" action="/my/iso20022/shares/pain001" method="POST">
@@ -90,15 +91,15 @@
                     <td>
                         <form id="share{{ share.id }}" method="post" action="{% url 'mail' %}">
                             {% csrf_token %}
-                            <input type="hidden" name="recipients"value="{{ share.member.email }}"/>
+                            <input type="hidden" name="recipients" value="{{ share.member.email }}"/>
                             <input type="hidden" name="recipients_count" value="1"/>
-                            <a href="#"onclick="$('#share{{ share.id }}').submit();" class="email">
+                            <a href="#" onclick="$('#share{{ share.id }}').submit();" class="email">
                                 {{ share.member.email }}
                             </a>
                         </form>
                     </td>
                     <td>
-                        <a href="{% url 'share-payout' share.id %}"class="btn btn-success">
+                        <a href="{% url 'share-payout' share.id %}" class="btn btn-success">
                             {% trans "ausbuchen" %}
                         </a>
                     </td>

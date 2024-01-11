@@ -149,7 +149,7 @@ def filters_active(request):
         'members': members,
         'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
@@ -159,7 +159,7 @@ def filters(request):
         'members': members,
         'title': _('Alle {}').format(Config.vocabulary('member_pl'))
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')
@@ -172,7 +172,7 @@ def filters_depot(request, depot_id):
         'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @permission_required('juntagrico.is_area_admin')
@@ -185,7 +185,7 @@ def filters_area(request, area_id):
         'mail_url': 'mail-area',
         'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
@@ -195,7 +195,7 @@ def subscriptions(request):
         'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
     }
 
-    return render(request, 'subscriptions.html', renderdict)
+    return render(request, 'management_lists/subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')
@@ -208,7 +208,7 @@ def filter_subscriptions_depot(request, depot_id):
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
     }
 
-    return render(request, 'subscriptions.html', renderdict)
+    return render(request, 'management_lists/subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.can_view_lists')
@@ -468,8 +468,7 @@ def extra_canceledlist(request):
 
 @permission_required('juntagrico.change_subscription')
 def depot_changes(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), render_dict,
+    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), {},
                                         'juntagrico/manage/subscription/depot/changes.html', request)
 
 
@@ -482,15 +481,13 @@ def depot_change_confirm(request, subscription_id):
 
 @permission_required('juntagrico.change_share')
 def share_canceledlist(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(ShareDao.canceled_shares(), render_dict,
+    return subscription_management_list(ShareDao.canceled_shares(), {},
                                         'management_lists/share_canceledlist.html', request)
 
 
 @permission_required('juntagrico.change_member')
 def member_canceledlist(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(MemberDao.canceled_members(), render_dict,
+    return subscription_management_list(MemberDao.canceled_members(), {},
                                         'management_lists/member_canceledlist.html', request)
 
 

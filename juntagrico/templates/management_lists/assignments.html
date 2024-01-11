@@ -7,11 +7,8 @@
         {% vocabulary "assignment_pl" %}
     </h3>
 {% endblock %}
-{% block list %}
-    {% show_core as b_show_core %}
-    {% requires_core as b_requires_core %}
-    {% vocabulary "assignment_pl" as v_assignment_pl %}
-    {% vocabulary "subscription" as v_subscription %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/email_sender.html' %}
     <div>
         <span class="switch switch-sm">
             <input class="switch" type="checkbox" id="show_co_members" checked="checked">
@@ -22,6 +19,12 @@
             <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
         </span>
     </div>
+{% endblock %}
+{% block list %}
+    {% show_core as b_show_core %}
+    {% requires_core as b_requires_core %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% vocabulary "subscription" as v_subscription %}
     <table id="filter-table" class="list table" data-dom="Q">
         <thead>
             <tr>

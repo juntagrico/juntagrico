@@ -6,6 +6,10 @@
         {% trans "Warteliste der Bestandteile" %}
     </h3>
 {% endblock %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/change_date.html' %}
+    {% include 'management_lists/snippets/email_sender.html' %}
+{% endblock %}
 {% block list %}
     {% vocabulary "subscription" as v_subscription %}
     <table id="filter-table" class="list table">

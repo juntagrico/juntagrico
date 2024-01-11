@@ -38,56 +38,38 @@ $(function() {
     });
 });
 
-function default_data_table() {
-    $("#filter-table").DataTable({
-        "drawCallback": function () {
-            updateSendEmailButton(fetch_emails().length);
-        },
-    })
-}
+$.fn.EmailButton = function(tables, selector='.email') {
+    tables = Array.isArray(tables)?tables:[tables]
+    let form = $(this)
 
-function updateSendEmailButton(count) {
-    if (count == 0) {
-        $("button#send-email")
-            .prop("disabled", true)
-            .text(email_string);
-    } else if (count == 1) {
-        $("button#send-email")
-            .prop("disabled", false)
-            .text(email_single_string + " " + member_string + " " + send_string);
-    } else {
-        $("button#send-email")
-            .prop("disabled", false)
-            .text(email_multi_string + " " + count + " " + members_string + " " + send_string);
+    let fetch_emails = function() {
+        let table_nodes = tables.map((table) => table.table().node())
+        let table_emails = $(selector, table_nodes).text().trim().replace(/[\s,]+/gm, ',');
+        if (table_emails !== "")
+            return new Set(table_emails.split(','))
+        return new Set()
     }
-}
 
-function move_email_button() {
-    // Move the "Send email" button (and the corresponding form) to the same level as the filter input
-    $("form#email-sender").appendTo("#filter_header div:first-child");
-}
+    // Move the button (and the corresponding form) to the same level as the filter input
+    form.appendTo("#filter-table_wrapper .row:first-child > div:first-child")
+    // On submit collect emails from table and first.
+    form.submit(function (event) {
+        let emails = fetch_emails()
+        $("[name='recipients']", this).val(Array.from(emails).join("\n"))
+        $("[name='recipients_count']", this).val(emails.size)
+    })
 
-function fetch_emails() {
-    var emails = []
-    $("[id^=filter-table]").find("tr").each(function () {
-        var txt = $(".email", this).text().trim();
-        if (txt.length > 0)
-            for (var email of txt.split(",")) {
-                emails.push(email.trim());
-            }
-    });
-    return emails;
-}
-
-function email_submit() {
-    $("form#email-sender").submit(function (event) {
-        var emails = fetch_emails();
-
-        $("#recipients").val(emails.join("\n"));
-        $("#recipients_count").val(emails.length);
-        return;
-    });
-}
+    // update counter in email button when table if filtered
+    for (let table of tables) {
+        table.on('draw', function() {
+            const count = fetch_emails().size
+            let button = $("[type='submit']", form)
+            button.prop("disabled", count === 0)
+            button.text(email_button_string[Math.min(2, count)].replace("{count}", count))
+        }).draw()
+    }
+    return this;
+};
 
 function member_phone_toggle() {
     let show_co_members = $("#show_co_members")
