@@ -370,37 +370,34 @@ th {
     border-top-style: none;
 }
 
-#filter {
+.dataTables_filter label input{
+    width: auto;
+    display: inline;
+}
+
+.dataTables_filter {
+    text-align: right;
+}
+
+
+#managementlist, #filter {
     width: 100%;
 }
 
-#filter table {
+#managementlist table, #filter table, #filter-table {
     width: 100%;
     font-size: 12pt;
+    display: table;
 }
 
-#filter a:not(.btn) {
+#managementlist a:not(.btn), #filter a:not(.btn) {
     color: #408040;
     text-decoration: underline;
-}
-
-#managementlist {
-    width: 100%;
-}
-
-#managementlist table {
-    width: 100%;
-    font-size: 12pt;
 }
 
 #managementlist table th {
     vertical-align: top;
     padding-left: 0;
-}
-
-#managementlist a:not(.btn) {
-    color: #408040;
-    text-decoration: underline;
 }
 
 /* deliveries stuff checked */
