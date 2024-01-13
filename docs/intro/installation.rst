@@ -38,60 +38,8 @@ Juntagrico can be installed via :command:`pip`:
 
 Django Settings
 ---------------
-The following django settings are necessary to run juntagrico. If you used the cookiecutter template, above this settings will already be set.
-
-Additional to juntagrico the following apps have to installed into django:
-
-.. code-block:: python
-
-    INSTALLED_APPS = [
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'django.contrib.sites',
-        'django.contrib.messages',
-        'django.contrib.staticfiles',
-        'django.contrib.admin',
-        'juntagrico',
-        'impersonate',
-        'crispy_forms',
-        'adminsortable2',
-        'demo',
-        'polymorphic',
-    ]
-    
-The following authentication settings are required
-
-.. code-block:: python
-
-    AUTHENTICATION_BACKENDS = (
-        'juntagrico.util.auth.AuthenticateWithEmail',
-        'django.contrib.auth.backends.ModelBackend'
-    )
-    
-Additionally also some changes in the middleware have to to be added
-
-.. code-block:: python
-
-    MIDDLEWARE = [
-        'django.middleware.common.CommonMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'impersonate.middleware.ImpersonateMiddleware',
-        'django.contrib.sites.middleware.CurrentSiteMiddleware',
-    ]
-    
-Since we use session we need a serializer
-
-.. code-block:: python
-
-    SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
-
-Further settings need to be configured to send emails and to access a database.
-If you need more helping points see the testsettings in the juntagrico project folder or refer to the `demo application settings <https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_.
-
+If you used the cookiecutter template, above this settings will already be set.
+Otherwise refer to the `demo application settings <https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_.
 
 Hook URLs in URLconf
 --------------------
@@ -101,14 +49,13 @@ Add the juntagrico urls to you urls.py e.g.:
 .. code-block:: python
 
     # urls.py
+    from django.urls import path, include
     from django.contrib import admin
-    from django.urls import path
-    import juntagrico
 
     urlpatterns = [
-        path(r'impersonate/', include('impersonate.urls')),
-        path(r'', include('juntagrico.urls')),
-        path(r'', juntagrico.views.home),
+        path('admin/', admin.site.urls),
+        path('impersonate/', include('impersonate.urls')),
+        path('', include('juntagrico.urls')),
     ]
 
 
