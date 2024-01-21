@@ -23,11 +23,11 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         # members
-        cls.member, cls.member2, cls.member3, cls.member4, cls.member5 = Member.objects.all()[:5]
+        cls.member, cls.member2, cls.member3, cls.member4, cls.member5 = Member.objects.order_by('id')[:5]
         cls.admin = Member.objects.get(email='admin@email.org')
         # areas
         cls.area_admin = Member.objects.get(email='areaadmin@email.org')
-        cls.area, cls.area2 = ActivityArea.objects.all()[:2]
+        cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
         # others
         cls.set_up_job()
         cls.set_up_depots()
