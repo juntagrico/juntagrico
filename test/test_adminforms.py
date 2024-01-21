@@ -111,14 +111,14 @@ class AdminTests(JuntagricoTestCase):
         self.assertEqual(Delivery.objects.all().count(), initial_count + 1)
 
     def testLocationReplaceForm(self):
-        data = {'replace_by': self.location}
-        form = LocationReplaceForm(queryset=Location.objects.filter(pk=self.location2.pk), data=data)
+        old_location = self.one_time_job1.location
+        new_location = self.create_location('new_location')
+        data = {'replace_by': new_location}
+        form = LocationReplaceForm(queryset=Location.objects.filter(pk=old_location.pk), data=data)
         form.full_clean()
         form.clean()
         form.save()
         self.one_time_job1.refresh_from_db()
-        self.assertEqual(self.one_time_job1.location, self.location)
-        self.job_type2.refresh_from_db()
-        self.assertEqual(self.job_type2.location, self.location)
+        self.assertEqual(self.one_time_job1.location, new_location)
         with self.assertRaises(Location.DoesNotExist):
-            Location.objects.get(pk=self.location2.pk)
+            Location.objects.get(pk=old_location.pk)

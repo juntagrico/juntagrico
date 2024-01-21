@@ -6,6 +6,7 @@ from test.util.test import JuntagricoTestCase
 
 
 class ManagementCommandsTest(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     def test_create_member_for_superuser(self):
         call_command('createsuperuser', username='testsuperuer', email='super@mail.com', no_input='')

@@ -4,6 +4,7 @@ from test.util.test import JuntagricoTestCase
 
 
 class ExtraSubTests(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     def testExtraSubs(self):
         self.assertGet(reverse('extra-change', args=[self.sub.pk]))

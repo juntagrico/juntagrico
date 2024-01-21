@@ -8,17 +8,16 @@ from test.util.test import JuntagricoTestCase
 
 class DepotChangeTests(JuntagricoTestCase):
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.admin.user.user_permissions.add(
+        cls.admin.user.user_permissions.add(
             Permission.objects.get(codename='notified_on_depot_change'))
-        self.admin.user.save()
+        cls.admin.user.save()
 
-        self.sub3 = self.create_sub(self.depot)
-        self.sub3.future_depot = self.depot2
-        self.sub3.save()
-        self.member4.join_subscription(self.sub3, True)
+        cls.sub3 = cls.create_sub(cls.depot, future_depot=cls.depot2)
+        cls.member4.join_subscription(cls.sub3, True)
 
     def testDepotChangeWaiting(self):
         """For not yet active subscriptions the depot should change immediately"""

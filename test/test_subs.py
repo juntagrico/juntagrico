@@ -7,6 +7,7 @@ from test.util.test import JuntagricoTestCase
 
 
 class SubscriptionTests(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     def testSub(self):
         self.assertGet(reverse('subscription-landing'), 302)

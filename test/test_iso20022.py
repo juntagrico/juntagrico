@@ -4,15 +4,17 @@ from test.util.test import JuntagricoTestCase
 
 
 class ISO2002Tests(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
         # add iban to member such that tested share can be paid back.
-        self.member.iban = 'CH6189144414396247884'
-        self.member.save()
+        cls.member.iban = 'CH6189144414396247884'
+        cls.member.save()
 
     def testSharePAIN001(self):
-        self.assertPost(reverse('share-pain001'), data={'share_ids': str(self.share.pk)})
+        self.assertPost(reverse('share-pain001'), data={'share_ids': str(self.member.share_set.first().pk)})
 
     def testSharePAIN001404(self):
         self.assertGet(reverse('share-pain001'), code=404)

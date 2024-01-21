@@ -4,6 +4,7 @@ from test.util.test import JuntagricoTestCase
 
 
 class SubAdminTests(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     def testSubAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)

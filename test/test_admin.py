@@ -6,6 +6,7 @@ from test.util.test import JuntagricoTestCase
 
 
 class AdminTests(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     def testOneTimeJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)), member=self.admin)
@@ -120,7 +121,7 @@ class AdminTests(JuntagricoTestCase):
 
     def testShareAdmin(self):
         url = reverse('admin:juntagrico_share_changelist')
-        selected_items = [self.share.pk]
+        selected_items = [self.member.share_set.first().pk]
         self.assertPost(url, data={'action': 'mass_edit_share_dates', '_selected_action': selected_items},
                         member=self.admin)
 

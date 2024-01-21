@@ -16,6 +16,7 @@ def mock_batch_mailer(msg):
 
 
 class MailerTests(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     def testMailer(self):
         self.assertGet(reverse('mail'))
