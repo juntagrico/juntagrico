@@ -38,7 +38,7 @@ the project.
    # Activate the virtual environment
    source .venv/bin/activate
    # Install python dependencies
-   pip install -r requirements-local.txt
+   pip install -r requirements.txt
 
 Getting started
 ---------------

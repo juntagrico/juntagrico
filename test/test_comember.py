@@ -7,11 +7,10 @@ from test.util.test import JuntagricoTestCase
 
 class CoMemberTests(JuntagricoTestCase):
 
-    def setUp(self):
-        super().setUp()
-        self.co_member = self.create_member('co_member@email.org')
-        self.co_member.iban = 'CH6189144414396247884'
-        self.co_member.save()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.co_member = cls.create_member('co_member@email.org', iban='CH6189144414396247884')
         mail.outbox.clear()
 
     @staticmethod

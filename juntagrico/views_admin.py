@@ -13,7 +13,7 @@ from django.utils.translation import gettext as _, get_language
 from django.views.generic import FormView
 from xlsxwriter import Workbook
 
-from juntagrico import version
+from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
@@ -145,7 +145,7 @@ def filters_active(request):
         'members': members,
         'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
@@ -155,7 +155,7 @@ def filters(request):
         'members': members,
         'title': _('Alle {}').format(Config.vocabulary('member_pl'))
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')
@@ -168,7 +168,7 @@ def filters_depot(request, depot_id):
         'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @permission_required('juntagrico.is_area_admin')
@@ -181,7 +181,7 @@ def filters_area(request, area_id):
         'mail_url': 'mail-area',
         'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
@@ -191,7 +191,7 @@ def subscriptions(request):
         'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
     }
 
-    return render(request, 'subscriptions.html', renderdict)
+    return render(request, 'management_lists/subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')
@@ -204,7 +204,7 @@ def filter_subscriptions_depot(request, depot_id):
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
     }
 
-    return render(request, 'subscriptions.html', renderdict)
+    return render(request, 'management_lists/subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.can_view_lists')
@@ -323,14 +323,15 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 4, str(_('HauptbezieherInMobile')))
     worksheet_s.write_string(0, 5, str(_('Weitere BezieherInnen')))
     worksheet_s.write_string(0, 6, str(_('Status')))
-    worksheet_s.write_string(0, 7, str(_('Depot')))
-    worksheet_s.write_string(0, 8, str(Config.vocabulary('assignment')))
-    worksheet_s.write_string(0, 9, str(_('{} soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 10, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 11, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 12, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 14, str(_('Preis')))
+    worksheet_s.write_string(0, 7, str(_('Kündigungsdatum')))
+    worksheet_s.write_string(0, 8, str(_('Depot')))
+    worksheet_s.write_string(0, 9, str(Config.vocabulary('assignment')))
+    worksheet_s.write_string(0, 10, str(_('{} soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 11, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 12, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 13, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 14, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 15, str(_('Preis')))
 
     subs = SubscriptionDao.all_subscritions().annotate_assignments_progress().select_related('primary_member')
 
@@ -348,6 +349,10 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
+        c_date = ''
+        if sub.cancellation_date:
+            c_date = sub.cancellation_date.strftime('%d/%m/%y')
+
         worksheet_s.write_string(row, 0, sub.size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
@@ -355,14 +360,15 @@ def excel_export_subscriptions(request):
         worksheet_s.write_string(row, 4, mobile)
         worksheet_s.write_string(row, 5, sub.other_recipients_names)
         worksheet_s.write_string(row, 6, sub.state_text)
-        worksheet_s.write_string(row, 7, sub.depot.name)
-        worksheet_s.write(row, 8, sub.assignment_count)
-        worksheet_s.write(row, 9, sub.required_assignments)
-        worksheet_s.write(row, 10, sub.assignments_progress)
-        worksheet_s.write(row, 11, sub.core_assignment_count)
-        worksheet_s.write(row, 12, sub.required_core_assignments)
-        worksheet_s.write(row, 13, sub.core_assignments_progress)
-        worksheet_s.write(row, 14, sub.price)
+        worksheet_s.write_string(row, 7, c_date)
+        worksheet_s.write_string(row, 8, sub.depot.name)
+        worksheet_s.write(row, 9, sub.assignment_count)
+        worksheet_s.write(row, 10, sub.required_assignments)
+        worksheet_s.write(row, 11, sub.assignments_progress)
+        worksheet_s.write(row, 12, sub.core_assignment_count)
+        worksheet_s.write(row, 13, sub.required_core_assignments)
+        worksheet_s.write(row, 14, sub.core_assignments_progress)
+        worksheet_s.write(row, 15, sub.price)
         row += 1
 
     workbook.close()
@@ -458,8 +464,7 @@ def extra_canceledlist(request):
 
 @permission_required('juntagrico.change_subscription')
 def depot_changes(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), render_dict,
+    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), {},
                                         'juntagrico/manage/subscription/depot/changes.html', request)
 
 
@@ -472,15 +477,13 @@ def depot_change_confirm(request, subscription_id):
 
 @permission_required('juntagrico.change_share')
 def share_canceledlist(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(ShareDao.canceled_shares(), render_dict,
+    return subscription_management_list(ShareDao.canceled_shares(), {},
                                         'management_lists/share_canceledlist.html', request)
 
 
 @permission_required('juntagrico.change_member')
 def member_canceledlist(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(MemberDao.canceled_members(), render_dict,
+    return subscription_management_list(MemberDao.canceled_members(), {},
                                         'management_lists/member_canceledlist.html', request)
 
 
@@ -555,7 +558,7 @@ def manage_list(request):
 
 @login_required
 def versions(request):
-    versions = {'juntagrico': version}
+    versions = {'juntagrico': __version__}
     versions.update(addons.config.get_versions())
     render_dict = {'versions': versions}
     return render(request, 'versions.html', render_dict)

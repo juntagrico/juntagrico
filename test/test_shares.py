@@ -6,6 +6,7 @@ from test.util.test import JuntagricoTestCase
 
 
 class ShareTests(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     def testShareManage(self):
         self.assertGet(reverse('manage-shares'), 200)

@@ -1,0 +1,8 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% vocabulary "subscription" as v_subscription %}
+<div class="alert alert-danger">
+    {% blocktrans with ld=subscription_membership.leave_date %}
+        Du trittst aus diesem/r {{ v_subscription }} am {{ ld }} aus.
+    {% endblocktrans %}
+</div>

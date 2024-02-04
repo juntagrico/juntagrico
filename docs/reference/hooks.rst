@@ -8,80 +8,96 @@ Template Hooks
 
 register_admin_menu
 ^^^^^^^^^^^^^^^^^^^
-  Renders the given template at the end of the admin menu.
 
-  Arguments:
+.. warning::
+    Deprecated since version 1.6.0. Use :ref:`template overrides <reference-templates-extend_admin_menu>` instead.
 
-  - template: String
+Renders the given template at the end of the admin menu.
+
+Arguments:
+
+- template: String
 
 register_admin_subscription_menu
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  Renders the given template at the end of the subscription section in the admin menu.
 
-  Arguments:
+.. warning::
+    Deprecated since version 1.6.0. Use :ref:`template overrides <reference-templates-extend_admin_subscription_menu>` instead.
 
-  - template: String
+Renders the given template at the end of the subscription section in the admin menu.
+
+Arguments:
+
+- template: String
 
 register_show_admin_menu_method
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  If the added function returns true, the admin menu will be displayed
 
-  Arguments:
+.. warning::
+    Removed in juntagrico 1.6.0. Now it is enough to not add any HTML to the admin menu,
+    for users without access. I.e. Add an if condition in your menu template to only show
+    it to users who should have access.
 
-  - function: Function that takes user as first argument
 
 register_user_menu
 ^^^^^^^^^^^^^^^^^^
-  Renders the given template at the end of the user menu.
-  
-  Arguments:
 
-  - template: String
+.. warning::
+    Deprecated since version 1.6.0. Use :ref:`template overrides <reference-templates-extend_user_menu>` instead.
+
+Renders the given template at the end of the user menu.
+
+Arguments:
+
+- template: String
 
 register_sub_overview
 ^^^^^^^^^^^^^^^^^^^^^
-  Renders the given template at the end of the subscription overview page
 
-  Arguments:
-
-  - template: String
+.. warning::
+    Removed in version 1.6.0. Keep it for the legacy subscription overview.
+    For the new subscription overview use :ref:`template overrides <reference-templates-extend_subscription_overview_single>` instead.
 
 register_sub_change
 ^^^^^^^^^^^^^^^^^^^
-  Renders the given template at the end of the subscription overview page
 
-  Arguments:
-
-  - template: String
+.. warning::
+    Removed in version 1.6.0. Keep it for the legacy subscription overview.
+    For the new subscription overview use :ref:`template overrides <reference-templates-extend_subscription_overview_single>` instead.
 
 Admin Hooks
 -----------
 
 register_model_inline
 ^^^^^^^^^^^^^^^^^^^^^
-  Adds the given inline to the admin of the given model
+Adds the given inline to the admin of the given model
 
-  Arguments:
+Arguments:
 
-  - model: String
-  - inline: InlineModelAdmin
+- model: String
+- inline: InlineModelAdmin
 
 Config Hooks
 ------------
 
 register_config_class
 ^^^^^^^^^^^^^^^^^^^^^
-  Extends the juntagrico ``config`` template tag by the attributes of the given class
+Extends the juntagrico ``config`` template tag by the attributes of the given class
 
-  Arguments:
+Arguments:
 
-  - cls: Class
+- cls: Class
 
 register_version
 ^^^^^^^^^^^^^^^^
-  Shows the given version with the given name on the version page
 
-  Arguments:
+.. note::
+    Since Version 1.6.0 this hook shall be called with the package name (as in imports)
+    as the only argument. Juntagrico will identify the installed version automatically.
 
-  - name: String
-  - version: String
+Shows the given version with the given name on the version page
+
+Arguments:
+
+- name: String
+- version: String (deprecated since juntagrico 1.6.0)

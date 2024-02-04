@@ -1,0 +1,26 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% vocabulary "depot" as v_depot %}
+<a href="{% url 'depot' subscription.depot.id %}">
+    {{ subscription.depot.name }}
+</a>
+<br>
+{% blocktrans %}Name auf der {{ v_depot }}-Liste:{% endblocktrans %}
+{{ subscription.recipients_display_name }}
+<br>
+{% if not subscription.inactive %}
+    {% if subscription.primary_member == member %}
+        <a href="{% url 'depot-change' subscription.id %}" class="btn btn-primary mt-3">
+            {% blocktrans %}{{ v_depot }} wechseln{% endblocktrans %}
+        </a>
+        <a href="{% url 'nickname-change' subscription.id %}" class="btn btn-outline-primary mt-3">
+            {% blocktrans %}Namen auf der Liste ändern{% endblocktrans %}
+        </a>
+    {% else %}
+        <i>
+            {% blocktrans trimmed %}
+            Nur {{ v_subscription }}-VerwalterIn kann Depot wechseln.
+            {% endblocktrans %}
+        </i>
+    {% endif %}
+{% endif %}

@@ -1,21 +1,23 @@
 from django.core import mail
 from django.urls import reverse
 
+from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from test.util.test import JuntagricoTestCase
 
 
 class ProfileTests(JuntagricoTestCase):
 
-    def setUp(self):
-        self.member = self.create_member('member_with_shares@email.org')
-        self.paid_share = self.create_paid_share(self.member)
-        self.member_without_shares = self.create_member('member_without_shares@email.org')
-        self.member_with_unpaid_share = self.create_member('member_with_unpaid_share@email.org')
-        self.unpaid_share = Share.objects.create(member=self.member_with_unpaid_share)
-        self.member_with_cancelled_share = self.create_member('member_with_cancelled_share@email.org')
-        self.cancelled_share = self.create_paid_and_cancelled_share(self.member_with_cancelled_share)
-        self.set_up_superuser()
+    @classmethod
+    def setUpTestData(cls):
+        cls.member = cls.create_member('member_with_shares@email.org')
+        cls.paid_share = cls.create_paid_share(cls.member)
+        cls.member_without_shares = cls.create_member('member_without_shares@email.org')
+        cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org')
+        cls.unpaid_share = Share.objects.create(member=cls.member_with_unpaid_share)
+        cls.member_with_cancelled_share = cls.create_member('member_with_cancelled_share@email.org')
+        cls.cancelled_share = cls.create_paid_and_cancelled_share(cls.member_with_cancelled_share)
+        cls.admin = Member.objects.get(email='admin@email.org')
 
     def testProfile(self):
         self.assertGet(reverse('profile'))

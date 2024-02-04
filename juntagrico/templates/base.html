@@ -6,7 +6,6 @@
 {% depot_admin request as qs_depot_admin %}
 {% area_admin request as qs_area_admin %}
 {% messages request as l_messages %}
-{% show_admin_menu request as b_show_admin_menu %}
 
 <!DOCTYPE html>
 <html lang="de">
@@ -46,22 +45,20 @@
             </div>
             <div class="row d-md-none">
                 <nav class="navbar navbar-expand-md col-sm-12">
-                      <a class="navbar-brand" href="/my/home">{{ request.site.name }}</a>
+                    <a class="navbar-brand" href="{% url 'home' %}">{{ request.site.name }}</a>
 
-                {% block small_menu_content %}
-                      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="mdi mdi-menu">
-                        </i>
-                      </button>
+                    {% block small_menu_content %}
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="fa-solid fa-bars">
+                            </i>
+                        </button>
 
-                      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            {% include "menu/user_menu.html" %}
-                            {% if b_show_admin_menu %}
-                                {% include "menu/admin_menu.html" %}
-                            {% endif %}
-                      </div>
-                {% endblock %}
-                    </nav>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            {% include "juntagrico/menu/user.html" %}
+                            {% include "juntagrico/menu/admin.html" %}
+                        </div>
+                    {% endblock %}
+                </nav>
             </div>
             <div class="logo-row row d-none d-md-block">
                 <div class="logo-col col-md-12">
@@ -99,10 +96,8 @@
             <div class="allcontent row">
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
-                        {% include "menu/user_menu.html" %}
-                        {% if b_show_admin_menu %}
-                            {% include "menu/admin_menu.html" %}
-                        {% endif %}
+                        {% include "juntagrico/menu/user.html" %}
+                        {% include "juntagrico/menu/admin.html" %}
                         {% include "widgets/assignements.html" %}
                         {% include "widgets/jobs.html" %}
                     </div>

@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "juntagrico"
+description = "juntagrico is a management platform for community gardens and vegetable cooperatives."
+authors = [
+    {name = "juntagrico", email = "python@juntagrico.org"},
+]
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.8"
+dependencies = [
+    "Django~=4.2.0",
+    "django-admin-sortable2~=2.1.10",
+    "django-crispy-forms~=1.14.0",
+    "django-impersonate~=1.9.1",
+    "django-polymorphic~=3.1.0",
+    "django-richtextfield~=1.6.1",
+    "django-import-export~=3.3.1",
+    "icalendar~=5.0.0",
+    "reportlab==3.6.13",
+    "schwifty==2023.6.0",
+    "xhtml2pdf==0.2.11",
+    "XlsxWriter==3.1.4",
+    "python-dateutil~=2.8.2",
+    "fontawesomefree~=6.4.2",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Other Audience",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8 ",
+    "Programming Language :: Python :: 3.9 ",
+    "Programming Language :: Python :: 3.10 ",
+    "Programming Language :: Python :: 3.11 ",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://www.juntagrico.org"
+Issues = "https://github.com/juntagrico/juntagrico/issues"
+Documentation = "https://juntagrico.readthedocs.io"
+
+[tool.setuptools.packages.find]
+include = ['juntagrico', 'juntagrico.*']
+
+[tool.setuptools.dynamic]
+version = {attr = "juntagrico.__version__"}
+
+[tool.ruff]
+select = ["E", "F", "B"]
+ignore = ["E501"]

@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.queryset.subtypes import SubscriptionTypeQueryset
 from juntagrico.util import temporal
 
 
@@ -84,6 +85,8 @@ class SubscriptionType(JuntagricoBaseModel):
                                          help_text=_('Versatz der Lieferung in Wochen, '
                                                      '0 entspricht einer Lieferung ab der ersten Kalenderwoche, '
                                                      '1 entspricht einer Lieferung ab der zweiten Kalenderwoche, usw.'))
+
+    objects = SubscriptionTypeQueryset.as_manager()
 
     @property
     def has_periods(self):
