@@ -64,7 +64,7 @@ def mail_send_permissions_forward(apps, schema_editor):
             user.user_permissions.add(perm)
 
 
-def mail_send_permissions_backwards(apps, schema_editor):
+def mail_send_permissions_backward(apps, schema_editor):
     """Delete permissions added above"""
     Permission.objects.filter(Q(content_type__app_label='juntagrico') & (
             Q(codename='can_email_all_in_system') |
@@ -83,5 +83,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(set_location_sort_order),
         migrations.RunPython(make_name_product_unique),
         migrations.RunPython(set_tour),
-        migrations.RunPython(mail_send_permissions_forward, mail_send_permissions_backwards),
+        migrations.RunPython(mail_send_permissions_forward, mail_send_permissions_backward),
     ]

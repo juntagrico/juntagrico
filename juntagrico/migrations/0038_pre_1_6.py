@@ -17,7 +17,8 @@ class Migration(migrations.Migration):
         migrations.AlterModelOptions(
             name='specialroles',
             options={'default_permissions': (), 'managed': False, 'permissions': (
-             ('is_operations_group', 'Ist in der BG'), ('is_book_keeper', 'Ist Buchhalter'),
+             ('is_operations_group', 'Ist in der BG'),
+             ('is_book_keeper', 'Ist Buchhalter'),
              ('can_send_mails', 'Kann E-Mails versenden'),
              ('can_use_general_email', 'Kann Haupt-E-Mail-Adresse verwenden'),
              ('can_use_for_members_email', 'Kann E-Mail-Adresse "for_members" verwenden'),
@@ -29,7 +30,8 @@ class Migration(migrations.Migration):
              ('can_email_all_with_sub', 'Kann E-Mails an alle mit Abo senden'),
              ('can_email_free_address_list', 'Kann E-Mails frei an Adressen senden'),
              ('depot_list_notification', 'Benutzer wird bei Depot-Listen-Erstellung informiert'),
-             ('can_view_exports', 'Kann Exporte öffnen'), ('can_view_lists', 'Kann Listen öffnen'),
+             ('can_view_exports', 'Kann Exporte öffnen'),
+             ('can_view_lists', 'Kann Listen öffnen'),
              ('can_generate_lists', 'Kann Listen erzeugen'))},
         ),
         migrations.AlterField(
