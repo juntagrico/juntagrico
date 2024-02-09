@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 from schwifty import IBAN
 
 from juntagrico.config import Config
@@ -87,7 +88,7 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         model = Member
         fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
         labels = {
-            "addr_street": _("Strasse/Nr.")
+            "addr_street": gettext_lazy("Strasse/Nr.")
         }
 
     def __init__(self, *args, **kwargs):
@@ -125,11 +126,11 @@ class MemberProfileForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone', 'iban', 'reachable_by_email']
         labels = {
-            "phone": _("Telefonnummer"),
-            "email": _("E-Mail-Adresse"),
-            "birthday": _("Geburtstag"),
-            "addr_street": _("Strasse/Nr."),
-            "reachable_by_email": _(
+            "phone": gettext_lazy("Telefonnummer"),
+            "email": gettext_lazy("E-Mail-Adresse"),
+            "birthday": gettext_lazy("Geburtstag"),
+            "addr_street": gettext_lazy("Strasse/Nr."),
+            "reachable_by_email": gettext_lazy(
                 'Sollen andere {} dich via Kontaktformular erreichen können? (Email nicht sichtbar)'
             ).format(Config.vocabulary('member_pl')),
         }
@@ -190,10 +191,10 @@ class MemberBaseForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone')
         labels = {
-            "phone": _("Telefonnummer"),
-            "email": _("E-Mail-Adresse"),
-            "birthday": _("Geburtstag"),
-            "addr_street": _("Strasse/Nr."),
+            "phone": gettext_lazy("Telefonnummer"),
+            "email": gettext_lazy("E-Mail-Adresse"),
+            "birthday": gettext_lazy("Geburtstag"),
+            "addr_street": gettext_lazy("Strasse/Nr."),
         }
 
     def __init__(self, *args, **kwargs):
@@ -216,7 +217,7 @@ class MemberBaseForm(ModelForm):
 
 
 class RegisterMemberForm(MemberBaseForm):
-    comment = CharField(required=False, max_length=4000, label='Kommentar', widget=Textarea(attrs={"rows": 3}))
+    comment = CharField(required=False, max_length=4000, label=gettext_lazy('Kommentar'), widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
 
     def __init__(self, *args, **kwargs):
