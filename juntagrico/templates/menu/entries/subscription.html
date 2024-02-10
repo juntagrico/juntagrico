@@ -1,0 +1,8 @@
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% vocabulary "subscription" as v_subscription %}
+<li class="nav-item">
+    <a class="nav-link {{ request|activemenu:"subscription" }}" href="{% url 'sub-detail' %}">
+        {{ v_subscription }}
+    </a>
+</li>

@@ -1,0 +1,7 @@
+{% load i18n %}
+{% load juntagrico.common %}
+<li class="nav-item">
+    <a class="nav-link {{ request|activemenu:"area" }}" href="{% url 'areas' %}">
+        {% trans "Tätigkeitsbereiche" %}
+    </a>
+</li>
