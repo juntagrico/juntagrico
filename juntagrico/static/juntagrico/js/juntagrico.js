@@ -1,44 +1,46 @@
 $(function() {
-    $.extend($.fn.dataTable.defaults, {
-        "responsive": true,
-        "paging": false,
-        "info": false,
-        "ordering": false,
-        "search": {
-            "smart": false,
-            "regex": true
-        },
-        "searchBuilder": {
-            "columns": ".search-builder-column"
-        },
-        "language": {
-            "decimal": decimal_symbol[1],
-            "search": search_field,
-            "emptyTable": empty_table_string,
-            "zeroRecords": zero_records_string,
-            searchBuilder: sb_lang
-        },
-        "initComplete": function(settings) {
-            let api = new $.fn.dataTable.Api( settings )
-            // activate column search inputs
-            if (api.init().searching !== false) {
-                $("th.filter:not(:has(> input))", this).each(function () {
-                    $(this).append("<input type='text' placeholder='' class='form-control form-control-sm' />");
+    if($.fn.dataTable) {
+        $.extend($.fn.dataTable.defaults, {
+            "responsive": true,
+            "paging": false,
+            "info": false,
+            "ordering": false,
+            "search": {
+                "smart": false,
+                "regex": true
+            },
+            "searchBuilder": {
+                "columns": ".search-builder-column"
+            },
+            "language": {
+                "decimal": decimal_symbol[1],
+                "search": search_field,
+                "emptyTable": empty_table_string,
+                "zeroRecords": zero_records_string,
+                searchBuilder: sb_lang
+            },
+            "initComplete": function (settings) {
+                let api = new $.fn.dataTable.Api(settings)
+                // activate column search inputs
+                if (api.init().searching !== false) {
+                    $("th.filter:not(:has(> input))", this).each(function () {
+                        $(this).append("<input type='text' placeholder='' class='form-control form-control-sm' />");
+                    });
+                }
+                this.api().columns().every(function () {
+                    let that = this;
+                    $("input", this.header()).on("keyup change", function () {
+                        if (that.search() !== this.value) {
+                            that.search(this.value, true, false).draw();
+                        }
+                    }).on("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    });
                 });
             }
-            this.api().columns().every(function () {
-                let that = this;
-                $("input", this.header()).on("keyup change", function () {
-                    if (that.search() !== this.value) {
-                        that.search(this.value, true, false).draw();
-                    }
-                }).on("click", function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            });
-        }
-    });
+        });
+    }
 });
 
 $.fn.EmailButton = function(tables, selector='.email') {
