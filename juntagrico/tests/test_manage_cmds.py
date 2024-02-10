@@ -2,7 +2,7 @@ from io import StringIO
 
 from django.core.management import call_command
 
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class ManagementCommandsTest(JuntagricoTestCase):

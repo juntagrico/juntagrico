@@ -1,7 +1,7 @@
 from datetime import date
 
 from juntagrico.entity.subs import Subscription
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class AssignmentTests(JuntagricoTestCase):

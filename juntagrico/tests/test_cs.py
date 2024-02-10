@@ -5,7 +5,7 @@ from django.urls import reverse
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Share, Subscription
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class CreateSubscriptionTests(JuntagricoTestCase):

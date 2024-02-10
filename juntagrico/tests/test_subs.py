@@ -3,7 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class SubscriptionTests(JuntagricoTestCase):

@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from juntagrico.entity.jobs import Assignment
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class AdminTests(JuntagricoTestCase):

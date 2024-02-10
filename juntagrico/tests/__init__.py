@@ -22,13 +22,10 @@ class JuntagricoTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # members
-        cls.member, cls.member2, cls.member3, cls.member4, cls.member5 = Member.objects.order_by('id')[:5]
-        cls.admin = Member.objects.get(email='admin@email.org')
-        # areas
-        cls.area_admin = Member.objects.get(email='areaadmin@email.org')
-        cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
-        # others
+        # load from fixtures
+        cls.load_members()
+        cls.load_areas()
+        # setup other objects
         cls.set_up_job()
         cls.set_up_depots()
         cls.set_up_sub_types()
@@ -40,6 +37,16 @@ class JuntagricoTestCase(TestCase):
         # Use this command here to create fixtures fast:
         # call_command('dumpdata', 'juntagrico.{model to export}', '-o', 'juntagrico/fixtures/test/data.json',
         # '--indent', '4', '--natural-primary', '--natural-foreign')
+
+    @classmethod
+    def load_members(cls):
+        cls.member, cls.member2, cls.member3, cls.member4, cls.member5 = Member.objects.order_by('id')[:5]
+        cls.admin = Member.objects.get(email='admin@email.org')
+
+    @classmethod
+    def load_areas(cls):
+        cls.area_admin = Member.objects.get(email='areaadmin@email.org')
+        cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
 
     @staticmethod
     def create_member(email, **kwargs):

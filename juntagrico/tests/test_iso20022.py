@@ -1,6 +1,6 @@
 from django.urls import reverse
 
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class ISO2002Tests(JuntagricoTestCase):

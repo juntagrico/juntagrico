@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class ProfileTests(JuntagricoTestCase):

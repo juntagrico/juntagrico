@@ -3,7 +3,7 @@ from unittest.mock import patch
 from django.core import mail
 from django.urls import reverse
 
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 from django.test import override_settings
 
 
@@ -23,7 +23,7 @@ class MailerTests(JuntagricoTestCase):
         self.assertGet(reverse('mail'), member=self.member2, code=302)
 
     def testMailSend(self):
-        with open('test/test_mailer.py') as fp:
+        with open('juntagrico/tests/test_mailer.py') as fp:
             post_data = {
                 'sender': 'test@mail.org',
                 'allsubscription': 'on',
