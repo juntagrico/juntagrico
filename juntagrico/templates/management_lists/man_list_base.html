@@ -20,7 +20,7 @@
         <script type="text/javascript">
             // Assuming default ids
             $(function(){
-                let table = $("#filter-table").DataTable();
+                let table = $("#filter-table").DataTable({"ordering": true});
                 $("#email-sender").EmailButton(table)
             })
         </script>
