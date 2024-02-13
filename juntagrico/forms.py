@@ -6,7 +6,7 @@ from crispy_forms.layout import Layout, Field, Submit, HTML, Div, Fieldset
 from crispy_forms.utils import TEMPLATE_PACK
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField, FloatField, \
-    DateTimeField
+    DateTimeField, forms
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.html import escape
@@ -44,6 +44,25 @@ class JuntagricoDateWidget(DateInput):
 class LinkButton(HTML):
     def __init__(self, name, href, css_classes=None):
         super().__init__(f'<a href="{href}" class="btn {css_classes}">{name}</a>')
+
+
+class ExtendableFormMetaclass(forms.DeclarativeFieldsMetaclass):
+    def __getattr__(cls, name):
+        if name == 'validators':
+            cls.validators = []
+            return cls.validators
+        raise AttributeError(name)
+
+
+class ExtendableFormMixin(metaclass=ExtendableFormMetaclass):
+    """
+    Allows adding validators to the form like this:
+    SomeForm.validators.append(some_validator_function)
+    """
+    def clean(self):
+        for validator in self.validators:
+            validator(self)
+        return super().clean()
 
 
 class PasswordForm(Form):
@@ -423,7 +442,7 @@ class SubscriptionTypeOption(Div):
         return render_to_string(template, {"type": self.instance, "option": self})
 
 
-class SubscriptionPartBaseForm(Form):
+class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
