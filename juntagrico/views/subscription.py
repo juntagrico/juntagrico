@@ -81,12 +81,8 @@ def part_order(request, subscription_id, extra=False):
     Order parts on a subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    parts_order_allowed = not subscription.cancellation_date
     products = SubscriptionProduct.objects.filter(is_extra=extra).all
     if request.method == 'POST':
-        if not parts_order_allowed:
-            raise ValidationError(_('Für gekündigte {} können keine Bestandteile bestellt werden').
-                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST, product_method=products)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected(), True)

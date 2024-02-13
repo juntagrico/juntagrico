@@ -159,11 +159,7 @@ def size_change(request, subscription_id):
     change the size of a subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    parts_order_allowed = not subscription.canceled
     if request.method == 'POST':
-        if not parts_order_allowed:
-            raise ValidationError(_('Für gekündigte {} können keine Bestandteile bestellt werden').
-                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected(), True)
@@ -175,7 +171,7 @@ def size_change(request, subscription_id):
         'subscription': subscription,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
-        'parts_order_allowed': parts_order_allowed,
+        'parts_order_allowed': not subscription.canceled,
         'can_change_part': SubscriptionTypeDao.get_normal_visible().count() > 1
     }
     return render(request, 'size_change.html', renderdict)
@@ -219,11 +215,7 @@ def extra_change(request, subscription_id):
         change an extra subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    extra_order_allowed = not subscription.canceled
     if request.method == 'POST':
-        if not extra_order_allowed:
-            raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
-                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST,
                                          product_method=SubscriptionProductDao.all_visible_extra_products)
         if form.is_valid():
@@ -236,7 +228,7 @@ def extra_change(request, subscription_id):
         'extras': subscription.active_and_future_extra_subscriptions.all(),
         'subscription': subscription,
         'sub_id': subscription_id,
-        'extra_order_allowed': extra_order_allowed,
+        'extra_order_allowed': not subscription.canceled,
     }
     return render(request, 'extra_change.html', renderdict)
 
