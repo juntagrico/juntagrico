@@ -59,8 +59,11 @@ class ExtendableFormMixin(metaclass=ExtendableFormMetaclass):
     Allows adding validators to the form like this:
     SomeForm.validators.append(some_validator_function)
     """
+    def get_validators(self):
+        return getattr(self, 'validators', [])
+
     def clean(self):
-        for validator in self.validators:
+        for validator in self.get_validators():
             validator(self)
         return super().clean()
 
