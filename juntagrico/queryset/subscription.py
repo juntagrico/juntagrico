@@ -181,3 +181,6 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
                              F('deactivation_date').desc(nulls_first=True),
                              F('cancellation_date').desc(nulls_first=True),
                              F('activation_date').desc(nulls_first=True))
+
+    def by_primary_member(self, member):
+        return self.filter(subscription__primary_member=member)
