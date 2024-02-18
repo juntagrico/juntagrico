@@ -266,12 +266,12 @@ def excel_export_members_filter(request):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
-    worksheet_s = workbook.add_worksheet(Config.vocabulary('member_pl'))
+    worksheet_s = workbook.add_worksheet(str(Config.vocabulary('member_pl')))
 
     worksheet_s.write_string(0, 0, str(_('Name')))
     worksheet_s.write_string(0, 1, str(Config.vocabulary('assignment')))
     worksheet_s.write_string(
-        0, 2, str(Config.vocabulary('assignment') + ' ' + _('Kernbereich')))
+        0, 2, str(Config.vocabulary('assignment') + ' ' + str(_('Kernbereich'))))
     worksheet_s.write_string(0, 3, str(_('Taetigkeitsbereiche')))
     worksheet_s.write_string(0, 4, str(_('Depot')))
     worksheet_s.write_string(0, 5, str(_('Email')))
@@ -314,7 +314,7 @@ def excel_export_subscriptions(request):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
-    worksheet_s = workbook.add_worksheet(Config.vocabulary('subscription_pl'))
+    worksheet_s = workbook.add_worksheet(str(Config.vocabulary('subscription_pl')))
 
     worksheet_s.write_string(0, 0, str(_('Übersicht')))
     worksheet_s.write_string(0, 1, str(_('HauptbezieherIn')))
