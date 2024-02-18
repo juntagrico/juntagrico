@@ -15,7 +15,7 @@ log = logging.getLogger('juntagrico.mailer')
 
 def base_dict(add=None):
     add = add or {}
-    add['serverurl'] = 'http://' + Site.objects.get_current().domain
+    add['serverurl'] = Config.url_protocol + Site.objects.get_current().domain
     return add
 
 
@@ -66,7 +66,7 @@ def organisation_subject(subject):
 
 
 def get_thread_id(obj):
-    return f'<{type(obj).__name__}{obj.id}@{Config.server_url()}>'
+    return f'<{type(obj).__name__}{obj.id}@{Site.objects.get_current().domain}>'
 
 
 class EmailSender:

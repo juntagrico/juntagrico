@@ -65,6 +65,13 @@ class Config:
         }
     )
     organisation_phone = _get_setting('ORGANISATION_PHONE')
+    organisation_website = _get_setting(
+        'ORGANISATION_WEBSITE',
+        {
+            'name': lambda: Config.server_url(),
+            'url': lambda: 'http://' + Config.server_url()
+        }
+    )
     organisation_bank_connection = _get_setting(
         'ORGANISATION_BANK_CONNECTION',
         {
@@ -125,6 +132,7 @@ class Config:
             'technical': lambda: Config.contacts('general'),
         }
     )
+    url_protocol = _get_setting('URL_PROTOCOL', 'https://')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
     default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
     batch_mailer = _get_setting_with_key(

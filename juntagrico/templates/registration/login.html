@@ -31,7 +31,7 @@
                     {% endfor %}
                     <br>
                     {% translate 'Brauchst du Hilfe? Melde dich bei' %}
-                    <a href="mailto:{% contacts "technical" %}?subject={% trans "Ich kann mich nicht einloggen" %} {% config "server_url" %}">
+                    <a href="mailto:{% contacts "technical" %}?subject={% trans "Ich kann mich nicht einloggen" %} {% site_name %}">
                         {% contacts "technical" %}
                     </a>
                 </div>
