@@ -98,7 +98,8 @@ ORGANISATION_WEBSITE
 
 INFO_EMAIL
 ^^^^^^^^^^
-  DEPRECATED: Use the CONTACTS setting instead
+  .. warning::
+    Deprecated since version 1.6.0. Use :ref:`CONTACTS <reference-settings-contacts>` instead.
 
   The general email of your organisation
 
@@ -109,6 +110,9 @@ INFO_EMAIL
   .. code-block:: python
 
     "info@juntagrico.juntagrico"
+
+
+.. _reference-settings-contacts:
 
 CONTACTS
 ^^^^^^^^
