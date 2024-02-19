@@ -152,6 +152,7 @@ urlpatterns = [
     # /manage/assignments
     path('my/assignments', juntagrico_admin.assignments, name='filter-assignments'),
     # /manage/share
+    path('manage/share/unpaid', juntagrico_admin.share_unpaidlist, name='manage-share-unpaid'),
     path('my/share/canceledlist', juntagrico_admin.share_canceledlist, name='share-mgmt-canceledlist'),
     path('my/payout/share/<int:share_id>/', juntagrico_subscription.payout_share, name='share-payout'),
     # /manage/depot
