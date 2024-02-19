@@ -15,7 +15,7 @@ log = logging.getLogger('juntagrico.mailer')
 
 def base_dict(add=None):
     add = add or {}
-    add['serverurl'] = Config.url_protocol + Site.objects.get_current().domain
+    add['serverurl'] = Config.url_protocol() + Site.objects.get_current().domain
     return add
 
 
