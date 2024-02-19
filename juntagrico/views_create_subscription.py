@@ -241,4 +241,4 @@ def cs_cancel(request, cs_session):
     if request.user.is_authenticated:
         return redirect('subscription-landing')
     else:
-        return redirect(Config.organisation_website()["url"])
+        return redirect(Config.organisation_website('url'))

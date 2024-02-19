@@ -65,7 +65,7 @@ class Config:
         }
     )
     organisation_phone = _get_setting('ORGANISATION_PHONE')
-    organisation_website = _get_setting(
+    organisation_website = _get_setting_with_key(
         'ORGANISATION_WEBSITE',
         {
             'name': lambda: Config.server_url(),

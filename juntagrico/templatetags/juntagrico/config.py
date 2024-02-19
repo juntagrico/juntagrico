@@ -32,7 +32,7 @@ def enriched_organisation(case):
 
 @register.simple_tag
 def organisation_website(key):
-    return Config.organisation_website()[key]
+    return Config.organisation_website(key)
 
 
 @register.simple_tag
