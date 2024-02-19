@@ -19,217 +19,244 @@
 {% endblock %}
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
-    <div class="row pb-4">
-        <div class="col-md-3">
-            {% trans "Zeitpunkt" %}:
-        </div>
-        <div class="col-md-5">
-            {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}
-            <br/>
-            {% if job_is_in_past %}
-                (vor {{ job.end_time|timesince }})
-            {% elif job_is_running %}
-                (seit {{ job.time|timesince }})
-            {% else %}
-                (in {{ job.time|timeuntil }})
-            {% endif %}
-        </div>
-    </div>
-    {% if job.free_slots > -1 %}
-    <div class="row pb-4">
-        <div class="col-md-3">
-            {% trans "Status" %}:
-        </div>
-        <div class="col-md-5">
-            {% spaceless %}
-            {% for i in slotrange %}
-                {% if i < number_of_participants %}
-                    <img class="" src="{% images "single_full" %}"title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+    {% block time %}
+        <div class="row pb-4">
+            <div class="col-md-3">
+                {% trans "Zeitpunkt" %}:
+            </div>
+            <div class="col-md-5">
+                {{ job.time |date:"l, d.m.Y, H:i" }} - {{ job.end_time|date:"H:i" }}
+                <br/>
+                {% if job_is_in_past %}
+                    (vor {{ job.end_time|timesince }})
+                {% elif job_is_running %}
+                    (seit {{ job.time|timesince }})
                 {% else %}
-                    <img class="" src="{% images "single_empty" %}"title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                    (in {{ job.time|timeuntil }})
                 {% endif %}
-            {% endfor %}
-            {% endspaceless %}
-        </div>
-    </div>
-    {% endif %}
-    {% if job.multiplier == 0 %}
-        <div class="row pb-4">
-            <div class="col-md-3">
-                {% vocabulary "assignment_pl" %}:
-            </div>
-            <div class="col-md-5">
-                {% blocktrans trimmed with jm=job.multiplier %}
-                Du erhältst für diese Veranstaltung keine {{ v_assignment_pl }} gutgeschrieben.
-                {% endblocktrans %}
             </div>
         </div>
-    {% elif job.multiplier != 1 %}
-        <div class="row pb-4">
-            <div class="col-md-3">
-                {% vocabulary "assignment_pl" %}:
+    {% endblock %}
+
+    {% if job.free_slots > -1 %}
+        {% block status %}
+            <div class="row pb-4">
+                <div class="col-md-3">
+                    {% trans "Status" %}:
+                </div>
+                <div class="col-md-5">
+                    {% spaceless %}
+                    {% for i in slotrange %}
+                        {% if i < number_of_participants %}
+                            <img src="{% images "single_full" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                        {% else %}
+                            <img src="{% images "single_empty" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
+                        {% endif %}
+                    {% endfor %}
+                    {% endspaceless %}
+                </div>
             </div>
-            <div class="col-md-5">
-                {% blocktrans trimmed with jm=job.multiplier %}
-                Du erhältst für diesen Einsatz das {{ jm }}-Fache an {{ v_assignment_pl }} gutgeschrieben.
-                {% endblocktrans %}
-            </div>
-        </div>
+        {% endblock %}
     {% endif %}
 
+    {% block multiplier %}
+        {% if job.multiplier == 0 %}
+            <div class="row pb-4">
+                <div class="col-md-3">
+                    {% vocabulary "assignment_pl" %}:
+                </div>
+                <div class="col-md-5">
+                    {% blocktrans trimmed with jm=job.multiplier %}
+                    Du erhältst für diese Veranstaltung keine {{ v_assignment_pl }} gutgeschrieben.
+                    {% endblocktrans %}
+                </div>
+            </div>
+        {% elif job.multiplier != 1 %}
+            <div class="row pb-4">
+                <div class="col-md-3">
+                    {% vocabulary "assignment_pl" %}:
+                </div>
+                <div class="col-md-5">
+                    {% blocktrans trimmed with jm=job.multiplier %}
+                    Du erhältst für diesen Einsatz das {{ jm }}-Fache an {{ v_assignment_pl }} gutgeschrieben.
+                    {% endblocktrans %}
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
+
     {% if job.extras.strip %}
-        <div class="row pb-4">
-            <div class="col-md-3">
-                {% trans "Extras" %}:
-            </div>
-            <div class="col-md-5">
-                {% for extra in job.empty_per_job_extras %}
-                    {{ extra.extra_type.display_empty|safe }}
-                {% endfor %}
-                {% for extra in job.full_per_job_extras %}
-                    {{ extra.extra_type.display_full|safe }}
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-    <div class="row pb-4">
-        <div class="col-md-3">
-            {% trans "Ort" %}:
-        </div>
-        <div class="col-md-5" id="map-container">
-            {{ job.type.location.to_html|safe }}
-            {% if job.type.location.google_maps_query %}
-                <br>
-                {% if job.type.location.has_coordinates %}
-                    <a class="open-map" href="#">{% trans "Karte" %}</a> -
-                {% endif %}
-                <a href="https://www.google.com/maps/dir/?api=1&destination={{ job.type.location.google_maps_query | urlencode }}" target="_blank">
-                    {% trans "Wegbeschreibung" %}
-                </a>
-            {% endif %}
-        </div>
-    </div>
-    <div class="row pb-4">
-        <div class="col-md-3">
-            {% trans "Beschreibung" %}:
-        </div>
-        <div class="col-md-5">
-            <div class="job-description">{{ job.type.description|richtext|safe }}</div>
-            {% if job.additional_description %}
-                <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
-            {% endif %}
-        </div>
-    </div>
-    {% if can_contact %}
-        <div class="row pb-4">
-            <div class="col-md-3">
-                {% trans "Kontaktieren" %}:
-            </div>
-            <div class="col-md-5">
-                <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="recipients" id="recipients" value="{{ emails }}"/>
-                    <input type="hidden" name="recipients_count" id="recipients_count"value="{{ number_of_participants }}"/>
-                    <button type="submit" class="btn" id="send-email">
-                        {% trans "Allen eine Email senden" %}
-                    </button>
-                </form>
-            </div>
-        </div>
-    {% endif %}
-    <div class="row pb-4">
-        <div class="col-md-3">
-            {% trans "Kontakt" %}:
-        </div>
-        <div class="col-md-5">
-            {% for contact in job.contacts %}
-                {{ contact.to_html }}
-            {% endfor %}
-        </div>
-    </div>
-    <div class="row pb-4">
-        <div class="col-md-3">
-            {% trans "Dabei sind" %}:
-        </div>
-        <div class="col-md-5">
-            {% if number_of_participants == 0 and not job_fully_booked %}
-                {% trans "Noch niemand" %} 🥺
-            {% else %}
-                <ul>
-                    {% for participant, url, reachable, extras in participants_summary %}
-                        <li>
-                            {{ participant }}
-                            {{ extras|safe }}
-                            {% if reachable %}
-                                &nbsp;
-                                <a href="{{ url }}">
-                                    <i class="far fa-envelope">
-                                    </i>
-                                </a>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
-    </div>
-    {% if can_subscribe %}
-        <div class="row">
-            <div class="col-md-3">
-                {% trans "Ich trage mich ein" %}:
-            </div>
-            <div class="col-md-3">
-                <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich verbindlich für diesen Einsatz eintragen?" %}')">
-                    {% csrf_token %}
-                    {% if allowed_additional_participants|length > 1 %}
-                        <div class="pg-4">
-                            <select name="jobs" class="form-control">
-                                {% for i in allowed_additional_participants %}
-                                    {% if i == 1 %}
-                                        <option value="1">
-                                            {% trans "Unbegleitet" %}
-                                        </option>
-                                    {% elif i == 2 %}
-                                        <option value="2">
-                                            {% trans "Zu Zweit" %}
-                                        </option>
-                                    {% elif i == 3 %}
-                                        <option value="3">
-                                            {% trans "Zu Dritt" %}
-                                        </option>
-                                    {% elif i == 4 %}
-                                        <option value="4">
-                                            {% trans "Zu Viert" %}
-                                        </option>
-                                    {% elif i < 16 %}
-                                        <option value="{{ i }}">
-                                            {{ i|add:"-1" }} {% trans "weitere Personen und ich" %}
-                                        </option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                    {% else %}
-                        <input type="hidden" name="jobs" value="1"/>
-                    {% endif %}
+        {% block extras %}
+            <div class="row pb-4">
+                <div class="col-md-3">
+                    {% trans "Extras" %}:
+                </div>
+                <div class="col-md-5">
                     {% for extra in job.empty_per_job_extras %}
-                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
-                        {{ extra.extra_type.name }}
-                        <br/>
+                        {{ extra.extra_type.display_empty|safe }}
                     {% endfor %}
-                    {% for extra in job.per_member_extras %}
-                        <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
-                        {{ extra.extra_type.name }}
-                        <br/>
+                    {% for extra in job.full_per_job_extras %}
+                        {{ extra.extra_type.display_full|safe }}
                     {% endfor %}
-                    <div>
-                        <button type="submit" class="btn btn-success">
-                            {% trans "Bestätigen" %}
-                        </button>
-                    </div>
-                </form>
+                </div>
+            </div>
+        {% endblock %}
+    {% endif %}
+
+    {% block location %}
+        <div class="row pb-4">
+            <div class="col-md-3">
+                {% trans "Ort" %}:
+            </div>
+            <div class="col-md-5" id="map-container">
+                {{ job.type.location.to_html|safe }}
+                {% if job.type.location.google_maps_query %}
+                    <br>
+                    {% if job.type.location.has_coordinates %}
+                        <a class="open-map" href="#">{% trans "Karte" %}</a> -
+                    {% endif %}
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ job.type.location.google_maps_query | urlencode }}" target="_blank">
+                        {% trans "Wegbeschreibung" %}
+                    </a>
+                {% endif %}
             </div>
         </div>
+    {% endblock %}
+
+    {% block description %}
+        <div class="row pb-4">
+            <div class="col-md-3">
+                {% trans "Beschreibung" %}:
+            </div>
+            <div class="col-md-5">
+                <div class="job-description">{{ job.type.description|richtext|safe }}</div>
+                {% if job.additional_description %}
+                    <div class="job-additional-description">{{ job.additional_description|richtext|safe }}</div>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+
+    {% if can_contact %}
+        {% block send_mail %}
+            <div class="row pb-4">
+                <div class="col-md-3">
+                    {% trans "Kontaktieren" %}:
+                </div>
+                <div class="col-md-5">
+                    <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="recipients" id="recipients" value="{{ emails }}"/>
+                        <input type="hidden" name="recipients_count" id="recipients_count"value="{{ number_of_participants }}"/>
+                        <button type="submit" class="btn" id="send-email">
+                            {% trans "Allen eine Email senden" %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endblock %}
+    {% endif %}
+
+    {% block contact %}
+        <div class="row pb-4">
+            <div class="col-md-3">
+                {% trans "Kontakt" %}:
+            </div>
+            <div class="col-md-5">
+                {% for contact in job.contacts %}
+                    {{ contact.to_html }}
+                {% endfor %}
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block participants %}
+        <div class="row pb-4">
+            <div class="col-md-3">
+                {% trans "Dabei sind" %}:
+            </div>
+            <div class="col-md-5">
+                {% if number_of_participants == 0 and not job_fully_booked %}
+                    {% trans "Noch niemand" %} 🥺
+                {% else %}
+                    <ul>
+                        {% for participant, url, reachable, extras in participants_summary %}
+                            <li>
+                                {{ participant }}
+                                {{ extras|safe }}
+                                {% if reachable %}
+                                    &nbsp;
+                                    <a href="{{ url }}">
+                                        <i class="far fa-envelope">
+                                        </i>
+                                    </a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    {% endblock %}
+    {% if can_subscribe %}
+        {% block subscribe %}
+            <div class="row">
+                <div class="col-md-3">
+                    {% trans "Ich trage mich ein" %}:
+                </div>
+                <div class="col-md-3">
+                    <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich verbindlich für diesen Einsatz eintragen?" %}')">
+                        {% csrf_token %}
+                        {% if allowed_additional_participants|length > 1 %}
+                            <div class="pg-4">
+                                <select name="jobs" class="form-control">
+                                    {% for i in allowed_additional_participants %}
+                                        {% if i == 1 %}
+                                            <option value="1">
+                                                {% trans "Unbegleitet" %}
+                                            </option>
+                                        {% elif i == 2 %}
+                                            <option value="2">
+                                                {% trans "Zu Zweit" %}
+                                            </option>
+                                        {% elif i == 3 %}
+                                            <option value="3">
+                                                {% trans "Zu Dritt" %}
+                                            </option>
+                                        {% elif i == 4 %}
+                                            <option value="4">
+                                                {% trans "Zu Viert" %}
+                                            </option>
+                                        {% elif i < 16 %}
+                                            <option value="{{ i }}">
+                                                {{ i|add:"-1" }} {% trans "weitere Personen und ich" %}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% else %}
+                            <input type="hidden" name="jobs" value="1"/>
+                        {% endif %}
+                        {% for extra in job.empty_per_job_extras %}
+                            <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                            {{ extra.extra_type.name }}
+                            <br/>
+                        {% endfor %}
+                        {% for extra in job.per_member_extras %}
+                            <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
+                            {{ extra.extra_type.name }}
+                            <br/>
+                        {% endfor %}
+                        <div>
+                            <button type="submit" class="btn btn-success">
+                                {% trans "Bestätigen" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endblock %}
     {% endif %}
 {% endblock %}
 {% block scripts %}
