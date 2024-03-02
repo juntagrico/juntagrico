@@ -1,0 +1,30 @@
+[
+{
+    "model": "juntagrico.activityarea",
+    "pk": 1,
+    "fields": {
+        "name": "name",
+        "description": "",
+        "core": false,
+        "hidden": false,
+        "coordinator": 7,
+        "auto_add_new_members": true,
+        "members": [
+            1
+        ]
+    }
+},
+{
+    "model": "juntagrico.activityarea",
+    "pk": 2,
+    "fields": {
+        "name": "name2",
+        "description": "",
+        "core": false,
+        "hidden": true,
+        "coordinator": 7,
+        "auto_add_new_members": false,
+        "members": []
+    }
+}
+]

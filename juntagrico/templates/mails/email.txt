@@ -5,4 +5,4 @@
 {% endautoescape %}
 {% endspaceless %}
 ============
-weitere Infos: http://{% config "server_url" %}
+weitere Infos: {% organisation_website "url" %}

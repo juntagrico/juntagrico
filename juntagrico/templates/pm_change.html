@@ -43,7 +43,7 @@
                 Leider kann niemand deiner {{ v_co_member_pl }} Haupt-{{ v_subscription }}-BezieherIn werden.
                 {% endblocktrans %}
             <br/>
-            <a href="{% url 'sub-detail-id' subscription.id %}">
+            <a href="{% url 'subscription-single' subscription.id %}">
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
             </a>
         </div>

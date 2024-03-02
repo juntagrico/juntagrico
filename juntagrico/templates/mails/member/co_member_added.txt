@@ -3,7 +3,7 @@
 {% load juntagrico.config %}
 {% block content %}
 {% config "enable_shares" as c_enable_shares %}
-{% config "info_email" as c_info_email %}
+{% contacts "for_members" as contact_email %}
 {% config "organisation_name" as c_organisation_name %}
 {% vocabulary "co_member" as v_co_member %}
 {% vocabulary "share_pl" as v_share_pl %}
@@ -15,7 +15,7 @@
 {% blocktrans with pm=sub.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
 {% endif %}
 
-{% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {{ c_info_email }}.
+{% blocktrans %}Solltest du irrtümlicherweise hier eingetragen worden sein melde dies bitte {{ contact_email }}.
 Anderenfalls gehen wir davon aus, dass dies seine Richtigkeit hat.{% endblocktrans %}
 
 {% blocktrans trimmed %}

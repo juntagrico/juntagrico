@@ -6,12 +6,19 @@
         {% trans "Kündigungsliste" %}
     </h3>
 {% endblock %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/change_date.html' %}
+    {% include 'management_lists/snippets/email_sender.html' %}
+{% endblock %}
 {% block list %}
-    <table id="filter-table" class="list table" style="display: table;">
+    <table id="filter-table" class="list table">
         <thead>
             <tr>
                 <th class="filter">
                     {% vocabulary "subscription" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kündigungsdatum" %}
                 </th>
                 <th class="filter">
                     {% trans "Enddatum" %}
@@ -36,6 +43,9 @@
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                             {{ subscription }}
                         </a>
+                    </td>
+                    <td>
+                        {{ subscription.cancellation_date |date:"Y-m-d" }}
                     </td>
                     <td>
                         {{ subscription.end_date |date:"Y-m-d" }}

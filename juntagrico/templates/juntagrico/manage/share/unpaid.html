@@ -1,0 +1,66 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.share %}
+{% block page_title %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <h3>
+        {% blocktrans %}Unbezahlte {{ v_share_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/email_sender.html' %}
+{% endblock %}
+{% block list %}
+    {% vocabulary "share" as v_share %}
+    {% vocabulary "subscription" as v_subscription %}
+    <table id="filter-table" class="list table" style="display: table;">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {{ v_share }}
+                </th>
+                <th class="filter">
+                    {% trans "Bestellt am" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
+                <th class="filter">
+                    {% blocktrans %}Benötigt für ein/e/n {{ v_subscription }}{% endblocktrans %}
+                </th>
+                <th class="d-none">
+                    {% trans "E-Mail" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% regroup management_list by member as shares_list %}
+            {% for member, shares in shares_list %}
+                {% for share in shares %}
+                    <tr>
+                        <td class="share_id">
+                            <a href="{% url 'admin:juntagrico_share_change' share.id %}">
+                                {{ share }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ share.creation_date|date:"Y-m-d" }}
+                        </td>
+                        <td>
+                            <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                                {{ member }}
+                            </a>
+                        </td>
+                        <td>
+                            {% required_for_subscription share forloop.counter %}
+                        </td>
+                        <td class="email d-none">
+                            {{ member.email }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

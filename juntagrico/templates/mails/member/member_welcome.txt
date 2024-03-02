@@ -3,7 +3,7 @@
 {% load juntagrico.config %}
 {% block content %}
 {% config "enable_shares" as c_enable_shares %}
-{% config "info_email" as c_info_email %}
+{% contacts "for_members" as contact_email %}
 {% config "faq_doc" as c_faq_doc %}
 {% config "organisation_name" as c_organisation_name %}
 {% enriched_organisation "D" as v_d_enriched_organisation %}
@@ -17,9 +17,9 @@
 {% trans "Bestätigungslink" %}: {{ serverurl }}{% url 'confirm' member.get_hash %}
 
 {% if c_faq_doc.strip %}
-{% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ c_info_email }}.{% endblocktrans %}
+{% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ contact_email }}.{% endblocktrans %}
 {% else %}
-{% blocktrans %}Für weitere Fragen schreibe eine Mail an {{ c_info_email }}.{% endblocktrans %}
+{% blocktrans %}Für weitere Fragen schreibe eine Mail an {{ contact_email }}.{% endblocktrans %}
 {% endif %}
 
 {% blocktrans trimmed %}

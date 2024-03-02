@@ -1,0 +1,9 @@
+<script type="text/javascript">
+    $(function() {
+        $("input.switch").AjaxSlider(
+            '{% url 'area-join' '99' %}',
+            '{% url 'area-leave' '99' %}',
+            '99'
+        )
+    })
+</script>

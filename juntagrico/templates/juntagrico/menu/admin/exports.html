@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if perms.juntagrico.can_view_exports %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'export' %}">
+            {% trans "Exporte" %}
+        </a>
+    </li>
+{% endif %}

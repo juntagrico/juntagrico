@@ -15,7 +15,7 @@
     {% else %}
     <b>{% trans "Übersicht" %}</b>
         <div>
-            <table id="filter-table" class="table" style="display: table;">
+            <table id="filter-table" class="table">
                 <thead>
                     <tr>
                         <th>
@@ -38,7 +38,11 @@
                                 {{ extra.state_text }}
                             </td>
                             <td>
-                                {% if not extra.canceled and extra.deactivation_date is None and extra.can_cancel %}
+                                {% if extra.canceled %}
+                                    {% blocktrans with cd=extra.cancellation_date %}
+                                        Gekündigt am {{cd}}
+                                    {% endblocktrans %}
+                                {% elif extra.deactivation_date is None and extra.can_cancel %}
                                     <a href="{% url 'part-cancel' extra.id sub_id %}"class="btn btn-success"
                                        onclick="return confirm('{% trans "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?" %}')">
                                         {% trans "kündigen" %}

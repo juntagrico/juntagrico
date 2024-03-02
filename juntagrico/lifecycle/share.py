@@ -1,5 +1,6 @@
+import datetime
+
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.mailer import adminnotification
@@ -24,7 +25,7 @@ def check_share_consistency(instance):
     is_canceled = instance.cancelled_date is not None
     is_terminated = instance.termination_date is not None
     is_payed_back = instance.payback_date is not None
-    paid_date = instance.paid_date or instance.cancelled_date or timezone.now().date()
+    paid_date = instance.paid_date or instance.cancelled_date or datetime.date.today()
     cancelled_date = instance.cancelled_date or paid_date
     termination_date = instance.termination_date or cancelled_date
     payback_date = instance.payback_date or termination_date

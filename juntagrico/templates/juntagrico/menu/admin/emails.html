@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if perms.juntagrico.can_send_mails %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'mail' %}">
+            {% trans "E-Mail-Versand" %}
+        </a>
+    </li>
+{% endif %}

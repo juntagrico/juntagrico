@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+    {% if view.success %}
+        <div class="alert alert-success">{% trans "Die Zeiten wurden verschoben." %}</div>
+    {% endif %}
+    <p>
+    {% blocktrans %}Mit diesem Formular können alle Einsätze innerhalb des gewählten Zeitraums zeitlich verschoben werden.
+    Dies ist z.B. nötig, wenn die Zeitzoneneinstellung geändert wird. Es werden keine automatischen E-Mails verschickt!{% endblocktrans %}
+    </p>
+    <form method="post">
+        {% crispy form %}
+    </form>
+{% endblock %}

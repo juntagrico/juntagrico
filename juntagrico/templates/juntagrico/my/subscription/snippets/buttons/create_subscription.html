@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% vocabulary "subscription" as v_subscription %}
+<div>
+    <a href="{% url 'cs-subscription' %}" class="btn btn-primary mt-3">
+        {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}
+    </a>
+</div>

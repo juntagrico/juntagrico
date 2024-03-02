@@ -27,12 +27,12 @@ It provides the basic functionality like
 -   management of members
 
 Detailed documentation how to install and configure juntagrico can be
-found here <http://juntagrico.readthedocs.io>
+found here <https://juntagrico.readthedocs.io>
 
 Demo can be found here <https://demo.juntagrico.science/> The
 username is "admin" and the password is "admin" too. Please do not
 change the password!
 
-[![image](http://forthebadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
-[![image](http://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
-[![image](http://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)
+[![image](https://forthebadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
+[![image](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+[![image](https://forthebadge.com/images/badges/powered-by-black-magic.svg)](https://forthebadge.com)

@@ -1,0 +1,89 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+{% block page_title %}
+    <h3>
+        {{ title }}
+    </h3>
+{% endblock %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/email_sender.html' %}
+{% endblock %}
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "HauptbezieherIn" %}
+                </th>
+                <th class="filter">
+                    {% trans "Weitere BezieherInnen" %}
+                </th>
+                <th class="filter">
+                    {% vocabulary "depot" %}
+                </th>
+                <th class="filter">
+                    {% trans "Inhalt" %}
+                </th>
+                <th class="filter">
+                    {% trans "Aktivierungsdatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "E-Mails" %}
+                </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>
+                    {% trans "HauptbezieherIn" %}
+                </th>
+                <th>
+                    {% trans "Weitere BezieherInnen" %}
+                </th>
+                <th>
+                    {% vocabulary "depot" %}
+                </th>
+                <th>
+                    {% trans "Inhalt" %}
+                </th>
+                <th>
+                    {% trans "Aktivierungsdatum" %}
+                </th>
+                <th>
+                    {% trans "E-Mails" %}
+                </th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for subscription in subscriptions %}
+                <tr>
+                    <td>
+                        {% impersonate_start request subscription.primary_member %}
+                        <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
+                            {{ subscription.primary_member.get_name }}
+                        </a>
+                    </td>
+                    <td>
+                        {{ subscription.other_recipients_names }}
+                    </td>
+                    <td>
+                        {{ subscription.depot.name }}
+                    </td>
+                    <td>
+                        {{ subscription }}
+                    </td>
+                    <td>
+                        {{ subscription.activation_date|date:"Y-m-d" }}
+                    </td>
+                    <td class="email">
+                        {{ subscription.recipients_qs|values_list:'member__email'|join:', ' }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

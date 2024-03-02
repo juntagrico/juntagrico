@@ -1,0 +1,19 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block content %}
+{% vocabulary "depot" as v_depot %}
+{% vocabulary "subscription" as v_subscription %}
+{% trans "Hallo" %}
+
+{% blocktrans with fn=member.first_name ln=member.last_name %}Soeben hat {{ fn }} {{ ln }} für {{ subscription }} der/die/das {{ v_depot }} geändert von "{{ old_depot }}" nach "{{ new_depot }}".{% endblocktrans %}
+{% if immediate %}{% blocktrans %}Die Änderung erfolgt sofort, weil der/die/das {{ v_subscription }} noch nicht aktiv ist.{% endblocktrans %}
+{% else %}{% blocktrans %}Die Änderung erfolgt bei der nächsten automatischen Erstellung der Depotliste, falls diese so eingerichtet ist.
+Andernfalls, musst du die Änderung hier aktivieren:{% endblocktrans %}
+{{ serverurl }}{% url 'manage-sub-depot-changes' %}
+{% endif %}
+
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
+
+{% endblock %}

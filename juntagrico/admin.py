@@ -17,11 +17,12 @@ from juntagrico.admins.subscription_admin import SubscriptionAdmin
 from juntagrico.admins.subscription_product_admin import SubscriptionProductAdmin
 from juntagrico.admins.subscription_size_admin import SubscriptionSizeAdmin
 from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin
+from juntagrico.admins.tour_admin import TourAdmin
 from juntagrico.config import Config
 from juntagrico.entity.billing import BillingPeriod
 from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.location import Location
-from juntagrico.entity.depot import Depot
+from juntagrico.entity.depot import Depot, Tour
 from juntagrico.entity.jobs import Assignment, ActivityArea, JobExtra, JobExtraType, JobType, RecuringJob, OneTimeJob
 from juntagrico.entity.listmessage import ListMessage
 from juntagrico.entity.mailing import MailTemplate
@@ -36,6 +37,7 @@ addons.load_addons()
 
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Depot, DepotAdmin)
+admin.site.register(Tour, TourAdmin)
 admin.site.register(SubscriptionSize, SubscriptionSizeAdmin)
 admin.site.register(SubscriptionType, SubscriptionTypeAdmin)
 admin.site.register(SubscriptionProduct, SubscriptionProductAdmin)

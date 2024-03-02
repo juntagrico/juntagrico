@@ -16,7 +16,7 @@
     {% vocabulary "subscription" as v_subscription %}
     {% if saved %}
         <div class="alert alert-success">
-            {% if subscription.state == 'waiting' %}
+            {% if subscription.waiting %}
                 {% blocktrans %}Dein/e {{ v_depot }} wurde geändert.{% endblocktrans %}
             {% else %}
                 {% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name%}
@@ -27,7 +27,7 @@
                 {% endblocktrans %}
             {% endif %}
             <br/>
-            <a href="{% url 'sub-detail-id' subscription.id %}">
+            <a href="{% url 'subscription-single' subscription.id %}">
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
             </a>
         </div>

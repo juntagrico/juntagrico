@@ -1,0 +1,52 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% vocabulary "co_member_pl" as v_co_member_pl %}
+{% vocabulary "subscription" as v_subscription %}
+<div>
+    {% for co_member in co_members %}
+        <span class="co-member">
+            {{ co_member }}<!--
+            {% if subscription.primary_member == co_member %}
+                --> <span class="badge badge-dark">{% blocktrans %}{{ v_subscription }}-VerwalterIn{% endblocktrans %}</span><!--
+            {% endif %}
+        --></span>
+    {% empty %}
+        {% blocktrans %}Du hast keine {{ v_co_member_pl }} eingetragen.{% endblocktrans %}
+    {% endfor %}
+</div>
+{% if not subscription.inactive %}
+    {% if subscription.primary_member == member %}
+        <div>
+            <a href="{% url 'add-member' subscription.id %}" class="btn btn-primary mt-3">
+                {% blocktrans %}{{ v_co_member_pl }} einladen{% endblocktrans %}
+            </a>
+        </div>
+        {% if co_members %}
+            <div class="mt-3">
+                {% blocktrans trimmed %}
+                Du bist {{ v_subscription }}-VerwalterIn. Zum Verlassen, musst du die Verwaltung zuerst abgeben.
+                {% endblocktrans %}
+            </div>
+            <div>
+                <a href="{% url 'primary-change' subscription.id %}" class="btn btn-outline-primary mt-3">
+                    {% blocktrans %}{{ v_subscription }}-Verwaltung abgeben{% endblocktrans %}
+                </a>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="mb-3">
+            <i>
+                {% blocktrans trimmed %}
+                Nur {{ v_subscription }}-VerwalterIn kann weitere {{ v_co_member_pl }} einladen.
+                {% endblocktrans %}
+            </i>
+        </div>
+        {% if subscription_membership.can_leave %}
+            <div class="mb-3">
+                <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
+                    {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+                </a>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endif %}

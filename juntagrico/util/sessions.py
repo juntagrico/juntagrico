@@ -109,8 +109,8 @@ class CSSessionObject(SessionObject):
 
     def count_shares(self):
         shares = {
-            'existing_main_member': len(self.main_member.usable_shares),
-            'existing_co_member': sum([len(co_member.usable_shares) for co_member in self.co_members]),
+            'existing_main_member': self.main_member.usable_shares_count,
+            'existing_co_member': sum([co_member.usable_shares_count for co_member in self.co_members]),
             'total_required': max(self.required_shares(), 1)
         }
         shares['remaining_required'] = max(

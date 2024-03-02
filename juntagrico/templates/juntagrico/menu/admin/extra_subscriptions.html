@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load juntagrico.common %}
+{% has_extra_subscriptions as b_has_extra_subscriptions %}
+{% if perms.juntagrico.change_subscriptionpart and b_has_extra_subscriptions %}
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#extrasubman">
+            {% blocktrans %}Zusatzabos{% endblocktrans %}
+            <i class="fas fa-angle-right">
+            </i>
+        </a>
+        <div class="collapse" id="extrasubman">
+            <ul class="nav flex-column subadmin-menu">
+            {% if perms.juntagrico.change_subscriptionpart %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
+                        {% trans "Warteliste" %}
+                    </a>
+                </li>
+            {% endif %}
+            {% if perms.juntagrico.change_subscriptionpart %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'sub-mgmt-extra-canceledlist' %}">
+                        {% trans "Kündigungsliste" %}
+                    </a>
+                </li>
+            {% endif %}
+            </ul>
+        </div>
+    </li>
+{% endif %}

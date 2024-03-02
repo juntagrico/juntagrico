@@ -1,0 +1,10 @@
+{% load i18n %}
+{% block admin %}
+    {% if request.user.is_staff %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'admin:index' %}">
+                {% trans "Datenverwaltung" %}
+            </a>
+        </li>
+    {% endif %}
+{% endblock %}

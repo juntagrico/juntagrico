@@ -1,0 +1,39 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% if perms.juntagrico.can_view_lists or perms.juntagrico.can_generate_lists %}
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#lists">
+            {% trans "Listen" %}
+            <i class="fas fa-angle-right">
+            </i>
+        </a>
+        <div class="collapse" id="lists">
+            <ul class="nav flex-column admin-menu subadmin-menu">
+                {% if perms.juntagrico.can_generate_lists %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-list' %}">
+                            {% trans "Erzeugen" %}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.juntagrico.can_view_lists %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lists-depot-amountoverview' %}">
+                            {% trans "Mengen Übersicht" %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lists-depotlist' %}">
+                            {% vocabulary "depot" %}-{% trans "Listen" %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lists-depot-overview' %}">
+                            {% vocabulary "depot" %} {% trans "Übersicht" %}
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </li>
+{% endif %}
