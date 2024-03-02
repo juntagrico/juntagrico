@@ -184,3 +184,6 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
 
     def by_primary_member(self, member):
         return self.filter(subscription__primary_member=member)
+
+    def on_depot_list(self):
+        return self.filter(type__size__depot_list=True)
