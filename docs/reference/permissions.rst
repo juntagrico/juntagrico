@@ -208,7 +208,47 @@ Search Hints:
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can access the mail from from the administration menu.
+Member can access the send mail form in the administration menu.
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_in_system
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Member can use the mail form in the administration menu to send mails to all active users in the system.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_with_share
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Member can use the mail form in the administration menu to send mails to all users with active shares.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_all_with_sub
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Member can use the mail form in the administration menu to send mails to all users with active subscription.
+
+Requires:
+    * juntagrico.can_send_mails
+
+Search Hints:
+    * German: Emails versenden
+
+juntagrico.can_email_free_address_list
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Member can use the mail form in the administration menu to send mails to a any manual list of addresses.
+
+Requires:
+    * juntagrico.can_send_mails
 
 Search Hints:
     * German: Emails versenden
