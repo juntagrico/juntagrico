@@ -1,6 +1,9 @@
+from django.dispatch import receiver
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.jobs import Job
+from ..signals import subscribed
 
 
 class JobTests(JuntagricoTestCase):
@@ -19,9 +22,20 @@ class JobTests(JuntagricoTestCase):
         self.assertGet(reverse('memberjobs'))
 
     def testJobPost(self):
+        self.signal_called = False
+
+        @receiver(subscribed, sender=Job)
+        def handler(instance, member, count, *args, **kwargs):
+            self.signal_called = True
+            self.assertEqual(count, 1)
+            self.assertEqual(instance.pk, self.job1.pk)
+            self.assertEqual(member, self.member)
+
         self.assertPost(reverse('job', args=[self.job1.pk]), {'jobs': 1}, 302)
         self.assertEqual(self.job1.free_slots, 0)
         self.assertEqual(self.job1.assignment_set.first().amount, 1)
+        self.assertTrue(self.signal_called)
+        subscribed.disconnect(handler)
 
     def testJobExtras(self):
         self.assertPost(reverse('job', args=[self.job3.pk]), {'jobs': 1, 'extra' + str(self.job_extra_type.id): str(self.job_extra_type.id)}, 302)
