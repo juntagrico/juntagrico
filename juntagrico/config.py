@@ -3,7 +3,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 
 def _get_setting(setting_key, default: Any = ''):
