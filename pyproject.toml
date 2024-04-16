@@ -18,7 +18,7 @@ dependencies = [
     "django-impersonate~=1.9.1",
     "django-polymorphic~=3.1.0",
     "django-richtextfield~=1.6.1",
-    "django-import-export~=3.3.1",
+    "django-import-export~=3.3.1,<3.3.7",
     "icalendar~=5.0.0",
     "reportlab==3.6.13",
     "schwifty==2023.6.0",
