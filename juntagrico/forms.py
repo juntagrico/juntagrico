@@ -14,7 +14,6 @@ from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
-from schwifty import IBAN
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
