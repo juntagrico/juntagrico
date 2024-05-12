@@ -1,8 +1,8 @@
-{% load juntagrico.config %}
+{% load juntagrico.config %}{% load i18n %}
 {% spaceless %}
 {% autoescape off %}
 {% block content %}{% endblock %}
 {% endautoescape %}
 {% endspaceless %}
 ============
-weitere Infos: http://{% config "server_url" %}
+{% trans "weitere Infos:" %} {% organisation_website "url" %}

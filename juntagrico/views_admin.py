@@ -1,15 +1,19 @@
+import datetime
 import re
 from io import BytesIO
 
-from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
+from django.core.management import call_command
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
-from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _, get_language
+from django.views.generic import FormView
 from xlsxwriter import Workbook
 
-from juntagrico import version
+from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
@@ -21,12 +25,14 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.entity.subs import Subscription
+from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
-from juntagrico.util.management_list import get_changedate
+from juntagrico.util.management_list import get_changedate, prefetch_for_list
 from juntagrico.util.pdf import return_pdf_http
-from juntagrico.util.subs import subscriptions_with_assignments
+from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
 from juntagrico.view_decorators import any_permission_required
@@ -131,56 +137,55 @@ def my_mails_intern(request, mail_url, error_message=None):
         'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
-        'can_use_general_email': request.user.has_perm('juntagrico.can_use_general_email'),
-        'can_load_templates': request.user.has_perm('juntagrico.can_load_templates')
+        'richtext_language': tinymce_lang(get_language()),
     }
     return render(request, 'mail_sender.html', renderdict)
 
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters_active(request):
-    members = MemberDao.active_members()
+    members = prefetch_for_list(MemberDao.active_members())
     renderdict = {
         'members': members,
         'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
 def filters(request):
-    members = MemberDao.all_members()
+    members = prefetch_for_list(MemberDao.all_members())
     renderdict = {
         'members': members,
         'title': _('Alle {}').format(Config.vocabulary('member_pl'))
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')
 def filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
-    members = MemberDao.member_with_active_subscription_for_depot(depot)
+    members = prefetch_for_list(MemberDao.member_with_active_subscription_for_depot(depot))
     renderdict = {
         'can_send_mails': True,
         'members': members,
         'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @permission_required('juntagrico.is_area_admin')
 def filters_area(request, area_id):
     area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
-    members = MemberDao.members_in_area(area)
+    members = prefetch_for_list(MemberDao.members_in_area(area))
     renderdict = {
         'can_send_mails': True,
         'members': members,
         'mail_url': 'mail-area',
         'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
     }
-    return render(request, 'members.html', renderdict)
+    return render(request, 'management_lists/members.html', renderdict)
 
 
 @any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
@@ -190,7 +195,7 @@ def subscriptions(request):
         'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
     }
 
-    return render(request, 'subscriptions.html', renderdict)
+    return render(request, 'management_lists/subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')
@@ -203,7 +208,7 @@ def filter_subscriptions_depot(request, depot_id):
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
     }
 
-    return render(request, 'subscriptions.html', renderdict)
+    return render(request, 'management_lists/subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.can_view_lists')
@@ -266,21 +271,20 @@ def excel_export_members_filter(request):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
-    worksheet_s = workbook.add_worksheet(Config.vocabulary('member_pl'))
+    worksheet_s = workbook.add_worksheet(str(Config.vocabulary('member_pl')))
 
     worksheet_s.write_string(0, 0, str(_('Name')))
     worksheet_s.write_string(0, 1, str(Config.vocabulary('assignment')))
     worksheet_s.write_string(
-        0, 2, str(Config.vocabulary('assignment') + ' ' + _('Kernbereich')))
+        0, 2, str(Config.vocabulary('assignment') + ' ' + str(_('Kernbereich'))))
     worksheet_s.write_string(0, 3, str(_('Taetigkeitsbereiche')))
     worksheet_s.write_string(0, 4, str(_('Depot')))
     worksheet_s.write_string(0, 5, str(_('Email')))
     worksheet_s.write_string(0, 6, str(_('Telefon')))
     worksheet_s.write_string(0, 7, str(_('Mobile')))
-    members = MemberDao.members_with_assignments_count()
 
     row = 1
-    for member in members:
+    for member in Member.objects.annotate_all_assignment_count():
         member.all_areas = ''
         for area in member.areas.all():
             member.all_areas = member.all_areas + area.name + ' '
@@ -314,7 +318,7 @@ def excel_export_subscriptions(request):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
-    worksheet_s = workbook.add_worksheet(Config.vocabulary('subscription_pl'))
+    worksheet_s = workbook.add_worksheet(str(Config.vocabulary('subscription_pl')))
 
     worksheet_s.write_string(0, 0, str(_('Übersicht')))
     worksheet_s.write_string(0, 1, str(_('HauptbezieherIn')))
@@ -323,20 +327,21 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 4, str(_('HauptbezieherInMobile')))
     worksheet_s.write_string(0, 5, str(_('Weitere BezieherInnen')))
     worksheet_s.write_string(0, 6, str(_('Status')))
-    worksheet_s.write_string(0, 7, str(_('Depot')))
-    worksheet_s.write_string(0, 8, str(Config.vocabulary('assignment')))
-    worksheet_s.write_string(0, 9, str(_('{} soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 10, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 11, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 12, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 13, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
-    worksheet_s.write_string(0, 14, str(_('Preis')))
+    worksheet_s.write_string(0, 7, str(_('Kündigungsdatum')))
+    worksheet_s.write_string(0, 8, str(_('Depot')))
+    worksheet_s.write_string(0, 9, str(Config.vocabulary('assignment')))
+    worksheet_s.write_string(0, 10, str(_('{} soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 11, str(_('{} status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 12, str(_('{} Kernbereich'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 13, str(_('{} Kernbereich soll'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 14, str(_('{} Kernbereich status(%)'.format(Config.vocabulary('assignment')))))
+    worksheet_s.write_string(0, 15, str(_('Preis')))
 
-    subs = subscriptions_with_assignments(SubscriptionDao.all_subscritions())
+    subs = SubscriptionDao.all_subscritions().annotate_assignments_progress().select_related('primary_member')
 
     row = 1
     for sub in subs:
-        primary_member = sub['subscription'].primary_member
+        primary_member = sub.primary_member
         if primary_member is not None:
             name = primary_member.get_name()
             email = primary_member.email
@@ -348,21 +353,26 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
-        worksheet_s.write_string(row, 0, sub['subscription'].size)
+        c_date = ''
+        if sub.cancellation_date:
+            c_date = sub.cancellation_date.strftime('%d/%m/%y')
+
+        worksheet_s.write_string(row, 0, sub.size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
         worksheet_s.write_string(row, 3, phone)
         worksheet_s.write_string(row, 4, mobile)
-        worksheet_s.write_string(row, 5, sub['subscription'].other_recipients_names)
-        worksheet_s.write_string(row, 6, sub['subscription'].state_text)
-        worksheet_s.write_string(row, 7, sub['subscription'].depot.name)
-        worksheet_s.write(row, 8, sub.get('assignments'))
-        worksheet_s.write(row, 9, sub['subscription'].required_assignments)
-        worksheet_s.write(row, 10, sub.get('assignments_progress'))
-        worksheet_s.write(row, 11, sub.get('core_assignments'))
-        worksheet_s.write(row, 12, sub['subscription'].required_core_assignments)
-        worksheet_s.write(row, 13, sub.get('core_assignments_progress'))
-        worksheet_s.write(row, 14, sub['subscription'].price)
+        worksheet_s.write_string(row, 5, sub.other_recipients_names)
+        worksheet_s.write_string(row, 6, sub.state_text)
+        worksheet_s.write_string(row, 7, c_date)
+        worksheet_s.write_string(row, 8, sub.depot.name)
+        worksheet_s.write(row, 9, sub.assignment_count)
+        worksheet_s.write(row, 10, sub.required_assignments)
+        worksheet_s.write(row, 11, sub.assignments_progress)
+        worksheet_s.write(row, 12, sub.core_assignment_count)
+        worksheet_s.write(row, 13, sub.required_core_assignments)
+        worksheet_s.write(row, 14, sub.core_assignments_progress)
+        worksheet_s.write(row, 15, sub.price)
         row += 1
 
     workbook.close()
@@ -456,24 +466,41 @@ def extra_canceledlist(request):
                                         'management_lists/extra_canceledlist.html', request)
 
 
+@permission_required('juntagrico.change_subscription')
+def depot_changes(request):
+    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), {},
+                                        'juntagrico/manage/subscription/depot/changes.html', request)
+
+
+@permission_required('juntagrico.change_subscription')
+def depot_change_confirm(request, subscription_id):
+    sub = get_object_or_404(Subscription, id=subscription_id)
+    sub.activate_future_depot()
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.view_share')
+def share_unpaidlist(request):
+    return subscription_management_list(Share.objects.filter(paid_date__isnull=True).order_by('member'), {},
+                                        'juntagrico/manage/share/unpaid.html', request)
+
+
 @permission_required('juntagrico.change_share')
 def share_canceledlist(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(ShareDao.canceled_shares(), render_dict,
+    return subscription_management_list(ShareDao.canceled_shares(), {},
                                         'management_lists/share_canceledlist.html', request)
 
 
 @permission_required('juntagrico.change_member')
 def member_canceledlist(request):
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(MemberDao.canceled_members(), render_dict,
+    return subscription_management_list(MemberDao.canceled_members(), {},
                                         'management_lists/member_canceledlist.html', request)
 
 
 @permission_required('juntagrico.change_member')
 def deactivate_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-    member.deactivation_date = timezone.now().date()
+    member.deactivation_date = datetime.date.today()
     member.save()
     return return_to_previous_location(request)
 
@@ -483,10 +510,10 @@ def set_change_date(request):
         raise Http404
     raw_date = request.POST.get('date')
     try:
-        date = timezone.datetime.strptime(raw_date, '%m/%d/%Y').date()
+        date = datetime.datetime.fromisoformat(raw_date).date()
         request.session['changedate'] = date
     except ValueError:
-        return error_page(request, _('Bitte gib ein Datum im Format MM/TT/JJJJ ein.'))
+        return error_page(request, _('Bitte gib ein Datum im Format JJJJ-MM-TT ein.'))
     return return_to_previous_location(request)
 
 
@@ -517,15 +544,47 @@ def sub_inconsistencies(request):
 
 @permission_required('juntagrico.change_assignment')
 def assignments(request):
-    management_list = subscriptions_with_assignments(SubscriptionDao.all_active_subscritions())
+    management_list = Subscription.objects.annotate_assignments_progress().select_related('primary_member')
     render_dict = {'change_date_disabled': True}
     return subscription_management_list(management_list, render_dict,
                                         'management_lists/assignments.html', request)
 
 
+@permission_required('juntagrico.can_generate_lists')
+def manage_list(request):
+    success = False
+    can_change_subscription = request.user.has_perm('juntagrico.change_subscription')
+    if request.method == 'POST':
+        form = GenerateListForm(request.POST, show_future=can_change_subscription)
+        if form.is_valid():
+            # generate list
+            f = can_change_subscription and form.cleaned_data['future']
+            call_command('generate_depot_list', force=True, future=f, no_future=not f, days=(form.cleaned_data['for_date'] - datetime.date.today()).days)
+            success = True
+    else:
+        form = GenerateListForm(show_future=can_change_subscription)
+    return render(request, 'juntagrico/manage/list.html', {'form': form, 'success': success})
+
+
 @login_required
 def versions(request):
-    versions = {'juntagrico': version}
+    versions = {'juntagrico': __version__}
     versions.update(addons.config.get_versions())
     render_dict = {'versions': versions}
     return render(request, 'versions.html', render_dict)
+
+
+@method_decorator(user_passes_test(lambda u: u.is_superuser), name="dispatch")
+class ShiftTimeFormView(FormView):
+    """
+    Show form to call the management command `shift_time`
+    """
+    success = False
+    template_name = "commands/shift_time.html"
+    form_class = ShiftTimeForm
+    success_url = reverse_lazy('command-shifttime-success')
+
+    def form_valid(self, form):
+        call_command('shift_time', form.cleaned_data['hours'],
+                     start=form.cleaned_data['start'] or None, end=form.cleaned_data['end'] or None)
+        return super().form_valid(form)

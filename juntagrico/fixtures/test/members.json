@@ -1,0 +1,413 @@
+[
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "first_name_last_name_01dne1toi",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": [
+            [
+                "is_area_admin",
+                "juntagrico",
+                "activityarea"
+            ],
+            [
+                "change_assignment",
+                "juntagrico",
+                "assignment"
+            ],
+            [
+                "is_depot_admin",
+                "juntagrico",
+                "depot"
+            ],
+            [
+                "can_load_templates",
+                "juntagrico",
+                "mailtemplate"
+            ],
+            [
+                "can_filter_members",
+                "juntagrico",
+                "member"
+            ],
+            [
+                "change_member",
+                "juntagrico",
+                "member"
+            ],
+            [
+                "notified_on_member_creation",
+                "juntagrico",
+                "member"
+            ],
+            [
+                "view_share",
+                "juntagrico",
+                "share"
+            ],
+            [
+                "change_share",
+                "juntagrico",
+                "share"
+            ],
+            [
+                "notified_on_share_creation",
+                "juntagrico",
+                "share"
+            ],
+            [
+                "can_send_mails",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
+                "can_view_exports",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
+                "can_view_lists",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
+                "is_operations_group",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
+                "can_filter_subscriptions",
+                "juntagrico",
+                "subscription"
+            ],
+            [
+                "change_subscription",
+                "juntagrico",
+                "subscription"
+            ],
+            [
+                "notified_on_subscription_creation",
+                "juntagrico",
+                "subscription"
+            ],
+            [
+                "change_subscriptionpart",
+                "juntagrico",
+                "subscriptionpart"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "first_name_last_name_0stiw217e",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "first_name_last_name_4rcjjva3t",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "first_name_last_name_go23rx1qk",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "first_name_last_name_gtw2ngisz",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": true,
+        "username": "first_name_last_name_vum6gx35f",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "first_name_last_name_nr83runka",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": [
+            [
+                "change_activityarea",
+                "juntagrico",
+                "activityarea"
+            ],
+            [
+                "is_area_admin",
+                "juntagrico",
+                "activityarea"
+            ],
+            [
+                "change_assignment",
+                "juntagrico",
+                "assignment"
+            ],
+            [
+                "change_jobtype",
+                "juntagrico",
+                "jobtype"
+            ],
+            [
+                "change_onetimejob",
+                "juntagrico",
+                "onetimejob"
+            ],
+            [
+                "add_recuringjob",
+                "juntagrico",
+                "recuringjob"
+            ],
+            [
+                "change_recuringjob",
+                "juntagrico",
+                "recuringjob"
+            ]
+        ]
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "first_name_last_name_01dne1toi"
+        ],
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "email": "email1@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "first_name_last_name_0stiw217e"
+        ],
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "email": "email2@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "first_name_last_name_4rcjjva3t"
+        ],
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "email": "email3@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 4,
+    "fields": {
+        "user": [
+            "first_name_last_name_go23rx1qk"
+        ],
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "email": "email4@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 5,
+    "fields": {
+        "user": [
+            "first_name_last_name_gtw2ngisz"
+        ],
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "email": "email5@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 6,
+    "fields": {
+        "user": [
+            "first_name_last_name_vum6gx35f"
+        ],
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "email": "admin@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 7,
+    "fields": {
+        "user": [
+            "first_name_last_name_nr83runka"
+        ],
+        "first_name": "first_name",
+        "last_name": "last_name",
+        "email": "areaadmin@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+}
+]

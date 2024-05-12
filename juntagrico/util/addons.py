@@ -1,3 +1,5 @@
+from importlib import metadata
+
 from django.utils.functional import LazyObject
 from django.utils.module_loading import autodiscover_modules
 
@@ -11,7 +13,6 @@ class AddonsConfig:
     def __init__(self):
         self._admin_menus = []
         self._admin_subscription_menus = []
-        self._show_admin_menu_methods = []
         self._user_menus = []
         self._sub_overview = []
         self._sub_change = []
@@ -30,12 +31,6 @@ class AddonsConfig:
 
     def get_admin_subscription_menu(self):
         return self._admin_subscription_menus
-
-    def register_show_admin_menu_method(self, method):
-        self._show_admin_menu_methods.append(method)
-
-    def show_admin_menu(self, user):
-        return any(method(user) for method in self._show_admin_menu_methods)
 
     def register_user_menu(self, template):
         self._user_menus.append(template)
@@ -69,7 +64,10 @@ class AddonsConfig:
     def get_config_classes(self):
         return self._config_classes
 
-    def register_version(self, name, version):
+    def register_version(self, name, version=None):
+        if version is None:
+            # get actually installed version
+            version = metadata.version(name)
         self._versions[name] = version
 
     def get_versions(self):

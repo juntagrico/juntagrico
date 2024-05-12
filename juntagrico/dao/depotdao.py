@@ -32,7 +32,3 @@ class DepotDao:
     @staticmethod
     def depot_by_id(identifier):
         return Depot.objects.all().filter(id=identifier)[0]
-
-    @staticmethod
-    def distinct_weekdays_for_depot_list():
-        return Depot.objects.all().filter(depot_list=True).order_by('weekday').values('weekday').distinct()
