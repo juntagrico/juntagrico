@@ -35,7 +35,7 @@ class JobTests(JuntagricoTestCase):
         self.assertEqual(self.job1.free_slots, 0)
         self.assertEqual(self.job1.assignment_set.first().amount, 1)
         self.assertTrue(self.signal_called)
-        subscribed.disconnect(handler)
+        self.assertTrue(subscribed.disconnect(handler, sender=Job))
 
     def testJobExtras(self):
         self.assertPost(reverse('job', args=[self.job3.pk]), {'jobs': 1, 'extra' + str(self.job_extra_type.id): str(self.job_extra_type.id)}, 302)
