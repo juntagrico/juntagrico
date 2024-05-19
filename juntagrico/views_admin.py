@@ -319,7 +319,7 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 4, str(_('HauptbezieherInMobile')))
     worksheet_s.write_string(0, 5, str(_('Weitere BezieherInnen')))
     worksheet_s.write_string(0, 6, str(_('Status')))
-    worksheet_s.write_string(0, 7, str(_('Kündigungsdatum')))
+    worksheet_s.write_string(0, 7, str(_('Gekündigt')))
     worksheet_s.write_string(0, 8, str(_('Depot')))
     worksheet_s.write_string(0, 9, str(Config.vocabulary('assignment')))
     worksheet_s.write_string(0, 10, str(_('{} soll'.format(Config.vocabulary('assignment')))))
@@ -345,10 +345,6 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
-        c_date = ''
-        if sub.cancellation_date:
-            c_date = sub.cancellation_date.strftime('%d/%m/%y')
-
         worksheet_s.write_string(row, 0, sub.size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
@@ -357,7 +353,7 @@ def excel_export_subscriptions(request):
         worksheet_s.write_string(row, 5, sub.other_recipients_names)
         # TODO: think of a good state representation.
         worksheet_s.write_string(row, 6, sub.state_text)
-        worksheet_s.write_string(row, 7, c_date)
+        worksheet_s.write_string(row, 7, sub.cancelled)
         worksheet_s.write_string(row, 8, sub.depot.name)
         worksheet_s.write(row, 9, sub.assignment_count)
         worksheet_s.write(row, 10, sub.required_assignments)

@@ -225,12 +225,12 @@ class JuntagricoTestCase(TestCase):
 
     @staticmethod
     def create_sub(depot, activation_date=None, parts=None, **kwargs):
-        if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
-            kwargs['cancellation_date'] = activation_date
+        cancellation_date = kwargs.pop('cancellation_date', None)
+        deactivation_date = kwargs.pop('deactivation_date', None)
+        if deactivation_date and not cancellation_date:
+            cancellation_date = activation_date
         sub = Subscription.objects.create(
             depot=depot,
-            activation_date=activation_date,
-            creation_date='2017-03-27',
             start_date='2018-01-01',
             **kwargs
         )
@@ -240,8 +240,8 @@ class JuntagricoTestCase(TestCase):
                     subscription=sub,
                     type=part,
                     activation_date=activation_date,
-                    cancellation_date=kwargs.get('cancellation_date', None),
-                    deactivation_date=kwargs.get('deactivation_date', None)
+                    cancellation_date=cancellation_date,
+                    deactivation_date=deactivation_date
                 )
         return sub
 

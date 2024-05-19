@@ -18,9 +18,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_subscription(depot, member, subtype, activation_date=None,):
-        sub_fields = {'depot': depot, 'future_depot': None,
-                      'activation_date': activation_date,
-                      'deactivation_date': None, 'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
+        sub_fields = {'depot': depot, 'future_depot': None, 'start_date': '2018-01-01'}
         subscription = Subscription.objects.create(**sub_fields)
         member.leave_subscription()
         member.join_subscription(subscription)

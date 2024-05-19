@@ -12,7 +12,7 @@ from juntagrico.resources.subscription import SubscriptionResource, Subscription
 class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
     form = SubscriptionAdminForm
     list_display = ['__str__', 'recipients_names',
-                    'primary_member_nullsave', 'depot', 'text_state', 'cancellation_date']
+                    'primary_member_nullsave', 'depot', 'text_state', 'cancelled']
     search_fields = ['subscriptionmembership__member__user__username',
                      'subscriptionmembership__member__first_name',
                      'subscriptionmembership__member__last_name',

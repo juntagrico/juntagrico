@@ -7,6 +7,7 @@ from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, E
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
 
+from juntagrico.entity import SimpleStateModelQuerySet
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.util.temporal import default_to_business_year
 

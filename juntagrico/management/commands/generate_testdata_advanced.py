@@ -96,7 +96,8 @@ class Command(BaseCommand):
             join_date=join_date)
         subscription.save()
         for sub_type in sub_types:
-            SubscriptionPart.objects.create(subscription=subscription, type=sub_type, activation_date=sub_dict['creation_date'])
+            activate_date = fake.date_between(start_date='-10y', end_date='-1m')
+            SubscriptionPart.objects.create(subscription=subscription, type=sub_type, activation_date=activate_date)
         self.members.append(main_member)
         self.members.append(co_member)
         # TODO: Create parts

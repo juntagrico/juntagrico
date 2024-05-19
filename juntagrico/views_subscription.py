@@ -183,7 +183,7 @@ def part_change(request, part):
     """
     change part of a subscription
     """
-    if part.subscription.canceled or part.subscription.inactive:
+    if part.subscription.cancelled or part.subscription.inactive:
         raise Http404("Can't change subscription part of cancelled subscription")
     if SubscriptionTypeDao.get_normal_visible().count() <= 1:
         raise Http404("Can't change subscription part if there is only one subscription type")
@@ -229,7 +229,7 @@ def extra_change(request, subscription_id):
         'extras': subscription.active_and_future_extra_subscriptions.all(),
         'subscription': subscription,
         'sub_id': subscription_id,
-        'extra_order_allowed': not subscription.canceled,
+        'extra_order_allowed': not subscription.cancelled,
     }
     return render(request, 'extra_change.html', renderdict)
 
