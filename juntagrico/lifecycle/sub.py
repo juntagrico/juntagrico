@@ -15,14 +15,16 @@ def check_sub_consistency(instance):
 
 
 def check_sub_primary(instance):
-    if instance.pk:  # can't access related objects, if sub has not been saved yet.
-        if instance.primary_member is not None:
-            pm_sub = instance.primary_member in instance.recipients
-            pm_form = instance.future_members and instance.primary_member in instance.future_members
-            if not (pm_sub or pm_form):
-                raise ValidationError(
-                    _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
-                    code='invalid')
+    if instance.primary_member is not None:
+        # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
+        pm_sub = instance.pk and instance.primary_member in instance.recipients
+        # this check works also for new instances, because future_members is populated with form data, if available
+        pm_form = instance.future_members and instance.primary_member in instance.future_members
+        if not (pm_sub or pm_form):
+            raise ValidationError(
+                _('HauptbezieherIn muss auch {}-BezieherIn sein').format(Config.vocabulary('subscription')),
+                code='invalid')
+    if instance.pk:  # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
         if instance.parts.count() > 0 and instance.future_parts.count() == 0 and instance.cancellation_date is None:
             raise ValidationError(
                 _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'

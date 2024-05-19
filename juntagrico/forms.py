@@ -6,14 +6,14 @@ from crispy_forms.layout import Layout, Field, Submit, HTML, Div, Fieldset
 from crispy_forms.utils import TEMPLATE_PACK
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField, FloatField, \
-    DateTimeField
+    DateTimeField, forms
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
-from schwifty import IBAN
+from django.utils.translation import gettext_lazy
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
@@ -28,7 +28,7 @@ from juntagrico.util.temporal import next_membership_end_date
 
 class Slider(Field):
     def __init__(self, *args, **kwargs):
-        super().__init__(template='forms/slider.html', css_class='slider', *args, **kwargs)
+        super().__init__(*args, template='forms/slider.html', css_class='slider', **kwargs)
 
 
 class JuntagricoDateWidget(DateInput):
@@ -45,6 +45,28 @@ class JuntagricoDateWidget(DateInput):
 class LinkButton(HTML):
     def __init__(self, name, href, css_classes=None):
         super().__init__(f'<a href="{href}" class="btn {css_classes}">{name}</a>')
+
+
+class ExtendableFormMetaclass(forms.DeclarativeFieldsMetaclass):
+    def __getattr__(cls, name):
+        if name == 'validators':
+            cls.validators = []
+            return cls.validators
+        raise AttributeError(name)
+
+
+class ExtendableFormMixin(metaclass=ExtendableFormMetaclass):
+    """
+    Allows adding validators to the form like this:
+    SomeForm.validators.append(some_validator_function)
+    """
+    def get_validators(self):
+        return getattr(self, 'validators', [])
+
+    def clean(self):
+        for validator in self.get_validators():
+            validator(self)
+        return super().clean()
 
 
 class PasswordForm(Form):
@@ -104,7 +126,7 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         model = Member
         fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
         labels = {
-            "addr_street": _("Strasse/Nr.")
+            "addr_street": gettext_lazy("Strasse/Nr.")
         }
 
     def __init__(self, *args, **kwargs):
@@ -119,9 +141,8 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         )
 
     def clean_iban(self):
-        try:
-            IBAN(self.data['iban'])
-        except ValueError:
+        # require IBAN on cancellation
+        if self.data['iban'] == '':
             raise ValidationError(_('IBAN ist nicht gültig'))
         return self.data['iban']
 
@@ -142,11 +163,11 @@ class MemberProfileForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone', 'iban', 'reachable_by_email']
         labels = {
-            "phone": _("Telefonnummer"),
-            "email": _("E-Mail-Adresse"),
-            "birthday": _("Geburtstag"),
-            "addr_street": _("Strasse/Nr."),
-            "reachable_by_email": _(
+            "phone": gettext_lazy("Telefonnummer"),
+            "email": gettext_lazy("E-Mail-Adresse"),
+            "birthday": gettext_lazy("Geburtstag"),
+            "addr_street": gettext_lazy("Strasse/Nr."),
+            "reachable_by_email": gettext_lazy(
                 'Sollen andere {} dich via Kontaktformular erreichen können? (Email nicht sichtbar)'
             ).format(Config.vocabulary('member_pl')),
         }
@@ -182,14 +203,6 @@ class MemberProfileForm(ModelForm):
             ).format('<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_members')))
         )
 
-    def clean_iban(self):
-        if self.data['iban'] != '':
-            try:
-                IBAN(self.data['iban'])
-            except ValueError:
-                raise ValidationError(_('IBAN ist nicht gültig'))
-        return self.data['iban']
-
 
 class SubscriptionForm(ModelForm):
     class Meta:
@@ -207,10 +220,10 @@ class MemberBaseForm(ModelForm):
                   'addr_street', 'addr_zipcode', 'addr_location',
                   'birthday', 'phone', 'mobile_phone')
         labels = {
-            "phone": _("Telefonnummer"),
-            "email": _("E-Mail-Adresse"),
-            "birthday": _("Geburtstag"),
-            "addr_street": _("Strasse/Nr."),
+            "phone": gettext_lazy("Telefonnummer"),
+            "email": gettext_lazy("E-Mail-Adresse"),
+            "birthday": gettext_lazy("Geburtstag"),
+            "addr_street": gettext_lazy("Strasse/Nr."),
         }
 
     def __init__(self, *args, **kwargs):
@@ -233,8 +246,19 @@ class MemberBaseForm(ModelForm):
 
 
 class RegisterMemberForm(MemberBaseForm):
-    comment = CharField(required=False, max_length=4000, label='Kommentar', widget=Textarea(attrs={"rows": 3}))
+    comment = CharField(required=False, max_length=4000, label=gettext_lazy('Kommentar'), widget=Textarea(attrs={"rows": 3}))
     agb = BooleanField(required=True)
+
+    documents = {
+        'die Statuten': Config.bylaws,
+        'das Betriebsreglement': Config.business_regulations,
+        'die DSGVO Infos': Config.gdpr_info,
+    }
+    text = {
+        'accept_with_docs': _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. Hiermit beantrage ich meine Aufnahme.'),
+        'accept_wo_docs': _('Ich erkläre meinen Willen, "{}" beizutreten. Hiermit beantrage ich meine Aufnahme.'),
+        'and': _('und')
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -249,26 +273,19 @@ class RegisterMemberForm(MemberBaseForm):
         )
         self.fields['email'].error_messages['unique'] = self.duplicate_email_message()
 
-    @staticmethod
-    def agb_label():
-        documents = {
-            'die Statuten': Config.bylaws,
-            'das Betriebsreglement': Config.business_regulations,
-            'die DSGVO Infos': Config.gdpr_info,
-        }
+    @classmethod
+    def agb_label(cls):
         documents_html = []
-        for text, link in documents.items():
+        for text, link in cls.documents.items():
             if link().strip():
                 documents_html.append('<a target="_blank" href="{}">{}</a>'.format(link(), _(text)))
         if documents_html:
-            return _('Ich habe {} gelesen und erkläre meinen Willen, "{}" beizutreten. '
-                     'Hiermit beantrage ich meine Aufnahme.').format(
-                (' ' + _('und') + ' ').join(documents_html),
+            return cls.text['accept_with_docs'].format(
+                (' ' + cls.text['and'] + ' ').join(documents_html),
                 Config.organisation_long_name()
             )
         else:
-            return _('Ich erkläre meinen Willen, "{}" beizutreten. '
-                     'Hiermit beantrage ich meine Aufnahme.').format(Config.organisation_long_name())
+            return cls.text['accept_wo_docs'].format(Config.organisation_long_name())
 
 
 class RegisterSummaryForm(Form):
@@ -345,7 +362,7 @@ class AddCoMemberForm(CoMemberBaseForm):
             *fields,
             FormActions(
                 self.get_submit_button(),
-                LinkButton(_("Abbrechen"), reverse("sub-detail")),
+                LinkButton(_("Abbrechen"), reverse("subscription-landing")),
             )
         )
 
@@ -429,7 +446,7 @@ class SubscriptionTypeOption(Div):
         return render_to_string(template, {"type": self.instance, "option": self})
 
 
-class SubscriptionPartBaseForm(Form):
+class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -454,7 +471,8 @@ class SubscriptionPartBaseForm(Form):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         size_container.append(type_field)
                 product_container.append(size_container)
-            containers.append(product_container)
+            if len(product_container):
+                containers.append(product_container)
         return containers
 
     def _get_initial(self, subscription_type):
@@ -505,6 +523,10 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
 
     def clean(self):
         selected = self.get_selected()
+        # check that subscription is not cancelled:
+        if self.subscription.cancellation_date:
+            raise ValidationError(_('Für gekündigte {} können keine Bestandteile oder Zusatzabos bestellt werden').
+                                  format(Config.vocabulary('subscription_pl')), code='no_order_if_cancelled')
         # check if members in subscription have sufficient shares
         available_shares = self.subscription.all_shares
         new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])

@@ -35,6 +35,22 @@ Default receivers:
 
 * handle_job_time_changed: Send notification email to members that are signed up to that job.
 
+subscribed
+^^^^^^^^^^
+
+Sender: Job
+
+Trigger: Member subscribes to a job
+
+Arguments:
+
+* instance: The job instance that the member subscribed to
+* member: Member that subscribed to the job
+* count: The number of assignments
+
+Default receivers:
+
+* none
 
 Extra subscription signals
 --------------------------

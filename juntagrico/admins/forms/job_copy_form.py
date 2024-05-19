@@ -1,6 +1,7 @@
 import datetime
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -45,7 +46,7 @@ class JobCopyForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if self.cleaned(cleaned_data) and not self.get_datetimes(cleaned_data):
-            raise ValidationError(_('Kein neuer Job fällt zwischen Anfangs- und Enddatum'))
+            raise ValidationError(_('Kein neuer Job fällt zwischen Anfangs- und Enddatum'), code='no_job_in_range')
         return cleaned_data
 
     def save(self, commit=True):
@@ -81,10 +82,10 @@ class JobCopyForm(forms.ModelForm):
             if skip_even_weeks and delta % 14 >= 7:
                 continue
             date = start + datetime.timedelta(delta)
-            if not date.isoweekday() in weekdays:
+            if date.isoweekday() not in weekdays:
                 continue
             dt = datetime.datetime.combine(date, time)
-            if is_naive(dt):
+            if settings.USE_TZ and is_naive(dt):
                 dt = dt.astimezone(gdtz())
             res.append(dt)
         return res
@@ -94,5 +95,5 @@ class JobCopyToFutureForm(JobCopyForm):
     def clean(self):
         cleaned_data = super().clean()
         if self.cleaned(cleaned_data) and self.get_datetimes(cleaned_data)[0] <= timezone.now():
-            raise ValidationError(_('Neue Jobs können nicht in der Vergangenheit liegen.'))
+            raise ValidationError(_('Neue Jobs können nicht in der Vergangenheit liegen.'), code='date_in_past')
         return cleaned_data

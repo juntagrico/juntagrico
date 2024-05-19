@@ -3,7 +3,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 
 def _get_setting(setting_key, default: Any = ''):
@@ -65,6 +65,13 @@ class Config:
         }
     )
     organisation_phone = _get_setting('ORGANISATION_PHONE')
+    organisation_website = _get_setting_with_key(
+        'ORGANISATION_WEBSITE',
+        {
+            'name': lambda: Config.server_url(),
+            'url': lambda: 'http://' + Config.server_url()
+        }
+    )
     organisation_bank_connection = _get_setting(
         'ORGANISATION_BANK_CONNECTION',
         {
@@ -125,6 +132,7 @@ class Config:
             'technical': lambda: Config.contacts('general'),
         }
     )
+    url_protocol = _get_setting('URL_PROTOCOL', 'https://')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
     default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
     batch_mailer = _get_setting_with_key(
@@ -168,7 +176,7 @@ class Config:
         }
     )
     favicon = _get_setting('FAVICON', fallback_static('juntagrico/img/favicon.ico'))
-    bootstrap = _get_setting('BOOTSTRAP', fallback_static('juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css'))
+    bootstrap = _get_setting('BOOTSTRAP', fallback_static('juntagrico/external/bootstrap/css/bootstrap.min.css'))
     styles = _get_setting_with_key('STYLES', {'template': '', 'static': []})
     scripts = _get_setting_with_key('SCRIPTS', {'template': '', 'static': []})
     images = _get_setting_with_key(

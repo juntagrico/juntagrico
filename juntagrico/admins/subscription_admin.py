@@ -6,13 +6,13 @@ from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminFor
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInlineWithShareCount
 from juntagrico.admins.inlines.subscription_part_inlines import SubscriptionPartInline
 from juntagrico.config import Config
-from juntagrico.resources.subscription import SubscriptionResource
+from juntagrico.resources.subscription import SubscriptionResource, SubscriptionPartResource
 
 
 class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
     form = SubscriptionAdminForm
     list_display = ['__str__', 'recipients_names',
-                    'primary_member_nullsave', 'depot', 'text_state']
+                    'primary_member_nullsave', 'depot', 'text_state', 'cancellation_date']
     search_fields = ['subscriptionmembership__member__user__username',
                      'subscriptionmembership__member__first_name',
                      'subscriptionmembership__member__last_name',
@@ -33,7 +33,7 @@ class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
         (_('Administration'), {'fields': ['notes']}),
     ]
 
-    resource_classes = [SubscriptionResource]
+    resource_classes = [SubscriptionResource, SubscriptionPartResource]
 
     @admin.display(description=_('Status'), ordering='activation_date')
     def text_state(self, instance):

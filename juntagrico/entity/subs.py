@@ -8,14 +8,14 @@ from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.dao.sharedao import ShareDao
-from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel, SimpleStateModelQuerySet
+from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
-from juntagrico.queryset.subscription import SubscriptionQuerySet
+from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.mailer import membernotification
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
@@ -84,13 +84,6 @@ class Subscription(Billable):
     @property
     def active_and_future_parts(self):
         return self.parts.filter(~q_deactivated())
-
-    @property
-    def part_change_date(self):
-        order_dates = list(self.future_parts.values_list('creation_date', flat=True).order_by('creation_date'))
-        cancel_dates = list(self.active_parts.values_list('cancellation_date', flat=True).order_by('cancellation_date'))
-        dates = order_dates + cancel_dates
-        return max([date for date in dates if date is not None])
 
     @property
     def size(self):
@@ -267,11 +260,6 @@ class Subscription(Billable):
             ('can_change_deactivated_subscriptions', _('Benutzer kann deaktivierte {0} ändern').format(Config.vocabulary('subscription'))),
             ('notified_on_depot_change', _('Wird bei {0}-Änderung informiert').format(Config.vocabulary('depot'))),
         )
-
-
-class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
-    def is_normal(self):
-        return self.filter(type__size__product__is_extra=False)
 
 
 class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):

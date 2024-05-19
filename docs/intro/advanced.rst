@@ -40,13 +40,16 @@ To enable the rich text editor you have to do the following:
 * Add the following setting
     .. code-block:: python
 
+        from juntagrico.util.settings import tinymce_lang
+
         DJRICHTEXTFIELD_CONFIG = {
-            'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
+            'js': ['juntagrico/external/tinymce/tinymce.min.js'],
             'init_template': 'djrichtextfield/init/tinymce.js',
             'settings': {
                 'menubar': False,
                 'plugins': 'link  lists',
-                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+                'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
+                'language': tinymce_lang(LANGUAGE_CODE)
             }
         }
 
@@ -61,34 +64,8 @@ More information on django-richtextfield you can find here https://pypi.org/proj
 Custom Templates
 ----------------
 
-.. Note::
-    Changing the templates will increase your maintenance work.
-    If you think the changes you want to make could also benefit other juntagrico users, consider opening an issue, suggesting your changes to juntagrico directly.
-    If you need your changes quickly, you may still want to override the templates as described here.
-
-Read `the official documentation <https://docs.djangoproject.com/en/4.2/howto/overriding-templates/>`_ on how to override templates in django.
-
-Roughly these are the steps to override a template:
-
-1. Either ensure, that your ``INSTALLED_APPS`` are in the desired order
-   or add ``DIRS`` to your ``TEMPLATES`` settings in ``{app}/settings.py``, e.g.:
-
-.. code-block:: python
-
-    TEMPLATES = [
-        {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [os.path.join(BASE_DIR, 'templates')],  # location of your overriding templates
-            'APP_DIRS': True,
-            # ...
-        },
-    ]
-
-2. Copy the juntagrico template that you want to override from ``juntagrico/templates``
-   (in the juntagrico source code) to your ``templates`` folder (in your app or in the project root, depending on the above setting),
-   while preserving the folder structure.
-3. The project will now use your copy of the template instead of the original.
-
+Templates can be modified, e.g., to change texts or menu entries.
+:ref:`See Templates Reference <reference-templates>`.
 
 .. _intro-custom-code:
 
@@ -117,3 +94,29 @@ i.e. in the ``ready`` method of your app config in ``apps.py`` in the main folde
             addons.config.register_user_menu('my_user_menu.html')
             # register other hooks
             # Add Monkey-Patches ..
+
+
+.. _intro-modify-text-in-code:
+
+Modifying Text in Code
+^^^^^^^^^^^^^^^^^^^^^^
+
+Some text is written directly into code instead of templates. These texts can be modified with :ref:`Custom Code <intro-custom-code>`.
+
+.. code-block:: python
+
+    def ready(self):
+        # import the form to patch
+        from juntagrico.forms import RegisterMemberForm
+        # modify text variable (check the form implementation to see if this is available)
+        RegisterMemberForm.text['accept_wo_docs']= 'I accept'
+        # modify field labels of a ModelForm
+        RegisterMemberForm.base_fields['phone'].label = 'Tel'
+        # modify the text in a submit button
+        old_init = RegisterMemberForm.__init__
+
+        def my_init(self, *args, **kwargs):
+            old_init(self, *args, **kwargs)
+            self.helper.layout[-1].fields[0].value = 'Go'
+
+        RegisterMemberForm.__init__ = my_init

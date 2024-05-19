@@ -6,9 +6,13 @@
         {% trans "Warteliste der Bestandteile" %}
     </h3>
 {% endblock %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/change_date.html' %}
+    {% include 'management_lists/snippets/email_sender.html' %}
+{% endblock %}
 {% block list %}
     {% vocabulary "subscription" as v_subscription %}
-    <table id="filter-table" class="list table" style="display: table;">
+    <table id="filter-table" class="list table">
         <thead>
             <tr>
                 <th class="filter">
@@ -52,12 +56,12 @@
                     <td>
                         {% if part.activation_date %}
                         {% trans "Wurde bereits aktiviert" %} {{ part.activation_date }}
-                        {% elif part.subscription.state == 'waiting' %}
+                        {% elif part.subscription.waiting %}
                             {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist noch nicht aktiv {% endblocktrans %}
-                        {% elif part.subscription.state == 'inactive' %}
+                        {% elif part.subscription.inactive %}
                             {% blocktrans %} Übergeordnete/s/r {{ v_subscription }} ist deaktiviert {% endblocktrans %}
                         {% else %}
-                        <a href="{% url 'part-activate' part.id %}"class="btn btn-success">
+                        <a href="{% url 'part-activate' part.id %}" class="btn btn-success">
                             {% trans "aktivieren" %}
                         </a>
                         {% endif %}

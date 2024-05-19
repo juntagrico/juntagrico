@@ -8,7 +8,7 @@ from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
-from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField
+from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailField, validate_iban
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.queryset.member import MemberQuerySet
@@ -49,7 +49,7 @@ class Member(JuntagricoBaseModel):
     mobile_phone = models.CharField(
         _('Mobile'), max_length=50, null=True, blank=True)
 
-    iban = models.CharField('IBAN', max_length=100, blank=True, default='')
+    iban = models.CharField('IBAN', max_length=100, blank=True, default='', validators=[validate_iban])
 
     confirmed = models.BooleanField(_('E-Mail-Adresse bestätigt'), default=False)
     reachable_by_email = models.BooleanField(
@@ -59,7 +59,7 @@ class Member(JuntagricoBaseModel):
     deactivation_date = models.DateField(
         _('Deaktivierungsdatum'), null=True, blank=True, help_text=_('Sperrt Login und entfernt von E-Mail-Listen'))
     end_date = models.DateField(
-        _('Enddatum'), null=True, blank=True, help_text=_('Voraususchtliches Datum an dem die Mitgliedschaft enden wird. Hat keinen Effekt im System'))
+        _('Enddatum'), null=True, blank=True, help_text=_('Voraussichtliches Datum an dem die Mitgliedschaft enden wird. Hat keinen Effekt im System'))
     notes = models.TextField(
         _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
@@ -79,7 +79,7 @@ class Member(JuntagricoBaseModel):
     def active_shares(self):
         """ :return: shares that have been paid by member and not cancelled AND paid back yet
         """
-        return self.share_set.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
+        return self.share_set.active()
 
     def active_shares_for_date(self, date):
         date = date or datetime.date.today()
@@ -169,7 +169,8 @@ class Member(JuntagricoBaseModel):
             subscription.primary_member = self
             subscription.save()
 
-    def leave_subscription(self, subscription, changedate=None):
+    def leave_subscription(self, subscription=None, changedate=None):
+        subscription = subscription or self.subscription_current
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         membership_present = sub_membership and sub_membership.leave_date is None
         if membership_present and sub_membership.join_date is not None:
@@ -248,6 +249,28 @@ class SubscriptionMembership(JuntagricoBaseModel):
 
     def clean(self):
         return check_sub_membership_consistency(self)
+
+    def can_leave(self):
+        enough_shares_to_leave = self.subscription.share_overflow - self.member.share_set.usable().count() >= 0
+        return self.leave_date is None and self.member.is_cooperation_member and enough_shares_to_leave
+
+    def waiting(self, date=None):
+        return self.join_date is None or self.join_date > (date or datetime.date.today())
+
+    def active(self, date=None):
+        return not self.waiting(date) and not self.left(date)
+
+    def leaves_before_end(self):
+        """ true, if member left or will leave subscription before the subscription ends or ended
+        """
+        return self.leave_date is not None and (self.subscription.deactivation_date is None
+                                                or self.leave_date < self.subscription.deactivation_date)
+
+    def left(self, date=None):
+        return self.leave_date is not None and self.leave_date <= (date or datetime.date.today())
+
+    def co_members(self):
+        return self.subscription.co_members(self.member)
 
     class Meta:
         unique_together = ('member', 'subscription')

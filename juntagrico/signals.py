@@ -2,9 +2,15 @@ from django.dispatch import Signal
 
 from juntagrico.mailer import adminnotification
 
+subscribed = Signal()
+
 ''' job related signals'''
 job_canceled = Signal()
 job_time_changed = Signal()
+
+''' area signals '''
+area_joined = Signal()
+area_left = Signal()
 
 ''' extra subscription signals '''
 extra_sub_activated = Signal()

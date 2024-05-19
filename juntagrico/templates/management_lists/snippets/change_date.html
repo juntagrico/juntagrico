@@ -1,0 +1,18 @@
+{% load i18n %}
+{% if can_change_date %}
+    <form action="{% url 'changedate-set' %}" method="POST" class="form-inline">
+        {% csrf_token %}
+        <input type="date" class="form-control docs-date mb-4 mr-sm-2" name="date" value="{% now "Y-m-d" %}">
+        <button type="submit" class="btn btn-primary mb-4">
+            {% trans "Änderungsdatum einstellen" %}
+        </button>
+    </form>
+{% else %}
+    <div class="alert alert-warning">
+        {% blocktrans %}Das Änderungsdatum ist auf {{ change_date }} gesetzt.{% endblocktrans %}
+        <a href="{% url 'changedate-unset' %}">
+            {% trans "Beende dies hier" %}
+        </a>
+        .
+    </div>
+{% endif %}

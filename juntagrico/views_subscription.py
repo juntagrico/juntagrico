@@ -49,7 +49,7 @@ def subscription(request, subscription_id=None):
     if subscription_id is None:
         subscription = member.subscription_current
     else:
-        subscription = get_object_or_404(Subscription, id=subscription_id)
+        subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
         future_subscription = future_subscription and subscription != member.subscription_future
     end_date = end_of_next_business_year()
     renderdict = {}
@@ -141,7 +141,7 @@ def primary_change(request, subscription_id):
         new_primary = get_object_or_404(Member, id=int(request.POST.get('primary')))
         subscription.primary_member = new_primary
         subscription.save()
-        return redirect('sub-detail-id', subscription_id=subscription.id)
+        return redirect('subscription-single', subscription_id=subscription.id)
     if Config.enable_shares():
         co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
     else:
@@ -160,11 +160,7 @@ def size_change(request, subscription_id):
     change the size of a subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    parts_order_allowed = subscription.waiting or subscription.active
     if request.method == 'POST':
-        if not parts_order_allowed:
-            raise ValidationError(_('Für gekündigte {} können keine Bestandteile bestellt werden').
-                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST)
         if form.is_valid():
             create_subscription_parts(subscription, form.get_selected(), True)
@@ -176,7 +172,7 @@ def size_change(request, subscription_id):
         'subscription': subscription,
         'hours_used': Config.assignment_unit() == 'HOURS',
         'next_cancel_date': temporal.next_cancelation_date(),
-        'parts_order_allowed': parts_order_allowed,
+        'parts_order_allowed': not subscription.canceled,
         'can_change_part': SubscriptionTypeDao.get_normal_visible().count() > 1
     }
     return render(request, 'size_change.html', renderdict)
@@ -220,11 +216,7 @@ def extra_change(request, subscription_id):
         change an extra subscription
     """
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    extra_order_allowed = subscription.waiting or subscription.active
     if request.method == 'POST':
-        if not extra_order_allowed:
-            raise ValidationError(_('Für gekündigte {} können keine Zusatzabos bestellt werden').
-                                  format(Config.vocabulary('subscription_pl')), code='invalid')
         form = SubscriptionPartOrderForm(subscription, request.POST,
                                          product_method=SubscriptionProductDao.all_visible_extra_products)
         if form.is_valid():
@@ -237,7 +229,7 @@ def extra_change(request, subscription_id):
         'extras': subscription.active_and_future_extra_subscriptions.all(),
         'subscription': subscription,
         'sub_id': subscription_id,
-        'extra_order_allowed': extra_order_allowed,
+        'extra_order_allowed': not subscription.canceled,
     }
     return render(request, 'extra_change.html', renderdict)
 
@@ -332,7 +324,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
         return self._done()
 
     def _done(self):
-        return redirect('sub-detail-id', subscription_id=self.subscription.id)
+        return redirect('subscription-single', subscription_id=self.subscription.id)
 
 
 def error_page(request, error_message):
@@ -343,11 +335,8 @@ def error_page(request, error_message):
 @primary_member_of_subscription
 def cancel_part(request, part_id, subscription_id):
     part = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=part_id)
-    if part.activation_date is None:
-        part.delete()
-    else:
-        part.cancel()
-        adminnotification.subpart_canceled(part)
+    part.cancel()
+    adminnotification.subpart_canceled(part)
     return return_to_previous_location(request)
 
 
@@ -357,7 +346,7 @@ def cancel_subscription(request, subscription_id):
     end_date = end_of_business_year() if datetime.date.today() <= cancelation_date() else end_of_next_business_year()
     if request.method == 'POST':
         cancel_sub(subscription, request.POST.get('end_date'), request.POST.get('message'))
-        return redirect('sub-detail')
+        return redirect('subscription-landing')
     renderdict = {
         'end_date': end_date,
     }
@@ -366,14 +355,14 @@ def cancel_subscription(request, subscription_id):
 
 @login_required
 def leave_subscription(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
     member = request.user.member
+    subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
     asc = member.usable_shares_count
     share_error = subscription.share_overflow - asc < 0
     primary = subscription.primary_member.id == member.id
     can_leave = member.is_cooperation_member and not share_error and not primary
     if not can_leave:
-        return redirect('sub-detail')
+        return redirect('subscription-landing')
     if request.method == 'POST':
         member.leave_subscription(subscription)
         primary_member = subscription.primary_member
@@ -395,8 +384,7 @@ def activate_part(request, part_id):
 def deactivate_part(request, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
     change_date = request.session.get('changedate', None)
-    if part.activation_date is not None:
-        part.deactivate(change_date)
+    part.deactivate(change_date)
     return return_to_previous_location(request)
 
 
@@ -408,7 +396,7 @@ def change_nickname(request, subscription_id):
         if form.is_valid():
             subscription.nickname = form.cleaned_data['nickname']
             subscription.save()
-            return redirect('sub-detail-id', subscription_id=subscription_id)
+            return redirect('subscription-single', subscription_id=subscription_id)
     else:
         form = NicknameForm()
     renderdict = {

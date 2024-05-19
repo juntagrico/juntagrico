@@ -11,7 +11,7 @@
                     {% trans "Email" %} {% config "demouser" %}
                 </label>
                 <div class="controls col-md-6">
-                    <input type="text" class="form-control" name="username" id="username" placeholder="Email-Adresse"/>
+                    <input type="text" class="form-control" name="username" id="username" placeholder="{% trans "Email-Adresse" %}"/>
                 </div>
             </div>
             <div class="form-group row">
@@ -19,7 +19,7 @@
                     {% trans "Passwort" %} {% config "demopwd" %}
                 </label>
                 <div class="controls col-md-6">
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Passwort"/>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="{% trans "Passwort" %}"/>
                 </div>
             </div>
             {% if form.errors %}
@@ -31,7 +31,7 @@
                     {% endfor %}
                     <br>
                     {% translate 'Brauchst du Hilfe? Melde dich bei' %}
-                    <a href="mailto:{% contacts "technical" %}?subject={% trans "Ich kann mich nicht einloggen" %} {% config "server_url" %}">
+                    <a href="mailto:{% contacts "technical" %}?subject={% trans "Ich kann mich nicht einloggen" %} {% site_name %}">
                         {% contacts "technical" %}
                     </a>
                 </div>
