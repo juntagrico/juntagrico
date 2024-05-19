@@ -2,7 +2,7 @@
 {% load juntagrico.config %}
 {% load i18n %}
 {% depot_admin request as qs_depot_admin %}
-{% if qs_depot_admin|length > 0 %}
+{% if perms.juntagrico.is_depot_admin and qs_depot_admin|length > 0 %}
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#depotman">
             {% blocktrans %}{{ v_depot_pl }}{% endblocktrans %}
