@@ -9,7 +9,13 @@ class FutureDateTimeFilter(DateFieldListFilter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        today = timezone.now().date()
+        now = timezone.now()
+        # When time zone support is enabled, convert "now" to the user's time
+        # zone so Django's definition of "Today" matches what the user expects.
+        # https://github.com/django/django/blob/main/django/contrib/admin/filters.py#L471
+        if timezone.is_aware(now):
+            now = timezone.localtime(now)
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
         self.links = self.links[:1] + (
             (_('Nächste 30 Tage'), {

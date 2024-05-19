@@ -1,0 +1,111 @@
+{% extends "management_lists/man_list_base.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+{% block page_title %}
+    <h3>
+        {{ title }}
+    </h3>
+{% endblock %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/email_sender.html' %}
+{% endblock %}
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "Name" %}
+                </th>
+                <th class="filter">
+                    {% trans "Tätigkeitsbereiche" %}
+                </th>
+                <th class="filter">
+                    {% vocabulary "depot" %}
+                </th>
+                <th class="filter">
+                    {% trans "Email" %}
+                </th>
+                <th class="filter">
+                    {% trans "Telefon" %}
+                </th>
+                <th class="filter">
+                    {% trans "Mobile" %}
+                </th>
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>
+                    {% trans "Name" %}
+                </th>
+                <th>
+                    {% trans "Tätigkeitsbereiche" %}
+                </th>
+                <th>
+                    {% vocabulary "depot" %}
+                </th>
+                <th>
+                    {% trans "Email" %}
+                </th>
+                <th>
+                    {% trans "Telefon" %}
+                </th>
+                <th>
+                    {% trans "Mobile" %}
+                </th>
+                <th>
+                    {% vocabulary "subscription" %}
+                </th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for member in members %}
+                {% with sub=member.current_subscriptionmembership.0 %}
+                    <tr>
+                        <td>
+                            {% impersonate_start request member %}
+                            <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+                                {{ member.get_name }}
+                            </a>
+                        </td>
+                        <td>
+                            {% for area in member.areas.all %}
+                                {{ area.name }},
+                                {% empty %}
+                                -Kein Tätigkeitsbereich-
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% if sub %}
+                                {{ sub.depot_name }}
+                            {% else %}
+                                Kein {% vocabulary "depot" %}
+                            {% endif %}
+                        </td>
+                        <td class="email">
+                            {{ member.email }}
+                        </td>
+                        <td>
+                            {{ member.phone }}
+                        </td>
+                        <td>
+                            {{ member.mobile_phone }}
+                        </td>
+                        <td>
+                            {% if sub %}
+                                {{ sub.subscription.size }}
+                            {% else %}
+                                Kein {% vocabulary "subscription" %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

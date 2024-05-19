@@ -3,7 +3,6 @@ import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -21,11 +20,6 @@ weekdays = dict(weekday_choices)
 
 def is_date_in_cancelation_period(date):
     return start_of_business_year() <= date <= cancelation_date()
-
-
-def weekday_short(day, num):
-    weekday = weekdays[day]
-    return weekday[:num]
 
 
 def days_in_month(year, month):
@@ -69,7 +63,7 @@ def next_cancelation_date():
     """
     :return: next cancelation deadline from today
     """
-    return next_cancelation_date_from(timezone.now())
+    return next_cancelation_date_from(datetime.date.today())
 
 
 def cancelation_date():
@@ -94,8 +88,7 @@ def next_membership_end_date():
     """
     endmonth = Config.membership_end_month()
     noticemonths = Config.membership_end_notice_period()
-    now = timezone.now().date()
-    nowplusnotice = now + relativedelta(months=noticemonths)
+    nowplusnotice = datetime.date.today() + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
         endyear = nowplusnotice.year
     else:
@@ -105,7 +98,7 @@ def next_membership_end_date():
 
 
 def calculate_next_offset(day, month, offset=None):
-    offset = offset or timezone.now()
+    offset = offset or datetime.date.today()
     if offset.month < month or (offset.month == month and offset.day < day):
         year = offset.year
     else:
@@ -117,7 +110,7 @@ calculate_next = calculate_next_offset  # todo: remove in 2.0
 
 
 def calculate_last_offset(day, month, offset=None):
-    offset = offset or timezone.now()
+    offset = offset or datetime.date.today()
     if offset.month > month or (offset.month == month and offset.day >= day):
         year = offset.year
     else:

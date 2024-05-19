@@ -28,10 +28,12 @@ It provides the basic functionality like
 
    reference/settings.rst
    reference/permissions.rst
+   reference/templates.rst
+   reference/exports.rst
    reference/signals.rst
    reference/hooks.rst
    reference/commands.rst
-   reference/extensions.rst
+   Release Notes <https://github.com/juntagrico/juntagrico/releases>
 
 
 .. toctree::
@@ -40,16 +42,3 @@ It provides the basic functionality like
    :hidden:
 
    contribute/development.rst
-
-
-.. toctree::
-   :caption: Release Notes
-   :maxdepth: 2
-   :hidden:
-
-   release_notes/1-6.rst
-   release_notes/1-5.rst
-   release_notes/1-4.rst
-   release_notes/1-3.rst
-   release_notes/1-2.rst
-   release_notes/1-1.rst

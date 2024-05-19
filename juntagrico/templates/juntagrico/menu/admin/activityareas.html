@@ -1,0 +1,24 @@
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% load i18n %}
+{% area_admin request as qs_area_admin %}
+{% if perms.juntagrico.is_area_admin and qs_area_admin|length > 0 %}
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#areaman">
+            {% trans "Tätigkeitsbereiche" %}
+            <i class="fas fa-angle-right">
+            </i>
+        </a>
+        <div class="collapse" id="areaman">
+            <ul class="nav flex-column subadmin-menu">
+                {% for area in qs_area_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'filter-area' area.id %}">
+                            {% vocabulary "member_pl" %} {% trans "in" %} {{ area.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </li>
+{% endif %}

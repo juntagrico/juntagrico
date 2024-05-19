@@ -73,6 +73,5 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initParticipation.js' %}">
-    </script>
+    {% include 'snippets/scripts/area_slider.html' %}
 {% endblock %}
