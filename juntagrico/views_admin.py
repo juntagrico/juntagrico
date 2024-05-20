@@ -163,7 +163,7 @@ def filters_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
     members = prefetch_for_list(MemberDao.member_with_active_subscription_for_depot(depot))
     renderdict = {
-        'can_send_mails': True,
+        'show_mail_button': True,
         'members': members,
         'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
@@ -176,7 +176,7 @@ def filters_area(request, area_id):
     area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
     members = prefetch_for_list(MemberDao.members_in_area(area))
     renderdict = {
-        'can_send_mails': True,
+        'show_mail_button': True,
         'members': members,
         'mail_url': 'mail-area',
         'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
@@ -187,6 +187,7 @@ def filters_area(request, area_id):
 @any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
 def subscriptions(request):
     renderdict = {
+        'show_mail_button': request.user.has_perm('juntagrico.can_send_mails'),
         'subscriptions': SubscriptionDao.all_active_subscritions(),
         'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
     }
@@ -198,7 +199,7 @@ def subscriptions(request):
 def filter_subscriptions_depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
     renderdict = {
-        'can_send_mails': True,
+        'show_mail_button': True,
         'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
         'mail_url': 'mail-depot',
         'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
@@ -444,6 +445,7 @@ def part_waitinglist(request):
 @permission_required('juntagrico.change_subscriptionpart')
 def part_canceledlist(request):
     render_dict = get_changedate(request)
+    render_dict['show_mail_button'] = request.user.has_perm('juntagrico.can_send_mails')
     changedlist = SubscriptionPartDao.canceled_parts_for_active_subscriptions()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
 
