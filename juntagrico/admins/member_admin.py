@@ -4,13 +4,14 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
-from juntagrico.admins import BaseAdmin
+from juntagrico.admins import BaseAdmin, DateRangeExportMixin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInline
 from juntagrico.config import Config
+from juntagrico.resources.member import MemberResource, MemberAssignmentsPerArea, MemberWithAssignmentsAndAreaResource
 
 
-class MemberAdmin(BaseAdmin):
+class MemberAdmin(DateRangeExportMixin, BaseAdmin):
     list_display = ['email', 'first_name', 'last_name', 'addr_street', 'addr_zipcode', 'addr_location', 'active']
     list_filter = ['user__is_superuser', 'user__is_staff', 'user__groups']
     search_fields = ['first_name', 'last_name', 'email', 'phone', 'mobile_phone',
@@ -26,6 +27,7 @@ class MemberAdmin(BaseAdmin):
         (_('Administration'), {'fields': ['notes', 'user']}),
     ]
     actions = ['impersonate_job']
+    resource_classes = [MemberResource, MemberWithAssignmentsAndAreaResource, MemberAssignmentsPerArea]
 
     @admin.display(
         boolean=True,

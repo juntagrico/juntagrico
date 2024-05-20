@@ -2,13 +2,15 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.translation import gettext as _
+from import_export.admin import ExportMixin
 
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.forms.admin_edit_share_dates import EditShareDatesForm
 from juntagrico.config import Config
+from juntagrico.resources.share import ShareResource
 
 
-class ShareAdmin(BaseAdmin):
+class ShareAdmin(ExportMixin, BaseAdmin):
     fields = ('member', 'value', 'creation_date', 'paid_date', 'issue_date', 'booking_date', 'cancelled_date',
               'termination_date', 'payback_date', 'number', 'sent_back', 'reason_for_acquisition', 'reason_for_cancellation', 'notes')
     readonly_fields = ['creation_date']
@@ -18,6 +20,7 @@ class ShareAdmin(BaseAdmin):
                      'issue_date', 'booking_date', 'cancelled_date', 'termination_date', 'payback_date']
     raw_id_fields = ['member']
     actions = ['mass_edit_share_dates']
+    resource_classes = [ShareResource]
 
     @admin.action(description=_('Datum für ausgewählte {} setzen').format(Config.vocabulary('share_pl')))
     def mass_edit_share_dates(self, request, queryset):

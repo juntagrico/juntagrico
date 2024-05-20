@@ -15,7 +15,7 @@
 {% blocktrans with pm=sub.primary_member %}Soeben hat dich '{{pm}}' als {{ v_co_member }} hinzugefügt.{% endblocktrans %}
 {% endif %}
 
-{% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein melde dies bitte {{ contact_email }}.
+{% blocktrans %}Solltest du irrtümlicherweise hier eingetragen worden sein melde dies bitte {{ contact_email }}.
 Anderenfalls gehen wir davon aus, dass dies seine Richtigkeit hat.{% endblocktrans %}
 
 {% blocktrans trimmed %}

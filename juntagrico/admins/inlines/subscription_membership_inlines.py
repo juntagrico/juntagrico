@@ -1,6 +1,7 @@
+import datetime
+
 from django.contrib import admin
 from django.forms import BaseInlineFormSet
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -12,7 +13,7 @@ class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
         def consider_form(form):
             leave_date = getattr(form.instance, 'leave_date', None)
             return not form.cleaned_data.get('DELETE', False) \
-                and (leave_date is None or leave_date > timezone.now().date()) \
+                and (leave_date is None or leave_date > datetime.date.today()) \
                 and hasattr(form.instance, 'member')
         if not self.instance.inactive:
             members = [form.instance.member for form in self.forms if consider_form(form)]

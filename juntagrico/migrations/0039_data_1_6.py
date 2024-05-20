@@ -2,6 +2,8 @@
 
 from django.db import migrations
 
+from juntagrico.util.temporal import weekdays
+
 
 def set_location_sort_order(apps, schema_editor):
     location = apps.get_model('juntagrico', 'Location')
@@ -20,6 +22,19 @@ def make_name_product_unique(apps, schema_editor):
         taken.add((size.name, size.product))
 
 
+def set_tour(apps, schema_editor):
+    depot = apps.get_model('juntagrico', 'Depot')
+    tour = apps.get_model('juntagrico', 'Tour')
+    delivery = apps.get_model('juntagrico', 'Delivery')
+    for d in depot.objects.all():
+        if 8 > d.weekday > 0:
+            d.tour = tour.objects.get_or_create(name=weekdays[d.weekday])[0]
+            d.save()
+    for d in delivery.objects.all():
+        d.tour = tour.objects.get_or_create(name=weekdays[d.delivery_date.weekday() + 1])[0]
+        d.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -29,4 +44,5 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(set_location_sort_order),
         migrations.RunPython(make_name_product_unique),
+        migrations.RunPython(set_tour),
     ]

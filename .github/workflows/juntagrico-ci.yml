@@ -16,10 +16,9 @@ jobs:
       DJANGO_SETTINGS_MODULE: testsettings
       PYTHONPATH: .
       CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     strategy:
       matrix:
-        python-version: [3.8, 3.9]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
 
     services:
       postgres:
@@ -44,11 +43,10 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: install dependencies
       run: |
-        pip install --upgrade -r requirements-local.txt
-    - name: flake 8
+        pip install --upgrade -r requirements.txt
+    - name: ruff
       run: |
-        flake8 --count --extend-ignore E501 juntagrico
-        flake8 --count --extend-ignore E501 test
+        ruff check juntagrico
     - name: install CodeClimate reporter
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |
@@ -59,7 +57,7 @@ jobs:
       run: |
         python -m django makemigrations --noinput
         coverage run -m manage test
-        python -m manage test test.test_deploy --settings="deploytestsettings"
+        python -m manage test juntagrico.tests.test_deploy --settings="deploytestsettings"
     - name: publish code coverage
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |
@@ -67,18 +65,3 @@ jobs:
         coverage xml
         ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
         ./cc-test-reporter upload-coverage -i coverageupload
-    - name: Slack notification
-      if: ${{  env.SLACK_WEBHOOK != null && github.event_name == 'push' && always()}}
-      env:
-        STATUS: ${{ job.status }}
-      uses: Ilshidur/action-slack@2.1.0
-      with:
-        args: 'A new <{{GITHUB_SERVER_URL}}/{{GITHUB_REPOSITORY}}/commit/{{GITHUB_SHA}}|commit> in repo {{GITHUB_REPOSITORY}} has been pushed by {{GITHUB_ACTOR}} and has the status {{STATUS}}.'
-    - name: Slack notification pullrequest
-      if: ${{ env.SLACK_WEBHOOK != null && github.event_name == 'pull_request' && always()}}
-      env:
-        PULL_ID: ${{ github.event.number }}
-        STATUS: ${{ job.status }}
-      uses: Ilshidur/action-slack@2.1.0
-      with:
-        args: 'A new build of <{{GITHUB_SERVER_URL}}/{{GITHUB_REPOSITORY}}/pull/{{PULL_ID}}|pr> in repo {{GITHUB_REPOSITORY}} has been triggered by {{GITHUB_ACTOR}} and has the status {{STATUS}}'

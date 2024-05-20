@@ -3,7 +3,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
-from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -12,14 +11,12 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.util.temporal import weekday_short
 
 
 @absolute_url(name='area')
 class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), default='')
     core = models.BooleanField(_('Kernbereich'), default=False)
     hidden = models.BooleanField(
         _('versteckt'), default=False,
@@ -111,7 +108,7 @@ class AbstractJobType(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True,
                             help_text='Eindeutiger Name des Einsatzes')
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
     default_duration = models.FloatField(_('Dauer in Stunden'),
                                          help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
@@ -175,19 +172,12 @@ class Job(JuntagricoBasePoly):
     def __str__(self):
         return _('Job {0}').format(self.id)
 
-    def weekday_name(self):
-        day = self.time.isoweekday()
-        return weekday_short(day, 2)
-
-    def time_stamp(self):
-        return int(time.mktime(self.time.timetuple()) * 1000)
-
     @property
     @admin.display(description=_('Freie Plätze'))
     def free_slots(self):
         if self.infinite_slots:
             return -1
-        if not (self.slots is None):
+        if self.slots is not None:
             return self.slots - self.occupied_slots
         return 0
 
@@ -278,7 +268,7 @@ class Job(JuntagricoBasePoly):
 
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
-    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
+    additional_description = models.TextField(_('Zusätzliche Beschreibung'), blank=True, default='')
     duration_override = models.FloatField(
         _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None, validators=[MinValueValidator(0)],
         help_text=_('Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.')

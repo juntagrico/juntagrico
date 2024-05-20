@@ -1,0 +1,35 @@
+{% load i18n %}
+{% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#memberman">
+            {% blocktrans %}{{ v_member_pl }}{% endblocktrans %}
+            <i class="fas fa-angle-right">
+            </i>
+        </a>
+        <div class="collapse" id="memberman">
+            <ul class="nav flex-column subadmin-menu">
+                {% block member_sub %}
+                    {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'filters-active' %}">
+                                {% blocktrans %}Aktive{% endblocktrans %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'filters' %}">
+                                {% blocktrans %}Alle{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_member %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'member-mgmt-canceledlist' %}">
+                                 {% blocktrans %}Kündigungsliste{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endblock %}
+            </ul>
+        </div>
+    </li>
+{% endif %}

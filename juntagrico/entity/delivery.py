@@ -3,34 +3,29 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
+from juntagrico.entity.depot import Tour
 from juntagrico.entity.subtypes import SubscriptionSize
-from juntagrico.util.temporal import weekday_short
 
 
 class Delivery(JuntagricoBaseModel):
     """
-    Delivery with a specific date (usually Tuesday or Thursday)
+    Delivery for a specific tour and subscription size
     """
     delivery_date = models.DateField(_('Lieferdatum'))
+    tour = models.ForeignKey(Tour, verbose_name=_('Ausfahrt'), on_delete=models.PROTECT, null=True, blank=True, default=None)
     subscription_size = models.ForeignKey(SubscriptionSize,
                                           verbose_name=_('{0}-Grösse').format(Config.vocabulary('subscription')),
                                           on_delete=models.PROTECT)
 
     def __str__(self):
-        return u"%s - %s" % (self.delivery_date,
-                             self.subscription_size.long_name)
-
-    def weekday(self):
-        return self.delivery_date.isoweekday()
-
-    def weekday_shortname(self):
-        day = self.delivery_date.isoweekday()
-        return weekday_short(day, 2)
+        return u"%s - %s - %s" % (self.delivery_date, self.tour or _('Keine'), self.subscription_size.long_name)
 
     class Meta:
         verbose_name = _('Lieferung')
         verbose_name_plural = _('Lieferungen')
-        unique_together = ("delivery_date", "subscription_size")
+        constraints = [
+            models.UniqueConstraint(fields=['delivery_date', 'tour', 'subscription_size'], name='unique_delivery'),
+        ]
 
 
 class DeliveryItem(JuntagricoBaseModel):
