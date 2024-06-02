@@ -363,6 +363,22 @@ ENABLE_SHARES
 
     True
 
+REQUIRED_SHARES
+^^^^^^^^^^^^^
+    .. note::
+    Added in version 1.7.0.
+
+  Specifies the minimum amount of shares that the main member must order during registration
+  regardless of the subscription requirements.
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    1
+
 SHARE_PRICE
 ^^^^^^^^^^^
   Price of one share

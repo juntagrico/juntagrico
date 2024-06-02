@@ -111,10 +111,13 @@ class CSSessionObject(SessionObject):
         shares = {
             'existing_main_member': self.main_member.usable_shares_count,
             'existing_co_member': sum([co_member.usable_shares_count for co_member in self.co_members]),
-            'total_required': max(self.required_shares(), 1)
+            'total_required': max(self.required_shares(), Config.required_shares())
         }
         shares['remaining_required'] = max(
             0, shares['total_required'] - max(0, shares['existing_main_member'] + shares['existing_co_member'])
+        )
+        shares['remaining_required_main_member'] = max(
+            0, Config.required_shares() - shares['existing_main_member']
         )
         return shares
 
@@ -126,7 +129,7 @@ class CSSessionObject(SessionObject):
         new_main_member = getattr(self.main_member, 'new_shares', 0)
         new_co_members = self.get_co_member_shares()
         # evaluate
-        return shares['existing_main_member'] + new_main_member > 0\
+        return shares['existing_main_member'] + new_main_member >= Config.required_shares()\
             and new_main_member + new_co_members >= shares['remaining_required']
 
     def next_page(self):

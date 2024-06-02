@@ -89,6 +89,7 @@ class Config:
     extra_sub_info = _get_setting('EXTRA_SUB_INFO')
     activity_area_info = _get_setting('ACTIVITY_AREA_INFO')
     enable_shares = _get_setting('ENABLE_SHARES', True)
+    required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
