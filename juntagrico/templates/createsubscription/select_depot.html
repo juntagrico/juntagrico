@@ -1,4 +1,5 @@
 {% extends "no_menu_base.html" %}
+{% load juntagrico.snippets %}
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
@@ -16,29 +17,22 @@
 {% block allcontent %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "depot" as v_depot %}
-    <div class="offset-md-2 col-md-8">
+    <div id="depot_container" class="offset-md-2 col-md-8">
         <form action="" method="post">
             {% csrf_token %}
-            <div id="depot_container" class="form-group row">
+            <div class="depot-select form-group row">
                 <label class="col-md-3" for="depot">
                     {% vocabulary "depot" %}
                 </label>
                 <div class="col-md-9">
-                    <select name="depot" id="depot" class="form-control">
-                        {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == selected %}selected{% endif %}>
-                                {{ depot.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                    <label for="depot">
+                        {% blocktrans %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
+                    </label>
+                    {% include "juntagrico/snippets/depot/select.html" %}
                 </div>
             </div>
-            <div id="depot_container" class="form-group row">
-                <label for="depot" class="offset-md-3 col-md-9">
-                    {% blocktrans %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
-                </label>
-            </div>
-            <div id="depot_container" class="form-group row">
+            {% include "juntagrico/snippets/depot/descriptions.html" %}
+            <div class="depot-map form-group row">
                 <div class="offset-md-3 col-md-9" id="map-container">
                 </div>
             </div>
