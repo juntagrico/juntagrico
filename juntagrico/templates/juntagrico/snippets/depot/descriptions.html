@@ -1,16 +1,13 @@
+{% load juntagrico.common %}
 <div class="depot-description form-group row">
     <div class="offset-md-3 col-md-9" id="depot-description-container">
         {% for depot in depots %}
             <div id="depot-description-container-{{ depot.id }}" style="display: none">
                 {% if not depot.location.longitude and not depot.location.latitude %}
-                    {% if depot.location.addr_street %}
-                        {{ depot.location.addr_street }}<br>
-                    {% endif %}
-                    {% if depot.location.addr_zipcode or depot.location.addr_location %}
-                        {{ depot.location.addr_zipcode }} {{ depot.location.addr_location }}<br>
-                    {% endif %}
+                    {{ depot.location.address_html|safe }}
                 {% endif %}
-                {{ depot.description|safe }}
+                {{ depot.location.description|richtext|safe }}
+                {{ depot.description|richtext|safe }}
             </div>
         {% endfor %}
     </div>
