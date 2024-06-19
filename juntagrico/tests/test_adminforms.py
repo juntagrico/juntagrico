@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
+from django.conf import settings
 
 from juntagrico.admins.forms.delivery_copy_form import DeliveryCopyForm
 from juntagrico.admins.forms.job_copy_form import JobCopyForm, JobCopyToFutureForm
@@ -73,7 +74,10 @@ class JobFormTests(JuntagricoTestCase):
         self.assertEqual(self.complex_job.type, new_job.type)
         self.assertEqual(self.complex_job.slots, new_job.slots)
         self.assertEqual(self.complex_job.infinite_slots, new_job.infinite_slots)
-        self.assertEqual(data['time'], timezone.localtime(new_job.time).strftime('%H:%M:%S'))
+        dt = datetime.datetime.fromisoformat('2020-07-06T'+data['time'])
+        if settings.USE_TZ:
+            dt = dt.astimezone(timezone.get_default_timezone())
+        self.assertEqual(dt, new_job.time)
         self.assertEqual(self.complex_job.multiplier, new_job.multiplier)
         self.assertEqual(self.complex_job.additional_description, new_job.additional_description)
         self.assertEqual(self.complex_job.duration_override, new_job.duration_override)
@@ -91,7 +95,7 @@ class JobFormTests(JuntagricoTestCase):
         form.save()
         self.assertEqual(RecuringJob.objects.all().count(), initial_count + 2)
 
-    def testCopyJobFormFull(self):
+    def testCopyJob(self):
         self.assertGet(reverse('admin:action-mass-copy-job', args=(self.complex_job.pk,)), member=self.admin)
         # test mass job copy changing entries
         data = {
@@ -144,7 +148,10 @@ class JobFormTests(JuntagricoTestCase):
         self.assertEqual(new_job.type, self.complex_job.type)
         self.assertEqual(new_job.slots, 2)
         self.assertEqual(new_job.infinite_slots, False)
-        self.assertEqual(timezone.localtime(new_job.time).strftime('%H:%M:%S'), '13:46:46')
+        dt = datetime.datetime.fromisoformat('2024-06-18T' + data['time'])
+        if settings.USE_TZ:
+            dt = dt.astimezone(timezone.get_default_timezone())
+        self.assertEqual(new_job.time, dt)
         self.assertEqual(new_job.multiplier, 3.0)
         self.assertEqual(new_job.additional_description, "New Description")
         self.assertEqual(new_job.duration_override, 9)
