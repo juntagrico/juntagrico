@@ -74,10 +74,10 @@ class JobCopyForm(forms.ModelForm):
             self.new_jobs.append(newjob)
         return newjob
 
-    def save_related(self, formsets=None):
+    def save_related(self, formsets):
         # collect contacts from formsets
         contacts = []
-        if formsets:
+        if formsets and len(formsets) >= 1:
             for contact_form in formsets[0].forms:
                 if not contact_form.cleaned_data['DELETE']:
                     contacts.append(contact_form.instance.copy())

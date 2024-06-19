@@ -12,7 +12,7 @@ from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.location import Location
 from . import JuntagricoTestCase
-from ..entity.contact import EmailContact, MemberContact, PhoneContact
+from ..entity.contact import EmailContact, MemberContact
 
 
 class JobFormTests(JuntagricoTestCase):
@@ -67,7 +67,6 @@ class JobFormTests(JuntagricoTestCase):
         form.full_clean()
         form.clean()
         form.save()
-        form.save_related()
         self.assertEqual(RecuringJob.objects.all().count(), initial_count + 1)
         # check completeness of copy
         new_job = RecuringJob.objects.last()
@@ -90,7 +89,6 @@ class JobFormTests(JuntagricoTestCase):
         form = JobCopyForm(instance=self.job1, data=data)
         form.full_clean()
         form.save()
-        form.save_related()
         self.assertEqual(RecuringJob.objects.all().count(), initial_count + 2)
 
     def testCopyJobFormFull(self):
@@ -185,7 +183,6 @@ class JobFormTests(JuntagricoTestCase):
         form.full_clean()
         form.clean()
         form.save()
-        form.save_related()
         self.assertEqual(RecuringJob.objects.all().count(), initial_count + 1)
 
 
