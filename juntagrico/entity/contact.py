@@ -90,6 +90,9 @@ class MemberContact(Contact):
             inner_html += '<span class="contact-member-phone">{}</span>\n'.format(self.member.phone)
         return inner_html
 
+    def copy(self):
+        return MemberContact(member=self.member, display=self.display)
+
     class Meta:
         verbose_name = Config.vocabulary('member')
         verbose_name_plural = Config.vocabulary('member_pl')
@@ -103,6 +106,9 @@ class EmailContact(Contact):
 
     def _inner_html(self):
         return '<a href="mailto:{0}">{0}</a>'.format(self.email)
+
+    def copy(self):
+        return EmailContact(email=self.email)
 
     class Meta:
         verbose_name = _('E-Mail-Adresse')
@@ -118,6 +124,9 @@ class PhoneContact(Contact):
     def _inner_html(self):
         return self.phone
 
+    def copy(self):
+        return PhoneContact(phone=self.phone)
+
     class Meta:
         verbose_name = _('Telefonnummer')
         verbose_name_plural = _('Telefonnummer')
@@ -131,6 +140,9 @@ class TextContact(Contact):
 
     def _inner_html(self):
         return urlize(self.text)
+
+    def copy(self):
+        return TextContact(text=self.text)
 
     class Meta:
         verbose_name = _('Freier Kontaktbeschrieb')
