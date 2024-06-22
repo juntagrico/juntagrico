@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.db.models import Q
+from django.db.models import Q, Max
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
@@ -18,13 +19,23 @@ from juntagrico.util.models import attribute_copy
 
 
 class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
-    list_display = ['__str__', 'activityarea',
-                    'default_duration', 'location', 'visible']
+    list_display = ['__str__', 'default_duration', 'location', 'contacts_text', 'visible', 'last_used']
     list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), 'visible')
     autocomplete_fields = ['activityarea', 'location']
-    search_fields = ['name', 'activityarea__name']
-    actions = ['transform_job_type']
+    search_fields = ['name', 'activityarea__name', 'last_used']
+    actions = ['transform_job_type', 'action_hide', 'action_make_visible']
     inlines = [ContactInline, JobExtraInline]
+
+    @admin.display(
+        ordering='last_used',
+        description=_('Zuletzt verwendet')
+    )
+    def last_used(self, instance):
+        return instance.last_used
+
+    @admin.display(description=_('Kontakt'))
+    def contacts_text(self, instance):
+        return mark_safe("<br>".join([str(c) for c in instance.contacts]))
 
     @admin.action(description=_('Jobart in EinzelJobs konvertieren'))
     def transform_job_type(self, request, queryset):
@@ -50,11 +61,20 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
                 je.delete()
             inst.delete()
 
+    @admin.action(description=_('Verstecken'))
+    def action_hide(self, request, queryset):
+        queryset.update(visible=False)
+
+    @admin.action(description=_('Sichtbar machen'))
+    def action_make_visible(self, request, queryset):
+        queryset.update(visible=True)
+
     def get_location_queryset(self, request, obj):
         return Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
+        qs = qs.annotate(last_used=Max('recuringjob__time'))
         return qs
 
     def get_search_results(self, request, queryset, search_term):
