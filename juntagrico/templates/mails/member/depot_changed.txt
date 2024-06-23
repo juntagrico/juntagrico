@@ -9,13 +9,13 @@
 {% blocktrans %}Dein/e/n {{ c_organisation_name }}-{{ v_depot }} hat wie von dir gewünscht gewechselt.{% endblocktrans %}
 
 {% trans "Details" %}:
-
+{% with depot=subscription.depot %}
 {% trans "Name" %}:            {{ depot.name }}
 {% trans "Ort" %}:             {{ depot.location.address }}
 {% trans "Wochentag" %}:       {{ depot.weekday_name}}
 {% blocktrans %}{{ v_depot }}-Betreuung{% endblocktrans %}:  {{ depot.contact.first_name }} {{ depot.contact.last_name }}, {{ depot.contact.get_phone }}, {{ depot.contact.email }}
 {% trans "Beschreibung" %}:    {{ depot.description|striptags }}
-
+{% endwith %}
 
 {% blocktrans trimmed %}
 Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe

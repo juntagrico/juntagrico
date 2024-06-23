@@ -68,7 +68,7 @@ function email_button(action, csrf_token) {
     }
 }
 
-function share_id_button(text, action, csrf_token, selector, confirm=null) {
+function id_action_button(text, action, csrf_token, selector, field='ids', confirm=null) {
     return {
         text: text,
         init: function (dt, node, config) {
@@ -79,13 +79,13 @@ function share_id_button(text, action, csrf_token, selector, confirm=null) {
             that.disable()
         },
         action: function (e, dt, node, config) {
-            let shares = fetch_unique_from_table(get_selected_or_all(dt), selector)
+            let elements = fetch_unique_from_table(get_selected_or_all(dt), selector)
             if (confirm) {
-                let confirm_text = confirm[Math.min(2, shares.size)-1].replace('{count}', shares.size)
+                let confirm_text = confirm[Math.min(2, elements.size)-1].replace('{count}', elements.size)
                 if (!window.confirm(confirm_text)) return
             }
             post(action, csrf_token, {
-                share_ids: Array.from(shares).join("_"),
+                [field]: Array.from(elements).join("_"),
             })
         }
     }

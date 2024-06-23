@@ -142,8 +142,9 @@ urlpatterns = [
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),
     path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),
     # /manage/subscription/depot
-    path('manage/subscription/depot/changes', juntagrico_admin.depot_changes, name='manage-sub-depot-changes'),
-    path('manage/subscription/depot/change/confirm/<int:subscription_id>', juntagrico_admin.depot_change_confirm, name='manage-sub-depot-change-confirm'),
+    path('manage/subscription/depot/changes', manage.SubscriptionDepotChangesView.as_view(), name='manage-sub-depot-changes'),
+    path('manage/subscription/depot/change/confirm', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm'),
+    path('manage/subscription/depot/change/confirm/<int:subscription_id>', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm-single'),
     # /manage/member
     path('my/member/canceledlist', juntagrico_admin.member_canceledlist, name='member-mgmt-canceledlist'),
     path('my/member/deactivate/<int:member_id>/', juntagrico_admin.deactivate_member, name='member-deactivate'),

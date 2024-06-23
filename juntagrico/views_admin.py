@@ -465,19 +465,6 @@ def extra_canceledlist(request):
                                         'management_lists/extra_canceledlist.html', request)
 
 
-@permission_required('juntagrico.change_subscription')
-def depot_changes(request):
-    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), {},
-                                        'juntagrico/manage/subscription/depot/changes.html', request)
-
-
-@permission_required('juntagrico.change_subscription')
-def depot_change_confirm(request, subscription_id):
-    sub = get_object_or_404(Subscription, id=subscription_id)
-    sub.activate_future_depot()
-    return return_to_previous_location(request)
-
-
 @permission_required('juntagrico.change_member')
 def member_canceledlist(request):
     return subscription_management_list(MemberDao.canceled_members(), {},

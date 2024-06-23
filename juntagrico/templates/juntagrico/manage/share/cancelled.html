@@ -79,7 +79,7 @@
                     <td>
                         {% if perms.juntagrico.change_share %}
                             {% if share.backpayable %}
-                                <a href="{% url 'manage-share-payout-single' share.id %}" class="btn btn-success">
+                                <a href="{% url 'manage-share-payout-single' share.id %}" class="btn btn-primary">
                                     {% trans "Ausbuchen" %}
                                 </a>
                             {% else %}
@@ -98,12 +98,14 @@
 {% block datatable_constructor %}
     {{ block.super }}
     config.layout.topStart.buttons.push(
-        share_id_button(
-            '{% trans "Zahlungsdatei erzeugen" %}', '{% url "share-pain001" %}', '{% csrf_token %}', '.share_id'
+        id_action_button(
+            '{% trans "Zahlungsdatei erzeugen" %}', '{% url "share-pain001" %}', '{% csrf_token %}',
+            '.share_id', 'share_ids'
         ),
         {% if perms.juntagrico.change_share %}
             share_id_button(
-                '{% trans "Ausbuchen" %}', '{% url 'manage-share-payout' %}', '{% csrf_token %}', '.backpayable',
+                '{% trans "Ausbuchen" %}', '{% url 'manage-share-payout' %}', '{% csrf_token %}', 
+                '.backpayable', 'share_ids',
                 [
                     {% vocabulary "share" as v_share %}
                     '{% blocktrans %}1 {{ v_share }} ausbuchen?{% endblocktrans %}',

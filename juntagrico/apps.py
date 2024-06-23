@@ -12,3 +12,4 @@ class JuntagricoAppconfig(AppConfig):
         from .models import Subscription
 
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
+        signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
