@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% block body_extra_classes %}wide-layout{% endblock %}
+{% block content %}
+    <div id="managementlist" class="row mt-3 mb-6">
+        <div class="col-md-12">
+            {% block list %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
+    </script>
+    {% block init_script %}
+        <script type="text/javascript">
+            $(function(){
+                {% block datatable_constructor %}
+                    let config = {
+                        ordering: true,
+                        responsive: false,
+                        select: {
+                            blurable: true,
+                            style: 'multi+shift',
+                        },
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    email_button(
+                                        '{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}',
+                                        '{% csrf_token %}'
+                                    )
+                                ]
+                            }
+                        },
+                    }
+                {% endblock %}
+                // Assuming default ids
+                $("#filter-table").DataTable(config);
+            })
+        </script>
+    {% endblock %}
+    {% block extrascripts %}
+    {% endblock %}
+{% endblock %}

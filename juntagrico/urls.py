@@ -6,7 +6,7 @@ from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
-from juntagrico.views import subscription
+from juntagrico.views import subscription, manage, email
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
 from juntagrico.config import Config
 from juntagrico.views_admin import ShiftTimeFormView
@@ -154,8 +154,9 @@ urlpatterns = [
     path('my/assignments', juntagrico_admin.assignments, name='filter-assignments'),
     # /manage/share
     path('manage/share/unpaid', juntagrico_admin.share_unpaidlist, name='manage-share-unpaid'),
-    path('my/share/canceledlist', juntagrico_admin.share_canceledlist, name='share-mgmt-canceledlist'),
-    path('my/payout/share/<int:share_id>/', juntagrico_subscription.payout_share, name='share-payout'),
+    path('manage/share/cancelled', manage.ShareCancelledView.as_view(), name='manage-share-cancelled'),
+    path('manage/share/payout', manage.share_payout, name='manage-share-payout'),
+    path('manage/share/payout/<int:share_id>', manage.share_payout, name='manage-share-payout-single'),
     # /manage/depot
     path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),
     path('my/subscriptions/depot/<int:depot_id>/', juntagrico_admin.filter_subscriptions_depot,
@@ -163,20 +164,21 @@ urlpatterns = [
     # /manage/area
     path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),
 
-    # /mails
+    # /email
     path('my/mails', juntagrico_admin.mails, name='mail'),
+    path('email/to/<int:member_id>', email.to_member, name='email-to-member'),
     path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),
     path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),
-    # /mails/depot
+    # /email/depot
     path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),
     path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),
-    # /mails/area
+    # /email/area
     path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),
     path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),
-    # /mails/job
+    # /email/job
     path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),
     path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),
-    # /mails/template
+    # /email/template
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
 
     # /list

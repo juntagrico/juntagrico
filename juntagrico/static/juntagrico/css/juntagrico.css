@@ -303,6 +303,29 @@ textarea#recipients[disabled=disabled] {
     height: 20rem;
 }
 
+/* datatable styling */
+
+:root {
+    --dt-row-selected: 255, 204, 102;
+    --dt-row-selected-text: 0, 0, 0;
+}
+
+#filter-table th {
+	position: sticky;
+	top: 2.6875rem;
+	z-index: 2;
+    background-color: #fefffa;
+}
+
+#filter-table_wrapper > div:first-child {
+    position: sticky;
+    top: 0;
+	z-index: 2;
+    background-color: #fefffa;
+    margin-bottom: 0;
+    padding-bottom: .5rem;
+}
+
 /* stuff for responsive tables */
 table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
     font-family: 'Font Awesome 5 Free';
