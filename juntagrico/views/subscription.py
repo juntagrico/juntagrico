@@ -89,4 +89,5 @@ def part_order(request, subscription_id, extra=False):
     return render(request, 'juntagrico/my/subscription/part/order.html', {
         'extra': extra,
         'form': form,
+        'selected_depot': subscription.depot,
     })

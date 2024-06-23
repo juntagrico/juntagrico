@@ -121,8 +121,10 @@ def depot_change(request, subscription_id):
         subscription.save()
         saved = True
     depots = DepotDao.all_visible_depots_with_map_info()
+    counts = subscription.active_and_future_parts.values('type').annotate(count=Count('type'))
     renderdict = {
         'subscription': subscription,
+        'subscription_count': {item['type']: item['count'] for item in counts},
         'saved': saved,
         'member': member,
         'depots': depots,

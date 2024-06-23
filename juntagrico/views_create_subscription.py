@@ -28,6 +28,7 @@ def cs_select_subscription(request, cs_session):
         'form': form,
         'subscription_selected': sum(form.get_selected().values()) > 0,
         'hours_used': Config.assignment_unit() == 'HOURS',
+        'selected_depot': cs_session.depot,
     }
     return render(request, 'createsubscription/select_subscription.html', render_dict)
 
@@ -42,6 +43,7 @@ def cs_select_depot(request, cs_session):
     render_dict = {
         'member': cs_session.main_member,
         'depots': depots,
+        'subscription_count': cs_session.subscriptions,
         'selected': cs_session.depot,
     }
     return render(request, 'createsubscription/select_depot.html', render_dict)
