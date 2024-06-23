@@ -99,44 +99,73 @@ $.fn.AjaxSlider = function(activate_url, disable_url, placeholder='{value}') {
 }
 
 function map_with_markers(locations, selected) {
-    let markers = []
-    if (locations[0]) {
+    let markers = new Map();
+    let marker_array = []
+    let map = null;
+    let positions = locations.filter((location) => location.latitude && location.longitude);
+    if (positions.length > 0) {
         $('#map-container').append('<div id="location-map">')
-        let map = L.map('location-map').setView([locations[0].latitude, locations[0].longitude], 11);
+        map = L.map('location-map');
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
                     '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
             }).addTo(map);
 
-        $.each(locations, function (i, location) {
-            let marker = add_marker(location, map)
-            if (location.name === selected) {
-                marker.openPopup()
+        $.each(positions, function (i, position) {
+            let marker = add_marker(position, map)
+            let index = position.id || i
+            if (marker) {
+                if (index === selected) {
+                    marker.openPopup()
+                }
+                markers.set(index, marker)
+                marker_array.push(marker)
             }
-            markers.push(marker)
         });
-        let group = new L.featureGroup(markers);
-        map.fitBounds(group.getBounds(), {padding: [100, 100]});
+        if (marker_array.length > 0) {
+            let group = new L.featureGroup(marker_array);
+            map.fitBounds(group.getBounds(), {padding: [100, 100]});
+        }
     }
-    return markers
+    return [map, markers]
 }
 
 function add_marker(location, map) {
-    let marker = L.marker([location.latitude, location.longitude]).addTo(map);
-    let description = "<strong>" + location.name + "</strong><br/>"
-    if (location.addr_street) description += location.addr_street + "<br/>"
-    if (location.addr_zipcode) description += location.addr_zipcode + " "
-    if (location.addr_location) description += location.addr_location
-    marker.bindPopup(description);
-    marker.name = location.name
-    return marker
+    if (location.latitude && location.longitude) {
+        let marker = L.marker([location.latitude, location.longitude]).addTo(map);
+        let description = "<strong>" + location.name + "</strong><br/>"
+        if (location.addr_street) description += location.addr_street + "<br/>"
+        if (location.addr_zipcode) description += location.addr_zipcode + " "
+        if (location.addr_location) description += location.addr_location
+        marker.bindPopup(description);
+        marker.name = location.name
+        return marker
+    }
 }
 
-function open_marker(markers, name) {
-    markers.forEach(function (marker) {
-        if (name === marker.name) {
-            marker.openPopup()
-        }
+function toggle_depot_description(selection) {
+    // display description of selected depot
+    let selected = selection.value || selection.val()
+    $('#depot-description-container').children().hide()
+    $('#depot-description-container-'+selected).show()
+}
+
+function init_depot_map(map, markers) {
+    let depot_selector = $('#depot')
+    depot_selector.on('change', function(e){
+        let selected = parseInt(this.value) || this.val()
+        map.closePopup()
+        let marker = markers.get(selected)
+        if (marker !== undefined) marker.openPopup()
+        toggle_depot_description(this)
     })
+    // set selected when clicking on marker
+    for (let [id, marker] of markers ) {
+        marker.on('click', function(e) {
+            depot_selector.val(id).change()
+        })
+    }
+    // initialize
+    toggle_depot_description(depot_selector)
 }

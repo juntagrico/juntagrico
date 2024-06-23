@@ -479,7 +479,7 @@ def depot_change_confirm(request, subscription_id):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.view_share')
+@any_permission_required('juntagrico.view_share', 'juntagrico.change_share')
 def share_unpaidlist(request):
     return subscription_management_list(Share.objects.filter(paid_date__isnull=True).order_by('member'), {},
                                         'juntagrico/manage/share/unpaid.html', request)
