@@ -207,7 +207,7 @@ External Documents
 
 BUSINESS_REGULATIONS
 ^^^^^^^^^^^^^^^^^^^^
-  URL to your business regulations document
+  URL to your business regulations document. The link will be displayed in the signup form and in the welcome mail after a successful registration.
   
   Type: String
 
@@ -219,8 +219,8 @@ BUSINESS_REGULATIONS
 
 BYLAWS
 ^^^^^^
-  URL to your bylaws document
-  
+  URL to your bylaws document. The link will be displayed in the signup form and in the welcome mail after a successful registration.
+ 
   Type: String
 
   default value
@@ -231,7 +231,7 @@ BYLAWS
 
 FAQ_DOC
 ^^^^^^^
-  URL to your FAQ document
+  URL to your FAQ document. The link will be displayed in the welcome mail after a successful registration.
 
   Type: String
 
@@ -362,6 +362,22 @@ ENABLE_SHARES
   .. code-block:: python
 
     True
+
+REQUIRED_SHARES
+^^^^^^^^^^^^^
+    .. note::
+    Added in version 1.7.0.
+
+  Specifies the minimum amount of shares that the main member must order during registration
+  regardless of the subscription requirements.
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    1
 
 SHARE_PRICE
 ^^^^^^^^^^^
