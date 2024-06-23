@@ -45,12 +45,13 @@ def email_confirmation(member):
     ).send_to(member.email)
 
 
-def depot_changed(emails, depot):
+def depot_changed(subscription, **kwargs):
     EmailSender.get_sender_for_contact(
         'for_subscriptions',
         organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
         get_email_content('d_changed', base_dict(locals())),
-        bcc=emails
+        to=[subscription.primary_member.email],
+        cc=subscription.other_memberships().values_list('member__email', flat=True)
     ).send()
 
 

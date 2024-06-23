@@ -42,6 +42,10 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         self._start_required = False
         self._end_required = False
 
+    def activate_future_depots(self):
+        for subscription in self.exclude(future_depot__isnull=True):
+            subscription.activate_future_depot()
+
     @method_decorator(default_to_business_year)
     def annotate_assignment_counts(self, start=None, end=None, of_member=None, prefix=''):
         """

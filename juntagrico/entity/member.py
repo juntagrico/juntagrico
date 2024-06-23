@@ -225,6 +225,12 @@ class Member(JuntagricoBaseModel):
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
+    def deactivate(self, date=None):
+        date = date or datetime.date.today()
+        if self.active_shares_count == 0 and self.canceled is True:
+            self.deactivation_date = date
+            self.save()
+
     @notifiable
     class Meta:
         verbose_name = Config.vocabulary('member')

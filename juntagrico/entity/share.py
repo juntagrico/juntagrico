@@ -77,6 +77,12 @@ class Share(Billable):
     def __str__(self):
         return _('Anteilschein {0} ({1})').format(self.id, self.state_text)
 
+    def payback(self, date=None):
+        date = date or datetime.date.today()
+        self.payback_date = date
+        self.save()
+        self.member.deactivate(date)
+
     @notifiable
     class Meta:
         verbose_name = Config.vocabulary('share')

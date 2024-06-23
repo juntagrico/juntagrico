@@ -16,7 +16,7 @@ from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
-from juntagrico.mailer import membernotification
+from juntagrico.signals import depot_change_confirmed
 from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
 
@@ -148,6 +148,10 @@ class Subscription(Billable, SimpleStateModel):
         members = self.recipients
         return ', '.join(str(member) for member in members)
 
+    def other_memberships(self, of_member=None):
+        of_member = of_member or self.primary_member
+        return self.recipients_qs.exclude(member=of_member)
+
     def co_members(self, member):
         qs = self.recipients_qs
         if member is not None:
@@ -233,10 +237,7 @@ class Subscription(Billable, SimpleStateModel):
             self.depot = self.future_depot
             self.future_depot = None
             self.save()
-            emails = []
-            for member in self.recipients:
-                emails.append(member.email)
-            membernotification.depot_changed(emails, self.depot)
+            depot_change_confirmed.send(Subscription, instance=self)
 
     def clean(self):
         check_sub_consistency(self)
