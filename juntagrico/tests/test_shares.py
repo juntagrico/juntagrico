@@ -26,8 +26,9 @@ class ShareTests(JuntagricoTestCase):
         share.cancelled_date = datetime.date.today()
         share.termination_date = datetime.date.today()
         share.save()
-        self.assertGet(reverse('share-payout', args=[share.pk]), 302)
+        self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 302)
         self.assertEqual(self.member2.active_shares.count(), 0)
+        # TODO: test manage-share-payout
 
     def testShareCertificate(self):
         self.client.force_login(self.member.user)
