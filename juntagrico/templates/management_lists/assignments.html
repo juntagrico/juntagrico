@@ -1,4 +1,5 @@
 {% extends "management_lists/man_list_base.html" %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
@@ -9,6 +10,7 @@
 {% endblock %}
 {% block management_cmd %}
     {% include 'management_lists/snippets/email_sender.html' %}
+    {% crispy date_form %}
     <div>
         <span class="switch switch-sm">
             <input class="switch" type="checkbox" id="show_co_members" checked="checked">

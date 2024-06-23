@@ -26,7 +26,7 @@ from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.forms import GenerateListForm, ShiftTimeForm
+from juntagrico.forms import GenerateListForm, ShiftTimeForm, DateRangeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
@@ -550,7 +550,10 @@ def assignments(request, start=None, end=None,
                 subscription_queryset=None):
     management_list = (subscription_queryset or SubscriptionDao.subscriptions_by_date(start, end)).annotate_assignments_progress(start, end).select_related('primary_member')
     context = context or {}
-    context.update({'change_date_disabled': True})
+    context.update({
+        'date_form': DateRangeForm(initial={'start_date': start, 'end_date': end}),
+        'change_date_disabled': True
+    })
     return subscription_management_list(management_list, context, template_name, request)
 
 
