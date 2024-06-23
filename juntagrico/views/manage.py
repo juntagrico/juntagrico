@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -24,3 +26,12 @@ def share_payout(request, share_id=None):
         # TODO: capture validation errors and display them. Continue with other shares
         share.payback()
     return return_to_previous_location(request)
+
+
+@method_decorator(any_permission_required('juntagrico.view_share', 'juntagrico.change_share'), name="dispatch")
+class ShareUnpaidView(ListView):
+    template_name = 'juntagrico/manage/share/unpaid.html'
+
+    def get_queryset(self):
+        return Share.objects.filter(paid_date__isnull=True).exclude(
+            termination_date__lt=datetime.date.today()).order_by('member')
