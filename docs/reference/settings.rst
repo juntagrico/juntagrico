@@ -207,7 +207,7 @@ External Documents
 
 BUSINESS_REGULATIONS
 ^^^^^^^^^^^^^^^^^^^^
-  URL to your business regulations document
+  URL to your business regulations document. The link will be displayed in the signup form and in the welcome mail after a successful registration.
   
   Type: String
 
@@ -219,8 +219,8 @@ BUSINESS_REGULATIONS
 
 BYLAWS
 ^^^^^^
-  URL to your bylaws document
-  
+  URL to your bylaws document. The link will be displayed in the signup form and in the welcome mail after a successful registration.
+ 
   Type: String
 
   default value
@@ -231,7 +231,7 @@ BYLAWS
 
 FAQ_DOC
 ^^^^^^^
-  URL to your FAQ document
+  URL to your FAQ document. The link will be displayed in the welcome mail after a successful registration.
 
   Type: String
 
