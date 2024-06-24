@@ -13,7 +13,7 @@ def required_for_subscription(share, index):
     if subscription:
         remaining = subscription.required_shares - subscription.paid_shares
         if index <= remaining:
-            other_unpaid = subscription.recipients_qs.exclude(member=member).filter(
+            other_unpaid = subscription.co_members(of_member=member).filter(
                 member__share__isnull=False, member__share__paid_date__isnull=True
             ).annotate(
                 member_name=Concat('member__first_name', Value(' '), 'member__last_name')

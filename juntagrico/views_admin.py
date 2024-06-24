@@ -362,7 +362,7 @@ def excel_export_subscriptions(request):
         worksheet_s.write_string(row, 2, email)
         worksheet_s.write_string(row, 3, phone)
         worksheet_s.write_string(row, 4, mobile)
-        worksheet_s.write_string(row, 5, sub.other_recipients_names)
+        worksheet_s.write_string(row, 5, ', '.join(str(m) for m in sub.co_members()))
         worksheet_s.write_string(row, 6, sub.state_text)
         worksheet_s.write_string(row, 7, c_date)
         worksheet_s.write_string(row, 8, sub.depot.name)

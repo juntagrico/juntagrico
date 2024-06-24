@@ -116,7 +116,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 1)
+        self.assertEqual(self.sub.current_members.count(), 1)
 
     def testJoin(self):
         self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
@@ -138,7 +138,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 3)
+        self.assertEqual(self.sub.current_members.count(), 3)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)

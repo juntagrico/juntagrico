@@ -64,7 +64,7 @@
         </thead>
         <tbody>
             {% for subscription in management_list %}
-                {% with other_recipients=subscription.other_recipients %}
+                {% with co_members=subscription.co_members %}
                     <tr>
                         <td class="members">
                             {% spaceless %}
@@ -75,7 +75,7 @@
                             {% with phone=subscription.primary_member.get_phone %}
                                 <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
                             {% endwith %}
-                            {% for recipient in other_recipients %}
+                            {% for recipient in co_members %}
                                 <div class="co-member">
                                 <a href="{% url 'admin:juntagrico_member_change' recipient.id %}">{{ recipient }}</a>
                                 {% with phone=recipient.get_phone %}
@@ -119,7 +119,7 @@
                             </td>
                         {% endif %}
                         <td class="email d-none">
-                            {% for recipient in other_recipients %}
+                            {% for recipient in co_members %}
                                 {{ recipient.email }},
                             {% endfor %}
                             {{ subscription.primary_member.email }}
