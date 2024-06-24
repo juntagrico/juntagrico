@@ -1,8 +1,6 @@
-import datetime
-
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, F, Sum
+from django.db.models import F, Sum
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -11,7 +9,6 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
