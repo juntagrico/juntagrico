@@ -1,0 +1,7 @@
+{% if perms.juntagrico.view_subscription or perms.juntagrico.change_subscription %}
+    <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
+        {{ subscription }}
+    </a>
+{% else %}
+    {{ subscription }}
+{% endif %}
