@@ -4,6 +4,7 @@ from io import BytesIO
 
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
+from django.db.models import Count, Q
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import Template, Context
@@ -20,12 +21,12 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subtypes import SubscriptionSize
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
@@ -228,28 +229,19 @@ def amount_overview(request):
 
 @permission_required('juntagrico.change_subscription')
 def future(request):
-    subscriptionsizes = []
-    subscription_lines = dict({})
-    for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
-        subscriptionsizes.append(subscription_size.id)
-        subscription_lines[subscription_size.id] = {
-            'name': subscription_size.product.name + '-' + subscription_size.name,
-            'future': 0,
-            'now': 0
-        }
-    for subscription in SubscriptionDao.all_active_subscritions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
-                subscription_size)
-
-    for subscription in SubscriptionDao.future_subscriptions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
-                subscription_size)
+    date = datetime.date.today()
+    sizes = SubscriptionSize.objects.order_by('product__is_extra', 'product', 'units').annotate(
+        now_count=Count('types__subscription_parts',
+                        filter=Q(types__subscription_parts__activation_date__lte=date) &
+                               ~Q(types__subscription_parts__deactivation_date__lt=date)),
+        future_count=Count('types__subscription_parts',
+                           filter=~Q(types__subscription_parts__cancellation_date__lt=date) &
+                                  ~Q(types__subscription_parts__deactivation_date__lt=date))
+    )
 
     renderdict = {
         'changed': request.GET.get('changed'),
-        'subscription_lines': iter(subscription_lines.values()),
+        'sizes': sizes,
     }
     return render(request, 'future.html', renderdict)
 
@@ -327,7 +319,7 @@ def excel_export_subscriptions(request):
     worksheet_s.write_string(0, 4, str(_('HauptbezieherInMobile')))
     worksheet_s.write_string(0, 5, str(_('Weitere BezieherInnen')))
     worksheet_s.write_string(0, 6, str(_('Status')))
-    worksheet_s.write_string(0, 7, str(_('Kündigungsdatum')))
+    worksheet_s.write_string(0, 7, str(_('Gekündigt')))
     worksheet_s.write_string(0, 8, str(_('Depot')))
     worksheet_s.write_string(0, 9, str(Config.vocabulary('assignment')))
     worksheet_s.write_string(0, 10, str(_('{} soll'.format(Config.vocabulary('assignment')))))
@@ -353,18 +345,15 @@ def excel_export_subscriptions(request):
             phone = ''
             mobile = ''
 
-        c_date = ''
-        if sub.cancellation_date:
-            c_date = sub.cancellation_date.strftime('%d/%m/%y')
-
         worksheet_s.write_string(row, 0, sub.size)
         worksheet_s.write_string(row, 1, name)
         worksheet_s.write_string(row, 2, email)
         worksheet_s.write_string(row, 3, phone)
         worksheet_s.write_string(row, 4, mobile)
         worksheet_s.write_string(row, 5, sub.other_recipients_names)
+        # TODO: think of a good state representation.
         worksheet_s.write_string(row, 6, sub.state_text)
-        worksheet_s.write_string(row, 7, c_date)
+        worksheet_s.write_string(row, 7, sub.cancelled)
         worksheet_s.write_string(row, 8, sub.depot.name)
         worksheet_s.write(row, 9, sub.assignment_count)
         worksheet_s.write(row, 10, sub.required_assignments)
@@ -424,31 +413,17 @@ def export(request):
     return render(request, 'export.html', {})
 
 
-@permission_required('juntagrico.change_subscription')
-def waitinglist(request):
-    render_dict = get_changedate(request)
-    return subscription_management_list(SubscriptionDao.not_started_subscriptions(), render_dict,
-                                        'management_lists/waitinglist.html', request)
-
-
-@permission_required('juntagrico.change_subscription')
-def canceledlist(request):
-    render_dict = get_changedate(request)
-    return subscription_management_list(SubscriptionDao.canceled_subscriptions(), render_dict,
-                                        'management_lists/canceledlist.html', request)
-
-
 @permission_required('juntagrico.change_subscriptionpart')
 def part_waitinglist(request):
     render_dict = get_changedate(request)
-    changedlist = SubscriptionPartDao.waiting_parts_for_active_subscriptions()
+    changedlist = SubscriptionPartDao.waiting()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_waitinglist.html', request)
 
 
 @permission_required('juntagrico.change_subscriptionpart')
 def part_canceledlist(request):
     render_dict = get_changedate(request)
-    changedlist = SubscriptionPartDao.canceled_parts_for_active_subscriptions()
+    changedlist = SubscriptionPartDao.canceled()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
 
 

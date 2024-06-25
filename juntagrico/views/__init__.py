@@ -149,6 +149,7 @@ def depot(request, depot_id):
     depot = get_object_or_404(Depot, id=int(depot_id))
     renderdict = {
         'depot': depot,
+        # TODO: Bug: this will show the member also access to depots they have been in the past.
         'show_access': request.user.member.subscriptionmembership_set.filter(
             subscription__depot=depot).count() > 0
     }

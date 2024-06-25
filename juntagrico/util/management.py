@@ -103,9 +103,11 @@ def create_subscription_parts(subscription, selected_types, notify=False):
 
 
 def cancel_sub(subscription, end_date, message):
-    subscription.cancel()
     subscription.end_date = end_date
     subscription.save()
+    for part in subscription.parts.all():
+        # TODO: allow setting cancelled date, regardless of activation.
+        part.cancel()
     adminnotification.subscription_canceled(subscription, message)
 
 

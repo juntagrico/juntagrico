@@ -524,7 +524,7 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
     def clean(self):
         selected = self.get_selected()
         # check that subscription is not cancelled:
-        if self.subscription.cancellation_date:
+        if self.subscription.cancelled:
             raise ValidationError(_('Für gekündigte {} können keine Bestandteile oder Zusatzabos bestellt werden').
                                   format(Config.vocabulary('subscription_pl')), code='no_order_if_cancelled')
         # check if members in subscription have sufficient shares

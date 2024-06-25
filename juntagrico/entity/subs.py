@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, F, Sum
+from django.db.models import Q, F, Sum, Min, Max
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -21,7 +21,7 @@ from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_de
 from juntagrico.util.temporal import start_of_next_business_year
 
 
-class Subscription(Billable, SimpleStateModel):
+class Subscription(Billable):
     '''
     One Subscription that may be shared among several people.
     '''
@@ -107,16 +107,6 @@ class Subscription(Billable, SimpleStateModel):
     def types_changed(self):
         return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
 
-    @staticmethod
-    def calc_subscription_amount(parts, size):
-        return parts.filter(type__size=size).count()
-
-    def subscription_amount(self, size):
-        return self.calc_subscription_amount(self.active_parts, size)
-
-    def subscription_amount_future(self, size):
-        return self.calc_subscription_amount(self.future_parts, size)
-
     @property
     def price(self):
         result = 0
@@ -190,6 +180,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def memberships_for_state(self):
+        # TODO: Make this method obsolete
         member_active = ~Q(member__deactivation_date__isnull=False,
                            member__deactivation_date__lte=datetime.date.today())
         if self.waiting:
@@ -199,6 +190,25 @@ class Subscription(Billable, SimpleStateModel):
         else:
             return self.subscriptionmembership_set.filter(q_joined_subscription(),
                                                           ~q_left_subscription(), member_active).prefetch_related('member')
+
+    @property
+    def waiting(self):
+        state = self.parts.aggregate(start=Min('activation_date'))
+        return state['start'] is None or state['start'] > datetime.date.today()
+
+    @property
+    def active(self):
+        return not self.waiting and not self.inactive
+
+    @property
+    def cancelled(self):
+        # cancellation date can not be in the future, so there is no need to compare with today
+        return self.parts.exists() and not self.parts.filter(cancellation_date=None).exists()
+
+    @property
+    def inactive(self):
+        state = self.parts.aggregate(end=Max('deactivation_date'))
+        return not self.parts.filter(deactivation_date__isnull=False).exists() or state['end'] <= datetime.date.today()
 
     @admin.display(description=primary_member.verbose_name)
     def primary_member_nullsave(self):

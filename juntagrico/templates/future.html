@@ -23,33 +23,20 @@
         <label class="offset-md-4 col-md-4">
             {% trans "Aktuell" %}
         </label>
-        <labelclass="col-md-4">
+        <label class="col-md-4">
             {% trans "Zukunft" %}
         </label>
     </div>
-    {% for line in subscription_lines %}
+    {% for size in sizes %}
         <div class="row mb-1">
             <label class="col-md-4">
-                {{ line.name }}
+                {{ size.name }}
             </label>
             <label class="col-md-4">
-                {{ line.now }}
-            </label>
-            <labelclass="col-md-4">
-                {{ line.future }}
-            </label>
-        </div>
-    {% endfor %}
-    {% for line in extra_lines %}
-        <div class="row mb-1">
-            <label class="col-md-4">
-                {{ line.name }}
+                {{ size.now_count }}
             </label>
             <label class="col-md-4">
-                {{ line.now }}
-            </label>
-            <labelclass="col-md-4">
-                {{ line.future }}
+                {{ size.future_count }}
             </label>
         </div>
     {% endfor %}

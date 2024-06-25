@@ -14,7 +14,8 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
 
     def testSubActivation(self):
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
+        # TODO decide if member join is not part of activation anymore.
+        self.assertGet(reverse('part-activate', args=[self.esub.pk]), 302)
         self.member2.refresh_from_db()
         self.area.refresh_from_db()
         self.assertIsNone(self.member2.subscription_future)
@@ -59,7 +60,8 @@ class SubscriptionTests(JuntagricoTestCase):
             self.assertEqual(self.sub.future_parts.count(), 1)
             # Add a share and cancel an existing part. Then order a part that requires 2 shares. Should succeed.
             self.create_paid_share(self.member)
-            self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
+            self.assertGet(reverse('part-cancel', args=[self.sub.parts.first().id, self.sub.pk]), code=302)
+            # TODO: Fails because cannot order on cancelled subscriptions
             self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
@@ -144,26 +146,28 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
         self.assertPost(reverse('sub-cancel', args=[self.sub.pk]), code=302)
         self.sub.refresh_from_db()
-        self.assertIsNotNone(self.sub.cancellation_date)
+        self.assertTrue(self.sub.cancelled)
 
     def testCancelWaiting(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub2.pk]), 200, member=self.member2)
         self.assertPost(reverse('sub-cancel', args=[self.sub2.pk]), code=302, member=self.member2)
         self.sub2.refresh_from_db()
-        self.assertIsNotNone(self.sub2.cancellation_date)
+        self.assertFalse(self.sub2.parts.filter(cancellation_date=None).exists())
 
     def testSubDeActivation(self):
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.assertGet(reverse('part-activate', args=[self.esub.pk]), 302)
         self.assertGet(reverse('part-activate', args=[self.esub2.pk]), 302)
+        # TODO: subscription_old is only used for this test. Try to remove the method.
         self.assertEqual(len(self.member2.subscriptions_old), 0)
-        self.assertGet(reverse('sub-deactivate', args=[self.sub2.pk]), 302)
+        self.assertGet(reverse('part-deactivate', args=[self.esub.pk]), 302)
+        self.assertGet(reverse('part-deactivate', args=[self.esub2.pk]), 302)
         self.member2.refresh_from_db()
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
         self.assertIsNone(self.member2.subscription_current)
+        # TODO: Also fails, because join/leave is not part of part activation/deactivation.
         self.assertEqual(len(self.member2.subscriptions_old), 1)
-        self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
+        self.assertGet(reverse('part-activate', args=[self.esub2.pk]), 302)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
 

@@ -54,6 +54,7 @@ def subscription(request, subscription_id=None):
     end_date = end_of_next_business_year()
     renderdict = {}
     if subscription is not None:
+        # TODO: Think of a good way to display sub status
         cancellation_date = subscription.cancellation_date
         if cancellation_date is not None and cancellation_date <= next_cancelation_date():
             end_date = end_of_business_year()
@@ -184,7 +185,7 @@ def part_change(request, part):
     """
     change part of a subscription
     """
-    if part.subscription.canceled or part.subscription.inactive:
+    if part.subscription.cancelled or part.subscription.inactive:
         raise Http404("Can't change subscription part of cancelled subscription")
     if SubscriptionTypeDao.get_normal_visible().count() <= 1:
         raise Http404("Can't change subscription part if there is only one subscription type")
@@ -230,7 +231,7 @@ def extra_change(request, subscription_id):
         'extras': subscription.active_and_future_extra_subscriptions.all(),
         'subscription': subscription,
         'sub_id': subscription_id,
-        'extra_order_allowed': not subscription.canceled,
+        'extra_order_allowed': not subscription.cancelled,
     }
     return render(request, 'extra_change.html', renderdict)
 
@@ -331,33 +332,6 @@ class AddCoMemberView(FormView, ModelFormMixin):
 def error_page(request, error_message):
     renderdict = {'error_message': error_message}
     return render(request, 'error.html', renderdict)
-
-
-@permission_required('juntagrico.is_operations_group')
-def activate_subscription(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
-    try:
-        subscription.activate(change_date)
-        add_subscription_member_to_activity_area(subscription)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
-
-
-def add_subscription_member_to_activity_area(subscription):
-    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
-
-
-@permission_required('juntagrico.is_operations_group')
-def deactivate_subscription(request, subscription_id):
-    subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
-    try:
-        subscription.deactivate(change_date)
-    except ValidationError as e:
-        return error_page(request, e.message)
-    return return_to_previous_location(request)
 
 
 @primary_member_of_subscription
