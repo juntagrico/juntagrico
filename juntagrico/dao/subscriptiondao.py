@@ -13,10 +13,6 @@ class SubscriptionDao:
         return Subscription.objects.filter(depot=depot).filter(q_isactive())
 
     @staticmethod
-    def subscritions_with_future_depots():
-        return Subscription.objects.exclude(future_depot__isnull=True)
-
-    @staticmethod
     def all_active_subscritions():
         return Subscription.objects.filter(q_isactive())
 

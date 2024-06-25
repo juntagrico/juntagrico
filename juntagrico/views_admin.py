@@ -17,7 +17,6 @@ from juntagrico import __version__
 from juntagrico.config import Config
 from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.sharedao import ShareDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
@@ -481,25 +480,6 @@ def extra_canceledlist(request):
     render_dict = get_changedate(request)
     return subscription_management_list(SubscriptionPartDao.canceled_extra_subs(), render_dict,
                                         'management_lists/extra_canceledlist.html', request)
-
-
-@permission_required('juntagrico.change_subscription')
-def depot_changes(request):
-    return subscription_management_list(SubscriptionDao.subscritions_with_future_depots(), {},
-                                        'juntagrico/manage/subscription/depot/changes.html', request)
-
-
-@permission_required('juntagrico.change_subscription')
-def depot_change_confirm(request, subscription_id):
-    sub = get_object_or_404(Subscription, id=subscription_id)
-    sub.activate_future_depot()
-    return return_to_previous_location(request)
-
-
-@any_permission_required('juntagrico.view_share', 'juntagrico.change_share')
-def share_unpaidlist(request):
-    return subscription_management_list(Share.objects.filter(paid_date__isnull=True).order_by('member'), {},
-                                        'juntagrico/manage/share/unpaid.html', request)
 
 
 @permission_required('juntagrico.change_member')

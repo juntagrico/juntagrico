@@ -1,4 +1,4 @@
-{% extends "management_lists/man_list_base.html" %}
+{% extends "juntagrico/manage/base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% load juntagrico.common %}
@@ -7,9 +7,6 @@
     <h3>
         {% blocktrans %}{{ v_depot_pl }}-Änderungsliste{% endblocktrans %}
     </h3>
-{% endblock %}
-{% block management_cmd %}
-    {% include 'management_lists/snippets/email_sender.html' %}
 {% endblock %}
 {% block list %}
     {% vocabulary "depot" as v_depot %}
@@ -28,7 +25,9 @@
                 <th class="filter">
                     {% blocktrans %}{{ v_depot }} Neu{% endblocktrans %}
                 </th>
-                <th></th>
+                <th>
+                    {% trans "Aktionen" %}
+                </th>
                 <th class="d-none">
                     {% trans "E-Mail" %}
                 </th>
@@ -38,15 +37,23 @@
             </tr>
         </thead>
         <tbody>
-            {% for subscription in management_list %}
+            {% for subscription in object_list %}
                 <tr>
                     <td class="share_id">
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                             {{ subscription }}
                         </a>
+                        <span class="d-none subscription_id">
+                            {{ subscription.id }}
+                        </span>
                     </td>
                     <td>
-                        {{ subscription.primary_member }}
+                        <div>{{ subscription.primary_member }}</div>
+                        <div>
+                            <a href="{% url "email-to-member" subscription.primary_member.id %}">
+                                {{ subscription.primary_member.email }}
+                            </a>
+                        </div>
                     </td>
                     <td>
                         {{ subscription.depot }}
@@ -55,7 +62,7 @@
                         {{ subscription.future_depot }}
                     </td>
                     <td>
-                        <a href="{% url 'manage-sub-depot-change-confirm' subscription.id %}" class="btn btn-success">
+                        <a href="{% url 'manage-sub-depot-change-confirm-single' subscription.id %}" class="btn btn-primary">
                             {% trans "Ändern" %}
                         </a>
                     </td>
@@ -69,4 +76,21 @@
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+{% block datatable_constructor %}
+    {{ block.super }}
+    config.layout.topStart.buttons.push(
+        id_action_button(
+            '{% trans "Ändern" %}', '{% url 'manage-sub-depot-change-confirm' %}', '{% csrf_token %}', 
+            '.subscription_id', 'ids',
+            [
+                {% vocabulary "depot" as v_depot %}
+                {% vocabulary "subscription" as v_subscription %}
+                '{% blocktrans %}{{ v_depot }} von 1 {{ v_subscription }} ändern?{% endblocktrans %}',
+                {% vocabulary "depot_pl" as v_depot_pl %}
+                {% vocabulary "subscription_pl" as v_subscription_pl %}
+                '{% blocktrans %}{{ v_depot_pl }} von {count} {{ v_subscription_pl }} ändern?{% endblocktrans %}'
+            ]
+        ),
+    )
 {% endblock %}
