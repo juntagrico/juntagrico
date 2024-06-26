@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block page_title %}
+    <h3>
+        {% trans "Manuelle Listenerzeugung" %}
+    </h3>
+{% endblock %}
+{% block content %}
+    {% vocabulary "member_pl" as v_member_pl %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% if success %}
+        <div class="alert alert-success">
+            {% trans "Listen erstellt" %}
+            {% if perms.juntagrico.can_view_lists %}
+                <br>
+                <a href="{% url 'lists-depot-amountoverview' %}">
+                    {% trans "Mengen Übersicht" %}
+                </a><br>
+                <a href="{% url 'lists-depotlist' %}">
+                    {% vocabulary "depot" %}-{% trans "Listen" %}
+                </a><br>
+                <a href="{% url 'lists-depot-overview' %}">
+                    {% vocabulary "depot" %} {% trans "Übersicht" %}
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% load i18n %}
+{% depot_admin request as qs_depot_admin %}
+{% if perms.juntagrico.is_depot_admin and qs_depot_admin|length > 0 %}
+    <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#depotman">
+            {% blocktrans %}{{ v_depot_pl }}{% endblocktrans %}
+            <i class="fas fa-angle-right">
+            </i>
+        </a>
+        <div class="collapse" id="depotman">
+            <ul class="nav flex-column subadmin-menu">
+                {% for depot in qs_depot_admin %}
+                    <li class="nav-item inline">
+                        <a class="nav-link inline" href="{%  url 'filter-depot' depot.id %}">
+                            {% vocabulary "member_pl" %}
+                        </a>
+                        |
+                        <a class="nav-link inline" href="{% url 'filter-subs-depot' depot.id %}">
+                            {% blocktrans with dn=depot.name %}{{ v_subscription_pl }} im {{ v_depot }} {{ dn }}{% endblocktrans %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </li>
+{% endif %}

@@ -1,6 +1,8 @@
 # test_settings.py
 import os
 
+from juntagrico.util.settings import tinymce_lang
+
 DEBUG = True
 
 SECRET_KEY = 'fake-key'
@@ -19,12 +21,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'fontawesomefree',
     'impersonate',
     'juntagrico',
     'crispy_forms',
     'adminsortable2',
     'djrichtextfield',
     'polymorphic',
+    'import_export',
     # enable only to test addon stuff
     # 'juntagrico_test_addon',
 ]
@@ -150,11 +154,14 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 CRISPY_FAIL_SILENTLY = not DEBUG
 
 DJRICHTEXTFIELD_CONFIG = {
-    'js': ['/static/juntagrico/external/tinymce/tinymce.min.js'],
+    'js': ['juntagrico/external/tinymce/tinymce.min.js'],
     'init_template': 'djrichtextfield/init/tinymce.js',
     'settings': {
         'menubar': False,
         'plugins': 'link  lists',
-        'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link'
+        'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
+        'language': tinymce_lang(LANGUAGE_CODE)
     }
 }
+
+IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'

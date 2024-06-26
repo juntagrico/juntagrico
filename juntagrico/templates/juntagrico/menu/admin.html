@@ -1,0 +1,42 @@
+{% load i18n %}
+{% load juntagrico.common %}
+{% load juntagrico.config %}
+{% load juntagrico.menu %}
+{% vocabulary "subscription" as v_subscription %}
+{% vocabulary "subscription_pl" as v_subscription_pl %}
+{% vocabulary "share_pl" as v_share_pl %}
+{% vocabulary "member_pl" as v_member_pl %}
+{% vocabulary "assignment_pl" as v_assignment_pl %}
+{% vocabulary "depot" as v_depot %}
+{% vocabulary "depot_pl" as v_depot_pl %}
+<ul class="admin-menu nav flex-column">
+    <li class="admin-menu-title">
+        <h5>
+            {% trans "Administration" %}
+        </h5>
+    </li>
+    {% include "juntagrico/menu/admin/admin.html" %}
+    {% include "juntagrico/menu/admin/subscriptions.html" %}
+    {% include "juntagrico/menu/admin/extra_subscriptions.html" %}
+    {% include "juntagrico/menu/admin/members.html" %}
+    {% include "juntagrico/menu/admin/assignments.html" %}
+    {% include "juntagrico/menu/admin/shares.html" %}
+    {% include "juntagrico/menu/admin/depots.html" %}
+    {% include "juntagrico/menu/admin/activityareas.html" %}
+    {% include "juntagrico/menu/admin/emails.html" %}
+    {% include "juntagrico/menu/admin/lists.html" %}
+    {% include "juntagrico/menu/admin/exports.html" %}
+    {% admin_menus as l_admin_menus %}
+    {% for menu in l_admin_menus %}
+        {% include menu %}
+    {% endfor %}
+    {% block extend %}
+    {% endblock %}
+    {% if request.user.is_staff %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'versions' %}">
+                {% trans "Version: " %}{% get_version %}
+            </a>
+        </li>
+    {% endif %}
+</ul>

@@ -7,11 +7,8 @@
         {% vocabulary "assignment_pl" %}
     </h3>
 {% endblock %}
-{% block list %}
-    {% show_core as b_show_core %}
-    {% requires_core as b_requires_core %}
-    {% vocabulary "assignment_pl" as v_assignment_pl %}
-    {% vocabulary "subscription" as v_subscription %}
+{% block management_cmd %}
+    {% include 'management_lists/snippets/email_sender.html' %}
     <div>
         <span class="switch switch-sm">
             <input class="switch" type="checkbox" id="show_co_members" checked="checked">
@@ -22,7 +19,13 @@
             <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
         </span>
     </div>
-    <table id="filter-table" class="list table" style="display: table;">
+{% endblock %}
+{% block list %}
+    {% show_core as b_show_core %}
+    {% requires_core as b_requires_core %}
+    {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% vocabulary "subscription" as v_subscription %}
+    <table id="filter-table" class="list table" data-dom="Q">
         <thead>
             <tr>
                 <th class="filter">
@@ -88,9 +91,15 @@
                             <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                                 {{ subscription.state_text }}
                             </a>
+                            {% if subscription.canceled %}
+                                -
+                                {% blocktrans with cd=subscription.cancellation_date|date:"Y-m-d" %}
+                                    Gekündigt am {{cd}}
+                                {% endblocktrans %}
+                            {% endif %}
                         </td>
                         <td>
-                            {{ subscription.assignment_count|floatformat }}
+                            {{ subscription.assignment_count|floatformat:-2 }}
                         </td>
                         <td>
                             {{ subscription.required_assignments|floatformat:0 }}
@@ -100,7 +109,7 @@
                         </td>
                         {% if b_show_core and b_requires_core %}
                             <td>
-                                {{ subscription.core_assignment_count|floatformat }}
+                                {{ subscription.core_assignment_count|floatformat:-2 }}
                             </td>
                             <td>
                                 {{ subscription.required_core_assignments|floatformat:0 }}
@@ -120,8 +129,13 @@
             {% endfor %}
         </tbody>
     </table>
-    <script type='text/javascript'>
-        var search_builder_enabled=true;
-        var search_builder_columns='.search-builder-column';
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(function(){
+            $("#show_co_members").ToggleButton('.co-member')
+            $("#show_phone_numbers").ToggleButton('.phone-number')
+        })
     </script>
 {% endblock %}

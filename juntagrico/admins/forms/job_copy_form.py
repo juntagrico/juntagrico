@@ -1,11 +1,13 @@
 import datetime
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz, localtime, is_naive
 from django.utils.translation import gettext as _
+from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.util.temporal import weekday_choices
@@ -14,7 +16,7 @@ from juntagrico.util.temporal import weekday_choices
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
-        fields = ['type', 'slots', 'infinite_slots', 'multiplier']
+        fields = ['type', 'slots', 'infinite_slots', 'multiplier', 'additional_description', 'duration_override']
 
     weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
@@ -42,10 +44,15 @@ class JobCopyForm(forms.ModelForm):
             self.fields['time'].initial = localtime(inst.time)
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
 
+        if 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
+            self.fields['additional_description'].widget = RichTextWidget()
+
+        self.new_jobs = []
+
     def clean(self):
         cleaned_data = super().clean()
         if self.cleaned(cleaned_data) and not self.get_datetimes(cleaned_data):
-            raise ValidationError(_('Kein neuer Job fällt zwischen Anfangs- und Enddatum'))
+            raise ValidationError(_('Kein neuer Job fällt zwischen Anfangs- und Enddatum'), code='no_job_in_range')
         return cleaned_data
 
     def save(self, commit=True):
@@ -53,16 +60,37 @@ class JobCopyForm(forms.ModelForm):
 
         newjob = None
         for dt in self.get_datetimes(self.cleaned_data):
-            newjob = RecuringJob.objects.create(
-                type=inst.type, slots=inst.slots, infinite_slots=inst.infinite_slots,
-                multiplier=inst.multiplier, time=dt
+            newjob = RecuringJob(
+                type=inst.type,
+                slots=inst.slots,
+                infinite_slots=inst.infinite_slots,
+                time=dt,
+                multiplier=inst.multiplier,
+                additional_description=inst.additional_description,
+                duration_override=inst.duration_override,
             )
-            newjob.save()
+            if commit:
+                newjob.save()
+            self.new_jobs.append(newjob)
         return newjob
 
-    def save_m2m(self):
-        # HACK: the admin expects this method to exist
-        pass
+    def save_related(self, formsets):
+        # collect contacts from formsets
+        contacts = []
+        if formsets and len(formsets) >= 1:
+            for contact_form in formsets[0].forms:
+                if not contact_form.cleaned_data['DELETE']:
+                    contacts.append(contact_form.instance.copy())
+            # excepted by ModelAdmin
+            formsets[0].new_objects = []
+            formsets[0].changed_objects = []
+            formsets[0].deleted_objects = []
+        # save and apply contacts
+        for job in self.new_jobs:
+            job.save()
+            for contact in contacts:
+                job.contact_set.add(contact, bulk=False)
+
 
     @staticmethod
     def cleaned(cleaned_data):
@@ -81,10 +109,10 @@ class JobCopyForm(forms.ModelForm):
             if skip_even_weeks and delta % 14 >= 7:
                 continue
             date = start + datetime.timedelta(delta)
-            if not date.isoweekday() in weekdays:
+            if date.isoweekday() not in weekdays:
                 continue
             dt = datetime.datetime.combine(date, time)
-            if is_naive(dt):
+            if settings.USE_TZ and is_naive(dt):
                 dt = dt.astimezone(gdtz())
             res.append(dt)
         return res
@@ -94,5 +122,5 @@ class JobCopyToFutureForm(JobCopyForm):
     def clean(self):
         cleaned_data = super().clean()
         if self.cleaned(cleaned_data) and self.get_datetimes(cleaned_data)[0] <= timezone.now():
-            raise ValidationError(_('Neue Jobs können nicht in der Vergangenheit liegen.'))
+            raise ValidationError(_('Neue Jobs können nicht in der Vergangenheit liegen.'), code='date_in_past')
         return cleaned_data

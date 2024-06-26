@@ -1,11 +1,13 @@
 import datetime
 
 from django.db import connection
-from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, OuterRef
+from django.db.models import When, Q, F, ExpressionWrapper, DurationField, Case, DateField, FloatField, Sum, Subquery, \
+    OuterRef, PositiveIntegerField
 from django.db.models.functions import Least, Greatest, Round, Cast, Coalesce, ExtractDay
 from django.utils.decorators import method_decorator
 from polymorphic.query import PolymorphicQuerySet
 
+from juntagrico.entity import SimpleStateModelQuerySet
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.util.temporal import default_to_business_year
 
@@ -23,15 +25,14 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
         Q(leave_date__isnull=True) |
         Q(leave_date__gte=F('member__assignment__job__time__date')),
         join_date__lte=F('member__assignment__job__time__date'),
-        member__assignment__job__time__date__gte=start,
-        member__assignment__job__time__date__lte=end,
+        member__assignment__job__time__date__range=(start, end),
         **extra_filters
     ).order_by().values('subscription').annotate(
         total=Sum('member__assignment__amount', default=0.0),
     ).values('total')
 
 
-class SubscriptionQuerySet(PolymorphicQuerySet):
+class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
     microseconds_in_day = 24 * 3600 * 10 ** 6
     days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)
@@ -156,3 +157,31 @@ class SubscriptionQuerySet(PolymorphicQuerySet):
                 output_field=FloatField()
             )
         })
+
+
+class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
+    def is_normal(self):
+        return self.filter(type__size__product__is_extra=False)
+
+    def waiting_or_active(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=date)
+
+    def active_on(self, date=None):
+        date = date or datetime.date.today()
+        current_week_number = date.isocalendar()[1] - 1
+        return (super().active_on(date)
+                .annotate(week_mod=ExpressionWrapper((current_week_number + F('type__offset')) % (F('type__interval')),
+                                                     output_field=PositiveIntegerField())).filter(week_mod=0))
+
+    def sorted(self):
+        return self.order_by('type__size__product__is_extra', 'type__size__product',
+                             F('deactivation_date').desc(nulls_first=True),
+                             F('cancellation_date').desc(nulls_first=True),
+                             F('activation_date').desc(nulls_first=True))
+
+    def by_primary_member(self, member):
+        return self.filter(subscription__primary_member=member)
+
+    def on_depot_list(self):
+        return self.filter(type__size__depot_list=True)
