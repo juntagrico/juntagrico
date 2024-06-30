@@ -140,8 +140,8 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         :return: the queryset of subscriptions with annotations `assignment_count`, `core_assignment_count`, `required_assignments`, `required_core_assignments`,
         `assignments_progress` and `core_assignments_progress`.
         :param prefix: prefix for the resulting attribute names `assignment_count`, `core_assignment_count`, `assignments_progress`, `core_assignments_progress`. default=''
-        :return: the queryset of subscriptions with annotations `assignments_progress`, `core_assignments_progress`, `assignments_progress`,
-        `core_assignments_progress`, `assignments_progress` and `core_assignments_progress`
+        :return: the queryset of subscriptions with annotations `assignments_progress`, `core_assignments_progress`, `required_assignments`,
+        `core_required_assignments`, `assignment_count` and `core_assignment_count`
         """
         return self.annotate_required_assignments(start, end).annotate_assignment_counts(
             start, count_jobs_until or end, of_member, prefix
