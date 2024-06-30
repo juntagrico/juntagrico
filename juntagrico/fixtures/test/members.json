@@ -98,6 +98,16 @@
                 "change_subscriptionpart",
                 "juntagrico",
                 "subscriptionpart"
+            ],
+            [
+                "notified_on_subscriptionpart_creation",
+                "juntagrico",
+                "subscriptionpart"
+            ],
+            [
+                "notified_on_subscriptionpart_cancellation",
+                "juntagrico",
+                "subscriptionpart"
             ]
         ]
     }

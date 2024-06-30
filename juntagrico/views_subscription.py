@@ -4,6 +4,7 @@ from datetime import date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Count, Sum
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -196,8 +197,12 @@ def part_change(request, part):
                 part.save()
             else:
                 # cancel existing part and create new waiting one
-                SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
-                part.cancel()
+                with transaction.atomic():
+                    SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
+                    part.cancel()
+                # notify admin
+                adminnotification.subpart_canceled(part)
+                adminnotification.subparts_created([part], part.subscription)
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
         form = SubscriptionPartChangeForm(part)
