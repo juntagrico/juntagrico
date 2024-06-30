@@ -63,6 +63,8 @@ class Member(JuntagricoBaseModel):
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
 
+    subscriptions = models.ManyToManyField('Subscription', through='SubscriptionMembership', related_name='members')
+
     objects = MemberQuerySet.as_manager()
 
     @property
