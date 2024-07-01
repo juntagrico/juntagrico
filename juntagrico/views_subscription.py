@@ -121,8 +121,10 @@ def depot_change(request, subscription_id):
         subscription.save()
         saved = True
     depots = DepotDao.all_visible_depots_with_map_info()
+    counts = subscription.active_and_future_parts.values('type').annotate(count=Count('type'))
     renderdict = {
         'subscription': subscription,
+        'subscription_count': {item['type']: item['count'] for item in counts},
         'saved': saved,
         'member': member,
         'depots': depots,
@@ -142,9 +144,9 @@ def primary_change(request, subscription_id):
         subscription.save()
         return redirect('subscription-single', subscription_id=subscription.id)
     if Config.enable_shares():
-        co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
+        co_members = [m for m in subscription.co_members() if m.is_cooperation_member]
     else:
-        co_members = subscription.other_recipients()
+        co_members = subscription.co_members()
     renderdict = {
         'subscription': subscription,
         'co_members': co_members,
@@ -294,7 +296,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
+        form_kwargs['existing_emails'] = self.subscription.current_members.values_list('email', flat=True)
         return form_kwargs
 
     def get_initial(self):
@@ -344,7 +346,7 @@ def activate_subscription(request, subscription_id):
 
 
 def add_subscription_member_to_activity_area(subscription):
-    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
+    [area.members.add(*subscription.current_members) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')

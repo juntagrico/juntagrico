@@ -26,7 +26,7 @@ from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.forms import GenerateListForm, ShiftTimeForm
+from juntagrico.forms import GenerateListForm, ShiftTimeForm, DateRangeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
@@ -35,7 +35,7 @@ from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
-from juntagrico.view_decorators import any_permission_required
+from juntagrico.view_decorators import any_permission_required, date_range_view
 from juntagrico.views_subscription import error_page
 
 
@@ -362,7 +362,7 @@ def excel_export_subscriptions(request):
         worksheet_s.write_string(row, 2, email)
         worksheet_s.write_string(row, 3, phone)
         worksheet_s.write_string(row, 4, mobile)
-        worksheet_s.write_string(row, 5, sub.other_recipients_names)
+        worksheet_s.write_string(row, 5, ', '.join(str(m) for m in sub.co_members()))
         worksheet_s.write_string(row, 6, sub.state_text)
         worksheet_s.write_string(row, 7, c_date)
         worksheet_s.write_string(row, 8, sub.depot.name)
@@ -479,7 +479,7 @@ def depot_change_confirm(request, subscription_id):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.view_share')
+@any_permission_required('juntagrico.view_share', 'juntagrico.change_share')
 def share_unpaidlist(request):
     return subscription_management_list(Share.objects.filter(paid_date__isnull=True).order_by('member'), {},
                                         'juntagrico/manage/share/unpaid.html', request)
@@ -543,11 +543,18 @@ def sub_inconsistencies(request):
 
 
 @permission_required('juntagrico.change_assignment')
-def assignments(request):
-    management_list = Subscription.objects.annotate_assignments_progress().select_related('primary_member')
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(management_list, render_dict,
-                                        'management_lists/assignments.html', request)
+@date_range_view
+def assignments(request, start=None, end=None,
+                template_name='management_lists/assignments.html',
+                context=None,
+                subscription_queryset=None):
+    management_list = (subscription_queryset or SubscriptionDao.subscriptions_by_date(start, end)).annotate_assignments_progress(start, end).select_related('primary_member')
+    context = context or {}
+    context.update({
+        'date_form': DateRangeForm(initial={'start_date': start, 'end_date': end}),
+        'change_date_disabled': True
+    })
+    return subscription_management_list(management_list, context, template_name, request)
 
 
 @permission_required('juntagrico.can_generate_lists')

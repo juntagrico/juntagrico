@@ -1,4 +1,5 @@
 {% extends "no_menu_base.html" %}
+{% load juntagrico.snippets %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
@@ -40,9 +41,11 @@
                         {{ period.price }} {% config "currency" %}
                     {% endfor %}
                 {% else %}
+                    <strong>
                     {%blocktrans with tp=type.price%}
                      à {{ c_currency }} {{ tp }}/Jahr.
                     {%endblocktrans%}
+                    </strong>
                     {{ type.min_duration_info }}
                 {% endif %}
                 {% if not forloop.last %}<br>{% endif %}
@@ -57,6 +60,7 @@
             {% block depot %}
                 <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
                 <p>{{ depot.name }}
+                    {% depot_fee depot subscriptions "<br><strong>" "</strong>" %}
                     <br>{% trans 'Abholung jeweils am' %} {{ depot.weekday_name }}
                     {% if depot.location.address %}<br>{{ depot.location.address_html|safe }}{% endif %}
                 </p>
@@ -117,7 +121,7 @@
                     <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
                     {% endfor %}
                 </p>
-                <p>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</p>
+                <p><strong>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</strong></p>
             {% endblock %}
         {% endif %}
 
