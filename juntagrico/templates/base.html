@@ -94,10 +94,11 @@
             <div class="allcontent row">
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
-                        {% include "juntagrico/menu/user.html" %}
-                        {% include "juntagrico/menu/admin.html" %}
-                        {% include "widgets/assignements.html" %}
-                        {% include "widgets/jobs.html" %}
+                        {% block menu %}
+                            {% include "juntagrico/menu/user.html" %}
+                            {% include "juntagrico/menu/admin.html" %}
+                            {% include "juntagrico/menu/widgets.html" %}
+                        {% endblock %}
                     </div>
                     <div class="content-container col-md-9 col-sm-12">
                         <div class="messages row">
@@ -118,9 +119,8 @@
             </div>
             <div class="footer row">
                 {% block footer_content %}
-                 <div class="sidebar col-sm-12 d-md-none">
-                        {% include "widgets/assignements.html" %}
-                        {% include "widgets/jobs.html" %}
+                    <div class="sidebar col-sm-12 d-md-none">
+                        {% include "juntagrico/menu/widgets.html" %}
                     </div>
                 {% endblock %}
             </div>

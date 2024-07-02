@@ -293,6 +293,10 @@ textarea#recipients[disabled=disabled] {
     color: #780fff;
 }
 
+.bg-core {
+    background-color: #780fff;
+}
+
 /* map stuff checked */
 #map-canvas {
     width: 100%;

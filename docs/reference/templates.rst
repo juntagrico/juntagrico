@@ -126,3 +126,28 @@ juntagrico/my/subscription/none.html|extend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add content to the subscription overview page, for members that have no subscription.
+
+
+Widget Templates
+----------------
+
+juntagrico/widgets/assignment_progress.html|progress
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Change appearance of the assignment progress widget in menu.
+
+E.g. to use the bean icon indicators of previous juntagrico versions do:
+
+.. code-block:: html
+
+    {% extends 'juntagrico/widgets/assignment_progress.html' %}
+    {% block progress %}
+        {% assignment_progress request.user.member future=False as assignments %}
+        {% include "./assignment_progress/classic.html" %}
+    {% endblock %}
+
+The ``future`` argument on ``assignment_progress`` specifies if planned future assignments are counted as well:
+
+* None: Count future assignments
+* False: Don't count future assignments
+* True: Count future assignments separately. This is not supported by the classic assignments widget.

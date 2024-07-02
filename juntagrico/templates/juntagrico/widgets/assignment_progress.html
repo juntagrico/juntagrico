@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.widgets %}
+<hr/>
+<div class="assignments">
+    {% block title %}
+        <h5>
+            {% vocabulary "subscription" %} {% vocabulary "assignment_pl" %}-{% trans "Übersicht" %}
+        </h5>
+    {% endblock %}
+    {% block progress %}
+        {% assignment_progress request.user.member future=True as assignments %}
+        {% include "./assignment_progress/bars.html" %}
+        {% include "./assignment_progress/text.html" %}
+    {% endblock %}
+</div>
