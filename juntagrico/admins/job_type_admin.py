@@ -63,11 +63,13 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
 
     @admin.action(description=_('Verstecken'))
     def action_hide(self, request, queryset):
-        queryset.update(visible=False)
+        # clear order, because update can not be applied when ordered by aggregate
+        queryset.order_by().update(visible=False)
 
     @admin.action(description=_('Sichtbar machen'))
     def action_make_visible(self, request, queryset):
-        queryset.update(visible=True)
+        # clear order, because update can not be applied when ordered by aggregate
+        queryset.order_by().update(visible=True)
 
     def get_location_queryset(self, request, obj):
         return Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
