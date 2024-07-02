@@ -65,19 +65,15 @@ def send_email_intern(request):
         raise Http404
     emails = set()
     sender = request.POST.get('sender')
-    if request.POST.get('allsubscription') == 'on':
-        m_emails = MemberDao.members_for_email_with_subscription().values_list('email',
-                                                                               flat=True)
-        emails.update(m_emails)
-    if request.POST.get('allshares') == 'on':
-        emails.update(MemberDao.members_for_email_with_shares(
-        ).values_list('email', flat=True))
-    if request.POST.get('all') == 'on':
-        emails.update(MemberDao.members_for_email(
-        ).values_list('email', flat=True))
+    if request.POST.get('allsubscription') == 'on' and request.user.has_perm('juntagrico.can_email_all_with_sub'):
+        emails.update(MemberDao.members_for_email_with_subscription().values_list('email', flat=True))
+    if request.POST.get('allshares') == 'on' and request.user.has_perm('juntagrico.can_email_all_with_share'):
+        emails.update(MemberDao.members_for_email_with_shares().values_list('email', flat=True))
+    if request.POST.get('all') == 'on' and request.user.has_perm('juntagrico.can_email_all_in_system'):
+        emails.update(MemberDao.members_for_email().values_list('email', flat=True))
     if request.POST.get('recipients'):
         emails.update(re.split(r'[\s,;]+', request.POST.get('recipients')))
-    if request.POST.get('allsingleemail'):
+    if request.POST.get('allsingleemail') and request.user.has_perm('juntagrico.can_email_free_address_list'):
         emails.update(re.split(r'[\s,;]+', request.POST.get('singleemail')))
 
     files = []
