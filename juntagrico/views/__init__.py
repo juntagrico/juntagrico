@@ -68,28 +68,38 @@ def job(request, job_id):
     job_is_running = job.start_time() < timezone.now()
     job_canceled = job.canceled
     can_subscribe = job.infinite_slots or not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
+    can_unsubscribe = job.allow_unsubscribe and len(AssignmentDao.assignments_for_job_and_member(job_id, member)) > 0
 
     if request.method == 'POST' and can_subscribe:
-        num = int(request.POST.get('jobs'))
-        if 0 < num and (job.free_slots >= num or job.infinite_slots):
-            # adding participants
-            amount = 1
-            if Config.assignment_unit() == 'ENTITY':
-                amount = job.multiplier
-            elif Config.assignment_unit() == 'HOURS':
-                amount = job.multiplier * job.duration
-            for _i in range(num):
-                assignment = Assignment.objects.create(
-                    member=member, job=job, amount=amount)
-            for extra in job.type.job_extras_set.all():
-                if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
-                    assignment.job_extras.add(extra)
-            assignment.save()
-            subscribed.send(Job, instance=job, member=member, count=num)
-            membernotification.job_signup(member.email, job)
+        if request.POST.get('subscribe'):
+            num = int(request.POST.get('jobs'))
+            if 0 < num and (job.free_slots >= num or job.infinite_slots):
+                # adding participants
+                amount = 1
+                if Config.assignment_unit() == 'ENTITY':
+                    amount = job.multiplier
+                elif Config.assignment_unit() == 'HOURS':
+                    amount = job.multiplier * job.duration
+                for _i in range(num):
+                    assignment = Assignment.objects.create(
+                        member=member, job=job, amount=amount)
+                for extra in job.type.job_extras_set.all():
+                    if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
+                        assignment.job_extras.add(extra)
+                assignment.save()
+                subscribed.send(Job, instance=job, member=member, count=num)
+                membernotification.job_signup(member.email, job)
+                # redirect to same page such that refresh in the browser or back
+                # button does not trigger a resubmission of the form
+                return redirect('job', job_id=job_id)
+
+        elif request.POST.get('unsubscribe') and can_unsubscribe:
+            assignment = Assignment.objects.filter(member=member, job=job)
+            assignment.delete()
             # redirect to same page such that refresh in the browser or back
             # button does not trigger a resubmission of the form
             return redirect('job', job_id=job_id)
+
     if request.method == 'POST':
         messages = getattr(request, 'member_messages', []) or []
         messages.extend(error_message(request))
@@ -128,6 +138,7 @@ def job(request, job_id):
         'slotrange': slotrange,
         'allowed_additional_participants': allowed_additional_participants,
         'can_subscribe': can_subscribe,
+        'can_unsubscribe': can_unsubscribe,
         'edit_url': get_job_admin_url(request, job)
     }
     return render(request, 'job.html', renderdict)
