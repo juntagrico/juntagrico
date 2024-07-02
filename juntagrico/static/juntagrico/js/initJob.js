@@ -14,4 +14,11 @@ define([], function () {
         })
     }
 
+    $('#job-subscribe-form').on('submit', function (e) {
+        const message = e.originalEvent.submitter.dataset.message;
+        if (message)
+            return confirm(message);
+        return true
+    })
+
 });
