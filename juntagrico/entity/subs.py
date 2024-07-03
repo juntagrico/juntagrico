@@ -140,10 +140,6 @@ class Subscription(Billable, SimpleStateModel):
             result += part.type.shares
         return result
 
-    def other_memberships(self, of_member=None):
-        of_member = of_member or self.primary_member
-        return self.recipients_qs.exclude(member=of_member)
-
     def co_members(self, of_member=None):
         of_member = of_member or self.primary_member
         return self.current_members.exclude(pk=of_member.pk)
