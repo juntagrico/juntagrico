@@ -151,7 +151,7 @@ urlpatterns = [
     path('my/filters', juntagrico_admin.filters, name='filters'),
     path('my/filters/active', juntagrico_admin.filters_active, name='filters-active'),
     # /manage/assignments
-    path('my/assignments', juntagrico_admin.assignments, name='filter-assignments'),
+    path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),
     # /manage/share
     path('manage/share/unpaid', manage.ShareUnpaidView.as_view(), name='manage-share-unpaid'),
     path('manage/share/cancelled', manage.ShareCancelledView.as_view(), name='manage-share-cancelled'),

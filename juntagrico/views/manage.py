@@ -7,8 +7,41 @@ from django.views.generic import ListView
 
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.util import return_to_previous_location
+from juntagrico.forms import DateRangeForm
+from juntagrico.util import return_to_previous_location, temporal
+from juntagrico.util.views_admin import date_from_get
 from juntagrico.view_decorators import any_permission_required
+
+
+class DateRangeMixin:
+    """
+    View mixin
+    Adds a DateRangeForm to the context with start and end as follows:
+    * `start` and `end` arguments passed directly into as_view() method in urls.py
+    * GET variables `start_date` and `end_date`
+    * Business year containing the GET variable `ref_date`, defaults to today
+    """
+    start = None
+    end = None
+
+    def __init__(self, start=None, end=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.start = start
+        self.end = end
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        ref_date = date_from_get(request, 'ref_date')
+        self.start = self.start or date_from_get(request, 'start_date') or temporal.start_of_specific_business_year(ref_date)
+        self.end = self.end or date_from_get(request, 'end_date') or temporal.end_of_specific_business_year(ref_date)
+
+    def get_context_data(self, **kwargs):
+        if "date_form" not in kwargs:
+            kwargs["date_form"] = self.get_form()
+        return super().get_context_data(**kwargs)
+
+    def get_form(self):
+        return DateRangeForm(initial={'start_date': self.start, 'end_date': self.end})
 
 
 @method_decorator(any_permission_required('juntagrico.view_share', 'juntagrico.change_share'), name="dispatch")
@@ -50,3 +83,18 @@ def subscription_depot_change_confirm(request, subscription_id=None):
     subs = Subscription.objects.filter(id__in=ids)
     subs.activate_future_depots()
     return return_to_previous_location(request)
+
+
+@method_decorator(
+    any_permission_required('juntagrico.view_assignment', 'juntagrico.change_assignment'),
+    name="dispatch"
+)
+class AssignmentsView(DateRangeMixin, ListView):
+    template_name = 'juntagrico/manage/assignments.html'
+
+    def get_queryset(self):
+        return (
+            Subscription.objects.in_date_range(self.start, self.end)
+            .annotate_assignments_progress(self.start, self.end)
+            .select_related("primary_member")
+        )

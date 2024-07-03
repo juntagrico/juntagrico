@@ -1,4 +1,4 @@
-{% extends "management_lists/man_list_base.html" %}
+{% extends "./base.html" %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% load juntagrico.common %}
@@ -8,8 +8,8 @@
         {% vocabulary "assignment_pl" %}
     </h3>
 {% endblock %}
-{% block management_cmd %}
-    {% include 'management_lists/snippets/email_sender.html' %}
+
+{% block content %}
     {% crispy date_form %}
     <div>
         <span class="switch switch-sm">
@@ -21,13 +21,15 @@
             <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
         </span>
     </div>
+    {{ block.super }}
 {% endblock %}
+
 {% block list %}
     {% show_core as b_show_core %}
     {% requires_core as b_requires_core %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
     {% vocabulary "subscription" as v_subscription %}
-    <table id="filter-table" class="list table" data-dom="Q">
+    <table id="filter-table" class="list table">
         <thead>
             <tr>
                 <th class="filter">
@@ -65,7 +67,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for subscription in management_list %}
+            {% for subscription in object_list %}
                 {% with co_members=subscription.co_members %}
                     <tr>
                         <td class="members">
@@ -132,6 +134,12 @@
         </tbody>
     </table>
 {% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    config.layout.top = 'searchBuilder'
+{% endblock %}
+
 {% block scripts %}
     {{ block.super }}
     <script type="text/javascript">

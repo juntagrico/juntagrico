@@ -42,6 +42,12 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         self._start_required = False
         self._end_required = False
 
+    def in_date_range(self, start, end):
+        """
+        subscriptions that were active in the given period
+        """
+        return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
+
     def activate_future_depots(self):
         for subscription in self.exclude(future_depot__isnull=True):
             subscription.activate_future_depot()
