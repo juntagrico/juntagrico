@@ -22,9 +22,9 @@ from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
-from juntagrico.entity.member import Member, SubscriptionMembership
+from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import Subscription
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
@@ -195,23 +195,6 @@ def subscriptions(request):
     }
 
     return render(request, 'management_lists/subscriptions.html', renderdict)
-
-
-@any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
-def manage_subscription_recent(request, days=30):
-    days = max(int(request.GET.get('days', days)), 0)
-    today = datetime.date.today()
-    date_range = (today - datetime.timedelta(days=days), today)
-    renderdict = dict(
-        days=days,
-        ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
-        activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
-        cancelled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
-        deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
-        joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
-        left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
-    )
-    return render(request, 'juntagrico/manage/subscription/recent.html', renderdict)
 
 
 @permission_required('juntagrico.is_depot_admin')

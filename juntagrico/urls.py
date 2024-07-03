@@ -121,7 +121,7 @@ urlpatterns = [
     path('my/changedate', juntagrico_admin.set_change_date, name='changedate-set'),
     path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),
     # /manage/subscription
-    path('manage/subscription/recent', juntagrico_admin.manage_subscription_recent, name='sub-mgmt-recent'),
+    path('manage/subscription/recent', manage.subscription_recent, name='manage-sub-recent'),
     path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),

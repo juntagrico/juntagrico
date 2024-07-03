@@ -12,7 +12,7 @@
             <ul class="nav flex-column subadmin-menu">
                 {% if perms.juntagrico.can_filter_subscriptions or perms.juntagrico.change_subscription %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'sub-mgmt-recent' %}">
+                        <a class="nav-link" href="{% url 'manage-sub-recent' %}">
                             {% blocktrans %}Letzte Änderungen{% endblocktrans %}
                         </a>
                     </li>

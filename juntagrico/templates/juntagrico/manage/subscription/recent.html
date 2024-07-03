@@ -1,4 +1,4 @@
-{% extends "management_lists/man_list_base.html" %}
+{% extends "../base.html" %}
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
@@ -10,13 +10,15 @@
         {% blocktrans %}Änderungen an {{ v_subscription_pl }} in den letzten {{ days }} Tagen{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block management_cmd %}
-    <form action="{% url "sub-mgmt-recent" %}" method="GET" class="form-inline">
+    <form method="GET" class="form-inline">
         <input type="number" id="days" name="days" class="form-control mb-4 mr-sm-2" value="{{ days }}" min="0" size="5"/>
         <label for="days" class="mb-4 mr-sm-2">{% trans "Tage" %}</label>
         <button type="submit" class="btn btn-primary mb-4">{% trans "anzeigen" %}</button>
     </form>
 {% endblock %}
+
 {% block list %}
     <table id="filter-table" class="list table">
         <thead>
@@ -175,19 +177,10 @@
         </tbody>
     </table>
 {% endblock %}
-{% block init_script %}
-    <script type="text/javascript">
-        $(function(){
-            $("#filter-table").DataTable({
-                ordering: true,
-                order: [[1, 'desc']],
-                info: true,
-                language: {
-                    info: 'Zeige _TOTAL_ von _MAX_',
-                    infoFiltered: ' - gefiltert',
-                    infoEmpty: 'Zeige _TOTAL_ von _MAX_'
-                }
-            });
-        })
-    </script>
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    config.ordering = true
+    config.order = [[1, 'desc']]
+    config.info = true
 {% endblock %}

@@ -1,12 +1,13 @@
 import datetime
 
 from django.contrib.auth.decorators import permission_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
 
+from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import any_permission_required
 
@@ -36,6 +37,23 @@ class ShareUnpaidView(ListView):
     def get_queryset(self):
         return Share.objects.filter(paid_date__isnull=True).exclude(
             termination_date__lt=datetime.date.today()).order_by('member')
+
+
+@any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
+def subscription_recent(request, days=30):
+    days = max(int(request.GET.get('days', days)), 0)
+    today = datetime.date.today()
+    date_range = (today - datetime.timedelta(days=days), today)
+    renderdict = dict(
+        days=days,
+        ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
+        activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
+        cancelled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
+        deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
+        joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
+        left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
+    )
+    return render(request, 'juntagrico/manage/subscription/recent.html', renderdict)
 
 
 @method_decorator(permission_required('juntagrico.change_subscription'), name="dispatch")
