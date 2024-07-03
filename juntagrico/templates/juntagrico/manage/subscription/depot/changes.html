@@ -67,7 +67,7 @@
                         </a>
                     </td>
                     <td class="email d-none">
-                        {{ subscription.recipients_qs|values_list:'member__email'|join:', ' }}
+                        {{ subscription.current_members|values_list:'email'|join:', ' }}
                     </td>
                     <td>
                         {{ subscription.notes }}
