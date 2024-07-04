@@ -254,13 +254,18 @@ class JuntagricoTestCase(TestCase):
         """
         subscription
         """
+        today = datetime.date.today()
         cls.sub = cls.create_sub_now(cls.depot)
         cls.sub2 = cls.create_sub(cls.depot)
+        cls.sub3 = cls.create_sub(cls.depot)
         cls.member.join_subscription(cls.sub, True)
+        cls.member3.join_subscription(cls.sub3, True)
+        cls.sub3.activate(today - datetime.timedelta(3))
+        cls.sub3.deactivate(today - datetime.timedelta(1))
         cls.member3.join_subscription(cls.sub)
         cls.member2.join_subscription(cls.sub2, True)
         SubscriptionPart.objects.create(subscription=cls.sub, type=cls.sub_type,
-                                        activation_date=datetime.date.today())
+                                        activation_date=today)
 
     @classmethod
     def set_up_extra_sub_types(cls):
