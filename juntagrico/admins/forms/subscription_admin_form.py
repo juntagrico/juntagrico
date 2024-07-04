@@ -17,3 +17,8 @@ class SubscriptionAdminForm(forms.ModelForm):
         forms.ModelForm.__init__(self, *a, **k)
         if 'primary_member' in self.fields.keys():
             self.fields['primary_member'].queryset = MemberDao.members_in_subscription(self.instance)
+
+    def clean(self):
+        # initialize in case somebody tries to create a sub without members
+        self.instance.override_future_members = set()
+        return super(SubscriptionAdminForm, self).clean()
