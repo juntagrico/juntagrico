@@ -215,11 +215,12 @@ class Member(JuntagricoBaseModel):
         '''
         Callback to create corresponding user when new member is created.
         '''
-        if getattr(instance, 'user', None) is None:
-            username = make_username(
-                instance.first_name, instance.last_name)
-            user, created = User.objects.get_or_create(username=username)
-            instance.user = user
+        if not kwds.get('raw', False):
+            if getattr(instance, 'user', None) is None:
+                username = make_username(
+                    instance.first_name, instance.last_name)
+                user, created = User.objects.get_or_create(username=username)
+                instance.user = user
 
     @classmethod
     def post_delete(cls, sender, instance, **kwds):
