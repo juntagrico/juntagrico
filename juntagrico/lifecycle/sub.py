@@ -18,14 +18,15 @@ def sub_post_save(sender, instance, created, **kwargs):
 
 
 def sub_pre_save(sender, instance, **kwargs):
-    with transaction.atomic():
-        check_sub_reactivation(instance)
-        instance.check_date_order()
-        handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
-        if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
-            sub_canceled.send(sender=sender, instance=instance)
-        check_children_dates(instance)
-        check_sub_primary(instance)
+    if not kwargs.get('raw', False):
+        with transaction.atomic():
+            check_sub_reactivation(instance)
+            instance.check_date_order()
+            handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
+            if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
+                sub_canceled.send(sender=sender, instance=instance)
+            check_children_dates(instance)
+            check_sub_primary(instance)
 
 
 def handle_sub_activated(sender, instance, **kwargs):
