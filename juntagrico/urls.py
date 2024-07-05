@@ -122,6 +122,7 @@ urlpatterns = [
     path('my/changedate/stop', juntagrico_admin.unset_change_date, name='changedate-unset'),
     # /manage/subscription
     path('my/subscriptions', juntagrico_admin.subscriptions, name='filter-subs'),
+    path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),
     path('my/future', juntagrico_admin.future, name='future'),
@@ -138,6 +139,9 @@ urlpatterns = [
          name='part-activate'),
     path('manage/subscription/part/<int:part_id>/deactivate/', juntagrico_subscription.deactivate_part,
          name='part-deactivate'),
+    path('manage/subscription/parts/activate', manage.parts_activate, name='parts-activate'),
+    path('manage/subscription/parts/deactivate', manage.parts_deactivate, name='parts-deactivate'),
+    path('manage/subscription/parts/apply', manage.parts_apply, name='parts-apply'),
     # /manage/subscription/extra
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),
     path('my/extra/canceledlist', juntagrico_admin.extra_canceledlist, name='sub-mgmt-extra-canceledlist'),

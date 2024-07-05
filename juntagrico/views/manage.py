@@ -1,12 +1,13 @@
 import datetime
 
 from django.contrib.auth.decorators import permission_required
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
 
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import DateRangeForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.views_admin import date_from_get
@@ -69,6 +70,56 @@ class ShareUnpaidView(ListView):
     def get_queryset(self):
         return Share.objects.filter(paid_date__isnull=True).exclude(
             termination_date__lt=datetime.date.today()).order_by('member')
+
+
+@method_decorator(permission_required('juntagrico.change_subscription'), name="dispatch")
+class SubscriptionPendingView(ListView):
+    template_name = 'juntagrico/manage/subscription/pending.html'
+
+    def get_queryset(self):
+        return Subscription.objects.filter(
+                Q(parts__activation_date=None)
+                | Q(parts__cancellation_date__isnull=False, parts__deactivation_date=None)
+            ).prefetch_related('parts').distinct()
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def parts_activate(request):
+    parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
+    if not request.POST.get('include_extra'):
+        parts = parts.is_normal()
+    change_date = request.session.get('changedate', None)
+    for part in parts:
+        if part.activation_date is None and part.deactivation_date is None:
+            part.activate(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def parts_deactivate(request):
+    parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
+    if not request.POST.get('include_extra'):
+        parts = parts.is_normal()
+    change_date = request.session.get('changedate', None)
+    for part in parts:
+        if part.cancellation_date is not None:
+            part.deactivate(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def parts_apply(request):
+    parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
+    if not request.POST.get('include_extra'):
+        parts = parts.is_normal()
+    change_date = request.session.get('changedate', None)
+    for part in parts:
+        # TODO: optimize code with code from parts_(de)activate
+        if part.activation_date is None and part.deactivation_date is None:
+            part.activate(change_date)
+        if part.cancellation_date is not None:
+            part.deactivate(change_date)
+    return return_to_previous_location(request)
 
 
 @method_decorator(permission_required('juntagrico.change_subscription'), name="dispatch")

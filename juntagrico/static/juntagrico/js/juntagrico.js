@@ -101,8 +101,8 @@ function fetch_unique_from_table(node, selector) {
 }
 
 function get_selected_or_all(dt) {
-    let selected = dt.rows({selected: true, search: 'applied'})
-    return selected.any() ? selected.nodes() : dt.rows({search: 'applied'}).nodes()
+    let selected = dt.rows(':visible', {selected: true, search: 'applied'})
+    return selected.any() ? selected.nodes() : dt.rows(':visible', {search: 'applied'}).nodes()
 }
 
 function post(action, csrf_token, data) {
@@ -152,13 +152,16 @@ $.fn.EmailButton = function (tables, selector = '.email') {
 
 // Form Elements
 
-$.fn.ToggleButton = function (selector) {
+$.fn.ToggleButton = function (selector, callback=null) {
     let button = $(this)
     // initialize correct value after reload
     $(selector).toggle(button.is(':checked'));
     // change on click
     button.change(function () {
         $(selector).toggle(this.checked);
+        if (callback) {
+            callback(this.checked)
+        }
     });
 }
 

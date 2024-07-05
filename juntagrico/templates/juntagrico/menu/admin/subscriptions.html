@@ -19,6 +19,13 @@
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-sub-pending' %}">
+                            {% trans "Pendente Änderungen" %}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.juntagrico.change_subscription %}
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
                             {% trans "Warteliste" %}
                         </a>

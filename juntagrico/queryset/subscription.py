@@ -175,6 +175,12 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
         return self.filter(type__size__product__is_extra=False)
 
+    def ordered(self):
+        return self.filter(activation_date=None)
+
+    def cancelled(self):
+        return self.filter(cancellation_date__isnull=False, deactivation_date=None)
+
     def waiting_or_active(self, date=None):
         date = date or datetime.date.today()
         return self.exclude(deactivation_date__lte=date)
