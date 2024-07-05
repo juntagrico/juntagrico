@@ -1,0 +1,8 @@
+{% if perms.juntagrico.view_member or perms.juntagrico.change_member %}
+    <a href="{% url 'admin:juntagrico_member_change' member.id %}">
+        {{ member }}
+    </a>
+{% else %}
+    {{ member }}
+{% endif %}
+{% include "./email_linked.html" %}

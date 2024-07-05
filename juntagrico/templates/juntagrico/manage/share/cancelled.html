@@ -49,12 +49,7 @@
                         </div>
                     </td>
                     <td>
-                        <div>{{ share.member }}</div>
-                        <div>
-                            <a href="{% url "email-to-member" share.member.id %}" class="email">
-                                {{ share.member.email }}
-                            </a>
-                        </div>
+                        {% include 'juntagrico/manage/member/snippets/display_linked.html' with member=share.member %}
                     </td>
                     <td>
                         {{ share.cancelled_date|date:"Y-m-d" }}
@@ -103,7 +98,7 @@
             '.share_id', 'share_ids'
         ),
         {% if perms.juntagrico.change_share %}
-            share_id_button(
+            id_action_button(
                 '{% trans "Ausbuchen" %}', '{% url 'manage-share-payout' %}', '{% csrf_token %}', 
                 '.backpayable', 'share_ids',
                 [

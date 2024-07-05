@@ -67,8 +67,11 @@ class ShareUnpaidView(ListView):
     template_name = 'juntagrico/manage/share/unpaid.html'
 
     def get_queryset(self):
-        return Share.objects.filter(paid_date__isnull=True).exclude(
-            termination_date__lt=datetime.date.today()).order_by('member')
+        return (
+            Share.objects.filter(paid_date__isnull=True)
+            .exclude(termination_date__lt=datetime.date.today())
+            .order_by('member')
+        )
 
 
 @method_decorator(permission_required('juntagrico.change_subscription'), name="dispatch")

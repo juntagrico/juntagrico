@@ -41,15 +41,7 @@
                             {{ share.creation_date|date:"Y-m-d" }}
                         </td>
                         <td>
-                            {# TODO: only link if has permission to view or change member #}
-                            <a href="{% url 'admin:juntagrico_member_change' member.id %}">
-                                {{ member }}
-                            </a>
-                            <div>
-                                <a href="{% url "email-to-member" member.id %}" class="email">
-                                    {{ member.email }}
-                                </a>
-                            </div>
+                            {% include 'juntagrico/manage/member/snippets/display_linked.html' %}
                         </td>
                         <td>
                             {% required_for_subscription share forloop.counter %}
