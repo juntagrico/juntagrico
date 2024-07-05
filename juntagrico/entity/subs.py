@@ -142,6 +142,8 @@ class Subscription(Billable, SimpleStateModel):
 
     def co_members(self, of_member=None):
         of_member = of_member or self.primary_member
+        if of_member is None:
+            return self.current_members
         return self.current_members.exclude(pk=of_member.pk)
 
     @property
