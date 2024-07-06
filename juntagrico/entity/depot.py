@@ -104,7 +104,7 @@ class Depot(JuntagricoBaseModel):
         if self.pickup_time and self.pickup_time > time.min:
             parts.append(date(self.pickup_time, 'H:i'))
         if self.pickup_duration:
-            end_time = self.pickup_end_time
+            end_time = self.pickup_end_time()
             display_format = []
             if end_time.time() > time.min:
                 display_format.append('H:i')
