@@ -1,5 +1,6 @@
 import datetime
 
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
@@ -78,6 +79,7 @@ class SubscriptionTests(JuntagricoTestCase):
 
         # add a shares for type2
         self.create_paid_share(self.member)
+        mail.outbox.clear()
         # change active type
         part = self.sub.parts.all()[0]
         self.assertGet(reverse('part-change', args=[part.pk]))
@@ -90,6 +92,8 @@ class SubscriptionTests(JuntagricoTestCase):
         # check: previous part was cancelled
         part.refresh_from_db()
         self.assertTrue(part.canceled)
+        # check notification was sent to admins
+        self.assertEqual(len(mail.outbox), 2)
 
         # change future type
         part = self.sub.future_parts.all()[0]
@@ -116,7 +120,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 1)
+        self.assertEqual(self.sub.current_members.count(), 1)
 
     def testJoin(self):
         self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
@@ -138,7 +142,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 3)
+        self.assertEqual(self.sub.current_members.count(), 3)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
@@ -173,3 +177,6 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testPrimaryMember(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), member=self.member3, code=302)
+
+    def testMembers(self):
+        self.assertListEqual(list(self.sub.current_members), [self.member, self.member3])

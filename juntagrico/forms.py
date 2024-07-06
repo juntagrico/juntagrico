@@ -628,3 +628,26 @@ class ShiftTimeForm(Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', _('Zeiten verschieben')))
+
+
+class DateWidget(DateInput):
+    """ Widget using browsers date picker
+    """
+    input_type = 'date'
+
+    def format_value(self, value):
+        if isinstance(value, str):
+            return value
+        return value.strftime('%Y-%m-%d')
+
+
+class DateRangeForm(Form):
+    start_date = DateField(label=_('Von'), widget=DateWidget())
+    end_date = DateField(label=_('Bis'), widget=DateWidget())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.form_class = 'form-inline'
+        self.helper.add_input(Submit('submit', _('Anwenden')))

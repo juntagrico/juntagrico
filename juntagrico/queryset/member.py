@@ -1,10 +1,24 @@
-from django.db.models import QuerySet, Sum, Case, When
+import datetime
+
+from django.db.models import QuerySet, Sum, Case, When, Q
 from django.utils.decorators import method_decorator
 
 from juntagrico.util.temporal import default_to_business_year
 
 
 class MemberQuerySet(QuerySet):
+    def active(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.exclude(deactivation_date__lte=on_date)
+
+    def joining_subscription(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        # note: using exclude here would exclude members that left another subscription
+        return self.filter(Q(subscriptionmembership__leave_date__gt=on_date) | Q(subscriptionmembership__leave_date=None))
+
+    def joined_subscription(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.filter(subscriptionmembership__join_date__lte=on_date).joining_subscription(on_date)
 
     @method_decorator(default_to_business_year)
     def annotate_assignment_count(self, start=None, end=None, prefix='', **extra_filters):

@@ -21,11 +21,14 @@ def assignment_data(request):
         return None
 
     # calculate assignments
+    today = datetime.date.today()
     sub = Subscription.objects.annotate_assignment_counts(
         of_member=member,
-        end=datetime.date.today(),
+        end=today,
         prefix='member_'
-    ).annotate_assignments_progress().get(pk=member.subscription_current)
+    ).annotate_assignments_progress(
+        end=today
+    ).get(pk=member.subscription_current)
     sub.remaining_assignments = max(
         sub.required_assignments - sub.assignment_count,
         sub.required_core_assignments - sub.core_assignment_count,

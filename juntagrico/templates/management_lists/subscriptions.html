@@ -62,13 +62,17 @@
             {% for subscription in subscriptions %}
                 <tr>
                     <td>
-                        {% impersonate_start request subscription.primary_member %}
-                        <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
-                            {{ subscription.primary_member.get_name }}
-                        </a>
+                        {% if subscription.primary_member is not None %}
+                            {% impersonate_start request subscription.primary_member %}
+                            <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
+                                {{ subscription.primary_member.get_name }}
+                            </a>
+                        {% else %}
+                            {% trans "Fehler: Kein(e) HauptbezügerIn gesetzt" %}
+                        {% endif %}
                     </td>
                     <td>
-                        {{ subscription.other_recipients_names }}
+                        {{ subscription.co_members|join:', ' }}
                     </td>
                     <td>
                         {{ subscription.depot.name }}
@@ -80,7 +84,7 @@
                         {{ subscription.activation_date|date:"Y-m-d" }}
                     </td>
                     <td class="email">
-                        {{ subscription.recipients_qs|values_list:'member__email'|join:', ' }}
+                        {{ subscription.current_members|values_list:'email'|join:', ' }}
                     </td>
                 </tr>
             {% endfor %}

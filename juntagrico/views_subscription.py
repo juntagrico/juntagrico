@@ -4,6 +4,7 @@ from datetime import date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Count, Sum
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -144,9 +145,9 @@ def primary_change(request, subscription_id):
         subscription.save()
         return redirect('subscription-single', subscription_id=subscription.id)
     if Config.enable_shares():
-        co_members = [m for m in subscription.other_recipients() if m.is_cooperation_member]
+        co_members = [m for m in subscription.co_members() if m.is_cooperation_member]
     else:
-        co_members = subscription.other_recipients()
+        co_members = subscription.co_members()
     renderdict = {
         'subscription': subscription,
         'co_members': co_members,
@@ -198,8 +199,12 @@ def part_change(request, part):
                 part.save()
             else:
                 # cancel existing part and create new waiting one
-                SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
-                part.cancel()
+                with transaction.atomic():
+                    SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
+                    part.cancel()
+                # notify admin
+                adminnotification.subpart_canceled(part)
+                adminnotification.subparts_created([part], part.subscription)
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
         form = SubscriptionPartChangeForm(part)
@@ -296,7 +301,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = [m.email for m in self.subscription.recipients]
+        form_kwargs['existing_emails'] = self.subscription.current_members.values_list('email', flat=True)
         return form_kwargs
 
     def get_initial(self):
@@ -346,7 +351,7 @@ def activate_subscription(request, subscription_id):
 
 
 def add_subscription_member_to_activity_area(subscription):
-    [area.members.add(*subscription.recipients_all) for area in ActivityAreaDao.all_auto_add_members_areas()]
+    [area.members.add(*subscription.current_members) for area in ActivityAreaDao.all_auto_add_members_areas()]
 
 
 @permission_required('juntagrico.is_operations_group')
