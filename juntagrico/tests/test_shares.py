@@ -45,7 +45,8 @@ class ShareTests(JuntagricoTestCase):
         future_terminated_share = Share.objects.create(
             member=self.member3, cancelled_date=yesterday, termination_date=tomorrow
         )
-        terminated_share = Share.objects.create(
+        # terminated share (should not show)
+        Share.objects.create(
             member=self.member4, cancelled_date=yesterday, termination_date=yesterday
         )
         unneeded_unpaid_share = Share.objects.create(member=self.member4)
