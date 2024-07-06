@@ -9,7 +9,7 @@ from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, absolute_url
 from juntagrico.entity.location import Location
 from juntagrico.util.models import q_isactive
-from juntagrico.util.temporal import weekday_choices, weekdays
+from juntagrico.util.temporal import weekday_choices
 
 
 @absolute_url(name='tour')
