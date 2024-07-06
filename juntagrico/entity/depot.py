@@ -42,9 +42,9 @@ class Depot(JuntagricoBaseModel):
     '''
     name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)
     tour = models.ForeignKey(Tour, on_delete=models.PROTECT, related_name='depots',
                              verbose_name=_('Ausfahrt'), blank=True, null=True)
+    weekday = models.PositiveIntegerField(_('Abholtag'), choices=weekday_choices)
     pickup_time = models.TimeField(_('Abholzeit'), null=True, blank=True)
     pickup_duration = models.FloatField(_('Abholzeitfenster in Stunden'), null=True, blank=True,
                                         validators=[MinValueValidator(0)])
@@ -78,12 +78,6 @@ class Depot(JuntagricoBaseModel):
         map_info['id'] = self.id
         return map_info
 
-    @property
-    def weekday_name(self):
-        if 8 > self.weekday > 0:
-            return weekdays[self.weekday]
-        return _('Unbekannt')
-
     def total_fee(self, subscription_count):
         """
         :param subscription_count: a dict of subscription_type => amount
@@ -96,6 +90,7 @@ class Depot(JuntagricoBaseModel):
         return fee
 
     def pickup_end_time(self):
+        # returns datetime with weekday and time of pickup. Rest of date is arbitrary
         start_date = datetime.strptime('1970 1 ' + str(self.weekday), '%Y %W %w')
         start_datetime = datetime.combine(start_date, self.pickup_time or time.min)
         return start_datetime + timedelta(hours=self.pickup_duration)

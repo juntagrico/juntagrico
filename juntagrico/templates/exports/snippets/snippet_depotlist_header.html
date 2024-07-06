@@ -6,7 +6,7 @@
         <th colspan="3" class="horz-left">{% comment "#TODO: get number of columns from data. workaround: there will be at least 3 columns" %}{% endcomment %}
             <h2 class="depot">{{ depot.get_weekday_display }} - {{ depot.name }}</h2>
             <h3 class="depotaddr">{{ depot.location.address }} ({% trans "Kontakt" %}: {{ depot.contact.first_name }} {{ depot.contact.last_name }})</h3>
-            <br />
+            <span class="pickup-details">{% trans "Abholung" %}: {{ depot.pickup_display }}</span>
         </th>
     </tr>
     <tr>
