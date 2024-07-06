@@ -16,6 +16,12 @@ class DepotDao:
         return Depot.objects.all().filter(visible=True)
 
     @staticmethod
+    def all_visible_depots_with_map_info():
+        depots = DepotDao.all_visible_depots()
+        depots.map_info = [depot.map_info for depot in depots]
+        return depots
+
+    @staticmethod
     def all_depots_for_list():
         return Depot.objects.all().filter(depot_list=True)
 
@@ -26,7 +32,3 @@ class DepotDao:
     @staticmethod
     def depot_by_id(identifier):
         return Depot.objects.all().filter(id=identifier)[0]
-
-    @staticmethod
-    def distinct_weekdays_for_depot_list():
-        return Depot.objects.all().filter(depot_list=True).order_by('weekday').values('weekday').distinct()

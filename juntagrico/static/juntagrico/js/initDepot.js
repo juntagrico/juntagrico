@@ -1,8 +1,6 @@
 /*global define */
 define([], function () {
 
-    var markers = map_with_markers(depots)
-    if(markers[0])
-        markers[0].openPopup();
+    map_with_markers([JSON.parse(document.getElementById('depot_data').textContent)], 0)
 
 });

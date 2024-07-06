@@ -1,14 +1,10 @@
-from datetime import datetime, time
+import datetime
 
 from django.contrib.auth.models import Permission
-from django.db.models import Sum, Case, When, Q
-from django.utils import timezone
-from django.utils.timezone import get_default_timezone as gdtz
+from django.db.models import Q
 
 from juntagrico.entity.member import Member
-from juntagrico.util.models import PropertyQuerySet, q_deactivated
-from juntagrico.util.models import q_cancelled
-from juntagrico.util.temporal import start_of_business_year, end_of_business_year
+from juntagrico.util.models import q_deactivated, q_cancelled
 
 
 class MemberDao:
@@ -16,27 +12,27 @@ class MemberDao:
     @staticmethod
     def q_joined_subscription():
         return Q(subscriptionmembership__join_date__isnull=False,
-                 subscriptionmembership__join_date__lte=timezone.now().date())
+                 subscriptionmembership__join_date__lte=datetime.date.today())
 
     @staticmethod
     def q_left_subscription():
         return Q(subscriptionmembership__leave_date__isnull=False,
-                 subscriptionmembership__leave_date__lte=timezone.now().date())
+                 subscriptionmembership__leave_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_activated():
         return Q(subscriptionmembership__subscription__activation_date__isnull=False,
-                 subscriptionmembership__subscription__activation_date__lte=timezone.now().date())
+                 subscriptionmembership__subscription__activation_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_cancelled():
         return Q(subscriptionmembership__subscription__cancellation_date__isnull=False,
-                 subscriptionmembership__subscription__cancellation_date__lte=timezone.now().date())
+                 subscriptionmembership__subscription__cancellation_date__lte=datetime.date.today())
 
     @staticmethod
     def q_subscription_deactivated():
         return Q(subscriptionmembership__subscription__deactivation_date__isnull=False,
-                 subscriptionmembership__subscription__deactivation_date__lte=timezone.now().date())
+                 subscriptionmembership__subscription__deactivation_date__lte=datetime.date.today())
 
     @staticmethod
     def has_subscription():
@@ -63,10 +59,7 @@ class MemberDao:
 
     @staticmethod
     def all_members():
-        result = PropertyQuerySet.from_qs(Member.objects.all())
-        result.set_property('name', 'all')
-        result.set_property('subscription_id', '')
-        return result
+        return Member.objects.all()
 
     @staticmethod
     def canceled_members():
@@ -78,7 +71,8 @@ class MemberDao:
 
     @staticmethod
     def members_with_shares():
-        return Member.objects.filter(share__isnull=False)
+        return Member.objects.filter(Q(share__isnull=False) & (
+            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=datetime.date.today())))
 
     @staticmethod
     def members_by_job(job):
@@ -87,32 +81,6 @@ class MemberDao:
     @staticmethod
     def members_in_subscription(subscription):
         return Member.objects.filter(subscriptionmembership__subscription=subscription)
-
-    @staticmethod
-    def members_for_subscription(subscription):
-        result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription() & ~MemberDao.has_cancelled_subscription() & ~MemberDao.has_future_subscription()) | Q(
-                subscriptionmembership__subscription=subscription)).distinct())
-        result.set_property('name', 's')
-        result.set_property('subscription_id', str(subscription.pk))
-        return result
-
-    @staticmethod
-    def members_for_future_subscription(subscription):
-        result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription() | Q(
-                subscriptionmembership__subscription=subscription)).distinct())
-        result.set_property('name', 'fs')
-        result.set_property('subscription_id', str(subscription.pk))
-        return result
-
-    @staticmethod
-    def members_for_create_subscription():
-        result = PropertyQuerySet.from_qs(Member.objects.filter(
-            (~MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()) & ~MemberDao.has_future_subscription()).distinct())
-        result.set_property('name', 'cs')
-        result.set_property('subscription_id', '')
-        return result
 
     @staticmethod
     def members_for_email():
@@ -125,7 +93,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_shares():
-        return Member.objects.filter(share__isnull=False).exclude(q_deactivated())
+        return MemberDao.members_with_shares().exclude(q_deactivated())
 
     @staticmethod
     def member_with_active_subscription_for_depot(depot):
@@ -134,34 +102,12 @@ class MemberDao:
             .exclude(q_deactivated())
 
     @staticmethod
-    def members_with_assignments_count():
-        return MemberDao.annotate_members_with_assignemnt_count(Member.objects.all())
-
-    @staticmethod
     def active_members():
         return Member.objects.filter(~q_deactivated())
 
     @staticmethod
     def members_in_area(area):
         return area.members.all().filter(~q_deactivated())
-
-    @staticmethod
-    def members_with_assignments_count_in_subscription(subscription):
-        return MemberDao.annotate_members_with_assignemnt_count(MemberDao.members_in_subscription(subscription))
-
-    @staticmethod
-    def annotate_members_with_assignemnt_count(members):
-        start = datetime.combine(start_of_business_year(), time.min, tzinfo=gdtz())
-        end = datetime.combine(end_of_business_year(), time.min, tzinfo=gdtz())
-        return members.annotate(assignment_count=Sum(
-            Case(When(assignment__job__time__gte=start,
-                      assignment__job__time__lt=end,
-                      then='assignment__amount')))).annotate(
-            core_assignment_count=Sum(Case(
-                When(assignment__job__time__gte=start,
-                     assignment__job__time__lt=end,
-                     assignment__core_cache=True,
-                     then='assignment__amount'))))
 
     @staticmethod
     def members_by_permission(permission_codename):

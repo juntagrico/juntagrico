@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
 {% block page_title %}
@@ -22,15 +23,35 @@
             <div class="col-md-10" id="sender-email">
                 <select name="sender" class="form-control">
                     {% for area in area_admin %}
-                        {% if area.email is not None %}
-                            <option value="{{ area.email }}">
-                                {{ area.email }}
+                        {% for email in area.get_emails %}
+                            <option value="{{ email }}">
+                                {{ email }}
                             </option>
-                        {% endif %}
+                        {% endfor %}
                     {% endfor %}
-                    {% if can_use_general_email %}
-                        <option value="{% config "info_email" %}">
-                            {% config "info_email" %}
+                    {% if perms.juntagrico.can_use_general_email %}
+                        <option value="{% contacts "general" %}">
+                            {% contacts "general" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_for_members_email %}
+                        <option value="{% contacts "for_members" %}">
+                            {% contacts "for_members" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_for_subscriptions_email %}
+                        <option value="{% contacts "for_subscriptions" %}">
+                            {% contacts "for_subscriptions" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_for_shares_email %}
+                        <option value="{% contacts "for_shares" %}">
+                            {% contacts "for_shares" %}
+                        </option>
+                    {% endif %}
+                    {% if perms.juntagrico.can_use_technical_email %}
+                        <option value="{% contacts "technical" %}">
+                            {% contacts "technical" %}
                         </option>
                     {% endif %}
                     <option value="{{ email }}">
@@ -141,7 +162,7 @@
                 <input type="hidden" id="textMessage" name="textMessage"/>
             </div>
         </div>
-        {% if can_load_templates and templates %}
+        {% if perms.juntagrico.can_load_templates and templates %}
             <div class="form-group row">
                 <label for="templates" class="col-md-2">
                     {% trans "Templates" %}
@@ -193,10 +214,13 @@
     </form>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/attachment_appender.js">
+    <script type="text/javascript" src="{% static 'juntagrico/js/attachment_appender.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/tinymce/tinymce.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/tinymce/tinymce.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initMailer.js">
+    {% config 'mailer_richtext_options' as c_mailer_richtext_options %}
+    {{ c_mailer_richtext_options|json_script:"mailer_richtext_options" }}
+    {{ richtext_language|json_script:"richtext_language" }}
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initMailer.js' %}">
     </script>
 {% endblock %}

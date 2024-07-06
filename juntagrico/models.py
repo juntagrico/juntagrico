@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import gettext as _
@@ -28,14 +27,22 @@ class SpecialRoles(models.Model):
     '''
 
     class Meta:
+        managed = False
+        default_permissions = ()
         permissions = (('is_operations_group', _('Benutzer ist in der BG')),
                        ('is_book_keeper', _('Benutzer ist Buchhalter')),
-                       ('can_send_mails', _('Benutzer kann im System Emails versenden')),
-                       ('can_use_general_email', _('Benutzer kann General Email Adresse verwenden')),
+                       ('can_send_mails', _('Benutzer kann im System E-Mails versenden')),
+                       ('can_use_general_email', _('Benutzer kann allgemeine E-Mail-Adresse verwenden')),
+                       ('can_use_for_members_email', _('Benutzer kann E-Mail-Adresse "for_members" verwenden')),
+                       ('can_use_for_subscriptions_email', _('Benutzer kann E-Mail-Adresse "for_subscription" verwenden')),
+                       ('can_use_for_shares_email', _('Benutzer kann E-Mail-Adresse "for_shares" verwenden')),
+                       ('can_use_technical_email', _('Benutzer kann technische E-Mail-Adresse verwenden')),
                        ('depot_list_notification',
                         _('Benutzer wird bei {0}-Listen-Erstellung informiert').format(Config.vocabulary('depot'))),
                        ('can_view_exports', _('Benutzer kann Exporte öffnen')),
-                       ('can_view_lists', _('Benutzer kann Listen öffnen')),)
+                       ('can_view_lists', _('Benutzer kann Listen öffnen')),
+                       ('can_generate_lists', _('Benutzer kann Listen erzeugen')),
+                       )
 
 
 ''' non lifecycle related signals '''
@@ -75,14 +82,3 @@ juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
 ''' lifecycle all post init'''
 register_entities_for_post_init_and_save()
-
-'''monkey patch User email method'''
-
-
-def member_email(self):
-    return self.member.email
-
-
-User.member__email = property(member_email)
-
-User.EMAIL_FIELD = 'member__email'

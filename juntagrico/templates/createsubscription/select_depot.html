@@ -1,8 +1,10 @@
 {% extends "no_menu_base.html" %}
+{% load juntagrico.snippets %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block styles %}
-    <link rel="stylesheet" href="/static/juntagrico/external/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
 {% block all_page_title %}
     {% vocabulary "depot" as v_depot %}
@@ -15,34 +17,23 @@
 {% block allcontent %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "depot" as v_depot %}
-    <div class="offset-md-2 col-md-8">
+    <div id="depot_container" class="offset-md-2 col-md-8">
         <form action="" method="post">
             {% csrf_token %}
-            <div id="depot_container" class="form-group row">
+            <div class="depot-select form-group row">
                 <label class="col-md-3" for="depot">
                     {% vocabulary "depot" %}
                 </label>
                 <div class="col-md-9">
-                    <select name="depot" id="depot" class="form-control">
-                        {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}"{% if depot == selected %}selected{% endif %}>
-                                {{ depot.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                    <label for="depot">
+                        {% blocktrans %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
+                    </label>
+                    {% include "juntagrico/snippets/depot/select.html" %}
                 </div>
             </div>
-            <div id="depot_container" class="form-group row">
-                <label for="depot" class="offset-md-3 col-md-9">
-                    {% blocktrans %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
-                </label>
-            </div>
-            <div id="depot_container" class="form-group row">
-                <div class="offset-md-3 col-md-9">
-                    {% if requires_map %}
-                        <div style="height: 20rem" id="depot-map">
-                        </div>
-                    {% endif %}
+            {% include "juntagrico/snippets/depot/descriptions.html" %}
+            <div class="depot-map form-group row">
+                <div class="offset-md-3 col-md-9" id="map-container">
                 </div>
             </div>
             <div class="form-actions row">
@@ -59,23 +50,11 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript">
-        var depots = [];
-        {% for depot in depots %}
-            {% if depot.has_geo %}
-                depots.push(
-                {name: '{{ depot.name }}',
-                addr_street: '{{ depot.addr_street }}',
-                addr_zipcode: '{{ depot.addr_zipcode }}',
-                addr_location: '{{ depot.addr_location }}',
-                latitude: '{{ depot.latitude }}',
-                longitude: '{{ depot.longitude }}',
-                code: '{{ depot.sort_order }}'
-                });
-            {% endif %}
-        {% endfor %}
-    </script>
-    <script type="text/javascript" src="/static/juntagrico/external/leaflet/leaflet.js"></script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js"data-main="/static/juntagrico/js/initCreateSubscription.js">
-    </script>
+    {% if selected %}
+        {{ selected.name|json_script:'selected_depot' }}
+    {% endif %}
+    {{ depots.map_info|json_script:'depots' }}
+    {% include 'snippets/scripts/leaflet.html' %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initCreateSubscription.js' %}">
+     </script>
 {% endblock %}

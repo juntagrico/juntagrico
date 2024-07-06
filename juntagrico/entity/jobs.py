@@ -1,49 +1,47 @@
 from django.contrib import admin
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
-from django.utils.datetime_safe import time
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly
+from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_url
+from juntagrico.entity.contact import get_emails, MemberContact, Contact
+from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.util.temporal import weekday_short
 
 
+@absolute_url(name='area')
 class ActivityArea(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True)
-    description = models.TextField(
-        _('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), default='')
     core = models.BooleanField(_('Kernbereich'), default=False)
     hidden = models.BooleanField(
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
-    email = models.EmailField(_('E-Mail'), null=True, blank=True,
-                              help_text=_('Wenn leer wird E-Mail-Adresse von KoordinatorIn angezeigt'))
-    show_coordinator_phonenumber = models.BooleanField(
-        _('Telefonnummer von KoordinatorIn anzeigen'), default=False)
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+    auto_add_new_members = models.BooleanField(_('Standard Tätigkeitesbereich für neue Benutzer'), default=False,
+                                               help_text=_(
+                                                   'Neue Benutzer werden automatisch zu diesem Tätigkeitsbereich hinzugefügt.'))
+
+    contact_set = GenericRelation(Contact)
 
     def __str__(self):
         return '%s' % self.name
 
-    def contact(self):
-        if self.show_coordinator_phonenumber is True:
-            return self.coordinator.phone + '   ' + self.coordinator.mobile_phone
-        else:
-            return self.get_email()
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
 
-    @admin.display(description=email.verbose_name)
-    def get_email(self):
-        if self.email is not None:
-            return self.email
-        else:
-            return self.coordinator.email
+    def get_emails(self):
+        return get_emails(self.contact_set, lambda: [self.coordinator.email])
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -110,11 +108,11 @@ class AbstractJobType(JuntagricoBaseModel):
     name = models.CharField(_('Name'), max_length=100, unique=True,
                             help_text='Eindeutiger Name des Einsatzes')
     displayed_name = models.CharField(_('Angezeigter Name'), max_length=100, blank=True, null=True)
-    description = models.TextField(_('Beschreibung'), max_length=1000, default='')
+    description = models.TextField(_('Beschreibung'), default='')
     activityarea = models.ForeignKey(ActivityArea, on_delete=models.PROTECT, verbose_name=_('Tätigkeitsbereich'))
     default_duration = models.FloatField(_('Dauer in Stunden'),
                                          help_text='Standard-Dauer für diese Jobart', validators=[MinValueValidator(0)])
-    location = models.CharField('Ort', max_length=100, default='')
+    location = models.ForeignKey(Location, on_delete=models.PROTECT, verbose_name=_('Ort'))
 
     def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name)
@@ -133,24 +131,38 @@ class JobType(AbstractJobType):
     '''
     Recuring type of job. do only add fields here you do not need in a onetime job
     '''
-
     visible = models.BooleanField(_('Sichtbar'), default=True)
+
+    contact_set = GenericRelation(Contact)
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.activityarea.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.activityarea.get_emails)
 
     class Meta:
         verbose_name = _('Jobart')
         verbose_name_plural = _('Jobarten')
 
 
+@absolute_url(name='job')
 class Job(JuntagricoBasePoly):
     slots = models.PositiveIntegerField(_('Plätze'), default=0)
     infinite_slots = models.BooleanField(_('Unendlich Plätze'), default=False)
     time = models.DateTimeField(_('Zeitpunkt'))
-    multiplier = models.PositiveIntegerField(
-        _('{0} vielfaches').format(Config.vocabulary('assignment')), default=1)
+    multiplier = models.FloatField(
+        _('{0} vielfaches').format(Config.vocabulary('assignment')), default=1.0,
+        validators=[MinValueValidator(0)])
     pinned = models.BooleanField(default=False)
     reminder_sent = models.BooleanField(
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
+
+    contact_set = GenericRelation(Contact)
 
     @property
     def type(self):
@@ -159,19 +171,12 @@ class Job(JuntagricoBasePoly):
     def __str__(self):
         return _('Job {0}').format(self.id)
 
-    def weekday_name(self):
-        day = self.time.isoweekday()
-        return weekday_short(day, 2)
-
-    def time_stamp(self):
-        return int(time.mktime(self.time.timetuple()) * 1000)
-
     @property
     @admin.display(description=_('Freie Plätze'))
     def free_slots(self):
         if self.infinite_slots:
             return -1
-        if not (self.slots is None):
+        if self.slots is not None:
             return self.slots - self.occupied_slots
         return 0
 
@@ -262,7 +267,7 @@ class Job(JuntagricoBasePoly):
 
 class RecuringJob(Job):
     type = models.ForeignKey(JobType, on_delete=models.PROTECT, verbose_name=_('Jobart'))
-    additional_description = models.TextField(_('Zusätzliche Beschreibung'), max_length=1000, blank=True, default='')
+    additional_description = models.TextField(_('Zusätzliche Beschreibung'), blank=True, default='')
     duration_override = models.FloatField(
         _('Dauer in Stunden (Überschreibend)'), null=True, blank=True, default=None, validators=[MinValueValidator(0)],
         help_text=_('Wenn nicht angegeben, wird die Standard-Dauer von der Jobart übernommen.')
@@ -271,6 +276,15 @@ class RecuringJob(Job):
     @property
     def duration(self):
         return self.duration_override if self.duration_override else super().duration
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.type.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.type.get_emails)
 
     class Meta:
         verbose_name = _('Job')
@@ -288,6 +302,15 @@ class OneTimeJob(Job, AbstractJobType):
 
     def __str__(self):
         return '%s - %s' % (self.activityarea, self.get_name)
+
+    @property
+    def contacts(self):
+        if self.contact_set.count():
+            return self.contact_set.all()
+        return self.activityarea.contacts
+
+    def get_emails(self):
+        return get_emails(self.contact_set, self.activityarea.get_emails)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):
@@ -323,7 +346,7 @@ class Assignment(JuntagricoBaseModel):
         instance.core_cache = instance.is_core()
 
     def can_modify(self, request):
-        return self.job.can_modify(request)
+        return self.job.get_real_instance().can_modify(request)
 
     class Meta:
         verbose_name = Config.vocabulary('assignment')

@@ -1,45 +1,50 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load juntagrico.config %}
-{% block styles %}
-    <link rel="stylesheet" type="text/css" href="/static/juntagrico/external/datatables.min.css"/>
-{% endblock %}
+{% load static %}
 {% block content %}
-    <h3>
-        {% trans "Aktuelle Arbeitseinsätze" %}
-    </h3>
-    <div class="row mb-3">
-        <div class="col-md-12">
-            {% include "snippets/snippet_jobs.html" %}
-        </div>
-    </div>
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <a href="{% url 'jobs' %}">
-                {% trans "Hier alle Arbeitseinsätze anzeigen" %}
-            </a>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-12">
-            <h4>
-                {% trans "Zu den Kalendern der einzelnen Tätigkeitsbereiche" %}
-            </h4>
-        </div>
-    </div>
-    {% for area in areas %}
-        <div class="row mb-1">
+    {% block jobs %}
+        <h3 id="jobs">
+            {% trans "Offene Arbeitseinsätze" %}
+        </h3>
+        <div class="row mb-3">
             <div class="col-md-12">
-                <a href="{% url 'area' area.id %}" class="{% if area.core %}core{% endif %}">
-                    {{ area.name }}
+                {% include "snippets/snippet_jobs.html" %}
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-12">
+                <a href="{% url 'jobs' %}">
+                    {% trans "Hier alle Arbeitseinsätze anzeigen" %}
                 </a>
             </div>
         </div>
-    {% endfor %}
+    {% endblock %}
+    {% block areas %}
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <h4 id="areas">
+                    {% trans "Zu den Kalendern der einzelnen Tätigkeitsbereichen" %}
+                </h4>
+            </div>
+        </div>
+        {% for area in areas %}
+            <div class="row mb-1">
+                <div class="col-md-12">
+                    <a href="{% url 'area' area.id %}" class="{% if area.core %}core{% endif %}">
+                        {{ area.name }}
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% endblock %}
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initHomeJobs.js">
-    </script>
+    <script type="text/javascript">
+        // Assuming default ids
+        $(function(){
+            $("#filter-table").DataTable({"searching": false});
+        })
+        </script>
 {% endblock %}

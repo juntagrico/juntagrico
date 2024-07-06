@@ -1,79 +1,30 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
-{% block styles %}
-    <link href="/static/juntagrico/external/datepicker/datepicker.min.css" rel="stylesheet"/>
-{% endblock %}
 {% block content %}
-    {% config "enable_shares" as enable_shares %}
-    {% if not change_date_disabled %}
-        {% if can_change_date %}
-            <form action="{% url 'changedate-set' %}" method="POST">
-                {% csrf_token %}
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <input type="text" class="form-control docs-date" name="date" data-toggle="datepicker" placeholder="{% trans "Lege das Datum für die Änderung fest." %}" autocomplete="off">
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary docs-datepicker-trigger" disabled="">
-                                        <i class="fa fa-calendar" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-success">
-                            {% trans "ändern" %}
-                        </button>
-                    </div>
-                </div>
-            </form>
-        {% else %}
-            <div class="alert alert-warning">
-                {% blocktrans %}Das Änderungsdatum ist auf {{ change_date }} gesetzt.{% endblocktrans %}
-                <a href="{% url 'changedate-unset' %}">
-                    {% trans "Beende dies hier" %}
-                </a>
-                .
-            </div>
-        {% endif %}
-    {% endif %}
-    {% if not email_form_disabled %}
-    <div class="row mb-3">
-        <div class="col-md-12">
-            <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="recipients" id="recipients"/>
-                
-                <input type="hidden"name="recipients_count"id="recipients_count"/>
-                {% if can_send_mails or perms.juntagrico.can_send_mails %}
-                    <button type="submit" class="btn btn-success" id="send-email">
-                        {% trans "Email senden" %}
-                    </button>
-                {% endif %}
-            </form>
-        </div>
-    </div>
-    {% endif %}
     {% block management_cmd %}
     {% endblock %}
-    <div id="managementlist" class="row">
+    <div id="managementlist" class="row mt-3 mb-6">
         <div class="col-md-12">
             {% block list %}
             {% endblock %}
         </div>
     </div>
-    <br/>
-    <br/>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/datatables.min.js">
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
-    <script type="text/javascript" src="/static/juntagrico/external/datepicker/datepicker.min.js">
-    </script>
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initManList.js">
-    </script>
+    {% block init_script %}
+        <script type="text/javascript">
+            // Assuming default ids
+            $(function(){
+                let table = $("#filter-table").DataTable({"ordering": true});
+                $("#email-sender").EmailButton(table)
+            })
+        </script>
+    {% endblock %}
     {% block extrascripts %}
     {% endblock %}
 {% endblock %}

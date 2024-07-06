@@ -1,1 +1,2 @@
-docutils<0.18 # rq.filter: !=0.18.1
+docutils==0.19 # rq.filter: !=0.18
+sphinx-rtd-theme

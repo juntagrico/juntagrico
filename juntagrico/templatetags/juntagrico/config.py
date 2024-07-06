@@ -1,4 +1,5 @@
 from django import template
+from django.contrib.sites.models import Site
 
 from juntagrico.config import Config
 from juntagrico.util.addons import config as addons_config
@@ -30,6 +31,11 @@ def enriched_organisation(case):
 
 
 @register.simple_tag
+def organisation_website(key):
+    return Config.organisation_website(key)
+
+
+@register.simple_tag
 def cookie_consent(key):
     return Config.cookie_consent(key)
 
@@ -38,3 +44,23 @@ def get_config_classes():
     configs = [Config]
     configs.extend(addons_config.get_config_classes())
     return configs
+
+
+@register.simple_tag
+def contacts(key):
+    return Config.contacts(key)
+
+
+@register.simple_tag
+def scripts(key):
+    return Config.scripts(key)
+
+
+@register.simple_tag
+def styles(key):
+    return Config.styles(key)
+
+
+@register.simple_tag
+def site_name():
+    return Site.objects.get_current().name

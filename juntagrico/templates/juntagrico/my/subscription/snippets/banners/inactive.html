@@ -1,0 +1,11 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% vocabulary "subscription" as v_subscription %}
+<div class="alert alert-danger">
+    {% blocktrans %}{{ v_subscription }} ist bereits deaktiviert.{% endblocktrans %}
+    <br/>
+    {% trans "Hier kannst du dich wieder anmelden:" %}
+    <a href="{% url 'cs-subscription' %}">
+        {% blocktrans %}{{ v_subscription }} erstellen{% endblocktrans %}
+    </a>
+</div>

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
 {% load juntagrico.config %}
 {% block page_title %}
     <h3>
@@ -44,7 +45,7 @@
                             {% endif %}
                         </div>
                         <div class="col-md-8">
-                            {% trans "Koordiniert von" %}:
+                            {% trans "Kontaktperson" %}:
                         </div>
                     </div>
                     <div class="row separator">
@@ -62,17 +63,9 @@
                         <a href="{% url 'area' area.id %}">{{ area.name }}</a>
                     </div>
                     <div class="col-md-8">
-                        {{ area.coordinator.first_name }} {{ area.coordinator.last_name }}
-                        <br/>
-                        {% if area.email is not None %}
-                            <a href="mailto:{{ area.email }}">
-                                {{ area.email }}
-                            </a>
-                        {% else %}
-                            <a href="mailto:{{ area.coordinator.email }}">
-                                {{ area.coordinator.email }}
-                            </a>
-                        {% endif %}
+                        {% for contact in area.contacts %}
+                            {{ contact.to_html }}
+                        {% endfor %}
                     </div>
                 </div>
             {% endfor %}
@@ -80,6 +73,5 @@
     </div>
 {% endblock %}
 {% block scripts %}
-    <script type="text/javascript" src="/static/juntagrico/external/require.min.js" data-main="/static/juntagrico/js/initParticipation.js">
-    </script>
+    {% include 'snippets/scripts/area_slider.html' %}
 {% endblock %}
