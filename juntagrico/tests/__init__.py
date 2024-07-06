@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from juntagrico.entity.delivery import Delivery, DeliveryItem
-from juntagrico.entity.depot import Depot
+from juntagrico.entity.depot import Depot, Tour
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
@@ -135,9 +135,14 @@ class JuntagricoTestCase(TestCase):
         cls.job4 = RecuringJob.objects.create(**job_data2)
         cls.job5 = RecuringJob.objects.create(**job_data)
         cls.past_job = RecuringJob.objects.create(
-            slots=1,
+            slots=2,
             time=timezone.now() - timezone.timedelta(hours=2),
             type=cls.job_type
+        )
+        cls.past_core_job = RecuringJob.objects.create(
+            slots=2,
+            time=timezone.now() - timezone.timedelta(hours=2),
+            type=cls.job_type2
         )
         cls.infinite_job = RecuringJob.objects.create(**{
             'infinite_slots': True,
@@ -160,20 +165,28 @@ class JuntagricoTestCase(TestCase):
         """
         assignment
         """
-        assignment_data = {'job': cls.job2,
-                           'member': cls.member,
-                           'amount': 1}
-        cls.assignment = Assignment.objects.create(**assignment_data)
+        cls.assignment = cls.create_assignment(cls.job2, cls.member)
+        # needed to test assignment widget fully
+        cls.create_assignment(cls.past_job, cls.member)
+        cls.create_assignment(cls.past_core_job, cls.member)
+        cls.create_assignment(cls.past_job, cls.member3)
+        cls.create_assignment(cls.past_core_job, cls.member3)
+
+    @staticmethod
+    def create_assignment(job, member, amount=1, **kwargs):
+        return Assignment.objects.create(job=job, member=member, amount=amount, **kwargs)
 
     @classmethod
     def set_up_depots(cls):
         """
         depots
         """
+        cls.tour = Tour.objects.create(name='Tour1', description='Tour1 description')
         location = cls.create_location('depot_location')
         depot_data = {
             'name': 'depot',
             'contact': cls.member,
+            'tour': cls.tour,
             'weekday': 1,
             'location': location}
         cls.depot = Depot.objects.create(**depot_data)
@@ -181,6 +194,7 @@ class JuntagricoTestCase(TestCase):
             'name': 'depot2',
             'contact': cls.member,
             'weekday': 1,
+            'tour': cls.tour,
             'location': location}
         cls.depot2 = Depot.objects.create(**depot_data)
 
@@ -254,13 +268,18 @@ class JuntagricoTestCase(TestCase):
         """
         subscription
         """
+        today = datetime.date.today()
         cls.sub = cls.create_sub_now(cls.depot)
         cls.sub2 = cls.create_sub(cls.depot)
+        cls.sub3 = cls.create_sub(cls.depot)
         cls.member.join_subscription(cls.sub, True)
+        cls.member3.join_subscription(cls.sub3, True)
+        cls.sub3.activate(today - datetime.timedelta(3))
+        cls.sub3.deactivate(today - datetime.timedelta(1))
         cls.member3.join_subscription(cls.sub)
         cls.member2.join_subscription(cls.sub2, True)
         SubscriptionPart.objects.create(subscription=cls.sub, type=cls.sub_type,
-                                        activation_date=datetime.date.today())
+                                        activation_date=today)
 
     @classmethod
     def set_up_extra_sub_types(cls):
@@ -311,6 +330,7 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def set_up_deliveries(cls):
         delivery_data = {'delivery_date': '2017-03-27',
+                         'tour': cls.tour,
                          'subscription_size': cls.sub_size}
         cls.delivery1 = Delivery.objects.create(**delivery_data)
         delivery_data['delivery_date'] = '2017-03-28'

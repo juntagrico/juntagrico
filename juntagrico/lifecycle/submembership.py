@@ -38,15 +38,11 @@ def check_submembership_parent_dates(instance):
 
 def check_sub_membership_consistency(instance):
     check_submembership_dates(instance)
-    check_submembership_parent_dates(instance)
-    subscription = instance.subscription
-    try:
-        member = instance.member
-    except AttributeError as e:
-        raise ValidationError(
-            _('Kein/e/n gültige/n/s {} angegeben').format(Config.vocabulary('member')),
-            code='invalid') from e
-    check_sub_membership_consistency_ms(member, subscription, instance.join_date, instance.leave_date)
+    if hasattr(instance, 'subscription'):
+        check_submembership_parent_dates(instance)
+        subscription = instance.subscription
+        if hasattr(instance, 'member'):
+            check_sub_membership_consistency_ms(instance.member, subscription, instance.join_date, instance.leave_date)
 
 
 def check_sub_membership_consistency_ms(member, subscription, join_date, leave_date):
