@@ -31,14 +31,6 @@ class ManListTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-mgmt-extra-canceledlist'))
         self.assertGet(reverse('sub-mgmt-extra-canceledlist'), member=self.member2, code=302)
 
-    def testShareCanceledList(self):
-        self.assertGet(reverse('share-mgmt-canceledlist'))
-        self.assertGet(reverse('share-mgmt-canceledlist'), member=self.member2, code=302)
-
-    def testShareUnpaindList(self):
-        self.assertGet(reverse('manage-share-unpaid'))
-        self.assertGet(reverse('manage-share-unpaid'), member=self.member2, code=302)
-
     def testMemberCanceledList(self):
         self.assertGet(reverse('member-mgmt-canceledlist'))
         self.assertGet(reverse('member-mgmt-canceledlist'), member=self.member2, code=302)
