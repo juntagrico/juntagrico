@@ -20,7 +20,7 @@
     "fields": {
         "name": "name2",
         "description": "",
-        "core": false,
+        "core": true,
         "hidden": true,
         "coordinator": 7,
         "auto_add_new_members": false,
