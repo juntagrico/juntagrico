@@ -1,27 +1,41 @@
 from django.contrib import admin
-from django.db.models import Q
+from django.db.models import Q, Max
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
-from juntagrico.admins import RichTextAdmin
+from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobextradao import JobExtraDao
+from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import OneTimeJob
 from juntagrico.entity.location import Location
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
-class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
-    list_display = ['__str__', 'activityarea',
-                    'default_duration', 'location', 'visible']
-    list_filter = ('activityarea', 'visible')
-    actions = ['transform_job_type']
+class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
+    list_display = ['__str__', 'default_duration', 'location', 'contacts_text', 'visible', 'last_used']
+    list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), 'visible')
+    autocomplete_fields = ['activityarea', 'location']
+    search_fields = ['name', 'activityarea__name', 'last_used']
+    actions = ['transform_job_type', 'action_hide', 'action_make_visible']
     inlines = [ContactInline, JobExtraInline]
+
+    @admin.display(
+        ordering='last_used',
+        description=_('Zuletzt verwendet')
+    )
+    def last_used(self, instance):
+        return instance.last_used
+
+    @admin.display(description=_('Kontakt'))
+    def contacts_text(self, instance):
+        return mark_safe("<br>".join([str(c) for c in instance.contacts]))
 
     @admin.action(description=_('Jobart in EinzelJobs konvertieren'))
     def transform_job_type(self, request, queryset):
@@ -47,16 +61,33 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
                 je.delete()
             inst.delete()
 
-    def get_form(self, request, obj=None, **kwds):
-        form = super().get_form(request, obj, **kwds)
-        # only include visible and current locations in choices
-        # filter queryset here, because here the obj is available
-        form.base_fields['location'].queryset = Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
-        return form
+    @admin.action(description=_('Verstecken'))
+    def action_hide(self, request, queryset):
+        # clear order, because update can not be applied when ordered by aggregate
+        queryset.order_by().update(visible=False)
+
+    @admin.action(description=_('Sichtbar machen'))
+    def action_make_visible(self, request, queryset):
+        # clear order, because update can not be applied when ordered by aggregate
+        queryset.order_by().update(visible=True)
+
+    def get_location_queryset(self, request, obj):
+        return Location.objects.exclude(Q(visible=False), ~Q(jobtype=obj))
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
+        qs = qs.annotate(last_used=Max('recuringjob__time'))
         return qs
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+        if 'autocomplete' in request.path and request.GET.get('model_name') == 'recuringjob' and request.GET.get(
+                'field_name') == 'type':
+            queryset = queryset.filter(visible=True)
+            if request.user.has_perm('juntagrico.is_area_admin') and (
+                    not (request.user.is_superuser or request.user.has_perm('juntagrico.is_operations_group'))):
+                queryset = queryset.intersection(JobTypeDao.visible_types_by_coordinator(request.user.member))
+        return queryset, use_distinct
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         kwargs = formfield_for_coordinator(request,

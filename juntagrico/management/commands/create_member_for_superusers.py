@@ -6,6 +6,8 @@ from juntagrico.entity.member import Member
 
 
 class Command(BaseCommand):
+    help = "Use this after `createsuperuser` to create a member for all super users, which is needed for login."
+
     # entry point used by manage.py
     def handle(self, *args, **options):
         for user in User.objects.all():

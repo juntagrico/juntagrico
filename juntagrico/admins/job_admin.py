@@ -1,13 +1,18 @@
-from django.urls import re_path
+from datetime import timedelta, datetime, date
+
+from django import forms
+from django.core.exceptions import ValidationError
+from django.urls import path, reverse
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
-from juntagrico.admins import RichTextAdmin
+from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.admin_decorators import single_element_action
 from juntagrico.admins.filters import FutureDateTimeFilter
-from juntagrico.admins.forms.job_copy_form import JobCopyForm
+from juntagrico.admins.forms.job_copy_form import JobCopyForm, JobCopyToFutureForm
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.dao.jobtypedao import JobTypeDao
@@ -15,75 +20,102 @@ from juntagrico.entity.jobs import RecuringJob, JobType
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 
 
-class JobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin):
+def can_edit_past_jobs(request):
+    return request.user.is_superuser or request.user.has_perm('juntagrico.can_edit_past_jobs')
+
+
+class OnlyFutureJobAdminForm(forms.ModelForm):
+    def clean_time(self):
+        time = self.cleaned_data['time']
+        if time <= timezone.now():
+            raise ValidationError(_('Neue Jobs können nicht in der Vergangenheit liegen.'))
+        return time
+
+
+class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
-    list_filter = ('type__activityarea', ('time', FutureDateTimeFilter))
+    list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
     exclude = ['reminder_sent']
+    autocomplete_fields = ['type']
     inlines = [ContactInline, AssignmentInline]
     readonly_fields = ['free_slots']
 
     def has_change_permission(self, request, obj=None):
-        return (obj is None or obj.can_modify(request)) and super().has_change_permission(request, obj)
+        return (self.is_copy_view(request) or obj is None or obj.can_modify(request)
+                ) and super().has_change_permission(request, obj)
 
     def has_delete_permission(self, request, obj=None):
-        return (obj is None or obj.can_modify(request)) and super().has_delete_permission(request, obj)
+        return (self.is_copy_view(request) or obj is None or obj.can_modify(request)
+                ) and super().has_delete_permission(request, obj)
+
+    def get_readonly_fields(self, request, obj=None):
+        if self.is_copy_view(request):
+            return []  # special case for mass job copy action
+        return super().get_readonly_fields(request, obj)
+
+    def get_inlines(self, request, obj):
+        if self.is_copy_view(request):
+            return [ContactInline]  # special case for mass job copy action
+        return super().get_inlines(request, obj)
+
+    def save_related(self, request, form, formsets, change):
+        if self.is_copy_view(request):
+            form.save_related(formsets)
+        else:
+            super().save_related(request, form, formsets, change)
 
     @admin.action(description=_('Job mehrfach kopieren...'))
     @single_element_action('Genau 1 Job auswählen!')
     def mass_copy_job(self, request, queryset):
-        inst, = queryset.all()
-        return HttpResponseRedirect('copy_job/%s/' % inst.id)
+        inst = queryset.first()
+        return HttpResponseRedirect(reverse('admin:action-mass-copy-job', args=[inst.id]))
 
     @admin.action(description=_('Jobs kopieren'))
     def copy_job(self, request, queryset):
         for inst in queryset.all():
-            newjob = RecuringJob(
-                type=inst.type, slots=inst.slots, time=inst.time)
+            time = inst.time
+            if not can_edit_past_jobs(request) and time <= timezone.now():
+                # create copy in future if job is in past and member can't edit past jobs
+                time = datetime.combine(date.today() + timedelta(7), time)
+            newjob = RecuringJob(type=inst.type, slots=inst.slots, time=time)
             newjob.save()
 
     def get_form(self, request, obj=None, **kwds):
-        if 'copy_job' in request.path:
-            return JobCopyForm
+        # return forms for mass copy
+        if self.is_copy_view(request):
+            if can_edit_past_jobs(request):
+                return JobCopyForm
+            return JobCopyToFutureForm
+        # or return normal edit forms
+        elif not can_edit_past_jobs(request):
+            kwds['form'] = OnlyFutureJobAdminForm
         return super().get_form(request, obj, **kwds)
 
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            re_path(r'^copy_job/(?P<jobid>.*?)/$',
-                    self.admin_site.admin_view(self.copy_job_view))
+            path('mass_copy_job/<str:jobid>/',
+                 self.admin_site.admin_view(self.copy_job_view), name='action-mass-copy-job')
         ]
         return my_urls + urls
 
+    @staticmethod
+    def is_copy_view(request):
+        return request.resolver_match.url_name == 'action-mass-copy-job'
+
     def copy_job_view(self, request, jobid):
-        # HUGE HACK: modify admin properties just for this view
-        tmp_readonly = self.readonly_fields
-        tmp_inlines = self.inlines
-        self.readonly_fields = []
-        self.inlines = []
-        res = self.change_view(request, jobid, extra_context={
-            'title': 'Copy job'})
-        self.readonly_fields = tmp_readonly
-        self.inlines = tmp_inlines
+        res = self.change_view(request, jobid, extra_context={'title': 'Copy job'})
         return res
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'type__activityarea__coordinator')
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'type':
-            kwargs['queryset'] = JobTypeDao.visible_types()
-            kwargs = formfield_for_coordinator(request,
-                                               db_field.name,
-                                               'type',
-                                               'juntagrico.is_area_admin',
-                                               JobTypeDao.visible_types_by_coordinator,
-                                               **kwargs)
-            # show jobtype even if invisible to be able to edit and save this job with the same type
-            # HACK: get instance via url argument
-            instance_pk = request.resolver_match.kwargs.get('object_id')
-            if instance_pk is not None:
-                kwargs['queryset'] |= JobType.objects.filter(recuringjob__pk=instance_pk)
-                kwargs['queryset'] = kwargs['queryset'].distinct()
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    def get_type_queryset(self, request, obj):
+        visible_by_coordinator = formfield_for_coordinator(
+            request, None, None, 'juntagrico.is_area_admin',
+            JobTypeDao.visible_types_by_coordinator,
+            queryset=JobTypeDao.visible_types()
+        )['queryset']
+        return (JobType.objects.filter(recuringjob=obj) | visible_by_coordinator).distinct()

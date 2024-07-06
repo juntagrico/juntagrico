@@ -8,9 +8,7 @@ define([], function () {
             if(map.length) {
                 map.toggle()
             } else {
-                const markers = map_with_markers([location])
-                if(markers[0])
-                    markers[0].openPopup()
+                map_with_markers([location], 0)
             }
             return false
         })

@@ -1,0 +1,15 @@
+{% load i18n %}
+{% if can_send_mails or perms.juntagrico.can_send_mails %}
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="recipients" id="recipients"/>
+                <input type="hidden" name="recipients_count" id="recipients_count"/>
+                <button type="submit" class="btn btn-success" id="send-email">
+                    {% trans "Email senden" %}
+                </button>
+            </form>
+        </div>
+    </div>
+{% endif %}

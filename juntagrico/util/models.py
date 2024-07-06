@@ -2,8 +2,9 @@
     Copys the user defined attributes of a model into another model.
     It will only copy the fields with are present in both
 '''
-from django.db.models import Q, QuerySet
-from django.utils import timezone
+import datetime
+
+from django.db.models import Q
 
 
 def attribute_copy(source, target):
@@ -16,15 +17,15 @@ def attribute_copy(source, target):
 
 
 def q_activated():
-    return Q(activation_date__isnull=False, activation_date__lte=timezone.now().date())
+    return Q(activation_date__isnull=False, activation_date__lte=datetime.date.today())
 
 
 def q_cancelled():
-    return Q(cancellation_date__isnull=False, cancellation_date__lte=timezone.now().date())
+    return Q(cancellation_date__isnull=False, cancellation_date__lte=datetime.date.today())
 
 
 def q_deactivated():
-    return Q(deactivation_date__isnull=False, deactivation_date__lte=timezone.now().date())
+    return Q(deactivation_date__isnull=False, deactivation_date__lte=datetime.date.today())
 
 
 def q_isactive():
@@ -33,25 +34,3 @@ def q_isactive():
 
 def q_deactivation_planned():
     return Q(deactivation_date__isnull=False)
-
-
-class PropertyQuerySet(QuerySet):
-
-    def __init__(self, model, query, using, hints):
-        super().__init__(model, query, using, hints)
-        self.properties = {}
-
-    @staticmethod
-    def from_qs(queryset):
-        return PropertyQuerySet(queryset.model, queryset.query.chain(), queryset._db, queryset._hints)
-
-    def set_property(self, key, value):
-        self.properties[key] = value
-
-    def get_property(self, key):
-        return self.properties.get(key)
-
-    def _clone(self):
-        result = super()._clone()
-        result.properties = self.properties.copy()
-        return result
