@@ -9,7 +9,6 @@ from juntagrico.lifecycle.submembership import check_submembership_parent_dates
 from juntagrico.lifecycle.subpart import check_subpart_parent_dates
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
 from juntagrico.util.lifecycle import handle_activated_deactivated
-from juntagrico.util.models import q_activated
 
 
 def sub_post_save(sender, instance, created, **kwargs):
@@ -56,20 +55,16 @@ def handle_sub_activated(sender, instance, **kwargs):
 def handle_sub_deactivated(sender, instance, **kwargs):
     instance.deactivation_date = instance.deactivation_date or datetime.date.today()
     change_date = instance.deactivation_date
-    for part in instance.active_parts.all():
+    for part in instance.parts.all():
         part.deactivate(change_date)
-    for part in instance.future_parts.all():
-        part.delete()
     for sub_membership in instance.subscriptionmembership_set.all():
         sub_membership.member.leave_subscription(instance, change_date)
 
 
 def handle_sub_canceled(sender, instance, **kwargs):
     instance.cancellation_date = instance.cancellation_date or datetime.date.today()
-    for part in instance.parts.filter(q_activated()).all():
+    for part in instance.parts.all():
         part.cancel()
-    for part in instance.parts.filter(~q_activated()).all():
-        part.delete()
 
 
 def handle_sub_created(sender, instance, **kwargs):
