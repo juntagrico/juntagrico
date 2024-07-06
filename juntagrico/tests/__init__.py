@@ -194,6 +194,8 @@ class JuntagricoTestCase(TestCase):
             'name': 'depot2',
             'contact': cls.member,
             'weekday': 1,
+            'pickup_time': datetime.time(9, 0),
+            'pickup_duration': 48,
             'tour': cls.tour,
             'location': location}
         cls.depot2 = Depot.objects.create(**depot_data)
