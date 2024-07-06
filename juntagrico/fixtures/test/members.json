@@ -5,7 +5,7 @@
         "last_login": null,
         "is_superuser": false,
         "username": "first_name_last_name_01dne1toi",
-        "is_staff": false,
+        "is_staff": true,
         "is_active": true,
         "groups": [],
         "user_permissions": [
