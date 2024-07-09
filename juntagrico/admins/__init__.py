@@ -41,15 +41,14 @@ class DateRangeExportMixin(ExportMixin):
     """
     export_form_class = ExportAssignmentDateRangeForm
 
-    def get_data_for_export(self, request, queryset, *args, **kwargs):
-        return super().get_data_for_export(request, queryset, *args, form=kwargs.get('export_form'), **kwargs)
-
     def get_export_resource_kwargs(self, request, *args, **kwargs):
-        form = kwargs.pop('form')
-        return dict(
-            start_date=form.cleaned_data['start_date'],
-            end_date=form.cleaned_data['end_date'],
-        )
+        form = kwargs.get('export_form')
+        if form:
+            kwargs.update(
+                start_date=form.cleaned_data['start_date'],
+                end_date=form.cleaned_data['end_date'],
+            )
+        return kwargs
 
     def get_export_filename(self, request, queryset, file_format):
         # add date range to filename

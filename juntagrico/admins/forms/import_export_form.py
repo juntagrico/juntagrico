@@ -3,13 +3,13 @@ from django.db.models import Max, Min
 from django.forms import SelectDateWidget
 from django.utils.translation import gettext as _
 
-from import_export.forms import ExportForm
+from import_export.forms import SelectableFieldsExportForm
 
 from juntagrico.entity.jobs import Job
 from juntagrico.util.temporal import start_of_business_year, end_of_business_year
 
 
-class ExportAssignmentDateRangeForm(ExportForm):
+class ExportAssignmentDateRangeForm(SelectableFieldsExportForm):
     start_date = forms.DateField(
         label=_('Startdatum'),
         help_text=_('Startdatum für Einsatzzählung'),
