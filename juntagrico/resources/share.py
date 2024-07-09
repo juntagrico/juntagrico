@@ -13,5 +13,18 @@ class ShareResource(ModQuerysetModelResource):
     class Meta:
         model = Share
         exclude = ('billable_ptr', 'polymorphic_ctype', 'member')
+        widgets = {
+            'id': {'coerce_to_string': False},
+            'number': {'coerce_to_string': False},
+            'value': {'coerce_to_string': False},
+            'creation_date': {'coerce_to_string': False},
+            'paid_date': {'coerce_to_string': False},
+            'issue_date': {'coerce_to_string': False},
+            'booking_date': {'coerce_to_string': False},
+            'cancelled_date': {'coerce_to_string': False},
+            'termination_date': {'coerce_to_string': False},
+            'payback_date': {'coerce_to_string': False},
+            'sent_back': {'coerce_to_string': False},
+        }
         export_order = ('id', 'number')
         name = Config.vocabulary('share_pl')
