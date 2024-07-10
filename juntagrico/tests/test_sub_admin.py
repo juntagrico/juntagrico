@@ -169,3 +169,30 @@ class SubAdminTests(JuntagricoTestCase):
             'parts-0-subscription': str(sub_id),
         })
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub_id]), data=data, member=self.admin, code=302)
+
+    def testWithoutMembership(self):
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2017',
+            'initial-start_date': '01.01.2017',
+            'activation_date': '01.01.2017',
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '0',
+            'subscriptionmembership_set-INITIAL_FORMS': '0',
+            'parts-TOTAL_FORMS': '1',
+            'parts-INITIAL_FORMS': '0',
+            'parts-0-id': '',
+            'parts-0-subscription': '',
+            'parts-0-activation_date': '01.01.2017',
+            'parts-0-cancellation_date': '',
+            'parts-0-deactivation_date': '',
+            'parts-0-type': str(self.sub_type3.id),
+            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-INITIAL_FORMS': '0',
+        }
+        response = self.assertPost(reverse('admin:juntagrico_subscription_add'),
+                                   data=data, member=self.admin)
+        self.assertListEqual(
+            ['require_subscription_membership'],
+            [e.code for e in response.context_data['errors'].as_data()]
+        )

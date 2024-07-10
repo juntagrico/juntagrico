@@ -236,6 +236,7 @@ class JuntagricoTestCase(TestCase):
         cls.sub_size = SubscriptionSize.objects.create(**sub_size_data)
         cls.sub_type = cls.create_sub_type(cls.sub_size)
         cls.sub_type2 = cls.create_sub_type(cls.sub_size, shares=2)
+        cls.sub_type3 = cls.create_sub_type(cls.sub_size, shares=0)
 
     @staticmethod
     def create_sub(depot, activation_date=None, parts=None, **kwargs):
