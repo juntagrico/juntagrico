@@ -32,9 +32,11 @@ def check_submembership_parent_dates(instance):
     wrong_start = (m_joined and s_activated and subscription.activation_date > instance.join_date) or (not s_activated and m_joined)
     wrong_end = (m_left and s_deactivated and subscription.deactivation_date < instance.leave_date) or (s_deactivated and not m_left)
     if wrong_start:
-        raise ValidationError(_('Beitrittsdatum des Bestandteils passt nicht zum übergeordneten Aktivierungsdatum'), code='invalid')
+        raise ValidationError(_('Beitrittsdatum des Bestandteils passt nicht zum übergeordneten Aktivierungsdatum'),
+                              code='part_activation_date_mismatch')
     if wrong_end:
-        raise ValidationError(_('Austrittsdatum des Bestandteils passt nicht zum übergeordneten Deaktivierungsdatum'), code='invalid')
+        raise ValidationError(_('Austrittsdatum des Bestandteils passt nicht zum übergeordneten Deaktivierungsdatum'),
+                              code='part_deactivation_date_mismatch')
 
 
 def check_sub_membership_consistency(instance):
