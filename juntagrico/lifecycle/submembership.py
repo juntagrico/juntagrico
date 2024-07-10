@@ -8,7 +8,8 @@ from juntagrico.config import Config
 
 
 def sub_membership_pre_save(sender, instance, **kwargs):
-    check_sub_membership_consistency(instance)
+    if not kwargs.get('raw', False):
+        check_sub_membership_consistency(instance)
 
 
 def check_submembership_dates(instance):
