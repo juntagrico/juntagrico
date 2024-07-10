@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.subtypes import SubscriptionType
 
 
 class SubscriptionTests(JuntagricoTestCase):
@@ -47,12 +48,12 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertEqual(self.sub.nickname, test_nickname)
 
     def testPartOrder(self):
-        with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
+        with (self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12)):
             # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
             self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
-                'amount[' + str(self.sub_type.pk) + ']': 0,
-                'amount[' + str(self.sub_type2.pk) + ']': 1
+                f'amount[{type_id}]': 1 if i == 1 else 0
+                for i, type_id in enumerate(SubscriptionType.objects.values_list('id', flat=True))
             }
             self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
