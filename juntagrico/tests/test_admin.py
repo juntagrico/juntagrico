@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.utils import timezone
 
-from juntagrico.entity.jobs import Assignment
+from juntagrico.entity.jobs import Assignment, RecuringJob
 from . import JuntagricoTestCase
 
 
@@ -65,6 +65,10 @@ class AdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin)
+        self.assertPost(reverse('admin:juntagrico_recuringjob_changelist'), data={
+            'action': 'copy_job', '_selected_action': [self.past_job.pk]
+        }, member=self.area_admin, code=302)
+        self.assertGreater(RecuringJob.objects.last().time, timezone.now())
 
     def testDeliveryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
