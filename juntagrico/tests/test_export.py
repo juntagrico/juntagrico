@@ -5,10 +5,10 @@ from . import JuntagricoTestCase
 
 class ExportTests(JuntagricoTestCase):
 
-    def get_data(self, resource=0, file_format=0):
-        return {
+    def get_data(self, resource=0, file_format=0, selected=None):
+        data = {
             "resource": resource,
-            "file_format": file_format,
+            "format": file_format,
             "start_date_day": "1",
             "start_date_month": "1",
             "start_date_year": "2024",
@@ -16,6 +16,9 @@ class ExportTests(JuntagricoTestCase):
             "end_date_month": "12",
             "end_date_year": "2024"
         }
+        if selected:
+            data.update({f: "on" for f in selected})
+        return data
 
     def testExport(self):
         self.assertGet(reverse('export'))
@@ -28,6 +31,7 @@ class ExportTests(JuntagricoTestCase):
         # admin can access
         self.assertGet(export_url, member=self.admin)
         response = self.assertPost(export_url, member=self.admin, data=self.get_data(1))
+        # This test only passes due to a bug in django_import_export. It should fail without selected fields
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testMembersExport(self):
@@ -35,28 +39,35 @@ class ExportTests(JuntagricoTestCase):
         export_url = reverse('admin:juntagrico_member_export')
         self.assertGet(export_url, member=self.admin)
         response = self.assertPost(export_url, member=self.admin, data=self.get_data())
+        # This test only passes due to a bug in django_import_export. It should fail without selected fields
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testMemberAssignmentsPerAreaExport(self):
         export_url = reverse('admin:juntagrico_member_export')
-        self.assertGet(export_url, member=self.admin)
-        response = self.assertPost(export_url, member=self.admin, data=self.get_data(2))
+        response = self.assertGet(export_url, member=self.admin)
+        fields = response.context_data['form'].resource_fields['MemberAssignmentsPerArea']
+        response = self.assertPost(export_url, member=self.admin, data=self.get_data(2, selected=fields))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testSharesExport(self):
         self.assertGet(reverse('export-shares'))
         export_url = reverse('admin:juntagrico_share_export')
-        self.assertGet(export_url, member=self.admin)
+        response = self.assertGet(export_url, member=self.admin)
+        fields = response.context_data['form'].resource_fields['ShareResource']
         response = self.assertPost(export_url, member=self.admin, data={
-            "file_format": "0",
+            "format": "0",
+            **{f: "on" for f in fields}
         })
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testSubExport(self):
         self.assertGet(reverse('export-subscriptions'))
         export_url = reverse('admin:juntagrico_subscription_export')
-        self.assertGet(export_url, member=self.admin)
-        response = self.assertPost(export_url, member=self.admin, data=self.get_data())
+        response = self.assertGet(export_url, member=self.admin)
+        fields = response.context_data['form'].resource_fields
+        response = self.assertPost(export_url, member=self.admin,
+                                   data=self.get_data(selected=fields['SubscriptionResource']))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
-        response = self.assertPost(export_url, member=self.admin, data=self.get_data(1))
+        response = self.assertPost(export_url, member=self.admin,
+                                   data=self.get_data(1, selected=fields['SubscriptionPartResource']))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
