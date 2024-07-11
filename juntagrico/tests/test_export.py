@@ -9,12 +9,12 @@ class ExportTests(JuntagricoTestCase):
         data = {
             "resource": resource,
             "format": file_format,
-            "start_date_day": "1",
-            "start_date_month": "1",
-            "start_date_year": "2024",
-            "end_date_day": "31",
-            "end_date_month": "12",
-            "end_date_year": "2024"
+            "export_start_date_day": "1",
+            "export_start_date_month": "1",
+            "export_start_date_year": "2024",
+            "export_end_date_day": "31",
+            "export_end_date_month": "12",
+            "export_end_date_year": "2024"
         }
         if selected:
             data.update({f: "on" for f in selected})
@@ -29,17 +29,17 @@ class ExportTests(JuntagricoTestCase):
         export_url = reverse('admin:juntagrico_member_export')
         self.assertGet(export_url, 403)
         # admin can access
-        self.assertGet(export_url, member=self.admin)
-        response = self.assertPost(export_url, member=self.admin, data=self.get_data(1))
-        # This test only passes due to a bug in django_import_export. It should fail without selected fields
+        response = self.assertGet(export_url, member=self.admin)
+        fields = response.context_data['form'].resource_fields['MemberWithAssignmentsAndAreaResource']
+        response = self.assertPost(export_url, member=self.admin, data=self.get_data(1, selected=fields))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testMembersExport(self):
         self.assertGet(reverse('export-members'))
         export_url = reverse('admin:juntagrico_member_export')
-        self.assertGet(export_url, member=self.admin)
-        response = self.assertPost(export_url, member=self.admin, data=self.get_data())
-        # This test only passes due to a bug in django_import_export. It should fail without selected fields
+        response = self.assertGet(export_url, member=self.admin)
+        fields = response.context_data['form'].resource_fields['MemberResource']
+        response = self.assertPost(export_url, member=self.admin, data=self.get_data(selected=fields))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
     def testMemberAssignmentsPerAreaExport(self):

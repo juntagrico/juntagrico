@@ -10,14 +10,14 @@ from juntagrico.util.temporal import start_of_business_year, end_of_business_yea
 
 
 class ExportAssignmentDateRangeForm(SelectableFieldsExportForm):
-    start_date = forms.DateField(
+    export_start_date = forms.DateField(
         label=_('Startdatum'),
         help_text=_('Startdatum für Einsatzzählung'),
         widget=SelectDateWidget,
         initial=start_of_business_year
     )
 
-    end_date = forms.DateField(
+    export_end_date = forms.DateField(
         label=_('Enddatum'),
         help_text=_('Enddatum für Einsatzzählung'),
         widget=SelectDateWidget,
@@ -29,5 +29,5 @@ class ExportAssignmentDateRangeForm(SelectableFieldsExportForm):
         # offer meaningful year range
         jobs = Job.objects.aggregate(oldest_year=Min('time__year'), newest_year=Max('time__year'))
         years = range(jobs['oldest_year'], jobs['newest_year'] + 1)
-        self.fields['start_date'].widget.years = years
-        self.fields['end_date'].widget.years = years
+        self.fields['export_start_date'].widget.years = years
+        self.fields['export_end_date'].widget.years = years
