@@ -22,12 +22,14 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
                 _('Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}').format(Config.vocabulary('share_pl'),
                                                                                    available_shares,
                                                                                    required_shares),
-                code='invalid')
+                code='missing_shares')
         if future_parts_count == 0 and self.instance.cancellation_date is None:
             raise ValidationError(
                 _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
                   ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
-                    Config.vocabulary('subscription')))
+                    Config.vocabulary('subscription')),
+                code='missing_part'
+            )
 
 
 class SubscriptionPartInline(admin.TabularInline):
