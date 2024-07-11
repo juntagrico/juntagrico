@@ -183,7 +183,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def future_members(self):
-        if getattr(self, 'override_future_members', False):
+        if hasattr(self, 'override_future_members'):
             return self.override_future_members
         qs = self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member')
         return set([m.member for m in qs])
