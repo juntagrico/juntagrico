@@ -171,6 +171,17 @@ div.all-page-title.row {
     font-size: 14px;
 }
 
+.admin-menu-title h5 {
+    padding-top: 1rem;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.admin-menu-title:first-child:last-child {
+    /* hide admin menu title if no admin menu entries */
+    display: none;
+}
+
 .version {
     margin-top: 6px;
     font-size: 12px;
@@ -282,6 +293,10 @@ textarea#recipients[disabled=disabled] {
     color: #780fff;
 }
 
+.bg-core {
+    background-color: #780fff;
+}
+
 /* map stuff checked */
 #map-canvas {
     width: 100%;
@@ -359,22 +374,29 @@ th {
     border-top-style: none;
 }
 
-#filter {
+.dataTables_filter label input{
+    width: auto;
+    display: inline;
+}
+
+.dataTables_filter {
+    text-align: right;
+}
+
+
+#managementlist, #filter {
     width: 100%;
 }
 
-#filter table {
+#managementlist table, #filter table, #filter-table {
     width: 100%;
-    font-size: 10px;
+    font-size: 12pt;
+    display: table;
 }
 
-#managementlist {
-    width: 100%;
-}
-
-#managementlist table {
-    width: 100%;
-    font-size: 14px;
+#managementlist a:not(.btn), #filter a:not(.btn) {
+    color: #408040;
+    text-decoration: underline;
 }
 
 #managementlist table th {
@@ -406,4 +428,26 @@ th {
 .contact span{
     display: block;
     white-space: nowrap;
+}
+
+/* phone number display */
+
+a.phone-number {
+    white-space: nowrap;
+    color: #606560;
+    text-decoration: underline;
+}
+
+/* impersonate link */
+
+.impersonate-action {
+    color: #606560;
+    float: right;
+    display: inline-block;
+}
+
+/* co-member separator */
+
+.co-member:not(:last-child)::after {
+    content: ', ';
 }

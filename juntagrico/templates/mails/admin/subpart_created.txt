@@ -11,6 +11,7 @@
 {{ part }}
 {% endfor %}
 
+{% trans "Von" %}: {% include "juntagrico/snippets/subscription/recipients.html" %}
 {% trans "ID" %}: {{subscription.id}}
 {{ serverurl }}{% url 'admin:juntagrico_subscription_change' subscription.id %}
 

@@ -1,0 +1,14 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% vocabulary "subscription" as v_subscription %}
+<div class="alert alert-danger">
+    {% if subscription_membership.join_date %}
+        {% blocktrans with jd=subscription_membership.join_date %}
+            Du wirst diesem/r {{ v_subscription }} am {{ jd }} beitreten.
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans %}
+            Dein Beitritt zu diesem/r {{ v_subscription }} ist noch ausstehend.
+        {% endblocktrans %}
+    {% endif %}
+</div>

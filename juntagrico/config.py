@@ -1,10 +1,12 @@
+from typing import Any
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.templatetags.static import static
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 
-def _get_setting(setting_key, default: object = ''):
+def _get_setting(setting_key, default: Any = ''):
     return lambda: getattr(settings, setting_key, default() if callable(default) else default)
 
 
@@ -12,7 +14,8 @@ def _get_setting_with_key(setting_key, default):
     def inner(key):
         if hasattr(settings, setting_key) and key in getattr(settings, setting_key):
             return getattr(settings, setting_key)[key]
-        return (default() if callable(default) else default)[key]
+        d = default[key]
+        return d() if callable(d) else d
 
     return inner
 
@@ -62,6 +65,13 @@ class Config:
         }
     )
     organisation_phone = _get_setting('ORGANISATION_PHONE')
+    organisation_website = _get_setting_with_key(
+        'ORGANISATION_WEBSITE',
+        {
+            'name': lambda: Config.server_url(),
+            'url': lambda: 'http://' + Config.server_url()
+        }
+    )
     organisation_bank_connection = _get_setting(
         'ORGANISATION_BANK_CONNECTION',
         {
@@ -79,6 +89,7 @@ class Config:
     extra_sub_info = _get_setting('EXTRA_SUB_INFO')
     activity_area_info = _get_setting('ACTIVITY_AREA_INFO')
     enable_shares = _get_setting('ENABLE_SHARES', True)
+    required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
@@ -90,10 +101,11 @@ class Config:
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})
     business_year_cancelation_month = _get_setting('BUSINESS_YEAR_CANCELATION_MONTH', 12)
     membership_end_month = _get_setting('MEMBERSHIP_END_MONTH', 6)
+    membership_end_notice_period = _get_setting('MEMBERSHIP_END_NOTICE_PERIOD', 0)
     cookie_consent = _get_setting_with_key(
         'COOKIE_CONSENT',
-        lambda: {
-            'text': _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(
+        {
+            'text': lambda: _('{} verwendet folgende Cookies: session, csfr, cookieconsent.').format(
                 Site.objects.get_current().name),
             'confirm_text': _('einverstanden'),
             'link_text': _('Hier findest du mehr zum Thema'),
@@ -102,16 +114,34 @@ class Config:
     )
     sub_overview_format = _get_setting_with_key(
         'SUB_OVERVIEW_FORMAT',
-        lambda: {
+        {
             'delimiter': '|',
-            'format': '{product}:{size}:{type}={amount}'
+            'format': '{product}:{size}:{type}={amount}',
+            'part_format': '{size}'
         }
     )
 
     # url and email settings
     info_email = _get_setting('INFO_EMAIL', 'info@juntagrico.juntagrico')
+    contacts = _get_setting_with_key(
+        'CONTACTS',
+        {
+            'general': lambda: Config.info_email(),
+            'for_members': lambda: Config.contacts('general'),
+            'for_subscriptions': lambda: Config.contacts('general'),
+            'for_shares': lambda: Config.contacts('general'),
+            'technical': lambda: Config.contacts('general'),
+        }
+    )
+    url_protocol = _get_setting('URL_PROTOCOL', 'https://')
     server_url = _get_setting('SERVER_URL', 'www.juntagrico.juntagrico')
-    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.defaultmailer.Mailer')
+    default_mailer = _get_setting('DEFAULT_MAILER', 'juntagrico.util.mailer.default.Mailer')
+    batch_mailer = _get_setting_with_key(
+        'BATCH_MAILER',
+        {
+            'batch_size': 39,
+            'wait_time': 65
+        })
     from_filter = _get_setting_with_key('FROM_FILTER',
                                         {
                                             'filter_expression': '.*',
@@ -147,7 +177,7 @@ class Config:
         }
     )
     favicon = _get_setting('FAVICON', fallback_static('juntagrico/img/favicon.ico'))
-    bootstrap = _get_setting('BOOTSTRAP', fallback_static('juntagrico/external/bootstrap-4.3.1/css/bootstrap.min.css'))
+    bootstrap = _get_setting('BOOTSTRAP', fallback_static('juntagrico/external/bootstrap/css/bootstrap.min.css'))
     styles = _get_setting_with_key('STYLES', {'template': '', 'static': []})
     scripts = _get_setting_with_key('SCRIPTS', {'template': '', 'static': []})
     images = _get_setting_with_key(

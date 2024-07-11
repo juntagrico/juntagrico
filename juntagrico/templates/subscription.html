@@ -20,7 +20,7 @@
         <div class="alert alert-success">
             {% trans "Du bist auf der Warteliste" %}
             <br/>
-            <a href="{% url 'sub-detail-id' member.subscription_future.id %}">
+            <a href="{% url 'subscription-single' member.subscription_future.id %}">
                 {% trans "Mehr Infos und Optionen dazu findest du hier" %}
             </a>
         </div>
@@ -59,7 +59,7 @@
                 {% blocktrans %}{{ v_subscription }}-Bestandteile{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {% if subscription.state == 'waiting' %}
+                {% if subscription.waiting %}
                 {{ subscription.future_part_overview|overview|safe }}
                 {% else %}
                 {{ subscription.part_overview|overview|safe }}
@@ -71,19 +71,22 @@
                 {% trans "Status" %}
             </div>
             <div class="col-md-9">
-                {% if subscription.state == 'active' %}
+                {% if subscription.active %}
                     {% trans "aktiv" %}
-                {% elif subscription.state == 'canceled' %}
-                    {% trans "gekündigt" %},
-                    {% blocktrans with ed=end_date|date:"d.m.Y" %}wird am {{ ed }} deaktiviert{% endblocktrans %}.
-                {% elif subscription.state == 'waiting' %}
+                {% elif subscription.waiting %}
                     <span class="text-error">
                         {% trans "Auf der Warteliste" %}
                     </span>
-                {% elif subscription.state == 'inactive' %}
+                {% elif subscription.inactive %}
                     <span class="text-error">
                         {% trans "deaktiviert" %}
                     </span>
+                {% endif %}
+                {% if subscription.canceled %}
+                    <br>
+                    {% blocktrans with cd=subscription.cancellation_date ed=end_date %}
+                        Gekündigt am {{ cd }} auf den {{ ed }}.
+                    {% endblocktrans %}
                 {% endif %}
             </div>
         </div>
@@ -161,7 +164,7 @@
                 {% blocktrans %}Name auf {{ v_depot }}-Liste{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.recipients_display_name }}
+                {% include "juntagrico/snippets/subscription/recipients.html" %}
             </div>
         </div>
         {% endif %}
@@ -182,17 +185,15 @@
                     {% trans "Zusatzabos" %}
                 </div>
                 <div class="col-md-9">
-                    {% if subscription.extra_subscriptions|length == 0 %}
-                        {% trans "Keine Zusatzabos" %}
-                    {% else %}
-                        <ul>
-                            {% for extra_subscription in subscription.extra_subscriptions %}
-                                <li>
-                                    {{ extra_subscription.type.display_name }}
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
+                    <ul>
+                        {% for extra_subscription in subscription.extra_subscriptions %}
+                            <li>
+                                {{ extra_subscription.type.display_name }}
+                            </li>
+                        {% empty %}
+                            <li>{% trans "Keine Zusatzabos" %}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
             {% if subscription.extrasubscriptions_changed %}
@@ -204,18 +205,15 @@
                         ({% blocktrans trimmed with nes=next_extra_subscription_date|date:"d.m.Y" %}
                         Die Änderungen treten voraussichtlich am {{ nes }} in Kraft
                         {% endblocktrans %})
-                        {% if not subscription.future_extra_subscriptions %}
-                            <br/>
-                            {% trans "Keine Zusatzabos" %}
-                        {% else %}
-                            <ul>
-                                {% for extra_subscription in subscription.future_extra_subscriptions %}
-                                    <li>
-                                        {{ extra_subscription.type.display_name }}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
+                        <ul>
+                            {% for extra_subscription in subscription.future_extra_subscriptions %}
+                                <li>
+                                    {{ extra_subscription.type.display_name }}
+                                </li>
+                            {% empty %}
+                                <li>{% trans "Keine Zusatzabos" %}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             {% endif %}
@@ -237,7 +235,7 @@
         {% for sub_overview_addon in sub_overview_addons %}
             {% include sub_overview_addon %}
         {% endfor %}
-        {% if subscription.state != 'inactive' %}
+        {% if not subscription.inactive %}
             <div class="row mb-3">
                 <div class="offset-3 col-md-9">
                     <a href="{% if primary %}{% url 'sub-change' subscription.id %}{% endif %}" class="btn btn-success {% if not primary %}disabled{% endif %}">
@@ -248,15 +246,15 @@
                     {% endif %}
                 </div>
             </div>
-        {% endif %}
-        {% if subscription.state != 'inactive' and can_leave %}
-            <div class="row mb-3">
-                <div class="offset-3 col-md-9">
-                    <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
-                        {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
-                    </a>
+            {% if can_leave %}
+                <div class="row mb-3">
+                    <div class="offset-3 col-md-9">
+                        <a href="{% url 'sub-leave' subscription.id %}" class="btn btn-danger">
+                            {% blocktrans %}{{ v_subscription }} verlassen{% endblocktrans %}
+                        </a>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endblock %}

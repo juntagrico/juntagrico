@@ -2,7 +2,7 @@ from django import template
 from django.conf import settings
 from django.template.defaultfilters import urlize, linebreaksbr
 
-from juntagrico import version
+from juntagrico import __version__
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
@@ -42,7 +42,7 @@ def show_job_extras():
 
 @register.simple_tag
 def show_deliveries(request):
-    return len(DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current)) > 0
+    return DeliveryDao.deliveries_by_subscription(request.user.member.subscription_current).exists()
 
 
 @register.filter
@@ -79,7 +79,7 @@ def area_admin(request):
 
 @register.simple_tag
 def get_version():
-    return version
+    return __version__
 
 
 @register.filter
@@ -88,3 +88,8 @@ def richtext(value):
         value = urlize(value)
         value = linebreaksbr(value)
     return value
+
+
+@register.filter
+def values_list(queryset, keys):
+    return queryset.values_list(keys, flat=isinstance(keys, str))

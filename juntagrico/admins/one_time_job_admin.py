@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin
 
-from juntagrico.admins import RichTextAdmin
+from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
@@ -16,13 +16,14 @@ from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordi
 from juntagrico.util.models import attribute_copy
 
 
-class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin, PolymorphicChildModelAdmin):
+class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin, PolymorphicChildModelAdmin):
     base_model = OneTimeJob
     list_display = ['__str__', 'time', 'slots', 'free_slots']
     list_filter = ('activityarea', ('time', FutureDateTimeFilter))
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
     exclude = ['reminder_sent']
+    autocomplete_fields = ['activityarea', 'location']
 
     inlines = [ContactInline, AssignmentInline, JobExtraInline]
     readonly_fields = ['free_slots']
@@ -52,12 +53,8 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, RichTextAdmin, PolymorphicC
             t.name = name
             t.save()
 
-    def get_form(self, request, obj=None, **kwds):
-        form = super().get_form(request, obj, **kwds)
-        # only include visible and current locations in choices
-        # filter queryset here, because here the obj is available
-        form.base_fields['location'].queryset = Location.objects.exclude(Q(visible=False), ~Q(onetimejob=obj))
-        return form
+    def get_location_queryset(self, request, obj):
+        return Location.objects.exclude(Q(visible=False), ~Q(onetimejob=obj))
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'activityarea__coordinator')

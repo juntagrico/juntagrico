@@ -22,10 +22,10 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-3">
-            {% trans "Wochentag" %}
+            {% trans "Abholung" %}
         </div>
         <div class="col-md-9">
-            {{ depot.get_weekday_display }}
+            {{ depot.pickup_display }}
         </div>
     </div>
     <div class="row mb-3">
@@ -67,7 +67,7 @@
 {% endblock %}
 {% block scripts %}
     {{ depot.map_info|json_script:'depot_data' }}
-    <script type="text/javascript" src="{% static 'juntagrico/external/leaflet/leaflet.js' %}"></script>
+    {% include 'snippets/scripts/leaflet.html' %}
     <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initDepot.js' %}">
     </script>
 {% endblock %}

@@ -1,6 +1,0 @@
--r requirements.txt
-coverage
-django-coverage-plugin
-faker
-flake8
-
