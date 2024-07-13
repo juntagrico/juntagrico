@@ -148,7 +148,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def future_members(self):
-        if getattr(self, 'override_future_members', False):
+        if hasattr(self, 'override_future_members'):
             return self.override_future_members
         return set(self.members.joining_subscription())
 
