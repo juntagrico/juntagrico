@@ -14,7 +14,10 @@ class MemberQuerySet(QuerySet):
     def joining_subscription(self, on_date=None):
         on_date = on_date or datetime.date.today()
         # note: using exclude here would exclude members that left another subscription
-        return self.filter(Q(subscriptionmembership__leave_date__gt=on_date) | Q(subscriptionmembership__leave_date=None))
+        return self.filter(
+            Q(subscriptionmembership__leave_date__gt=on_date)
+            | Q(subscriptionmembership__leave_date=None)
+        ).distinct()
 
     def joined_subscription(self, on_date=None):
         on_date = on_date or datetime.date.today()
