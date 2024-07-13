@@ -650,4 +650,6 @@ class DateRangeForm(Form):
         self.helper = FormHelper()
         self.helper.form_method = 'get'
         self.helper.form_class = 'form-inline'
+        self.helper.label_class = 'mr-2'
+        self.helper.field_class = 'mr-2'
         self.helper.add_input(Submit('submit', _('Anwenden')))

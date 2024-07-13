@@ -1,0 +1,3 @@
+{% with phone=member.get_phone %}
+    <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
+{% endwith %}

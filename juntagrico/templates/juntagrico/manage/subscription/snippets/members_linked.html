@@ -1,0 +1,6 @@
+{% include './primary_linked.html' %}
+{% for recipient in subscription.co_members  %}
+    <div class="co-member">
+        {% include '../../member/snippets/display_linked.html' with member=recipient %}
+    </div>
+{% endfor %}

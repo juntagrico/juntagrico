@@ -1,13 +1,20 @@
-{% extends "juntagrico/manage/base.html" %}
+{% extends "../../base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% load juntagrico.common %}
+
 {% block page_title %}
     {% vocabulary "depot_pl" as v_depot_pl %}
     <h3>
         {% blocktrans %}{{ v_depot_pl }}-Änderungsliste{% endblocktrans %}
     </h3>
 {% endblock %}
+
+{% block content %}
+    {% include '../../member/snippets/toggle_buttons.html' with co_members=True %}
+    {{ block.super }}
+{% endblock %}
+
 {% block list %}
     {% vocabulary "depot" as v_depot %}
     <table id="filter-table" class="list table">
@@ -28,9 +35,6 @@
                 <th>
                     {% trans "Aktionen" %}
                 </th>
-                <th class="d-none">
-                    {% trans "E-Mail" %}
-                </th>
                 <th>
                     {% trans "Notizen" %}
                 </th>
@@ -39,7 +43,7 @@
         <tbody>
             {% for subscription in object_list %}
                 <tr>
-                    <td class="share_id">
+                    <td>
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                             {{ subscription }}
                         </a>
@@ -48,12 +52,7 @@
                         </span>
                     </td>
                     <td>
-                        <div>{{ subscription.primary_member }}</div>
-                        <div>
-                            <a href="{% url "email-to-member" subscription.primary_member.id %}">
-                                {{ subscription.primary_member.email }}
-                            </a>
-                        </div>
+                        {% include '../snippets/members_linked.html' %}
                     </td>
                     <td>
                         {{ subscription.depot }}
@@ -66,9 +65,6 @@
                             {% trans "Ändern" %}
                         </a>
                     </td>
-                    <td class="email d-none">
-                        {{ subscription.current_members|values_list:'email'|join:', ' }}
-                    </td>
                     <td>
                         {{ subscription.notes }}
                     </td>
@@ -77,6 +73,7 @@
         </tbody>
     </table>
 {% endblock %}
+
 {% block datatable_constructor %}
     {{ block.super }}
     config.layout.topStart.buttons.push(

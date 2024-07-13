@@ -153,13 +153,16 @@ $.fn.EmailButton = function (tables, selector = '.email') {
 // Form Elements
 
 $.fn.ToggleButton = function (selector) {
-    let button = $(this)
-    // initialize correct value after reload
-    $(selector).toggle(button.is(':checked'));
-    // change on click
-    button.change(function () {
-        $(selector).toggle(this.checked);
-    });
+    $(this).each(function() {
+        let button = $(this)
+        let this_selector = selector || button.data('filter')
+        // initialize correct value after reload
+        $(this_selector).toggle(button.is(':checked'));
+        // change on click
+        button.change(function () {
+            $(this_selector).toggle(this.checked);
+        });
+    })
 }
 
 $.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}') {

@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     <h3>
         {% vocabulary "assignment_pl" %}
@@ -11,16 +12,7 @@
 
 {% block content %}
     {% crispy date_form %}
-    <div>
-        <span class="switch switch-sm">
-            <input class="switch" type="checkbox" id="show_co_members" checked="checked">
-            <label for="show_co_members">{% trans "MitabonnentInnen anzeigen" %}</label>
-        </span>
-        <span class="switch switch-sm">
-            <input class="switch" type="checkbox" id="show_phone_numbers" checked="checked">
-            <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
-        </span>
-    </div>
+    {% include './member/snippets/toggle_buttons.html' with co_members=True %}
     {{ block.super }}
 {% endblock %}
 
@@ -61,75 +53,49 @@
                             {% blocktrans %}{{ v_assignment_pl }} Kernbereich Status{% endblocktrans %}
                         </th>
                  {% endif %}
-                <th class="d-none">
-                    {% trans "Emails" %}
-                </th>
             </tr>
         </thead>
         <tbody>
             {% for subscription in object_list %}
-                {% with co_members=subscription.co_members %}
-                    <tr>
-                        <td class="members">
-                            {% spaceless %}
-                                <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
-                                    <strong>{{ subscription.primary_member }}</strong>
-                                </a>
-                            {% endspaceless %}
-                            {% with phone=subscription.primary_member.get_phone %}
-                                <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
-                            {% endwith %}
-                            {% for recipient in co_members %}
-                                <div class="co-member">
-                                <a href="{% url 'admin:juntagrico_member_change' recipient.id %}">{{ recipient }}</a>
-                                {% with phone=recipient.get_phone %}
-                                    <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
-                                {% endwith %}
-                                </div>
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {{ subscription.activation_date|date:"Y-m-d" }}
-                        </td>
-                        <td>
-                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
-                                {{ subscription.state_text }}
-                            </a>
-                            {% if subscription.canceled %}
-                                -
-                                {% blocktrans with cd=subscription.cancellation_date|date:"Y-m-d" %}
-                                    Gekündigt am {{cd}}
-                                {% endblocktrans %}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ subscription.assignment_count|floatformat:-2 }}
-                        </td>
-                        <td>
-                            {{ subscription.required_assignments|floatformat:0 }}
-                        </td>
-                        <td>
-                            {{ subscription.assignments_progress|floatformat:0 }}%
-                        </td>
-                        {% if b_show_core and b_requires_core %}
-                            <td>
-                                {{ subscription.core_assignment_count|floatformat:-2 }}
-                            </td>
-                            <td>
-                                {{ subscription.required_core_assignments|floatformat:0 }}
-                            </td>
-                            <td>
-                                {{ subscription.core_assignments_progress|floatformat:0 }}%
-                            </td>
+                <tr>
+                    <td class="members">
+                        {% include './subscription/snippets/members_linked.html' %}
+                    </td>
+                    <td>
+                        {{ subscription.activation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
+                            {{ subscription.state_text }}
+                        </a>
+                        {% if subscription.canceled %}
+                            -
+                            {% blocktrans with cd=subscription.cancellation_date|date:"Y-m-d" %}
+                                Gekündigt am {{cd}}
+                            {% endblocktrans %}
                         {% endif %}
-                        <td class="email d-none">
-                            {% for recipient in co_members %}
-                                {{ recipient.email }},
-                            {% endfor %}
-                            {{ subscription.primary_member.email }}
+                    </td>
+                    <td>
+                        {{ subscription.assignment_count|floatformat:-2 }}
+                    </td>
+                    <td>
+                        {{ subscription.required_assignments|floatformat:0 }}
+                    </td>
+                    <td>
+                        {{ subscription.assignments_progress|floatformat:0 }}%
+                    </td>
+                    {% if b_show_core and b_requires_core %}
+                        <td>
+                            {{ subscription.core_assignment_count|floatformat:-2 }}
                         </td>
-                    </tr>
-                {% endwith %}
+                        <td>
+                            {{ subscription.required_core_assignments|floatformat:0 }}
+                        </td>
+                        <td>
+                            {{ subscription.core_assignments_progress|floatformat:0 }}%
+                        </td>
+                    {% endif %}
+                </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -138,14 +104,4 @@
 {% block datatable_constructor %}
     {{ block.super }}
     config.layout.top = 'searchBuilder'
-{% endblock %}
-
-{% block scripts %}
-    {{ block.super }}
-    <script type="text/javascript">
-        $(function(){
-            $("#show_co_members").ToggleButton('.co-member')
-            $("#show_phone_numbers").ToggleButton('.phone-number')
-        })
-    </script>
 {% endblock %}

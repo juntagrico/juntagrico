@@ -39,6 +39,9 @@
                 {% endblock %}
                 // Assuming default ids
                 $("#filter-table").DataTable(config);
+                
+                // initialize toggle buttons
+                $(".toggle-display").ToggleButton()
             })
         </script>
     {% endblock %}
