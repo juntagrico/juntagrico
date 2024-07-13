@@ -69,7 +69,7 @@
                         </form>
                     </td>
                     <td>
-                        {{ subscription.depot.weekday_name }}
+                        {{ subscription.depot.get_weekday_display }}
                     </td>
                     {% if enable_shares %}
                         <td>
