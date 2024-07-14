@@ -102,12 +102,16 @@
     {{ block.super }}
     config.layout.topStart.buttons.push(
         id_action_button(
-            '{% trans "Zahlungsdatei erzeugen" %}', '{% url "share-pain001" %}', '{% csrf_token %}',
+            '<i class="fa-solid fa-file-invoice-dollar"></i> {% trans "Zahlungsdatei erzeugen" %}',
+            '{% url "share-pain001" %}',
+            '{% csrf_token %}',
             '.share_id', 'share_ids'
         ),
         {% if perms.juntagrico.change_share %}
             id_action_button(
-                '{% trans "Ausbuchen" %}', '{% url 'manage-share-payout' %}', '{% csrf_token %}', 
+                '<i class="fa-regular fa-circle-check"></i> {% trans "Ausbuchen" %}',
+                '{% url 'manage-share-payout' %}',
+                '{% csrf_token %}', 
                 '.backpayable', 'share_ids',
                 [
                     {% vocabulary "share" as v_share %}

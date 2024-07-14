@@ -78,8 +78,11 @@
     {{ block.super }}
     config.layout.topStart.buttons.push(
         id_action_button(
-            '{% trans "Ändern" %}', '{% url 'manage-sub-depot-change-confirm' %}', '{% csrf_token %}', 
-            '.subscription_id', 'ids',
+            '<i class="fa-solid fa-rotate"></i> {% trans "Ändern" %}',
+            '{% url 'manage-sub-depot-change-confirm' %}',
+            '{% csrf_token %}',
+            '.subscription_id',
+            'ids',
             [
                 {% vocabulary "depot" as v_depot %}
                 {% vocabulary "subscription" as v_subscription %}

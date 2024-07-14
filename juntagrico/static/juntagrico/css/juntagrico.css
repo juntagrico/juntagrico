@@ -330,6 +330,10 @@ textarea#recipients[disabled=disabled] {
     padding-bottom: .5rem;
 }
 
+.dtsb-titleRow {
+    display: none;
+}
+
 /* stuff for responsive tables */
 table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
     font-family: 'Font Awesome 5 Free';

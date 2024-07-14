@@ -15,7 +15,7 @@ $(function () {
             },
             "language": {
                 "decimal": decimal_symbol[1],
-                "search": search_field,
+                "search": '<i class="fa-solid fa-magnifying-glass"></i> ' + search_field,
                 "emptyTable": empty_table_string,
                 "zeroRecords": zero_records_string,
                 searchBuilder: sb_lang
@@ -45,17 +45,17 @@ $(function () {
 });
 
 function email_button(action, csrf_token) {
-    function get_emails(dt) {
-        return fetch_unique_from_table(get_selected_or_all(dt), '.email')
-    }
     return {
-        text: email_button_string[0],
+        text: '<i class="fa-regular fa-envelope"></i> ' + email_button_string[0],
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
                 const count = get_emails(dt).size
                 that.enable(count > 0)
-                that.text(email_button_string[Math.min(2, count)].replace("{count}", count))
+                that.text(
+                    '<i class="fa-regular fa-envelope"></i> ' +
+                    email_button_string[Math.min(2, count)].replace("{count}", count)
+                )
             })
         },
         action: function (e, dt, node, config) {
@@ -64,6 +64,32 @@ function email_button(action, csrf_token) {
                 recipients: Array.from(emails).join("\n"),
                 recipients_count: emails.size,
             })
+        }
+    }
+}
+
+function email_copy_button() {
+    return {
+        text: '<i class="fa-regular fa-clipboard"></i> ' + email_copy_string,
+        init: function (dt, node, config) {
+            let that = this;
+            dt.on('draw select.dt.DT deselect.dt.DT', function () {
+                that.enable(get_emails(dt).size > 0)
+            })
+            this.node().on('click', function() {
+                let button = $(this)
+                button.addClass('btn-success')
+                let original_text = button.html()
+                button.html('<i class="fa-solid fa-check"></i> ' + email_copied_string)
+                window.setTimeout(function () {
+                    button.html(original_text)
+                    button.removeClass('btn-success')
+                }, 3000)
+            })
+        },
+        action: function (e, dt, node, config) {
+            let emails = get_emails(dt)
+            navigator.clipboard.writeText(Array.from(emails).join("\n"))
         }
     }
 }
@@ -91,6 +117,9 @@ function id_action_button(text, action, csrf_token, selector, field='ids', confi
     }
 }
 
+function get_emails(dt) {
+    return fetch_unique_from_table(get_selected_or_all(dt), '.email')
+}
 
 function fetch_unique_from_table(node, selector) {
     // TODO make more robust for case, where there is no space around the node texts.

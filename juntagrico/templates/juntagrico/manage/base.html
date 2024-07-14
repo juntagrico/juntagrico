@@ -31,7 +31,8 @@
                                     email_button(
                                         '{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}',
                                         '{% csrf_token %}'
-                                    )
+                                    ),
+                                    email_copy_button()
                                 ]
                             }
                         },
