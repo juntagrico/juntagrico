@@ -62,7 +62,7 @@ class ShareTests(JuntagricoTestCase):
             unpaid_share, cancelled_share, future_terminated_share, unneeded_unpaid_share
         ])
         # member2 has no access
-        self.assertGet(reverse('manage-share-unpaid'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-share-unpaid'), member=self.member2, code=403)
         # Test share count templatetag
         rendered = Template(
             '{% load juntagrico.share %}'
@@ -100,7 +100,7 @@ class ShareTests(JuntagricoTestCase):
 
     def testManageShareCanceledList(self):
         self.assertGet(reverse('manage-share-cancelled'))
-        self.assertGet(reverse('manage-share-cancelled'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-share-cancelled'), member=self.member2, code=403)
 
     def testManageSharePayout(self):
         share = self.member.share_set.first()

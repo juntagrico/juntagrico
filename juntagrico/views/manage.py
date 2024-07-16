@@ -10,6 +10,7 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.forms import DateRangeForm
 from juntagrico.util import return_to_previous_location, temporal
+from juntagrico.util.auth import MultiplePermissionsRequiredMixin
 from juntagrico.util.views_admin import date_from_get
 
 
@@ -44,8 +45,8 @@ class DateRangeMixin:
         return DateRangeForm(initial={'start_date': self.start, 'end_date': self.end})
 
 
-class MemberCancelledView(PermissionRequiredMixin, ListView):
-    permission_required = ['juntagrico.view_member', 'juntagrico.change_member']
+class MemberCancelledView(MultiplePermissionsRequiredMixin, ListView):
+    permission_required = [['juntagrico.view_member', 'juntagrico.change_member']]
     template_name = 'juntagrico/manage/member/cancelled.html'
     queryset = Member.objects.cancelled
 
@@ -58,8 +59,8 @@ def member_deactivate(request, member_id):
     return return_to_previous_location(request)
 
 
-class ShareCancelledView(PermissionRequiredMixin, ListView):
-    permission_required = ['juntagrico.view_share', 'juntagrico.change_share']
+class ShareCancelledView(MultiplePermissionsRequiredMixin, ListView):
+    permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
     template_name = 'juntagrico/manage/share/cancelled.html'
     queryset = Share.objects.cancelled().annotate_backpayable
 
@@ -76,8 +77,8 @@ def share_payout(request, share_id=None):
     return return_to_previous_location(request)
 
 
-class ShareUnpaidView(PermissionRequiredMixin, ListView):
-    permission_required = ['juntagrico.view_share', 'juntagrico.change_share']
+class ShareUnpaidView(MultiplePermissionsRequiredMixin, ListView):
+    permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
     template_name = 'juntagrico/manage/share/unpaid.html'
 
     def get_queryset(self):
@@ -102,8 +103,8 @@ def subscription_depot_change_confirm(request, subscription_id=None):
     return return_to_previous_location(request)
 
 
-class AssignmentsView(PermissionRequiredMixin, DateRangeMixin, ListView):
-    permission_required = ['juntagrico.view_assignment', 'juntagrico.change_assignment']
+class AssignmentsView(MultiplePermissionsRequiredMixin, DateRangeMixin, ListView):
+    permission_required = [['juntagrico.view_assignment', 'juntagrico.change_assignment']]
     template_name = 'juntagrico/manage/assignments.html'
 
     def get_queryset(self):

@@ -39,7 +39,7 @@ class DepotChangeTests(JuntagricoTestCase):
     def testDepotChangesList(self):
         """Test that depot change list opens for admins and not for members"""
         self.assertGet(reverse('manage-sub-depot-changes'))
-        self.assertGet(reverse('manage-sub-depot-changes'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-sub-depot-changes'), member=self.member2, code=403)
 
     def testDepotChangeConfirmSingle(self):
         """Test that admin can confirm a depot change manually, and normal members can't"""
