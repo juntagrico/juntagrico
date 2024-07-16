@@ -464,20 +464,6 @@ def extra_canceledlist(request):
                                         'management_lists/extra_canceledlist.html', request)
 
 
-@permission_required('juntagrico.change_member')
-def member_canceledlist(request):
-    return subscription_management_list(MemberDao.canceled_members(), {},
-                                        'management_lists/member_canceledlist.html', request)
-
-
-@permission_required('juntagrico.change_member')
-def deactivate_member(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-    member.deactivation_date = datetime.date.today()
-    member.save()
-    return return_to_previous_location(request)
-
-
 def set_change_date(request):
     if request.method != 'POST':
         raise Http404

@@ -32,8 +32,8 @@ class ManListTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-mgmt-extra-canceledlist'), member=self.member2, code=302)
 
     def testMemberCanceledList(self):
-        self.assertGet(reverse('member-mgmt-canceledlist'))
-        self.assertGet(reverse('member-mgmt-canceledlist'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-member-cancelled'))
+        self.assertGet(reverse('manage-member-cancelled'), member=self.member2, code=302)
 
     def testAssignmentList(self):
         self.assertGet(reverse('manage-assignments'))

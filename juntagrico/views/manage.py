@@ -1,16 +1,16 @@
 import datetime
 
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
-from django.utils.decorators import method_decorator
 from django.views.generic import ListView
 
+from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
 from juntagrico.forms import DateRangeForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.views_admin import date_from_get
-from juntagrico.view_decorators import any_permission_required
 
 
 class DateRangeMixin:
@@ -44,8 +44,22 @@ class DateRangeMixin:
         return DateRangeForm(initial={'start_date': self.start, 'end_date': self.end})
 
 
-@method_decorator(any_permission_required('juntagrico.view_share', 'juntagrico.change_share'), name="dispatch")
-class ShareCancelledView(ListView):
+class MemberCancelledView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.view_member', 'juntagrico.change_member']
+    template_name = 'juntagrico/manage/member/cancelled.html'
+    queryset = Member.objects.cancelled
+
+
+@permission_required('juntagrico.change_member')
+def member_deactivate(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+    member.deactivation_date = datetime.date.today()
+    member.save()
+    return return_to_previous_location(request)
+
+
+class ShareCancelledView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.view_share', 'juntagrico.change_share']
     template_name = 'juntagrico/manage/share/cancelled.html'
     queryset = Share.objects.cancelled().annotate_backpayable
 
@@ -62,8 +76,8 @@ def share_payout(request, share_id=None):
     return return_to_previous_location(request)
 
 
-@method_decorator(any_permission_required('juntagrico.view_share', 'juntagrico.change_share'), name="dispatch")
-class ShareUnpaidView(ListView):
+class ShareUnpaidView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.view_share', 'juntagrico.change_share']
     template_name = 'juntagrico/manage/share/unpaid.html'
 
     def get_queryset(self):
@@ -74,8 +88,8 @@ class ShareUnpaidView(ListView):
         )
 
 
-@method_decorator(permission_required('juntagrico.change_subscription'), name="dispatch")
-class SubscriptionDepotChangesView(ListView):
+class SubscriptionDepotChangesView(PermissionRequiredMixin, ListView):
+    permission_required = 'juntagrico.change_subscription'
     template_name = 'juntagrico/manage/subscription/depot/changes.html'
     queryset = Subscription.objects.exclude(future_depot__isnull=True)
 
@@ -88,11 +102,8 @@ def subscription_depot_change_confirm(request, subscription_id=None):
     return return_to_previous_location(request)
 
 
-@method_decorator(
-    any_permission_required('juntagrico.view_assignment', 'juntagrico.change_assignment'),
-    name="dispatch"
-)
-class AssignmentsView(DateRangeMixin, ListView):
+class AssignmentsView(PermissionRequiredMixin, DateRangeMixin, ListView):
+    permission_required = ['juntagrico.view_assignment', 'juntagrico.change_assignment']
     template_name = 'juntagrico/manage/assignments.html'
 
     def get_queryset(self):

@@ -95,9 +95,10 @@ class ProfileTests(JuntagricoTestCase):
         self.assertTrue(self.member.canceled)
 
     def _testDeactivateMembership(self, member):
-        self.assertPost(reverse('member-deactivate', args=(member.pk,)), member=self.admin, code=302)
+        self.assertPost(reverse('manage-member-deactivate-single', args=(member.pk,)), member=self.admin, code=302)
         member.refresh_from_db()
         self.assertTrue(member.inactive)
+        # TODO: test manage-member-deactivate
 
     def testConfirmEmail(self):
         self.assertGet(reverse('send-confirm'))

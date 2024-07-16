@@ -62,10 +62,6 @@ class MemberDao:
         return Member.objects.all()
 
     @staticmethod
-    def canceled_members():
-        return Member.objects.filter(q_cancelled()).exclude(q_deactivated())
-
-    @staticmethod
     def member_by_email(email):
         return next(iter(Member.objects.filter(email__iexact=email) or []), None)
 

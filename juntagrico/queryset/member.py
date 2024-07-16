@@ -11,6 +11,12 @@ class MemberQuerySet(QuerySet):
         on_date = on_date or datetime.date.today()
         return self.exclude(deactivation_date__lte=on_date)
 
+    def cancelled(self):
+        return self.filter(
+            cancellation_date__isnull=False,
+            deactivation_date__isnull=True
+        )
+
     def joining_subscription(self, on_date=None):
         on_date = on_date or datetime.date.today()
         # note: using exclude here would exclude members that left another subscription
