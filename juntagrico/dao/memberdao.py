@@ -4,7 +4,7 @@ from django.contrib.auth.models import Permission
 from django.db.models import Q
 
 from juntagrico.entity.member import Member
-from juntagrico.util.models import q_deactivated, q_cancelled
+from juntagrico.util.models import q_deactivated
 
 
 class MemberDao:
