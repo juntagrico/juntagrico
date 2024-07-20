@@ -124,7 +124,13 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_general_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {
@@ -139,7 +145,18 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_for_members_email",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
+                "can_use_for_subscriptions_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {
@@ -154,7 +171,13 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_for_shares_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {
@@ -169,7 +192,13 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_technical_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {

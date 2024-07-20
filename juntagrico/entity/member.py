@@ -201,6 +201,19 @@ class Member(JuntagricoBaseModel):
             return self.mobile_phone
         return self.phone
 
+    def all_emails(self):
+        """
+        :return: a list of all email addresses this member is allowed to send from
+        """
+        emails = []
+        for area in self.activityarea_set.all():  # areas that this member coordinates
+            emails += area.get_emails()
+        for target in ['general', 'for_members', 'for_subscriptions', 'for_shares', 'technical']:
+            if self.user.has_perm(f'juntagrico.can_use_{target}_email'):
+                emails.append(Config.contacts(target))
+        emails.append(self.email)
+        return list(dict.fromkeys(emails))  # make emails unique and return
+
     def get_hash(self):
         return hashlib.sha1((str(self.email) + str(self.pk)).encode('utf8')).hexdigest()
 

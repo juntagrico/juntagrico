@@ -35,8 +35,9 @@ class JuntagricoTestCase(TestCase):
         cls.set_up_mail_template()
         cls.set_up_deliveries()
         # Use this command here to create fixtures fast:
+        # from django.core.management import call_command
         # call_command('dumpdata', 'juntagrico.{model to export}', '-o', 'juntagrico/fixtures/test/data.json',
-        # '--indent', '4', '--natural-primary', '--natural-foreign')
+        #              '--indent', '4', '--natural-primary', '--natural-foreign')
 
     @classmethod
     def load_members(cls):
