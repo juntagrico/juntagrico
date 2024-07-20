@@ -68,6 +68,7 @@ jobs:
         ./cc-test-reporter before-build
     - name: run tests on mysql
       run: |
+        python -m django makemigrations --noinput
         python -m manage test
       env:
         GITHUB_MYSQL: 1
