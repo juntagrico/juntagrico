@@ -39,7 +39,13 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: mysql
           MYSQL_DATABASE: mysql
-        ports: ['3306:3306']
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
