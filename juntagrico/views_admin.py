@@ -186,29 +186,6 @@ def filters_area(request, area_id):
     return render(request, 'management_lists/members.html', renderdict)
 
 
-@any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
-def subscriptions(request):
-    renderdict = {
-        'subscriptions': SubscriptionDao.all_active_subscritions(),
-        'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
-    }
-
-    return render(request, 'management_lists/subscriptions.html', renderdict)
-
-
-@permission_required('juntagrico.is_depot_admin')
-def filter_subscriptions_depot(request, depot_id):
-    depot = get_object_or_404(Depot, id=int(depot_id))
-    renderdict = {
-        'can_send_mails': True,
-        'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
-        'mail_url': 'mail-depot',
-        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
-    }
-
-    return render(request, 'management_lists/subscriptions.html', renderdict)
-
-
 @permission_required('juntagrico.can_view_lists')
 def depotlist(request):
     return return_pdf_http('depotlist.pdf')

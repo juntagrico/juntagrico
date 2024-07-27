@@ -208,7 +208,7 @@ Search Hints:
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can access the mail from from the administration menu.
+Member can access the email form from the administration menu.
 
 Search Hints:
     * German: Emails versenden

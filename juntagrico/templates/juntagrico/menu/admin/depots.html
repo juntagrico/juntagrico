@@ -17,7 +17,7 @@
                             {% vocabulary "member_pl" %}
                         </a>
                         |
-                        <a class="nav-link inline" href="{% url 'filter-subs-depot' depot.id %}">
+                        <a class="nav-link inline" href="{% url 'manage-depot-subs' depot.id %}">
                             {% blocktrans with dn=depot.name %}{{ v_subscription_pl }} im {{ v_depot }} {{ dn }}{% endblocktrans %}
                         </a>
                     </li>

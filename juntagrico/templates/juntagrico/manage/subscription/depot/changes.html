@@ -44,9 +44,7 @@
             {% for subscription in object_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
-                            {{ subscription }}
-                        </a>
+                        {% include '../snippets/display_linked.html' %}
                         <span class="d-none subscription_id">
                             {{ subscription.id }}
                         </span>

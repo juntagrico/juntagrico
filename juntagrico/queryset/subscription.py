@@ -42,6 +42,10 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         self._start_required = False
         self._end_required = False
 
+    def active(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.in_date_range(on_date, on_date).exclude(activation_date=None)
+
     def in_date_range(self, start, end):
         """
         subscriptions that were active in the given period

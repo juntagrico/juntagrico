@@ -3,8 +3,11 @@ import datetime
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
+from juntagrico.config import Config
+from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
@@ -87,6 +90,36 @@ class ShareUnpaidView(MultiplePermissionsRequiredMixin, ListView):
             .exclude(termination_date__lt=datetime.date.today())
             .order_by('member')
         )
+
+
+class SubscriptionView(MultiplePermissionsRequiredMixin, ListView):
+    permission_required = [['juntagrico.view_subscription', 'juntagrico.change_subscription',
+                            'juntagrico.can_filter_subscriptions']]
+    template_name = 'juntagrico/manage/subscription/show.html'
+    queryset = Subscription.objects.active
+    title = _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        return context
+
+
+class DepotSubscriptionView(SubscriptionView):
+    permission_required = 'juntagrico.is_depot_admin'
+    title = _('Alle aktiven {subs} im {depot} {depot_name}').format(
+        subs=Config.vocabulary('subscription_pl'), depot=Config.vocabulary('depot'), depot_name='{depot_name}'
+    )
+
+    def get_queryset(self):
+        self.depot = get_object_or_404(Depot, id=int(self.kwargs['depot_id']))
+        return super().get_queryset()().filter(depot=self.depot)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title.format(depot_name=self.depot.name)
+        context['mail_url'] = 'mail-depot'
+        return context
 
 
 class SubscriptionDepotChangesView(PermissionRequiredMixin, ListView):

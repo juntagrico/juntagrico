@@ -6,11 +6,11 @@ from . import JuntagricoTestCase
 class FilterTests(JuntagricoTestCase):
 
     def testSubscrition(self):
-        self.assertGet(reverse('filter-subs'))
-        self.assertGet(reverse('filter-subs'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-subscription'))
+        self.assertGet(reverse('manage-subscription'), member=self.member2, code=302)
 
     def testSubscritionDepot(self):
-        url = reverse('filter-subs-depot', args=[self.depot.pk])
+        url = reverse('manage-depot-subs', args=[self.depot.pk])
         self.assertGet(url)
         self.assertGet(url, member=self.member2, code=302)
 
