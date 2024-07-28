@@ -19,8 +19,8 @@
 {% block list %}
     <table id="filter-table" class="list table">
         <thead>
-            {% block list_head %}
-                <tr>
+            <tr>
+                {% block list_head %}
                     <th class="filter">
                         {% vocabulary "subscription" %}
                     </th>
@@ -33,12 +33,12 @@
                     <th class="filter">
                         {% trans "Kontakt" %}
                     </th>
-                </tr>
-            {% endblock %}
+                {% endblock %}
+            </tr>
         </thead>
         <tfoot>
-            {% block list_foot %}
-                <tr>
+            <tr>
+                {% block list_foot %}
                     <th>
                         {% vocabulary "subscription" %}
                     </th>
@@ -51,8 +51,8 @@
                     <th>
                         {% trans "Kontakt" %}
                     </th>
-                </tr>
-            {% endblock %}
+                {% endblock %}
+            </tr>
         </tfoot>
         <tbody>
             {% for subscription in object_list %}

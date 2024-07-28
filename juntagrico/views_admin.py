@@ -5,7 +5,7 @@ from io import BytesIO
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
 from django.http import Http404, HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -20,15 +20,13 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
-from juntagrico.util.management_list import get_changedate, prefetch_for_list
+from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
@@ -138,52 +136,6 @@ def my_mails_intern(request, mail_url, error_message=None):
         'richtext_language': tinymce_lang(get_language()),
     }
     return render(request, 'mail_sender.html', renderdict)
-
-
-@any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
-def filters_active(request):
-    members = prefetch_for_list(MemberDao.active_members())
-    renderdict = {
-        'members': members,
-        'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
-    }
-    return render(request, 'management_lists/members.html', renderdict)
-
-
-@any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
-def filters(request):
-    members = prefetch_for_list(MemberDao.all_members())
-    renderdict = {
-        'members': members,
-        'title': _('Alle {}').format(Config.vocabulary('member_pl'))
-    }
-    return render(request, 'management_lists/members.html', renderdict)
-
-
-@permission_required('juntagrico.is_depot_admin')
-def filters_depot(request, depot_id):
-    depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
-    members = prefetch_for_list(MemberDao.member_with_active_subscription_for_depot(depot))
-    renderdict = {
-        'can_send_mails': True,
-        'members': members,
-        'mail_url': 'mail-depot',
-        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
-    }
-    return render(request, 'management_lists/members.html', renderdict)
-
-
-@permission_required('juntagrico.is_area_admin')
-def filters_area(request, area_id):
-    area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
-    members = prefetch_for_list(MemberDao.members_in_area(area))
-    renderdict = {
-        'can_send_mails': True,
-        'members': members,
-        'mail_url': 'mail-area',
-        'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
-    }
-    return render(request, 'management_lists/members.html', renderdict)
 
 
 @permission_required('juntagrico.can_view_lists')

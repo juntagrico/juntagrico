@@ -10,6 +10,7 @@ from polymorphic.query import PolymorphicQuerySet
 from juntagrico.entity import SimpleStateModelQuerySet
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.util.temporal import default_to_business_year
+from . import SubscriptionMembershipQuerySetMixin
 
 
 def assignments_in_subscription_membership(start, end, **extra_filters):
@@ -32,7 +33,7 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
     ).values('total')
 
 
-class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
+class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModelQuerySet, PolymorphicQuerySet):
     microseconds_in_day = 24 * 3600 * 10 ** 6
     days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)

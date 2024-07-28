@@ -13,7 +13,7 @@
             <ul class="nav flex-column subadmin-menu">
                 {% for area in qs_area_admin %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'filter-area' area.id %}">
+                        <a class="nav-link" href="{% url 'manage-area-member' area.id %}">
                             {% vocabulary "member_pl" %} {% trans "in" %} {{ area.name }}
                         </a>
                     </li>

@@ -150,7 +150,7 @@ class Subscription(Billable, SimpleStateModel):
     def future_members(self):
         if hasattr(self, 'override_future_members'):
             return self.override_future_members
-        return set(self.members.joining_subscription())
+        return set(self.members.joining())
 
     @property
     def current_members(self):
@@ -159,7 +159,7 @@ class Subscription(Billable, SimpleStateModel):
         elif self.inactive:
             return self.members.all()
         else:
-            return self.members.joined_subscription().active()
+            return self.members.joined().active()
 
     @admin.display(description=primary_member.verbose_name)
     def primary_member_nullsave(self):

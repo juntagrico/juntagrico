@@ -145,13 +145,15 @@ urlpatterns = [
     path('manage/subscription/depot/changes', manage.SubscriptionDepotChangesView.as_view(), name='manage-sub-depot-changes'),
     path('manage/subscription/depot/change/confirm', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm'),
     path('manage/subscription/depot/change/confirm/<int:subscription_id>', manage.subscription_depot_change_confirm, name='manage-sub-depot-change-confirm-single'),
+
     # /manage/member
+    path('manage/member', manage.MemberView.as_view(), name='manage-member'),
+    path('manage/member/active', manage.MemberActiveView.as_view(), name='manage-member-active'),
     path('manage/member/cancelled', manage.MemberCancelledView.as_view(), name='manage-member-cancelled'),
     path('manage/member/deactivate', manage.member_deactivate, name='manage-member-deactivate'),
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
-    path('my/filters', juntagrico_admin.filters, name='filters'),
-    path('my/filters/active', juntagrico_admin.filters_active, name='filters-active'),
+
     # /manage/assignments
     path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),
     # /manage/share
@@ -160,11 +162,10 @@ urlpatterns = [
     path('manage/share/payout', manage.share_payout, name='manage-share-payout'),
     path('manage/share/payout/<int:share_id>', manage.share_payout, name='manage-share-payout-single'),
     # /manage/depot
-    path('my/filters/depot/<int:depot_id>/', juntagrico_admin.filters_depot, name='filter-depot'),
     path('manage/depot/<int:depot_id>/subscription', manage.DepotSubscriptionView.as_view(),
          name='manage-depot-subs'),
     # /manage/area
-    path('my/filters/area/<int:area_id>/', juntagrico_admin.filters_area, name='filter-area'),
+    path('manage/area/<int:area_id>/member', manage.AreaMemberView.as_view(), name='manage-area-member'),
 
     # /email
     path('my/mails', juntagrico_admin.mails, name='mail'),

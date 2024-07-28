@@ -8,6 +8,7 @@ from django.views.generic import ListView
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
@@ -46,6 +47,53 @@ class DateRangeMixin:
 
     def get_form(self):
         return DateRangeForm(initial={'start_date': self.start, 'end_date': self.end})
+
+
+class TitledListView(ListView):
+    title = _('Titel')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title
+        return context
+
+
+class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
+    permission_required = [['juntagrico.view_member', 'juntagrico.change_member',
+                            'juntagrico.can_filter_members']]
+    template_name = 'juntagrico/manage/member/show.html'
+    queryset = Member.objects.all
+    title = _('Alle {}').format(Config.vocabulary('member_pl'))
+
+    def get_queryset(self):
+        return super().get_queryset()().prefetch_for_list
+
+
+class MemberActiveView(MemberView):
+    queryset = Member.objects.active
+    title = _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
+
+
+class AreaMemberView(MemberView):
+    permission_required = 'juntagrico.is_area_admin'
+    title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
+        member=Config.vocabulary('member_pl'), area_name='{area_name}'
+    )
+
+    def get_queryset(self):
+        self.area = get_object_or_404(
+            ActivityArea,
+            id=int(self.kwargs['area_id']),
+            coordinator=self.request.user.member
+        )
+        return self.area.members.active().prefetch_for_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.title.format(area_name=self.area.name)
+        context['mail_url'] = 'mail-area'
+        context['hide_areas'] = True
+        return context
 
 
 class MemberCancelledView(MultiplePermissionsRequiredMixin, ListView):
@@ -92,17 +140,12 @@ class ShareUnpaidView(MultiplePermissionsRequiredMixin, ListView):
         )
 
 
-class SubscriptionView(MultiplePermissionsRequiredMixin, ListView):
+class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     permission_required = [['juntagrico.view_subscription', 'juntagrico.change_subscription',
                             'juntagrico.can_filter_subscriptions']]
     template_name = 'juntagrico/manage/subscription/show.html'
     queryset = Subscription.objects.active
     title = _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = self.title
-        return context
 
 
 class DepotSubscriptionView(SubscriptionView):
@@ -112,7 +155,7 @@ class DepotSubscriptionView(SubscriptionView):
     )
 
     def get_queryset(self):
-        self.depot = get_object_or_404(Depot, id=int(self.kwargs['depot_id']))
+        self.depot = get_object_or_404(Depot, id=int(self.kwargs['depot_id']), contact=self.request.user.member)
         return super().get_queryset()().filter(depot=self.depot)
 
     def get_context_data(self, **kwargs):

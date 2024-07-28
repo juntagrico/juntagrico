@@ -1,12 +1,13 @@
 import datetime
 
-from django.db.models import QuerySet, Sum, Case, When, Q
+from django.db.models import QuerySet, Sum, Case, When, Prefetch, F
 from django.utils.decorators import method_decorator
 
 from juntagrico.util.temporal import default_to_business_year
+from . import SubscriptionMembershipQuerySetMixin
 
 
-class MemberQuerySet(QuerySet):
+class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
     def active(self, on_date=None):
         on_date = on_date or datetime.date.today()
         return self.exclude(deactivation_date__lte=on_date)
@@ -17,17 +18,18 @@ class MemberQuerySet(QuerySet):
             deactivation_date__isnull=True
         )
 
-    def joining_subscription(self, on_date=None):
-        on_date = on_date or datetime.date.today()
-        # note: using exclude here would exclude members that left another subscription
-        return self.filter(
-            Q(subscriptionmembership__leave_date__gt=on_date)
-            | Q(subscriptionmembership__leave_date=None)
-        ).distinct()
-
-    def joined_subscription(self, on_date=None):
-        on_date = on_date or datetime.date.today()
-        return self.filter(subscriptionmembership__join_date__lte=on_date).joining_subscription(on_date)
+    def prefetch_for_list(self):
+        # TODO: Write test for this
+        members = self.defer('notes').prefetch_related('areas').annotate(userid=F('user__id'))
+        # prefetch current subscription. This will be picked up in Member.subscription_current()
+        from juntagrico.entity.subs import Subscription
+        return members.prefetch_related(
+            Prefetch(
+                'subscriptions',
+                queryset=Subscription.objects.joined().annotate(depot_name=F('depot__name')),
+                to_attr='current_subscription'
+            ),
+        )
 
     @method_decorator(default_to_business_year)
     def annotate_assignment_count(self, start=None, end=None, prefix='', **extra_filters):

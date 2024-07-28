@@ -149,8 +149,12 @@ class Member(JuntagricoBaseModel):
 
     @cached_property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
-        return getattr(sub_membership, 'subscription', None)
+        if hasattr(self, 'current_subscription'):
+            # use prefetched subscription (from MemberQuerySet.prefetch_for_list)
+            if sm := self.current_subscription:
+                return sm[0]
+            return None
+        return self.subscriptions.joined().first()
 
     @property
     def subscriptions_old(self):
