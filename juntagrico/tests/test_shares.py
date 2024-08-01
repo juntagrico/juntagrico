@@ -41,7 +41,7 @@ class ShareTests(JuntagricoTestCase):
         yesterday = today - datetime.timedelta(days=1)
         tomorrow = today + datetime.timedelta(days=1)
         unpaid_share = Share.objects.create(member=self.member)
-        cancelled_share = Share.objects.create(member=self.member2, cancelled_date=yesterday)
+        canceled_share = Share.objects.create(member=self.member2, cancelled_date=yesterday)
         future_terminated_share = Share.objects.create(
             member=self.member3, cancelled_date=yesterday, termination_date=tomorrow
         )
@@ -59,7 +59,7 @@ class ShareTests(JuntagricoTestCase):
         response = self.assertGet(reverse('manage-share-unpaid'))
         # make sure the right shares are shown
         self.assertEqual(list(response.context['object_list'].order_by('id')), [
-            unpaid_share, cancelled_share, future_terminated_share, unneeded_unpaid_share
+            unpaid_share, canceled_share, future_terminated_share, unneeded_unpaid_share
         ])
         # member2 has no access
         self.assertGet(reverse('manage-share-unpaid'), member=self.member2, code=403)
@@ -76,7 +76,7 @@ class ShareTests(JuntagricoTestCase):
         self.assertEqual(
             rendered,
             'Ja,Ja,Ja. Oder first_name1 last_name1. (1 insgesamt),Nein,',
-            msg="\nfirst should be yes, because unpaid share of member 3 is cancelled"
+            msg="\nfirst should be yes, because unpaid share of member 3 is canceled"
                 "\nsecond is a plain yes for member 2"
                 "\nthird could also be paid by member 1"
                 "\nlast is a not required share of member 4"
@@ -99,8 +99,8 @@ class ShareTests(JuntagricoTestCase):
         # TODO: Test cancellation date
 
     def testManageShareCanceledList(self):
-        self.assertGet(reverse('manage-share-cancelled'))
-        self.assertGet(reverse('manage-share-cancelled'), member=self.member2, code=403)
+        self.assertGet(reverse('manage-share-canceled'))
+        self.assertGet(reverse('manage-share-canceled'), member=self.member2, code=403)
 
     def testManageSharePayoutSingle(self):
         share = self.member.share_set.first()

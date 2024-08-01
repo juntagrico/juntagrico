@@ -186,7 +186,7 @@ def part_change(request, part):
     change part of a subscription
     """
     if part.subscription.canceled or part.subscription.inactive:
-        raise Http404("Can't change subscription part of cancelled subscription")
+        raise Http404("Can't change subscription part of canceled subscription")
     if SubscriptionTypeDao.get_normal_visible().count() <= 1:
         raise Http404("Can't change subscription part if there is only one subscription type")
     if request.method == 'POST':

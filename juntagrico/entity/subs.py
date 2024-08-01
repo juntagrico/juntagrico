@@ -14,7 +14,7 @@ from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.signals import depot_change_confirmed
-from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
+from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
 
 
@@ -76,7 +76,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def future_parts(self):
-        return self.parts.filter(~q_cancelled() & ~q_deactivated())
+        return self.parts.filter(~q_canceled() & ~q_deactivated())
 
     @property
     def active_and_future_parts(self):
@@ -102,7 +102,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -180,7 +180,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extrasubscriptions_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()

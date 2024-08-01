@@ -361,7 +361,7 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
-    # Check if membership can be cancelled
+    # Check if membership can be canceled
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future

@@ -12,11 +12,11 @@ class ShareQueryset(PolymorphicQuerySet):
         return self.filter(paid_date__isnull=True)
 
     def usable(self):
-        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
+        """ :return: shares that have been ordered (i.e. created) and not canceled yet
         """
         return self.filter(cancelled_date__isnull=True)
 
-    def cancelled(self):
+    def canceled(self):
         return self.filter(
             paid_date__isnull=False,
             cancelled_date__isnull=False,

@@ -500,10 +500,10 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
 
     def clean(self):
         selected = self.get_selected()
-        # check that subscription is not cancelled:
+        # check that subscription is not canceled:
         if self.subscription.cancellation_date:
             raise ValidationError(_('Für gekündigte {} können keine Bestandteile oder Zusatzabos bestellt werden').
-                                  format(Config.vocabulary('subscription_pl')), code='no_order_if_cancelled')
+                                  format(Config.vocabulary('subscription_pl')), code='no_order_if_canceled')
         # check if members in subscription have sufficient shares
         available_shares = self.subscription.all_shares
         new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])

@@ -78,7 +78,7 @@ class Member(JuntagricoBaseModel):
 
     @property
     def active_shares(self):
-        """ :return: shares that have been paid by member and not cancelled AND paid back yet
+        """ :return: shares that have been paid by member and not canceled AND paid back yet
         """
         return self.share_set.active()
 
@@ -118,7 +118,7 @@ class Member(JuntagricoBaseModel):
 
     @property
     def usable_shares(self):
-        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
+        """ :return: shares that have been ordered (i.e. created) and not canceled yet
         """
         return self.share_set.usable()
 

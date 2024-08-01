@@ -12,11 +12,11 @@ Job signals
 job_canceled
 ^^^^^^^^^^^^
 
-Trigger: Job is saved with the cancelled flag set (and the flag wasn't set before).
+Trigger: Job is saved with the canceled flag set (and the flag wasn't set before).
 
 Arguments:
 
-* instance: The job instance that was cancelled
+* instance: The job instance that was canceled
 
 Default receivers:
 
@@ -198,7 +198,7 @@ member_canceled
 ^^^^^^^^^^^^^^^
 
 .. warning::
-    Deprecated since version 1.7.0. Use :ref:`cancelled <reference-signals-canceled>` with sender ``Member`` instead.
+    Deprecated since version 1.7.0. Use :ref:`canceled <reference-signals-canceled>` with sender ``Member`` instead.
 
 
 Trigger: A member that had no cancellation date set, is saved with a cancellation date.

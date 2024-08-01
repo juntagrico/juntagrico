@@ -96,10 +96,10 @@ class AreaMemberView(MemberView):
         return context
 
 
-class MemberCancelledView(MultiplePermissionsRequiredMixin, ListView):
+class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_member', 'juntagrico.change_member']]
-    template_name = 'juntagrico/manage/member/cancelled.html'
-    queryset = Member.objects.cancelled
+    template_name = 'juntagrico/manage/member/canceled.html'
+    queryset = Member.objects.canceled
 
 
 @permission_required('juntagrico.change_member')
@@ -113,10 +113,10 @@ def member_deactivate(request, member_id=None):
     return return_to_previous_location(request)
 
 
-class ShareCancelledView(MultiplePermissionsRequiredMixin, ListView):
+class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
     permission_required = [['juntagrico.view_share', 'juntagrico.change_share']]
-    template_name = 'juntagrico/manage/share/cancelled.html'
-    queryset = Share.objects.cancelled().annotate_backpayable
+    template_name = 'juntagrico/manage/share/canceled.html'
+    queryset = Share.objects.canceled().annotate_backpayable
 
 
 @permission_required('juntagrico.change_share')

@@ -35,7 +35,7 @@ class Share(Billable):
     paid_date = models.DateField(_('Bezahlt am'), null=True, blank=True)
     issue_date = models.DateField(_('Ausgestellt am'), null=True, blank=True)
     booking_date = models.DateField(_('Eingebucht am'), null=True, blank=True)
-    cancelled_date = models.DateField(_('Gekündigt am'), null=True, blank=True)
+    cancelled_date = models.DateField(_('Gekündigt am'), null=True, blank=True)  # TODO: rename to cancellation_date
     termination_date = models.DateField(
         _('Gekündigt auf'), null=True, blank=True)
     payback_date = models.DateField(
@@ -63,9 +63,9 @@ class Share(Billable):
     def state_text(self):
         today = datetime.date.today()
         paid = (self.paid_date is not None and self.paid_date <= today) << 0
-        cancelled = (self.cancelled_date is not None and self.cancelled_date <= today) << 1
+        canceled = (self.cancelled_date is not None and self.cancelled_date <= today) << 1
         paid_back = (self.payback_date is not None and self.payback_date <= today) << 2
-        state_code = paid + cancelled + paid_back
+        state_code = paid + canceled + paid_back
         return Share.__state_text_dict.get(state_code, _('Fehler!'))
 
     @property

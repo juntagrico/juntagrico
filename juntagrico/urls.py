@@ -149,7 +149,7 @@ urlpatterns = [
     # /manage/member
     path('manage/member', manage.MemberView.as_view(), name='manage-member'),
     path('manage/member/active', manage.MemberActiveView.as_view(), name='manage-member-active'),
-    path('manage/member/cancelled', manage.MemberCancelledView.as_view(), name='manage-member-cancelled'),
+    path('manage/member/canceled', manage.MemberCanceledView.as_view(), name='manage-member-canceled'),
     path('manage/member/deactivate', manage.member_deactivate, name='manage-member-deactivate'),
     path('manage/member/deactivate/<int:member_id>/', manage.member_deactivate,
          name='manage-member-deactivate-single'),
@@ -158,7 +158,7 @@ urlpatterns = [
     path('manage/assignments', manage.AssignmentsView.as_view(), name='manage-assignments'),
     # /manage/share
     path('manage/share/unpaid', manage.ShareUnpaidView.as_view(), name='manage-share-unpaid'),
-    path('manage/share/cancelled', manage.ShareCancelledView.as_view(), name='manage-share-cancelled'),
+    path('manage/share/canceled', manage.ShareCanceledView.as_view(), name='manage-share-canceled'),
     path('manage/share/payout', manage.share_payout, name='manage-share-payout'),
     path('manage/share/payout/<int:share_id>', manage.share_payout, name='manage-share-payout-single'),
     # /manage/depot

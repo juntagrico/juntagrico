@@ -12,7 +12,7 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         on_date = on_date or datetime.date.today()
         return self.exclude(deactivation_date__lte=on_date)
 
-    def cancelled(self):
+    def canceled(self):
         return self.filter(
             cancellation_date__isnull=False,
             deactivation_date__isnull=True

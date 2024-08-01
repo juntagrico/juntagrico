@@ -16,8 +16,8 @@ class ProfileTests(JuntagricoTestCase):
         cls.member_without_shares = cls.create_member('member_without_shares@email.org')
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org')
         cls.unpaid_share = Share.objects.create(member=cls.member_with_unpaid_share)
-        cls.member_with_cancelled_share = cls.create_member('member_with_cancelled_share@email.org')
-        cls.cancelled_share = cls.create_paid_and_cancelled_share(cls.member_with_cancelled_share)
+        cls.member_with_canceled_share = cls.create_member('member_with_canceled_share@email.org')
+        cls.canceled_share = cls.create_paid_and_canceled_share(cls.member_with_canceled_share)
         cls.admin = Member.objects.get(email='admin@email.org')
         cls.admin.user.user_permissions.add(
             Permission.objects.get(codename='notified_on_member_cancellation')
@@ -78,18 +78,18 @@ class ProfileTests(JuntagricoTestCase):
         self.assertTrue(self.member_without_shares.inactive)
         self._testDeactivateMembershipSingle(self.member_without_shares)
 
-    def testCancelMembershipWithCancelledShares(self):
-        self.assertPost(reverse('cancel-membership'), code=302, member=self.member_with_cancelled_share)
+    def testCancelMembershipWithCanceledShares(self):
+        self.assertPost(reverse('cancel-membership'), code=302, member=self.member_with_canceled_share)
         self.assertEqual(len(mail.outbox), 1)  # admin notification
-        self.member_with_cancelled_share.refresh_from_db()
-        self.assertTrue(self.member_with_cancelled_share.canceled)
+        self.member_with_canceled_share.refresh_from_db()
+        self.assertTrue(self.member_with_canceled_share.canceled)
         # pay back the share
-        self.cancelled_share.refresh_from_db()
-        self.cancelled_share.payback_date = self.cancelled_share.termination_date
-        self.cancelled_share.save()
-        self._testDeactivateMembershipSingle(self.member_with_cancelled_share)
+        self.canceled_share.refresh_from_db()
+        self.canceled_share.payback_date = self.canceled_share.termination_date
+        self.canceled_share.save()
+        self._testDeactivateMembershipSingle(self.member_with_canceled_share)
 
-    def testCancelMembershipWithCancelledSubscriptions(self):
+    def testCancelMembershipWithCanceledSubscriptions(self):
         self.set_up_depots()
         self.set_up_sub_types()
         sub = self.create_sub_now(self.depot)
@@ -99,7 +99,7 @@ class ProfileTests(JuntagricoTestCase):
         self.assertEqual(len(mail.outbox), 0)
         self.member.refresh_from_db()
         self.assertFalse(self.member.canceled)
-        # succeed when cancelled
+        # succeed when canceled
         sub.cancel()
         self.assertPost(reverse('cancel-membership'), code=302, member=self.member, data=self.cancellation_data)
         self.assertEqual(len(mail.outbox), 1)  # admin notification
@@ -114,10 +114,10 @@ class ProfileTests(JuntagricoTestCase):
     def testDeactivateMembership(self):
         # Expected result: members that have no paid shares, can be deactivated.
         members = {
-            self.member: False,  # still has cancelled shares
+            self.member: False,  # still has canceled shares
             self.member_without_shares: True,
             self.member_with_unpaid_share: True,
-            self.member_with_cancelled_share: False
+            self.member_with_canceled_share: False
         }
         for member in members.keys():
             member.cancel()

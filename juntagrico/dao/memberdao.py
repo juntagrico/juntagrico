@@ -25,7 +25,7 @@ class MemberDao:
                  subscriptionmembership__subscription__activation_date__lte=datetime.date.today())
 
     @staticmethod
-    def q_subscription_cancelled():
+    def q_subscription_canceled():
         return Q(subscriptionmembership__subscription__cancellation_date__isnull=False,
                  subscriptionmembership__subscription__cancellation_date__lte=datetime.date.today())
 
@@ -37,15 +37,15 @@ class MemberDao:
     @staticmethod
     def has_subscription():
         return Q(MemberDao.q_subscription_activated(),
-                 ~MemberDao.q_subscription_cancelled(),
+                 ~MemberDao.q_subscription_canceled(),
                  ~MemberDao.q_subscription_deactivated(),
                  MemberDao.q_joined_subscription(),
                  ~MemberDao.q_left_subscription())
 
     @staticmethod
-    def has_cancelled_subscription():
+    def has_canceled_subscription():
         return Q(MemberDao.q_subscription_activated(),
-                 MemberDao.q_subscription_cancelled(),
+                 MemberDao.q_subscription_canceled(),
                  ~MemberDao.q_subscription_deactivated(),
                  MemberDao.q_joined_subscription(),
                  ~MemberDao.q_left_subscription())
@@ -53,7 +53,7 @@ class MemberDao:
     @staticmethod
     def has_future_subscription():
         return Q(~MemberDao.q_subscription_activated(),
-                 ~MemberDao.q_subscription_cancelled(),
+                 ~MemberDao.q_subscription_canceled(),
                  ~MemberDao.q_subscription_deactivated(),
                  subscriptionmembership__isnull=False)
 
@@ -84,7 +84,7 @@ class MemberDao:
 
     @staticmethod
     def members_for_email_with_subscription():
-        return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_cancelled_subscription()).exclude(
+        return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_canceled_subscription()).exclude(
             q_deactivated())
 
     @staticmethod
@@ -93,7 +93,7 @@ class MemberDao:
 
     @staticmethod
     def member_with_active_subscription_for_depot(depot):
-        return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_cancelled_subscription(),
+        return Member.objects.filter(MemberDao.has_subscription() | MemberDao.has_canceled_subscription(),
                                      subscriptionmembership__subscription__depot=depot)\
             .exclude(q_deactivated())
 
