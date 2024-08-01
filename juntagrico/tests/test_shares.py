@@ -102,11 +102,25 @@ class ShareTests(JuntagricoTestCase):
         self.assertGet(reverse('manage-share-cancelled'))
         self.assertGet(reverse('manage-share-cancelled'), member=self.member2, code=403)
 
-    def testManageSharePayout(self):
+    def testManageSharePayoutSingle(self):
         share = self.member.share_set.first()
         share.cancelled_date = datetime.date.today()
         share.termination_date = datetime.date.today()
         share.save()
         self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 302)
-        self.assertEqual(self.member2.active_shares.count(), 0)
-        # TODO: test manage-share-payout
+        self.assertEqual(self.member.active_shares.count(), 0)
+
+    def testManageSharePayout(self):
+        shares = Share.objects.all()
+        for share in shares:
+            share.cancelled_date = datetime.date.today()
+            share.termination_date = datetime.date.today()
+            share.save()
+        self.assertPost(
+            reverse('manage-share-payout'),
+            {'share_ids': '_'.join(map(str, shares.values_list('pk', flat=True)))},
+            302
+        )
+        self.assertEqual(self.member.active_shares.count(), 0)
+        self.assertEqual(self.member4.active_shares.count(), 0)
+        self.assertEqual(self.member5.active_shares.count(), 0)
