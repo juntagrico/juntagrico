@@ -177,4 +177,12 @@ DJRICHTEXTFIELD_CONFIG = {
     }
 }
 
+CONTACTS = {
+    'general': "info@juntagrico.juntagrico",
+    'for_members': "member@juntagrico.juntagrico",
+    'for_subscriptions': "subscription@juntagrico.juntagrico",
+    'for_shares': "share@juntagrico.juntagrico",
+    'technical': "it@juntagrico.juntagrico",
+}
+
 IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
