@@ -56,13 +56,13 @@ class DepotChangeTests(JuntagricoTestCase):
     def testDepotChangeConfirm(self):
         self.sub2.future_depot = self.depot2
         self.sub2.save()
-        self.assertPost(reverse('manage-sub-depot-change-confirm'), code=302, data={'ids': f'{self.sub2.pk}_{self.sub3.pk}'})
+        self.assertPost(reverse('manage-sub-depot-change-confirm'), code=302, data={'ids': f'{self.sub2.pk}_{self.another_sub.pk}'})
         self.sub2.refresh_from_db()
-        self.sub3.refresh_from_db()
+        self.another_sub.refresh_from_db()
         self.assertEqual(self.sub2.depot, self.depot2)
         self.assertIsNone(self.sub2.future_depot)
-        self.assertEqual(self.sub3.depot, self.depot2)
-        self.assertIsNone(self.sub3.future_depot)
+        self.assertEqual(self.another_sub.depot, self.depot2)
+        self.assertIsNone(self.another_sub.future_depot)
         self.assertEqual(len(mail.outbox), 2)  # member notification of depot change
 
     def testDepotChangeOnListCreation(self):
