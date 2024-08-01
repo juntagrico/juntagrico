@@ -1,5 +1,5 @@
-from django.urls import reverse
 from django.core import mail
+from django.urls import reverse
 
 from . import JuntagricoTestCase
 
@@ -16,10 +16,10 @@ class AreaTests(JuntagricoTestCase):
         self.assertGet(reverse('area-join', args=[self.area.pk]))
         self.assertEqual(self.area.members.count(), 1)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].recipients(), [self.area.coordinator.email])
+        self.assertEqual(mail.outbox[0].recipients(), ['test@test.org'])
         mail.outbox = []
 
         self.assertGet(reverse('area-leave', args=[self.area.pk]))
         self.assertEqual(self.area.members.count(), 0)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].recipients(), [self.area.coordinator.email])
+        self.assertEqual(mail.outbox[0].recipients(), ['test@test.org'])

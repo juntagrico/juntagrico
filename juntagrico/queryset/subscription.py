@@ -83,7 +83,13 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
 
         return self.alias(
             # convert trial days into duration. Minus 1 to end up at the end of the last trial day, e.g., 1. + 30 days = 30. (not 31.)
-            parts__type__trial_duration=ExpressionWrapper(F('parts__type__trial_days') * self.one_day, DurationField()) - self.one_day,
+            parts__type__trial_duration=(
+                # tested with postgreSQL
+                ExpressionWrapper(F('parts__type__trial_days') * self.one_day, DurationField()) - self.one_day
+                if connection.features.has_native_duration_field else
+                # alternative tested with MariaDB and Sqlite
+                Cast(F('parts__type__trial_days') * self.microseconds_in_day, DurationField()) - self.one_day
+            ),
             # find (assumed) deactivation date of part
             parts__forecast_final_date=Least(
                 end,  # limit final date to period of interest
@@ -103,7 +109,7 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
             parts__duration_in_period=F('parts__forecast_final_date') - Greatest('parts__activation_date', start) + self.one_day,
             parts__duration_in_period_float=Greatest(
                 0.0,  # ignore values <0 resulting from parts outside the period of interest
-                # Tested on postgres (ExtractDay) and SQLite (Cast)
+                # Tested on postgreSQL (ExtractDay) and SQLite, MariaDB (Cast)
                 ExtractDay('parts__duration_in_period')
                 if connection.features.has_native_duration_field else
                 Cast('parts__duration_in_period', FloatField()) / self.microseconds_in_day,

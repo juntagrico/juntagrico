@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 from django.core import mail
+from django.test import override_settings
 from django.urls import reverse
 
 from . import JuntagricoTestCase
-from django.test import override_settings
 
 
 def mock_batch_mailer(msg):
@@ -21,6 +21,22 @@ class MailerTests(JuntagricoTestCase):
     def testMailer(self):
         self.assertGet(reverse('mail'))
         self.assertGet(reverse('mail'), member=self.member2, code=302)
+
+    def testMemberFromEmailSelection(self):
+        self.assertListEqual(self.member.all_emails(), ['email1@email.org'])
+        self.assertListEqual(self.member2.all_emails(), ['info@juntagrico.juntagrico', 'email2@email.org'])
+        self.assertListEqual(self.member3.all_emails(), [
+            'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico', 'email3@email.org'
+        ])
+        self.assertListEqual(self.member4.all_emails(), ['share@juntagrico.juntagrico', 'email4@email.org'])
+        self.assertListEqual(self.member5.all_emails(), ['it@juntagrico.juntagrico', 'email5@email.org'])
+        self.assertListEqual(self.area_admin.all_emails(), [
+            'test@test.org', 'email2@email.org', 'areaadmin@email.org'
+        ])
+        self.assertListEqual(self.admin.all_emails(), [
+            'info@juntagrico.juntagrico', 'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico',
+            'share@juntagrico.juntagrico', 'it@juntagrico.juntagrico', 'admin@email.org'
+        ])
 
     def testMailSend(self):
         with open('juntagrico/tests/test_mailer.py') as fp:
