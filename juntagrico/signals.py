@@ -3,6 +3,7 @@ from django.dispatch import Signal
 from juntagrico.mailer import adminnotification, membernotification
 
 subscribed = Signal()
+canceled = Signal()
 
 ''' job related signals'''
 job_canceled = Signal()
@@ -34,7 +35,7 @@ share_canceled = Signal()
 
 ''' member signals '''
 member_created = Signal()
-member_canceled = Signal()
+member_canceled = Signal()  # DEPRECATED
 member_deactivated = Signal()
 
 
@@ -47,3 +48,7 @@ def on_depot_changed(sender, **kwargs):
 
 def on_depot_change_confirmed(sender, instance, **kwargs):
     membernotification.depot_changed(instance, **kwargs)
+
+
+def on_member_canceled(sender, instance, **kwargs):
+    adminnotification.member_canceled(instance, **kwargs)

@@ -108,7 +108,7 @@
             '<i class="fa-solid fa-user-slash"></i> {% trans "Deaktivieren" %}',
             '{% url 'manage-member-deactivate' %}',
             '{% csrf_token %}', 
-            '.deactivatable', 'ids',
+            '.deactivatable', 'member_ids',
             [
                 {% vocabulary "member" as v_member %}
                 '{% blocktrans %}1 {{ v_member }} deaktivieren?{% endblocktrans %}',

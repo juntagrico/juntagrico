@@ -9,6 +9,7 @@ from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
 from juntagrico.queryset.share import ShareQueryset
+from juntagrico.util.temporal import next_membership_end_date
 
 reason_for_acquisition_choices = ((1, _('Gründungsmitglied')),
                                   (2, _('Beitrittserklärung')),
@@ -76,6 +77,11 @@ class Share(Billable):
 
     def __str__(self):
         return _('Anteilschein {0} ({1})').format(self.id, self.state_text)
+
+    def cancel(self, date=None, end_date=None):
+        self.cancelled_date = self.cancelled_date or date or datetime.date.today()
+        self.termination_date = self.termination_date or end_date or next_membership_end_date(self.cancelled_date)
+        self.save()
 
     def payback(self, date=None):
         date = date or datetime.date.today()

@@ -103,10 +103,13 @@ class MemberCancelledView(MultiplePermissionsRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_member')
-def member_deactivate(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-    member.deactivation_date = datetime.date.today()
-    member.save()
+def member_deactivate(request, member_id=None):
+    if member_id:
+        members = [get_object_or_404(Member, id=member_id)]
+    else:
+        members = Member.objects.filter(id__in=request.POST.get('member_ids').split('_'))
+    for member in members:
+        member.deactivate()
     return return_to_previous_location(request)
 
 

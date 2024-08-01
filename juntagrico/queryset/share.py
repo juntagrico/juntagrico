@@ -6,7 +6,7 @@ from polymorphic.query import PolymorphicQuerySet
 
 class ShareQueryset(PolymorphicQuerySet):
     def active(self):
-        return self.filter(paid_date__isnull=False).filter(payback_date__isnull=True)
+        return self.filter(paid_date__isnull=False, payback_date__isnull=True)
 
     def unpaid(self):
         return self.filter(paid_date__isnull=True)
@@ -22,6 +22,9 @@ class ShareQueryset(PolymorphicQuerySet):
             cancelled_date__isnull=False,
             payback_date__isnull=True
         )
+
+    def potentially_pending_payback(self):
+        return self.filter(payback_date__isnull=True)
 
     def annotate_backpayable(self, on_date=None):
         """Share must be terminated before it can be paid back"""

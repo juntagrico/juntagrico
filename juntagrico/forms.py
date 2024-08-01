@@ -19,11 +19,8 @@ from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
-from juntagrico.mailer import adminnotification
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Subscription
-from juntagrico.util.management import cancel_share
-from juntagrico.util.temporal import next_membership_end_date
 
 
 class Slider(Field):
@@ -91,6 +88,14 @@ class AbstractMemberCancellationForm(ModelForm):
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
 
+    def save(self, commit=True):
+        if (sub := self.instance.subscription_current) is not None:
+            self.instance.leave_subscription(sub)
+        if (sub := self.instance.subscription_future) is not None:
+            self.instance.leave_subscription(sub)
+        self.instance.cancel()
+        return super().save(commit)
+
 
 class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
     class Meta:
@@ -104,19 +109,6 @@ class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
                 Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
             ),
         )
-
-    def save(self, commit=True):
-        today = datetime.date.today()
-        self.instance.end_date = today
-        self.instance.cancellation_date = today
-        # if member has cancelled but not yet paid back share, can't deactivate member yet.
-        if not self.instance.is_cooperation_member:
-            self.instance.deactivation_date = today
-        if (sub := self.instance.subscription_current) is not None:
-            self.instance.leave_subscription(sub)
-        if (sub := self.instance.subscription_future) is not None:
-            self.instance.leave_subscription(sub)
-        super().save(commit)
 
 
 class CoopMemberCancellationForm(AbstractMemberCancellationForm):
@@ -145,15 +137,6 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         if self.data['iban'] == '':
             raise ValidationError(_('IBAN ist nicht gültig'))
         return self.data['iban']
-
-    def save(self, commit=True):
-        today = datetime.date.today()
-        end_date = next_membership_end_date()
-        self.instance.end_date = end_date
-        self.instance.cancellation_date = today
-        adminnotification.member_canceled(self.instance, end_date, self.data['message'])
-        [cancel_share(s, today, end_date) for s in self.instance.share_set.all()]
-        super().save(commit)
 
 
 class MemberProfileForm(ModelForm):
