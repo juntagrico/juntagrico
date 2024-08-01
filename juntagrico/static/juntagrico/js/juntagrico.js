@@ -69,6 +69,7 @@ function email_button(action, csrf_token) {
 }
 
 function email_copy_button() {
+    let copied_text = '<i class="fa-solid fa-check"></i> ' + email_copied_string
     return {
         text: '<i class="fa-regular fa-clipboard"></i> ' + email_copy_string,
         init: function (dt, node, config) {
@@ -78,13 +79,15 @@ function email_copy_button() {
             })
             this.node().on('click', function() {
                 let button = $(this)
-                button.addClass('btn-success')
-                let original_text = button.html()
-                button.html('<i class="fa-solid fa-check"></i> ' + email_copied_string)
-                window.setTimeout(function () {
-                    button.html(original_text)
-                    button.removeClass('btn-success')
-                }, 3000)
+                if (!button.is('.btn-success')) { // catch double click
+                    button.addClass('btn-success')
+                    let original_text = button.html()
+                    button.html(copied_text)
+                    window.setTimeout(function () {
+                        button.html(original_text)
+                        button.removeClass('btn-success')
+                    }, 3000)
+                }
             })
         },
         action: function (e, dt, node, config) {
