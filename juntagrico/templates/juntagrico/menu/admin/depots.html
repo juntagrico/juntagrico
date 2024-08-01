@@ -9,7 +9,7 @@
             <i class="fas fa-angle-right">
             </i>
         </a>
-        <div class="collapse" id="depotman">
+        <div class="collapse{% if 'manage-depot' in request.resolver_match.url_name %} show{% endif %}" id="depotman">
             <ul class="nav flex-column subadmin-menu">
                 {% for depot in qs_depot_admin %}
                     <li class="nav-item">

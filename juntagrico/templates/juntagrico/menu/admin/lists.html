@@ -7,7 +7,7 @@
             <i class="fas fa-angle-right">
             </i>
         </a>
-        <div class="collapse" id="lists">
+        <div class="collapse {% if 'manage-list' in request.resolver_match.url_name %} show{% endif %}" id="lists">
             <ul class="nav flex-column admin-menu subadmin-menu">
                 {% if perms.juntagrico.can_generate_lists %}
                     <li class="nav-item">

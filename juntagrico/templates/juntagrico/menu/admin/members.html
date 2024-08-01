@@ -6,7 +6,7 @@
             <i class="fas fa-angle-right">
             </i>
         </a>
-        <div class="collapse" id="memberman">
+        <div class="collapse{% if 'manage-member' in request.resolver_match.url_name %} show{% endif %}" id="memberman">
             <ul class="nav flex-column subadmin-menu">
                 {% block member_sub %}
                     {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
