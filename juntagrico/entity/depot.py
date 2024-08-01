@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, time
-from django.template.defaultfilters import date
 
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.template.defaultfilters import date
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -80,13 +80,18 @@ class Depot(JuntagricoBaseModel):
 
     def total_fee(self, subscription_count):
         """
-        :param subscription_count: a dict of subscription_type => amount
+        :param subscription_count: a dict of subscription_type => amount or subscription_type_id => amount
         :return: total fee for this depot with selected subscription.
         """
         fee = self.fee
+        # normalize count dict
+        subscription_count = {
+            k if isinstance(k, int) else k.id: v for k, v in subscription_count.items() if v > 0
+        }
+        # get fees of relevant types and sum them
         conditions = self.subscription_type_conditions.filter(subscription_type__in=subscription_count.keys())
         for condition in conditions:
-            fee += condition.fee * subscription_count[condition.subscription_type]
+            fee += condition.fee * subscription_count[condition.subscription_type.id]
         return fee
 
     def pickup_end_time(self):

@@ -16,8 +16,8 @@ class DepotChangeTests(JuntagricoTestCase):
             Permission.objects.get(codename='notified_on_depot_change'))
         cls.admin.user.save()
 
-        cls.sub3 = cls.create_sub(cls.depot, future_depot=cls.depot2)
-        cls.member4.join_subscription(cls.sub3, True)
+        cls.another_sub = cls.create_sub(cls.depot, cls.sub_type, future_depot=cls.depot2)
+        cls.member4.join_subscription(cls.another_sub, True)
 
     def testDepotChangeWaiting(self):
         """For not yet active subscriptions the depot should change immediately"""
@@ -43,19 +43,20 @@ class DepotChangeTests(JuntagricoTestCase):
 
     def testDepotChangeConfirm(self):
         """Test that admin can confirm a depot change manually, and normal members can't"""
-        self.assertGet(reverse('manage-sub-depot-change-confirm', args=[self.sub3.pk]), member=self.member2, code=302)
-        self.sub3.refresh_from_db()
-        self.assertEqual(self.sub3.depot, self.depot)
-        self.assertGet(reverse('manage-sub-depot-change-confirm', args=[self.sub3.pk]), code=302)
-        self.sub3.refresh_from_db()
-        self.assertEqual(self.sub3.depot, self.depot2)
-        self.assertIsNone(self.sub3.future_depot)
+        self.assertGet(reverse('manage-sub-depot-change-confirm', args=[self.another_sub.pk]),
+                       member=self.member2, code=302)
+        self.another_sub.refresh_from_db()
+        self.assertEqual(self.another_sub.depot, self.depot)
+        self.assertGet(reverse('manage-sub-depot-change-confirm', args=[self.another_sub.pk]), code=302)
+        self.another_sub.refresh_from_db()
+        self.assertEqual(self.another_sub.depot, self.depot2)
+        self.assertIsNone(self.another_sub.future_depot)
         self.assertEqual(len(mail.outbox), 1)  # member notification of depot change
 
     def testDepotChangeOnListCreation(self):
         """Test that depot changes, when depot list is generated with --future option"""
         call_command('generate_depot_list', '--force', '--future')
-        self.sub3.refresh_from_db()
-        self.assertEqual(self.sub3.depot, self.depot2)
-        self.assertIsNone(self.sub3.future_depot)
+        self.another_sub.refresh_from_db()
+        self.assertEqual(self.another_sub.depot, self.depot2)
+        self.assertIsNone(self.another_sub.future_depot)
         self.assertEqual(len(mail.outbox), 1)  # member notification of depot change
