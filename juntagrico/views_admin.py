@@ -130,7 +130,6 @@ def my_mails_intern(request, mail_url, error_message=None):
         'mail_subject': request.POST.get('subject'),
         'mail_message': request.POST.get('message'),
         'mail_url': mail_url,
-        'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
         'richtext_language': tinymce_lang(get_language()),

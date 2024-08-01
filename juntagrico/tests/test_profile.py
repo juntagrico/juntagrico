@@ -82,6 +82,7 @@ class ProfileTests(JuntagricoTestCase):
 
     def testCancelMembershipWithCancelledSubscriptions(self):
         self.set_up_depots()
+        self.set_up_sub_types()
         sub = self.create_sub_now(self.depot)
         self.member.join_subscription(sub, True)
         # don't cancel while subscription is active
