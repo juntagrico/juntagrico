@@ -409,26 +409,6 @@ def unset_change_date(request):
     return return_to_previous_location(request)
 
 
-@permission_required('juntagrico.change_subscription')
-def sub_inconsistencies(request):
-    management_list = []
-    for sub in SubscriptionDao.all_subscritions():
-        try:
-            sub.clean()
-            for part in sub.parts.all():
-                part.clean()
-            for member in sub.subscriptionmembership_set.all():
-                member.clean()
-        except Exception as e:
-            management_list.append({'subscription': sub, 'error': e})
-        if sub.primary_member is None:
-            management_list.append({'subscription': sub, 'error': _('Haubtbezieher ist nicht gesetzt')})
-    render_dict = {'change_date_disabled': True,
-                   'email_form_disabled': True}
-    return subscription_management_list(management_list, render_dict,
-                                        'management_lists/inconsistent.html', request)
-
-
 @permission_required('juntagrico.can_generate_lists')
 def manage_list(request):
     success = False

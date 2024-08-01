@@ -2,7 +2,7 @@ import datetime
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
@@ -180,6 +180,26 @@ def subscription_depot_change_confirm(request, subscription_id=None):
     subs = Subscription.objects.filter(id__in=ids)
     subs.activate_future_depots()
     return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscription')
+def subscription_inconsistencies(request):
+    management_list = []
+    for sub in Subscription.objects.all():
+        try:
+            sub.clean()
+            for part in sub.parts.all():
+                part.clean()
+            for member in sub.subscriptionmembership_set.all():
+                member.clean()
+        except Exception as e:
+            management_list.append({'subscription': sub, 'error': e})
+        if sub.primary_member is None:
+            management_list.append({'subscription': sub, 'error': _('HauptbezieherIn ist nicht gesetzt')})
+    render_dict = {
+        'object_list': management_list,
+    }
+    return render(request, 'juntagrico/manage/subscription/inconsistent.html', render_dict)
 
 
 class AssignmentsView(MultiplePermissionsRequiredMixin, DateRangeMixin, ListView):
