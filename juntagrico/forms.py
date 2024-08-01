@@ -79,6 +79,8 @@ class PasswordForm(Form):
 
 
 class AbstractMemberCancellationForm(ModelForm):
+    message = CharField(label=_('Mitteilung'), widget=Textarea, required=False)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -87,6 +89,12 @@ class AbstractMemberCancellationForm(ModelForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
+        self.helper.layout = Layout(
+            'message',
+            FormActions(
+                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-danger'),
+            ),
+        )
 
     def save(self, commit=True):
         if (sub := self.instance.subscription_current) is not None:
@@ -102,18 +110,8 @@ class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
         model = Member
         fields = []
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.layout = Layout(
-            FormActions(
-                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
-            ),
-        )
-
 
 class CoopMemberCancellationForm(AbstractMemberCancellationForm):
-    message = CharField(label=_('Mitteilung'), widget=Textarea, required=False)
-
     class Meta:
         model = Member
         fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
@@ -123,13 +121,9 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper.layout = Layout(
-            'message', Fieldset(
-                _('Bitte hinterlege oder überprüfe deine Daten, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')),
-                'iban', 'addr_street', 'addr_zipcode', 'addr_location'),
-            FormActions(
-                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
-            ),
+        self.helper.layout.insert(1, Fieldset(
+            _('Bitte hinterlege oder überprüfe deine Daten, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')),
+            'iban', 'addr_street', 'addr_zipcode', 'addr_location')
         )
 
     def clean_iban(self):

@@ -70,7 +70,6 @@ class ProfileTests(JuntagricoTestCase):
     def testCancelMembershipNonCoopPost(self):
         data = {
             'message': 'a personal message',
-            'iban': ''
         }
         self.assertPost(reverse('cancel-membership'), code=302, member=self.member_without_shares, data=data)
         self.assertEqual(len(mail.outbox), 1)  # admin notification
