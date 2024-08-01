@@ -180,4 +180,4 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), member=self.member3, code=302)
 
     def testMembers(self):
-        self.assertListEqual(list(self.sub.current_members), [self.member, self.member3])
+        self.assertListEqual(list(self.sub.current_members.order_by('id')), [self.member, self.member3])
