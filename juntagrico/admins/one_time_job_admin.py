@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q
 from django.utils.translation import gettext as _
-from polymorphic.admin import PolymorphicInlineSupportMixin
+from polymorphic.admin import PolymorphicInlineSupportMixin, PolymorphicChildModelAdmin
 
 from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.filters import FutureDateTimeFilter
@@ -10,13 +10,14 @@ from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
-from juntagrico.entity.jobs import JobType, RecuringJob
+from juntagrico.entity.jobs import JobType, RecuringJob, OneTimeJob
 from juntagrico.entity.location import Location
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 from juntagrico.util.models import attribute_copy
 
 
-class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
+class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin, PolymorphicChildModelAdmin):
+    base_model = OneTimeJob
     list_display = ['__str__', 'time', 'slots', 'free_slots']
     list_filter = ('activityarea', ('time', FutureDateTimeFilter))
     actions = ['transform_job']
