@@ -19,7 +19,17 @@ class ManageListTests(JuntagricoTestCase):
         self.assertGet(url, member=self.member2, code=403)
 
     def testMember(self):
-        self.assertGet(reverse('manage-member'))
+        response = self.assertGet(reverse('manage-member'))
+        # check that member list is correct
+        objects = response.context['object_list']()
+        self.assertEqual(list(objects.order_by('id')), [
+            self.member, self.member2, self.member3, self.member4, self.member5,
+            self.admin, self.area_admin
+        ])
+        member = objects[0]
+        self.assertEqual(member.subscription_current, self.sub)
+        # check if member is prefetched correctly
+        self.assertEqual(member.subscription_current.depot_name, self.depot.name)
         # member2 has no access
         self.assertGet(reverse('manage-member'), member=self.member2, code=403)
 

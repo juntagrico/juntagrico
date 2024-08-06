@@ -19,7 +19,6 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         )
 
     def prefetch_for_list(self):
-        # TODO: Write test for this
         members = self.defer('notes').prefetch_related('areas').annotate(userid=F('user__id'))
         # prefetch current subscription. This will be picked up in Member.subscription_current()
         from juntagrico.entity.subs import Subscription
