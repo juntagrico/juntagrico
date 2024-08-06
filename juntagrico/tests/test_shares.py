@@ -94,9 +94,16 @@ class ShareTests(JuntagricoTestCase):
         self.assertEqual(response['content-type'], 'application/pdf')
 
     def testMemberShareCancel(self):
+        # member can not cancel share because it is used
         share = self.member.share_set.first()
         self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
-        # TODO: Test cancellation date
+        share.refresh_from_db()
+        self.assertEqual(share.cancelled_date, None)
+        # add share to cancel
+        share = self.create_paid_share(self.member)
+        self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
+        share.refresh_from_db()
+        self.assertEqual(share.cancelled_date, datetime.date.today())
 
     def testManageShareCanceledList(self):
         self.assertGet(reverse('manage-share-canceled'))
