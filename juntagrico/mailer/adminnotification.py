@@ -95,7 +95,8 @@ def member_created(member, **kwargs):
 
 
 @requires_someone_with_perm('notified_on_member_cancellation')
-def member_canceled(member, end_date, message, **kwargs):
+def member_canceled(member, message='', **kwargs):
+    end_date = member.end_date
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
         get_email_content('m_canceled', base_dict(locals())),

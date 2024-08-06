@@ -12,6 +12,7 @@ from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailFie
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.queryset.member import MemberQuerySet
+from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.util.users import make_username
 
 
@@ -77,7 +78,7 @@ class Member(JuntagricoBaseModel):
 
     @property
     def active_shares(self):
-        """ :return: shares that have been paid by member and not cancelled AND paid back yet
+        """ :return: shares that have been paid by member and not canceled AND paid back yet
         """
         return self.share_set.active()
 
@@ -117,9 +118,9 @@ class Member(JuntagricoBaseModel):
 
     @property
     def usable_shares(self):
-        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
+        """ :return: shares that have been ordered (i.e. created) and not canceled yet
         """
-        return self.share_set.filter(cancelled_date__isnull=True)
+        return self.share_set.usable()
 
     @property
     def usable_shares_count(self):
@@ -149,8 +150,12 @@ class Member(JuntagricoBaseModel):
 
     @cached_property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
-        return getattr(sub_membership, 'subscription', None)
+        if hasattr(self, 'current_subscription'):
+            # use prefetched subscription (from MemberQuerySet.prefetch_for_list)
+            if sm := self.current_subscription:
+                return sm[0]
+            return None
+        return self.subscriptions.joined().first()
 
     @property
     def subscriptions_old(self):
@@ -238,6 +243,26 @@ class Member(JuntagricoBaseModel):
     @classmethod
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
+
+    def cancel(self, date=None, commit=True):
+        date = date or datetime.date.today()
+        self.cancellation_date = date
+        # if all shares of member are already paid back: deactivate automatically
+        if not self.share_set.potentially_pending_payback().exists():
+            self.end_date = date
+            self.deactivation_date = date
+        else:
+            self.end_date = next_membership_end_date(self.cancellation_date)
+        for share in self.share_set.all():
+            share.cancel(date, self.end_date)
+        if commit:
+            self.save()
+
+    def deactivate(self, date=None):
+        date = date or datetime.date.today()
+        if self.active_shares_count == 0 and self.canceled is True:
+            self.deactivation_date = date
+            self.save()
 
     @notifiable
     class Meta:

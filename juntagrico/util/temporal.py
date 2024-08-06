@@ -1,8 +1,8 @@
 import calendar
 import datetime
 from datetime import timedelta
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -82,13 +82,15 @@ def next_cancelation_date_from(start):
     return datetime.date(year, c_month, days_in_month(year, c_month))
 
 
-def next_membership_end_date():
+def next_membership_end_date(cancellation_date=None):
     """
-    :return: end date of membership when canceling now
+    :param cancellation_date: calculate end date from this cancellation date, defaults to today
+    :return: end date of membership when canceling on cancellation_date
     """
+    date = cancellation_date or datetime.date.today()
     endmonth = Config.membership_end_month()
     noticemonths = Config.membership_end_notice_period()
-    nowplusnotice = datetime.date.today() + relativedelta(months=noticemonths)
+    nowplusnotice = date + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
         endyear = nowplusnotice.year
     else:

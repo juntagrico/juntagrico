@@ -12,11 +12,11 @@ Job signals
 job_canceled
 ^^^^^^^^^^^^
 
-Trigger: Job is saved with the cancelled flag set (and the flag wasn't set before).
+Trigger: Job is saved with the canceled flag set (and the flag wasn't set before).
 
 Arguments:
 
-* instance: The job instance that was cancelled
+* instance: The job instance that was canceled
 
 Default receivers:
 
@@ -169,7 +169,7 @@ Arguments:
 
 Default receivers:
 
-* handle_share_created: Send email to admins, that share has been created
+* handle_share_created: Notify users with permission `notified_on_share_creation` via email.
 
 share_canceled
 ^^^^^^^^^^^^^^
@@ -191,11 +191,15 @@ Arguments:
 
 Default receivers:
 
-* handle_member_created: Send email to admins, that member has been created
+* handle_member_created: Notify users with permission `notified_on_member_creation` via email.
 
 
 member_canceled
 ^^^^^^^^^^^^^^^
+
+.. warning::
+    Deprecated since version 1.7.0. Use :ref:`canceled <reference-signals-canceled>` with sender ``Member`` instead.
+
 
 Trigger: A member that had no cancellation date set, is saved with a cancellation date.
 
@@ -205,6 +209,23 @@ Arguments:
 
 Default receivers: None
 
+.. _reference-signals-canceled:
+
+canceled
+^^^^^^^^
+
+Sender: Member
+
+Trigger: Member cancels their membership
+
+Arguments:
+
+* instance: The member instance of the member that canceled
+* message (optional): The message the member left on cancellation
+
+Default receivers:
+
+* on_member_canceled: Notify users with permission `notified_on_member_cancellation` via email.
 
 member_deactivated
 ^^^^^^^^^^^^^^^^^^

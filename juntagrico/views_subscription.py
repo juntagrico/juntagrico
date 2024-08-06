@@ -186,7 +186,7 @@ def part_change(request, part):
     change part of a subscription
     """
     if part.subscription.canceled or part.subscription.inactive:
-        raise Http404("Can't change subscription part of cancelled subscription")
+        raise Http404("Can't change subscription part of canceled subscription")
     if SubscriptionTypeDao.get_normal_visible().count() <= 1:
         raise Http404("Can't change subscription part if there is only one subscription type")
     if request.method == 'POST':
@@ -499,17 +499,4 @@ def cancel_share(request, share_id):
         share.cancelled_date = datetime.date.today()
         share.termination_date = next_membership_end_date()
         share.save()
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.is_operations_group')
-def payout_share(request, share_id):
-    share = get_object_or_404(Share, id=share_id)
-    today = datetime.date.today()
-    share.payback_date = today
-    share.save()
-    member = share.member
-    if member.active_shares_count == 0 and member.canceled is True:
-        member.deactivation_date = today
-        member.save()
     return return_to_previous_location(request)

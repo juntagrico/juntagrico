@@ -6,24 +6,24 @@
             <i class="fas fa-angle-right">
             </i>
         </a>
-        <div class="collapse" id="memberman">
+        <div class="collapse{% if 'manage-member' in request.resolver_match.url_name %} show{% endif %}" id="memberman">
             <ul class="nav flex-column subadmin-menu">
                 {% block member_sub %}
                     {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'filters-active' %}">
+                            <a class="nav-link" href="{% url 'manage-member-active' %}">
                                 {% blocktrans %}Aktive{% endblocktrans %}
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'filters' %}">
+                            <a class="nav-link" href="{% url 'manage-member' %}">
                                 {% blocktrans %}Alle{% endblocktrans %}
                             </a>
                         </li>
                     {% endif %}
                     {% if perms.juntagrico.change_member %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'member-mgmt-canceledlist' %}">
+                            <a class="nav-link" href="{% url 'manage-member-canceled' %}">
                                  {% blocktrans %}Kündigungsliste{% endblocktrans %}
                             </a>
                         </li>

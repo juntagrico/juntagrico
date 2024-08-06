@@ -10,6 +10,7 @@ from polymorphic.query import PolymorphicQuerySet
 from juntagrico.entity import SimpleStateModelQuerySet
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.util.temporal import default_to_business_year
+from . import SubscriptionMembershipQuerySetMixin
 
 
 def assignments_in_subscription_membership(start, end, **extra_filters):
@@ -32,7 +33,7 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
     ).values('total')
 
 
-class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
+class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModelQuerySet, PolymorphicQuerySet):
     microseconds_in_day = 24 * 3600 * 10 ** 6
     days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)
@@ -41,6 +42,20 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         super().__init__(*args, **kwargs)
         self._start_required = False
         self._end_required = False
+
+    def active(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.in_date_range(on_date, on_date).exclude(activation_date=None)
+
+    def in_date_range(self, start, end):
+        """
+        subscriptions that were active in the given period
+        """
+        return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
+
+    def activate_future_depots(self):
+        for subscription in self.exclude(future_depot__isnull=True):
+            subscription.activate_future_depot()
 
     @method_decorator(default_to_business_year)
     def annotate_assignment_counts(self, start=None, end=None, of_member=None, prefix=''):
