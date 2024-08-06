@@ -5,6 +5,8 @@
 {% block body_extra_classes %}wide-layout{% endblock %}
 
 {% block content %}
+    {% block management_cmd %}
+    {% endblock %}
     <div id="managementlist" class="row mt-3 mb-6">
         <div class="col-md-12">
             {% block list %}
