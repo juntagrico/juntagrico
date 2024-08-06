@@ -5,7 +5,7 @@ from io import BytesIO
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
 from django.http import Http404, HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -20,16 +20,13 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
-from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
-from juntagrico.util.management_list import get_changedate, prefetch_for_list
+from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
@@ -133,81 +130,11 @@ def my_mails_intern(request, mail_url, error_message=None):
         'mail_subject': request.POST.get('subject'),
         'mail_message': request.POST.get('message'),
         'mail_url': mail_url,
-        'email': request.user.member.email,
         'error_message': error_message,
         'templates': MailTemplateDao.all_templates(),
         'richtext_language': tinymce_lang(get_language()),
     }
     return render(request, 'mail_sender.html', renderdict)
-
-
-@any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
-def filters_active(request):
-    members = prefetch_for_list(MemberDao.active_members())
-    renderdict = {
-        'members': members,
-        'title': _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
-    }
-    return render(request, 'management_lists/members.html', renderdict)
-
-
-@any_permission_required('juntagrico.can_filter_members', 'juntagrico.change_member')
-def filters(request):
-    members = prefetch_for_list(MemberDao.all_members())
-    renderdict = {
-        'members': members,
-        'title': _('Alle {}').format(Config.vocabulary('member_pl'))
-    }
-    return render(request, 'management_lists/members.html', renderdict)
-
-
-@permission_required('juntagrico.is_depot_admin')
-def filters_depot(request, depot_id):
-    depot = get_object_or_404(Depot, id=int(depot_id), contact=request.user.member)
-    members = prefetch_for_list(MemberDao.member_with_active_subscription_for_depot(depot))
-    renderdict = {
-        'can_send_mails': True,
-        'members': members,
-        'mail_url': 'mail-depot',
-        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('member_pl'), Config.vocabulary('depot'), depot.name)
-    }
-    return render(request, 'management_lists/members.html', renderdict)
-
-
-@permission_required('juntagrico.is_area_admin')
-def filters_area(request, area_id):
-    area = get_object_or_404(ActivityArea, id=int(area_id), coordinator=request.user.member)
-    members = prefetch_for_list(MemberDao.members_in_area(area))
-    renderdict = {
-        'can_send_mails': True,
-        'members': members,
-        'mail_url': 'mail-area',
-        'title': _('Alle aktiven {} im Tätigkeitsbereich {}').format(Config.vocabulary('member_pl'), area.name)
-    }
-    return render(request, 'management_lists/members.html', renderdict)
-
-
-@any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
-def subscriptions(request):
-    renderdict = {
-        'subscriptions': SubscriptionDao.all_active_subscritions(),
-        'title': _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
-    }
-
-    return render(request, 'management_lists/subscriptions.html', renderdict)
-
-
-@permission_required('juntagrico.is_depot_admin')
-def filter_subscriptions_depot(request, depot_id):
-    depot = get_object_or_404(Depot, id=int(depot_id))
-    renderdict = {
-        'can_send_mails': True,
-        'subscriptions': SubscriptionDao.active_subscritions_by_depot(depot),
-        'mail_url': 'mail-depot',
-        'title': _('Alle aktiven {} im {} {}').format(Config.vocabulary('subscription_pl'), Config.vocabulary('depot'), depot.name)
-    }
-
-    return render(request, 'management_lists/subscriptions.html', renderdict)
 
 
 @permission_required('juntagrico.can_view_lists')
@@ -361,7 +288,7 @@ def excel_export_subscriptions(request):
         worksheet_s.write_string(row, 2, email)
         worksheet_s.write_string(row, 3, phone)
         worksheet_s.write_string(row, 4, mobile)
-        worksheet_s.write_string(row, 5, sub.other_recipients_names)
+        worksheet_s.write_string(row, 5, ', '.join(str(m) for m in sub.co_members()))
         worksheet_s.write_string(row, 6, sub.state_text)
         worksheet_s.write_string(row, 7, c_date)
         worksheet_s.write_string(row, 8, sub.depot.name)
@@ -465,20 +392,6 @@ def extra_canceledlist(request):
                                         'management_lists/extra_canceledlist.html', request)
 
 
-@permission_required('juntagrico.change_member')
-def member_canceledlist(request):
-    return subscription_management_list(MemberDao.canceled_members(), {},
-                                        'management_lists/member_canceledlist.html', request)
-
-
-@permission_required('juntagrico.change_member')
-def deactivate_member(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-    member.deactivation_date = datetime.date.today()
-    member.save()
-    return return_to_previous_location(request)
-
-
 def set_change_date(request):
     if request.method != 'POST':
         raise Http404
@@ -494,34 +407,6 @@ def set_change_date(request):
 def unset_change_date(request):
     request.session['changedate'] = None
     return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.change_subscription')
-def sub_inconsistencies(request):
-    management_list = []
-    for sub in SubscriptionDao.all_subscritions():
-        try:
-            sub.clean()
-            for part in sub.parts.all():
-                part.clean()
-            for member in sub.subscriptionmembership_set.all():
-                member.clean()
-        except Exception as e:
-            management_list.append({'subscription': sub, 'error': e})
-        if sub.primary_member is None:
-            management_list.append({'subscription': sub, 'error': _('Haubtbezieher ist nicht gesetzt')})
-    render_dict = {'change_date_disabled': True,
-                   'email_form_disabled': True}
-    return subscription_management_list(management_list, render_dict,
-                                        'management_lists/inconsistent.html', request)
-
-
-@permission_required('juntagrico.change_assignment')
-def assignments(request):
-    management_list = Subscription.objects.annotate_assignments_progress().select_related('primary_member')
-    render_dict = {'change_date_disabled': True}
-    return subscription_management_list(management_list, render_dict,
-                                        'management_lists/assignments.html', request)
 
 
 @permission_required('juntagrico.can_generate_lists')

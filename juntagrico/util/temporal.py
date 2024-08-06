@@ -1,8 +1,8 @@
 import calendar
 import datetime
 from datetime import timedelta
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -82,13 +82,15 @@ def next_cancelation_date_from(start):
     return datetime.date(year, c_month, days_in_month(year, c_month))
 
 
-def next_membership_end_date():
+def next_membership_end_date(cancellation_date=None):
     """
-    :return: end date of membership when canceling now
+    :param cancellation_date: calculate end date from this cancellation date, defaults to today
+    :return: end date of membership when canceling on cancellation_date
     """
+    date = cancellation_date or datetime.date.today()
     endmonth = Config.membership_end_month()
     noticemonths = Config.membership_end_notice_period()
-    nowplusnotice = datetime.date.today() + relativedelta(months=noticemonths)
+    nowplusnotice = date + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
         endyear = nowplusnotice.year
     else:
@@ -97,15 +99,8 @@ def next_membership_end_date():
     return datetime.date(endyear, endmonth, day)
 
 
-def calculate_next(day, month):
-    return calculate_next_offset(day, month, datetime.date.today())
-
-
-def calculate_last(day, month):
-    return calculate_last_offset(day, month, datetime.date.today())
-
-
-def calculate_next_offset(day, month, offset):
+def calculate_next_offset(day, month, offset=None):
+    offset = offset or datetime.date.today()
     if offset.month < month or (offset.month == month and offset.day < day):
         year = offset.year
     else:
@@ -113,12 +108,19 @@ def calculate_next_offset(day, month, offset):
     return datetime.date(year, month, day)
 
 
-def calculate_last_offset(day, month, offset):
+calculate_next = calculate_next_offset  # todo: remove in 2.0
+
+
+def calculate_last_offset(day, month, offset=None):
+    offset = offset or datetime.date.today()
     if offset.month > month or (offset.month == month and offset.day >= day):
         year = offset.year
     else:
         year = offset.year - 1
     return datetime.date(year, month, day)
+
+
+calculate_last = calculate_last_offset  # todo: remove in 2.0
 
 
 def calculate_remaining_days_percentage(date):

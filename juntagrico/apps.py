@@ -10,6 +10,13 @@ class JuntagricoAppconfig(AppConfig):
     def ready(self):
         from . import signals
         from .models import Subscription
+        from juntagrico.entity.member import Member
 
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
         signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
+        signals.canceled.connect(signals.on_member_canceled, sender=Member)
+
+        '''monkey patch User email method for password reset'''
+        from django.contrib.auth.models import User
+        User.member__email = property(lambda this: this.member.email)
+        User.EMAIL_FIELD = 'member__email'

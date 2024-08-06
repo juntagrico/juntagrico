@@ -1,5 +1,5 @@
 from juntagrico.entity.subs import Subscription
-from juntagrico.util.models import q_deactivated, q_activated, q_cancelled, q_isactive
+from juntagrico.util.models import q_deactivated, q_activated, q_canceled, q_isactive
 
 
 class SubscriptionDao:
@@ -22,19 +22,8 @@ class SubscriptionDao:
 
     @staticmethod
     def future_subscriptions():
-        return Subscription.objects.filter(~q_cancelled() & ~q_deactivated()).filter(deactivation_date=None)
+        return Subscription.objects.filter(~q_canceled() & ~q_deactivated()).filter(deactivation_date=None)
 
     @staticmethod
     def canceled_subscriptions():
-        return Subscription.objects.filter(q_cancelled() & ~q_deactivated()).order_by('end_date')
-
-    @staticmethod
-    def subscriptions_by_date(fromdate, tilldate):
-        """
-        subscriptions that are active in a certain period
-        all subscriptions except those that ended before or
-        started after our date range.
-        """
-        return Subscription.objects.\
-            exclude(deactivation_date__lt=fromdate).exclude(
-                activation_date__gt=tilldate)
+        return Subscription.objects.filter(q_canceled() & ~q_deactivated()).order_by('end_date')

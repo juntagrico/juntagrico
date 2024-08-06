@@ -1,12 +1,19 @@
 {% extends "../base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
     <h3>
         {% blocktrans %}Gekündigte {{ v_share_pl }}{% endblocktrans %}
     </h3>
 {% endblock %}
+
+{% block content %}
+    {% include '../member/snippets/toggle_buttons.html' %}
+    {{ block.super }}
+{% endblock %}
+
 {% block list %}
     <table id="filter-table" class="list table">
         <thead>
@@ -32,7 +39,7 @@
                 <th>
                     {% trans "Aktionen" %}
                 </th>
-                <th>
+                <th class="filter">
                     {% trans "Notizen" %}
                 </th>
             </tr>
@@ -49,12 +56,7 @@
                         </div>
                     </td>
                     <td>
-                        <div>{{ share.member }}</div>
-                        <div>
-                            <a href="{% url "email-to-member" share.member.id %}" class="email">
-                                {{ share.member.email }}
-                            </a>
-                        </div>
+                        {% include 'juntagrico/manage/member/snippets/display_linked.html' with member=share.member %}
                     </td>
                     <td>
                         {{ share.cancelled_date|date:"Y-m-d" }}
@@ -95,16 +97,21 @@
         </tbody>
     </table>
 {% endblock %}
+
 {% block datatable_constructor %}
     {{ block.super }}
     config.layout.topStart.buttons.push(
         id_action_button(
-            '{% trans "Zahlungsdatei erzeugen" %}', '{% url "share-pain001" %}', '{% csrf_token %}',
+            '<i class="fa-solid fa-file-invoice-dollar"></i> {% trans "Zahlungsdatei erzeugen" %}',
+            '{% url "share-pain001" %}',
+            '{% csrf_token %}',
             '.share_id', 'share_ids'
         ),
         {% if perms.juntagrico.change_share %}
-            share_id_button(
-                '{% trans "Ausbuchen" %}', '{% url 'manage-share-payout' %}', '{% csrf_token %}', 
+            id_action_button(
+                '<i class="fa-regular fa-circle-check"></i> {% trans "Ausbuchen" %}',
+                '{% url 'manage-share-payout' %}',
+                '{% csrf_token %}', 
                 '.backpayable', 'share_ids',
                 [
                     {% vocabulary "share" as v_share %}

@@ -24,5 +24,6 @@ def check_subpart_parent_dates(instance, subscription):
 
 
 def sub_part_pre_save(sender, instance, **kwargs):
-    check_sub_part_consistency(instance)
-    handle_activated_deactivated(instance, sender, sub_part_activated, sub_part_deactivated)
+    if not kwargs.get('raw', False):
+        check_sub_part_consistency(instance)
+        handle_activated_deactivated(instance, sender, sub_part_activated, sub_part_deactivated)

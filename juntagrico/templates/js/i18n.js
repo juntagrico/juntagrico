@@ -7,9 +7,11 @@ var email_button_string = [
     "{% blocktrans %}E-Mail an {{ v_member }} senden{% endblocktrans %}",
     "{% blocktrans %}E-Mail an {count} {{ v_member_pl }} senden{% endblocktrans %}"
 ]
+var email_copy_string = "{% trans "E-Mails kopieren" %}";
+var email_copied_string = "{% trans "E-Mails kopiert" %}";
 var dt_language = {
     decimal: "{{ 0.0 }}"[1], {# let django render this as float to take the decimal symbol from here #}
-    search: "{% trans "Suchen: " %}",
+    search: "<i class=\"fa-solid fa-magnifying-glass\"></i> {% trans "Suchen: " %}",
     emptyTable: "{% trans "Keine Daten verfügbar" %}",
     zeroRecords: "{% trans "Keine passenden Einträge gefunden" %}",
     info: "{% trans "Zeige _TOTAL_ von _MAX_" %}",
@@ -24,8 +26,8 @@ var dt_language = {
     },
     searchBuilder: {
         "search": "{% trans "Suchen" %}",
-        "add": "{% trans "Suchkriterium hinzufügen" %}",
-        "clearAll": "{% trans "Leeren" %}",
+        "add": "<i class=\"fa-solid fa-magnifying-glass\"></i> {% trans "Suchkriterium hinzufügen" %}",
+        "clearAll": "<i class=\"fa-solid fa-xmark\"></i> {% trans "Leeren" %}",
         "condition": "{% trans "Bedingung" %}",
         "conditions": {
             "date": {

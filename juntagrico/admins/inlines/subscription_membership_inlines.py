@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
 from django.utils.translation import gettext as _
 
@@ -20,6 +21,9 @@ class SubscriptionMembershipInlineFormset(BaseInlineFormSet):
         else:
             members = [form.instance.member for form in self.forms]
         self.instance.override_future_members = set(members)
+        if not members:
+            raise ValidationError(_('Mindestens eine Mitgliedschaft wird benötigt.'),
+                                  code='require_subscription_membership')
         if self.instance.primary_member not in members:
             self.instance.primary_member = members[0] if len(members) > 0 else None
 

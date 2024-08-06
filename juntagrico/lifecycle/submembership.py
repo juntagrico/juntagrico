@@ -8,7 +8,8 @@ from juntagrico.config import Config
 
 
 def sub_membership_pre_save(sender, instance, **kwargs):
-    check_sub_membership_consistency(instance)
+    if not kwargs.get('raw', False):
+        check_sub_membership_consistency(instance)
 
 
 def check_submembership_dates(instance):
@@ -31,22 +32,20 @@ def check_submembership_parent_dates(instance):
     wrong_start = (m_joined and s_activated and subscription.activation_date > instance.join_date) or (not s_activated and m_joined)
     wrong_end = (m_left and s_deactivated and subscription.deactivation_date < instance.leave_date) or (s_deactivated and not m_left)
     if wrong_start:
-        raise ValidationError(_('Beitrittsdatum des Bestandteils passt nicht zum übergeordneten Aktivierungsdatum'), code='invalid')
+        raise ValidationError(_('Beitrittsdatum des Bestandteils passt nicht zum übergeordneten Aktivierungsdatum'),
+                              code='part_activation_date_mismatch')
     if wrong_end:
-        raise ValidationError(_('Austrittsdatum des Bestandteils passt nicht zum übergeordneten Deaktivierungsdatum'), code='invalid')
+        raise ValidationError(_('Austrittsdatum des Bestandteils passt nicht zum übergeordneten Deaktivierungsdatum'),
+                              code='part_deactivation_date_mismatch')
 
 
 def check_sub_membership_consistency(instance):
     check_submembership_dates(instance)
-    check_submembership_parent_dates(instance)
-    subscription = instance.subscription
-    try:
-        member = instance.member
-    except AttributeError as e:
-        raise ValidationError(
-            _('Kein/e/n gültige/n/s {} angegeben').format(Config.vocabulary('member')),
-            code='invalid') from e
-    check_sub_membership_consistency_ms(member, subscription, instance.join_date, instance.leave_date)
+    if hasattr(instance, 'subscription'):
+        check_submembership_parent_dates(instance)
+        subscription = instance.subscription
+        if hasattr(instance, 'member'):
+            check_sub_membership_consistency_ms(instance.member, subscription, instance.join_date, instance.leave_date)
 
 
 def check_sub_membership_consistency_ms(member, subscription, join_date, leave_date):

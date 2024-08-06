@@ -5,7 +5,7 @@
         "last_login": null,
         "is_superuser": false,
         "username": "first_name_last_name_01dne1toi",
-        "is_staff": false,
+        "is_staff": true,
         "is_active": true,
         "groups": [],
         "user_permissions": [
@@ -98,6 +98,16 @@
                 "change_subscriptionpart",
                 "juntagrico",
                 "subscriptionpart"
+            ],
+            [
+                "notified_on_subscriptionpart_creation",
+                "juntagrico",
+                "subscriptionpart"
+            ],
+            [
+                "notified_on_subscriptionpart_cancellation",
+                "juntagrico",
+                "subscriptionpart"
             ]
         ]
     }
@@ -114,7 +124,13 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_general_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {
@@ -129,7 +145,18 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_for_members_email",
+                "juntagrico",
+                "specialroles"
+            ],
+            [
+                "can_use_for_subscriptions_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {
@@ -144,7 +171,13 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_for_shares_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {
@@ -159,7 +192,13 @@
         "is_staff": false,
         "is_active": true,
         "groups": [],
-        "user_permissions": []
+        "user_permissions": [
+            [
+                "can_use_technical_email",
+                "juntagrico",
+                "specialroles"
+            ]
+        ]
     }
 },
 {
@@ -235,8 +274,8 @@
         "user": [
             "first_name_last_name_01dne1toi"
         ],
-        "first_name": "first_name",
-        "last_name": "last_name",
+        "first_name": "first_name1",
+        "last_name": "last_name1",
         "email": "email1@email.org",
         "addr_street": "addr_street",
         "addr_zipcode": "1234",
@@ -261,8 +300,8 @@
         "user": [
             "first_name_last_name_0stiw217e"
         ],
-        "first_name": "first_name",
-        "last_name": "last_name",
+        "first_name": "first_name2",
+        "last_name": "last_name2",
         "email": "email2@email.org",
         "addr_street": "addr_street",
         "addr_zipcode": "1234",
@@ -287,8 +326,8 @@
         "user": [
             "first_name_last_name_4rcjjva3t"
         ],
-        "first_name": "first_name",
-        "last_name": "last_name",
+        "first_name": "first_name3",
+        "last_name": "last_name3",
         "email": "email3@email.org",
         "addr_street": "addr_street",
         "addr_zipcode": "1234",
@@ -313,8 +352,8 @@
         "user": [
             "first_name_last_name_go23rx1qk"
         ],
-        "first_name": "first_name",
-        "last_name": "last_name",
+        "first_name": "first_name4",
+        "last_name": "last_name4",
         "email": "email4@email.org",
         "addr_street": "addr_street",
         "addr_zipcode": "1234",
@@ -339,8 +378,8 @@
         "user": [
             "first_name_last_name_gtw2ngisz"
         ],
-        "first_name": "first_name",
-        "last_name": "last_name",
+        "first_name": "first_name5",
+        "last_name": "last_name5",
         "email": "email5@email.org",
         "addr_street": "addr_street",
         "addr_zipcode": "1234",
@@ -365,8 +404,8 @@
         "user": [
             "first_name_last_name_vum6gx35f"
         ],
-        "first_name": "first_name",
-        "last_name": "last_name",
+        "first_name": "first_name6",
+        "last_name": "last_name6",
         "email": "admin@email.org",
         "addr_street": "addr_street",
         "addr_zipcode": "1234",
@@ -391,8 +430,8 @@
         "user": [
             "first_name_last_name_nr83runka"
         ],
-        "first_name": "first_name",
-        "last_name": "last_name",
+        "first_name": "first_name7",
+        "last_name": "last_name7",
         "email": "areaadmin@email.org",
         "addr_street": "addr_street",
         "addr_zipcode": "1234",

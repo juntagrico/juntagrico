@@ -1,8 +1,6 @@
-import datetime
-
 from django.contrib import admin
 from django.db import models
-from django.db.models import Q, F, Sum
+from django.db.models import F, Sum
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -11,13 +9,12 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.member import q_left_subscription, q_joined_subscription
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
 from juntagrico.signals import depot_change_confirmed
-from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
+from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
 
 
@@ -79,7 +76,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def future_parts(self):
-        return self.parts.filter(~q_cancelled() & ~q_deactivated())
+        return self.parts.filter(~q_canceled() & ~q_deactivated())
 
     @property
     def active_and_future_parts(self):
@@ -105,7 +102,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -143,66 +140,26 @@ class Subscription(Billable, SimpleStateModel):
             result += part.type.shares
         return result
 
-    @admin.display(description='{}-BezieherInnen'.format(Config.vocabulary('subscription')))
-    def recipients_names(self):
-        members = self.recipients
-        return ', '.join(str(member) for member in members)
-
-    def other_memberships(self, of_member=None):
+    def co_members(self, of_member=None):
         of_member = of_member or self.primary_member
-        return self.recipients_qs.exclude(member=of_member)
-
-    def co_members(self, member):
-        qs = self.recipients_qs
-        if member is not None:
-            qs = qs.exclude(member__email=member.email)
-        return [m.member for m in qs.all()]
-
-    def recipients_display_name(self):
-        if self.nickname:
-            return ', '.join([self.primary_member_nullsave(), self.nickname])
-        else:
-            return '{}, {}'.format(self.primary_member_nullsave(), self.other_recipients_names)
-
-    def other_recipients(self):
-        return self.co_members(self.primary_member)
-
-    @property
-    def other_recipients_names(self):
-        members = self.other_recipients()
-        return ', '.join(str(member) for member in members)
-
-    @property
-    def recipients_qs(self):
-        return self.memberships_for_state.order_by(
-            'member__first_name', 'member__last_name')
-
-    @property
-    def recipients(self):
-        return [m.member for m in self.recipients_qs.all()]
-
-    @property
-    def recipients_all(self):
-        return [m.member for m in self.memberships_for_state.all()]
+        if of_member is None:
+            return self.current_members
+        return self.current_members.exclude(pk=of_member.pk)
 
     @property
     def future_members(self):
-        if getattr(self, 'override_future_members', False):
+        if hasattr(self, 'override_future_members'):
             return self.override_future_members
-        qs = self.subscriptionmembership_set.filter(~q_left_subscription()).prefetch_related('member')
-        return set([m.member for m in qs])
+        return set(self.members.joining())
 
     @property
-    def memberships_for_state(self):
-        member_active = ~Q(member__deactivation_date__isnull=False,
-                           member__deactivation_date__lte=datetime.date.today())
+    def current_members(self):
         if self.waiting:
-            return self.subscriptionmembership_set.prefetch_related('member').filter(member_active)
+            return self.members.active()
         elif self.inactive:
-            return self.subscriptionmembership_set.prefetch_related('member')
+            return self.members.all()
         else:
-            return self.subscriptionmembership_set.filter(q_joined_subscription(),
-                                                          ~q_left_subscription(), member_active).prefetch_related('member')
+            return self.members.joined().active()
 
     @admin.display(description=primary_member.verbose_name)
     def primary_member_nullsave(self):
@@ -223,7 +180,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extrasubscriptions_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()

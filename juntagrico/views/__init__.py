@@ -25,7 +25,7 @@ from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left, subscribed
+from juntagrico.signals import area_joined, area_left, subscribed, canceled
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
@@ -361,6 +361,16 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
+    # Check if membership can be canceled
+    asc = member.usable_shares_count
+    sub = member.subscription_current
+    f_sub = member.subscription_future
+    future_active = f_sub is not None and not f_sub.canceled
+    current_active = sub is not None and not sub.canceled
+    future = future_active and f_sub.share_overflow - asc < 0
+    current = current_active and sub.share_overflow - asc < 0
+    share_error = future or current
+    can_cancel = not share_error and not future_active and not current_active
     # considering unpaid shares as well, as they might have been paid but not yet updated in the system.
     # Then IBAN is needed to pay it back.
     coop_member = member.usable_shares_count > 0
@@ -368,22 +378,14 @@ def cancel_membership(request):
         form_type = CoopMemberCancellationForm
     else:
         form_type = NonCoopMemberCancellationForm
-    if request.method == 'POST':
+    if can_cancel and request.method == 'POST':
         form = form_type(request.POST, instance=member)
         if form.is_valid():
             form.save()
+            canceled.send(Member, instance=form.instance, message=form.cleaned_data.get('message'))
             return redirect('profile')
     else:
         form = form_type(instance=member)
-    asc = member.usable_shares_count
-    sub = member.subscription_current
-    f_sub = member.subscription_future
-    future_active = f_sub is not None and (f_sub.active or f_sub.waiting)
-    current_active = sub is not None and (sub.active or sub.waiting)
-    future = future_active and f_sub.share_overflow - asc < 0
-    current = current_active and sub.share_overflow - asc < 0
-    share_error = future or current
-    can_cancel = not share_error and not future_active and not current_active
     renderdict = {
         'coop_member': coop_member,
         'end_date': next_membership_end_date(),

@@ -3,6 +3,7 @@
 {% load static %}
 {% load juntagrico.config %}
 {% block body_extra_classes %}wide-layout{% endblock %}
+
 {% block content %}
     {% block management_cmd %}
     {% endblock %}
@@ -13,6 +14,7 @@
         </div>
     </div>
 {% endblock %}
+
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
@@ -33,14 +35,26 @@
                                     email_button(
                                         '{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}',
                                         '{% csrf_token %}'
-                                    )
+                                    ),
+                                    email_copy_button()
                                 ]
                             }
                         },
                     }
                 {% endblock %}
                 // Assuming default ids
-                $("#filter-table").DataTable(config);
+                let datatable = $("#filter-table").DataTable(config);
+                
+                // initialize toggle buttons
+                $(".toggle-display").ToggleButton(null, function(button, selector, is_selected) {
+                    // toggle classes to collect or not collect co-member emails
+                    if (is_selected) {
+                        $('.no-email', selector).addClass('email').removeClass('no-email')
+                    } else {
+                        $('.email', selector).addClass('no-email').removeClass('email')
+                    }
+                    datatable.draw()
+                })
             })
         </script>
     {% endblock %}

@@ -2,12 +2,19 @@
 {% load i18n %}
 {% load juntagrico.config %}
 {% load juntagrico.share %}
+
 {% block page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
     <h3>
         {% blocktrans %}Unbezahlte {{ v_share_pl }}{% endblocktrans %}
     </h3>
 {% endblock %}
+
+{% block content %}
+    {% include '../member/snippets/toggle_buttons.html' %}
+    {{ block.super }}
+{% endblock %}
+
 {% block list %}
     <table id="filter-table" class="list table" style="display: table;">
         <thead>
@@ -41,15 +48,7 @@
                             {{ share.creation_date|date:"Y-m-d" }}
                         </td>
                         <td>
-                            {# TODO: only link if has permission to view or change member #}
-                            <a href="{% url 'admin:juntagrico_member_change' member.id %}">
-                                {{ member }}
-                            </a>
-                            <div>
-                                <a href="{% url "email-to-member" member.id %}" class="email">
-                                    {{ member.email }}
-                                </a>
-                            </div>
+                            {% include 'juntagrico/manage/member/snippets/display_linked.html' %}
                         </td>
                         <td>
                             {% required_for_subscription share forloop.counter %}

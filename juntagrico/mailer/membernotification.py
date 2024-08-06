@@ -51,7 +51,7 @@ def depot_changed(subscription, **kwargs):
         organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
         get_email_content('d_changed', base_dict(locals())),
         to=[subscription.primary_member.email],
-        cc=subscription.other_memberships().values_list('member__email', flat=True)
+        cc=subscription.co_members().values_list('email', flat=True)
     ).send()
 
 

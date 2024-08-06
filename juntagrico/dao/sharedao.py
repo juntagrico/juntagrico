@@ -5,12 +5,12 @@ class ShareDao:
 
     @staticmethod
     def paid_shares(subscription):
-        return Share.objects.filter(member__in=subscription.recipients).filter(paid_date__isnull=False).filter(
+        return Share.objects.filter(member__in=subscription.current_members).filter(paid_date__isnull=False).filter(
             cancelled_date__isnull=True)
 
     @staticmethod
     def all_shares_subscription(subscription):
-        return Share.objects.filter(member__in=subscription.recipients_all).filter(
+        return Share.objects.filter(member__in=subscription.current_members).filter(
             cancelled_date__isnull=True)
 
     @staticmethod

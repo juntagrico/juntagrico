@@ -1,9 +1,11 @@
 import datetime
 
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..entity.subtypes import SubscriptionType
 
 
 class SubscriptionTests(JuntagricoTestCase):
@@ -46,12 +48,12 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertEqual(self.sub.nickname, test_nickname)
 
     def testPartOrder(self):
-        with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
+        with (self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12)):
             # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
             self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
-                'amount[' + str(self.sub_type.pk) + ']': 0,
-                'amount[' + str(self.sub_type2.pk) + ']': 1
+                f'amount[{type_id}]': 1 if i == 1 else 0
+                for i, type_id in enumerate(SubscriptionType.objects.values_list('id', flat=True))
             }
             self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
             self.sub.refresh_from_db()
@@ -78,25 +80,28 @@ class SubscriptionTests(JuntagricoTestCase):
 
         # add a shares for type2
         self.create_paid_share(self.member)
+        mail.outbox.clear()
         # change active type
         part = self.sub.parts.all()[0]
         self.assertGet(reverse('part-change', args=[part.pk]))
         post_data = {'part_type': self.sub_type2.pk}
         self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
         self.sub.refresh_from_db()
-        # check: has only one uncancelled part with new type
+        # check: has only one uncanceled part with new type
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
-        # check: previous part was cancelled
+        # check: previous part was canceled
         part.refresh_from_db()
         self.assertTrue(part.canceled)
+        # check notification was sent to admins
+        self.assertEqual(len(mail.outbox), 2)
 
         # change future type
         part = self.sub.future_parts.all()[0]
         post_data = {'part_type': self.sub_type.pk}
         self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
         self.sub.refresh_from_db()
-        # check: has only one uncancelled part with first type
+        # check: has only one uncanceled part with first type
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
@@ -116,7 +121,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 1)
+        self.assertEqual(self.sub.current_members.count(), 1)
 
     def testJoin(self):
         self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
@@ -138,7 +143,7 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 3)
+        self.assertEqual(self.sub.current_members.count(), 3)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
@@ -173,3 +178,6 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testPrimaryMember(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), member=self.member3, code=302)
+
+    def testMembers(self):
+        self.assertListEqual(list(self.sub.current_members.order_by('id')), [self.member, self.member3])

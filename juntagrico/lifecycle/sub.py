@@ -9,7 +9,6 @@ from juntagrico.lifecycle.submembership import check_submembership_parent_dates
 from juntagrico.lifecycle.subpart import check_subpart_parent_dates
 from juntagrico.signals import sub_activated, sub_deactivated, sub_canceled, sub_created
 from juntagrico.util.lifecycle import handle_activated_deactivated
-from juntagrico.util.models import q_activated
 
 
 def sub_post_save(sender, instance, created, **kwargs):
@@ -18,14 +17,15 @@ def sub_post_save(sender, instance, created, **kwargs):
 
 
 def sub_pre_save(sender, instance, **kwargs):
-    with transaction.atomic():
-        check_sub_reactivation(instance)
-        instance.check_date_order()
-        handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
-        if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
-            sub_canceled.send(sender=sender, instance=instance)
-        check_children_dates(instance)
-        check_sub_primary(instance)
+    if not kwargs.get('raw', False):
+        with transaction.atomic():
+            check_sub_reactivation(instance)
+            instance.check_date_order()
+            handle_activated_deactivated(instance, sender, sub_activated, sub_deactivated)
+            if instance._old['cancellation_date'] is None and instance.cancellation_date is not None:
+                sub_canceled.send(sender=sender, instance=instance)
+            check_children_dates(instance)
+            check_sub_primary(instance)
 
 
 def handle_sub_activated(sender, instance, **kwargs):
@@ -36,7 +36,7 @@ def handle_sub_activated(sender, instance, **kwargs):
         # see https://github.com/juntagrico/juntagrico/pull/641
         return
     activation_date = instance.activation_date or datetime.date.today()
-    for member in instance.recipients:
+    for member in instance.current_members:
         current_sub = member.subscription_current is not None
         sub_deactivated = current_sub and member.subscription_current.deactivation_date is not None
         dates_do_not_overlap = current_sub and sub_deactivated and member.subscription_current.deactivation_date <= activation_date
@@ -56,20 +56,16 @@ def handle_sub_activated(sender, instance, **kwargs):
 def handle_sub_deactivated(sender, instance, **kwargs):
     instance.deactivation_date = instance.deactivation_date or datetime.date.today()
     change_date = instance.deactivation_date
-    for part in instance.active_parts.all():
+    for part in instance.parts.all():
         part.deactivate(change_date)
-    for part in instance.future_parts.all():
-        part.delete()
     for sub_membership in instance.subscriptionmembership_set.all():
         sub_membership.member.leave_subscription(instance, change_date)
 
 
 def handle_sub_canceled(sender, instance, **kwargs):
     instance.cancellation_date = instance.cancellation_date or datetime.date.today()
-    for part in instance.parts.filter(q_activated()).all():
+    for part in instance.parts.all():
         part.cancel()
-    for part in instance.parts.filter(~q_activated()).all():
-        part.delete()
 
 
 def handle_sub_created(sender, instance, **kwargs):
@@ -93,7 +89,7 @@ def check_sub_reactivation(instance):
 def check_sub_primary(instance):
     if instance.primary_member is not None:
         # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
-        pm_sub = instance.pk and instance.primary_member in instance.recipients
+        pm_sub = instance.pk and instance.primary_member in instance.current_members
         # this check works also for new instances, because future_members is populated with form data, if available
         pm_form = instance.future_members and instance.primary_member in instance.future_members
         if not (pm_sub or pm_form):

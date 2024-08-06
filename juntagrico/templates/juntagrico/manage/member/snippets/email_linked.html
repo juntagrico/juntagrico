@@ -1,6 +1,7 @@
-<div>
-    {# TODO: Check if can send email #}
-    <a href="{% url "email-to-member" member.id %}" class="email">
-        {{ member.email }}
-    </a>
-</div>
+{% if perms.juntagrico.can_send_mails %}
+    <div>
+        <a href="{% url "email-to-member" member.id %}" class="email">
+            {{ member.email }}
+        </a>
+    </div>
+{% endif %}

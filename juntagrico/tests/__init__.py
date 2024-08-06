@@ -4,7 +4,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from juntagrico.entity.delivery import Delivery, DeliveryItem
-from juntagrico.entity.depot import Depot
+from juntagrico.entity.depot import Depot, Tour, DepotSubscriptionTypeCondition
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, Assignment, OneTimeJob, JobExtraType, JobExtra
 from juntagrico.entity.location import Location
 from juntagrico.entity.mailing import MailTemplate
@@ -35,8 +35,9 @@ class JuntagricoTestCase(TestCase):
         cls.set_up_mail_template()
         cls.set_up_deliveries()
         # Use this command here to create fixtures fast:
+        # from django.core.management import call_command
         # call_command('dumpdata', 'juntagrico.{model to export}', '-o', 'juntagrico/fixtures/test/data.json',
-        # '--indent', '4', '--natural-primary', '--natural-foreign')
+        #              '--indent', '4', '--natural-primary', '--natural-foreign')
 
     @classmethod
     def load_members(cls):
@@ -73,7 +74,7 @@ class JuntagricoTestCase(TestCase):
         )
 
     @classmethod
-    def create_paid_and_cancelled_share(cls, member, **kwargs):
+    def create_paid_and_canceled_share(cls, member, **kwargs):
         return cls.create_paid_share(
             member=member,
             booking_date='2017-12-27',
@@ -135,9 +136,14 @@ class JuntagricoTestCase(TestCase):
         cls.job4 = RecuringJob.objects.create(**job_data2)
         cls.job5 = RecuringJob.objects.create(**job_data)
         cls.past_job = RecuringJob.objects.create(
-            slots=1,
+            slots=2,
             time=timezone.now() - timezone.timedelta(hours=2),
             type=cls.job_type
+        )
+        cls.past_core_job = RecuringJob.objects.create(
+            slots=2,
+            time=timezone.now() - timezone.timedelta(hours=2),
+            type=cls.job_type2
         )
         cls.infinite_job = RecuringJob.objects.create(**{
             'infinite_slots': True,
@@ -160,28 +166,42 @@ class JuntagricoTestCase(TestCase):
         """
         assignment
         """
-        assignment_data = {'job': cls.job2,
-                           'member': cls.member,
-                           'amount': 1}
-        cls.assignment = Assignment.objects.create(**assignment_data)
+        cls.assignment = cls.create_assignment(cls.job2, cls.member)
+        # needed to test assignment widget fully
+        cls.create_assignment(cls.past_job, cls.member)
+        cls.create_assignment(cls.past_core_job, cls.member)
+        cls.create_assignment(cls.past_job, cls.member3)
+        cls.create_assignment(cls.past_core_job, cls.member3)
+
+    @staticmethod
+    def create_assignment(job, member, amount=1, **kwargs):
+        return Assignment.objects.create(job=job, member=member, amount=amount, **kwargs)
 
     @classmethod
     def set_up_depots(cls):
         """
         depots
         """
+        cls.tour = Tour.objects.create(name='Tour1', description='Tour1 description')
         location = cls.create_location('depot_location')
         depot_data = {
             'name': 'depot',
             'contact': cls.member,
+            'tour': cls.tour,
             'weekday': 1,
-            'location': location}
+            'location': location,
+        }
         cls.depot = Depot.objects.create(**depot_data)
         depot_data = {
             'name': 'depot2',
             'contact': cls.member,
             'weekday': 1,
-            'location': location}
+            'pickup_time': datetime.time(9, 0),
+            'pickup_duration': 48,
+            'tour': cls.tour,
+            'location': location,
+            'fee': 55.0,
+        }
         cls.depot2 = Depot.objects.create(**depot_data)
 
     @staticmethod
@@ -222,9 +242,20 @@ class JuntagricoTestCase(TestCase):
         cls.sub_size = SubscriptionSize.objects.create(**sub_size_data)
         cls.sub_type = cls.create_sub_type(cls.sub_size)
         cls.sub_type2 = cls.create_sub_type(cls.sub_size, shares=2)
+        cls.sub_type3 = cls.create_sub_type(cls.sub_size, shares=0)
+        DepotSubscriptionTypeCondition.objects.create(
+            depot=cls.depot,
+            subscription_type=cls.sub_type,
+            fee=100
+        )
+        DepotSubscriptionTypeCondition.objects.create(
+            depot=cls.depot2,
+            subscription_type=cls.sub_type2,
+            fee=50
+        )
 
     @staticmethod
-    def create_sub(depot, activation_date=None, parts=None, **kwargs):
+    def create_sub(depot, parts, activation_date=None, **kwargs):
         if 'deactivation_date' in kwargs and 'cancellation_date' not in kwargs:
             kwargs['cancellation_date'] = activation_date
         sub = Subscription.objects.create(
@@ -234,33 +265,39 @@ class JuntagricoTestCase(TestCase):
             start_date='2018-01-01',
             **kwargs
         )
-        if parts:
-            for part in parts:
-                SubscriptionPart.objects.create(
-                    subscription=sub,
-                    type=part,
-                    activation_date=activation_date,
-                    cancellation_date=kwargs.get('cancellation_date', None),
-                    deactivation_date=kwargs.get('deactivation_date', None)
-                )
+        if isinstance(parts, SubscriptionType):
+            parts = [parts]
+        for part in parts:
+            SubscriptionPart.objects.create(
+                subscription=sub,
+                type=part,
+                activation_date=activation_date,
+                cancellation_date=kwargs.get('cancellation_date', None),
+                deactivation_date=kwargs.get('deactivation_date', None)
+            )
         return sub
 
     @classmethod
-    def create_sub_now(cls, depot, **kwargs):
-        return cls.create_sub(depot, datetime.date.today(), **kwargs)
+    def create_sub_now(cls, depot, parts=None, **kwargs):
+        if not parts:
+            parts = [cls.sub_type]
+        return cls.create_sub(depot, parts, datetime.date.today(), **kwargs)
 
     @classmethod
     def set_up_sub(cls):
         """
         subscription
         """
+        today = datetime.date.today()
         cls.sub = cls.create_sub_now(cls.depot)
-        cls.sub2 = cls.create_sub(cls.depot)
+        cls.sub2 = cls.create_sub(cls.depot, cls.sub_type2)
+        cls.sub3 = cls.create_sub(cls.depot, cls.sub_type3)
         cls.member.join_subscription(cls.sub, True)
+        cls.member3.join_subscription(cls.sub3, True)
+        cls.sub3.activate(today - datetime.timedelta(3))
+        cls.sub3.deactivate(today - datetime.timedelta(1))
         cls.member3.join_subscription(cls.sub)
         cls.member2.join_subscription(cls.sub2, True)
-        SubscriptionPart.objects.create(subscription=cls.sub, type=cls.sub_type,
-                                        activation_date=datetime.date.today())
 
     @classmethod
     def set_up_extra_sub_types(cls):
@@ -311,6 +348,7 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def set_up_deliveries(cls):
         delivery_data = {'delivery_date': '2017-03-27',
+                         'tour': cls.tour,
                          'subscription_size': cls.sub_size}
         cls.delivery1 = Delivery.objects.create(**delivery_data)
         delivery_data['delivery_date'] = '2017-03-28'
