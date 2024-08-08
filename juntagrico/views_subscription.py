@@ -4,6 +4,7 @@ from datetime import date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Count, Sum
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -185,7 +186,7 @@ def part_change(request, part):
     change part of a subscription
     """
     if part.subscription.canceled or part.subscription.inactive:
-        raise Http404("Can't change subscription part of cancelled subscription")
+        raise Http404("Can't change subscription part of canceled subscription")
     if SubscriptionTypeDao.get_normal_visible().count() <= 1:
         raise Http404("Can't change subscription part if there is only one subscription type")
     if request.method == 'POST':
@@ -198,8 +199,12 @@ def part_change(request, part):
                 part.save()
             else:
                 # cancel existing part and create new waiting one
-                SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
-                part.cancel()
+                with transaction.atomic():
+                    SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
+                    part.cancel()
+                # notify admin
+                adminnotification.subpart_canceled(part)
+                adminnotification.subparts_created([part], part.subscription)
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
         form = SubscriptionPartChangeForm(part)

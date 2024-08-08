@@ -4,6 +4,7 @@
 {% load juntagrico.config %}
 {% load juntagrico.menu %}
 {% messages request as l_messages %}
+{% widgets_menu request as widgets_menu %}
 
 <!DOCTYPE html>
 <html lang="de">
@@ -52,8 +53,7 @@
                         </button>
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            {% include "juntagrico/menu/user.html" %}
-                            {% include "juntagrico/menu/admin.html" %}
+                            {% include "juntagrico/menu/navigation.html" %}
                         </div>
                     {% endblock %}
                 </nav>
@@ -94,10 +94,10 @@
             <div class="allcontent row">
                 {% block allcontent %}
                     <div class="sidebar col-md-3 d-none d-md-block">
-                        {% include "juntagrico/menu/user.html" %}
-                        {% include "juntagrico/menu/admin.html" %}
-                        {% include "widgets/assignements.html" %}
-                        {% include "widgets/jobs.html" %}
+                        {% block menu %}
+                            {% include "juntagrico/menu/navigation.html" %}
+                            {{ widgets_menu }}
+                        {% endblock %}
                     </div>
                     <div class="content-container col-md-9 col-sm-12">
                         <div class="messages row">
@@ -118,9 +118,8 @@
             </div>
             <div class="footer row">
                 {% block footer_content %}
-                 <div class="sidebar col-sm-12 d-md-none">
-                        {% include "widgets/assignements.html" %}
-                        {% include "widgets/jobs.html" %}
+                    <div class="sidebar col-sm-12 d-md-none">
+                        {{ widgets_menu }}
                     </div>
                 {% endblock %}
             </div>
