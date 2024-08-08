@@ -47,6 +47,10 @@ a.canceled:hover, a.canceled:focus {
     color: #ff3399;
 }
 
+.pre {
+    white-space: pre;
+}
+
 /* crispy-form */
 .asteriskField {
     padding-left: 0.2em;

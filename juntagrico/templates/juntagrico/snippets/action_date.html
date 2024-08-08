@@ -1,0 +1,24 @@
+{% load i18n %}
+{% if date_changed %}
+    <div class="alert alert-warning">
+{% endif %}
+        <form action="{% url 'changedate-set' %}" method="POST" class="form-inline">
+            {% csrf_token %}
+            {% if date_changed %}
+                <label class="form-check-label mb-2 mr-sm-2" for="change-date">
+                    {% blocktrans %}Das Änderungsdatum ist gesetzt auf:{% endblocktrans %}
+                </label>
+            {% endif %}
+            <input type="date" class="form-control docs-date mb-2 mr-sm-2" name="date" id="change-date" value="{{ change_date|date:"Y-m-d" }}">
+            <button type="submit" class="btn btn-primary mb-2">
+                {% trans "Änderungsdatum einstellen" %}
+            </button>
+            {% if date_changed %}
+                <a href="{% url 'changedate-unset' %}" class="btn btn-secondary mb-2 ml-2">
+                    {% trans "Zurücksetzen auf Heute" %}
+                </a>
+            {% endif %}
+        </form>
+{% if date_changed %}
+    </div>
+{% endif %}
