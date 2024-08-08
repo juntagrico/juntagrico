@@ -22,8 +22,8 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
-from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed
 from juntagrico.util.management import cancel_share
@@ -671,7 +671,7 @@ class JobSubscribeForm(Form):
         if self.current_slots > 0:
             actions = [Submit('subscribe', _('Ändern'),
                               data_message=_('Möchtest du deinen Einsatz verbindlich ändern?'))]
-            if self.job.allow_unsubscribe:
+            if Config.allow_job_unsubscribe():
                 actions.append(Submit(self.UNSUBSCRIBE, _('Abmelden'), css_class='btn-danger',
                                       data_message=_('Möchtest du dich wirklich abmelden?')))
         else:
@@ -691,7 +691,7 @@ class JobSubscribeForm(Form):
 
     @property
     def can_unsubscribe(self):
-        return self.current_slots > 0 and self.job.allow_unsubscribe
+        return self.current_slots > 0 and Config.allow_job_unsubscribe()
 
     @property
     def can_interact(self):

@@ -407,6 +407,20 @@ ASSIGNMENT_UNIT
 
     "ENTITY"
 
+ALLOW_JOB_UNSUBSCRIBE
+^^^^^^^^^^^^^^^^^^^^^
+  If set to true, members can unsubscribe themselves from a job they signed up to previously by filling out a form.
+  Job contacts will be notified.
+
+  Type: Boolean
+
+  default value
+
+  .. code-block:: python
+
+    False
+
+
 PROMOTED_JOB_TYPES
 ^^^^^^^^^^^^^^^^^^
   Types of jobs which should apear on start page

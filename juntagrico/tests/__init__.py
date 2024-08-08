@@ -132,8 +132,7 @@ class JuntagricoTestCase(TestCase):
                      'type': cls.job_type}
         job_data3 = {'slots': 5,
                      'time': time,
-                     'type': cls.job_type,
-                     'allow_unsubscribe': True}
+                     'type': cls.job_type}
         cls.job1 = RecuringJob.objects.create(**job_data)
         cls.job2 = RecuringJob.objects.create(**job_data)
         cls.job3 = RecuringJob.objects.create(**job_data)

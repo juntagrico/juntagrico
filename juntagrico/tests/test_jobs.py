@@ -1,4 +1,5 @@
 from django.dispatch import receiver
+from django.test import override_settings
 from django.urls import reverse
 
 from . import JuntagricoTestCase
@@ -68,6 +69,23 @@ class JobTests(JuntagricoTestCase):
             self.assertEqual(self.job5.assignment_set.first().amount, 2)
 
     def testUnsubscribe(self):
+        # Unsubscribe should be prevented, because ALLOW_JOB_UNSUBSCRIBE=False
+        # subscribe and try unsubscribing
+        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'subscribe': True}, 302)
+        self.assertEqual(self.job6.occupied_slots, 1)
+        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True}, 200)
+        self.assertEqual(self.job6.occupied_slots, 1)
+
+        # subscribe for multiple slots and try unsubscribing from all
+        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 4, 'subscribe': True}, 302)
+        self.assertEqual(self.job6.occupied_slots, 4)
+        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True}, 200)
+        self.assertEqual(self.job6.occupied_slots, 4)
+
+
+@override_settings(ALLOW_JOB_UNSUBSCRIBE=True)
+class UnsubscribableJobTests(JobTests):
+    def testUnsubscribe(self):
         # subscribe and unsubscribe job6
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'subscribe': True}, 302)
         self.assertEqual(self.job6.occupied_slots, 1)
@@ -77,7 +95,7 @@ class JobTests(JuntagricoTestCase):
         # now we have no sign ups, so a repeated unsubscribe should return 200
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True})
 
-        # subscribe for multiple slots and unsubscribe for all
+        # subscribe for multiple slots and unsubscribe from all
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 4, 'subscribe': True}, 302)
         self.assertEqual(self.job6.occupied_slots, 4)
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True}, 302)
