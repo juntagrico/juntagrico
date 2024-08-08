@@ -1,0 +1,109 @@
+{% load i18n %}
+<div class="assignment-progress assignment-progress-bars">
+    {% if assignments.subscription %}
+        {% with sub=assignments.subscription %}
+            {# all assignments #}
+            <div class="progress"
+                 title="{{ sub.assignment_count|floatformat }}/{{ sub.required_assignments|floatformat }}
+            {% if sub.future_assignment_count %}{% blocktrans with c=sub.future_assignment_count|floatformat %}und {{ c }} geplant{% endblocktrans %}{% endif %}">
+                {% with max=sub.required_assignments|floatformat:"u" %}
+                    {% if sub.member_assignment_count %}
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: {{ sub.member_assignments_progress|floatformat:"u" }}%"
+                             aria-valuenow="{{ sub.member_assignment_count|floatformat:"u" }}"
+                             aria-valuemin="0" aria-valuemax="{{ max }}">
+                            {{ sub.member_assignment_count|floatformat }}
+                        </div>
+                    {% endif %}
+                    {% if sub.future_member_assignment_count %}
+                        <div class="progress-bar-striped bg-success" role="progressbar"
+                             style="width: {{ sub.future_member_assignments_progress|floatformat:"u" }}%"
+                             aria-valuenow="{{ sub.future_member_assignment_count|floatformat:"u" }}"
+                             aria-valuemin="0" aria-valuemax="{{ max }}">
+                        </div>
+                    {% endif %}
+                    {% if sub.partner_assignment_count %}
+                        <div class="progress-bar bg-success partner-assignments" role="progressbar"
+                             style="width: {{ sub.partner_assignments_progress|floatformat:"u" }}%"
+                             aria-valuenow="{{ sub.partner_assignment_count|floatformat:"u" }}"
+                             aria-valuemin="0" aria-valuemax="{{ max }}">
+                            {{ sub.partner_assignment_count|floatformat }}
+                        </div>
+                    {% endif %}
+                    {% if sub.future_partner_assignment_count %}
+                        <div class="progress-bar-striped bg-success partner-assignments" role="progressbar"
+                             style="width: {{ sub.future_partner_assignments_progress|floatformat:"u" }}%"
+                             aria-valuenow="{{ sub.future_partner_assignment_count|floatformat:"u" }}"
+                             aria-valuemin="0" aria-valuemax="{{ max }}">
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            {# core assignments #}
+            {% if sub.required_core_assignments %}
+                <div class="progress core-assignment-progress"
+                     title="{{ sub.core_assignment_count|floatformat }}/{{ sub.required_core_assignments|floatformat }} {% trans "in Kernbereich" %}
+            {% if sub.future_core_assignment_count %}{% blocktrans with c=sub.future_core_assignment_count|floatformat %}und {{ c }} geplant{% endblocktrans %}{% endif %}">
+                    {% with max=sub.required_core_assignments|floatformat:"u" %}
+                        {% if sub.member_core_assignment_count %}
+                            <div class="progress-bar bg-core" role="progressbar"
+                                 style="width: {{ sub.member_core_assignments_progress|floatformat:"u" }}%"
+                                 aria-valuenow="{{ sub.member_core_assignment_count|floatformat:"u" }}"
+                                 aria-valuemin="0" aria-valuemax="{{ max }}">
+                                {{ sub.member_core_assignment_count|floatformat }}
+                            </div>
+                        {% endif %}
+                        {% if sub.future_member_core_assignment_count %}
+                            <div class="progress-bar-striped bg-core" role="progressbar"
+                                 style="width: {{ sub.future_member_core_assignments_progress|floatformat:"u" }}%"
+                                 aria-valuenow="{{ sub.future_member_core_assignment_count|floatformat:"u" }}"
+                                 aria-valuemin="0" aria-valuemax="{{ max }}">
+                                {{ sub.future_member_core_assignment_count|floatformat }}
+                            </div>
+                        {% endif %}
+                        {% if sub.partner_core_assignment_count %}
+                            <div class="progress-bar bg-core partner-assignments" role="progressbar"
+                                 style="width: {{ sub.partner_core_assignments_progress|floatformat:"u" }}%"
+                                 aria-valuenow="{{ sub.partner_core_assignment_count|floatformat:"u" }}"
+                                 aria-valuemin="0" aria-valuemax="{{ max }}">
+                                {{ sub.partner_core_assignment_count|floatformat }}
+                            </div>
+                        {% endif %}
+                        {% if sub.future_partner_assignment_count %}
+                            <div class="progress-bar-striped bg-core partner-assignments" role="progressbar"
+                                 style="width: {{ sub.future_partner_core_assignments_progress|floatformat:"u" }}%"
+                                 aria-valuenow="{{ sub.future_partner_core_assignment_count|floatformat:"u" }}"
+                                 aria-valuemin="0" aria-valuemax="{{ max }}">
+                                {{ sub.future_partner_core_assignment_count|floatformat }}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% else %}
+        {% with member=assignments.member %}
+            <div class="progress" title="{{ member.assignment_count|floatformat }}
+            {% if member.future_assignment_count %}{% blocktrans with c=member.future_assignment_count|floatformat %}und {{ c }} geplant{% endblocktrans %}{% endif %}">
+                {% with max=1 %}
+                    {% if member.assignment_count %}
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="flex-grow: {{ member.assignment_count|floatformat:"u" }}"
+                             aria-valuenow="{{ member.assignment_count|floatformat:"u" }}"
+                             aria-valuemin="0" aria-valuemax="{{ max }}">
+                            {{ member.assignment_count|floatformat }}
+                        </div>
+                    {% endif %}
+                    {% if member.future_assignment_count %}
+                        <div class="progress-bar-striped bg-success" role="progressbar"
+                             style="flex-grow: {{ member.future_assignment_count|floatformat:"u" }}"
+                             aria-valuenow="{{ member.future_assignment_count|floatformat:"u" }}"
+                             aria-valuemin="0" aria-valuemax="{{ max }}">
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endwith %}
+    {% endif %}
+</div>

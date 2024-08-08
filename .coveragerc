@@ -1,4 +1,5 @@
 [run]
+plugins = django_coverage_plugin
 include =
     juntagrico/*
 omit =

@@ -1,6 +1,4 @@
 from django import template
-from django.db.models import Value
-from django.db.models.functions import Concat
 from django.utils.translation import gettext as _
 
 register = template.Library()
@@ -14,13 +12,11 @@ def required_for_subscription(share, index):
         remaining = subscription.required_shares - subscription.paid_shares
         if index <= remaining:
             other_unpaid = subscription.co_members(of_member=member).filter(
-                member__share__isnull=False, member__share__paid_date__isnull=True
-            ).annotate(
-                member_name=Concat('member__first_name', Value(' '), 'member__last_name')
-            ).values('member_name')
+                share__isnull=False, share__paid_date__isnull=True, share__cancelled_date__isnull=True
+            )
             if index > remaining - other_unpaid.count():
                 return _("Ja. Oder ") + ", ".join(
-                    o['member_name'] for o in other_unpaid.distinct()
+                    str(o) for o in other_unpaid.distinct()
                 ) + ". " + _("({} insgesamt)").format(remaining)
             return _("Ja")
     return _("Nein")

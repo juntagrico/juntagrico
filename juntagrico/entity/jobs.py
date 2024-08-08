@@ -344,7 +344,8 @@ class Assignment(JuntagricoBaseModel):
 
     @classmethod
     def pre_save(cls, sender, instance, **kwargs):
-        instance.core_cache = instance.is_core()
+        if not kwargs.get('raw', False):
+            instance.core_cache = instance.is_core()
 
     def can_modify(self, request):
         return self.job.get_real_instance().can_modify(request)

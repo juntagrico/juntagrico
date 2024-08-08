@@ -52,8 +52,8 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         response = self.client.post(
             reverse('cs-subscription'),
             {
-                f'amount[{sub_types_id[0]}]': 1,
-                f'amount[{sub_types_id[1]}]': 0,
+                f'amount[{type_id}]': 1 if i == 0 else 0
+                for i, type_id in enumerate(sub_types_id)
             }
         )
         self.assertRedirects(response, reverse('cs-depot'))

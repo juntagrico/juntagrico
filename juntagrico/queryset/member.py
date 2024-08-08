@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import QuerySet, Sum, Case, When
+from django.db.models import QuerySet, Sum, Case, When, Q
 from django.utils.decorators import method_decorator
 
 from juntagrico.util.temporal import default_to_business_year
@@ -13,7 +13,11 @@ class MemberQuerySet(QuerySet):
 
     def joining_subscription(self, on_date=None):
         on_date = on_date or datetime.date.today()
-        return self.exclude(subscriptionmembership__leave_date__lte=on_date)
+        # note: using exclude here would exclude members that left another subscription
+        return self.filter(
+            Q(subscriptionmembership__leave_date__gt=on_date)
+            | Q(subscriptionmembership__leave_date=None)
+        ).distinct()
 
     def joined_subscription(self, on_date=None):
         on_date = on_date or datetime.date.today()
