@@ -119,3 +119,41 @@ def member_changed_depot(**kwargs):
         get_template('juntagrico/mails/admin/depot_changed.txt').render(base_dict(kwargs)),
         bcc=kwargs['emails']
     ).send()
+
+
+def member_subscribed_to_job(job, **kwargs):
+    #TODO: Allow contacts to subscribe/unsubscribe from notifications
+    emails = job.get_emails()
+    kwargs['job'] = job
+    if kwargs.get('message'):
+        subject = _('Neue Anmeldung zum Einsatz mit Mitteilung')
+    else:
+        subject = _('Neue Anmeldung zum Einsatz')
+    EmailSender.get_sender(
+        organisation_subject(subject),
+        get_template('juntagrico/mails/admin/job/signup.txt').render(base_dict(kwargs)),
+        to=emails,
+        reply_to=[kwargs['member'].email],
+    ).send()
+
+
+def member_changed_job_subscription(job, **kwargs):
+    emails = job.get_emails()
+    kwargs['job'] = job
+    EmailSender.get_sender(
+        organisation_subject(_('Änderung der Einsatzanmeldung')),
+        get_template('juntagrico/mails/admin/job/changed_subscription.txt').render(base_dict(kwargs)),
+        to=emails,
+        reply_to=[kwargs['member'].email],
+    ).send()
+
+
+def member_unsubscribed_from_job(job, **kwargs):
+    emails = job.get_emails()
+    kwargs['job'] = job
+    EmailSender.get_sender(
+        organisation_subject(_('Abmeldung vom Einsatz')),
+        get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(base_dict(kwargs)),
+        to=emails,
+        reply_to=[kwargs['member'].email],
+    ).send()

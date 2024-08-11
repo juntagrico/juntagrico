@@ -1,6 +1,6 @@
 from django.dispatch import Signal
 
-from juntagrico.mailer import adminnotification
+from juntagrico.mailer import adminnotification, membernotification
 
 subscribed = Signal()
 
@@ -44,3 +44,19 @@ member_deactivated = Signal()
 
 def on_depot_changed(sender, **kwargs):
     adminnotification.member_changed_depot(**kwargs)
+
+
+def on_job_subscribed(sender, **kwargs):
+    job = kwargs.get('instance')
+    member = kwargs.get('member')
+    initial_count = kwargs.get('initial_count')
+    count = kwargs.get('count')
+    if initial_count == 0 and count > 0:
+        membernotification.job_signup(member.email, job, count)
+        adminnotification.member_subscribed_to_job(job, **kwargs)
+    elif count == 0:
+        membernotification.job_unsubscribed(member.email, job, initial_count)
+        adminnotification.member_unsubscribed_from_job(job, **kwargs)
+    else:
+        membernotification.job_subscription_changed(member.email, job, count)
+        adminnotification.member_changed_job_subscription(job, **kwargs)

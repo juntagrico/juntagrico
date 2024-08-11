@@ -1,9 +1,10 @@
+from django.core import mail
 from django.dispatch import receiver
 from django.test import override_settings
 from django.urls import reverse
 
 from . import JuntagricoTestCase
-from ..entity.jobs import Job
+from ..entity.jobs import Job, Assignment
 from ..signals import subscribed
 
 
@@ -36,6 +37,9 @@ class JobTests(JuntagricoTestCase):
         self.assertEqual(self.job1.free_slots, 0)
         self.assertEqual(self.job1.assignment_set.first().amount, 1)
         self.assertTrue(self.signal_called)
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
         self.assertTrue(subscribed.disconnect(handler, sender=Job))
 
     def testJobExtras(self):
@@ -47,13 +51,23 @@ class JobTests(JuntagricoTestCase):
         # should override slots not add
         self.assertPost(reverse('job', args=[self.job4.pk]), {'slots': 1, 'subscribe': True}, 302)
         self.assertEqual(self.job4.assignment_set.count(), 1)
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        mail.outbox = []
         self.assertGet(reverse('job', args=[self.job4.pk]))
         self.assertPost(reverse('job', args=[self.job4.pk]), {'slots': 2, 'subscribe': True}, 302)
         self.assertEqual(self.job4.assignment_set.count(), 2)
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        mail.outbox = []
         self.assertGet(reverse('job', args=[self.job4.pk]))
         self.assertPost(reverse('job', args=[self.job4.pk]), {'slots': 3, 'subscribe': True}, 302)
         self.assertEqual(self.job4.assignment_set.count(), 3)
         self.assertGet(reverse('job', args=[self.job4.pk]))
+        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        mail.outbox = []
 
     def testInfiniteSlots(self):
         self.assertPost(reverse('job', args=[self.infinite_job.pk]), {'slots': 3, 'subscribe': True}, 302)
@@ -61,7 +75,14 @@ class JobTests(JuntagricoTestCase):
         self.assertGet(reverse('job', args=[self.infinite_job.pk]))
 
     def testOverassignement(self):
+        assignment = Assignment.objects.create(job=self.job4, member=self.member, amount=2)
         self.assertPost(reverse('job', args=[self.job4.pk]), {'slots': 1000, 'subscribe': True})
+        # ensure that assignment is not modified
+        self.assertEqual(self.job4.assignment_set.count(), 1)
+        assignment.refresh_from_db()
+        self.assertEqual(assignment.amount, 2)
+        # assert nobody was notified
+        self.assertEqual(len(mail.outbox), 0)
 
     def testHours(self):
         with self.settings(ASSIGNMENT_UNIT='HOURS'):
@@ -71,32 +92,41 @@ class JobTests(JuntagricoTestCase):
     def testUnsubscribe(self):
         # Unsubscribe should be prevented, because ALLOW_JOB_UNSUBSCRIBE=False
         # subscribe and try unsubscribing
-        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'subscribe': True}, 302)
-        self.assertEqual(self.job6.occupied_slots, 1)
+        Assignment.objects.create(job=self.job6, member=self.member, amount=1)
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True}, 200)
         self.assertEqual(self.job6.occupied_slots, 1)
 
         # subscribe for multiple slots and try unsubscribing from all
-        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 4, 'subscribe': True}, 302)
-        self.assertEqual(self.job6.occupied_slots, 4)
+        Assignment.objects.create(job=self.job6, member=self.member, amount=1)
+        Assignment.objects.create(job=self.job6, member=self.member, amount=1)
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True}, 200)
-        self.assertEqual(self.job6.occupied_slots, 4)
+        self.assertEqual(self.job6.occupied_slots, 3)
+        # assert nobody was notified
+        self.assertEqual(len(mail.outbox), 0)
 
 
 @override_settings(ALLOW_JOB_UNSUBSCRIBE=True)
 class UnsubscribableJobTests(JobTests):
     def testUnsubscribe(self):
         # subscribe and unsubscribe job6
-        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'subscribe': True}, 302)
-        self.assertEqual(self.job6.occupied_slots, 1)
+        Assignment.objects.create(job=self.job6, member=self.member, amount=1)
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True}, 302)
         self.assertEqual(self.job6.occupied_slots, 0)
+        # assert member and admin notification
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        mail.outbox = []
 
         # now we have no sign ups, so a repeated unsubscribe should return 200
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True})
 
-        # subscribe for multiple slots and unsubscribe from all
-        self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 4, 'subscribe': True}, 302)
-        self.assertEqual(self.job6.occupied_slots, 4)
+        # unsubscribe from multiple slots
+        Assignment.objects.create(job=self.job6, member=self.member, amount=1)
+        Assignment.objects.create(job=self.job6, member=self.member, amount=1)
         self.assertPost(reverse('job', args=[self.job6.pk]), {'slots': 1, 'unsubscribe': True}, 302)
         self.assertEqual(self.job6.occupied_slots, 0)
+        # assert member and admin notification
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])

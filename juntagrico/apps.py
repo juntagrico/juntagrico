@@ -9,9 +9,10 @@ class JuntagricoAppconfig(AppConfig):
 
     def ready(self):
         from . import signals
-        from .models import Subscription
+        from .models import Subscription, Job
 
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
+        signals.subscribed.connect(signals.on_job_subscribed, sender=Job)
 
         '''monkey patch User email method for password reset'''
         from django.contrib.auth.models import User

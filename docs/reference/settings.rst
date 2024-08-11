@@ -409,10 +409,15 @@ ASSIGNMENT_UNIT
 
 ALLOW_JOB_UNSUBSCRIBE
 ^^^^^^^^^^^^^^^^^^^^^
-  If set to true, members can unsubscribe themselves from a job they signed up to previously by filling out a form.
+  If set to true, members can unsubscribe themselves (or reduce the slots they reserved)
+  from a job they signed up to previously by filling out a form.
+
   Job contacts will be notified.
 
-  Type: Boolean
+  If the value is a string, unsubscribing will be allowed and the string will be displayed to the member, when they
+  try to unsubscribe from a job.
+
+  Type: Boolean or String
 
   default value
 
