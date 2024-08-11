@@ -628,7 +628,7 @@ class JobSubscribeForm(Form):
     UNSUBSCRIBE = 'unsubscribe'
 
     slots = ChoiceField(label=_('Ich trage mich ein:'))
-    message = CharField(label=_('Mitteilung:'), widget=Textarea, required=False,
+    message = CharField(label=_('Mitteilung:'), widget=Textarea(attrs={"rows": 3}), required=False,
                         help_text=_('Diese Mitteilung wird an die Einsatz-Koordination gesendet'))
 
     text = {
@@ -736,8 +736,13 @@ class JobSubscribeForm(Form):
             with transaction.atomic():
                 # clear current slots of member and fill new
                 self.current_assignments.delete()
-                assignments = [Assignment(member=self.member, job=self.job, amount=self.get_multiplier())] * slots
-                Assignment.objects.bulk_create(assignments)
+                assignment = Assignment(
+                    member=self.member,
+                    job=self.job,
+                    amount=self.get_multiplier(),
+                    core_cache=self.job.type.activityarea.core
+                )
+                Assignment.objects.bulk_create([assignment] * slots)
 
                 # apply job extras
                 assignment = Assignment.objects.filter(member=self.member, job=self.job).last()
