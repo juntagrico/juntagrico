@@ -97,7 +97,7 @@ class SubAdminTests(JuntagricoTestCase):
         # editing that subscription must be possible too
         sub = self.member4.subscription_current
         sub_id = sub.id
-        subscription_memberships = sub.subscriptionmembership_set.all()
+        subscription_memberships = sub.subscriptionmembership_set.all().order_by('id')
         data.update({
             'subscriptionmembership_set-INITIAL_FORMS': '2',
             'subscriptionmembership_set-0-id': str(subscription_memberships[0].id),
@@ -105,7 +105,7 @@ class SubAdminTests(JuntagricoTestCase):
             'subscriptionmembership_set-1-id': str(subscription_memberships[1].id),
             'subscriptionmembership_set-1-subscription': str(sub_id),
             'extra_subscription_set-INITIAL_FORMS': '1',
-            'parts-0-id': str(sub.parts.all()[0].id),
+            'parts-0-id': str(sub.parts.first().id),
             'parts-0-subscription': str(sub_id),
         })
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub_id]),
