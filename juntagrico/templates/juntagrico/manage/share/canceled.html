@@ -1,6 +1,7 @@
 {% extends "juntagrico/manage/base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 
 {% block page_title %}
     {% vocabulary "share_pl" as v_share_pl %}
@@ -10,6 +11,7 @@
 {% endblock %}
 
 {% block content %}
+    {% action_date request %}
     {% include '../member/snippets/toggle_buttons.html' %}
     {{ block.super }}
 {% endblock %}
