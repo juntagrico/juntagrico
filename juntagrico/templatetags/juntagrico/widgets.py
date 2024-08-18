@@ -26,7 +26,7 @@ def assignment_data(request):
         end=today,
         prefix='member_'
     ).annotate_assignments_progress(
-        end=today
+        count_jobs_until=today
     ).get(pk=member.subscription_current)
     sub.remaining_assignments = max(
         sub.required_assignments - sub.assignment_count,
