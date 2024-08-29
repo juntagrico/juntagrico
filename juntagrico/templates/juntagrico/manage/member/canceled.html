@@ -1,0 +1,124 @@
+{% extends "../base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+{% block page_title %}
+    <h3>
+        {% trans "Gekündigte Mitgliedschaften" %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% action_date request %}
+    {% include '../member/snippets/toggle_buttons.html' %}
+    {{ block.super }}
+{% endblock %}
+
+{% block list %}
+    {% vocabulary "subscription" as v_subscription %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "member" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kündigungsdatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Enddatum" %}
+                </th>
+                <th class="filter">
+                    {% blocktrans %}Aktive {{ v_share_pl }}{% endblocktrans %}
+                </th>
+                <th class="filter">
+                    {% blocktrans %}Aktive/r/s {{ v_subscription }}{% endblocktrans %}
+                </th>
+                <th>
+                    {% trans "Aktionen" %}
+                </th>
+                <th class="filter">
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in object_list %}
+                <tr>
+                    <td>
+                        {% include './snippets/display_linked.html' %}
+                        <div class="d-none member_id{% if not member.in_subscription and not member.is_cooperation_member %} deactivatable{% endif %}">
+                            {{ member.id }}{# spaces are required here #}
+                        </div>
+                    </td>
+                    <td>
+                        {{ member.cancellation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ member.end_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ member.active_shares_count }}
+                        {% if member.active_shares_count > 0 %}
+                            {% trans "(J)" %}
+                        {% else %}
+                            {% trans "(N)" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if member.in_subscription %}
+                            {% trans "(J)" %}
+                        {% else %}
+                            {% trans "(N)" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if member.in_subscription %}
+                            <span>
+                                {% blocktrans trimmed %}
+                                    {{ v_subscription }} muss zuerst deaktiviert werden.
+                                {% endblocktrans %}
+                            </span>
+                        {% elif member.is_cooperation_member %}
+                            <span>
+                                {% blocktrans trimmed %}
+                                    {{ v_share_pl }} müssen zuerst deaktiviert werden.
+                                {% endblocktrans %}
+                            </span>
+                        {% else %}
+                            <a href="{% url 'manage-member-deactivate-single' member.id %}" class="btn btn-danger">
+                                {% trans "deaktivieren" %}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ member.notes }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    {% if perms.juntagrico.change_share %}
+    config.layout.topStart.buttons.push(
+        id_action_button(
+            '<i class="fa-solid fa-user-slash"></i> {% trans "Deaktivieren" %}',
+            '{% url 'manage-member-deactivate' %}',
+            '{% csrf_token %}', 
+            '.deactivatable', 'member_ids',
+            [
+                {% vocabulary "member" as v_member %}
+                '{% blocktrans %}1 {{ v_member }} deaktivieren?{% endblocktrans %}',
+                {% vocabulary "member_pl" as v_member_pl %}
+                '{% blocktrans %}Diese {count} {{ v_member_pl }} deaktivieren?{% endblocktrans %}'
+            ]
+        )
+    )
+    {% endif %}
+{% endblock %}
+

@@ -114,7 +114,7 @@ Search Hints:
 
 Notifications
 -------------
-Some entities send a notification email when they are created or cancelled. Should a member be notified on a certain event it has to have the corresponding
+Some entities send a notification email when they are created or canceled. Should a member be notified on a certain event it has to have the corresponding
 permission for that entity type and event.
 
 juntagrico.notified_on_share_creation
@@ -126,7 +126,7 @@ Search Hints:
 
 juntagrico.notified_on_share_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a share is cancelled.
+Member gets notified when a share is canceled.
 
 Search Hints:
     * German: Kündigung informiert
@@ -154,7 +154,7 @@ Search Hints:
 
 juntagrico.notified_on_subscription_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a subscription is cancelled.
+Member gets notified when a subscription is canceled.
 
 Search Hints:
     * German: Kündigung informiert
@@ -208,7 +208,7 @@ Search Hints:
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can access the mail from from the administration menu.
+Member can access the email form from the administration menu.
 
 Search Hints:
     * German: Emails versenden

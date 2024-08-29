@@ -10,7 +10,7 @@ E-Mail: {{ e }}
 {{ serverurl }}{% url 'admin:juntagrico_member_change' member.id %}
 
 {% trans "Ausserdem hat er/sie folgende Nachricht für euch hinterlassen" %}:
-{{ message}}
+{{ message }}
 
 {% blocktrans %}Liebe Grüsse und einen schönen Tag noch
 Dein Server{% endblocktrans %}

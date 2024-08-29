@@ -1,6 +1,7 @@
+from functools import cached_property
+
 from django.contrib import admin
 from django.db import models
-from django.db.models import F, Sum
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -9,12 +10,11 @@ from juntagrico.dao.sharedao import ShareDao
 from juntagrico.entity import notifiable, JuntagricoBaseModel, SimpleStateModel
 from juntagrico.entity.billing import Billable
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.lifecycle.sub import check_sub_consistency
 from juntagrico.lifecycle.subpart import check_sub_part_consistency
 from juntagrico.queryset.subscription import SubscriptionQuerySet, SubscriptionPartQuerySet
-from juntagrico.mailer import membernotification
-from juntagrico.util.models import q_activated, q_cancelled, q_deactivated, q_deactivation_planned, q_isactive
+from juntagrico.signals import depot_change_confirmed
+from juntagrico.util.models import q_activated, q_canceled, q_deactivated, q_deactivation_planned, q_isactive
 from juntagrico.util.temporal import start_of_next_business_year
 
 
@@ -41,6 +41,8 @@ class Subscription(Billable, SimpleStateModel):
     notes = models.TextField(
         _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
+
+    types = models.ManyToManyField('SubscriptionType', through='SubscriptionPart', related_name='subscriptions')
 
     objects = PolymorphicManager.from_queryset(SubscriptionQuerySet)()
 
@@ -76,33 +78,44 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def future_parts(self):
-        return self.parts.filter(~q_cancelled() & ~q_deactivated())
+        return self.parts.filter(~q_canceled() & ~q_deactivated())
 
     @property
     def active_and_future_parts(self):
         return self.parts.filter(~q_deactivated())
 
+    @cached_property
+    def content(self):
+        """
+        :return: list of parts annotated with size_sum, size_name and product_name
+        """
+        return self.types.with_active_or_future_parts().annotate_content()
+
+    def content_strings(self, sformat=None):
+        """
+        :param sformat: format string. defaults to SUB_OVERVIEW_FORMAT.format
+        :return: list of formated strings desribing each type and amount in this subscription
+        """
+        sformat = sformat or Config.sub_overview_format('format')
+        return [sformat.format(
+            product=t.product_name,
+            size=t.size_name,
+            type=t.name,
+            amount=t.size_sum,
+        ) for t in self.content]
+
     @property
     def size(self):
+        """
+        for backwards compatibility.
+        :return: content_strings concatenated with SUB_OVERVIEW_FORMAT.delimiter
+        """
         delimiter = Config.sub_overview_format('delimiter')
-        sformat = Config.sub_overview_format('format')
-        types = SubscriptionType.objects.filter(subscription_parts__in=self.active_and_future_parts).annotate(
-            size_sum=Sum('size__units'),
-            size_name=F('size__name'),
-            product_name=F('size__product__name')
-        )
-        return delimiter.join(
-            [sformat.format(
-                product=t.product_name,
-                size=t.size_name,
-                type=t.name,
-                amount=t.size_sum,
-            ) for t in types]
-        )
+        return delimiter.join(self.content_strings())
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -150,7 +163,7 @@ class Subscription(Billable, SimpleStateModel):
     def future_members(self):
         if hasattr(self, 'override_future_members'):
             return self.override_future_members
-        return set(self.members.joining_subscription())
+        return set(self.members.joining())
 
     @property
     def current_members(self):
@@ -159,7 +172,7 @@ class Subscription(Billable, SimpleStateModel):
         elif self.inactive:
             return self.members.all()
         else:
-            return self.members.joined_subscription().active()
+            return self.members.joined().active()
 
     @admin.display(description=primary_member.verbose_name)
     def primary_member_nullsave(self):
@@ -180,7 +193,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extrasubscriptions_changed(self):
-        return self.parts.filter(~q_activated() | (q_cancelled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
@@ -194,10 +207,7 @@ class Subscription(Billable, SimpleStateModel):
             self.depot = self.future_depot
             self.future_depot = None
             self.save()
-            emails = []
-            for member in self.current_members:
-                emails.append(member.email)
-            membernotification.depot_changed(emails, self.depot)
+            depot_change_confirmed.send(Subscription, instance=self)
 
     def clean(self):
         check_sub_consistency(self)

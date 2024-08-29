@@ -24,7 +24,7 @@ from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left
+from juntagrico.signals import area_joined, area_left, canceled
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
@@ -340,7 +340,7 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
-    # Check if membership can be cancelled
+    # Check if membership can be canceled
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future
@@ -361,6 +361,7 @@ def cancel_membership(request):
         form = form_type(request.POST, instance=member)
         if form.is_valid():
             form.save()
+            canceled.send(Member, instance=form.instance, message=form.cleaned_data.get('message'))
             return redirect('profile')
     else:
         form = form_type(instance=member)

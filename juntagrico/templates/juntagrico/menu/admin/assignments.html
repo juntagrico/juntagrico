@@ -1,15 +1,15 @@
 {% load i18n %}
-{% if perms.juntagrico.change_assignment %}
+{% if perms.juntagrico.view_assignment or perms.juntagrico.change_assignment %}
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#assman">
             {% blocktrans %}{{ v_assignment_pl }}{% endblocktrans %}
             <i class="fas fa-angle-right">
             </i>
         </a>
-        <div class="collapse" id="assman">
+        <div class="collapse{% if 'manage-assignments' in request.resolver_match.url_name %} show{% endif %}" id="assman">
             <ul class="nav flex-column subadmin-menu">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'filter-assignments' %}">
+                    <a class="nav-link" href="{% url 'manage-assignments' %}">
                          {% blocktrans %}Übersicht{% endblocktrans %}
                     </a>
                 </li>

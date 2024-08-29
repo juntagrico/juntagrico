@@ -16,11 +16,3 @@ class ShareDao:
     @staticmethod
     def unpaid_shares(member):
         return Share.objects.filter(member=member).filter(paid_date__isnull=True)
-
-    @staticmethod
-    def canceled_shares():
-        return Share.objects.filter(
-            paid_date__isnull=False,
-            cancelled_date__isnull=False,
-            payback_date__isnull=True
-        )

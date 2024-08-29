@@ -74,7 +74,7 @@ class JuntagricoTestCase(TestCase):
         )
 
     @classmethod
-    def create_paid_and_cancelled_share(cls, member, **kwargs):
+    def create_paid_and_canceled_share(cls, member, **kwargs):
         return cls.create_paid_share(
             member=member,
             booking_date='2017-12-27',

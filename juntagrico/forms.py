@@ -23,11 +23,8 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType
-from juntagrico.mailer import adminnotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed
-from juntagrico.util.management import cancel_share
-from juntagrico.util.temporal import next_membership_end_date
 
 
 class Slider(Field):
@@ -86,6 +83,8 @@ class PasswordForm(Form):
 
 
 class AbstractMemberCancellationForm(ModelForm):
+    message = CharField(label=_('Mitteilung'), widget=Textarea, required=False)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -94,6 +93,20 @@ class AbstractMemberCancellationForm(ModelForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
+        self.helper.layout = Layout(
+            'message',
+            FormActions(
+                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-danger'),
+            ),
+        )
+
+    def save(self, commit=True):
+        if (sub := self.instance.subscription_current) is not None:
+            self.instance.leave_subscription(sub)
+        if (sub := self.instance.subscription_future) is not None:
+            self.instance.leave_subscription(sub)
+        self.instance.cancel()
+        return super().save(commit)
 
 
 class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
@@ -101,31 +114,8 @@ class NonCoopMemberCancellationForm(AbstractMemberCancellationForm):
         model = Member
         fields = []
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper.layout = Layout(
-            FormActions(
-                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
-            ),
-        )
-
-    def save(self, commit=True):
-        today = datetime.date.today()
-        self.instance.end_date = today
-        self.instance.cancellation_date = today
-        # if member has cancelled but not yet paid back share, can't deactivate member yet.
-        if not self.instance.is_cooperation_member:
-            self.instance.deactivation_date = today
-        if (sub := self.instance.subscription_current) is not None:
-            self.instance.leave_subscription(sub)
-        if (sub := self.instance.subscription_future) is not None:
-            self.instance.leave_subscription(sub)
-        super().save(commit)
-
 
 class CoopMemberCancellationForm(AbstractMemberCancellationForm):
-    message = CharField(label=_('Mitteilung'), widget=Textarea, required=False)
-
     class Meta:
         model = Member
         fields = ['iban', 'addr_street', 'addr_zipcode', 'addr_location']
@@ -135,13 +125,9 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper.layout = Layout(
-            'message', Fieldset(
-                _('Bitte hinterlege oder überprüfe deine Daten, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')),
-                'iban', 'addr_street', 'addr_zipcode', 'addr_location'),
-            FormActions(
-                Submit('submit', _('Mitgliedschaft künden'), css_class='btn-success'),
-            ),
+        self.helper.layout.insert(1, Fieldset(
+            _('Bitte hinterlege oder überprüfe deine Daten, damit deine {} ausbezahlt werden können.').format(Config.vocabulary('share_pl')),
+            'iban', 'addr_street', 'addr_zipcode', 'addr_location')
         )
 
     def clean_iban(self):
@@ -149,15 +135,6 @@ class CoopMemberCancellationForm(AbstractMemberCancellationForm):
         if self.data['iban'] == '':
             raise ValidationError(_('IBAN ist nicht gültig'))
         return self.data['iban']
-
-    def save(self, commit=True):
-        today = datetime.date.today()
-        end_date = next_membership_end_date()
-        self.instance.end_date = end_date
-        self.instance.cancellation_date = today
-        adminnotification.member_canceled(self.instance, end_date, self.data['message'])
-        [cancel_share(s, today, end_date) for s in self.instance.share_set.all()]
-        super().save(commit)
 
 
 class MemberProfileForm(ModelForm):
@@ -527,10 +504,10 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
 
     def clean(self):
         selected = self.get_selected()
-        # check that subscription is not cancelled:
+        # check that subscription is not canceled:
         if self.subscription.cancellation_date:
             raise ValidationError(_('Für gekündigte {} können keine Bestandteile oder Zusatzabos bestellt werden').
-                                  format(Config.vocabulary('subscription_pl')), code='no_order_if_cancelled')
+                                  format(Config.vocabulary('subscription_pl')), code='no_order_if_canceled')
         # check if members in subscription have sufficient shares
         available_shares = self.subscription.all_shares
         new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
@@ -797,4 +774,6 @@ class DateRangeForm(Form):
         self.helper = FormHelper()
         self.helper.form_method = 'get'
         self.helper.form_class = 'form-inline'
+        self.helper.label_class = 'mr-2'
+        self.helper.field_class = 'mr-2'
         self.helper.add_input(Submit('submit', _('Anwenden')))
