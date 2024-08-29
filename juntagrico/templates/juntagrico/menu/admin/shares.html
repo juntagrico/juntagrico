@@ -9,20 +9,18 @@
                 <i class="fas fa-angle-right">
                 </i>
             </a>
-            <div class="collapse" id="shareman">
+            <div class="collapse{% if 'manage-share' in request.resolver_match.url_name %} show{% endif %}" id="shareman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if perms.juntagrico.view_share or perms.juntagrico.change_share %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'manage-share-unpaid' %}">{% trans "Unbezahlt" %}</a>
-                        </li>
-                    {% endif %}
-                    {% if perms.juntagrico.change_share %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'share-mgmt-canceledlist' %}">
-                                 {% blocktrans %}Kündigungsliste{% endblocktrans %}
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-share-unpaid' %}">
+                            {% trans "Unbezahlt" %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-share-canceled' %}">
+                            {% trans "Gekündigt" %}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>
