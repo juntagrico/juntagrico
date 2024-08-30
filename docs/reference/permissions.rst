@@ -160,18 +160,27 @@ Search Hints:
     * German: Kündigung informiert
 
 juntagrico.notified_on_subscriptionpart_creation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person gets notified when a subscription part is created.
 
 Search Hints:
     * German: Erstellung informiert
 
 juntagrico.notified_on_subscriptionpart_cancellation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person gets notified when a subscription part is cancelled.
 
 Search Hints:
     * German: Kündigung informiert
+
+
+juntagrico.notified_on_depot_change
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets notified when a member wants to change their depot.
+
+Search Hints:
+    * German: Änderung informiert
+
 
 juntagrico.depot_list_notification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
