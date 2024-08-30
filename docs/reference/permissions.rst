@@ -119,42 +119,56 @@ permission for that entity type and event.
 
 juntagrico.notified_on_share_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a share is created.
+Person gets notified when a share is created.
 
 Search Hints:
     * German: Erstellung informiert
 
 juntagrico.notified_on_share_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a share is cancelled.
+Person gets notified when a share is cancelled.
 
 Search Hints:
     * German: Kündigung informiert
 
 juntagrico.notified_on_member_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a member is created.
+Person gets notified when a member is created.
 
 Search Hints:
     * German: Erstellung informiert
 
 juntagrico.notified_on_member_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when any member cancels their membership.
+Person gets notified when any member cancels their membership.
 
 Search Hints:
     * German: Kündigung informiert
 
 juntagrico.notified_on_subscription_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a subscription is created.
+Person gets notified when a subscription is created.
 
 Search Hints:
     * German: Erstellung informiert
 
 juntagrico.notified_on_subscription_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a subscription is cancelled.
+Person gets notified when a subscription is cancelled.
+
+Search Hints:
+    * German: Kündigung informiert
+
+juntagrico.notified_on_subscriptionpart_creation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets notified when a subscription part is created.
+
+Search Hints:
+    * German: Erstellung informiert
+
+juntagrico.notified_on_subscriptionpart_cancellation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets notified when a subscription part is cancelled.
 
 Search Hints:
     * German: Kündigung informiert
@@ -173,70 +187,70 @@ Which entries can be seen on the administration menu depend on a set of permissi
 
 juntagrico.change_subscription
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the subscription entry in the administration menu.
+Person sees the subscription entry in the administration menu.
 
 Search Hints:
     * German: Abo
 
 juntagrico.change_subscriptionpart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the extra subscription entry in the administration menu.
+Person sees the extra subscription entry in the administration menu.
 
 Search Hints:
     * German: Bestandteil
 
 juntagrico.change_member
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the member entry in the administration menu.
+Person sees the member entry in the administration menu.
 
 Search Hints:
     * German: Mitglied
 
 juntagrico.change_assignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the assignment entry in the administration menu.
+Person sees the assignment entry in the administration menu.
 
 Search Hints:
     * German: Arbeitseinsatz
 
 juntagrico.change_share
 ^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the share entry in the administration menu.
+Person sees the share entry in the administration menu.
 
 Search Hints:
     * German: Anteilsschein
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can access the mail from from the administration menu.
+Person can access the mail from from the administration menu.
 
 Search Hints:
     * German: Emails versenden
 
 juntagrico.can_view_lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the lists entry in the administration menu.
+Person sees the lists entry in the administration menu.
 
 Search Hints:
     * German: Listen öffnen
 
 juntagrico.can_view_exports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the exports entry in the administration menu.
+Person sees the exports entry in the administration menu.
 
 Search Hints:
     * German: Exporte öffnen
 
 juntagrico.can_filter_members
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the member filter entry in the administration menu without the permission to change members.
+Person sees the member filter entry in the administration menu without the permission to change members.
 
 Search Hints:
     * German: filtern
 
 juntagrico.can_filter_subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the subscription filter entry in the administration menu without the permission to change subscriptions.
+Person sees the subscription filter entry in the administration menu without the permission to change subscriptions.
 
 Search Hints:
     * German: filtern
@@ -246,7 +260,7 @@ Email Permissions
 -----------------
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the email address specified in the setting :ref:`INFO_EMAIL <reference-settings-info-email>` as sender in the mail form.
+Person can use the email address specified in the setting :ref:`INFO_EMAIL <reference-settings-info-email>` as sender in the mail form.
 
 Search Hints:
     * German: General Email
@@ -256,14 +270,14 @@ Edit Permissions
 ----------------
 juntagrico.can_edit_past_jobs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can edit jobs which are in the past.
+Person can edit jobs which are in the past.
 
 Search Hints:
     * German: vergangene
 
 juntagrico.can_change_deactivated_subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can edit subscriptions which are deactivated.
+Person can edit subscriptions which are deactivated.
 
 Search Hints:
     * German: deaktivierte
