@@ -11,6 +11,20 @@ from juntagrico.util.pdf import render_to_pdf_storage
 from juntagrico.util.subs import activate_future_depots
 
 
+def depot_list_data(days=0):
+    date = datetime.date.today() + datetime.timedelta(days)
+
+    return {
+        'subscriptions': Subscription.objects.active_on(date).order_by('primary_member__first_name',
+                                                                       'primary_member__last_name'),
+        'products': SubscriptionProductDao.get_all_for_depot_list(),
+        'depots': DepotDao.all_depots_for_list(),
+        'date': date,
+        'tours': Tour.objects.filter(visible_on_list=True),
+        'messages': ListMessageDao.all_active()
+    }
+
+
 def default_depot_list_generation(*args, days=0, force=False, future=False, no_future=False, **options):
     weekday = datetime.date.today().weekday()
     if not force and weekday not in Config.depot_list_generation_days():
@@ -27,16 +41,7 @@ def default_depot_list_generation(*args, days=0, force=False, future=False, no_f
         else:
             print('future depots ignored, use --future to override')
 
-    date = datetime.date.today() + datetime.timedelta(days)
-
-    depot_dict = {
-        'subscriptions': Subscription.objects.active_on(date),
-        'products': SubscriptionProductDao.get_all_for_depot_list(),
-        'depots': DepotDao.all_depots_for_list(),
-        'date': date,
-        'tours': Tour.objects.filter(visible_on_list=True),
-        'messages': ListMessageDao.all_active()
-    }
+    depot_dict = depot_list_data(days)
 
     render_to_pdf_storage('exports/depotlist.html',
                           depot_dict, 'depotlist.pdf')
