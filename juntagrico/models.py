@@ -31,7 +31,7 @@ class SpecialRoles(models.Model):
         managed = False
         default_permissions = ()
         permissions = (('is_operations_group', _('Benutzer ist in der BG')),
-                       ('is_book_keeper', _('Benutzer ist Buchhalter')),
+                       ('is_book_keeper', _('Benutzer ist Buchhalter')),  # DEPRECATED
                        ('can_send_mails', _('Benutzer kann im System E-Mails versenden')),
                        ('can_use_general_email', _('Benutzer kann allgemeine E-Mail-Adresse verwenden')),
                        ('can_use_for_members_email', _('Benutzer kann E-Mail-Adresse "for_members" verwenden')),

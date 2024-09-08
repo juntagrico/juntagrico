@@ -106,6 +106,11 @@ juntagrico.is_area_admin
 Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
 Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
 
+people with this permission have limited access to certain fields. They can not:
+- change name, core, hidden and coordinator fields of areas
+- see assignments of anybody but people from their areas
+- see job types which are not from their areas
+
 Search Hints:
     * German: Benutzer ist Tätigkeitsbereichskoordinator
 
@@ -238,17 +243,24 @@ Search Hints:
 
 juntagrico.can_view_lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Person sees the lists entry in the administration menu.
+Person can open the generated lists in the administration menu.
 
 Search Hints:
-    * German: Listen öffnen
+    * German: Benutzer kann Listen öffnen
+
+juntagrico.can_generate_lists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can generate lists (of depot etc.)
+
+Search Hints:
+    * German: Benutzer kann Listen erzeugen
 
 juntagrico.can_view_exports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person sees the exports entry in the administration menu.
 
 Search Hints:
-    * German: Exporte öffnen
+    * German: Benutzer kann Exporte öffnen
 
 juntagrico.can_filter_members
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -269,11 +281,38 @@ Email Permissions
 -----------------
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can use the email address specified in the setting :ref:`INFO_EMAIL <reference-settings-info-email>` as sender in the mail form.
+Person can use the "general" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: General Email
+    * German: Benutzer kann allgemeine E-Mail-Adresse verwenden
 
+juntagrico.can_use_for_members_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "for_member" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann E-Mail-Adresse "for_members" verwenden
+
+juntagrico.can_use_for_subscriptions_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "for_subscriptions" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann E-Mail-Adresse "for_subscription" verwenden
+
+juntagrico.can_use_for_shares_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "for_shares" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann E-Mail-Adresse "for_shares" verwenden
+
+juntagrico.can_use_technical_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "technical" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann technische E-Mail-Adresse verwenden
 
 Edit Permissions
 ----------------
@@ -290,3 +329,22 @@ Person can edit subscriptions which are deactivated.
 
 Search Hints:
     * German: deaktivierte
+
+Other Permissions
+-----------------
+
+juntagrico.is_operations_group
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning::
+    Deprecated. This permission will be replaced by more granular permissions in the next releases.
+
+- Download payment file for shares
+- (De)activate subscriptions
+- Add attachments in the form to contact members
+
+In addition, the limitations applied by ``juntagrico.is_area_admin`` become ineffective,
+when this permission is also given.
+
+Search Hints:
+    * German: Benutzer ist in der BG
