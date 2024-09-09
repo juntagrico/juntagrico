@@ -7,15 +7,20 @@ from ..util.depot_list import depot_list_data
 
 
 class DepotlistTests(JuntagricoTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.sub2.activate()
+        cls.sub.primary_member = cls.member3
+        cls.sub.save()
+        cls.sub4 = cls.create_sub_now(cls.depot)
+        cls.member4.join_subscription(cls.sub4, True)
+
     def test_depot_list(self):
         out = StringIO()
         call_command('generate_depot_list', '--force', stdout=out)
         self.assertEqual(out.getvalue(), '')
 
     def test_depot_list_data(self):
-        self.sub2.activate()
-        self.sub.primary_member = self.member3
-        self.sub.save()
         data = depot_list_data()
-        self.assertEqual(data['subscriptions'].first(), self.sub2)
-        self.assertEqual(data['subscriptions'].last(), self.sub)
+        self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4])
