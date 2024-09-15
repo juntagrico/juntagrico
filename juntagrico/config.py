@@ -93,9 +93,12 @@ class Config:
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
+
     assignment_unit = _get_setting('ASSIGNMENT_UNIT', 'ENTITY')
+    allow_job_unsubscribe = _get_setting('ALLOW_JOB_UNSUBSCRIBE', False)
     promoted_job_types = _get_setting('PROMOTED_JOB_TYPES', [])
     promomted_jobs_amount = _get_setting('PROMOTED_JOBS_AMOUNT', 2)
+
     depot_list_generation_days = _get_setting('DEPOT_LIST_GENERATION_DAYS', [0, 1, 2, 3, 4, 5, 6])
     default_depot_list_generators = _get_setting('DEFAULT_DEPOTLIST_GENERATORS', ['juntagrico.util.depot_list.default_depot_list_generation'])
     business_year_start = _get_setting('BUSINESS_YEAR_START', {'day': 1, 'month': 1})

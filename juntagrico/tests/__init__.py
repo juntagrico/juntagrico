@@ -130,11 +130,15 @@ class JuntagricoTestCase(TestCase):
         job_data2 = {'slots': 6,
                      'time': time,
                      'type': cls.job_type}
+        job_data3 = {'slots': 5,
+                     'time': time,
+                     'type': cls.job_type}
         cls.job1 = RecuringJob.objects.create(**job_data)
         cls.job2 = RecuringJob.objects.create(**job_data)
         cls.job3 = RecuringJob.objects.create(**job_data)
         cls.job4 = RecuringJob.objects.create(**job_data2)
         cls.job5 = RecuringJob.objects.create(**job_data)
+        cls.job6 = RecuringJob.objects.create(**job_data3)
         cls.past_job = RecuringJob.objects.create(
             slots=2,
             time=timezone.now() - timezone.timedelta(hours=2),

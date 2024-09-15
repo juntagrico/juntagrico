@@ -40,17 +40,19 @@ subscribed
 
 Sender: Job
 
-Trigger: Member subscribes to a job
+Trigger: Member subscribes to a job or unsubscribed from it.
 
 Arguments:
 
 * instance: The job instance that the member subscribed to
 * member: Member that subscribed to the job
-* count: The number of assignments
+* count: The number of assignments. Is 0 if the member unsubscribes completely
+* initial_count: The previous number of assignments. Is 0 if member was not signed up before
+* message: A message from the member
 
 Default receivers:
 
-* none
+* on_job_subscribed: Sends confirmation to member and notification to admin.
 
 
 Subscription signals
