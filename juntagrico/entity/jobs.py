@@ -246,7 +246,7 @@ class Job(JuntagricoBasePoly):
 
     @property
     def participant_emails(self):
-        return [m.email for m in self.participants]
+        return set(m.email for m in self.participants)
 
     def clean(self):
         check_job_consistency(self)
