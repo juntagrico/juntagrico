@@ -46,7 +46,7 @@ def handle_sub_activated(sender, instance, **kwargs):
                 code='invalid')
     instance.activation_date = activation_date
     change_date = instance.activation_date
-    if not instance.__skip_part_activation__:
+    if not getattr(instance, '__skip_part_activation__', False):
         for part in instance.future_parts.all():
             part.activate(change_date)
     for sub_membership in instance.subscriptionmembership_set.all():
