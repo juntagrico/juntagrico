@@ -9,7 +9,7 @@
     </div>
     {% if subscription.deactivation_date %}
         <div>
-            {% blocktrans with dd=subscription.cancellation_date %}
+            {% blocktrans with dd=subscription.deactivation_date %}
                 Deaktivierung erfolgt per {{ dd }}.
             {% endblocktrans %}
         </div>
