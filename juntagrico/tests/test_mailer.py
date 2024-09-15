@@ -31,7 +31,7 @@ class MailerTests(JuntagricoTestCase):
         self.assertListEqual(self.member4.all_emails(), ['share@juntagrico.juntagrico', 'email4@email.org'])
         self.assertListEqual(self.member5.all_emails(), ['it@juntagrico.juntagrico', 'email5@email.org'])
         self.assertListEqual(self.area_admin.all_emails(), [
-            'test@test.org', 'email2@email.org', 'areaadmin@email.org'
+            'email_contact@example.org', 'email2@email.org', 'areaadmin@email.org'
         ])
         self.assertListEqual(self.admin.all_emails(), [
             'info@juntagrico.juntagrico', 'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico',

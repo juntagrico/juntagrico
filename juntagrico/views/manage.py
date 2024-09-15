@@ -106,12 +106,13 @@ class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 @permission_required('juntagrico.change_member')
 def member_deactivate(request, member_id=None):
+    change_date = request.session.get('changedate', None)
     if member_id:
         members = [get_object_or_404(Member, id=member_id)]
     else:
         members = Member.objects.filter(id__in=request.POST.get('member_ids').split('_'))
     for member in members:
-        member.deactivate()
+        member.deactivate(change_date)
     return return_to_previous_location(request)
 
 
@@ -123,13 +124,14 @@ class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 @permission_required('juntagrico.change_share')
 def share_payout(request, share_id=None):
+    change_date = request.session.get('changedate', None)
     if share_id:
         shares = [get_object_or_404(Share, id=share_id)]
     else:
         shares = Share.objects.filter(id__in=request.POST.get('share_ids').split('_'))
     for share in shares:
         # TODO: capture validation errors and display them. Continue with other shares
-        share.payback()
+        share.payback(change_date)
     return return_to_previous_location(request)
 
 

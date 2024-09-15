@@ -1,10 +1,10 @@
 {% if perms.juntagrico.view_subscription or perms.juntagrico.change_subscription %}
     <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}" 
        {% if css_class %}class="{{ css_class }}"{% endif %}>
-        {{ subscription }}
+        {{ subscription.id }}
     </a>
 {% else %}
     <span {% if css_class %}class="{{ css_class }}"{% endif %}>
-        {{ subscription }}
+        {{ subscription.id }}
     </span>
 {% endif %}

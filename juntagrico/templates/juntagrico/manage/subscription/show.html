@@ -25,6 +25,9 @@
                         {% vocabulary "subscription" %}
                     </th>
                     <th class="filter">
+                        {% trans "Inhalt" %}
+                    </th>
+                    <th class="filter">
                         {% vocabulary "depot" %}
                     </th>
                     <th class="filter">
@@ -41,6 +44,9 @@
                 {% block list_foot %}
                     <th>
                         {% vocabulary "subscription" %}
+                    </th>
+                    <th>
+                        {% trans "Inhalt" %}
                     </th>
                     <th>
                         {% vocabulary "depot" %}
@@ -60,6 +66,13 @@
                     <tr>
                         <td>
                             {% include './snippets/display_linked.html' %}
+                        </td>
+                        <td>
+                            {% for item in subscription.content_strings %}
+                                <div>
+                                    {{ item }}
+                                </div>
+                            {% endfor %}
                         </td>
                         <td>
                             {{ subscription.depot.name }}

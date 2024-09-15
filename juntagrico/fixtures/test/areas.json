@@ -32,7 +32,7 @@
     "pk": 1,
     "fields": {
         "contact_ptr": 1,
-        "email": "test@test.org"
+        "email": "email_contact@example.org"
     }
 },
 {
