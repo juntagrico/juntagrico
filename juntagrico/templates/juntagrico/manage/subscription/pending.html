@@ -3,15 +3,18 @@
 {% load juntagrico.config %}
 {% load juntagrico.common %}
 {% load juntagrico.snippets %}
+
 {% block page_title %}
     <h3>
         {% vocabulary "subscription_pl" as v_subscription_pl %}
         {% blocktrans %}Pendente Änderungen an {{ v_subscription_pl }}{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block content %}
     <div class="alert alert-danger">{% trans "Diese Ansicht ist noch experimentell." %}</div>
     {% action_date request %}
+    {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
     {% has_extra_subscriptions as b_has_extra_subscriptions %}
     {% if b_has_extra_subscriptions %}
         <div>
@@ -23,6 +26,7 @@
     {% endif %}
     {{ block.super }}
 {% endblock %}
+
 {% block list %}
     {% config "enable_shares" as enable_shares %}
     {% vocabulary "subscription" as v_subscription %}
@@ -81,17 +85,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% with member=subscription.primary_member %}
-                                {# TODO: only link if has permission to view or change member #}
-                                <a href="{% url 'admin:juntagrico_member_change' member.id %}">
-                                    {{ member }}
-                                </a>
-                                <div>
-                                    <a href="{% url "email-to-member" member.id %}" class="email">
-                                        {{ member.email }}
-                                    </a>
-                                </div>
-                            {% endwith %}
+                            {% include "./snippets/members_linked.html" %}
                         </td>
                         {% if enable_shares %}
                             <td>
