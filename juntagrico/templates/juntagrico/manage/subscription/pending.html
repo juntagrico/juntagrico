@@ -66,16 +66,18 @@
                         </td>
                         <td class="pl-5">
                             {% regroup cancelled_parts by cancellation_date as parts_by_date %}
-                            {% include "./snippets/parts_by_date.html" %}
+                            {% include "./snippets/parts_by_date.html" with grouper_title=_('Kündigungsdatum') %}
                             {% if parts_by_date and subscription.cancellation_date %}
-                                <div class="end-date pre">Auf: {{ subscription.end_date|date:"Y-m-d"|default:"?" }}</div>
+                                <div class="end-date pre" title="{% trans "Gewünschtes Enddatum" %}"
+                                >Auf: {{ subscription.end_date|date:"Y-m-d"|default:"?" }}</div>
                             {% endif %}
                         </td>
                         <td class="pl-5">
                             {% regroup ordered_parts by creation_date as parts_by_date %}
-                            {% include "./snippets/parts_by_date.html" %}
+                            {% include "./snippets/parts_by_date.html" with grouper_title=_('Bestelldatum') %}
                             {% if parts_by_date and not subscription.activation_date %}
-                                <div class="start-date pre">Auf: {{ subscription.start_date|date:"Y-m-d"|default:"?" }}</div>
+                                <div class="start-date pre" title="{% trans "Gewünschtes Startdatum" %}"
+                                >Auf: {{ subscription.start_date|date:"Y-m-d"|default:"?" }}</div>
                             {% endif %}
                         </td>
                         <td>

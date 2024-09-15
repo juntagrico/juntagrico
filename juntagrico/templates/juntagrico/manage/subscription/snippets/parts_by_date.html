@@ -1,6 +1,6 @@
 {% for parts in parts_by_date %}
     <div class="parts-for-date">
-        <span class="pre date">{{ parts.grouper|date:"Y-m-d" }}:</span>
+        <span class="pre date" title="{{ grouper_title }}">{{ parts.grouper|date:"Y-m-d" }}:</span>
         {% for part in parts.list %}
             <div class="{% if part.is_extra %} show-extra{% else %} show-normal{% endif %}">
                 <input type="checkbox" form="form-sub-{{ subscription.id }}" checked="checked"
