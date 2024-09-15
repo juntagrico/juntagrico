@@ -140,8 +140,6 @@ urlpatterns = [
          name='part-activate'),
     path('manage/subscription/part/<int:part_id>/deactivate/', juntagrico_subscription.deactivate_part,
          name='part-deactivate'),
-    path('manage/subscription/parts/activate', manage.parts_activate, name='parts-activate'),
-    path('manage/subscription/parts/deactivate', manage.parts_deactivate, name='parts-deactivate'),
     path('manage/subscription/parts/apply', manage.parts_apply, name='parts-apply'),
     # /manage/subscription/extra
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),

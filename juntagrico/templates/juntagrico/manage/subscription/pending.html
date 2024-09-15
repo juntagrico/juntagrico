@@ -65,7 +65,6 @@
                             </a>
                         </td>
                         <td class="pl-5">
-                            {# TODO: Don't show checkboxes, if entire sub is cancelled. Or add option to deactivate selectively #}
                             {% regroup cancelled_parts by cancellation_date as parts_by_date %}
                             {% include "./snippets/parts_by_date.html" %}
                             {% if parts_by_date and subscription.cancellation_date %}
@@ -103,43 +102,12 @@
                             </td>
                         {% endif %}
                         <td>
-                            {# TODO: Subscription activation is not yet selective. All parts will be activated. #}
-                            {% if not subscription.activation_date %}
-                                <a href="{% url 'sub-activate' subscription.id %}" class="btn btn-success mb-1">
-                                    {% blocktrans %}{{ v_subscription }} aktivieren{% endblocktrans %}
-                                </a>
-                                {% if subscription.cancellation_date and not subscription.deactivation_date %}
-                                    <a href="{% url 'sub-deactivate' subscription.id %}" class="btn btn-danger mb-1">
-                                        {% blocktrans %}{{ v_subscription }} stornieren{% endblocktrans %}
-                                    </a>
-                                {% endif %}
-                            {% elif subscription.cancellation_date and not subscription.deactivation_date %}
-                                <a href="{% url 'sub-deactivate' subscription.id %}" class="btn btn-danger mb-1">
-                                    {% blocktrans %}{{ v_subscription }} deaktivieren{% endblocktrans %}
-                                </a>
-                            {% else %}
-                                <form method="post" id="form-sub-{{ subscription.id }}">
-                                    {% csrf_token %}
-                                    {% if ordered_parts and cancelled_parts %}
-                                        <button formaction="{% url 'parts-apply' %}" type="submit"
-                                                class="btn btn-warning mb-1{% if not has_normal_ordered_parts or not has_normal_cancelled_parts %} show-extra{% endif %}">
-                                            {% trans "Bestandteil(e) ändern" %}
-                                        </button>
-                                    {% endif %}
-                                    {% if ordered_parts %}
-                                        <button formaction="{% url 'parts-activate' %}" type="submit"
-                                                class="btn btn-success mb-1{% if not has_normal_ordered_parts %} show-extra{% endif %}">
-                                            {% trans "Bestandteil(e) aktivieren" %}
-                                        </button>
-                                    {% endif %}
-                                    {% if cancelled_parts %}
-                                        <button formaction="{% url 'parts-deactivate' %}" type="submit"
-                                                class="btn btn-danger mb-1{% if not has_normal_cancelled_parts %} show-extra{% endif %}">
-                                            {% trans "Bestandteil(e) deaktivieren" %}
-                                        </button>
-                                    {% endif %}
-                                </form>
-                            {% endif %}
+                            <form method="post" id="form-sub-{{ subscription.id }}">
+                                {% csrf_token %}
+                                <button formaction="{% url 'parts-apply' %}" type="submit" class="btn btn-primary mb-1">
+                                    {% trans "Ausgewählte anwenden" %}
+                                </button>
+                            </form>
                         </td>
                         <td>
                             {{ subscription.notes }}
@@ -155,7 +123,9 @@
 {% block scripts %}
     {{ block.super }}
     <script type="text/javascript">
-        function redraw_on_show_extra () {
+        function redraw_on_show_extra (button, this_selector, is_checked) {
+            // en/disable extra checkboxes to not include them in form submit
+            $(this_selector + '>input').prop('disabled', !is_checked);
             // this makes the buttons show up correctly taking show-extra status into account
             $('#filter-table').DataTable().draw()
         }

@@ -2,10 +2,11 @@ import datetime
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.shortcuts import get_object_or_404, render
-from django.utils.translation import gettext_lazy as _
+from django.db import transaction
 from django.db.models import Q
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from juntagrico.config import Config
@@ -167,41 +168,22 @@ class SubscriptionPendingView(ListView):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def parts_activate(request):
-    parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
-    if not request.POST.get('include_extra'):
-        parts = parts.is_normal()
-    change_date = request.session.get('changedate', None)
-    for part in parts:
-        if part.activation_date is None and part.deactivation_date is None:
-            part.activate(change_date)
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.change_subscriptionpart')
-def parts_deactivate(request):
-    parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
-    if not request.POST.get('include_extra'):
-        parts = parts.is_normal()
-    change_date = request.session.get('changedate', None)
-    for part in parts:
-        if part.cancellation_date is not None:
-            part.deactivate(change_date)
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.change_subscriptionpart')
 def parts_apply(request):
     parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
-    if not request.POST.get('include_extra'):
-        parts = parts.is_normal()
     change_date = request.session.get('changedate', None)
-    for part in parts:
-        # TODO: optimize code with code from parts_(de)activate
-        if part.activation_date is None and part.deactivation_date is None:
-            part.activate(change_date)
-        if part.cancellation_date is not None:
-            part.deactivate(change_date)
+    with transaction.atomic():
+        for part in parts:
+            if part.activation_date is None and part.deactivation_date is None:
+                if part.subscription.activation_date is None:
+                    # automatically activate subscription, but don't activate all parts
+                    part.subscription.__skip_part_activation__ = True
+                    part.subscription.activate(change_date)
+                part.activate(change_date)
+            if part.cancellation_date is not None:
+                part.deactivate(change_date)
+                # deactivate entire subscription, if this was the last part
+                if not part.subscription.parts.waiting_or_active(change_date).exists():
+                    part.subscription.deactivate(change_date)
     return return_to_previous_location(request)
 
 
