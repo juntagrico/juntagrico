@@ -7,21 +7,16 @@ class AssignmentInline(admin.TabularInline):
     model = Assignment
     raw_id_fields = ['member']
 
-    # can_delete = False
-
-    # TODO: added these temporarily, need to be removed
-    extra = 0
-    max_num = 0
-
     def get_extra(self, request, obj=None, **kwargs):
-        # TODO is this needed?
-        # if 'copy_job' in request.path:
-        #    return 0
         if obj is None:
             return 0
-        return obj.free_slots
+        if not obj.infinite_slots:
+            return obj.free_slots
+        return super().get_extra(request, obj, **kwargs)
 
     def get_max_num(self, request, obj=None, **kwargs):
         if obj is None:
             return 0
-        return obj.slots
+        if not obj.infinite_slots:
+            return obj.slots
+        return super().get_max_num(request, obj, **kwargs)
