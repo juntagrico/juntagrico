@@ -1,3 +1,5 @@
+import datetime
+
 from django.urls import reverse
 
 from . import JuntagricoTestCase
@@ -137,3 +139,39 @@ class SubAdminTests(JuntagricoTestCase):
             ['require_subscription_membership'],
             [e.code for e in response.context_data['errors'].as_data()]
         )
+
+    def testDeactivation(self):
+        # setup
+        sub = self.create_sub(self.depot, datetime.date(2017, 1, 1), [self.sub_type])
+        self.member4.join_subscription(sub, True)
+        sub_membership = sub.subscriptionmembership_set.first()
+        sub_membership.join_date = datetime.date(2017, 1, 1)
+        sub_membership.save()
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2017',
+            'initial-start_date': '01.01.2017',
+            'activation_date': '01.01.2017',
+            'cancellation_date': '01.01.2018',
+            'deactivation_date': '01.01.2018',
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
+            'subscriptionmembership_set-INITIAL_FORMS': '1',
+            'subscriptionmembership_set-0-id': str(sub.subscriptionmembership_set.first().id),
+            'subscriptionmembership_set-0-subscription': '',
+            'subscriptionmembership_set-0-member': str(self.member4.id),
+            'subscriptionmembership_set-0-join_date': '01.01.2017',
+            'parts-TOTAL_FORMS': '1',
+            'parts-INITIAL_FORMS': '1',
+            'parts-0-id': str(sub.parts.first().id),
+            'parts-0-subscription': '',
+            'parts-0-activation_date': '01.01.2017',
+            'parts-0-cancellation_date': '01.01.2018',
+            'parts-0-deactivation_date': '',
+            'parts-0-type': str(sub.parts.first().type.id),
+            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-INITIAL_FORMS': '0',
+        }
+        # test deactivation of sub, by setting only deactivation date of sub.
+        self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
+                        data=data, member=self.admin, code=302)
