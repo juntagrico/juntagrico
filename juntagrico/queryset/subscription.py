@@ -184,6 +184,9 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
         return self.filter(type__size__product__is_extra=False)
 
+    def is_extra(self):
+        return self.filter(type__size__product__is_extra=True)
+
     def ordered(self):
         return self.filter(activation_date=None)
 

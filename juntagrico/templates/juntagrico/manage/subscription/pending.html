@@ -19,7 +19,11 @@
     {% if b_has_extra_subscriptions %}
         <div>
             <span class="switch switch-sm">
-                <input class="switch" type="checkbox" id="show_extras">
+                <input class="switch" type="checkbox" id="show_normals" checked="checked">
+                <label for="show_normals">{% trans "Normale Bestandteile anzeigen" %}</label>
+            </span>
+            <span class="switch switch-sm">
+                <input class="switch" type="checkbox" id="show_extras" checked="checked">
                 <label for="show_extras">{% trans "Zusatz-Abos anzeigen" %}</label>
             </span>
         </div>
@@ -61,14 +65,13 @@
         <tbody>
             {% for subscription in object_list %}
                 {% with cancelled_parts=subscription.parts.cancelled ordered_parts=subscription.parts.ordered %}
-                {% with has_normal_cancelled_parts=cancelled_parts.is_normal.exists has_normal_ordered_parts=ordered_parts.is_normal.exists %}
-                    <tr class="{% if not has_normal_cancelled_parts and not has_normal_ordered_parts %}show-extra{% endif %}">
+                    <tr class="{% include "./snippets/row_class.html" %}">
                         <td>
                             <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                                 {{ subscription.id }}
                             </a>
                         </td>
-                        <td class="pl-5">
+                        <td class="cancelled-parts pl-5">
                             {% regroup cancelled_parts by cancellation_date as parts_by_date %}
                             {% include "./snippets/parts_by_date.html" with grouper_title=_('Kündigungsdatum') %}
                             {% if parts_by_date and subscription.cancellation_date %}
@@ -76,7 +79,7 @@
                                 >Auf: {{ subscription.end_date|date:"Y-m-d"|default:"?" }}</div>
                             {% endif %}
                         </td>
-                        <td class="pl-5">
+                        <td class="ordered-parts pl-5">
                             {% regroup ordered_parts by creation_date as parts_by_date %}
                             {% include "./snippets/parts_by_date.html" with grouper_title=_('Bestelldatum') %}
                             {% if parts_by_date and not subscription.activation_date %}
@@ -110,7 +113,6 @@
                         </td>
                     </tr>
                 {% endwith %}
-                {% endwith %}
             {% endfor %}
         </tbody>
     </table>
@@ -119,17 +121,19 @@
 {% block scripts %}
     {{ block.super }}
     <script type="text/javascript">
-        function redraw_on_show_extra (button, this_selector, is_checked) {
-            // en/disable extra checkboxes to not include them in form submit
+        function redraw_on_show_normal_extra (button, this_selector, is_checked) {
+            // en/disable checkboxes to not include them in form submit
             $(this_selector + '>input').prop('disabled', !is_checked);
-            // this makes the buttons show up correctly taking show-extra status into account
+            // this makes the buttons show up correctly taking show-normal and show-extra status into account
             $('#filter-table').DataTable().draw()
         }
 
         $(function(){
             $('.parts-for-date:not(:has(.show-normal))').addClass('show-extra')  // makes date also hide if only has extras
-            $("#show_extras").ToggleButton('.show-extra', redraw_on_show_extra)
-            redraw_on_show_extra()
+            $('.parts-for-date:not(:has(.show-extra))').addClass('show-normal')  // makes date also hide if only has normals
+            $("#show_extras").ToggleButton('.show-extra', redraw_on_show_normal_extra)
+            $("#show_normals").ToggleButton('.show-normal', redraw_on_show_normal_extra)
+            redraw_on_show_normal_extra()
             
             // prevent selection of row when clicking checkbox
             $("input, label").click(function(e) {e.stopPropagation()})
