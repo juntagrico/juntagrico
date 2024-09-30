@@ -68,9 +68,13 @@
                     <tr>
                         <td class="members">
                             {% spaceless %}
-                                <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
-                                    <strong>{{ subscription.primary_member }}</strong>
-                                </a>
+                                {% if subscription.primary_member %}
+                                    <a href="{% url 'admin:juntagrico_member_change' subscription.primary_member.id %}">
+                                        <strong>{{ subscription.primary_member }}</strong>
+                                    </a>
+                                {% else %}
+                                    {% trans "! Haupt-BezieherIn ist nicht definiert" %}
+                                {% endif %}
                             {% endspaceless %}
                             {% with phone=subscription.primary_member.get_phone %}
                                 <a href="tel:{{ phone }}" class="phone-number">{{ phone }}</a>
