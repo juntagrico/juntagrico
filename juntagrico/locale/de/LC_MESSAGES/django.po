@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-01 04:16-0500\n"
+"POT-Creation-Date: 2024-10-01 15:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -536,7 +536,7 @@ msgstr ""
 
 #: juntagrico/entity/delivery.py:21
 #: juntagrico/templates/exports/amount_overview.html:50
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:72
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:81
 msgid "Keine"
 msgstr ""
 
@@ -1489,13 +1489,13 @@ msgid ""
 "vom {0}"
 msgstr ""
 
-#: juntagrico/lifecycle/sub.py:121
+#: juntagrico/lifecycle/sub.py:122
 msgid ""
 "Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten "
 "Aktivierungs- oder Deaktivierungsdatum."
 msgstr ""
 
-#: juntagrico/lifecycle/sub.py:128
+#: juntagrico/lifecycle/sub.py:130
 msgid ""
 "Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten "
 "Beitritts- oder Austrittsdatum."
@@ -1509,29 +1509,25 @@ msgstr ""
 msgid "Datenreihenfolge stimmt nicht."
 msgstr ""
 
-#: juntagrico/lifecycle/submembership.py:35
-msgid ""
-"Beitrittsdatum des Bestandteils passt nicht zum übergeordneten "
-"Aktivierungsdatum"
+#: juntagrico/lifecycle/submembership.py:32
+msgid "Beitrittsdatum passt nicht zum übergeordneten Aktivierungsdatum"
 msgstr ""
 
-#: juntagrico/lifecycle/submembership.py:38
-msgid ""
-"Austrittsdatum des Bestandteils passt nicht zum übergeordneten "
-"Deaktivierungsdatum"
+#: juntagrico/lifecycle/submembership.py:42
+msgid "Austrittsdatum passt nicht zum übergeordneten Deaktivierungsdatum"
 msgstr ""
 
-#: juntagrico/lifecycle/submembership.py:64
+#: juntagrico/lifecycle/submembership.py:73
 msgid "{} kann nur 1 {} gleichzeitig haben."
 msgstr ""
 
-#: juntagrico/lifecycle/subpart.py:21
+#: juntagrico/lifecycle/subpart.py:23
 msgid ""
 "Aktivierungsdatum des Bestandteils passt nicht zum übergeordneten "
 "Aktivierungsdatum"
 msgstr ""
 
-#: juntagrico/lifecycle/subpart.py:23
+#: juntagrico/lifecycle/subpart.py:32
 msgid ""
 "Deaktivierungsdatum des Bestandteils passt nicht zum übergeordneten "
 "Deaktivierungsdatum"
@@ -2399,11 +2395,13 @@ msgid ""
 msgstr ""
 
 #: juntagrico/templates/extra_change.html:47
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:49
 msgid "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?"
 msgstr ""
 
 #: juntagrico/templates/extra_change.html:48
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:60
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:50
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:68
 #: juntagrico/templates/manage_shares.html:73
 #: juntagrico/templates/size_change.html:59
 msgid "kündigen"
@@ -2411,7 +2409,7 @@ msgstr ""
 
 #: juntagrico/templates/extra_change.html:60
 #: juntagrico/templates/juntagrico/my/subscription/part/order.html:9
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:85
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:94
 msgid "Zusatzabos bestellen"
 msgstr ""
 
@@ -3297,29 +3295,29 @@ msgid ""
 "                                "
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:48
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:56
 #: juntagrico/templates/pm_change.html:36
 #: juntagrico/templates/size_change.html:48
 msgid "ändern"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:54
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:62
 #: juntagrico/templates/size_change.html:53
 #: juntagrico/templates/subscription_change.html:29
 #, python-format
 msgid "%(v_subscription)s komplett künden"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:59
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:67
 #: juntagrico/templates/size_change.html:58
 msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:81
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:90
 msgid "Weitere Bestandteile bestellen"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:90
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:99
 #: juntagrico/templates/size_change.html:83
 #, python-format
 msgid ""
@@ -3327,7 +3325,7 @@ msgid ""
 "werden."
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:93
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:102
 #, python-format
 msgid "Nur %(v_subscription)s-VerwalterIn kann Bestandteile bestellen."
 msgstr ""
@@ -3872,7 +3870,11 @@ msgstr ""
 msgid "Emails"
 msgstr ""
 
-#: juntagrico/templates/management_lists/assignments.html:96
+#: juntagrico/templates/management_lists/assignments.html:76
+msgid "! Haupt-BezieherIn ist nicht definiert"
+msgstr ""
+
+#: juntagrico/templates/management_lists/assignments.html:100
 #: juntagrico/templates/size_change.html:63
 #, python-format
 msgid ""
