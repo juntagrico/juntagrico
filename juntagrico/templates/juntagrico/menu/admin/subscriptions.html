@@ -27,28 +27,28 @@
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
-                            {% trans "Warteliste" %}
+                            <i>{% trans "Warteliste" %}</i>
                         </a>
                     </li>
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
-                            {% trans "Kündigungsliste" %}
+                            <i>{% trans "Kündigungsliste" %}</i>
                         </a>
                     </li>
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-part-waitinglist' %}">
-                            {% trans "Bestandteile Warteliste" %}
+                            <i>{% trans "Bestandteile Warteliste" %}</i>
                         </a>
                     </li>
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-part-canceledlist' %}">
-                            {% trans "Bestandteile Kündigungsliste" %}
+                            <i>{% trans "Bestandteile Kündigungsliste" %}</i>
                         </a>
                     </li>
                 {% endif %}

@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block content %}
-    <div class="alert alert-danger">{% trans "Diese Ansicht ist noch experimentell." %}</div>
     {% action_date request %}
     {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
     {% has_extra_subscriptions as b_has_extra_subscriptions %}
