@@ -5,7 +5,6 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
@@ -156,8 +155,8 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     title = _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
 
 
-@method_decorator(permission_required('juntagrico.change_subscription'), name="dispatch")
-class SubscriptionPendingView(ListView):
+class SubscriptionPendingView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.change_subscription']
     template_name = 'juntagrico/manage/subscription/pending.html'
 
     def get_queryset(self):
