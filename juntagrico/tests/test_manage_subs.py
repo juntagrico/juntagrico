@@ -18,7 +18,7 @@ class ManageSubPendingListTests(JuntagricoTestCase):
     def testSubscriptionActivate(self):
         self.assertGet(reverse('parts-apply'), code=302)
         # member2 has no access
-        response = self.assertPost(reverse('parts-apply'), member=self.member2, code=302)
+        self.assertPost(reverse('parts-apply'), member=self.member2, code=302)
         self.assertFalse(self.sub2.parts.first().active)
         # test activation
         self.assertPost(reverse('parts-apply'), {'parts[]': [self.sub2.parts.first().id]}, code=302)
