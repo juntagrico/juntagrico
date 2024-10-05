@@ -21,9 +21,11 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         self.assertPost(reverse('parts-apply'), member=self.member2, code=302)
         self.assertFalse(self.sub2.parts.first().active)
         # test activation
-        self.assertPost(reverse('parts-apply'), {'parts[]': [self.sub2.parts.first().id]}, code=302)
-        # check that sub is active
-        self.assertTrue(self.sub2.parts.first().active)
+        part = self.sub2.parts.first()
+        self.assertPost(reverse('parts-apply'), {'parts[]': [part.id]}, code=302)
+        # check that part is active
+        part.refresh_from_db()
+        self.assertTrue(part.active)
 
 
     def testSubscriptionCancelled(self):
@@ -37,7 +39,9 @@ class ManageSubPendingListTests(JuntagricoTestCase):
         self.sub.cancel()
         self.assertGet(reverse('parts-apply'), code=302)
         self.assertTrue(self.sub.parts.first().active)
-        # deactivate
-        self.assertPost(reverse('parts-apply'), {'parts[]': [self.sub.parts.first().id]}, code=302)
-        # check that sub is deactivated
-        self.assertFalse(self.sub.parts.first().active)
+        # test deactivate
+        part = self.sub.parts.first()
+        self.assertPost(reverse('parts-apply'), {'parts[]': [part.id]}, code=302)
+        # check that part is deactivated
+        part.refresh_from_db()
+        self.assertFalse(part.active)
