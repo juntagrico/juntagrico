@@ -296,6 +296,7 @@ class JuntagricoTestCase(TestCase):
         cls.sub = cls.create_sub_now(cls.depot)
         cls.sub2 = cls.create_sub(cls.depot, cls.sub_type2)
         cls.sub3 = cls.create_sub(cls.depot, cls.sub_type3)
+        cls.cancelled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
         cls.member.join_subscription(cls.sub, True)
         cls.member3.join_subscription(cls.sub3, True)
         cls.sub3.activate(today - datetime.timedelta(3))
