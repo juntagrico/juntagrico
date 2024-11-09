@@ -122,39 +122,28 @@ def member_changed_depot(**kwargs):
     ).send()
 
 
-def member_subscribed_to_job(job, **kwargs):
-    #TODO: Allow contacts to subscribe/unsubscribe from notifications
-    emails = job.get_emails()
+def _template_member_in_job(job, subject, template_name, **kwargs):
     kwargs['job'] = job
+    EmailSender.get_sender(
+        organisation_subject(subject),
+        get_template(f'juntagrico/mails/admin/job/{template_name}.txt').render(base_dict(kwargs)),
+        to=job.get_emails(),
+        reply_to=[kwargs['member'].email],
+    ).send()
+
+
+def member_subscribed_to_job(job, **kwargs):
+    # TODO: Allow contacts to subscribe/unsubscribe from notifications
     if kwargs.get('message'):
         subject = _('Neue Anmeldung zum Einsatz mit Mitteilung')
     else:
         subject = _('Neue Anmeldung zum Einsatz')
-    EmailSender.get_sender(
-        organisation_subject(subject),
-        get_template('juntagrico/mails/admin/job/signup.txt').render(base_dict(kwargs)),
-        to=emails,
-        reply_to=[kwargs['member'].email],
-    ).send()
+    _template_member_in_job(job, subject, 'signup', **kwargs)
 
 
 def member_changed_job_subscription(job, **kwargs):
-    emails = job.get_emails()
-    kwargs['job'] = job
-    EmailSender.get_sender(
-        organisation_subject(_('Änderung der Einsatzanmeldung')),
-        get_template('juntagrico/mails/admin/job/changed_subscription.txt').render(base_dict(kwargs)),
-        to=emails,
-        reply_to=[kwargs['member'].email],
-    ).send()
+    _template_member_in_job(job, _('Änderung der Einsatzanmeldung'), 'changed_subscription', **kwargs)
 
 
 def member_unsubscribed_from_job(job, **kwargs):
-    emails = job.get_emails()
-    kwargs['job'] = job
-    EmailSender.get_sender(
-        organisation_subject(_('Abmeldung vom Einsatz')),
-        get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(base_dict(kwargs)),
-        to=emails,
-        reply_to=[kwargs['member'].email],
-    ).send()
+    _template_member_in_job(job, _('Abmeldung vom Einsatz'), 'unsubscribed', **kwargs)

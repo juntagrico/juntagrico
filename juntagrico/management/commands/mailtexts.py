@@ -19,7 +19,8 @@ class Command(BaseCommand):
     help = "Prints the text of all notification emails using real data from the database, but without sending any emails."
 
     def add_arguments(self, parser):
-        parser.add_argument('selected', nargs='*', type=str)
+        parser.add_argument('selected', nargs='*', type=str,
+                            default='signup subscription share password job depot member')
 
     # entry point used by manage.py
     def handle(self, selected, *args, **options):
@@ -34,7 +35,7 @@ class Command(BaseCommand):
             depot = Depot.objects.all()[0]
             transaction.set_rollback(True)  # force rollback
 
-        if not selected or 'signup' in selected:
+        if 'signup' in selected:
             print('*** welcome  mit abo***')
             print(get_email_content('welcome', base_dict({
                 'member': member,
@@ -70,7 +71,7 @@ class Command(BaseCommand):
             print(get_email_content('confirm', base_dict({'hash': 'hash'})))
             print()
 
-        if not selected or 'subscription' in selected:
+        if 'subscription' in selected:
             print('*** n_sub ***')
             print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
             print()
@@ -82,7 +83,7 @@ class Command(BaseCommand):
             })))
             print()
 
-        if not selected or 'share' in selected:
+        if 'share' in selected:
             print('*** s_created ***')
             print(get_email_content('s_created', base_dict({'shares': shares})))
             print()
@@ -93,7 +94,7 @@ class Command(BaseCommand):
             })))
             print()
 
-        if not selected or 'password' in selected:
+        if 'password' in selected:
             print('*** password ***')
             print(get_email_content('password', base_dict({
                 'email': 'email@email.org',
@@ -105,7 +106,7 @@ class Command(BaseCommand):
             })))
             print()
 
-        if not selected or 'job' in selected:
+        if 'job' in selected:
             print('*** j_reminder ***')
             job_dict = base_dict({'job': job})
             print(get_email_content('j_reminder', job_dict))
@@ -145,12 +146,12 @@ class Command(BaseCommand):
             print('*** admin/job/unsubscribed ***')
             print(get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(admin_job_dict), end='\n\n')
 
-        if not selected or 'depot' in selected:
+        if 'depot' in selected:
             print('*** d_changed ***')
             print(get_email_content('d_changed', base_dict({'depot': depot})))
             print()
 
-        if not selected or 'member' in selected:
+        if 'member' in selected:
             print('*** a_member_created ***')
             print(get_email_content('a_member_created', base_dict({
                 'member': member
