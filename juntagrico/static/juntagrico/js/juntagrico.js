@@ -62,6 +62,21 @@ function email_button(action, csrf_token) {
     }
 }
 
+function timed_text_class_change(new_text, new_class, duration) {
+    return function() {
+        let elem = $(this)
+        if (!elem.is('.' + new_class)) { // catch double click
+            elem.addClass(new_class)
+            let original_text = elem.html()
+            elem.html(new_text)
+            window.setTimeout(function () {
+                elem.html(original_text)
+                elem.removeClass(new_class)
+            }, duration || 3000)
+        }
+    }
+}
+
 function email_copy_button() {
     let copied_text = '<i class="fa-solid fa-check"></i> ' + email_copied_string
     return {
@@ -71,18 +86,7 @@ function email_copy_button() {
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
                 that.enable(get_emails(dt).size > 0)
             })
-            this.node().on('click', function() {
-                let button = $(this)
-                if (!button.is('.btn-success')) { // catch double click
-                    button.addClass('btn-success')
-                    let original_text = button.html()
-                    button.html(copied_text)
-                    window.setTimeout(function () {
-                        button.html(original_text)
-                        button.removeClass('btn-success')
-                    }, 3000)
-                }
-            })
+            this.node().on('click', timed_text_class_change(copied_text, 'btn-success'))
         },
         action: function (e, dt, node, config) {
             let emails = get_emails(dt)
@@ -212,33 +216,33 @@ $.fn.AjaxSlider = function (activate_url, disable_url, placeholder = '{value}') 
 
 // Maps
 
+function default_tile_layer() {
+    return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+            '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+    })
+}
+
 function map_with_markers(locations, selected) {
     let markers = new Map();
-    let marker_array = []
     let map = null;
     let positions = locations.filter((location) => location.latitude && location.longitude);
     if (positions.length > 0) {
         $('#map-container').append('<div id="location-map">')
         map = L.map('location-map');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-                    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
-            }).addTo(map);
+        default_tile_layer().addTo(map);
 
         $.each(positions, function (i, position) {
             let marker = add_marker(position, map)
-            let index = position.id || i
             if (marker) {
-                if (index === selected) {
-                    marker.openPopup()
-                }
+                let index = position.id || i
+                if (index === selected) { marker.openPopup() }
                 markers.set(index, marker)
-                marker_array.push(marker)
             }
         });
-        if (marker_array.length > 0) {
-            let group = new L.featureGroup(marker_array);
+        if (markers.size > 0) {
+            let group = new L.featureGroup(Array.from(markers.values()));
             map.fitBounds(group.getBounds(), {padding: [100, 100]});
         }
     }
