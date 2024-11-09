@@ -23,7 +23,7 @@ class ManageListTests(JuntagricoTestCase):
         # check that member list is correct
         objects = response.context['object_list']()
         self.assertEqual(list(objects.order_by('id')), [
-            self.member, self.member2, self.member3, self.member4, self.member5,
+            self.member, self.member2, self.member3, self.member4, self.member5, self.member6,
             self.admin, self.area_admin
         ])
         member = objects[0]

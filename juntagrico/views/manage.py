@@ -2,6 +2,8 @@ import datetime
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
@@ -105,12 +107,13 @@ class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 @permission_required('juntagrico.change_member')
 def member_deactivate(request, member_id=None):
+    change_date = request.session.get('changedate', None)
     if member_id:
         members = [get_object_or_404(Member, id=member_id)]
     else:
         members = Member.objects.filter(id__in=request.POST.get('member_ids').split('_'))
     for member in members:
-        member.deactivate()
+        member.deactivate(change_date)
     return return_to_previous_location(request)
 
 
@@ -122,13 +125,14 @@ class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 @permission_required('juntagrico.change_share')
 def share_payout(request, share_id=None):
+    change_date = request.session.get('changedate', None)
     if share_id:
         shares = [get_object_or_404(Share, id=share_id)]
     else:
         shares = Share.objects.filter(id__in=request.POST.get('share_ids').split('_'))
     for share in shares:
         # TODO: capture validation errors and display them. Continue with other shares
-        share.payback()
+        share.payback(change_date)
     return return_to_previous_location(request)
 
 
@@ -167,6 +171,37 @@ def subscription_recent(request, days=30):
         left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
     )
     return render(request, 'juntagrico/manage/subscription/recent.html', renderdict)
+
+
+class SubscriptionPendingView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.change_subscription']
+    template_name = 'juntagrico/manage/subscription/pending.html'
+
+    def get_queryset(self):
+        return Subscription.objects.filter(
+                Q(parts__activation_date=None)
+                | Q(parts__cancellation_date__isnull=False, parts__deactivation_date=None)
+            ).prefetch_related('parts').distinct()
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def parts_apply(request):
+    parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
+    change_date = request.session.get('changedate', None)
+    with transaction.atomic():
+        for part in parts:
+            if part.activation_date is None and part.deactivation_date is None:
+                if part.subscription.activation_date is None:
+                    # automatically activate subscription, but don't activate all parts
+                    part.subscription.__skip_part_activation__ = True
+                    part.subscription.activate(change_date)
+                part.activate(change_date)
+            if part.cancellation_date is not None:
+                part.deactivate(change_date)
+                # deactivate entire subscription, if this was the last part
+                if not part.subscription.parts.waiting_or_active(change_date).exists():
+                    part.subscription.deactivate(change_date)
+    return return_to_previous_location(request)
 
 
 class DepotSubscriptionView(SubscriptionView):

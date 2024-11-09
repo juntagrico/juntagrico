@@ -32,6 +32,9 @@
                         {% vocabulary "subscription" %}
                     </th>
                     <th class="filter">
+                        {% trans "Inhalt" %}
+                    </th>
+                    <th class="filter">
                         {% vocabulary "depot" %}
                     </th>
                 {% endblock %}
@@ -49,6 +52,9 @@
                 {% endif %}
                 <th>
                     {% vocabulary "subscription" %}
+                </th>
+                <th>
+                    {% trans "Inhalt" %}
                 </th>
                 <th>
                     {% vocabulary "depot" %}
@@ -75,6 +81,17 @@
                             <td>
                                 {% if subscription %}
                                     {% include '../subscription/snippets/display_linked.html' %}
+                                {% else %}
+                                    {% trans "-" %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if subscription %}
+                                    {% for item in subscription.content_strings %}
+                                        <div>
+                                            {{ item }}
+                                        </div>
+                                    {% endfor %}
                                 {% else %}
                                     {% trans "-" %}
                                 {% endif %}

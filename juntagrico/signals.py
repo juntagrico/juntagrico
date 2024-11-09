@@ -52,3 +52,19 @@ def on_depot_change_confirmed(sender, instance, **kwargs):
 
 def on_member_canceled(sender, instance, **kwargs):
     adminnotification.member_canceled(instance, **kwargs)
+
+
+def on_job_subscribed(sender, **kwargs):
+    job = kwargs.get('instance')
+    member = kwargs.get('member')
+    initial_count = kwargs.get('initial_count')
+    count = kwargs.get('count')
+    if initial_count == 0 and count > 0:
+        membernotification.job_signup(member.email, job, count)
+        adminnotification.member_subscribed_to_job(job, **kwargs)
+    elif count == 0:
+        membernotification.job_unsubscribed(member.email, job, initial_count)
+        adminnotification.member_unsubscribed_from_job(job, **kwargs)
+    else:
+        membernotification.job_subscription_changed(member.email, job, count)
+        adminnotification.member_changed_job_subscription(job, **kwargs)

@@ -398,6 +398,8 @@ def set_change_date(request):
     raw_date = request.POST.get('date')
     try:
         date = datetime.datetime.fromisoformat(raw_date).date()
+        if date == datetime.date.today():
+            date = None
         request.session['changedate'] = date
     except ValueError:
         return error_page(request, _('Bitte gib ein Datum im Format JJJJ-MM-TT ein.'))

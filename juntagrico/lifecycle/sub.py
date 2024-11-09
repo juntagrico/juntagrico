@@ -46,8 +46,9 @@ def handle_sub_activated(sender, instance, **kwargs):
                 code='invalid')
     instance.activation_date = activation_date
     change_date = instance.activation_date
-    for part in instance.future_parts.all():
-        part.activate(change_date)
+    if not getattr(instance, '__skip_part_activation__', False):
+        for part in instance.future_parts.all():
+            part.activate(change_date)
     for sub_membership in instance.subscriptionmembership_set.all():
         sub_membership.join_date = change_date
         sub_membership.save()
@@ -114,7 +115,8 @@ def check_children_dates(instance):
                           ' 2. Aktivierungsdatum vom {0}').format(Config.vocabulary('subscription'))
     try:
         for part in instance.parts.all():
-            check_subpart_parent_dates(part, instance)
+            # empty end dates are made consistent on save, no need to check
+            check_subpart_parent_dates(part, instance, check_empty_end=False)
     except ValidationError as e:
         raise ValidationError(
             _(
@@ -122,7 +124,8 @@ def check_children_dates(instance):
             code='invalid') from e
     try:
         for membership in instance.subscriptionmembership_set.all():
-            check_submembership_parent_dates(membership)
+            # empty end dates are made consistent on save, no need to check
+            check_submembership_parent_dates(membership, check_empty_end=False)
     except ValidationError as e:
         raise ValidationError(
             _('Aktivierungs- oder Deaktivierungsdatum passt nicht zum untergeordneten Beitritts- oder Austrittsdatum.' + reactivation_info),

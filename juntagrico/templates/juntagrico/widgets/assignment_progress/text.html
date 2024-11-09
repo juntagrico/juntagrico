@@ -47,7 +47,7 @@
             {% endif %}
             {% if sub.required_core_assignments > 0 %}
                 {% blocktrans with r=sub.required_core_assignments|floatformat %}
-                    Davon {{ c }} in Kernbereichen.
+                    Davon {{ r }} in Kernbereichen.
                 {% endblocktrans %}
             {% endif %}
             {% if sub.future_assignment_count %}

@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load juntagrico.config %}
+<div class="alert alert-danger">
+    {% trans 'Diese Ansicht wird in einer zukünftigen Version entfernt. Sprich mit deiner/m System-Admin, falls die neue Liste deine Anforderungen nicht abdeckt. ' %}
+    <br>
+    {% trans "Neue Liste: " %}{% vocabulary "subscription_pl" %}
+    <a href="{% url 'manage-sub-pending' %}">&rarr; {% trans "Pendente Änderungen" %}</a>
+</div>
