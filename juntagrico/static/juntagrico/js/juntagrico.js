@@ -133,8 +133,8 @@ function fetch_unique_from_table(node, selector) {
 }
 
 function get_selected_or_all(dt) {
-    let selected = dt.rows({selected: true, search: 'applied'})
-    return selected.any() ? selected.nodes() : dt.rows({search: 'applied'}).nodes()
+    let selected = dt.rows(':visible', {selected: true, search: 'applied'})
+    return selected.any() ? selected.nodes() : dt.rows(':visible', {search: 'applied'}).nodes()
 }
 
 function post(action, csrf_token, data) {

@@ -41,7 +41,7 @@ class JuntagricoTestCase(TestCase):
 
     @classmethod
     def load_members(cls):
-        cls.member, cls.member2, cls.member3, cls.member4, cls.member5 = Member.objects.order_by('id')[:5]
+        cls.member, cls.member2, cls.member3, cls.member4, cls.member5, cls.member6 = Member.objects.order_by('id')[:6]
         cls.admin = Member.objects.get(email='admin@email.org')
 
     @classmethod
@@ -293,15 +293,21 @@ class JuntagricoTestCase(TestCase):
         subscription
         """
         today = datetime.date.today()
-        cls.sub = cls.create_sub_now(cls.depot)
-        cls.sub2 = cls.create_sub(cls.depot, cls.sub_type2)
+        # sub 3 (inactive)
         cls.sub3 = cls.create_sub(cls.depot, cls.sub_type3)
-        cls.member.join_subscription(cls.sub, True)
         cls.member3.join_subscription(cls.sub3, True)
         cls.sub3.activate(today - datetime.timedelta(3))
         cls.sub3.deactivate(today - datetime.timedelta(1))
+        # sub (active, 2 members)
+        cls.sub = cls.create_sub_now(cls.depot)
+        cls.member.join_subscription(cls.sub, True)
         cls.member3.join_subscription(cls.sub)
+        # sub2 (waiting)
+        cls.sub2 = cls.create_sub(cls.depot, cls.sub_type2)
         cls.member2.join_subscription(cls.sub2, True)
+        # cancelled_sub
+        cls.cancelled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
+        cls.member6.join_subscription(cls.cancelled_sub, True)
 
     @classmethod
     def set_up_extra_sub_types(cls):

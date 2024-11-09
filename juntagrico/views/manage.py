@@ -2,6 +2,8 @@ import datetime
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
@@ -11,7 +13,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription
+from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import DateRangeForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
@@ -151,6 +153,37 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     template_name = 'juntagrico/manage/subscription/show.html'
     queryset = Subscription.objects.active
     title = _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
+
+
+class SubscriptionPendingView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.change_subscription']
+    template_name = 'juntagrico/manage/subscription/pending.html'
+
+    def get_queryset(self):
+        return Subscription.objects.filter(
+                Q(parts__activation_date=None)
+                | Q(parts__cancellation_date__isnull=False, parts__deactivation_date=None)
+            ).prefetch_related('parts').distinct()
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def parts_apply(request):
+    parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
+    change_date = request.session.get('changedate', None)
+    with transaction.atomic():
+        for part in parts:
+            if part.activation_date is None and part.deactivation_date is None:
+                if part.subscription.activation_date is None:
+                    # automatically activate subscription, but don't activate all parts
+                    part.subscription.__skip_part_activation__ = True
+                    part.subscription.activate(change_date)
+                part.activate(change_date)
+            if part.cancellation_date is not None:
+                part.deactivate(change_date)
+                # deactivate entire subscription, if this was the last part
+                if not part.subscription.parts.waiting_or_active(change_date).exists():
+                    part.subscription.deactivate(change_date)
+    return return_to_previous_location(request)
 
 
 class DepotSubscriptionView(SubscriptionView):
