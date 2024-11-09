@@ -13,13 +13,7 @@ $(function () {
             "searchBuilder": {
                 "columns": ".search-builder-column"
             },
-            "language": {
-                "decimal": decimal_symbol[1],
-                "search": '<i class="fa-solid fa-magnifying-glass"></i> ' + search_field,
-                "emptyTable": empty_table_string,
-                "zeroRecords": zero_records_string,
-                searchBuilder: sb_lang
-            },
+            "language": dt_language,
             "initComplete": function (settings) {
                 let api = new $.fn.dataTable.Api(settings)
                 // activate column search inputs

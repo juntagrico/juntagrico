@@ -12,12 +12,14 @@ from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
+from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import DateRangeForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
 from juntagrico.util.views_admin import date_from_get
+from juntagrico.view_decorators import any_permission_required
 
 
 class DateRangeMixin:
@@ -74,7 +76,6 @@ class MemberView(MultiplePermissionsRequiredMixin, TitledListView):
 class MemberActiveView(MemberView):
     queryset = Member.objects.active
     title = _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
-
 
 class AreaMemberView(MemberView):
     permission_required = 'juntagrico.is_area_admin'
@@ -153,6 +154,23 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     template_name = 'juntagrico/manage/subscription/show.html'
     queryset = Subscription.objects.active
     title = _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
+
+
+@any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
+def subscription_recent(request, days=30):
+    days = max(int(request.GET.get('days', days)), 0)
+    today = datetime.date.today()
+    date_range = (today - datetime.timedelta(days=days), today)
+    renderdict = dict(
+        days=days,
+        ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
+        activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
+        cancelled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
+        deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
+        joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
+        left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
+    )
+    return render(request, 'juntagrico/manage/subscription/recent.html', renderdict)
 
 
 class SubscriptionPendingView(PermissionRequiredMixin, ListView):
