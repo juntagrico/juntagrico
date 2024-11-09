@@ -1,0 +1,39 @@
+{% load juntagrico.common %}
+{% load i18n %}
+<ul>
+    {% for participant in job.unique_participants %}
+        {% spaceless %}
+            <li>
+                {{ participant }}
+                {% if participant.slots > 1 %}
+                    (+{{ participant.slots|add:"-1" }})
+                {% endif %}
+                {% for extra in job.all_participant_extras|get_item:participant %}
+                    {{ extra.extra_type.display_full|safe }}
+                {% endfor %}
+                {% if can_contact or participant.reachable_by_email %}
+                    <a href="{% url 'contact-member' participant.id %}">
+                        <i class="far fa-envelope"></i>
+                    </a>
+                {% endif %}
+            </li>
+        {% endspaceless %}
+    {% endfor %}
+</ul>
+
+{% if can_contact %}
+    {% block send_mail %}
+        <div>
+            <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="recipients" id="recipients"
+                       value="{% for e in job.participant_emails %}{{ e }}
+{% endfor %}"/>
+                <input type="hidden" name="recipients_count" id="recipients_count" value="{{ job.unique_participants.count }}"/>
+                <button type="submit" class="btn btn-outline-primary" id="send-email">
+                    {% trans "Allen ein E-Mail senden" %}
+                </button>
+            </form>
+        </div>
+    {% endblock %}
+{% endif %}

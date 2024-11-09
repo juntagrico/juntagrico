@@ -1,7 +1,10 @@
+from functools import cached_property
+
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Count
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -162,6 +165,8 @@ class Job(JuntagricoBasePoly):
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
 
+    members = models.ManyToManyField('Member', through='Assignment', related_name='jobs')
+
     contact_set = GenericRelation(Contact)
 
     @property
@@ -238,7 +243,21 @@ class Job(JuntagricoBasePoly):
 
     @property
     def participants(self):
-        return [a.member for a in self.assignment_set.all().prefetch_related('member') if a.member]
+        return self.members.all()
+
+    @property
+    def unique_participants(self):
+        return self.participants.annotate(slots=Count('id')).distinct()
+
+    @cached_property
+    def all_participant_extras(self):
+        extras = {}
+        for assignment in self.assignment_set.all():
+            if assignment.member not in extras:
+                extras[assignment.member] = []
+            for extra in assignment.job_extras.all():
+                extras[assignment.member].append(extra)
+        return extras
 
     @property
     def participant_names(self):

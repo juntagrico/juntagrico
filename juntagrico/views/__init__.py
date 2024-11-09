@@ -2,19 +2,16 @@ from datetime import timedelta
 
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, ActivityArea
 from juntagrico.entity.member import Member
@@ -67,7 +64,6 @@ def job(request, job_id, form_class=JobSubscribeForm):
             # redirect to same page such that refresh in the browser or back
             # button does not trigger a resubmission of the form
             return redirect('job', job_id=job_id)
-
     else:
         form = form_class(member, job)
 
@@ -76,38 +72,15 @@ def job(request, job_id, form_class=JobSubscribeForm):
         messages.extend(error_message(request))
         request.member_messages = messages
 
-    all_participants = MemberDao.members_by_job(job)
-    number_of_participants = len(all_participants)
-    unique_participants = all_participants.annotate(
-        assignment_for_job=Count('id')).distinct()
-
-    participants_summary = []
-    emails = []
-    for participant in unique_participants:
-        name = '{} {}'.format(participant.first_name, participant.last_name)
-        if participant.assignment_for_job == 2:
-            name += _(' (mit einer weiteren Person)')
-        elif participant.assignment_for_job > 2:
-            name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
-        contact_url = reverse('contact-member', args=[participant.id])
-        extras = []
-        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
-            for extra in assignment.job_extras.all():
-                extras.append(extra.extra_type.display_full)
-        reachable = participant.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == participant
-        participants_summary.append((name, contact_url, reachable, ' '.join(extras)))
-        emails.append(participant.email)
     messages = getattr(request, 'member_messages', []) or []
     messages.extend(job_messages(request, job))
     request.member_messages = messages
     renderdict = {
-        'form': form,
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
-        'emails': '\n'.join(emails),
-        'number_of_participants': number_of_participants,
-        'participants_summary': participants_summary,
         'job': job,
-        'edit_url': get_job_admin_url(request, job)
+        'edit_url': get_job_admin_url(request, job),
+        'form': form,
+        # TODO: should als be able to contact, if is member-contact of this job or job type
+        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
     }
     return render(request, 'job.html', renderdict)
 
