@@ -754,8 +754,10 @@ class JobSubscribeForm(Form):
 class EditAssignmentForm(JobSubscribeForm):
     message_wrapper_class = None  # always show message field
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, can_delete, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.can_delete = can_delete
+        self.helper.form_id = 'assignment-edit-form'
         self.fields['message'].help_text = _('Mitteilung an das Mitglied')
         self.fields['slots'].label = _('Teilnahme')
 
@@ -766,7 +768,7 @@ class EditAssignmentForm(JobSubscribeForm):
 
     @property
     def can_unsubscribe(self):
-        return True
+        return self.can_delete
 
     @property
     def can_interact(self):

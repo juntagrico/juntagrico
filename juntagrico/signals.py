@@ -37,6 +37,7 @@ share_canceled = Signal()
 member_created = Signal()
 member_canceled = Signal()  # DEPRECATED
 member_deactivated = Signal()
+assignment_changed = Signal()
 
 
 ''' Signal Receivers '''

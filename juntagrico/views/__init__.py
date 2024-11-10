@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -78,12 +79,14 @@ def job(request, job_id, form_class=JobSubscribeForm):
 
     member_messages.extend(job_messages(request, job))
     request.member_messages = member_messages
+    is_job_coordinator = job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')
     renderdict = {
         'job': job,
         'edit_url': get_job_admin_url(request, job),
         'form': form,
-        # TODO: should als be able to contact, if is member-contact of this job or job type
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
+        # TODO: should also be able to contact, if is member-contact of this job or job type
+        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or is_job_coordinator,
+        'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or is_job_coordinator,
     }
     return render(request, 'job.html', renderdict)
 
@@ -91,10 +94,18 @@ def job(request, job_id, form_class=JobSubscribeForm):
 @login_required
 def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, redirect_on_post=True):
     job = get_object_or_404(Job, id=int(job_id))
+    # check permission
+    admin = request.user.member
+    is_job_coordinator = job.type.activityarea.coordinator == admin and request.user.has_perm('juntagrico.is_area_admin')
+    if not (is_job_coordinator
+            or request.user.has_perm('juntagrico.change_assignment')
+            or request.user.has_perm('juntagrico.add_assignment')):
+        raise PermissionDenied
+    can_delete = is_job_coordinator or request.user.has_perm('juntagrico.delete_assignment')
     member = get_object_or_404(Member, id=int(member_id))
     success = False
     if request.method == 'POST':
-        form = form_class(member, job, request.POST)
+        form = form_class(can_delete, member, job, request.POST, prefix='edit')
         if form.is_valid():
             form.save()
             success = True
@@ -106,7 +117,7 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
                 messages.error(request, _('Änderung des Einsatzes fehlgeschlagen.'))
             return redirect('job', job_id=job_id)
     else:
-        form = form_class(member, job)
+        form = form_class(can_delete, member, job, prefix='edit')
     renderdict = {
         'member': member,
         'form': form,

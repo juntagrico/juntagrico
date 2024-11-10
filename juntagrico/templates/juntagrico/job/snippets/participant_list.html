@@ -2,27 +2,31 @@
 {% load i18n %}
 <ul>
     {% for participant in job.unique_participants %}
-        {% spaceless %}
-            <li>
-                {{ participant }}
-                {% if participant.slots > 1 %}
-                    (+{{ participant.slots|add:"-1" }})
-                {% endif %}
-                {% for extra in job.all_participant_extras|get_item:participant %}
-                    {{ extra.extra_type.display_full|safe }}
-                {% endfor %}
-                {% if can_contact or participant.reachable_by_email %}
-                    <a href="{% url 'contact-member' participant.id %}">
-                        <i class="far fa-envelope"></i>
-                    </a>
-                {% endif %}
-                {% if True %}
+        <li class="participant">
+            <span class="participant-name">{{ participant }}</span>
+            {% if participant.slots > 1 %}
+                <span class="participant-count">(+{{ participant.slots|add:"-1" }})</span>
+            {% endif %}
+            <span class="participant-job-extras">
+            {% for extra in job.all_participant_extras|get_item:participant %}
+                {{ extra.extra_type.display_full|safe }}
+            {% endfor %}
+            </span>
+            {% if can_edit_assignments %}
+                {% spaceless %}
                     <a class="edit-assignment" href="#" data-url="{% url 'assignment-edit' job.id participant.id %}">
                         <i class="fas fa-pen"></i>
                     </a>
-                {% endif %}
-            </li>
-        {% endspaceless %}
+                {% endspaceless %}
+            {% endif %}
+            {% if can_contact or participant.reachable_by_email %}
+                {% spaceless %}
+                    <a class="contact-member" href="{% url 'contact-member' participant.id %}">
+                        <i class="far fa-envelope"></i>
+                    </a>
+                {% endspaceless %}
+            {% endif %}
+        </li>
     {% endfor %}
 </ul>
 
@@ -63,7 +67,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Abbrechen" %}</button>
-                    <input type="submit" id="edit_assignment_submit" form="job-subscribe-form" class="btn btn-primary" 
+                    <input type="submit" id="edit_assignment_submit" form="assignment-edit-form" class="btn btn-primary" 
                            value="{% trans "Speichern" %}">
                 </div>
             </div>

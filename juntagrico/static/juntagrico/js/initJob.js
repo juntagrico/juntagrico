@@ -53,26 +53,19 @@ define([], function () {
         content.empty()
         $('#edit_assignment_loader').show()
         $('#edit_assignment_modal').modal('show')
-        $.get(url, handle_edit_assignment_form(url, content))
+        content.load(url, handle_edit_assignment_form(url))
         return false
     })
 
-    function handle_edit_assignment_form(url, content) {
+    function handle_edit_assignment_form(url) {
         let submit_button = $('#edit_assignment_submit')
         return function(response, status, xhr) {
             $('#edit_assignment_loader').hide()
             if (status === 'error') {
-                content.text(xhr.status + ' ' + xhr.statusText)
+                $(this).text(xhr.status + ' ' + xhr.statusText)
                 submit_button.prop('disabled', true)
             } else {
-                content.html(response)
                 submit_button.prop('disabled', false).attr('formaction', url)
-                // TODO: Remove
-                // $('form', content).on('submit', function () {
-                //     $('#edit_assignment_loader').show()
-                //     $.post(url, $(this).serialize(), handle_edit_assignment_form(url, content), 'html')
-                //     return false
-                // })
             }
         }
     }
