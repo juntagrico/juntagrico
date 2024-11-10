@@ -15,6 +15,16 @@ class MemberResource(resources.ModelResource):
     class Meta:
         model = Member
         exclude = ('user',)
+        widgets = {
+            'id': {'coerce_to_string': False},
+            'birthday': {'coerce_to_string': False},
+            'confirmed': {'coerce_to_string': False},
+            'reachable_by_email': {'coerce_to_string': False},
+            'cancellation_date': {'coerce_to_string': False},
+            'deactivation_date': {'coerce_to_string': False},
+            'end_date': {'coerce_to_string': False},
+            'number': {'coerce_to_string': False},
+        }
         name = Config.vocabulary('member_pl')
 
 
