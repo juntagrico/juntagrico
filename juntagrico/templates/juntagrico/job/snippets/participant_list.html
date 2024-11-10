@@ -16,11 +16,17 @@
                         <i class="far fa-envelope"></i>
                     </a>
                 {% endif %}
+                {% if True %}
+                    <a class="edit-assignment" href="#" data-url="{% url 'assignment-edit' job.id participant.id %}">
+                        <i class="fas fa-pen"></i>
+                    </a>
+                {% endif %}
             </li>
         {% endspaceless %}
     {% endfor %}
 </ul>
 
+{# button to contact all #}
 {% if can_contact %}
     {% block send_mail %}
         <div>
@@ -36,4 +42,31 @@
             </form>
         </div>
     {% endblock %}
+{% endif %}
+
+{# Modal for editing assignment #}
+{% if can_edit or True %}
+    <div class="modal" id="edit_assignment_modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Einsatz bearbeiten" %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="spinner-grow" id="edit_assignment_loader" role="status">
+                        <span class="sr-only">{% trans "Lädt..." %}</span>
+                    </div>
+                    <div id="edit_assignment_content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Abbrechen" %}</button>
+                    <input type="submit" id="edit_assignment_submit" form="job-subscribe-form" class="btn btn-primary" 
+                           value="{% trans "Speichern" %}">
+                </div>
+            </div>
+        </div>
+    </div>
 {% endif %}

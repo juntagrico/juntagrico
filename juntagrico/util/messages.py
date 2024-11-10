@@ -42,6 +42,15 @@ def job_messages(request, job):
     return result
 
 
-def error_message(request):
-    result = [get_template('messages/error.html').render()]
-    return result
+def error_message():
+    return get_template('messages/error.html').render()
+
+
+def alert(message):
+    if message.level_tag == 'error':
+        alert_lvl = 'danger'
+    elif message.level_tag == 'debug':
+        alert_lvl = 'secondary'
+    else:
+        alert_lvl = message.level_tag
+    return get_template('messages/alert.html').render({'message': message, 'alert_level': 'alert-' + alert_lvl})
