@@ -69,3 +69,11 @@ def on_job_subscribed(sender, **kwargs):
     else:
         membernotification.job_subscription_changed(member.email, job, count)
         adminnotification.member_changed_job_subscription(job, **kwargs)
+
+def on_assignment_changed(sender, **kwargs):
+    member = kwargs.get('instance')
+    count = kwargs.get('count')
+    if count == 0:
+        membernotification.assignment_removed(member.email, **kwargs)
+    else:
+        membernotification.assignment_changed(member.email, **kwargs)

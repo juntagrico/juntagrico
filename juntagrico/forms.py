@@ -24,7 +24,7 @@ from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Subscription
-from juntagrico.signals import subscribed
+from juntagrico.signals import subscribed, assignment_changed
 
 
 class Slider(Field):
@@ -754,8 +754,9 @@ class JobSubscribeForm(Form):
 class EditAssignmentForm(JobSubscribeForm):
     message_wrapper_class = None  # always show message field
 
-    def __init__(self, can_delete, *args, **kwargs):
+    def __init__(self, editor, can_delete, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.editor = editor
         self.can_delete = can_delete
         self.helper.form_id = 'assignment-edit-form'
         self.fields['message'].help_text = _('Mitteilung an das Mitglied')
@@ -776,7 +777,11 @@ class EditAssignmentForm(JobSubscribeForm):
 
     def send_signals(self, slots, message=''):
         # send signals
-        # TODO: inform member in this case
+        assignment_changed.send(
+            Member, instance=self.member, job=self.job, editor=self.editor,
+            count=slots, initial_count=self.current_slots,
+            message=message
+        )
         pass
 
 class ShiftTimeForm(Form):

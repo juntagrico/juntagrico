@@ -132,6 +132,7 @@ class UnsubscribableJobTests(JobTests):
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
 
+
 class AssignmentTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
@@ -158,19 +159,30 @@ class AssignmentTests(JuntagricoTestCase):
 
         self.assertGet(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), member=admin)
         # test increase subscription
-        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), {'slots': 2},302, admin)
+        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
+                        {'edit-slots': 2},302, admin)
         self.assertEqual(self.job2.occupied_slots, 2)
         self.assertTrue(self.signal_called)
         self.assertEqual(len(mail.outbox), 1)  # member notification
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         mail.outbox.clear()
-        self.assertTrue(subscribed.disconnect(handler, sender=Job))
-        # test unsubscribe
-        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), {'slots': 0},
-                        302, admin)
+        self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
+
+    def testAssignmentNotDelete(self):
+        # member does not have permission to delete
+        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
+                        {'edit-slots': 0}, 302, self.member)
+        # test that slots are unchanged
+        self.assertEqual(self.job2.occupied_slots, 1)
+
+    def testAssignmentDelete(self, admin=None):
+        admin = admin or self.admin
+        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
+                        {'edit-slots': 0}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 0)
         self.assertEqual(len(mail.outbox), 1)  # member notification
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
 
     def testAssignmentEditByCoordinator(self):
         self.testAssignmentEdit(self.area_admin)
+        self.testAssignmentDelete(self.area_admin)

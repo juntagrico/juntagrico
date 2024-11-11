@@ -15,6 +15,7 @@ Dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" findet neu um {{ jt }}
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 {% trans "Teilnehmer" %}:      {{ job.participant_names }}
 {% trans "Ort" %}:             {{ job.type.location }}
+{% trans "Einsatz ansehen" %}: {{ serverurl }}{% url 'job' job.id %}
 
 {% blocktrans trimmed %}
 Wir freuen uns, dich zu sehen und zählen auf dich!

@@ -104,10 +104,13 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
     can_delete = is_job_coordinator or request.user.has_perm('juntagrico.delete_assignment')
     member = get_object_or_404(Member, id=int(member_id))
     success = False
+
     if request.method == 'POST':
-        form = form_class(can_delete, member, job, request.POST, prefix='edit')
+        # handle submit
+        form = form_class(admin, can_delete, member, job, request.POST, prefix='edit')
         if form.is_valid():
-            form.save()
+            if form.has_changed():  # don't send any notifications, if nothing was changed.
+                form.save()
             success = True
         if redirect_on_post:
             if success:
@@ -117,7 +120,7 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
                 messages.error(request, _('Änderung des Einsatzes fehlgeschlagen.'))
             return redirect('job', job_id=job_id)
     else:
-        form = form_class(can_delete, member, job, prefix='edit')
+        form = form_class(admin, can_delete, member, job, prefix='edit')
     renderdict = {
         'member': member,
         'form': form,
