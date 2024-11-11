@@ -1,12 +1,13 @@
 from datetime import timedelta
 
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.activityareadao import ActivityAreaDao
@@ -14,19 +15,18 @@ from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import Job, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
-    CoopMemberCancellationForm, JobSubscribeForm
+    CoopMemberCancellationForm, JobSubscribeForm, EditAssignmentForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.signals import area_joined, area_left, canceled
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.messages import home_messages, job_messages, error_message
+from juntagrico.util.messages import home_messages, job_messages, error_message, alert
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
 
@@ -60,6 +60,10 @@ def job(request, job_id, form_class=JobSubscribeForm):
     member = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
 
+    member_messages = getattr(request, 'member_messages', []) or []
+    for message in messages.get_messages(request):
+        member_messages.append(alert(message))
+
     if request.method == 'POST':
         form = form_class(member, job, request.POST)
         if form.is_valid():
@@ -67,50 +71,62 @@ def job(request, job_id, form_class=JobSubscribeForm):
             # redirect to same page such that refresh in the browser or back
             # button does not trigger a resubmission of the form
             return redirect('job', job_id=job_id)
-
     else:
         form = form_class(member, job)
 
     if request.method == 'POST':
-        messages = getattr(request, 'member_messages', []) or []
-        messages.extend(error_message(request))
-        request.member_messages = messages
+        member_messages.append(error_message())
 
-    all_participants = MemberDao.members_by_job(job)
-    number_of_participants = len(all_participants)
-    unique_participants = all_participants.annotate(
-        assignment_for_job=Count('id')).distinct()
-
-    participants_summary = []
-    emails = []
-    for participant in unique_participants:
-        name = '{} {}'.format(participant.first_name, participant.last_name)
-        if participant.assignment_for_job == 2:
-            name += _(' (mit einer weiteren Person)')
-        elif participant.assignment_for_job > 2:
-            name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
-        contact_url = reverse('contact-member', args=[participant.id])
-        extras = []
-        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
-            for extra in assignment.job_extras.all():
-                extras.append(extra.extra_type.display_full)
-        reachable = participant.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == participant
-        participants_summary.append((name, contact_url, reachable, ' '.join(extras)))
-        emails.append(participant.email)
-    messages = getattr(request, 'member_messages', []) or []
-    messages.extend(job_messages(request, job))
-    request.member_messages = messages
+    member_messages.extend(job_messages(request, job))
+    request.member_messages = member_messages
+    is_job_coordinator = job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')
     renderdict = {
-        'form': form,
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
-        'emails': '\n'.join(emails),
-        'number_of_participants': number_of_participants,
-        'participants_summary': participants_summary,
         'job': job,
-        'edit_url': get_job_admin_url(request, job)
+        'edit_url': get_job_admin_url(request, job),
+        'form': form,
+        # TODO: should also be able to contact, if is member-contact of this job or job type
+        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or is_job_coordinator,
+        'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or is_job_coordinator,
     }
     return render(request, 'job.html', renderdict)
 
+# TODO: set permission
+@login_required
+def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, redirect_on_post=True):
+    job = get_object_or_404(Job, id=int(job_id))
+    # check permission
+    admin = request.user.member
+    is_job_coordinator = job.type.activityarea.coordinator == admin and request.user.has_perm('juntagrico.is_area_admin')
+    if not (is_job_coordinator
+            or request.user.has_perm('juntagrico.change_assignment')
+            or request.user.has_perm('juntagrico.add_assignment')):
+        raise PermissionDenied
+    can_delete = is_job_coordinator or request.user.has_perm('juntagrico.delete_assignment')
+    member = get_object_or_404(Member, id=int(member_id))
+    success = False
+
+    if request.method == 'POST':
+        # handle submit
+        form = form_class(admin, can_delete, member, job, request.POST, prefix='edit')
+        if form.is_valid():
+            if form.has_changed():  # don't send any notifications, if nothing was changed.
+                form.save()
+            success = True
+        if redirect_on_post:
+            if success:
+                messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                                                    _("Änderung gespeichert")))
+            else:
+                messages.error(request, _('Änderung des Einsatzes fehlgeschlagen.'))
+            return redirect('job', job_id=job_id)
+    else:
+        form = form_class(admin, can_delete, member, job, prefix='edit')
+    renderdict = {
+        'member': member,
+        'form': form,
+        'success': success,
+    }
+    return render(request, 'juntagrico/job/snippets/edit_assignment.html', renderdict)
 
 @login_required
 def depot_landing(request):

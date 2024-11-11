@@ -13,6 +13,7 @@ Dein {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" um {{ jt }}-{{ jet }} 
 {% trans "Job" %}:             {{ job.type.description|striptags }}
 {% trans "Zeit" %}:            {{ job.time |date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 {% trans "Ort" %}:             {{ job.type.location }}
+{% trans "Einsatz ansehen" %}: {{ serverurl }}{% url 'job' job.id %}
 {% blocktrans trimmed%}
 Es tut uns leid und hoffen dich bei einem anderen Einsatz wieder zu sehen!
 {% endblocktrans %}

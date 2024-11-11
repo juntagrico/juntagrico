@@ -129,14 +129,14 @@ class Command(BaseCommand):
             print('*** member/job/unsubscribed ***')
             print(get_template('juntagrico/mails/member/job/unsubscribed.txt').render(job_dict), end='\n\n')
 
-            admin_job_dict = dict(
+            admin_job_dict = base_dict(dict(
                 job=job,
                 instance=job,
                 member=member,
                 initial_count=2,
                 count=1,
                 message='[Nachricht des Mitglieds]'
-            )
+            ))
             print('*** admin/job/signup ***')
             print(get_template('juntagrico/mails/admin/job/signup.txt').render(admin_job_dict), end='\n\n')
 
@@ -145,6 +145,21 @@ class Command(BaseCommand):
 
             print('*** admin/job/unsubscribed ***')
             print(get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(admin_job_dict), end='\n\n')
+
+            member_assignment_dict = base_dict(dict(
+                job=job,
+                instance=member,
+                member=member,
+                editor=co_member,
+                initial_count=2,
+                count=1,
+                message='[Nachricht an Mitglied]'
+            ))
+            print('*** member/assignment/changed ***')
+            print(get_template('juntagrico/mails/member/assignment/changed.txt').render(member_assignment_dict), end='\n\n')
+
+            print('*** member/assignment/deleted ***')
+            print(get_template('juntagrico/mails/member/assignment/deleted.txt').render(member_assignment_dict), end='\n\n')
 
         if 'depot' in selected:
             print('*** d_changed ***')

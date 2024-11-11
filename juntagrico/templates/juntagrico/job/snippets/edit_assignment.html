@@ -1,0 +1,13 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% if success %}
+    <div class="alert alert-success">
+        <i class="fa-regular fa-circle-check"></i> {% trans "Änderung gespeichert" %}
+    </div>
+{% endif %}
+<p>
+    {% blocktrans with m=member %}
+    	Du änderst den Einsatz von {{ m }}
+    {% endblocktrans %}
+</p>
+{% crispy form %}

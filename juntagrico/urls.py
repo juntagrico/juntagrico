@@ -91,10 +91,13 @@ urlpatterns = [
     # /my/assignments
     path('my/memberjobs', juntagrico.memberjobs, name='memberjobs'),
 
-    # /jobs
+    # /job
     path('my/jobs', juntagrico.jobs, name='jobs'),
     path('my/jobs/all', juntagrico.all_jobs, name='jobs-all'),
     path('my/jobs/<int:job_id>/', juntagrico.job, name='job'),
+
+    # /assignment
+    path('assignment/<int:job_id>/<int:member_id>/edit', juntagrico.edit_assignment, name='assignment-edit'),
 
     # /area
     path('my/areas', juntagrico.areas, name='areas'),
