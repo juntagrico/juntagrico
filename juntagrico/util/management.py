@@ -1,4 +1,3 @@
-import datetime
 import itertools
 import random
 import string
@@ -8,7 +7,6 @@ from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import membernotification
-from juntagrico.util.temporal import next_membership_end_date
 
 
 def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
@@ -107,9 +105,3 @@ def cancel_sub(subscription, end_date, message):
     subscription.end_date = end_date
     subscription.save()
     adminnotification.subscription_canceled(subscription, message)
-
-
-def cancel_share(share, date, end_date):
-    share.cancelled_date = share.cancelled_date or date or datetime.date.today()
-    share.termination_date = share.termination_date or end_date or next_membership_end_date()
-    share.save()

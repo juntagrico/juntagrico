@@ -22,7 +22,9 @@ class Command(BaseCommand):
                       'activation_date': activation_date,
                       'deactivation_date': None, 'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
         subscription = Subscription.objects.create(**sub_fields)
-        member.leave_subscription()
+        member.leave_subscription(changedate=datetime.date.today()-datetime.timedelta(1))
+        if member.subscription_future:
+            member.leave_subscription(member.subscription_future)
         member.join_subscription(subscription)
         subscription.primary_member = member
         subscription.save()

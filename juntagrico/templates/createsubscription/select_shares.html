@@ -13,6 +13,7 @@
 {% block allcontent %}
     {% config "currency" as c_currency %}
     {% config "share_price" as c_share_price %}
+    {% config "required_shares" as c_required_shares %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     {% vocabulary "share_pl" as v_share_pl %}
     {% vocabulary "subscription" as v_subscription %}
@@ -38,20 +39,19 @@
                 Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }}
                 zurückerstattet.
                 {% endblocktrans %}
-                {% if shares.total_required > 0 %}
+                {% if shares.total_required > c_required_shares %}
                     {% blocktrans trimmed with shares.total_required as st %}
                     Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ st }}
                     {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                     {% endblocktrans %}
                     <br/>
-                {% else %}
+                {% elif c_required_shares > 0 %}
                     {% blocktrans trimmed %}
-                    Als {{ v_member_type }} ohne {{ v_subscription }} benötigst du 1
-                    {{ v_share }}. Du kannst natürlich noch mehr erwerben.
+                    Du benötigst mindestens {{ c_required_shares }} {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                     {% endblocktrans %}
                     <br/>
                 {% endif %}
-                {% if co_members|length > 0 %}
+                {% if co_members|length > 0 and shares.remaining_required > 0 %}
                     {% blocktrans trimmed with shares.remaining_required as sr %}
                     Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
                     deinen {{ v_co_member_pl }} auf.
@@ -66,14 +66,21 @@
                     {% blocktrans %}Neue {{ v_share_pl }}{% endblocktrans %}:
                 </label>
                 <div class="col-md-3">
-                    <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:shares.total_required }}" min="{% if shares.existing_main_member == 0 %}1{% else %}0{% endif %}"/>
+                    <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:shares.total_required }}" 
+                           min="{{ shares.remaining_required_main_member }}"/>
                 </div>
                 <label class="col-md-6 col-form-label">
-                    {% if shares.existing_main_member == 0 %}
-                        {% blocktrans trimmed %}
-                        Du brauchst als HauptbezieherIn mindestens 1 {{ v_share }}.
-                        {% endblocktrans %}
-                    {% else %}
+                    {% if shares.existing_main_member < c_required_shares %}
+                        {% if c_required_shares == 1 %}
+                            {% blocktrans trimmed %}
+                            Du brauchst als HauptbezieherIn mindestens {{ c_required_shares }} {{ v_share }}.
+                            {% endblocktrans %}
+                        {% elif c_required_shares > 1 %}
+                            {% blocktrans trimmed %}
+                            Du brauchst als HauptbezieherIn mindestens {{ c_required_shares }} {{ v_share_pl }}.
+                            {% endblocktrans %}
+                        {% endif %}
+                    {% elif shares.existing_main_member > 0 %}
                         {% blocktrans trimmed with msc=member.active_shares_count%}
                         Du hast bereits {{ msc }} {{ v_share_pl }}
                         {% endblocktrans %}

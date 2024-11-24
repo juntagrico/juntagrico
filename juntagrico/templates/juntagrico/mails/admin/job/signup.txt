@@ -1,0 +1,21 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% block content %}
+{{ job.time|date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }} {{ job.type.get_name }}
+
+{% trans "Hallo" %}
+
+{% block intro %}{% blocktrans %}Soeben hat sich {{ member }} für einen Einsatz angemeldet.{% endblocktrans %}{% endblock %}
+{% trans "Email" %}: {{ member.email }}
+{% if message %}{% trans "MITTEILUNG" %}: {{ message }}{% endif %}
+{% trans "Einsatz" %}: {{ job.type.get_name }}
+{% trans "Am" %}: {{ job.time|date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
+{% block count %}{% trans "Anzahl Personen" %}: {{ count }}{% endblock %}
+
+{% blocktrans with total=job.occupied_slots %}Damit sind jetzt insgesamt {{ total }} Personen für diesen Einsatz angemeldet.{% endblocktrans %}
+{% if not job.infinite_slots %}{% blocktrans with n=job.free_slots  %}Es hat noch Platz für {{ n }} weitere Personen.{% endblocktrans %}{% endif %}
+
+{% blocktrans %}Liebe Grüsse und einen schönen Tag noch
+Dein Server{% endblocktrans %}
+
+{% endblock %}

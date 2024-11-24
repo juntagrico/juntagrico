@@ -1,0 +1,13 @@
+{% load i18n %}
+{% load juntagrico.snippets %}
+{% load juntagrico.config %}
+{% vocabulary "depot" as v_depot %}
+
+{% subscription_depot_fee type selected_depot as fee %}
+{% if fee != 0 %}
+    <br/>
+    {% block label %}
+    {% blocktrans %}{{ v_depot }}-Zuschlag{% endblocktrans %}:
+    {% endblock %}
+    {% include "juntagrico/snippets/depot/fee.html" %}
+{% endif %}

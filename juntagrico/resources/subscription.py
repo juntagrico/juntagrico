@@ -14,7 +14,7 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
     primary_member_email = Field('primary_member__email')
     primary_member_phone = Field('primary_member__phone')
     primary_member_mobile = Field('primary_member__mobile')
-    other_recipients_names = Field('other_recipients_names')
+    co_members = Field('co_members')
     depot = Field('depot__name')
 
     assignment_count = Field('assignment_count', widget=DecimalWidget())
@@ -27,6 +27,9 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
 
     def update_queryset(self, queryset):
         return Subscription.objects.annotate_assignments_progress(self.start_date, self.end_date)
+
+    def dehydrate_co_members(self, subscription):
+        return ', '.join(str(m) for m in subscription.co_members())
 
     class Meta:
         model = Subscription
