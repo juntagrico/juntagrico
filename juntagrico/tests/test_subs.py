@@ -4,13 +4,11 @@ from django.core import mail
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
 from ..entity.subtypes import SubscriptionType
 
 
-class SubscriptionTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class SubscriptionTests(JuntagricoTestCaseWithShares):
     def testSub(self):
         self.assertGet(reverse('subscription-landing'), 302)
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]))

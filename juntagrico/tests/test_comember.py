@@ -1,5 +1,6 @@
-from django.urls import reverse
+from django.conf import settings
 from django.core import mail
+from django.urls import reverse
 
 from juntagrico.models import Member, Share, Subscription
 from . import JuntagricoTestCase
@@ -36,10 +37,11 @@ class CoMemberTests(JuntagricoTestCase):
         new_co_member_data = self.get_co_member_data('new_comember@juntagrico.org')
         self.assertPost(reverse('add-member', args=[self.sub.pk]), new_co_member_data, 302)
         self.assertEqual(Member.objects.filter(email=new_co_member_data['email']).count(), 1)
-        self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 1)
+        if settings.ENABLE_SHARES:
+            self.assertEqual(Share.objects.filter(member__email=new_co_member_data['email']).count(), 1)
         self.assertEqual(Subscription.objects.filter(subscriptionmembership__member__email=new_co_member_data['email']).count(), 1)
-        # membership and share order emails to co-member & admin notifications for the same
-        self.assertEqual(len(mail.outbox), 4)
+        # membership and, if enabled, share order emails to co-member & admin notifications for the same
+        self.assertEqual(len(mail.outbox), 4 if settings.ENABLE_SHARES else 2)
 
     def testAddExistingCoMemberWithSub(self):
         # existing member with subs can not be added as co members
