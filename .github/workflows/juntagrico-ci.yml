@@ -19,12 +19,13 @@ jobs:
       EXCLUDE_TEST: ${{ matrix.exclude-test }}
     strategy:
       matrix:
-        - python-version: '3.8'
-        - python-version: '3.9'
-        - python-version: '3.10'
-        - python-version: '3.11'
-        - python-version: '3.11'
-          exclude-test: shares
+        include:
+          - python-version: '3.8'
+          - python-version: '3.9'
+          - python-version: '3.10'
+          - python-version: '3.11'
+          - python-version: '3.11'
+            exclude-test: shares
 
     services:
       postgres:
