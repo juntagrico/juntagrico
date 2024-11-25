@@ -322,7 +322,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
         shares = 0
         # or create new member and order shares for them
         if co_member is None:
-            shares = form.cleaned_data['shares']
+            shares = form.cleaned_data.get('shares', 0)
             co_member = form.instance
         create_or_update_co_member(co_member, self.subscription, shares)
         return self._done()
