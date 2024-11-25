@@ -16,9 +16,16 @@ jobs:
       DJANGO_SETTINGS_MODULE: testsettings
       PYTHONPATH: .
       CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
+      EXCLUDE_TEST: ${{ matrix.exclude-test }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        include:
+          - python-version: '3.8'
+          - python-version: '3.9'
+          - python-version: '3.10'
+          - python-version: '3.11'
+          - python-version: '3.11'
+            exclude-test: shares
 
     services:
       postgres:
@@ -69,13 +76,13 @@ jobs:
     - name: run tests on mysql
       run: |
         python -m django makemigrations --noinput
-        python -m manage test
+        python -m manage test --exclude-tag=$EXCLUDE_TEST
       env:
         GITHUB_MYSQL: 1
     - name: run tests on postgres
       run: |
         python -m django makemigrations --noinput
-        coverage run -m manage test
+        coverage run -m manage test --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico.tests.test_deploy --settings="deploytestsettings"
     - name: publish code coverage
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}

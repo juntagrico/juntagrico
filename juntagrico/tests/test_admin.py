@@ -1,13 +1,12 @@
+from django.test import tag
 from django.urls import reverse
 from django.utils import timezone
 
 from juntagrico.entity.jobs import Assignment, RecuringJob
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
 
 
-class AdminTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class AdminTests(JuntagricoTestCaseWithShares):
     def testOneTimeJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)),
@@ -113,13 +112,9 @@ class AdminTests(JuntagricoTestCase):
     def testSubtypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
 
+    @tag('shares')
     def testShareAdmin(self):
         url = reverse('admin:juntagrico_share_changelist')
         selected_items = [self.member.share_set.first().pk]
         self.assertPost(url, data={'action': 'mass_edit_share_dates', '_selected_action': selected_items},
                         member=self.admin)
-
-    def testSubtypeAdminNoShares(self):
-        with self.settings(ENABLE_SHARES=False):
-            self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.extrasub_type.pk,)),
-                           member=self.admin)
