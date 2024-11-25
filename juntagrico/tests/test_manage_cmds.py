@@ -3,12 +3,10 @@ from io import StringIO
 from django.core import mail
 from django.core.management import call_command
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
 
 
-class ManagementCommandsTest(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class ManagementCommandsTest(JuntagricoTestCaseWithShares):
     def test_create_member_for_superuser(self):
         call_command('createsuperuser', username='testsuperuer', email='super@mail.com', no_input='')
         out = StringIO()

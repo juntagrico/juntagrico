@@ -186,3 +186,5 @@ CONTACTS = {
 }
 
 IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
+
+ENABLE_SHARES = os.environ.get('EXCLUDE_TEST', 'none') != 'shares'

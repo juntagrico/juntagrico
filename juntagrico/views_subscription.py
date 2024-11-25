@@ -322,7 +322,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
         shares = 0
         # or create new member and order shares for them
         if co_member is None:
-            shares = form.cleaned_data['shares']
+            shares = form.cleaned_data.get('shares', 0)
             co_member = form.instance
         create_or_update_co_member(co_member, self.subscription, shares)
         return self._done()
@@ -388,10 +388,10 @@ def cancel_subscription(request, subscription_id):
 def leave_subscription(request, subscription_id):
     member = request.user.member
     subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
-    asc = member.usable_shares_count
-    share_error = subscription.share_overflow - asc < 0
+    share_error = Config.enable_shares() and subscription.share_overflow - member.usable_shares_count < 0
     primary = subscription.primary_member.id == member.id
-    can_leave = member.is_cooperation_member and not share_error and not primary
+    has_min_shares = not Config.enable_shares() or member.is_cooperation_member
+    can_leave = has_min_shares and not share_error and not primary
     if not can_leave:
         return redirect('subscription-landing')
     if request.method == 'POST':

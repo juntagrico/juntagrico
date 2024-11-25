@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import auth
 from django.core import mail
 from django.urls import reverse
@@ -88,7 +89,8 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         response = self.client.post(reverse('cs-summary'), {'comment': comment})
         self.assertRedirects(response, reverse('welcome-with-sub'))
         self.assertEqual(Member.objects.filter(email=member_email).count(), 1)
-        self.assertEqual(Share.objects.filter(member__email=member_email).count(), initial_share_count + 1)
+        if settings.ENABLE_SHARES:
+            self.assertEqual(Share.objects.filter(member__email=member_email).count(), initial_share_count + 1)
         self.assertEqual(Subscription.objects.filter(primary_member__email=member_email).count(), 1)
         # look for comment in admin notification
         self.assertIn(comment, mail.outbox[comment_in].body)
@@ -100,7 +102,8 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         response = self.client.post(reverse('signup'), new_member_data)
         self.assertRedirects(response, reverse('cs-subscription'))
         self.commonAddSub(new_member_data['email'], 'new test comment' if with_comment else '')
-        self.assertEqual(len(mail.outbox), 7)  # welcome mail, share mail & same for co-member & 3 admin notifications
+        # welcome mail, share mail & same for co-member & 3 admin notifications
+        self.assertEqual(len(mail.outbox), 7 if settings.ENABLE_SHARES else 5)
 
         # signup with different case email address should fail
         new_member_data['email'] = 'Test@user.com'
@@ -141,9 +144,9 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         """ test order of new sub by existing member without sub
         """
         self.client.force_login(self.member4.user)
-        self.commonAddSub(self.member4.email, 'test comment', 2)
-        # share mail for member & welcome mail for co-member & 3 admin notifications
-        self.assertEqual(len(mail.outbox), 5)
+        self.commonAddSub(self.member4.email, 'test comment', 2 if settings.ENABLE_SHARES else 0)
+        # share mail (if enabled) for member & welcome mail for co-member & 3 admin notifications
+        self.assertEqual(len(mail.outbox), 5 if settings.ENABLE_SHARES else 3)
 
     def testSignupWithComment(self):
         self.commonSignupTest(True)
