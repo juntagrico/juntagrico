@@ -329,8 +329,8 @@ class CoMemberBaseForm(MemberBaseForm):
         existing_member = MemberDao.member_by_email(email)
         if existing_member:
             if existing_member.blocked:
-                raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktiv\
-                 {}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
+                raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktive '
+                    '{}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
                     Config.vocabulary('subscription'),
                     '<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
                     Config.vocabulary('member_type_pl'),
