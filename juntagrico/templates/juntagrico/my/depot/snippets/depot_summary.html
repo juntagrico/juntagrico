@@ -1,6 +1,11 @@
 {% load juntagrico.config %}
 {% load i18n %}
 {% vocabulary "depot" as v_depot %}
+{% if subscription.future_depot %}
+    <div class="alert alert-warning">
+        {% include "juntagrico/my/depot/snippets/change_pending_info.html" %}
+    </div>
+{% endif %}
 <a href="{% url 'depot' subscription.depot.id %}">
     {{ subscription.depot.name }}
 </a>
