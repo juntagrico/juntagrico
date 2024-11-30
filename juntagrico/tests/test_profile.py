@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core import mail
 from django.urls import reverse
@@ -12,12 +13,13 @@ class ProfileTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.member = cls.create_member('member_with_shares@email.org')
-        cls.paid_share = cls.create_paid_share(cls.member)
         cls.member_without_shares = cls.create_member('member_without_shares@email.org')
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org')
-        cls.unpaid_share = Share.objects.create(member=cls.member_with_unpaid_share)
         cls.member_with_canceled_share = cls.create_member('member_with_canceled_share@email.org')
-        cls.canceled_share = cls.create_paid_and_canceled_share(cls.member_with_canceled_share)
+        if settings.ENABLE_SHARES:
+            cls.paid_share = cls.create_paid_share(cls.member)
+            cls.unpaid_share = Share.objects.create(member=cls.member_with_unpaid_share)
+            cls.canceled_share = cls.create_paid_and_canceled_share(cls.member_with_canceled_share)
         cls.admin = Member.objects.get(email='admin@email.org')
         cls.admin.user.user_permissions.add(
             Permission.objects.get(codename='notified_on_member_cancellation')
@@ -50,9 +52,10 @@ class ProfileTests(JuntagricoTestCase):
         self.assertTrue(self.member.canceled)
         self.assertEqual(self.member.usable_shares_count, 0)
         # pay back the share
-        self.paid_share.refresh_from_db()
-        self.paid_share.payback_date = self.paid_share.termination_date
-        self.paid_share.save()
+        if settings.ENABLE_SHARES:
+            self.paid_share.refresh_from_db()
+            self.paid_share.payback_date = self.paid_share.termination_date
+            self.paid_share.save()
         # deactivate member
         self._testDeactivateMembershipSingle(self.member)
 
@@ -84,9 +87,10 @@ class ProfileTests(JuntagricoTestCase):
         self.member_with_canceled_share.refresh_from_db()
         self.assertTrue(self.member_with_canceled_share.canceled)
         # pay back the share
-        self.canceled_share.refresh_from_db()
-        self.canceled_share.payback_date = self.canceled_share.termination_date
-        self.canceled_share.save()
+        if settings.ENABLE_SHARES:
+            self.canceled_share.refresh_from_db()
+            self.canceled_share.payback_date = self.canceled_share.termination_date
+            self.canceled_share.save()
         self._testDeactivateMembershipSingle(self.member_with_canceled_share)
 
     def testCancelMembershipWithCanceledSubscriptions(self):

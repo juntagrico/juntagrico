@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
@@ -66,12 +67,13 @@ class JuntagricoTestCase(TestCase):
 
     @staticmethod
     def create_paid_share(member, **kwargs):
-        return Share.objects.create(
-            member=member,
-            paid_date='2017-03-27',
-            issue_date='2017-03-27',
-            **kwargs
-        )
+        if settings.ENABLE_SHARES:
+            return Share.objects.create(
+                member=member,
+                paid_date='2017-03-27',
+                issue_date='2017-03-27',
+                **kwargs
+            )
 
     @classmethod
     def create_paid_and_canceled_share(cls, member, **kwargs):
@@ -378,3 +380,7 @@ class JuntagricoTestCase(TestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, code)
         return response
+
+
+class JuntagricoTestCaseWithShares(JuntagricoTestCase):
+    fixtures = JuntagricoTestCase.fixtures + (['test/shares'] if settings.ENABLE_SHARES else [])

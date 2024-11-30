@@ -1,16 +1,16 @@
 import datetime
 
+from django.conf import settings
 from django.core import mail
 from django.core.exceptions import ValidationError
+from django.test import tag
 from django.urls import reverse
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
 from ..entity.subtypes import SubscriptionType
 
 
-class SubscriptionTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class SubscriptionTests(JuntagricoTestCaseWithShares):
     def testSub(self):
         self.assertGet(reverse('subscription-landing'), 302)
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
@@ -49,16 +49,17 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testPartOrder(self):
         with (self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12)):
-            # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
             self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
                 f'amount[{type_id}]': 1 if i == 1 else 0
                 for i, type_id in enumerate(SubscriptionType.objects.values_list('id', flat=True))
             }
-            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
-            self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_parts.first().type, self.sub_type)
-            self.assertEqual(self.sub.future_parts.count(), 1)
+            # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
+            if settings.ENABLE_SHARES:
+                self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
+                self.sub.refresh_from_db()
+                self.assertEqual(self.sub.future_parts.first().type, self.sub_type)
+                self.assertEqual(self.sub.future_parts.count(), 1)
             # Add a share and cancel an existing part. Then order a part that requires 2 shares. Should succeed.
             self.create_paid_share(self.member)
             self.assertGet(reverse('part-cancel', args=[self.sub.parts.first().id, self.sub.pk]), code=302)
@@ -67,17 +68,19 @@ class SubscriptionTests(JuntagricoTestCase):
             self.assertEqual(self.sub.future_parts.first().type, self.sub_type2)
             self.assertEqual(self.sub.future_parts.count(), 1)
 
-    def testTypeChange(self):
-        # change type, with unsufficient shares
+    @tag('shares')
+    def testTypeChangeOnInsufficientShares(self):
         part = self.sub.parts.all()[0]
         self.assertGet(reverse('part-change', args=[part.pk]))
         post_data = {'part_type': self.sub_type2.pk}
+        # should fail
         self.assertPost(reverse('part-change', args=[part.pk]), post_data)
         self.sub.refresh_from_db()
         # check: type and amount unchanged
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
+    def testTypeChange(self):
         # add a shares for type2
         self.create_paid_share(self.member)
         mail.outbox.clear()
@@ -116,8 +119,9 @@ class SubscriptionTests(JuntagricoTestCase):
             self.assertEqual(self.sub.future_parts.count(), 0)
 
     def testLeave(self):
-        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
-        self.create_paid_share(self.member3)
+        if settings.ENABLE_SHARES:
+            self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
+            self.create_paid_share(self.member3)
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
