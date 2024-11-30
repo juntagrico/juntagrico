@@ -19,7 +19,7 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-12">
-            <form action="" method="POST" onsubmit="return confirm('{% blocktrans %}Möchtest du sicher deieses {{ v_subscription }} verbindlich künden?{% endblocktrans %}')">
+            <form action="" method="POST" onsubmit="return confirm('{% blocktrans %}Möchtest du sicher diese/n/s {{ v_subscription }} verbindlich künden?{% endblocktrans %}')">
                 {% csrf_token %}
                 <input name="end_date" value="{{ end_date |date:"Y-m-d" }}" type="hidden"/>
                 <div class="form-group">

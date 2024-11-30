@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-01 15:41-0500\n"
+"POT-Creation-Date: 2024-11-25 11:43-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,12 +175,12 @@ msgstr "cancelar la membresía"
 msgid "Verwendbare {}"
 msgstr ""
 
-#: juntagrico/admins/inlines/subscription_part_inlines.py:22
+#: juntagrico/admins/inlines/subscription_part_inlines.py:23
 #, python-brace-format
 msgid "Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}"
 msgstr "No hay suficiente {0} disponible. Disponible {1}. Requiere {2}"
 
-#: juntagrico/admins/inlines/subscription_part_inlines.py:28
+#: juntagrico/admins/inlines/subscription_part_inlines.py:29
 #: juntagrico/lifecycle/sub.py:102
 #, python-brace-format
 msgid ""
@@ -189,12 +189,12 @@ msgid ""
 "zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}."
 msgstr ""
 
-#: juntagrico/admins/inlines/subscription_part_inlines.py:38
+#: juntagrico/admins/inlines/subscription_part_inlines.py:39
 #: juntagrico/entity/subs.py:289
 msgid "{} Bestandteil"
 msgstr ""
 
-#: juntagrico/admins/inlines/subscription_part_inlines.py:39
+#: juntagrico/admins/inlines/subscription_part_inlines.py:40
 #: juntagrico/entity/subs.py:290
 msgid "{} Bestandteile"
 msgstr ""
@@ -414,7 +414,7 @@ msgid "Bitte \"Aktivierungsdatum\" ausfüllen"
 msgstr "Por favor, rellene \"Pagado en"
 
 #: juntagrico/entity/__init__.py:114
-msgid "\"Aktivierungsdatum\" kann nicht nach \"Deaktivierungsdatum liegen\""
+msgid "\"Aktivierungsdatum\" kann nicht nach \"Deaktivierungsdatum\" liegen"
 msgstr ""
 
 #: juntagrico/entity/__init__.py:116
@@ -424,7 +424,7 @@ msgid "Bitte \"Kündigungsdatum\" ausfüllen"
 msgstr "Por favor, rellene \"Terminado el"
 
 #: juntagrico/entity/__init__.py:118
-msgid "\"Kündigungsdatum\" kann nicht nach \"Deaktivierungsdatum liegen\""
+msgid "\"Kündigungsdatum\" kann nicht nach \"Deaktivierungsdatum\" liegen"
 msgstr ""
 
 #: juntagrico/entity/__init__.py:120
@@ -1028,46 +1028,46 @@ msgstr ""
 msgid "Mitglieder-Nummer"
 msgstr "Miembros"
 
-#: juntagrico/entity/member.py:244 juntagrico/entity/subs.py:249
+#: juntagrico/entity/member.py:246 juntagrico/entity/subs.py:249
 #, python-brace-format
 msgid "Benutzer kann {0} filtern"
 msgstr "El usuario puede filtrar {0}."
 
-#: juntagrico/entity/member.py:250
+#: juntagrico/entity/member.py:252
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Beitrittsdatum"
 msgstr "Fecha de nacimiento"
 
-#: juntagrico/entity/member.py:250
+#: juntagrico/entity/member.py:252
 #, python-brace-format
 msgid "Erster Tag an dem {0} bezogen wird"
 msgstr ""
 
-#: juntagrico/entity/member.py:251
+#: juntagrico/entity/member.py:253
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Austrittsdatum"
 msgstr "Fecha de nacimiento"
 
-#: juntagrico/entity/member.py:251
+#: juntagrico/entity/member.py:253
 #, python-brace-format
 msgid "Letzter Tag an dem {0} bezogen wird"
 msgstr ""
 
-#: juntagrico/entity/member.py:255
+#: juntagrico/entity/member.py:257
 #, fuzzy
 #| msgid "Geburtsdatum"
 msgid "Beitritt ausstehend"
 msgstr "Fecha de nacimiento"
 
-#: juntagrico/entity/member.py:287
+#: juntagrico/entity/member.py:289
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaft"
 msgstr "cancelar la membresía"
 
-#: juntagrico/entity/member.py:288
+#: juntagrico/entity/member.py:290
 #, fuzzy
 #| msgid "Mitgliedschaft künden"
 msgid "{}-Mitgliedschaften"
@@ -1456,7 +1456,7 @@ msgstr "Orden vinculante"
 msgid "Abbrechen"
 msgstr "Cancelar"
 
-#: juntagrico/forms.py:314 juntagrico/forms.py:406 juntagrico/forms.py:565
+#: juntagrico/forms.py:314 juntagrico/forms.py:406 juntagrico/forms.py:566
 #: juntagrico/templates/juntagrico/manage/subscription/depot/changes.html:59
 msgid "Ändern"
 msgstr "Cambiar"
@@ -1468,10 +1468,14 @@ msgstr ""
 "{}."
 
 #: juntagrico/forms.py:332
+#, fuzzy
+#| msgid ""
+#| "Die Person mit dieser E-Mail-Adresse ist bereits aktiv                 {}-"
+#| "BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} "
+#| "hinzufügen möchtet."
 msgid ""
-"Die Person mit dieser E-Mail-Adresse ist bereits aktiv                 {}-"
-"BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen "
-"möchtet."
+"Die Person mit dieser E-Mail-Adresse ist bereits aktive {}-BezierIn. Bitte "
+"meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet."
 msgstr ""
 "La persona con esta dirección de correo electrónico ya está activa en "
 "Bézierin. Por favor, póngase en contacto con {} si desea añadir los "
@@ -1513,41 +1517,41 @@ msgid ""
 "Für gekündigte {} können keine Bestandteile oder Zusatzabos bestellt werden"
 msgstr ""
 
-#: juntagrico/forms.py:535
+#: juntagrico/forms.py:536
 #, fuzzy
 #| msgid "Es sind zu wenig %(v_share_pl)s vorhanden für diese Grösse!"
 msgid "Es sind zu wenig {} vorhanden für diese Bestandteile!{}"
 msgstr "¡Hay muy pocos %(v_share_pl)s disponibles para este tamaño!"
 
-#: juntagrico/forms.py:538 juntagrico/forms.py:589
+#: juntagrico/forms.py:539 juntagrico/forms.py:591
 #, fuzzy
 #| msgid "Bestelle hier mehr Anteilscheine."
 msgid "&rarr; Bestelle hier mehr {}"
 msgstr "Ordene más certificados de acciones aquí."
 
-#: juntagrico/forms.py:543
+#: juntagrico/forms.py:544
 msgid "Wähle mindestens 1 {} aus.{}"
 msgstr ""
 
-#: juntagrico/forms.py:547
+#: juntagrico/forms.py:548
 msgid "&rarr; Oder {} komplett künden"
 msgstr ""
 
-#: juntagrico/forms.py:586
+#: juntagrico/forms.py:588
 #, fuzzy
 #| msgid "Es sind zu wenig %(v_share_pl)s vorhanden für diese Grösse!"
 msgid "Es sind zu wenig {} vorhanden für diesen Bestandteil!{}"
 msgstr "¡Hay muy pocos %(v_share_pl)s disponibles para este tamaño!"
 
-#: juntagrico/forms.py:600
+#: juntagrico/forms.py:602
 msgid "{}-Spitzname"
 msgstr ""
 
-#: juntagrico/forms.py:605
+#: juntagrico/forms.py:607
 msgid "Speichern"
 msgstr ""
 
-#: juntagrico/forms.py:609 juntagrico/templates/exports/amount_overview.html:15
+#: juntagrico/forms.py:611 juntagrico/templates/exports/amount_overview.html:15
 #: juntagrico/templates/exports/depot_overview.html:17
 #: juntagrico/templates/exports/depotlist.html:15
 #, fuzzy
@@ -1555,34 +1559,34 @@ msgstr ""
 msgid "Stichtag"
 msgstr "Visible"
 
-#: juntagrico/forms.py:610
+#: juntagrico/forms.py:612
 msgid "Akzeptiere alle Depot-Änderungen"
 msgstr ""
 
-#: juntagrico/forms.py:611
+#: juntagrico/forms.py:613
 msgid "Änderungen stattdessen einzeln prüfen und akzeptieren"
 msgstr ""
 
-#: juntagrico/forms.py:619
+#: juntagrico/forms.py:621
 msgid "Listen Erzeugen"
 msgstr ""
 
-#: juntagrico/forms.py:623
+#: juntagrico/forms.py:625
 #: juntagrico/templates/forms/subscription_type_label.html:34
 msgid "Stunden"
 msgstr "horas"
 
-#: juntagrico/forms.py:624
+#: juntagrico/forms.py:626
 #, fuzzy
 #| msgid "Abo"
 msgid "Ab"
 msgstr "Suscripción"
 
-#: juntagrico/forms.py:625
+#: juntagrico/forms.py:627
 msgid "Bis"
 msgstr ""
 
-#: juntagrico/forms.py:630
+#: juntagrico/forms.py:632
 #, fuzzy
 #| msgid "Mails verschicken"
 msgid "Zeiten verschieben"
@@ -2064,7 +2068,7 @@ msgstr ""
 #: juntagrico/templates/cancelsubscription.html:22
 #, fuzzy, python-format
 #| msgid "Möchtest du dich sicher für diesen Job verbindlich eintragen?"
-msgid "Möchtest du sicher deieses %(v_subscription)s verbindlich künden?"
+msgid "Möchtest du sicher diese/n/s %(v_subscription)s verbindlich künden?"
 msgstr "¿Estás seguro de que quieres inscribirte en este trabajo?"
 
 #: juntagrico/templates/cancelsubscription.html:29
@@ -2475,7 +2479,7 @@ msgid "Alle Lieferungen im Überblick"
 msgstr "Todas las entregas de un vistazo"
 
 #: juntagrico/templates/depot_change.html:11
-#: juntagrico/templates/depot_change.html:70
+#: juntagrico/templates/depot_change.html:63
 #: juntagrico/templates/snippets/snippet_subscription_change_depot.html:18
 #, python-format
 msgid "%(v_depot)s ändern"
@@ -2486,49 +2490,27 @@ msgstr "Variación %(v_depot)s"
 msgid "Dein/e %(v_depot)s wurde geändert."
 msgstr "Su %(v_depot)s ha sido cambiado."
 
-#: juntagrico/templates/depot_change.html:22
-#, python-format
-msgid ""
-"!!!Achtung! Dein/e %(v_depot)s änderst erst bei der nächsten %(v_depot)s-"
-"Listen Generierung. Solange keine Email an %(spe)s mit der Bestätigung für "
-"dein/e/n neue/s/n %(v_depot)s gesendet wurde ist noch dein/e/n alte/s/n "
-"%(v_depot)s %(sde)s aktiv!!!"
-msgstr ""
-"¡¡¡Atención!!! Tus %(v_depot)s no cambiarán hasta la próxima generación de "
-"la lista de %(v_depot)s. Mientras no se envíe un e-mail a los %(spe)s con la "
-"confirmación de sus nuevos %(v_depot)s, sus antiguos %(v_depot)s %(sde)s "
-"seguirán activos!"
-
-#: juntagrico/templates/depot_change.html:31
+#: juntagrico/templates/depot_change.html:27
 #: juntagrico/templates/pm_change.html:47
 #, python-format
 msgid "Zurück zur %(v_subscription)s-Übersicht"
 msgstr "Volver a la vista general de %(v_subscription)s"
 
-#: juntagrico/templates/depot_change.html:39
+#: juntagrico/templates/depot_change.html:35
 #, python-format
 msgid "Alte/s/r %(v_depot)s"
 msgstr "Viejo/s/r %(v_depot)s"
 
-#: juntagrico/templates/depot_change.html:47
+#: juntagrico/templates/depot_change.html:43
 #, python-format
 msgid "Neue/s/r %(v_depot)s"
 msgstr "Nuevo/s/r %(v_depot)s"
 
-#: juntagrico/templates/depot_change.html:58
+#: juntagrico/templates/depot_change.html:54
 #, python-format
 msgid "Wähle 1 %(v_depot)s aus als zukünftiger %(v_subscription)s-Abholort. "
 msgstr ""
 "Selecciona 1 %(v_depot)s como el futuro %(v_subscription)s lugar de recogida"
-
-#: juntagrico/templates/depot_change.html:63
-#, python-format
-msgid ""
-"Achtung! Dein/e %(v_depot)s änderst erst bei der nächsten %(v_depot)slisten "
-"Generierung. Du wirst darüber informiert wenn dein/e %(v_depot)s ändert."
-msgstr ""
-"¡Atención! Tus %(v_depot)s no cambiarán hasta la siguiente generación de "
-"%(v_depot)slist. Se le informará cuando cambie su %(v_depot)s."
 
 #: juntagrico/templates/export.html:6
 #: juntagrico/templates/juntagrico/menu/admin/exports.html:5
@@ -2543,17 +2525,17 @@ msgid ""
 msgstr ""
 
 #: juntagrico/templates/export.html:23 juntagrico/templates/export.html:41
-#: juntagrico/templates/export.html:59 juntagrico/templates/export.html:76
+#: juntagrico/templates/export.html:61 juntagrico/templates/export.html:79
 msgid "exportieren"
 msgstr "exportación"
 
 #: juntagrico/templates/export.html:28 juntagrico/templates/export.html:46
-#: juntagrico/templates/export.html:64 juntagrico/templates/export.html:81
+#: juntagrico/templates/export.html:66 juntagrico/templates/export.html:84
 msgid "Neu: Datenverwaltung"
 msgstr ""
 
 #: juntagrico/templates/export.html:30 juntagrico/templates/export.html:48
-#: juntagrico/templates/export.html:66 juntagrico/templates/export.html:83
+#: juntagrico/templates/export.html:68 juntagrico/templates/export.html:86
 msgid "&rarr; Exportieren (oben rechts)"
 msgstr ""
 
@@ -3407,25 +3389,34 @@ msgstr "%(v_assignment_pl)s Área del núcleo"
 msgid "Deine %(v_assignment_pl)s ansehen"
 msgstr "%(v_assignment_pl)s Área del núcleo"
 
-#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:8
+#: juntagrico/templates/juntagrico/my/depot/snippets/change_pending_info.html:2
+#, python-format
+msgid ""
+"<strong>Achtung:</strong> Deine Änderung zur/m %(v_depot)s \"%(sfe)s\" wurde "
+"beantragt. Wir informieren dich per E-Mail an %(spe)s sobald die Änderung "
+"aktiv wird. Bis dahin ist dein/e %(v_depot)s weiterhin <strong>\"%(sde)s\"</"
+"strong>."
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:13
 #, fuzzy, python-format
 #| msgid "%(v_depot)s-Listen"
 msgid "Name auf der %(v_depot)s-Liste:"
 msgstr "listas %(v_depot)s"
 
-#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:14
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:19
 #, fuzzy, python-format
 #| msgid "%(v_depot)s auswählen"
 msgid "%(v_depot)s wechseln"
 msgstr "Seleccione %(v_depot)s"
 
-#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:17
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:22
 #, fuzzy
 #| msgid "%(v_depot)s-Listen"
 msgid "Namen auf der Liste ändern"
 msgstr "listas %(v_depot)s"
 
-#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:21
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:26
 #, fuzzy, python-format
 #| msgid "Neue %(v_subscription)s-Grösse"
 msgid "Nur %(v_subscription)s-VerwalterIn kann Depot wechseln."
@@ -5555,466 +5546,3 @@ msgstr ""
 #: juntagrico/views_subscription.py:476
 msgid "{}-Bescheinigungen können nur für vergangene Jahre ausgestellt werden."
 msgstr ""
-
-#~ msgid "senden"
-#~ msgstr "envíe"
-
-#, fuzzy
-#~| msgid "Email an diese"
-#~ msgid "E-Mail an dieses"
-#~ msgstr "Envía un correo electrónico a este"
-
-#, fuzzy
-#~| msgid "Email an diese"
-#~ msgid "E-Mail an diese"
-#~ msgstr "Envía un correo electrónico a este"
-
-#, fuzzy
-#~| msgid "Zukünftige/r/s {0}"
-#~ msgid "Zukünftige/r/s {}"
-#~ msgstr "Futuro {0}"
-
-#, fuzzy
-#~| msgid "Zukünftige/r/s {0}"
-#~ msgid "Kein/e zukünftige/r/s {}"
-#~ msgstr "Futuro {0}"
-
-#, fuzzy
-#~| msgid "Alte {0}"
-#~ msgid "Alte {}"
-#~ msgstr "Viejo {0}"
-
-#~ msgid "aktiv - gekündigt"
-#~ msgstr "activo - cancelado"
-
-#~ msgid "inaktiv-gekündigt"
-#~ msgstr "inactivo terminado"
-
-#, fuzzy
-#~| msgid "Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}"
-#~ msgid "Diese/r/s {} hat ein/e/n zeitlich überlappende/n/s {}"
-#~ msgstr "Este tiene al menos uno(s) activo(s)."
-
-#~ msgid "Aktuelle Arbeitseinsätze"
-#~ msgstr "Las asignaciones de trabajo actuales..."
-
-#~ msgid "Lege das Datum für die Änderung fest."
-#~ msgstr "Ponga la fecha para el cambio."
-
-#, fuzzy
-#~| msgid "Grössen Änderungsliste"
-#~ msgid "Bestandteile Änderungsliste"
-#~ msgstr "Lista de cambio de tamaño"
-
-#, fuzzy
-#~| msgid "Aktuelle Arbeitseinsätze"
-#~ msgid "Aktuelle Bestandteile"
-#~ msgstr "Las asignaciones de trabajo actuales..."
-
-#, python-format
-#~ msgid "wird am %(ed)s deaktiviert"
-#~ msgstr "se desactiva a los %(ed)s"
-
-#~ msgid "Du erhälst keine Emails mehr"
-#~ msgstr "No recibirás más correos electrónicos"
-
-#, fuzzy
-#~| msgid "und"
-#~ msgid "and"
-#~ msgstr "y"
-
-#, fuzzy
-#~| msgid "Email-Adresse"
-#~ msgid "Email address"
-#~ msgstr "Dirección de correo electrónico"
-
-#, fuzzy
-#~| msgid "des"
-#~ msgid "Yes"
-#~ msgstr "de"
-
-#, fuzzy
-#~| msgid "Montag"
-#~ msgid "Mon"
-#~ msgstr "Lunes"
-
-#, fuzzy
-#~| msgid "Wartend"
-#~ msgid "Wed"
-#~ msgstr "Esperando"
-
-#, fuzzy
-#~| msgid "Fertig"
-#~ msgid "Fri"
-#~ msgstr "Terminado"
-
-#, fuzzy
-#~| msgid "Status"
-#~ msgid "Sat"
-#~ msgstr "Estado"
-
-#, fuzzy
-#~| msgid "und"
-#~ msgid "Sun"
-#~ msgstr "y"
-
-#, fuzzy
-#~| msgid "Januar"
-#~ msgid "January"
-#~ msgstr "Enero"
-
-#, fuzzy
-#~| msgid "Februar"
-#~ msgid "February"
-#~ msgstr "Febrero"
-
-#, fuzzy
-#~| msgid "Mai"
-#~ msgid "May"
-#~ msgstr "Mayo"
-
-#, fuzzy
-#~| msgid "Oktober"
-#~ msgid "October"
-#~ msgstr "Octubre"
-
-#, fuzzy
-#~| msgid "Dezember"
-#~ msgid "December"
-#~ msgstr "Diciembre"
-
-#, fuzzy
-#~| msgid "und"
-#~ msgid "jun"
-#~ msgstr "y"
-
-#, fuzzy
-#~| msgid "Tag"
-#~ msgid "aug"
-#~ msgstr "Día"
-
-#, fuzzy
-#~| msgid "der"
-#~ msgid "dec"
-#~ msgstr "el"
-
-#, fuzzy
-#~| msgid "April"
-#~ msgctxt "abbrev. month"
-#~ msgid "April"
-#~ msgstr "Abril"
-
-#, fuzzy
-#~| msgid "Mai"
-#~ msgctxt "abbrev. month"
-#~ msgid "May"
-#~ msgstr "Mayo"
-
-#, fuzzy
-#~| msgid "Januar"
-#~ msgctxt "alt. month"
-#~ msgid "January"
-#~ msgstr "Enero"
-
-#, fuzzy
-#~| msgid "Februar"
-#~ msgctxt "alt. month"
-#~ msgid "February"
-#~ msgstr "Febrero"
-
-#, fuzzy
-#~| msgid "April"
-#~ msgctxt "alt. month"
-#~ msgid "April"
-#~ msgstr "Abril"
-
-#, fuzzy
-#~| msgid "Mai"
-#~ msgctxt "alt. month"
-#~ msgid "May"
-#~ msgstr "Mayo"
-
-#, fuzzy
-#~| msgid "August"
-#~ msgctxt "alt. month"
-#~ msgid "August"
-#~ msgstr "Agosto"
-
-#, fuzzy
-#~| msgid "September"
-#~ msgctxt "alt. month"
-#~ msgid "September"
-#~ msgstr "Septiembre"
-
-#, fuzzy
-#~| msgid "Oktober"
-#~ msgctxt "alt. month"
-#~ msgid "October"
-#~ msgstr "Octubre"
-
-#, fuzzy
-#~| msgid "November"
-#~ msgctxt "alt. month"
-#~ msgid "November"
-#~ msgstr "Noviembre"
-
-#, fuzzy
-#~| msgid "Dezember"
-#~ msgctxt "alt. month"
-#~ msgid "December"
-#~ msgstr "Diciembre"
-
-#, fuzzy
-#~| msgid "Vorname"
-#~ msgid "or"
-#~ msgstr "Nombre de pila"
-
-#, fuzzy
-#~| msgid "Daten Administration"
-#~ msgid "Django Documentation"
-#~ msgstr "Administración de datos"
-
-#, python-brace-format
-#~ msgid "Kein/e/n {0}"
-#~ msgstr "Ninguno {0}"
-
-#, python-brace-format
-#~ msgid "Zukünftige/r/s {0}"
-#~ msgstr "Futuro {0}"
-
-#, python-brace-format
-#~ msgid "Alte {0}"
-#~ msgstr "Viejo {0}"
-
-#, fuzzy
-#~| msgid "Diese/r/s {} hat mindestens noch ein/e/n aktive/n/s {}"
-#~ msgid "Diese/r/s {} hat bereits ein/e/n {}"
-#~ msgstr "Este tiene al menos uno(s) activo(s)."
-
-#~ msgid "Latitude"
-#~ msgstr "Latitud"
-
-#~ msgid "Longitude"
-#~ msgstr "Longitud"
-
-#~ msgid "Verantwortlicher"
-#~ msgstr "Responsable"
-
-#~ msgid "Koordiniert von"
-#~ msgstr "Coordinado por"
-
-#~ msgid "Verantwortlich"
-#~ msgstr "Responsable"
-
-#~ msgid "Dreiviertel"
-#~ msgstr "Tres cuartos"
-
-#~ msgid "Halb"
-#~ msgstr "La mitad"
-
-#~ msgid "Angefangen"
-#~ msgstr "Comenzó"
-
-#~ msgid "Nix"
-#~ msgstr "Nix"
-
-#~ msgid "<b>%(amount)s</b>&times; %(tn)s à %(c_currency)s %(tp)s/Jahr"
-#~ msgstr "<b>%(amount)s</b>& veces; %(tn)s à %(c_currency)s %(tp)s/año"
-
-#, fuzzy
-#~| msgid "Genau 1 Job auswählen!"
-#~ msgid "Genau 1 Lieferung auswählen!"
-#~ msgstr "¡Selecciona exactamente un trabajo!"
-
-#~ msgid "Genau 1 Job auswählen!"
-#~ msgstr "¡Selecciona exactamente un trabajo!"
-
-#~ msgid "Zusatz-Abo Kündigungsliste"
-#~ msgstr "Lista de cancelación de suscripción adicional"
-
-#~ msgid "Zusatz-Abo Warteliste"
-#~ msgstr "Lista de espera de suscripción adicional"
-
-#, fuzzy
-#~| msgid "Kündigungsliste"
-#~ msgid "Änderungsliste"
-#~ msgstr "Lista de cancelación"
-
-#~ msgid "nur %(nby)s-%(ncd)s möglich"
-#~ msgstr "sólo %(nby)s-%(ncd)s posible"
-
-#~ msgid "Dein Benutzername"
-#~ msgstr "Tu nombre de usuario"
-
-#~ msgid "Sortier-Code"
-#~ msgstr "Código de clasificación"
-
-#~ msgid "Groesse (gross,4, ...)"
-#~ msgstr "Tamaño (grande,4, ...)"
-
-#~ msgid "Groesse zum Sortieren"
-#~ msgstr "Tamaño para la clasificación"
-
-#~ msgid "Zusatz-Abo-Typ"
-#~ msgstr "Tipo de suscripción adicional"
-
-#~ msgid "Zusatz-Abo-Typen"
-#~ msgstr "Tipos de suscripción adicionales"
-
-#~ msgid "Nummer zum Sortieren"
-#~ msgstr "Número a clasificar"
-
-#~ msgid "Zusatz-Abo-Kategorie"
-#~ msgstr "Categoría de suscripción adicional"
-
-#~ msgid "Zusatz-Abo-Kategorien"
-#~ msgstr "Categorías de suscripción adicionales"
-
-#~ msgid "Zusatz-Abo"
-#~ msgstr "Suscripción adicional"
-
-#~ msgid " Einheiten {0}"
-#~ msgstr " Unidades {0}"
-
-#~ msgid ""
-#~ "Du bist entweder Hauptabonnent oder ohne deine %(v_share_pl)s hat dein/e "
-#~ "jetztige/r/s %(v_subscription)s nicht genug %(v_share_pl)s um weiter zu "
-#~ "existieren. Falls du Hilfe brauchst um das Problem zu beheben wende dich "
-#~ "an %(c_info_email)s."
-#~ msgstr ""
-#~ "Usted es un suscriptor importante o sin sus %(v_share_pl)s, su "
-#~ "%(v_subscription)s actual no tiene suficientes %(v_share_pl)s para seguir "
-#~ "existiendo. Si necesitas ayuda para arreglar el problema, contacta con "
-#~ "%(c_info_email)s."
-
-#~ msgid ""
-#~ "Du bist Hauptabonnent, wende dich an %(c_info_email)s um das anzupassen."
-#~ msgstr ""
-#~ "Eres el principal suscriptor, contacta con %(c_info_email)s para "
-#~ "personalizar esto."
-
-#~ msgid "Email an diesen"
-#~ msgstr "Envía un correo electrónico a este"
-
-#~ msgid "Alle %(v_member_pl)s im Überblick"
-#~ msgstr "Todos los %(v_member_pl)s de un vistazo"
-
-#, fuzzy
-#~| msgid "Grössen Änderungen"
-#~ msgid "Bestandteile Änderungen"
-#~ msgstr "Cambios de tamaño"
-
-#~ msgid "Zusatzabos Warteliste"
-#~ msgstr "Lista de espera de suscripciones adicionales"
-
-#~ msgid "Zusatzabos Kündigungsliste"
-#~ msgstr "Lista de cancelación de suscripciones adicionales"
-
-#~ msgid "%(v_member_pl)s Kündigungsliste"
-#~ msgstr "lista de cancelación de %(v_member_pl)s"
-
-#~ msgid "%(v_share_pl)s Management"
-#~ msgstr "%(v_share_pl)s Management"
-
-#~ msgid "Filter"
-#~ msgstr "Filtro"
-
-#~ msgid "Alle %(v_subscription_pl)s im Überblick"
-#~ msgstr "Todos los %(v_subscription_pl)s de un vistazo"
-
-#~ msgid "Hauptbezieher"
-#~ msgstr "Receptor principal"
-
-#~ msgid "Weitere Bezieher"
-#~ msgstr "Otros receptores"
-
-#~ msgid "Kündigüngsdatum"
-#~ msgstr "Fecha de cancelación"
-
-#~ msgid "Einer der Bezüger hat noch 1 aktive/s/n %(v_subscription)s!"
-#~ msgstr "¡Uno de los suscriptores todavía tiene 1 %(v_subscription)s activo!"
-
-#~ msgid "zurück zum Einsatz"
-#~ msgstr "de vuelta a la acción"
-
-#~ msgid "Fortsetzung"
-#~ msgstr "Continuación"
-
-#~ msgid "Alle %(v_depot_pl)s und %(v_member_pl)s"
-#~ msgstr "Todos los %(v_depot_pl)s y %(v_member_pl)s"
-
-#~ msgid "Bestelle hier mehr Anteilscheine."
-#~ msgstr "Ordene más certificados de acciones aquí."
-
-#~ msgid "bestellen"
-#~ msgstr "ordena"
-
-#~ msgid ""
-#~ "Deine Anteilsscheine wurden bestellt, bitte bezahle sie and die "
-#~ "untenstehende Bankverbindung"
-#~ msgstr ""
-#~ "Sus certificados de acciones han sido solicitados, por favor, pague a la "
-#~ "cuenta bancaria que se indica a continuación."
-
-#~ msgid "Bestelle mehr %(v_share_pl)s hier"
-#~ msgstr "Ordene más %(v_share_pl)s aquí"
-
-#~ msgid "nicht bestätigt"
-#~ msgstr "no respaldado"
-
-#~ msgid "Zukunft {0}-Typ"
-#~ msgstr "El tipo de futuro {0}"
-
-#~ msgid "Zukunft {0}-Typen"
-#~ msgstr "Los tipos de futuro {0}"
-
-#~ msgid "Aktivierungssdatum"
-#~ msgstr "Fecha de activación"
-
-#~ msgid "Koordinator Tel Nr Veröffentlichen"
-#~ msgstr "Coordinador Tel Nr Publish"
-
-#~ msgid "AbstractJobart"
-#~ msgstr "AbstractJobart"
-
-#~ msgid "AbstractJobarten"
-#~ msgstr "Resumen Tipos de trabajo"
-
-#~ msgid "Plaetze"
-#~ msgstr "Lugares"
-
-#~ msgid "bestätigt"
-#~ msgstr "confirmado"
-
-#~ msgid "Kündigüngssdatum"
-#~ msgstr "Fecha de terminación"
-
-#~ msgid "kein/e/n {0}"
-#~ msgstr "ninguno {0}"
-
-#~ msgid "Hinweis"
-#~ msgstr "Nota"
-
-#~ msgid "End Datum"
-#~ msgstr "Fecha de finalización"
-
-#~ msgid "Aktuelle Grösse"
-#~ msgstr "Tamaño actual"
-
-#~ msgid "Neue Grösse"
-#~ msgstr "Nuevo tamaño"
-
-#~ msgid "%(v_subscription)s-Grösse ändern"
-#~ msgstr "Cambiar %(v_subscription)s tamaño"
-
-#~ msgid "Die %(v_subscription)s-Grösse wurde erfolgreich geändert."
-#~ msgstr "El tamaño de %(v_subscription)s fue cambiado con éxito."
-
-#~ msgid "Bestelle hier mehr %(v_share_pl)s."
-#~ msgstr "Pide más %(v_share_pl)s aquí."
-
-#~ msgid "Grösse ändern"
-#~ msgstr "Redimensionar"
-
-#~ msgid "%(v_subscription)sgrösse"
-#~ msgstr "%(v_subscription)s tamaño"

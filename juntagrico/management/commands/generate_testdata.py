@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Q
 from django.utils import timezone
 
+from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
 from juntagrico.entity.location import Location
@@ -62,16 +63,17 @@ class Command(BaseCommand):
         member_3, _ = Member.objects.get_or_create(email=mem3_fields['email'], defaults=mem3_fields)
         member_4, _ = Member.objects.get_or_create(email=mem4_fields['email'], defaults=mem4_fields)
         member_5, _ = Member.objects.get_or_create(email=mem5_fields['email'], defaults=mem5_fields)
-        share_all_fields = {'member': member_1, 'paid_date': '2017-03-27', 'issue_date': '2017-03-27', 'booking_date': None,
-                            'cancelled_date': None, 'termination_date': None, 'payback_date': None, 'number': None,
-                            'notes': ''}
-        Share.objects.create(**share_all_fields)
-        Share.objects.create(**share_all_fields)
-        share_all_fields['member'] = member_2
-        Share.objects.create(**share_all_fields)
-        Share.objects.create(**share_all_fields)
-        share_all_fields['member'] = member_3
-        Share.objects.create(**share_all_fields)
+        if Config.enable_shares():
+            share_all_fields = {'member': member_1, 'paid_date': '2017-03-27', 'issue_date': '2017-03-27', 'booking_date': None,
+                                'cancelled_date': None, 'termination_date': None, 'payback_date': None, 'number': None,
+                                'notes': ''}
+            Share.objects.create(**share_all_fields)
+            Share.objects.create(**share_all_fields)
+            share_all_fields['member'] = member_2
+            Share.objects.create(**share_all_fields)
+            Share.objects.create(**share_all_fields)
+            share_all_fields['member'] = member_3
+            Share.objects.create(**share_all_fields)
         subproduct, _ = SubscriptionProduct.objects.get_or_create(name='Gemüse')
         subsize_name = 'Normales Abo'
         subsize_fields = {'long_name': 'Ganz Normales Abo', 'units': 1, 'visible': True, 'depot_list': True,

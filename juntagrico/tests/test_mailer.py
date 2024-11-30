@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import override_settings
+from django.test import override_settings, tag
 from django.urls import reverse
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
 
 
 def mock_batch_mailer(msg):
@@ -15,9 +15,7 @@ def mock_batch_mailer(msg):
     Mailer._send_batches(msg, 4, 3)  # testing with waiting time
 
 
-class MailerTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class MailerTests(JuntagricoTestCaseWithShares):
     def testMailer(self):
         self.assertGet(reverse('mail'))
         self.assertGet(reverse('mail'), member=self.member2, code=302)
@@ -53,6 +51,7 @@ class MailerTests(JuntagricoTestCase):
             self.assertGet(reverse('mail-send'), code=404)
             self.assertPost(reverse('mail-send'), post_data, code=302)
 
+    @tag('shares')
     def testAllSharesMailSend(self):
         post_data = {
             'sender': 'test@mail.org',

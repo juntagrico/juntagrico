@@ -1,0 +1,6 @@
+{% load i18n %}
+{% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name sfe=subscription.future_depot.name%}
+<strong>Achtung:</strong> Deine Änderung zur/m {{ v_depot }} "{{ sfe }}" wurde beantragt.
+    Wir informieren dich per E-Mail an {{ spe }} sobald die Änderung aktiv wird.
+    Bis dahin ist dein/e {{ v_depot }} weiterhin <strong>"{{ sde }}"</strong>.
+{% endblocktrans %}

@@ -176,6 +176,8 @@ class Member(JuntagricoBaseModel):
 
     def leave_subscription(self, subscription=None, changedate=None):
         subscription = subscription or self.subscription_current
+        if subscription == self.subscription_current:
+            del self.subscription_current  # clear cache
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
         membership_present = sub_membership and sub_membership.leave_date is None
         if membership_present and sub_membership.join_date is not None:
