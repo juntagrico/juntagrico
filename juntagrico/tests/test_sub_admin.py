@@ -2,12 +2,10 @@ import datetime
 
 from django.urls import reverse
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
 
 
-class SubAdminTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class SubAdminTests(JuntagricoTestCaseWithShares):
     def testSubAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub2.pk,)), member=self.admin)

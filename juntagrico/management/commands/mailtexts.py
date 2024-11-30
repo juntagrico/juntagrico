@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.template.loader import get_template
 
+from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import RecuringJob
@@ -28,7 +29,8 @@ class Command(BaseCommand):
             # generate temporary test data to ensure that required objects are available
             management.call_command('generate_testdata')
             subscription = Subscription.objects.all()[0]
-            shares = Share.objects.all()[:2]
+            if Config.enable_shares():
+                shares = Share.objects.all()[:2]
             job = RecuringJob.objects.all()[0]
             member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
             member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
@@ -44,10 +46,22 @@ class Command(BaseCommand):
             print()
 
             print('*** welcome  ohne abo***')
+
             print(get_email_content('welcome', base_dict({
                 'member': member_wo_subs,
                 'password': 'password'
             })))
+            print()
+
+            if Config.enable_shares():
+                print('*** s_created ***')
+
+                print(get_email_content('s_created', base_dict({'shares': shares})))
+                print()
+
+            print('*** n_sub ***')
+
+            print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
             print()
 
             print('*** co_welcome ***')
@@ -147,9 +161,10 @@ class Command(BaseCommand):
             print(get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(admin_job_dict), end='\n\n')
 
         if 'depot' in selected:
-            print('*** d_changed ***')
-            print(get_email_content('d_changed', base_dict({'depot': depot})))
-            print()
+            if Config.enable_shares():
+                print('*** d_changed ***')
+                print(get_email_content('d_changed', base_dict({'depot': depot})))
+                print()
 
         if 'member' in selected:
             print('*** a_member_created ***')

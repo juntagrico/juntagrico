@@ -111,11 +111,11 @@ class SimpleStateModel(models.Model):
             if not is_active:
                 raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='invalid')
             elif self.activation_date > self.deactivation_date:
-                raise ValidationError(_('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum liegen"'), code='invalid')
+                raise ValidationError(_('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
             elif not is_canceled:
                 raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
             elif self.cancellation_date > self.deactivation_date:
-                raise ValidationError(_('"Kündigungsdatum" kann nicht nach "Deaktivierungsdatum liegen"'), code='invalid')
+                raise ValidationError(_('"Kündigungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
         if is_canceled and self.cancellation_date > today:
             raise ValidationError(_('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
 

@@ -23,6 +23,7 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.mailer import adminnotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed
 
@@ -310,8 +311,8 @@ class CoMemberBaseForm(MemberBaseForm):
         existing_member = MemberDao.member_by_email(email)
         if existing_member:
             if existing_member.blocked:
-                raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktiv\
-                 {}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
+                raise ValidationError(mark_safe(escape(_('Die Person mit dieser E-Mail-Adresse ist bereits aktive '
+                    '{}-BezierIn. Bitte meldet euch bei {}, wenn ihr bestehende {} als {} hinzufügen möchtet.')).format(
                     Config.vocabulary('subscription'),
                     '<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
                     Config.vocabulary('member_type_pl'),
@@ -509,16 +510,17 @@ class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
             raise ValidationError(_('Für gekündigte {} können keine Bestandteile oder Zusatzabos bestellt werden').
                                   format(Config.vocabulary('subscription_pl')), code='no_order_if_canceled')
         # check if members in subscription have sufficient shares
-        available_shares = self.subscription.all_shares
-        new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
-        existing_required_shares = self.subscription.required_shares
-        if available_shares < new_required_shares + existing_required_shares:
-            share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Bestandteile!{}').format(
-                Config.vocabulary('share_pl'),
-                '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                    reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
-            ))
-            raise ValidationError(share_error_message, code='share_error')
+        if Config.enable_shares():
+            available_shares = self.subscription.all_shares
+            new_required_shares = sum([sub_type.shares * amount for sub_type, amount in selected.items()])
+            existing_required_shares = self.subscription.required_shares
+            if available_shares < new_required_shares + existing_required_shares:
+                share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diese Bestandteile!{}').format(
+                    Config.vocabulary('share_pl'),
+                    '<br/><a href="{}" class="alert-link">{}</a>'.format(
+                        reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
+                ))
+                raise ValidationError(share_error_message, code='share_error')
         # check that at least one subscription was selected
         if sum(selected.values()) == 0:
             amount_error_message = mark_safe(_('Wähle mindestens 1 {} aus.{}').format(
@@ -561,15 +563,16 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
         if selected:
             sub_type = SubscriptionType.objects.get(id=selected)
             # check if members in subscription have sufficient shares
-            additional_available_shares = self.part.subscription.all_shares - self.part.subscription.required_shares
-            additional_required_shares = sub_type.shares - self.part.type.shares
-            if additional_available_shares < additional_required_shares:
-                share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diesen Bestandteil!{}').format(
-                    Config.vocabulary('share_pl'),
-                    '<br/><a href="{}" class="alert-link">{}</a>'.format(
-                        reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
-                ))
-                raise ValidationError(share_error_message, code='share_error')
+            if Config.enable_shares():
+                additional_available_shares = self.part.subscription.all_shares - self.part.subscription.required_shares
+                additional_required_shares = sub_type.shares - self.part.type.shares
+                if additional_available_shares < additional_required_shares:
+                    share_error_message = mark_safe(_('Es sind zu wenig {} vorhanden für diesen Bestandteil!{}').format(
+                        Config.vocabulary('share_pl'),
+                        '<br/><a href="{}" class="alert-link">{}</a>'.format(
+                            reverse('manage-shares'), _('&rarr; Bestelle hier mehr {}').format(Config.vocabulary('share_pl')))
+                    ))
+                    raise ValidationError(share_error_message, code='share_error')
         else:
             # re-raise field error as form error
             for error_code, error in self.errors.items():

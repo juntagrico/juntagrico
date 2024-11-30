@@ -1,8 +1,10 @@
+from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCase
 
 
+@tag('shares')
 class ISO2002Tests(JuntagricoTestCase):
     fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
