@@ -23,7 +23,6 @@ from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType
-from juntagrico.mailer import adminnotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed
 

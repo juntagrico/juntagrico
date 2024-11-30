@@ -118,10 +118,10 @@ class ProfileTests(JuntagricoTestCase):
     def testDeactivateMembership(self):
         # Expected result: members that have no paid shares, can be deactivated.
         members = {
-            self.member: False,  # still has canceled shares
+            self.member: not settings.ENABLE_SHARES,  # still has canceled shares
             self.member_without_shares: True,
             self.member_with_unpaid_share: True,
-            self.member_with_canceled_share: False
+            self.member_with_canceled_share: not settings.ENABLE_SHARES
         }
         for member in members.keys():
             member.cancel()
