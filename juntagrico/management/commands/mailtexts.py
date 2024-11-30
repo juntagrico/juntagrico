@@ -46,22 +46,10 @@ class Command(BaseCommand):
             print()
 
             print('*** welcome  ohne abo***')
-
             print(get_email_content('welcome', base_dict({
                 'member': member_wo_subs,
                 'password': 'password'
             })))
-            print()
-
-            if Config.enable_shares():
-                print('*** s_created ***')
-
-                print(get_email_content('s_created', base_dict({'shares': shares})))
-                print()
-
-            print('*** n_sub ***')
-
-            print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
             print()
 
             print('*** co_welcome ***')
@@ -97,7 +85,7 @@ class Command(BaseCommand):
             })))
             print()
 
-        if 'share' in selected:
+        if 'share' in selected and Config.enable_shares():
             print('*** s_created ***')
             print(get_email_content('s_created', base_dict({'shares': shares})))
             print()
