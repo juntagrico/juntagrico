@@ -149,10 +149,9 @@ class Command(BaseCommand):
             print(get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(admin_job_dict), end='\n\n')
 
         if 'depot' in selected:
-            if Config.enable_shares():
-                print('*** d_changed ***')
-                print(get_email_content('d_changed', base_dict({'depot': depot})))
-                print()
+            print('*** d_changed ***')
+            print(get_email_content('d_changed', base_dict({'depot': depot})))
+            print()
 
         if 'member' in selected:
             print('*** a_member_created ***')
