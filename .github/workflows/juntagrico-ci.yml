@@ -24,8 +24,8 @@ jobs:
           - python-version: '3.9'
           - python-version: '3.10'
           - python-version: '3.11'
-            exclude-test: shares
           - python-version: '3.11'
+            exclude-test: shares
 
     services:
       postgres:
@@ -68,7 +68,7 @@ jobs:
       run: |
         ruff check juntagrico
     - name: install CodeClimate reporter
-      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
+      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' && matrix.exclude-test != 'shares' }}
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
@@ -85,7 +85,7 @@ jobs:
         coverage run -m manage test --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico.tests.test_deploy --settings="deploytestsettings"
     - name: publish code coverage
-      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
+      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' && matrix.exclude-test != 'shares'}}
       run: |
         coverage report
         coverage xml
