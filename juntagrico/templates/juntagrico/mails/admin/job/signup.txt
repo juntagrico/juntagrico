@@ -11,6 +11,7 @@
 {% trans "Einsatz" %}: {{ job.type.get_name }}
 {% trans "Am" %}: {{ job.time|date:"d.m.Y H:i" }}-{{ job.end_time|date:"H:i" }}
 {% block count %}{% trans "Anzahl Personen" %}: {{ count }}{% endblock %}
+{% trans "Einsatz ansehen" %}: {{ serverurl }}{% url 'job' job.id %}
 
 {% blocktrans with total=job.occupied_slots %}Damit sind jetzt insgesamt {{ total }} Personen für diesen Einsatz angemeldet.{% endblocktrans %}
 {% if not job.infinite_slots %}{% blocktrans with n=job.free_slots  %}Es hat noch Platz für {{ n }} weitere Personen.{% endblocktrans %}{% endif %}

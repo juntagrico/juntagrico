@@ -16,6 +16,7 @@ class JuntagricoAppconfig(AppConfig):
         signals.depot_change_confirmed.connect(signals.on_depot_change_confirmed, sender=Subscription)
         signals.canceled.connect(signals.on_member_canceled, sender=Member)
         signals.subscribed.connect(signals.on_job_subscribed, sender=Job)
+        signals.assignment_changed.connect(signals.on_assignment_changed, sender=Member)
 
         '''monkey patch User email method for password reset'''
         from django.contrib.auth.models import User
