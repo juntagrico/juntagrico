@@ -1,3 +1,4 @@
+from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCase
@@ -49,6 +50,7 @@ class ExportTests(JuntagricoTestCase):
         response = self.assertPost(export_url, member=self.admin, data=self.get_data(2, selected=fields))
         self.assertEqual(response.headers['Content-Type'], 'text/csv')
 
+    @tag('shares')
     def testSharesExport(self):
         self.assertGet(reverse('export-shares'))
         export_url = reverse('admin:juntagrico_share_export')

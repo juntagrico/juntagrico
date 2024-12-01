@@ -10,6 +10,7 @@ from polymorphic.query import PolymorphicQuerySet
 from juntagrico.entity import SimpleStateModelQuerySet
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.util.temporal import default_to_business_year
+from . import SubscriptionMembershipQuerySetMixin
 
 
 def assignments_in_subscription_membership(start, end, **extra_filters):
@@ -32,7 +33,7 @@ def assignments_in_subscription_membership(start, end, **extra_filters):
     ).values('total')
 
 
-class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
+class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModelQuerySet, PolymorphicQuerySet):
     microseconds_in_day = 24 * 3600 * 10 ** 6
     days_in_year = 365  # ignore leap years
     one_day = datetime.timedelta(1)
@@ -42,13 +43,27 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         self._start_required = False
         self._end_required = False
 
+    def active(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.in_date_range(on_date, on_date).exclude(activation_date=None)
+
+    def in_date_range(self, start, end):
+        """
+        subscriptions that were active in the given period
+        """
+        return self.exclude(deactivation_date__lt=start).exclude(activation_date__gt=end)
+
+    def activate_future_depots(self):
+        for subscription in self.exclude(future_depot__isnull=True):
+            subscription.activate_future_depot()
+
     @method_decorator(default_to_business_year)
     def annotate_assignment_counts(self, start=None, end=None, of_member=None, prefix=''):
         """
         count assignments of the subscription members for the jobs they did within their subscription membership and in the period of interest.
         :param start: beginning of period of interest, default: start of current business year.
         :param end: end of period of interest, default: end of current business year.
-        :param of_member: if set, assignments of the given member are also counted and stored in `member_assignment_count` and `member_core_assignment_count`.
+        :param of_member: if set, only assignments of the given member are counted.
         :param prefix: prefix for the resulting attribute names, default=''.
         :return: the queryset of subscriptions with annotations `assignment_count` and `core_assignment_count`.
         """
@@ -83,7 +98,13 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
 
         return self.alias(
             # convert trial days into duration. Minus 1 to end up at the end of the last trial day, e.g., 1. + 30 days = 30. (not 31.)
-            parts__type__trial_duration=ExpressionWrapper(F('parts__type__trial_days') * self.one_day, DurationField()) - self.one_day,
+            parts__type__trial_duration=(
+                # tested with postgreSQL
+                ExpressionWrapper(F('parts__type__trial_days') * self.one_day, DurationField()) - self.one_day
+                if connection.features.has_native_duration_field else
+                # alternative tested with MariaDB and Sqlite
+                Cast(F('parts__type__trial_days') * self.microseconds_in_day, DurationField()) - self.one_day
+            ),
             # find (assumed) deactivation date of part
             parts__forecast_final_date=Least(
                 end,  # limit final date to period of interest
@@ -103,7 +124,7 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
             parts__duration_in_period=F('parts__forecast_final_date') - Greatest('parts__activation_date', start) + self.one_day,
             parts__duration_in_period_float=Greatest(
                 0.0,  # ignore values <0 resulting from parts outside the period of interest
-                # Tested on postgres (ExtractDay) and SQLite (Cast)
+                # Tested on postgreSQL (ExtractDay) and SQLite, MariaDB (Cast)
                 ExtractDay('parts__duration_in_period')
                 if connection.features.has_native_duration_field else
                 Cast('parts__duration_in_period', FloatField()) / self.microseconds_in_day,
@@ -129,22 +150,20 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
         )
 
     @method_decorator(default_to_business_year)
-    def annotate_assignments_progress(self, start=None, end=None, of_member=None, count_jobs_until=None, prefix=''):
+    def annotate_assignments_progress(self, start=None, end=None, of_member=None, count_jobs_from=None, count_jobs_until=None, prefix=''):
         """
         annotate required and made assignments and calculated progress for core and in general
-        count_jobs_until: only account for jobs until this date.
         :param start: beginning of period of interest, default: start of current business year.
         :param end: end of period of interest, default: end of current business year.
-        :param of_member: if set, assignments of the given member are also counted and stored in `member_assignment_count` and `member_core_assignment_count`.
+        :param of_member: if set, assignments are only counted for the given member.
+        :param count_jobs_from: if set, `annotate_assignment_counts` will only count starting from this date instead of start.
         :param count_jobs_until: if set, `annotate_assignment_counts` will only count until this date instead of end.
+        :param prefix: prefix for the resulting attribute names `assignment_count`, `core_assignment_count`, `assignments_progress`, `core_assignments_progress`. default=''
         :return: the queryset of subscriptions with annotations `assignment_count`, `core_assignment_count`, `required_assignments`, `required_core_assignments`,
         `assignments_progress` and `core_assignments_progress`.
-        :param prefix: prefix for the resulting attribute names `assignment_count`, `core_assignment_count`, `assignments_progress`, `core_assignments_progress`. default=''
-        :return: the queryset of subscriptions with annotations `assignments_progress`, `core_assignments_progress`, `required_assignments`,
-        `core_required_assignments`, `assignment_count` and `core_assignment_count`
         """
         return self.annotate_required_assignments(start, end).annotate_assignment_counts(
-            start, count_jobs_until or end, of_member, prefix
+            count_jobs_from or start, count_jobs_until or end, of_member, prefix
         ).annotate(**{
             prefix + 'assignments_progress': Case(
                 When(required_assignments=0,
@@ -164,6 +183,15 @@ class SubscriptionQuerySet(SimpleStateModelQuerySet, PolymorphicQuerySet):
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
         return self.filter(type__size__product__is_extra=False)
+
+    def is_extra(self):
+        return self.filter(type__size__product__is_extra=True)
+
+    def ordered(self):
+        return self.filter(activation_date=None)
+
+    def cancelled(self):
+        return self.filter(cancellation_date__isnull=False, deactivation_date=None)
 
     def waiting_or_active(self, date=None):
         date = date or datetime.date.today()

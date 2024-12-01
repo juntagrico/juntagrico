@@ -16,18 +16,21 @@ class SubscriptionPartInlineFormset(BaseInlineFormSet):
                     and form.cleaned_data.get('type') is not None:
                 required_shares += form.instance.type.shares
                 future_parts_count += 1 if form.instance.cancellation_date is None else 0
-        available_shares = sum([member.usable_shares_count for member in self.instance.future_members])
-        if required_shares > available_shares:
-            raise ValidationError(
-                _('Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}').format(Config.vocabulary('share_pl'),
-                                                                                   available_shares,
-                                                                                   required_shares),
-                code='invalid')
+        if Config.enable_shares():
+            available_shares = sum([member.usable_shares_count for member in self.instance.future_members])
+            if required_shares > available_shares:
+                raise ValidationError(
+                    _('Nicht genug {0} vorhanden. Vorhanden {1}. Benötigt {2}').format(Config.vocabulary('share_pl'),
+                                                                                       available_shares,
+                                                                                       required_shares),
+                    code='missing_shares')
         if future_parts_count == 0 and self.instance.cancellation_date is None:
             raise ValidationError(
                 _('Nicht gekündigte {0} brauchen mindestens einen aktiven oder wartenden {0}-Bestandteil.'
                   ' Um die Kündigung rückgängig zu machen, leere und speichere zuerst das Kündigungsdatum des Bestandteils und dann jenes vom {0}.').format(
-                    Config.vocabulary('subscription')))
+                    Config.vocabulary('subscription')),
+                code='missing_part'
+            )
 
 
 class SubscriptionPartInline(admin.TabularInline):

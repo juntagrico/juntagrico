@@ -186,7 +186,7 @@ def part_change(request, part):
     change part of a subscription
     """
     if part.subscription.canceled or part.subscription.inactive:
-        raise Http404("Can't change subscription part of cancelled subscription")
+        raise Http404("Can't change subscription part of canceled subscription")
     if SubscriptionTypeDao.get_normal_visible().count() <= 1:
         raise Http404("Can't change subscription part if there is only one subscription type")
     if request.method == 'POST':
@@ -324,7 +324,7 @@ class AddCoMemberView(FormView, ModelFormMixin):
         shares = 0
         # or create new member and order shares for them
         if co_member is None:
-            shares = form.cleaned_data['shares']
+            shares = form.cleaned_data.get('shares', 0)
             co_member = form.instance
         create_or_update_co_member(co_member, self.subscription, shares)
         return self._done()
@@ -390,10 +390,10 @@ def cancel_subscription(request, subscription_id):
 def leave_subscription(request, subscription_id):
     member = request.user.member
     subscription = Subscription.objects.filter(subscriptionmembership__member=member).get(id=subscription_id)
-    asc = member.usable_shares_count
-    share_error = subscription.share_overflow - asc < 0
+    share_error = Config.enable_shares() and subscription.share_overflow - member.usable_shares_count < 0
     primary = subscription.primary_member.id == member.id
-    can_leave = member.is_cooperation_member and not share_error and not primary
+    has_min_shares = not Config.enable_shares() or member.is_cooperation_member
+    can_leave = has_min_shares and not share_error and not primary
     if not can_leave:
         return redirect('subscription-landing')
     if request.method == 'POST':
@@ -499,17 +499,4 @@ def cancel_share(request, share_id):
         share.cancelled_date = datetime.date.today()
         share.termination_date = next_membership_end_date()
         share.save()
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.is_operations_group')
-def payout_share(request, share_id):
-    share = get_object_or_404(Share, id=share_id)
-    today = datetime.date.today()
-    share.payback_date = today
-    share.save()
-    member = share.member
-    if member.active_shares_count == 0 and member.canceled is True:
-        member.deactivation_date = today
-        member.save()
     return return_to_previous_location(request)

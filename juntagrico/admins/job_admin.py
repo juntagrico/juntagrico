@@ -78,7 +78,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
             time = inst.time
             if not can_edit_past_jobs(request) and time <= timezone.now():
                 # create copy in future if job is in past and member can't edit past jobs
-                time = datetime.combine(date.today() + timedelta(7), time)
+                time = datetime.combine(date.today() + timedelta(7), time.time())
             newjob = RecuringJob(type=inst.type, slots=inst.slots, time=time)
             newjob.save()
 

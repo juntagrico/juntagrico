@@ -47,6 +47,10 @@ a.canceled:hover, a.canceled:focus {
     color: #ff3399;
 }
 
+.pre {
+    white-space: pre;
+}
+
 /* crispy-form */
 .asteriskField {
     padding-left: 0.2em;
@@ -293,6 +297,10 @@ textarea#recipients[disabled=disabled] {
     color: #780fff;
 }
 
+.bg-core {
+    background-color: #780fff;
+}
+
 /* map stuff checked */
 #map-canvas {
     width: 100%;
@@ -301,6 +309,33 @@ textarea#recipients[disabled=disabled] {
 
 #location-map {
     height: 20rem;
+}
+
+/* datatable styling */
+
+:root {
+    --dt-row-selected: 255, 204, 102;
+    --dt-row-selected-text: 0, 0, 0;
+}
+
+#filter-table th {
+	position: sticky;
+	top: 2.6875rem;
+	z-index: 2;
+    background-color: #fefffa;
+}
+
+#filter-table_wrapper > div.justify-content-between {
+    position: sticky;
+    top: 0;
+	z-index: 2;
+    background-color: #fefffa;
+    margin-bottom: 0;
+    padding-bottom: .5rem;
+}
+
+.dtsb-titleRow {
+    display: none;
 }
 
 /* stuff for responsive tables */
@@ -400,6 +435,20 @@ th {
     padding-left: 0;
 }
 
+.primary-member {
+    font-weight: bold;
+}
+
+.email {
+    display: block;
+}
+
+.co-member {
+    border-top: 1px solid rgb(222, 226, 230);
+    margin-top: .5rem;
+    padding-top: .5rem;
+}
+
 /* deliveries stuff checked */
 .delivery-table {
     width: 70%;
@@ -440,10 +489,4 @@ a.phone-number {
     color: #606560;
     float: right;
     display: inline-block;
-}
-
-/* co-member separator */
-
-.co-member:not(:last-child)::after {
-    content: ', ';
 }

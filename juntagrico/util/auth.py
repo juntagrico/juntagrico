@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ValidationError
@@ -75,3 +76,29 @@ class JuntagricoPasswordResetForm(PasswordResetForm):
         # custom sender
         sender = EmailSender.get_sender_from_email(email_message)
         sender.send()
+
+
+class MultiplePermissionsRequiredMixin(PermissionRequiredMixin):
+    """
+    Check multiple permissions. First layer list elements are combined with logical AND,
+    Second level with logical OR, third level with logical AND and so on.
+    Example:
+    permission=required = [
+        "Needs this permission and",
+        ["this one or", ["this one and", "this one"], "or this one"],
+        "and this one"
+    ]
+    """
+    def has_any_permission(self, permissions):
+        if isinstance(permissions, str):
+            return self.request.user.has_perms((permissions,))
+        return any(self.has_all_permissions(perm) for perm in permissions)
+
+    def has_all_permissions(self, permissions):
+        if isinstance(permissions, str):
+            return self.request.user.has_perms((permissions,))
+        return all(self.has_any_permission(perm) for perm in permissions)
+
+    def has_permission(self):
+        perms = self.get_permission_required()
+        return self.has_all_permissions(perms)

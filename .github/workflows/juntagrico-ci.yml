@@ -16,9 +16,16 @@ jobs:
       DJANGO_SETTINGS_MODULE: testsettings
       PYTHONPATH: .
       CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
+      EXCLUDE_TEST: ${{ matrix.exclude-test }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        include:
+          - python-version: '3.8'
+          - python-version: '3.9'
+          - python-version: '3.10'
+          - python-version: '3.11'
+          - python-version: '3.11'
+            exclude-test: shares
 
     services:
       postgres:
@@ -34,32 +41,51 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+          MYSQL_DATABASE: mysql
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: install dependencies
       run: |
         pip install --upgrade -r requirements.txt
+        pip install psycopg2 mysqlclient
     - name: ruff
       run: |
         ruff check juntagrico
     - name: install CodeClimate reporter
-      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
+      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' && matrix.exclude-test != 'shares' }}
       run: |
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
         ./cc-test-reporter before-build
+    - name: run tests on mysql
+      run: |
+        python -m django makemigrations --noinput
+        python -m manage test --exclude-tag=$EXCLUDE_TEST
+      env:
+        GITHUB_MYSQL: 1
     - name: run tests on postgres
       run: |
         python -m django makemigrations --noinput
-        coverage run -m manage test
+        coverage run -m manage test --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico.tests.test_deploy --settings="deploytestsettings"
     - name: publish code coverage
-      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
+      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' && matrix.exclude-test != 'shares'}}
       run: |
         coverage report
         coverage xml

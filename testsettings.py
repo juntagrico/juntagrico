@@ -40,17 +40,30 @@ DATABASES = {
     }
 }
 
+# settings for CI
 if os.environ.get('GITHUB_WORKFLOW'):
-    DATABASES = {
-        'default': {
-           'ENGINE': 'django.db.backends.postgresql',
-           'NAME': 'testdb',
-           'USER': 'postgres',
-           'PASSWORD': 'postgres',
-           'HOST': '127.0.0.1',
-           'PORT': '5432',
+    if os.environ.get('GITHUB_MYSQL'):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'mysql',
+                'USER': 'root',
+                'PASSWORD': 'mysql',
+                'HOST': '127.0.0.1',
+                'PORT': '3306',
+            }
         }
-    }
+    else:
+        DATABASES = {
+            'default': {
+               'ENGINE': 'django.db.backends.postgresql',
+               'NAME': 'testdb',
+               'USER': 'postgres',
+               'PASSWORD': 'postgres',
+               'HOST': '127.0.0.1',
+               'PORT': '5432',
+            }
+        }
 
 ROOT_URLCONF = 'testurls'
 
@@ -164,4 +177,14 @@ DJRICHTEXTFIELD_CONFIG = {
     }
 }
 
+CONTACTS = {
+    'general': "info@juntagrico.juntagrico",
+    'for_members': "member@juntagrico.juntagrico",
+    'for_subscriptions': "subscription@juntagrico.juntagrico",
+    'for_shares': "share@juntagrico.juntagrico",
+    'technical': "it@juntagrico.juntagrico",
+}
+
 IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
+
+ENABLE_SHARES = os.environ.get('EXCLUDE_TEST', 'none') != 'shares'

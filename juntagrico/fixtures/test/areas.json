@@ -7,7 +7,7 @@
         "description": "",
         "core": false,
         "hidden": false,
-        "coordinator": 7,
+        "coordinator": 21,
         "auto_add_new_members": true,
         "members": [
             1
@@ -22,9 +22,156 @@
         "description": "",
         "core": true,
         "hidden": true,
-        "coordinator": 7,
+        "coordinator": 21,
         "auto_add_new_members": false,
         "members": []
+    }
+},
+{
+    "model": "juntagrico.emailcontact",
+    "pk": 1,
+    "fields": {
+        "contact_ptr": 1,
+        "email": "email_contact@example.org"
+    }
+},
+{
+    "model": "juntagrico.contact",
+    "pk": 1,
+    "fields": {
+        "polymorphic_ctype": [
+            "juntagrico",
+            "emailcontact"
+        ],
+        "content_type": [
+            "juntagrico",
+            "activityarea"
+        ],
+        "object_id": 1,
+        "sort_order": 0
+    }
+},
+{
+    "model": "juntagrico.phonecontact",
+    "pk": 2,
+    "fields": {
+        "contact_ptr": 2,
+        "phone": "079"
+    }
+},
+    {
+    "model": "juntagrico.contact",
+    "pk": 2,
+    "fields": {
+        "polymorphic_ctype": [
+            "juntagrico",
+            "phonecontact"
+        ],
+        "content_type": [
+            "juntagrico",
+            "activityarea"
+        ],
+        "object_id": 1,
+        "sort_order": 0
+    }
+},
+{
+    "model": "juntagrico.textcontact",
+    "pk": 3,
+    "fields": {
+        "contact_ptr": 3,
+        "text": "only fax please"
+    }
+},
+{
+    "model": "juntagrico.contact",
+    "pk": 3,
+    "fields": {
+        "polymorphic_ctype": [
+            "juntagrico",
+            "textcontact"
+        ],
+        "content_type": [
+            "juntagrico",
+            "activityarea"
+        ],
+        "object_id": 1,
+        "sort_order": 0
+    }
+},
+{
+    "model": "juntagrico.membercontact",
+    "pk": 4,
+    "fields": {
+        "contact_ptr": 4,
+        "member": 2,
+        "display": "E"
+    }
+},
+{
+    "model": "juntagrico.contact",
+    "pk": 4,
+    "fields": {
+        "polymorphic_ctype": [
+            "juntagrico",
+            "membercontact"
+        ],
+        "content_type": [
+            "juntagrico",
+            "activityarea"
+        ],
+        "object_id": 2,
+        "sort_order": 0
+    }
+},
+{
+    "model": "juntagrico.membercontact",
+    "pk": 5,
+    "fields": {
+        "contact_ptr": 5,
+        "member": 21,
+        "display": "B"
+    }
+},
+{
+    "model": "juntagrico.contact",
+    "pk": 5,
+    "fields": {
+        "polymorphic_ctype": [
+            "juntagrico",
+            "membercontact"
+        ],
+        "content_type": [
+            "juntagrico",
+            "activityarea"
+        ],
+        "object_id": 2,
+        "sort_order": 0
+    }
+},
+{
+    "model": "juntagrico.membercontact",
+    "pk": 6,
+    "fields": {
+        "contact_ptr": 6,
+        "member": 4,
+        "display": "T"
+    }
+},
+    {
+    "model": "juntagrico.contact",
+    "pk": 6,
+    "fields": {
+        "polymorphic_ctype": [
+            "juntagrico",
+            "membercontact"
+        ],
+        "content_type": [
+            "juntagrico",
+            "activityarea"
+        ],
+        "object_id": 2,
+        "sort_order": 0
     }
 }
 ]

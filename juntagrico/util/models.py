@@ -20,7 +20,7 @@ def q_activated():
     return Q(activation_date__isnull=False, activation_date__lte=datetime.date.today())
 
 
-def q_cancelled():
+def q_canceled():
     return Q(cancellation_date__isnull=False, cancellation_date__lte=datetime.date.today())
 
 

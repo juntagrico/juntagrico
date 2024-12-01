@@ -1,5 +1,4 @@
-juntagrico
-==========
+# juntagrico
 
 [![image](https://github.com/juntagrico/juntagrico/actions/workflows/juntagrico-ci.yml/badge.svg?branch=main&event=push)](https://github.com/juntagrico/juntagrico/actions/workflows/juntagrico-ci.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f9fccaf1602ddb23c69b/maintainability)](https://codeclimate.com/github/juntagrico/juntagrico/maintainability)
@@ -11,9 +10,9 @@ juntagrico
 [![image](https://img.shields.io/pypi/dm/juntagrico.svg)](https://pypi.python.org/pypi/juntagrico/)
 [![image](https://img.shields.io/github/last-commit/juntagrico/juntagrico.svg)](https://github.com/juntagrico/juntagrico)
 [![image](https://img.shields.io/github/commit-activity/y/juntagrico/juntagrico)](https://github.com/juntagrico/juntagrico)
-[![Requirements Status](https://requires.io/github/juntagrico/juntagrico/requirements.svg?branch=main)](https://requires.io/github/juntagrico/juntagrico/requirements/?branch=main)
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/juntagrico/juntagrico)
 
-**the easy solution for cooperative vegetable growers**
+**The easy solution for cooperative vegetable growers**
 
 juntagrico is a management platform for community gardens and vegetable
 cooperatives.
@@ -26,11 +25,14 @@ It provides the basic functionality like
 -   delivery management
 -   management of members
 
+## Documentation
 Detailed documentation how to install and configure juntagrico can be
-found here <https://juntagrico.readthedocs.io>
+found in [juntagrico.readthedocs.io](https://juntagrico.readthedocs.io)
 
-Demo can be found here <https://demo.juntagrico.science/> The
-username is "admin" and the password is "admin" too. Please do not
+## Demo
+[demo.juntagrico.science](https://demo.juntagrico.science/)
+
+The username is "admin" and the password is "admin" too. Please do not
 change the password!
 
 [![image](https://forthebadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
