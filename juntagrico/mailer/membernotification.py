@@ -1,3 +1,4 @@
+from django.template.loader import get_template
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -45,12 +46,13 @@ def email_confirmation(member):
     ).send_to(member.email)
 
 
-def depot_changed(emails, depot):
+def depot_changed(subscription, **kwargs):
     EmailSender.get_sender_for_contact(
         'for_subscriptions',
         organisation_subject(_('{} geändert').format(Config.vocabulary('depot'))),
         get_email_content('d_changed', base_dict(locals())),
-        bcc=emails
+        to=[subscription.primary_member.email],
+        cc=subscription.co_members().values_list('email', flat=True)
     ).send()
 
 
@@ -63,11 +65,29 @@ def co_member_left_subscription(primary_member, co_member, message):
     ).send()
 
 
-def job_signup(email, job):
+def job_signup(email, job, count):
     EmailSender.get_sender(
         organisation_subject(_('Für Einsatz angemeldet')),
         get_email_content('j_signup', base_dict(locals()))
     ).attach_ics(generate_ical_for_job(job)).start_thread(job).send_to(email)
+
+
+def job_subscription_changed(email, job, count):
+    EmailSender.get_sender(
+        organisation_subject(_('Von Einsatz abgemeldet')),
+        get_template('juntagrico/mails/member/job/subscription_changed.txt').render(base_dict(
+            dict(job=job, count=count)
+        ))
+    ).continue_thread(job).send_to(email)
+
+
+def job_unsubscribed(email, job, count):
+    EmailSender.get_sender(
+        organisation_subject(_('Von Einsatz abgemeldet')),
+        get_template('juntagrico/mails/member/job/unsubscribed.txt').render(base_dict(
+            dict(job=job, count=count)
+        ))
+    ).continue_thread(job).send_to(email)
 
 
 def job_reminder(emails, job):

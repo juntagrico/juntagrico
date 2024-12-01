@@ -1,0 +1,12 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% block content %}{% config "organisation_name" as c_organisation_name %}
+{% blocktrans trimmed with jtg=job.type.get_name jt=job.time|date:"d.m.Y H:i" jet=job.end_time|date:"H:i" %}
+Du hast dich vom {{ c_organisation_name }}-Arbeitseinsatz "{{ jtg }}" um {{ jt }}-{{ jet }} abgemeldet.
+{% endblocktrans %}
+
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
+{% endblock %}

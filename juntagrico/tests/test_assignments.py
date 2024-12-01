@@ -14,21 +14,21 @@ class AssignmentTests(JuntagricoTestCase):
         cls.sub_trial_type = cls.create_sub_type(cls.sub_size, trial_days=30)
         cls.subs = [
             # sub in second half of the year
-            cls.create_sub(cls.depot, date(day=1, month=7, year=cls.year), parts=[cls.sub_type]),
+            cls.create_sub(cls.depot, cls.sub_type, date(day=1, month=7, year=cls.year)),
             # sub in first half of the year
-            cls.create_sub(cls.depot, cls.activation_date, deactivation_date=date(day=30, month=6, year=cls.year), parts=[cls.sub_type]),
+            cls.create_sub(cls.depot, cls.sub_type, cls.activation_date, deactivation_date=date(day=30, month=6, year=cls.year)),
             # trial sub ongoing
-            cls.create_sub(cls.depot, cls.activation_date, [cls.sub_trial_type]),
+            cls.create_sub(cls.depot, cls.sub_trial_type, cls.activation_date, ),
             # trial sub shorter than planned
-            cls.create_sub(cls.depot, cls.activation_date, deactivation_date=date(day=15, month=1, year=cls.year), parts=[cls.sub_trial_type]),
+            cls.create_sub(cls.depot, cls.sub_trial_type, cls.activation_date, deactivation_date=date(day=15, month=1, year=cls.year)),
             # trial sub at the end of the year
-            cls.create_sub(cls.depot, date(day=15, month=12, year=cls.year), [cls.sub_trial_type]),
+            cls.create_sub(cls.depot, cls.sub_trial_type, date(day=15, month=12, year=cls.year)),
             # trial sub starting last year
-            cls.create_sub(cls.depot, date(day=15, month=12, year=cls.year - 1), [cls.sub_trial_type]),
+            cls.create_sub(cls.depot, cls.sub_trial_type, date(day=15, month=12, year=cls.year - 1)),
             # ordered, not activated sub
-            cls.create_sub(cls.depot, parts=[cls.sub_type]),
+            cls.create_sub(cls.depot, cls.sub_type),
             # multiple parts
-            cls.create_sub(cls.depot, cls.activation_date, parts=[cls.sub_type, cls.sub_type]),
+            cls.create_sub(cls.depot, [cls.sub_type, cls.sub_type], cls.activation_date),
         ]
 
     def testRequiredAssignments(self):

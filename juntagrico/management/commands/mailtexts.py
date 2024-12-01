@@ -4,6 +4,7 @@ from django.contrib.sites.models import Site
 from django.core import management
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.template.loader import get_template
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
@@ -18,8 +19,12 @@ from juntagrico.mailer import get_email_content, base_dict
 class Command(BaseCommand):
     help = "Prints the text of all notification emails using real data from the database, but without sending any emails."
 
+    def add_arguments(self, parser):
+        parser.add_argument('selected', nargs='*', type=str,
+                            default='signup subscription share password job depot member')
+
     # entry point used by manage.py
-    def handle(self, *args, **options):
+    def handle(self, selected, *args, **options):
         with transaction.atomic(durable=True):
             # generate temporary test data to ensure that required objects are available
             management.call_command('generate_testdata')
@@ -32,124 +37,133 @@ class Command(BaseCommand):
             depot = Depot.objects.all()[0]
             transaction.set_rollback(True)  # force rollback
 
-        print('*** welcome  mit abo***')
-
-        print(get_email_content('welcome', base_dict({
-            'member': member,
-            'password': 'password'
-        })))
-        print()
-
-        print('*** welcome  ohne abo***')
-
-        print(get_email_content('welcome', base_dict({
-            'member': member_wo_subs,
-            'password': 'password'
-        })))
-        print()
-
-        if Config.enable_shares():
-            print('*** s_created ***')
-
-            print(get_email_content('s_created', base_dict({'shares': shares})))
+        if 'signup' in selected:
+            print('*** welcome  mit abo***')
+            print(get_email_content('welcome', base_dict({
+                'member': member,
+                'password': 'password'
+            })))
             print()
 
-        print('*** n_sub ***')
+            print('*** welcome  ohne abo***')
+            print(get_email_content('welcome', base_dict({
+                'member': member_wo_subs,
+                'password': 'password'
+            })))
+            print()
 
-        print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
-        print()
+            print('*** co_welcome ***')
+            print(get_email_content('co_welcome', base_dict({
+                'co_member': co_member,
+                'password': 'password',
+                'sub': co_member.subscription_future or co_member.subscription_current
+            })))
+            print()
 
-        print('*** co_welcome ***')
+            print('*** co_added ***')
+            print(get_email_content('co_added', base_dict({
+                'co_member': co_member,
+                'password': 'password',
+                'new_shares': '9',
+                'sub': co_member.subscription_future or co_member.subscription_current
+            })))
+            print()
 
-        print(get_email_content('co_welcome', base_dict({
-            'co_member': co_member,
-            'password': 'password',
-            'sub': co_member.subscription_future or co_member.subscription_current
-        })))
-        print()
+            print('*** confirm ***')
+            print(get_email_content('confirm', base_dict({'hash': 'hash'})))
+            print()
 
-        print('*** co_added ***')
+        if 'subscription' in selected:
+            print('*** n_sub ***')
+            print(get_email_content('n_sub', base_dict({'subscription': subscription, 'comment': 'user comment'})))
+            print()
 
-        print(get_email_content('co_added', base_dict({
-            'co_member': co_member,
-            'password': 'password',
-            'new_shares': '9',
-            'sub': co_member.subscription_future or co_member.subscription_current
-        })))
-        print()
-
-        print('*** password ***')
-
-        print(get_email_content('password', base_dict({
-            'email': 'email@email.org',
-            'password': 'password',
-            'protocol': 'https',
-            'domain': Site.objects.get_current().domain,
-            'uid': 'uid',
-            'token': 'token'
-        })))
-        print()
-
-        print('*** j_reminder ***')
-
-        print(get_email_content('j_reminder', base_dict({
-            'job': job
-        })))
-        print()
-
-        print('*** j_canceled ***')
-
-        print(get_email_content('j_canceled', base_dict({'job': job})))
-        print()
-
-        print('*** confirm ***')
-
-        print(get_email_content('confirm', base_dict({'hash': 'hash'})))
-        print()
-
-        print('*** j_changed ***')
-
-        print(get_email_content('j_changed', base_dict({'job': job})))
-        print()
-
-        print('*** j_signup ***')
-
-        print(get_email_content('j_signup', base_dict({'job': job})))
-        print()
-
-        print('*** d_changed ***')
-
-        print(get_email_content('d_changed', base_dict({'depot': depot})))
-        print()
-
-        if Config.enable_shares():
             print('*** s_canceled ***')
-
             print(get_email_content('s_canceled', base_dict({
                 'subscription': subscription,
                 'message': 'Nachricht'
             })))
             print()
 
-            print('*** a_share_created ***')
+        if 'share' in selected and Config.enable_shares():
+            print('*** s_created ***')
+            print(get_email_content('s_created', base_dict({'shares': shares})))
+            print()
 
+            print('*** a_share_created ***')
             print(get_email_content('a_share_created', base_dict({
                 'share': shares[0]
             })))
             print()
 
-        print('*** a_member_created ***')
+        if 'password' in selected:
+            print('*** password ***')
+            print(get_email_content('password', base_dict({
+                'email': 'email@email.org',
+                'password': 'password',
+                'protocol': 'https',
+                'domain': Site.objects.get_current().domain,
+                'uid': 'uid',
+                'token': 'token'
+            })))
+            print()
 
-        print(get_email_content('a_member_created', base_dict({
-            'member': member
-        })))
-        print()
+        if 'job' in selected:
+            print('*** j_reminder ***')
+            job_dict = base_dict({'job': job})
+            print(get_email_content('j_reminder', job_dict))
+            print()
 
-        print('*** m_canceled ***')
+            print('*** j_canceled ***')
+            print(get_email_content('j_canceled', job_dict))
+            print()
 
-        print(get_email_content('m_canceled', base_dict({
-            'member': member,
-            'end_date': datetime.date.today(),
-            'message': 'Nachricht'
-        })))
-        print()
+            print('*** j_changed ***')
+            print(get_email_content('j_changed', job_dict), end='\n\n')
+
+            job_dict['count'] = 1
+            print('*** j_signup ***')
+            print(get_email_content('j_signup', job_dict), end='\n\n')
+
+            print('*** member/job/subscription_changed ***')
+            print(get_template('juntagrico/mails/member/job/subscription_changed.txt').render(job_dict), end='\n\n')
+
+            print('*** member/job/unsubscribed ***')
+            print(get_template('juntagrico/mails/member/job/unsubscribed.txt').render(job_dict), end='\n\n')
+
+            admin_job_dict = dict(
+                job=job,
+                instance=job,
+                member=member,
+                initial_count=2,
+                count=1,
+                message='[Nachricht des Mitglieds]'
+            )
+            print('*** admin/job/signup ***')
+            print(get_template('juntagrico/mails/admin/job/signup.txt').render(admin_job_dict), end='\n\n')
+
+            print('*** admin/job/subscription_changed ***')
+            print(get_template('juntagrico/mails/admin/job/changed_subscription.txt').render(admin_job_dict), end='\n\n')
+
+            print('*** admin/job/unsubscribed ***')
+            print(get_template('juntagrico/mails/admin/job/unsubscribed.txt').render(admin_job_dict), end='\n\n')
+
+        if 'depot' in selected:
+            print('*** d_changed ***')
+            print(get_email_content('d_changed', base_dict({'depot': depot})))
+            print()
+
+        if 'member' in selected:
+            print('*** a_member_created ***')
+            print(get_email_content('a_member_created', base_dict({
+                'member': member
+            })))
+            print()
+
+            print('*** m_canceled ***')
+            print(get_email_content('m_canceled', base_dict({
+                'member': member,
+                'end_date': datetime.date.today(),
+                'message': 'Nachricht'
+            })))
+            print()
