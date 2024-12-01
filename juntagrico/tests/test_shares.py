@@ -1,7 +1,8 @@
 import datetime
 
-from django.test import tag
+from django.core.exceptions import ValidationError
 from django.template import Template, Context
+from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCase
@@ -89,6 +90,14 @@ class ShareTests(JuntagricoTestCase):
         selected_items = [self.member.share_set.first().pk]
         self.assertPost(url, data={'action': 'mass_edit_share_dates', '_selected_action': selected_items},
                         member=self.admin)
+
+    def testIncompleteShareAddFails(self):
+        url = reverse('admin:juntagrico_share_add')
+        response = self.assertPost(url, data={'member': ''}, member=self.admin)
+        self.assertListEqual(
+            [ValidationError],
+            [type(e) for e in response.context_data['errors'].as_data()]
+        )
 
     def testShareCertificate(self):
         self.client.force_login(self.member.user)

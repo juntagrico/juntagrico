@@ -29,8 +29,8 @@ def share_value_default():
 
 
 class Share(Billable):
-    member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT)
-    value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, default=share_value_default)
+    member = models.ForeignKey('Member', on_delete=models.PROTECT)
+    value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, blank=True, default=share_value_default)
     creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=datetime.date.today)
     paid_date = models.DateField(_('Bezahlt am'), null=True, blank=True)
     issue_date = models.DateField(_('Ausgestellt am'), null=True, blank=True)
