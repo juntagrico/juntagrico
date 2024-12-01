@@ -1,8 +1,8 @@
 from import_export.fields import Field
 
-from ..entity.share import Share
-from ..config import Config
 from . import ModQuerysetModelResource
+from ..config import Config
+from ..entity.share import Share
 
 
 class ShareResource(ModQuerysetModelResource):
@@ -16,7 +16,6 @@ class ShareResource(ModQuerysetModelResource):
         widgets = {
             'id': {'coerce_to_string': False},
             'number': {'coerce_to_string': False},
-            'value': {'coerce_to_string': False},
             'creation_date': {'coerce_to_string': False},
             'paid_date': {'coerce_to_string': False},
             'issue_date': {'coerce_to_string': False},

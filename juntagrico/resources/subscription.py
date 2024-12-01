@@ -1,9 +1,9 @@
 from import_export.fields import Field
 from import_export.widgets import DecimalWidget, IntegerWidget
 
-from ..entity.subs import Subscription, SubscriptionPart
-from ..config import Config
 from . import ModQuerysetModelResource, DateRangeResourceMixin
+from ..config import Config
+from ..entity.subs import Subscription, SubscriptionPart
 
 
 class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
@@ -23,7 +23,7 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
     core_assignment_count = Field('core_assignment_count', widget=DecimalWidget(coerce_to_string=False))
     required_core_assignments = Field('required_core_assignments', widget=DecimalWidget(coerce_to_string=False))
     core_assignments_progress = Field('core_assignments_progress', widget=DecimalWidget(coerce_to_string=False))
-    price = Field('price', widget=DecimalWidget(coerce_to_string=False))
+    price = Field('price', widget=DecimalWidget())
 
     def update_queryset(self, queryset):
         return Subscription.objects.annotate_assignments_progress(self.start_date, self.end_date)
