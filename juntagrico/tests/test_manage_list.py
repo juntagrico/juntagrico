@@ -21,8 +21,8 @@ class ManageListTests(JuntagricoTestCase):
     def testMember(self):
         response = self.assertGet(reverse('manage-member'))
         # check that member list is correct
-        objects = response.context['object_list']()
-        self.assertEqual(list(objects.order_by('id')), [
+        objects = list(response.context['object_list']().order_by('id'))
+        self.assertEqual(objects, [
             self.member, self.member2, self.member3, self.member4, self.member5, self.member6,
             self.admin, self.area_admin
         ])
