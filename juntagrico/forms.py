@@ -756,18 +756,26 @@ class JobSubscribeForm(Form):
 class EditAssignmentForm(JobSubscribeForm):
     message_wrapper_class = None  # always show message field
 
+    text = dict(
+        message_to_member=gettext_lazy('Mitteilung an das Mitglied'),
+        slots_label=gettext_lazy('Teilnahme'),
+        option_1=gettext_lazy('Alleine'),
+        option_x=gettext_lazy('{0} Personen'),
+        **JobSubscribeForm.text,
+    )
+
     def __init__(self, editor, can_delete, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.editor = editor
         self.can_delete = can_delete
         self.helper.form_id = 'assignment-edit-form'
-        self.fields['message'].help_text = _('Mitteilung an das Mitglied')
-        self.fields['slots'].label = _('Teilnahme')
+        self.fields['message'].help_text = self.text['message_to_member']
+        self.fields['slots'].label = self.text['slots_label']
 
     def get_option_text(self, index):
         if index == 1:
-            return _('Alleine')
-        return self.text['options'].get(index, _('{0} Personen').format(index))
+            return self.text['option_1']
+        return self.text['options'].get(index, self.text['option_x'].format(index))
 
     @property
     def can_unsubscribe(self):
@@ -784,7 +792,7 @@ class EditAssignmentForm(JobSubscribeForm):
             count=slots, initial_count=self.current_slots,
             message=message
         )
-        pass
+
 
 class ShiftTimeForm(Form):
     hours = FloatField(label=_('Stunden'))
