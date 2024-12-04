@@ -8,7 +8,7 @@ from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, manage, email
+from juntagrico.views import subscription, manage, email, job
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -89,15 +89,15 @@ urlpatterns = [
     path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
          name='part-cancel'),
     # /my/assignments
-    path('my/memberjobs', juntagrico.memberjobs, name='memberjobs'),
+    path('my/memberjobs', job.memberjobs, name='memberjobs'),
 
     # /job
-    path('my/jobs', juntagrico.jobs, name='jobs'),
-    path('my/jobs/all', juntagrico.all_jobs, name='jobs-all'),
-    path('my/jobs/<int:job_id>/', juntagrico.job, name='job'),
+    path('my/jobs', job.jobs, name='jobs'),
+    path('my/jobs/all', job.all_jobs, name='jobs-all'),
+    path('my/jobs/<int:job_id>/', job.job, name='job'),
 
     # /assignment
-    path('assignment/<int:job_id>/<int:member_id>/edit', juntagrico.edit_assignment, name='assignment-edit'),
+    path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),
 
     # /area
     path('my/areas', juntagrico.areas, name='areas'),
