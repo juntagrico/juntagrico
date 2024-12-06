@@ -43,8 +43,20 @@ class ActivityArea(JuntagricoBaseModel):
             return self.contact_set.all()
         return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
 
-    def get_emails(self):
-        return get_emails(self.contact_set, lambda: [self.coordinator.email])
+    def _get_email_fallback(self, get_member=False, exclude=None):
+        if exclude is None or self.coordinator.email not in exclude:
+            if get_member:
+                return [(self.coordinator.email, self.coordinator)]
+            return [self.coordinator.email]
+
+    def get_emails(self, get_member=False, exclude=None):
+        """
+        :param get_member: If true returns a member (or None) in addition to the email address
+        :param exclude: List of email addresses to exclude
+        :return: list of email addresses of area coordinator(s) or,
+                 if `get_member` is true, a list of tuples with email and member object
+        """
+        return get_emails(self.contact_set, self._get_email_fallback, get_member, exclude)
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -144,8 +156,14 @@ class JobType(AbstractJobType):
             return self.contact_set.all()
         return self.activityarea.contacts
 
-    def get_emails(self):
-        return get_emails(self.contact_set, self.activityarea.get_emails)
+    def get_emails(self, get_member=False, exclude=None):
+        """
+        :param get_member: If true returns a member (or None) in addition to the email address
+        :param exclude: List of email addresses to exclude
+        :return: list of email addresses of job type coordinator(s) or,
+                 if `get_member` is true, a list of tuples with email and member object
+        """
+        return get_emails(self.contact_set, self.activityarea.get_emails, get_member, exclude)
 
     class Meta:
         verbose_name = _('Jobart')
@@ -267,9 +285,18 @@ class Job(JuntagricoBasePoly):
     def participant_emails(self):
         return set(m.email for m in self.participants)
 
-    def get_emails(self):
+    def get_emails(self, get_member=False, exclude=None):
         """
-        :return: list of email addresses of job coordinator(s)
+        :param get_member: If true returns a member (or None) in addition to the email address
+        :param exclude: List of email addresses to exclude
+        :return: list of email addresses of job coordinator(s) or,
+                 if `get_member` is true, a list of tuples with email and member object
+        """
+        raise NotImplementedError
+
+    def contacts(self):
+        """
+        :return: list job coordinator(s)
         """
         raise NotImplementedError
 
@@ -308,8 +335,8 @@ class RecuringJob(Job):
             return self.contact_set.all()
         return self.type.contacts
 
-    def get_emails(self):
-        return get_emails(self.contact_set, self.type.get_emails)
+    def get_emails(self, get_member=False, exclude=None):
+        return get_emails(self.contact_set, self.type.get_emails, get_member, exclude)
 
     class Meta:
         verbose_name = _('Job')
@@ -334,8 +361,8 @@ class OneTimeJob(Job, AbstractJobType):
             return self.contact_set.all()
         return self.activityarea.contacts
 
-    def get_emails(self):
-        return get_emails(self.contact_set, self.activityarea.get_emails)
+    def get_emails(self, get_member=False, exclude=None):
+        return get_emails(self.contact_set, self.activityarea.get_emails, get_member, exclude)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

@@ -163,8 +163,11 @@ class AssignmentTests(JuntagricoTestCase):
                         {'edit-slots': 2},302, admin)
         self.assertEqual(self.job2.occupied_slots, 2)
         self.assertTrue(self.signal_called)
-        self.assertEqual(len(mail.outbox), 1)  # member notification
-        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(len(mail.outbox), 2 if admin != self.member else 1)  # (member notification +) admin notification
+        if admin != self.member:
+            # if member edits their own assignment, no notification is sent to them
+            self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
         mail.outbox.clear()
         self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
 
@@ -180,8 +183,9 @@ class AssignmentTests(JuntagricoTestCase):
         self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
                         {'edit-slots': 0}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 0)
-        self.assertEqual(len(mail.outbox), 1)  # member notification
+        self.assertEqual(len(mail.outbox), 2)  # member notification and coordinator notification
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
 
     def testAssignmentEditByCoordinator(self):
         self.testAssignmentEdit(self.area_admin)

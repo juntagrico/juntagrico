@@ -72,8 +72,14 @@ def on_job_subscribed(sender, **kwargs):
 
 def on_assignment_changed(sender, **kwargs):
     member = kwargs.get('instance')
+    editor = kwargs.get('editor')
     count = kwargs.get('count')
+    if member != editor:  # don't send this notification if editor changed their own assignment
+        if count == 0:
+            membernotification.assignment_removed(member.email, **kwargs)
+        else:
+            membernotification.assignment_changed(member.email, **kwargs)
     if count == 0:
-        membernotification.assignment_removed(member.email, **kwargs)
+        adminnotification.assignment_removed(**kwargs)
     else:
-        membernotification.assignment_changed(member.email, **kwargs)
+        adminnotification.assignment_changed(**kwargs)

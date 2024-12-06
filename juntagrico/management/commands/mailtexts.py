@@ -160,8 +160,14 @@ class Command(BaseCommand):
             print('*** member/assignment/changed ***')
             print(get_template('juntagrico/mails/member/assignment/changed.txt').render(member_assignment_dict), end='\n\n')
 
-            print('*** member/assignment/deleted ***')
-            print(get_template('juntagrico/mails/member/assignment/deleted.txt').render(member_assignment_dict), end='\n\n')
+            print('*** member/assignment/removed ***')
+            print(get_template('juntagrico/mails/member/assignment/removed.txt').render(member_assignment_dict), end='\n\n')
+
+            print('*** admin/assignment/changed ***')
+            print(get_template('juntagrico/mails/admin/assignment/changed.txt').render(member_assignment_dict), end='\n\n')
+
+            print('*** admin/assignment/removed ***')
+            print(get_template('juntagrico/mails/admin/assignment/removed.txt').render(member_assignment_dict), end='\n\n')
 
         if 'depot' in selected:
             print('*** d_changed ***')

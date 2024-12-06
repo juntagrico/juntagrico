@@ -100,8 +100,8 @@ def job(request, job_id, form_class=JobSubscribeForm):
 def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, redirect_on_post=True):
     job = get_object_or_404(Job, id=int(job_id))
     # check permission
-    admin = request.user.member
-    is_job_coordinator = job.type.activityarea.coordinator == admin and request.user.has_perm('juntagrico.is_area_admin')
+    editor = request.user.member
+    is_job_coordinator = job.type.activityarea.coordinator == editor and request.user.has_perm('juntagrico.is_area_admin')
     if not (is_job_coordinator
             or request.user.has_perm('juntagrico.change_assignment')
             or request.user.has_perm('juntagrico.add_assignment')):
@@ -112,7 +112,7 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
 
     if request.method == 'POST':
         # handle submit
-        form = form_class(admin, can_delete, member, job, request.POST, prefix='edit')
+        form = form_class(editor, can_delete, member, job, request.POST, prefix='edit')
         if form.is_valid():
             if form.has_changed():  # don't send any notifications, if nothing was changed.
                 form.save()
@@ -125,9 +125,12 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
                 messages.error(request, _('Änderung des Einsatzes fehlgeschlagen.'))
             return redirect('job', job_id=job_id)
     else:
-        form = form_class(admin, can_delete, member, job, prefix='edit')
+        form = form_class(editor, can_delete, member, job, prefix='edit')
+
     renderdict = {
         'member': member,
+        'other_job_contacts': job.get_emails(get_member=True, exclude=[editor.email]),
+        'editor': editor,
         'form': form,
         'success': success,
     }

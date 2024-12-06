@@ -94,15 +94,15 @@ def assignment_changed(email, job, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Einsatz geändert')),
         get_template('juntagrico/mails/member/assignment/changed.txt').render(base_dict({'job': job, **kwargs})),
-        from_email=kwargs.get('editor').email
+        reply_to=[kwargs.get('editor').email]
     ).continue_thread(job).send_to(email)
 
 
 def assignment_removed(email, job, **kwargs):
     EmailSender.get_sender(
         organisation_subject(_('Einsatz gelöscht')),
-        get_template('juntagrico/mails/member/assignment/deleted.txt').render(base_dict({'job': job, **kwargs})),
-        from_email=kwargs.get('editor').email
+        get_template('juntagrico/mails/member/assignment/removed.txt').render(base_dict({'job': job, **kwargs})),
+        reply_to=[kwargs.get('editor').email]
     ).continue_thread(job).send_to(email)
 
 
