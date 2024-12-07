@@ -117,6 +117,10 @@ td {
     font-size:11px
 }
 
+.pickup-details {
+    font-weight: normal;
+}
+
 .gendate {
     text-align: right;
 }

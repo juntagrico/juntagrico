@@ -41,21 +41,24 @@ class DateRangeExportMixin(ExportMixin):
     """
     export_form_class = ExportAssignmentDateRangeForm
 
-    def get_data_for_export(self, request, queryset, *args, **kwargs):
-        return super().get_data_for_export(request, queryset, *args, form=kwargs.get('export_form'), **kwargs)
-
     def get_export_resource_kwargs(self, request, *args, **kwargs):
-        form = kwargs.pop('form')
-        return dict(
-            start_date=form.cleaned_data['start_date'],
-            end_date=form.cleaned_data['end_date'],
-        )
+        form = kwargs.get('export_form')
+        if form:
+            kwargs.update(
+                start_date=form.cleaned_data['export_start_date'],
+                end_date=form.cleaned_data['export_end_date'],
+            )
+        return kwargs
+
+    @staticmethod
+    def get_export_date(post, name):
+        return '-'.join([post.get(f"export_{name}_date_{i}") for i in ['year', 'month', 'day']])
 
     def get_export_filename(self, request, queryset, file_format):
         # add date range to filename
         ext = file_format.get_extension()
-        start_date = request.POST.get('start_date_year') + '-' + request.POST.get('start_date_month') + '-' + request.POST.get('start_date_day')
-        end_date = request.POST.get('end_date_year') + '-' + request.POST.get('end_date_month') + '-' + request.POST.get('end_date_day')
+        start_date = self.get_export_date(request.POST, 'start')
+        end_date = self.get_export_date(request.POST, 'end')
         return f'{super().get_export_filename(request, queryset, file_format)[:-len(ext)-1]}--{start_date}--{end_date}.{ext}'
 
 

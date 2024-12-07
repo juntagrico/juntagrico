@@ -13,14 +13,14 @@
             {% if perms.juntagrico.change_subscriptionpart %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
-                        {% trans "Warteliste" %}
+                        <i>{% trans "Warteliste" %}</i>
                     </a>
                 </li>
             {% endif %}
             {% if perms.juntagrico.change_subscriptionpart %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'sub-mgmt-extra-canceledlist' %}">
-                        {% trans "Kündigungsliste" %}
+                        <i>{% trans "Kündigungsliste" %}</i>
                     </a>
                 </li>
             {% endif %}
