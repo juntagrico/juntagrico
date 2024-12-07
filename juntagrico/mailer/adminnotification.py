@@ -150,13 +150,15 @@ def member_unsubscribed_from_job(job, **kwargs):
 
 
 def _template_assignment_changed(job, subject, template_name, **kwargs):
-    kwargs['job'] = job
-    EmailSender.get_sender(
-        organisation_subject(subject),
-        get_template(f'juntagrico/mails/admin/assignment/{template_name}.txt').render(base_dict(kwargs)),
-        to=job.get_emails(exclude=kwargs['editor'].email),
-        reply_to=[kwargs['editor'].email],
-    ).send()
+    to = job.get_emails(exclude=kwargs['editor'].email)
+    if to:
+        kwargs['job'] = job
+        EmailSender.get_sender(
+            organisation_subject(subject),
+            get_template(f'juntagrico/mails/admin/assignment/{template_name}.txt').render(base_dict(kwargs)),
+            to=to,
+            reply_to=[kwargs['editor'].email],
+        ).send()
 
 
 def assignment_changed(job, **kwargs):
