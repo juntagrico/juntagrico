@@ -24,7 +24,7 @@ from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Subscription
-from juntagrico.signals import subscribed
+from juntagrico.signals import subscribed, assignment_changed
 
 
 class Slider(Field):
@@ -620,6 +620,7 @@ class JobSubscribeForm(Form):
             None: lambda x: _('{0} weitere Personen und ich').format(x-1)
         },
     }
+    message_wrapper_class = 'd-none'  # let js display the field if needed
 
     def __init__(self, member, job, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -642,8 +643,11 @@ class JobSubscribeForm(Form):
 
     def _set_up_form(self):
         selected_extras = list(JobExtra.objects.filter(assignments__in=self.current_assignments))
+        extras = []
         for extra in set(selected_extras + self.job.empty_per_job_extras() + list(self.job.per_member_extras())):
-            self.fields[f'extra{extra.extra_type.id}'] = BooleanField(label=extra.extra_type.name, required=False)
+            field_name = f'extra{extra.extra_type.id}'
+            self.fields[field_name] = BooleanField(label=extra.extra_type.name, required=False)
+            extras.append(field_name)
         for selected_extra in selected_extras:
             self.initial[f'extra{selected_extra.extra_type.id}'] = True
         self.fields['slots'].choices = self.get_choices
@@ -662,11 +666,12 @@ class JobSubscribeForm(Form):
                               data_message=_('Möchtest du dich verbindlich für diesen Einsatz eintragen?'))]
         self.helper.layout = Layout(
             Field('slots', data_initial_slots=self.current_slots),
-            Field('message', wrapper_class='d-none'),
+            *[Field(f, data_initial_checked=self.initial.get(f, False)) for f in extras],
+            Field('message', wrapper_class=self.message_wrapper_class),
             FormActions(*actions),
         )
         if self.current_slots > 0:
-            self.helper.layout.insert(2, Div(
+            self.helper.layout.insert(-1, Div(
                 HTML(get_template('messages/job_assigned.html').render(dict(amount=self.current_slots - 1))),
                 css_id='subscribed_info',
                 css_class='offset-md-3 col-md-6 mb-3 d-none'
@@ -679,12 +684,15 @@ class JobSubscribeForm(Form):
                 css_class='offset-md-3 col-md-6 mb-3 d-none'
             ))
 
+    def get_option_text(self, index):
+        return self.text['options'].get(index, self.text['options'][None](index))
+
     def get_choices(self):
         max_slots = min(self.available_slots, self.MAX_VALUE)
         min_slots = 0 if self.can_unsubscribe else max(1, self.current_slots)
         for i in range(min_slots, max_slots+1):
-            label = self.text['options'].get(i, self.text['options'][None])
-            yield i, label(i) if callable(label) else label
+            label = self.get_option_text(i)
+            yield i, label
 
     @property
     def can_unsubscribe(self):
@@ -707,7 +715,7 @@ class JobSubscribeForm(Form):
         slots = int(self.cleaned_data['slots'])
 
         # handle unsubscribe action
-        if self.cleaned_data[self.UNSUBSCRIBE] or slots == '0':
+        if self.cleaned_data[self.UNSUBSCRIBE] or slots == 0:
             self.current_assignments.delete()
 
         # handle subscribe action
@@ -743,6 +751,47 @@ class JobSubscribeForm(Form):
         # send signals
         subscribed.send(Job, instance=self.job, member=self.member, count=slots, initial_count=self.current_slots,
                         message=message)
+
+
+class EditAssignmentForm(JobSubscribeForm):
+    message_wrapper_class = None  # always show message field
+
+    text = dict(
+        message_to_member=gettext_lazy('Mitteilung an das Mitglied'),
+        slots_label=gettext_lazy('Teilnahme'),
+        option_1=gettext_lazy('Alleine'),
+        option_x=gettext_lazy('{0} Personen'),
+        **JobSubscribeForm.text,
+    )
+
+    def __init__(self, editor, can_delete, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.editor = editor
+        self.can_delete = can_delete
+        self.helper.form_id = 'assignment-edit-form'
+        self.fields['message'].help_text = self.text['message_to_member']
+        self.fields['slots'].label = self.text['slots_label']
+
+    def get_option_text(self, index):
+        if index == 1:
+            return self.text['option_1']
+        return self.text['options'].get(index, self.text['option_x'].format(index))
+
+    @property
+    def can_unsubscribe(self):
+        return self.can_delete
+
+    @property
+    def can_interact(self):
+        return True
+
+    def send_signals(self, slots, message=''):
+        # send signals
+        assignment_changed.send(
+            Member, instance=self.member, job=self.job, editor=self.editor,
+            count=slots, initial_count=self.current_slots,
+            message=message
+        )
 
 
 class ShiftTimeForm(Form):
