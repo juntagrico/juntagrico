@@ -64,12 +64,15 @@ var dt_language = {
             },
             "string": {
                 "contains": "{% trans "Beinhaltet" %}",
+                "notContains": "{% trans "Beinhaltet nicht" %}",
                 "empty": "{% trans "Leer" %}",
                 "endsWith": "{% trans "Endet mit" %}",
+                "notEndsWith": "{% trans "Endet nicht mit" %}",
                 "equals": "{% trans "Entspricht" %}",
                 "not": "{% trans "Nicht" %}",
                 "notEmpty": "{% trans "Nicht leer" %}",
-                "startsWith": "{% trans "Startet mit" %}"
+                "startsWith": "{% trans "Startet mit" %}",
+                "notStartsWith": "{% trans "Startet nicht mit" %}"
             }
         },
         "data": "{% trans "Feld" %}",
