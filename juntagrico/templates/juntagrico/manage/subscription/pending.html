@@ -139,3 +139,8 @@
         })
     </script>
 {% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    config.info = false  // disabled, because it doesn't count correctly
+{% endblock %}
