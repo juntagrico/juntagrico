@@ -7,6 +7,7 @@ from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
+from ..entity.member import SubscriptionMembership
 from ..entity.subtypes import SubscriptionType
 
 
@@ -133,6 +134,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
                         data={'email': self.member4.email})
 
     def testJoinLeaveRejoin(self):
+        # leaving on the same day should delete the subscription membership again
         post_data = {
             'email': self.member4.email,
             'first_name': self.member4.first_name,
@@ -148,6 +150,23 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.sub.refresh_from_db()
         self.assertEqual(self.sub.current_members.count(), 3)
+
+    def testRejoinPreviousSub(self):
+        # rejoining on a later day should keep 2 subscription memberships
+        today = datetime.date.today()
+        a_while_ago = today - datetime.timedelta(days=10)
+        old_sub = self.create_sub(self.depot, self.sub_type, activation_date=a_while_ago)
+        SubscriptionMembership.objects.create(subscription=old_sub, member=self.member4, join_date=a_while_ago)
+        self.member4.leave_subscription(changedate=datetime.date.today() - datetime.timedelta(days=5))
+        self.assertEqual(old_sub.current_members.count(), 0)
+        self.member4.join_subscription(old_sub)
+        self.assertEqual(old_sub.current_members.count(), 1)
+        self.assertEqual(old_sub.subscriptionmembership_set.count(), 2)
+        # joining again should fail
+        with self.assertRaises(ValidationError):
+            self.member4.join_subscription(old_sub)
+        with self.assertRaises(ValidationError):
+            self.member4.join_subscription(self.sub)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
