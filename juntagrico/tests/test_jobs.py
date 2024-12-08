@@ -5,7 +5,8 @@ from django.urls import reverse
 
 from . import JuntagricoTestCase
 from ..entity.jobs import Job, Assignment
-from ..signals import subscribed
+from ..entity.member import Member
+from ..signals import subscribed, assignment_changed
 
 
 class JobTests(JuntagricoTestCase):
@@ -130,3 +131,62 @@ class UnsubscribableJobTests(JobTests):
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+
+
+class AssignmentTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.job2.slots = 2
+        cls.job2.save()
+
+    def testPermission(self):
+        self.assertGet(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), 403, self.member2)
+        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), {'slots': 2},
+                        403, self.member2)
+        self.assertEqual(self.job2.occupied_slots, 1)
+
+    def testAssignmentEdit(self, admin=None):
+        admin = admin or self.member  # has general permission to change assignments
+        self.signal_called = False
+
+        @receiver(assignment_changed, sender=Member)
+        def handler(instance, job, count, *args, **kwargs):
+            self.signal_called = True
+            self.assertEqual(count, 2)
+            self.assertEqual(job, self.job2)
+            self.assertEqual(instance.pk, self.member.pk)
+
+        self.assertGet(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), member=admin)
+        # test increase subscription
+        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
+                        {'edit-slots': 2},302, admin)
+        self.assertEqual(self.job2.occupied_slots, 2)
+        self.assertTrue(self.signal_called)
+        self.assertEqual(len(mail.outbox), 2 if admin != self.member else 1)  # (member notification +) admin notification
+        if admin != self.member:
+            # if member edits their own assignment, no notification is sent to them
+            self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[-1].recipients(), ['email_contact@example.org'])
+        mail.outbox.clear()
+        self.assertTrue(assignment_changed.disconnect(handler, sender=Member))
+
+    def testAssignmentNotDelete(self):
+        # member does not have permission to delete
+        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
+                        {'edit-slots': 0}, 302, self.member)
+        # test that slots are unchanged
+        self.assertEqual(self.job2.occupied_slots, 1)
+
+    def testAssignmentDelete(self, admin=None):
+        admin = admin or self.admin
+        self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
+                        {'edit-slots': 0}, 302, admin)
+        self.assertEqual(self.job2.occupied_slots, 0)
+        self.assertEqual(len(mail.outbox), 2)  # member notification and coordinator notification
+        self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
+        self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+
+    def testAssignmentEditByCoordinator(self):
+        self.testAssignmentEdit(self.area_admin)
+        self.testAssignmentDelete(self.area_admin)

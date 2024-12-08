@@ -1,0 +1,32 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% if success %}
+    <div class="alert alert-success">
+        <i class="fa-regular fa-circle-check"></i> {% trans "Änderung gespeichert" %}
+    </div>
+{% endif %}
+<p>
+    {% blocktrans with m=member %}
+    	Du änderst den Einsatz von {{ m }}
+    {% endblocktrans %}
+</p>
+{% crispy form %}
+<p>
+    <strong>
+        {% if other_job_contacts %}
+            {% blocktrans%}
+                 Folgende Personen werden automatisch über diese Änderung informiert:<br>
+            {% endblocktrans %}
+            {% if member != editor %}
+                {{ member }}<br>
+            {% endif %}
+            {% for email, coordinator in other_job_contacts %}
+                {{ coordinator|default:email }}<br>
+            {% endfor %}
+        {% elif editor != member %}
+            {% blocktrans %}
+                {{ member }} wird automatisch über diese Änderung informiert.
+            {% endblocktrans %}
+        {% endif %}
+    </strong>
+</p>
