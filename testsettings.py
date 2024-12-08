@@ -144,6 +144,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'juntagrico.context_processors.vocabulary',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -188,3 +189,8 @@ CONTACTS = {
 IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
 
 ENABLE_SHARES = os.environ.get('EXCLUDE_TEST', 'none') != 'shares'
+BUSINESS_REGULATIONS = 'https://juntagrico.juntagrico/business-regulations'
+BYLAWS = 'https://juntagrico.juntagrico/bylaws'
+FAQ_DOC = 'https://juntagrico.juntagrico/faq'
+EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
+ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
