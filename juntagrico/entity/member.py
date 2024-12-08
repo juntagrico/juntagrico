@@ -316,6 +316,5 @@ class SubscriptionMembership(JuntagricoBaseModel):
         return self.subscription.co_members(self.member)
 
     class Meta:
-        unique_together = ('member', 'subscription')
         verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))

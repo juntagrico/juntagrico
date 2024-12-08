@@ -7,8 +7,8 @@ from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
-from ..entity.subtypes import SubscriptionType
 from ..entity.member import SubscriptionMembership
+from ..entity.subtypes import SubscriptionType
 
 
 class SubscriptionTests(JuntagricoTestCaseWithShares):
@@ -155,13 +155,18 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         # rejoining on a later day should keep 2 subscription memberships
         today = datetime.date.today()
         a_while_ago = today - datetime.timedelta(days=10)
-        old_sub = self.create_sub(self.depot, activation_date=a_while_ago)
+        old_sub = self.create_sub(self.depot, self.sub_type, activation_date=a_while_ago)
         SubscriptionMembership.objects.create(subscription=old_sub, member=self.member4, join_date=a_while_ago)
         self.member4.leave_subscription(changedate=datetime.date.today() - datetime.timedelta(days=5))
         self.assertEqual(old_sub.current_members.count(), 0)
         self.member4.join_subscription(old_sub)
-        self.assertEqual(self.sub.current_members.count(), 1)
-        self.assertEqual(self.sub.subscriptionmembership_set.count(), 2)
+        self.assertEqual(old_sub.current_members.count(), 1)
+        self.assertEqual(old_sub.subscriptionmembership_set.count(), 2)
+        # joining again should fail
+        with self.assertRaises(ValidationError):
+            self.member4.join_subscription(old_sub)
+        with self.assertRaises(ValidationError):
+            self.member4.join_subscription(self.sub)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
