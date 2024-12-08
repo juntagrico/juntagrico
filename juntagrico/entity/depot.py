@@ -1,11 +1,15 @@
+from datetime import datetime, timedelta, time
+
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.template.defaultfilters import date
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel, absolute_url
 from juntagrico.entity.location import Location
 from juntagrico.util.models import q_isactive
-from juntagrico.util.temporal import weekday_choices, weekdays
+from juntagrico.util.temporal import weekday_choices
 
 
 @absolute_url(name='tour')
@@ -38,9 +42,12 @@ class Depot(JuntagricoBaseModel):
     '''
     name = models.CharField(_('{0} Name').format(Config.vocabulary('depot')), max_length=100, unique=True)
     contact = models.ForeignKey('Member', on_delete=models.PROTECT)
-    weekday = models.PositiveIntegerField(_('Wochentag'), choices=weekday_choices)
     tour = models.ForeignKey(Tour, on_delete=models.PROTECT, related_name='depots',
                              verbose_name=_('Ausfahrt'), blank=True, null=True)
+    weekday = models.PositiveIntegerField(_('Abholtag'), choices=weekday_choices)
+    pickup_time = models.TimeField(_('Abholzeit'), null=True, blank=True)
+    pickup_duration = models.FloatField(_('Abholzeitfenster in Stunden'), null=True, blank=True,
+                                        validators=[MinValueValidator(0)])
     capacity = models.PositiveIntegerField(_('Kapazität'), default=0)
     location = models.ForeignKey(Location, on_delete=models.PROTECT, verbose_name=_('Ort'))
     fee = models.DecimalField(_('Aufpreis'), max_digits=9, decimal_places=2, default=0.0,
@@ -71,22 +78,50 @@ class Depot(JuntagricoBaseModel):
         map_info['id'] = self.id
         return map_info
 
-    @property
-    def weekday_name(self):
-        if 8 > self.weekday > 0:
-            return weekdays[self.weekday]
-        return _('Unbekannt')
-
     def total_fee(self, subscription_count):
         """
-        :param subscription_count: a dict of subscription_type => amount
+        :param subscription_count: a dict of subscription_type => amount or subscription_type_id => amount
         :return: total fee for this depot with selected subscription.
         """
         fee = self.fee
+        # normalize count dict
+        subscription_count = {
+            k if isinstance(k, int) else k.id: v for k, v in subscription_count.items() if v > 0
+        }
+        # get fees of relevant types and sum them
         conditions = self.subscription_type_conditions.filter(subscription_type__in=subscription_count.keys())
         for condition in conditions:
-            fee += condition.fee * subscription_count[condition.subscription_type]
+            fee += condition.fee * subscription_count[condition.subscription_type.id]
         return fee
+
+    def pickup_end_time(self):
+        # returns datetime with weekday and time of pickup. Rest of date is arbitrary
+        start_date = datetime.strptime('1970 1 ' + str(self.weekday), '%Y %W %w')
+        start_datetime = datetime.combine(start_date, self.pickup_time or time.min)
+        return start_datetime + timedelta(hours=self.pickup_duration)
+
+    @property
+    def pickup_display(self):
+        """ get string with pickup start day, end time, if it is not midnight
+         end day if it is different than start day and end time if it is not midnight
+        """
+        parts = [self.get_weekday_display()]
+        if self.pickup_time and self.pickup_time > time.min:
+            parts.append(date(self.pickup_time, 'H:i'))
+        if self.pickup_duration:
+            end_time = self.pickup_end_time()
+            display_format = []
+            if end_time.time() > time.min:
+                display_format.append('H:i')
+            else:
+                # if end_time is midnight, show the previous day as end day
+                end_time -= timedelta(1)
+            if end_time.isoweekday() != self.weekday:
+                display_format.insert(0, 'l')
+            if display_format:
+                parts.append(_('bis'))
+                parts.append(date(end_time, ' '.join(display_format)))
+        return ' '.join(parts)
 
     class Meta:
         verbose_name = Config.vocabulary('depot')

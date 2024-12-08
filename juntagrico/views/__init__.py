@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
@@ -17,15 +16,15 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import Job, Assignment, ActivityArea
+from juntagrico.entity.jobs import Job, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
-    CoopMemberCancellationForm
+    CoopMemberCancellationForm, JobSubscribeForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left, subscribed
+from juntagrico.signals import area_joined, area_left, canceled
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
@@ -54,42 +53,24 @@ def home(request):
 
 
 @login_required
-def job(request, job_id):
+def job(request, job_id, form_class=JobSubscribeForm):
     '''
     Details for a job
     '''
     member = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
-    slotrange = list(range(0, job.slots))
-    allowed_additional_participants = list(
-        range(1, job.free_slots + 1))
-    job_fully_booked = len(allowed_additional_participants) == 0
-    job_is_in_past = job.end_time() < timezone.now()
-    job_is_running = job.start_time() < timezone.now()
-    job_canceled = job.canceled
-    can_subscribe = job.infinite_slots or not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
 
-    if request.method == 'POST' and can_subscribe:
-        num = int(request.POST.get('jobs'))
-        if 0 < num and (job.free_slots >= num or job.infinite_slots):
-            # adding participants
-            amount = 1
-            if Config.assignment_unit() == 'ENTITY':
-                amount = job.multiplier
-            elif Config.assignment_unit() == 'HOURS':
-                amount = job.multiplier * job.duration
-            for _i in range(num):
-                assignment = Assignment.objects.create(
-                    member=member, job=job, amount=amount)
-            for extra in job.type.job_extras_set.all():
-                if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
-                    assignment.job_extras.add(extra)
-            assignment.save()
-            subscribed.send(Job, instance=job, member=member, count=num)
-            membernotification.job_signup(member.email, job)
+    if request.method == 'POST':
+        form = form_class(member, job, request.POST)
+        if form.is_valid():
+            form.save()
             # redirect to same page such that refresh in the browser or back
             # button does not trigger a resubmission of the form
             return redirect('job', job_id=job_id)
+
+    else:
+        form = form_class(member, job)
+
     if request.method == 'POST':
         messages = getattr(request, 'member_messages', []) or []
         messages.extend(error_message(request))
@@ -120,14 +101,12 @@ def job(request, job_id):
     messages.extend(job_messages(request, job))
     request.member_messages = messages
     renderdict = {
+        'form': form,
         'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
         'emails': '\n'.join(emails),
         'number_of_participants': number_of_participants,
         'participants_summary': participants_summary,
         'job': job,
-        'slotrange': slotrange,
-        'allowed_additional_participants': allowed_additional_participants,
-        'can_subscribe': can_subscribe,
         'edit_url': get_job_admin_url(request, job)
     }
     return render(request, 'job.html', renderdict)
@@ -361,7 +340,7 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
-    # Check if membership can be cancelled
+    # Check if membership can be canceled
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future
@@ -382,6 +361,7 @@ def cancel_membership(request):
         form = form_type(request.POST, instance=member)
         if form.is_valid():
             form.save()
+            canceled.send(Member, instance=form.instance, message=form.cleaned_data.get('message'))
             return redirect('profile')
     else:
         form = form_type(instance=member)

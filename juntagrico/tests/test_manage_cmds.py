@@ -1,13 +1,12 @@
 from io import StringIO
 
+from django.core import mail
 from django.core.management import call_command
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
 
 
-class ManagementCommandsTest(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class ManagementCommandsTest(JuntagricoTestCaseWithShares):
     def test_create_member_for_superuser(self):
         call_command('createsuperuser', username='testsuperuer', email='super@mail.com', no_input='')
         out = StringIO()
@@ -28,3 +27,13 @@ class ManagementCommandsTest(JuntagricoTestCase):
         out = StringIO()
         call_command('mailtexts', stderr=out)
         self.assertEqual(out.getvalue(), '')
+
+    def test_remind_members(self):
+        # add another assignment of member to job2
+        self.create_assignment(self.job2, self.member)
+        out = StringIO()
+        call_command('remind_members', stderr=out)
+        self.assertEqual(out.getvalue(), '')
+        self.assertEqual(len(mail.outbox), 1)
+        # expect only 1 recipient, event when signed up twice
+        self.assertListEqual(mail.outbox[0].recipients(), [self.member.email])

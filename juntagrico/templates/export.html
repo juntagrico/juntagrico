@@ -50,23 +50,26 @@
             </div>
         </div>
     </div>
-    <div class="row mb-4">
-        <div class="col-md-3">
-            {{ v_share_pl }}
-        </div>
-        <div class="col-md-3">
-            <a href="{% url 'export-shares' %}">
-                {% trans "exportieren" %}
-            </a>
-        </div>
-        <div class="col-md-6">
-            <div class="alert alert-warning">
-                {% trans "Neu: Datenverwaltung" %}
-                <a href="{% url 'admin:juntagrico_share_changelist' %}">&rarr; {{ v_share_pl }}</a>
-                {% trans "&rarr; Exportieren (oben rechts)" %}
+    {% config "enable_shares" as c_enable_shares %}
+    {% if c_enable_shares %}
+        <div class="row mb-4">
+            <div class="col-md-3">
+                {{ v_share_pl }}
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'export-shares' %}">
+                    {% trans "exportieren" %}
+                </a>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-warning">
+                    {% trans "Neu: Datenverwaltung" %}
+                    <a href="{% url 'admin:juntagrico_share_changelist' %}">&rarr; {{ v_share_pl }}</a>
+                    {% trans "&rarr; Exportieren (oben rechts)" %}
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
     <div class="row mb-4">
         <div class="col-md-3">
             {{ v_subscription_pl }}

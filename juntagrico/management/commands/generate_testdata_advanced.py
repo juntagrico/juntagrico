@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from faker import Faker
 
+from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
 from juntagrico.entity.location import Location
@@ -51,10 +52,11 @@ class Command(BaseCommand):
         return result
 
     def generate_shares(self, member, sub_share):
-        amount = int(math.ceil(float(sub_share) / 2.0))
-        for _ in range(0, amount):
-            share_dict = self.generate_share_dict(member)
-            Share.objects.create(**share_dict)
+        if Config.enable_shares():
+            amount = int(math.ceil(float(sub_share) / 2.0))
+            for _ in range(0, amount):
+                share_dict = self.generate_share_dict(member)
+                Share.objects.create(**share_dict)
 
     def generate_depot(self, props, member, i, days):
         location_dict = {

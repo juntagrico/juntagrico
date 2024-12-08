@@ -1,6 +1,8 @@
 import datetime
 
+from django.core.exceptions import ValidationError
 from django.template import Template, Context
+from django.test import tag
 from django.urls import reverse
 
 from . import JuntagricoTestCase
@@ -8,6 +10,7 @@ from ..entity.share import Share
 from ..entity.subs import SubscriptionPart
 
 
+@tag('shares')
 class ShareTests(JuntagricoTestCase):
     fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
@@ -41,13 +44,15 @@ class ShareTests(JuntagricoTestCase):
         yesterday = today - datetime.timedelta(days=1)
         tomorrow = today + datetime.timedelta(days=1)
         unpaid_share = Share.objects.create(member=self.member)
-        cancelled_share = Share.objects.create(member=self.member2, cancelled_date=yesterday)
+        canceled_share = Share.objects.create(member=self.member2, cancelled_date=yesterday)
         future_terminated_share = Share.objects.create(
             member=self.member3, cancelled_date=yesterday, termination_date=tomorrow
         )
-        terminated_share = Share.objects.create(
+        # terminated share (should not show)
+        Share.objects.create(
             member=self.member4, cancelled_date=yesterday, termination_date=yesterday
         )
+        unneeded_unpaid_share = Share.objects.create(member=self.member4)
         # additional part that needs shares for member 1 and 3
         SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
         # additional part that needs shares for member 2
@@ -56,12 +61,11 @@ class ShareTests(JuntagricoTestCase):
         # test
         response = self.assertGet(reverse('manage-share-unpaid'))
         # make sure the right shares are shown
-        # TODO: terminated_share should not be shown in the list anymore
-        self.assertEqual(list(response.context['management_list'].order_by('id')), [
-            unpaid_share, cancelled_share, future_terminated_share, terminated_share
+        self.assertEqual(list(response.context['object_list'].order_by('id')), [
+            unpaid_share, canceled_share, future_terminated_share, unneeded_unpaid_share
         ])
         # member2 has no access
-        self.assertGet(reverse('manage-share-unpaid'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-share-unpaid'), member=self.member2, code=403)
         # Test share count templatetag
         rendered = Template(
             '{% load juntagrico.share %}'
@@ -71,11 +75,11 @@ class ShareTests(JuntagricoTestCase):
             '{% required_for_subscription share forloop.counter %},'
             '{% endfor %}'
             '{% endfor %}'
-        ).render(Context({'management_list': response.context['management_list']}))
+        ).render(Context({'management_list': response.context['object_list']}))
         self.assertEqual(
             rendered,
             'Ja,Ja,Ja. Oder first_name1 last_name1. (1 insgesamt),Nein,',
-            msg="\nfirst should be yes, because unpaid share of member 3 is cancelled"
+            msg="\nfirst should be yes, because unpaid share of member 3 is canceled"
                 "\nsecond is a plain yes for member 2"
                 "\nthird could also be paid by member 1"
                 "\nlast is a not required share of member 4"
@@ -87,24 +91,54 @@ class ShareTests(JuntagricoTestCase):
         self.assertPost(url, data={'action': 'mass_edit_share_dates', '_selected_action': selected_items},
                         member=self.admin)
 
+    def testIncompleteShareAddFails(self):
+        url = reverse('admin:juntagrico_share_add')
+        response = self.assertPost(url, data={'member': ''}, member=self.admin)
+        self.assertListEqual(
+            [ValidationError],
+            [type(e) for e in response.context_data['errors'].as_data()]
+        )
+
     def testShareCertificate(self):
         self.client.force_login(self.member.user)
         response = self.client.get(reverse('share-certificate') + '?year=2017')
         self.assertEqual(response['content-type'], 'application/pdf')
 
     def testMemberShareCancel(self):
+        # member can not cancel share because it is used
         share = self.member.share_set.first()
         self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
-        # TODO: Test cancellation date
+        share.refresh_from_db()
+        self.assertEqual(share.cancelled_date, None)
+        # add share to cancel
+        share = self.create_paid_share(self.member)
+        self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
+        share.refresh_from_db()
+        self.assertEqual(share.cancelled_date, datetime.date.today())
 
     def testManageShareCanceledList(self):
-        self.assertGet(reverse('share-mgmt-canceledlist'))
-        self.assertGet(reverse('share-mgmt-canceledlist'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-share-canceled'))
+        self.assertGet(reverse('manage-share-canceled'), member=self.member2, code=403)
 
-    def testManageSharePayout(self):
+    def testManageSharePayoutSingle(self):
         share = self.member.share_set.first()
         share.cancelled_date = datetime.date.today()
         share.termination_date = datetime.date.today()
         share.save()
-        self.assertGet(reverse('share-payout', args=[share.pk]), 302)
-        self.assertEqual(self.member2.active_shares.count(), 0)
+        self.assertGet(reverse('manage-share-payout-single', args=[share.pk]), 302)
+        self.assertEqual(self.member.active_shares.count(), 0)
+
+    def testManageSharePayout(self):
+        shares = Share.objects.all()
+        for share in shares:
+            share.cancelled_date = datetime.date.today()
+            share.termination_date = datetime.date.today()
+            share.save()
+        self.assertPost(
+            reverse('manage-share-payout'),
+            {'share_ids': '_'.join(map(str, shares.values_list('pk', flat=True)))},
+            302
+        )
+        self.assertEqual(self.member.active_shares.count(), 0)
+        self.assertEqual(self.member4.active_shares.count(), 0)
+        self.assertEqual(self.member5.active_shares.count(), 0)

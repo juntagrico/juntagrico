@@ -1,13 +1,11 @@
 from django.urls import reverse
 from django.utils import timezone
 
-from juntagrico.entity.jobs import Assignment
-from . import JuntagricoTestCase
+from juntagrico.entity.jobs import Assignment, RecuringJob
+from . import JuntagricoTestCaseWithShares
 
 
-class AdminTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class AdminTests(JuntagricoTestCaseWithShares):
     def testOneTimeJobAdmin(self):
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.one_time_job1.pk,)),
@@ -65,6 +63,10 @@ class AdminTests(JuntagricoTestCase):
         self.assertGet(reverse('admin:juntagrico_recuringjob_change', args=(self.past_job.pk,)), member=self.area_admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_onetimejob_change', args=(self.past_one_time_job.pk,)), member=self.area_admin)
+        self.assertPost(reverse('admin:juntagrico_recuringjob_changelist'), data={
+            'action': 'copy_job', '_selected_action': [self.past_job.pk]
+        }, member=self.area_admin, code=302)
+        self.assertGreater(RecuringJob.objects.last().time, timezone.now())
 
     def testDeliveryAdmin(self):
         self.assertGet(reverse('admin:juntagrico_delivery_add'), member=self.admin)
@@ -108,8 +110,3 @@ class AdminTests(JuntagricoTestCase):
 
     def testSubtypeAdmin(self):
         self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.sub_type.pk,)), member=self.admin)
-
-    def testSubtypeAdminNoShares(self):
-        with self.settings(ENABLE_SHARES=False):
-            self.assertGet(reverse('admin:juntagrico_subscriptiontype_change', args=(self.extrasub_type.pk,)),
-                           member=self.admin)

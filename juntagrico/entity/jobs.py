@@ -246,7 +246,13 @@ class Job(JuntagricoBasePoly):
 
     @property
     def participant_emails(self):
-        return [m.email for m in self.participants]
+        return set(m.email for m in self.participants)
+
+    def get_emails(self):
+        """
+        :return: list of email addresses of job coordinator(s)
+        """
+        raise NotImplementedError
 
     def clean(self):
         check_job_consistency(self)
@@ -343,7 +349,8 @@ class Assignment(JuntagricoBaseModel):
 
     @classmethod
     def pre_save(cls, sender, instance, **kwargs):
-        instance.core_cache = instance.is_core()
+        if not kwargs.get('raw', False):
+            instance.core_cache = instance.is_core()
 
     def can_modify(self, request):
         return self.job.get_real_instance().can_modify(request)

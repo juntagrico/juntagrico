@@ -15,16 +15,13 @@
     {% vocabulary "depot" as v_depot %}
     {% vocabulary "subscription" as v_subscription %}
     {% if saved %}
-        <div class="alert alert-success">
-            {% if subscription.waiting %}
+        {% if subscription.waiting %}
+            <div class="alert alert-success">
                 {% blocktrans %}Dein/e {{ v_depot }} wurde geändert.{% endblocktrans %}
-            {% else %}
-                {% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name%}
-                    !!!Achtung! Wir prüfen deine gewünschte Änderung.
-                    Solange keine Email an {{ spe }} mit der Bestätigung für dein/e/n neue/s/n {{ v_depot }}
-                    gesendet wurde, ist noch dein/e/n alte/s/n {{ v_depot }} {{ sde }} aktiv!!!
-                {% endblocktrans %}
-            {% endif %}
+        {% else %}
+            <div class="alert alert-warning">
+                {% include "juntagrico/my/depot/snippets/change_pending_info.html" %}
+        {% endif %}
             <br/>
             <a href="{% url 'subscription-single' subscription.id %}">
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
@@ -66,11 +63,10 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="offset-md-3 col-md-9 form-actions">
-                    <button type="submit" class="btn btn-success">
-                        {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}
-                    </button>
-                </div>
+            <div class="offset-md-3 form-actions">
+                <button type="submit" class="btn btn-success">
+                    {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}
+                </button>
             </div>
         </form>
     {% endif %}

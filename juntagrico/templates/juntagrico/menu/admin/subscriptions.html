@@ -8,40 +8,54 @@
             <i class="fas fa-angle-right">
             </i>
         </a>
-        <div class="collapse" id="subman">
+        <div class="collapse {% if 'manage-sub' in request.resolver_match.url_name %} show{% endif %}" id="subman">
             <ul class="nav flex-column subadmin-menu">
                 {% if perms.juntagrico.can_filter_subscriptions or perms.juntagrico.change_subscription %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'filter-subs' %}">
+                        <a class="nav-link" href="{% url 'manage-sub-recent' %}">
+                            {% blocktrans %}Letzte Änderungen{% endblocktrans %}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.juntagrico.can_filter_subscriptions or perms.juntagrico.change_subscription %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-subscription' %}">
                             {% blocktrans %}Aktive{% endblocktrans %}
                         </a>
                     </li>
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-sub-pending' %}">
+                            {% trans "Pendente Änderungen" %}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if perms.juntagrico.change_subscription %}
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-waitinglist' %}">
-                            {% trans "Warteliste" %}
+                            <i>{% trans "Warteliste" %}</i>
                         </a>
                     </li>
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-canceledlist' %}">
-                            {% trans "Kündigungsliste" %}
+                            <i>{% trans "Kündigungsliste" %}</i>
                         </a>
                     </li>
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-part-waitinglist' %}">
-                            {% trans "Bestandteile Warteliste" %}
+                            <i>{% trans "Bestandteile Warteliste" %}</i>
                         </a>
                     </li>
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'sub-mgmt-part-canceledlist' %}">
-                            {% trans "Bestandteile Kündigungsliste" %}
+                            <i>{% trans "Bestandteile Kündigungsliste" %}</i>
                         </a>
                     </li>
                 {% endif %}
@@ -61,7 +75,7 @@
                 {% endif %}
                 {% if perms.juntagrico.change_subscription %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'sub-mgmt-inconsistencies' %}">
+                        <a class="nav-link" href="{% url 'manage-subscription-inconsistencies' %}">
                             {% blocktrans %}Inkonsistenzen{% endblocktrans %}
                         </a>
                     </li>

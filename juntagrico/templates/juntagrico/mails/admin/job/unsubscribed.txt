@@ -1,0 +1,4 @@
+{% extends "juntagrico/mails/admin/job/signup.txt" %}
+{% load i18n %}
+{% block intro %}{% blocktrans %}Soeben hat sich {{ member }} von einem Einsatz abgemeldet.{% endblocktrans %}{% endblock %}
+{% block count %}{% trans "Anzahl abgemeldete Personen" %}: {{ initial_count }}{% endblock %}
