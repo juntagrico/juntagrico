@@ -4,4 +4,3 @@ coverage
 django-coverage-plugin
 faker
 ruff
-reportlab==3.6.13

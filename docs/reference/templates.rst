@@ -114,7 +114,7 @@ Add entries to the subscription section in the admin menu.
 
 .. _reference-templates-extend_subscription_overview_single:
 
-juntagrico/my/subscriptions/single.html|extend
+juntagrico/my/subscription/single.html|extend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add content to the subscription overview page, for members that have a subscription.
@@ -122,7 +122,7 @@ Add content to the subscription overview page, for members that have a subscript
 
 .. _reference-templates-extend_subscription_overview_none:
 
-juntagrico/my/subscriptions/none.html|extend
+juntagrico/my/subscription/none.html|extend
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add content to the subscription overview page, for members that have no subscription.

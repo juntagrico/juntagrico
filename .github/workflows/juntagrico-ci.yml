@@ -47,7 +47,6 @@ jobs:
     - name: ruff
       run: |
         ruff check juntagrico
-        ruff check test
     - name: install CodeClimate reporter
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |
@@ -58,7 +57,7 @@ jobs:
       run: |
         python -m django makemigrations --noinput
         coverage run -m manage test
-        python -m manage test test.test_deploy --settings="deploytestsettings"
+        python -m manage test juntagrico.tests.test_deploy --settings="deploytestsettings"
     - name: publish code coverage
       if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push'}}
       run: |

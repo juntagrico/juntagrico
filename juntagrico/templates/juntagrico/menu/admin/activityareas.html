@@ -2,7 +2,7 @@
 {% load juntagrico.config %}
 {% load i18n %}
 {% area_admin request as qs_area_admin %}
-{% if qs_area_admin|length > 0 %}
+{% if perms.juntagrico.is_area_admin and qs_area_admin|length > 0 %}
     <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#areaman">
             {% trans "Tätigkeitsbereiche" %}

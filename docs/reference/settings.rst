@@ -78,11 +78,28 @@ ORGANISATION_PHONE
 
     ""
 
+.. _reference-settings-organisation-website:
+
+ORGANISATION_WEBSITE
+^^^^^^^^^^^^^^^^^^^^
+  The website of your organisation (not the one where you run juntagrico)
+
+  default value
+
+  .. code-block:: python
+
+        {
+            'name': "www.juntagrico.juntagrico",
+            'url': "https://www.juntagrico.juntagrico"
+        }
+
+
 .. _reference-settings-info-email:
 
 INFO_EMAIL
 ^^^^^^^^^^
-  DEPRECATED: Use the CONTACTS setting instead
+  .. warning::
+    Deprecated since version 1.6.0. Use :ref:`CONTACTS <reference-settings-contacts>` instead.
 
   The general email of your organisation
 
@@ -93,6 +110,9 @@ INFO_EMAIL
   .. code-block:: python
 
     "info@juntagrico.juntagrico"
+
+
+.. _reference-settings-contacts:
 
 CONTACTS
 ^^^^^^^^
@@ -126,15 +146,26 @@ CONTACTS
 
 SERVER_URL
 ^^^^^^^^^^
+
+  .. warning::
+    Deprecated since version 1.6.0. Use :ref:`ORGANISATION_WEBSITE <reference-settings-organisation-website>` instead.
+
   The base url of your organisation (not the one where you run juntagrico)
 
   Type: String
+
+  "www.juntagrico.juntagrico"
+
+
+URL_PROTOCOL
+^^^^^^^^^^^^
+  The protocol used for urls written in emails and exports.
 
   default value
 
   .. code-block:: python
 
-    "www.juntagrico.juntagrico"
+    "https://"
 
 Accounting
 ----------

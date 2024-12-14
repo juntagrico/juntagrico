@@ -9,7 +9,7 @@ from juntagrico.admins.forms.location_replace_form import LocationReplaceForm
 from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.entity.location import Location
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class JobFormTests(JuntagricoTestCase):

@@ -29,7 +29,13 @@ class JuntagricoBasePoly(PolymorphicModel, OldHolder):
 class SimpleStateModelQuerySet(QuerySet):
     def active_on(self, date=None):
         date = date or datetime.date.today()
-        return self.filter(activation_date__lte=date).exclude(deactivation_date__lt=date)
+        return self.in_daterange(date, date)
+
+    def in_daterange(self, from_date, till_date):
+        """
+        exclude those that ended before or started after our date range.
+        """
+        return self.filter(activation_date__lte=till_date).exclude(deactivation_date__lt=from_date)
 
 
 class SimpleStateModel(models.Model):

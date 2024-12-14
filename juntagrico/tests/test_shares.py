@@ -2,7 +2,7 @@ import datetime
 
 from django.urls import reverse
 
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class ShareTests(JuntagricoTestCase):

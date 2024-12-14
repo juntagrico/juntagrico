@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.core import mail
 
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class AreaTests(JuntagricoTestCase):

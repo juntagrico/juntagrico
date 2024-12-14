@@ -3,7 +3,7 @@ from django.core import mail
 from django.core.management import call_command
 from django.urls import reverse
 
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class DepotChangeTests(JuntagricoTestCase):

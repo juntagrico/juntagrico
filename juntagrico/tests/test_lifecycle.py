@@ -3,7 +3,7 @@ import datetime
 from django.core.exceptions import ValidationError
 
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class ListTests(JuntagricoTestCase):

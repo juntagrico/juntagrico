@@ -214,7 +214,7 @@ class Command(BaseCommand):
             area_2.members.set(self.members)
         area_2.save()
         location_1_fields = {'name': 'auf dem Hof'}
-        location_1 = Location.objects.create(**location_1_fields)
+        location_1, _ = Location.objects.get_or_create(**location_1_fields)
         location_1.save()
         type1_fields = {'name': 'Ernten', 'displayed_name': '', 'description': 'the real deal', 'activityarea': area_1,
                         'default_duration': 2, 'location': location_1}

@@ -18,6 +18,9 @@
                     {% vocabulary "subscription" %}
                 </th>
                 <th class="filter">
+                    {% trans "Kündigungsdatum" %}
+                </th>
+                <th class="filter">
                     {% trans "Enddatum" %}
                 </th>
                 <th class="filter">
@@ -40,6 +43,9 @@
                         <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
                             {{ subscription }}
                         </a>
+                    </td>
+                    <td>
+                        {{ subscription.cancellation_date |date:"Y-m-d" }}
                     </td>
                     <td>
                         {{ subscription.end_date |date:"Y-m-d" }}

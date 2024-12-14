@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.core import mail
 
 from juntagrico.models import Member, Share, Subscription
-from test.util.test import JuntagricoTestCase
+from . import JuntagricoTestCase
 
 
 class CoMemberTests(JuntagricoTestCase):

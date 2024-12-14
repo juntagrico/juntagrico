@@ -268,12 +268,12 @@ def excel_export_members_filter(request):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
-    worksheet_s = workbook.add_worksheet(Config.vocabulary('member_pl'))
+    worksheet_s = workbook.add_worksheet(str(Config.vocabulary('member_pl')))
 
     worksheet_s.write_string(0, 0, str(_('Name')))
     worksheet_s.write_string(0, 1, str(Config.vocabulary('assignment')))
     worksheet_s.write_string(
-        0, 2, str(Config.vocabulary('assignment') + ' ' + _('Kernbereich')))
+        0, 2, str(Config.vocabulary('assignment') + ' ' + str(_('Kernbereich'))))
     worksheet_s.write_string(0, 3, str(_('Taetigkeitsbereiche')))
     worksheet_s.write_string(0, 4, str(_('Depot')))
     worksheet_s.write_string(0, 5, str(_('Email')))
@@ -315,7 +315,7 @@ def excel_export_subscriptions(request):
     response['Content-Disposition'] = 'attachment; filename=Report.xlsx'
     output = BytesIO()
     workbook = Workbook(output)
-    worksheet_s = workbook.add_worksheet(Config.vocabulary('subscription_pl'))
+    worksheet_s = workbook.add_worksheet(str(Config.vocabulary('subscription_pl')))
 
     worksheet_s.write_string(0, 0, str(_('Übersicht')))
     worksheet_s.write_string(0, 1, str(_('HauptbezieherIn')))
@@ -475,6 +475,12 @@ def depot_change_confirm(request, subscription_id):
     sub = get_object_or_404(Subscription, id=subscription_id)
     sub.activate_future_depot()
     return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.view_share')
+def share_unpaidlist(request):
+    return subscription_management_list(Share.objects.filter(paid_date__isnull=True).order_by('member'), {},
+                                        'juntagrico/manage/share/unpaid.html', request)
 
 
 @permission_required('juntagrico.change_share')

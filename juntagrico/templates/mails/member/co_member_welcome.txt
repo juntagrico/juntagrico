@@ -39,7 +39,7 @@
 {% if c_gdpr_info.strip %} - {% trans "die DSGVO Infos" %} ({{ c_gdpr_info|safe }}){% endif %}
 {% endif %}
 
-{% blocktrans %}Solltest du irrtumlicherweise hier eingetragen worden sein, melde dies bitte {{ contact_email }}.{% endblocktrans %}
+{% blocktrans %}Solltest du irrtümlicherweise hier eingetragen worden sein, melde dies bitte {{ contact_email }}.{% endblocktrans %}
 
 {% if c_faq_doc.strip %}
 {% blocktrans with fd=c_faq_doc|safe %}Für weitere Fragen schaust du in den FAQ ({{ fd }}) nach oder schreibst eine Mail an {{ contact_email }}.{% endblocktrans %}

@@ -25,7 +25,7 @@ from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left
+from juntagrico.signals import area_joined, area_left, subscribed
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import home_messages, job_messages, error_message
 from juntagrico.util.temporal import next_membership_end_date
@@ -85,6 +85,7 @@ def job(request, job_id):
                 if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
                     assignment.job_extras.add(extra)
             assignment.save()
+            subscribed.send(Job, instance=job, member=member, count=num)
             membernotification.job_signup(member.email, job)
             # redirect to same page such that refresh in the browser or back
             # button does not trigger a resubmission of the form

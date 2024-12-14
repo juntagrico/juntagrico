@@ -70,7 +70,9 @@ Admin Hooks
 
 register_model_inline
 ^^^^^^^^^^^^^^^^^^^^^
-Adds the given inline to the admin of the given model
+Adds the given inline to the admin of the given model.
+
+Call this in your apps admin.py.
 
 Arguments:
 
