@@ -16,7 +16,7 @@
     {% endif %}
     {% if member.canceled %}
         <div class="alert alert-warning">
-            {% block info_cancelled %}
+            {% block info_canceled %}
                 {% blocktrans trimmed with cd=member.cancellation_date|date:"d.m.Y"%}
                     Deine {{ v_member_type }}schaft ist seit dem {{ cd }} gekündigt.
                 {% endblocktrans %}
