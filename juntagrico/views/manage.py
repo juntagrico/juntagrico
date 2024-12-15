@@ -6,7 +6,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
@@ -19,7 +19,6 @@ from juntagrico.forms import DateRangeForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
 from juntagrico.util.views_admin import date_from_get
-from juntagrico.view_decorators import any_permission_required
 
 
 class DateRangeMixin:
@@ -37,12 +36,19 @@ class DateRangeMixin:
         super().__init__(*args, **kwargs)
         self.start = start
         self.end = end
+        self.ref_date = None
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        ref_date = date_from_get(request, 'ref_date')
-        self.start = self.start or date_from_get(request, 'start_date') or temporal.start_of_specific_business_year(ref_date)
-        self.end = self.end or date_from_get(request, 'end_date') or temporal.end_of_specific_business_year(ref_date)
+        self.ref_date = date_from_get(request, 'ref_date')
+        self.start = self.start or date_from_get(request, 'start_date') or self.get_default_start()
+        self.end = self.end or date_from_get(request, 'end_date') or self.get_default_end()
+
+    def get_default_start(self):
+        return temporal.start_of_specific_business_year(self.ref_date)
+
+    def get_default_end(self):
+        return temporal.end_of_specific_business_year(self.ref_date)
 
     def get_context_data(self, **kwargs):
         if "date_form" not in kwargs:
@@ -156,21 +162,28 @@ class SubscriptionView(MultiplePermissionsRequiredMixin, TitledListView):
     title = _('Alle aktiven {} im Überblick').format(Config.vocabulary('subscription_pl'))
 
 
-@any_permission_required('juntagrico.can_filter_subscriptions', 'juntagrico.change_subscription')
-def subscription_recent(request, days=30):
-    days = max(int(request.GET.get('days', days)), 0)
-    today = datetime.date.today()
-    date_range = (today - datetime.timedelta(days=days), today)
-    renderdict = dict(
-        days=days,
-        ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
-        activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
-        cancelled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
-        deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
-        joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
-        left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
-    )
-    return render(request, 'juntagrico/manage/subscription/recent.html', renderdict)
+class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, TemplateView):
+    permission_required = [['juntagrico.view_subscription', 'juntagrico.change_subscription',
+                            'juntagrico.can_filter_subscriptions']]
+    template_name = 'juntagrico/manage/subscription/recent.html'
+
+    def get_default_start(self):
+        return datetime.date.today() - datetime.timedelta(days=30)
+
+    def get_default_end(self):
+        return datetime.date.today()
+
+    def get_context_data(self, **kwargs):
+        date_range = (self.start, self.end)
+        kwargs.update(dict(
+            ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
+            activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
+            cancelled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
+            deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
+            joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
+            left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),
+        ))
+        return super().get_context_data(**kwargs)
 
 
 class SubscriptionPendingView(PermissionRequiredMixin, ListView):

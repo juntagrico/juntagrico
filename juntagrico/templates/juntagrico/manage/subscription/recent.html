@@ -1,4 +1,5 @@
 {% extends "../base.html" %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
@@ -7,16 +8,12 @@
 {% block page_title %}
     <h3>
         {% vocabulary "subscription_pl" as v_subscription_pl %}
-        {% blocktrans %}Änderungen an {{ v_subscription_pl }} in den letzten {{ days }} Tagen{% endblocktrans %}
+        {% blocktrans %}Änderungen an {{ v_subscription_pl }}{% endblocktrans %}
     </h3>
 {% endblock %}
 
 {% block content %}
-    <form method="GET" class="form-inline">
-        <input type="number" id="days" name="days" class="form-control mb-4 mr-sm-2" value="{{ days }}" min="0" size="5"/>
-        <label for="days" class="mb-4 mr-sm-2">{% trans "Tage" %}</label>
-        <button type="submit" class="btn btn-primary mb-4">{% trans "anzeigen" %}</button>
-    </form>
+    {% crispy date_form %}
     {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
     {{ block.super }}
 {% endblock %}
