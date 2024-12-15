@@ -11,14 +11,24 @@ from juntagrico.entity import JuntagricoBasePoly
 from juntagrico.entity.member import Member
 
 
-def get_emails(source, fallback):
-    emails = source.filter(
+def get_emails(source, fallback, get_member, exclude):
+    email_contacts = source.filter(
         Q(instance_of=EmailContact) | Q(MemberContact___display__in=[MemberContact.DISPLAY_EMAIL,
                                                                      MemberContact.DISPLAY_EMAIL_TEL])
     )
-    if emails.count():
-        return [e.email for e in emails]
-    return fallback()
+    # if there are email contacts return all their emails except for excludes, otherwise use the fallback
+    if email_contacts.count():
+        exclude = exclude or []
+        result = []
+        for contact in email_contacts:
+            if contact.email not in exclude:
+                # if `get_members` is true, also return the member object (if available)
+                if get_member:
+                    result.append((contact.email, getattr(contact, 'member', None)))
+                else:
+                    result.append(contact.email)
+        return result
+    return fallback(get_member, exclude)
 
 
 class Contact(JuntagricoBasePoly):
