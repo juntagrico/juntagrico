@@ -59,4 +59,4 @@ class ManageSubRecentListTests(JuntagricoTestCase):
             *self.sub3.subscriptionmembership_set.all()
         })
         # member2 has no access
-        self.assertGet(reverse('manage-sub-recent'), member=self.member2, code=302)
+        self.assertGet(reverse('manage-sub-recent'), member=self.member2, code=403)
