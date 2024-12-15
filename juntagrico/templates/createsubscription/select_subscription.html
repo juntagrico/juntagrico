@@ -1,21 +1,16 @@
-{% extends "no_menu_base.html" %}
+{% extends "juntagrico/signup/base.html" %}
 {% load i18n %}
 {% load static %}
-{% load juntagrico.config %}
 {% load crispy_forms_tags %}
-{% block all_page_title %}
-    {% vocabulary "subscription" as v_subscription %}
-    <div class="page-title offset-md-2 col-md-8">
-        <h3>
-            {% blocktrans %}Wähle deine {{ v_subscription }}-Bestandteile{% endblocktrans %}
-        </h3>
-    </div>
+
+{% block title %}
+    {% blocktrans with v_subscription=vocabulary.subscription %}Wähle deine {{ v_subscription }}-Bestandteile{% endblocktrans %}
 {% endblock %}
-{% block allcontent %}
-    <div class="offset-md-2 col-md-8">
-        {% crispy form %}
-    </div>
+
+{% block content %}
+    {% crispy form %}
 {% endblock %}
+
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}">
     </script>

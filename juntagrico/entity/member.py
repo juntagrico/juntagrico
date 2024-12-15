@@ -12,6 +12,7 @@ from juntagrico.entity import JuntagricoBaseModel, notifiable, LowercaseEmailFie
 from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.queryset.member import MemberQuerySet
+from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.util.users import make_username
 
 
@@ -63,6 +64,8 @@ class Member(JuntagricoBaseModel):
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
 
+    subscriptions = models.ManyToManyField('Subscription', through='SubscriptionMembership', related_name='members')
+
     objects = MemberQuerySet.as_manager()
 
     @property
@@ -75,7 +78,7 @@ class Member(JuntagricoBaseModel):
 
     @property
     def active_shares(self):
-        """ :return: shares that have been paid by member and not cancelled AND paid back yet
+        """ :return: shares that have been paid by member and not canceled AND paid back yet
         """
         return self.share_set.active()
 
@@ -115,9 +118,9 @@ class Member(JuntagricoBaseModel):
 
     @property
     def usable_shares(self):
-        """ :return: shares that have been ordered (i.e. created) and not cancelled yet
+        """ :return: shares that have been ordered (i.e. created) and not canceled yet
         """
-        return self.share_set.filter(cancelled_date__isnull=True)
+        return self.share_set.usable()
 
     @property
     def usable_shares_count(self):
@@ -147,8 +150,12 @@ class Member(JuntagricoBaseModel):
 
     @cached_property
     def subscription_current(self):
-        sub_membership = self.subscriptionmembership_set.filter(q_joined_subscription() & ~q_left_subscription()).first()
-        return getattr(sub_membership, 'subscription', None)
+        if hasattr(self, 'current_subscription'):
+            # use prefetched subscription (from MemberQuerySet.prefetch_for_list)
+            if sm := self.current_subscription:
+                return sm[0]
+            return None
+        return self.subscriptions.joined().first()
 
     @property
     def subscriptions_old(self):
@@ -157,11 +164,12 @@ class Member(JuntagricoBaseModel):
 
     def join_subscription(self, subscription, primary=False):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        if sub_membership and sub_membership.leave_date:
+        today = datetime.date.today()
+        if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date >= today):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = None if subscription.waiting else datetime.date.today()
+            join_date = None if subscription.waiting else today
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
@@ -171,14 +179,17 @@ class Member(JuntagricoBaseModel):
         subscription = subscription or self.subscription_current
         if subscription == self.subscription_current:
             del self.subscription_current  # clear cache
-        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        membership_present = sub_membership and sub_membership.leave_date is None
-        if membership_present and sub_membership.join_date is not None:
+        if subscription:
+            sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
             changedate = changedate or datetime.date.today()
-            sub_membership.leave_date = changedate
-            sub_membership.save()
-        elif membership_present and sub_membership.join_date is None:
-            sub_membership.delete()
+            # if subscription will not have been left at change date already
+            if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date > changedate):
+                # if subscription will have been joined at change date
+                if sub_membership.join_date is not None and sub_membership.join_date <= changedate:
+                    sub_membership.leave_date = changedate
+                    sub_membership.save()
+                else:
+                    sub_membership.delete()
 
     @property
     def in_subscription(self):
@@ -239,6 +250,26 @@ class Member(JuntagricoBaseModel):
     def post_delete(cls, sender, instance, **kwds):
         instance.user.delete()
 
+    def cancel(self, date=None, commit=True):
+        date = date or datetime.date.today()
+        self.cancellation_date = date
+        # if all shares of member are already paid back: deactivate automatically
+        if not self.share_set.potentially_pending_payback().exists():
+            self.end_date = date
+            self.deactivation_date = date
+        else:
+            self.end_date = next_membership_end_date(self.cancellation_date)
+        for share in self.share_set.all():
+            share.cancel(date, self.end_date)
+        if commit:
+            self.save()
+
+    def deactivate(self, date=None):
+        date = date or datetime.date.today()
+        if self.active_shares_count == 0 and self.canceled is True:
+            self.deactivation_date = date
+            self.save()
+
     @notifiable
     class Meta:
         verbose_name = Config.vocabulary('member')
@@ -285,6 +316,5 @@ class SubscriptionMembership(JuntagricoBaseModel):
         return self.subscription.co_members(self.member)
 
     class Meta:
-        unique_together = ('member', 'subscription')
         verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))

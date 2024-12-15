@@ -1,60 +1,46 @@
-{% extends "no_menu_base.html" %}
+{% extends "juntagrico/signup/base.html" %}
 {% load i18n %}
 {% load static %}
-{% load juntagrico.config %}
+
 {% block styles %}
     <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
-{% block all_page_title %}
-    {% vocabulary "depot" as v_depot %}
-    <div class="page-title offset-md-2 col-md-8">
-        <h3>
-            {% blocktrans %}{{ v_depot }} auswählen{% endblocktrans %}
-        </h3>
-    </div>
+
+{% block title %}
+    {% blocktrans with v_depot=vocabulary.depot %}{{ v_depot }} auswählen{% endblocktrans %}
 {% endblock %}
-{% block allcontent %}
-    {% vocabulary "subscription" as v_subscription %}
-    {% vocabulary "depot" as v_depot %}
-    <div class="offset-md-2 col-md-8">
-        <form action="" method="post">
-            {% csrf_token %}
-            <div id="depot_container" class="form-group row">
-                <label class="col-md-3" for="depot">
-                    {% vocabulary "depot" %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="depot-select form-group row">
+            <div class="col-md-12">
+                <label for="depot">
+                    {% block label %}
+                        {% blocktrans with v_depot=vocabulary.depot v_subscription=vocabulary.subscription %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
+                    {% endblock %}
                 </label>
-                <div class="col-md-9">
-                    <select name="depot" id="depot" class="form-control">
-                        {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == selected %}selected{% endif %}>
-                                {{ depot.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
+                {% include "juntagrico/snippets/depot/select.html" %}
             </div>
-            <div id="depot_container" class="form-group row">
-                <label for="depot" class="offset-md-3 col-md-9">
-                    {% blocktrans %}Wähle 1 {{ v_depot }} als {{ v_subscription }}-Abholort aus.{% endblocktrans %}
-                </label>
+        </div>
+        {% include "juntagrico/snippets/depot/descriptions.html" %}
+        <div class="depot-map form-group row">
+            <div class="col-md-12" id="map-container">
             </div>
-            <div id="depot_container" class="form-group row">
-                <div class="offset-md-3 col-md-9" id="map-container">
-                </div>
+        </div>
+        <div class="form-actions row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-success">
+                    {% trans "Weiter" %}
+                </button>
+                <a href="{% url 'cs-cancel' %}" class="btn">
+                    {% trans "Abbrechen" %}
+                </a>
             </div>
-            <div class="form-actions row">
-                <div class="offset-md-3 col-md-9">
-                    <button type="submit" class="btn btn-success">
-                        {% trans "Weiter" %}
-                    </button>
-                    <a href="{% url 'cs-cancel' %}" class="btn">
-                        {% trans "Abbrechen" %}
-                    </a>
-                </div>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 {% endblock %}
+
 {% block scripts %}
     {% if selected %}
         {{ selected.name|json_script:'selected_depot' }}

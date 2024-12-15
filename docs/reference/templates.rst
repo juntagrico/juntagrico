@@ -111,11 +111,80 @@ juntagrico/menu/admin/subscriptions.html|extend
 
 Add entries to the subscription section in the admin menu.
 
+juntagrico/menu/admin/*.html|sub
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Change admin sub menu entries of:
+
+- ``activityareas.html``
+- ``assignments.html``
+- ``depots.html``
+- ``extra_subscriptions.html``
+- ``lists.html``
+- ``members.html``
+- ``shares.html``
+- ``subscriptions.html``
+
+Signup Templates
+----------------
+
+All signup pages have these 2 blocks to override:
+
+- ``title``: Text of the title
+- ``intro``: Text after the title
+
+The signup templates are located in the folder ``createsubscription``.
+
+Some pages have additional blocks listed below.
+
+signup.html
+^^^^^^^^^^^
+
+- ``intro_1``: First part of intro
+- ``intro_with_shares``: Part of intro, about shares
+- ``intro_2``  Last part of intro
+- ``read_instructions``: Text on documents that should be read
+
+forms/no_subscription_field.html
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+- ``description``: Textlabel on signup option without subscription
+- ``base_fee``: Base fee description on signup option without subscription
+
+
+select_depot.html|label
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Labeltext of depot selection field
+
+select_start_date.html
+^^^^^^^^^^^^^^^^^^^^^^
+
+- ``label``: Label of date selection field
+- ``hint``: text below selection field
+
+summary.html
+^^^^^^^^^^^^
+
+Each section has a block:
+
+- ``profile``
+- ``subscription``
+- ``depot``
+- ``start_date``
+- ``co_member``
+- ``activity_areas``
+- ``shares``:
+- ``comment``:
+
+Subscription Templates
+----------------------
 
 .. _reference-templates-extend_subscription_overview_single:
 
 juntagrico/my/subscription/single.html|extend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add content to the subscription overview page, for members that have a subscription.
 
@@ -123,6 +192,75 @@ Add content to the subscription overview page, for members that have a subscript
 .. _reference-templates-extend_subscription_overview_none:
 
 juntagrico/my/subscription/none.html|extend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add content to the subscription overview page, for members that have no subscription.
+
+
+Depot Templates
+---------------
+
+depot.html
+^^^^^^^^^^
+
+Each section has a block to overwrite or extend it:
+
+- ``address``
+- ``pickup``
+- ``contact``
+- ``description``
+- ``access_information``
+- ``map``
+
+
+Activity Area Templates
+-----------------------
+
+juntagrico/my/area/snippets/intro.html|all
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Override the intro text on the activity area overview page
+
+
+Membership Templates
+--------------------
+
+cancelmembership.html|intro
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Text after title
+
+profile.html
+^^^^^^^^^^^^
+
+Blocks exist for the text in the info banner on top and for the buttons
+
+- ``info_canceled``
+- ``info_active``
+- ``button_change_password``
+- ``button_cancel_membership``
+
+
+Widget Templates
+----------------
+
+juntagrico/widgets/assignment_progress.html|progress
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Change appearance of the assignment progress widget in menu.
+
+E.g. to use the bean icon indicators of previous juntagrico versions do:
+
+.. code-block:: html
+
+    {% extends 'juntagrico/widgets/assignment_progress.html' %}
+    {% block progress %}
+        {% assignment_progress request.user.member future=False as assignments %}
+        {% include "./assignment_progress/classic.html" %}
+    {% endblock %}
+
+The ``future`` argument on ``assignment_progress`` specifies if planned future assignments are counted as well:
+
+* None: Count future assignments
+* False: Don't count future assignments
+* True: Count future assignments separately. This is not supported by the classic assignments widget.

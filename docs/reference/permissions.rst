@@ -105,6 +105,7 @@ juntagrico.is_area_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
 Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
+They also have the permission to modify assignments in jobs of their area.
 
 people with this permission have limited access to certain fields. They can not:
 - change name, core, hidden and coordinator fields of areas
@@ -119,7 +120,7 @@ Search Hints:
 
 Notifications
 -------------
-Some entities send a notification email when they are created or cancelled. Should a member be notified on a certain event it has to have the corresponding
+Some entities send a notification email when they are created or canceled. Should a member be notified on a certain event it has to have the corresponding
 permission for that entity type and event.
 
 juntagrico.notified_on_share_creation
@@ -131,7 +132,7 @@ Search Hints:
 
 juntagrico.notified_on_share_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a share is cancelled.
+Person gets notified when a share is canceled.
 
 Search Hints:
     * German: Kündigung informiert
@@ -173,7 +174,7 @@ Search Hints:
 
 juntagrico.notified_on_subscriptionpart_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription part is cancelled.
+Person gets notified when a subscription part is canceled.
 
 Search Hints:
     * German: Kündigung informiert
@@ -236,7 +237,7 @@ Search Hints:
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can access the mail from from the administration menu.
+Person can access the email form from the administration menu.
 
 Search Hints:
     * German: Emails versenden
@@ -279,6 +280,8 @@ Search Hints:
 
 Email Permissions
 -----------------
+These permissions are related to sending emails.
+
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "general" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
@@ -316,12 +319,29 @@ Search Hints:
 
 Edit Permissions
 ----------------
+These permissions allow to edit certain entities.
+
 juntagrico.can_edit_past_jobs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can edit jobs which are in the past.
 
 Search Hints:
     * German: vergangene
+
+juntagrico.change_assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can edit all assignments on all jobs.
+To reduce the assignments, the `juntagrico.delete_assignment` permission is needed. See below.
+
+Search Hints:
+    * German: Arbeitseinsatz
+
+juntagrico.delete_assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can remove any assignment on any job.
+
+Search Hints:
+    * German: Arbeitseinsatz
 
 juntagrico.can_change_deactivated_subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

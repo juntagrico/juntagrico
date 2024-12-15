@@ -1,0 +1,4 @@
+{% extends "juntagrico/mails/admin/assignment/changed.txt" %}
+{% load i18n %}
+{% block intro %}{% blocktrans %}Soeben hat {{ editor }} den Einsatz von {{ member }} abgemeldet.{% endblocktrans %}{% endblock %}
+{% block count %}{% trans "Anzahl abgemeldete Personen" %}: {{ initial_count }}{% endblock %}

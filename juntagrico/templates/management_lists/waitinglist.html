@@ -7,6 +7,7 @@
     </h3>
 {% endblock %}
 {% block management_cmd %}
+    {% include './snippets/deprecation_warning.html' %}
     {% include 'management_lists/snippets/change_date.html' %}
     {% include 'management_lists/snippets/email_sender.html' %}
 {% endblock %}
@@ -39,7 +40,7 @@
                 </th>
                 <th>
                 </th>
-                <th>
+                <th class="filter">
                     {% trans "Notizen" %}
                 </th>
             </tr>
@@ -69,7 +70,7 @@
                         </form>
                     </td>
                     <td>
-                        {{ subscription.depot.weekday_name }}
+                        {{ subscription.depot.get_weekday_display }}
                     </td>
                     {% if enable_shares %}
                         <td>
