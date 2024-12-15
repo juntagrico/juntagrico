@@ -10,20 +10,22 @@
         </a>
         <div class="collapse" id="extrasubman">
             <ul class="nav flex-column subadmin-menu">
-            {% if perms.juntagrico.change_subscriptionpart %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
-                        <i>{% trans "Warteliste" %}</i>
-                    </a>
-                </li>
-            {% endif %}
-            {% if perms.juntagrico.change_subscriptionpart %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'sub-mgmt-extra-canceledlist' %}">
-                        <i>{% trans "Kündigungsliste" %}</i>
-                    </a>
-                </li>
-            {% endif %}
+                {% block sub %}
+                    {% if perms.juntagrico.change_subscriptionpart %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sub-mgmt-extra-waitinglist' %}">
+                                <i>{% trans "Warteliste" %}</i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscriptionpart %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'sub-mgmt-extra-canceledlist' %}">
+                                <i>{% trans "Kündigungsliste" %}</i>
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endblock %}
             </ul>
         </div>
     </li>

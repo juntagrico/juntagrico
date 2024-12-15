@@ -11,16 +11,18 @@
             </a>
             <div class="collapse{% if 'manage-share' in request.resolver_match.url_name %} show{% endif %}" id="shareman">
                 <ul class="nav flex-column subadmin-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'manage-share-unpaid' %}">
-                            {% trans "Unbezahlt" %}
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'manage-share-canceled' %}">
-                            {% trans "Gekündigt" %}
-                        </a>
-                    </li>
+                    {% block sub %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-share-unpaid' %}">
+                                {% trans "Unbezahlt" %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-share-canceled' %}">
+                                {% trans "Gekündigt" %}
+                            </a>
+                        </li>
+                    {% endblock %}
                 </ul>
             </div>
         </li>

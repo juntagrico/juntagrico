@@ -11,13 +11,15 @@
         </a>
         <div class="collapse{% if 'manage-depot' in request.resolver_match.url_name %} show{% endif %}" id="depotman">
             <ul class="nav flex-column subadmin-menu">
-                {% for depot in qs_depot_admin %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'manage-depot-subs' depot.id %}">
-                            {% blocktrans with dn=depot.name %}{{ v_subscription_pl }} im {{ v_depot }} {{ dn }}{% endblocktrans %}
-                        </a>
-                    </li>
-                {% endfor %}
+                {% block sub %}
+                    {% for depot in qs_depot_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-depot-subs' depot.id %}">
+                                {% blocktrans with dn=depot.name %}{{ v_subscription_pl }} im {{ v_depot }} {{ dn }}{% endblocktrans %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% endblock %}
             </ul>
         </div>
     </li>

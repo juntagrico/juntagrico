@@ -16,14 +16,18 @@
     {% endif %}
     {% if member.canceled %}
         <div class="alert alert-warning">
-            {% blocktrans trimmed with cd=member.cancellation_date|date:"d.m.Y"%}
-                Deine {{ v_member_type }}schaft ist seit dem {{ cd }} gekündigt.
-            {% endblocktrans %}
+            {% block info_canceled %}
+                {% blocktrans trimmed with cd=member.cancellation_date|date:"d.m.Y"%}
+                    Deine {{ v_member_type }}schaft ist seit dem {{ cd }} gekündigt.
+                {% endblocktrans %}
+            {% endblock %}
         </div>
     {% endif %}
     {% if not member.canceled and not member.inactive%}
         <div class="alert alert-success">
-            {% blocktrans %}Deine {{ v_member_type }}schaft ist aktiv.{% endblocktrans %}
+            {% block info_active %}
+                {% blocktrans %}Deine {{ v_member_type }}schaft ist aktiv.{% endblocktrans %}
+            {% endblock %}
         </div>
     {% endif %}
     <form method="post" class="mb-4">
@@ -31,17 +35,21 @@
     </form>
     <div class="row mb-2">
         <div class="offset-md-3 col-md-9">
-            <a href="{% url 'password' %}" class="btn btn-success">
-                {% trans "Passwort ändern" %}
-            </a>
+            {% block button_change_password %}
+                <a href="{% url 'password' %}" class="btn btn-success">
+                    {% trans "Passwort ändern" %}
+                </a>
+            {% endblock %}
         </div>
     </div>
     {% if not member.canceled %}
         <div class="row mb-2">
             <div class="offset-md-3 col-md-9">
-                <a href="{% url 'cancel-membership' %}" class="btn btn-danger">
-                    {% trans "Mitgliedschaft künden" %}
-                </a>
+                {% block button_cancel_membership %}
+                    <a href="{% url 'cancel-membership' %}" class="btn btn-danger">
+                        {% trans "Mitgliedschaft künden" %}
+                    </a>
+                {% endblock %}
             </div>
         </div>
     {% endif %}

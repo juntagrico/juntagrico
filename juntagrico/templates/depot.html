@@ -3,68 +3,84 @@
 {% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+
 {% block styles %}
     <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
 {% endblock %}
+
 {% block page_title %}
     <h3>
         {% vocabulary "depot" %} {{ depot.name }}
     </h3>
 {% endblock %}
+
 {% block content %}
-    <div class="row mb-3">
-        <div class="col-md-3">
-            {% trans "Adresse" %}
-        </div>
-        <div class="col-md-9">
-            {{ depot.location.address_html|safe }}
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-3">
-            {% trans "Abholung" %}
-        </div>
-        <div class="col-md-9">
-            {{ depot.pickup_display }}
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-3">
-            {% trans "Kontaktperson" %}
-        </div>
-        <div class="col-md-9">
-            {{ depot.contact.first_name }} {{ depot.contact.last_name }}
-            <a href="mailto:{{ depot.contact.email }}">
-                {{ depot.contact.email }}
-            </a>
-        </div>
-    </div>
-    {% if depot.description %}
+    {% block address %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% trans "Beschreibung" %}
+                {% trans "Adresse" %}
             </div>
             <div class="col-md-9">
-                {{ depot.location.description|richtext|safe }}
-                {{ depot.description|richtext|safe }}
+                {{ depot.location.address_html|safe }}
             </div>
         </div>
-    {% endif %}
-    {% if depot.access_information and show_access %}
+    {% endblock %}
+    {% block pickup %}
         <div class="row mb-3">
             <div class="col-md-3">
-                {% trans "Zugangsbeschreibung" %}
+                {% trans "Abholung" %}
             </div>
             <div class="col-md-9">
-                {{ depot.access_information|richtext|safe }}
+                {{ depot.pickup_display }}
             </div>
         </div>
-    {% endif %}
-    <div class="row">
-        <div class="offset-md-3 col-md-9" id="map-container">
+    {% endblock %}
+    {% block contact %}
+        <div class="row mb-3">
+            <div class="col-md-3">
+                {% trans "Kontaktperson" %}
+            </div>
+            <div class="col-md-9">
+                {{ depot.contact.first_name }} {{ depot.contact.last_name }}
+                <a href="mailto:{{ depot.contact.email }}">
+                    {{ depot.contact.email }}
+                </a>
+            </div>
         </div>
-    </div>
+    {% endblock %}
+    {% block description %}
+        {% if depot.description %}
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    {% trans "Beschreibung" %}
+                </div>
+                <div class="col-md-9">
+                    {{ depot.location.description|richtext|safe }}
+                    {{ depot.description|richtext|safe }}
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
+    {% block access_information %}
+        {% if depot.access_information and show_access %}
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    {% trans "Zugangsbeschreibung" %}
+                </div>
+                <div class="col-md-9">
+                    {{ depot.access_information|richtext|safe }}
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
+    {% block map %}
+        <div class="row">
+            <div class="offset-md-3 col-md-9" id="map-container">
+            </div>
+        </div>
+    {% endblock %}
 {% endblock %}
+
 {% block scripts %}
     {{ depot.map_info|json_script:'depot_data' }}
     {% include 'snippets/scripts/leaflet.html' %}

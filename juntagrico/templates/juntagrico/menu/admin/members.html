@@ -8,7 +8,7 @@
         </a>
         <div class="collapse{% if 'manage-member' in request.resolver_match.url_name %} show{% endif %}" id="memberman">
             <ul class="nav flex-column subadmin-menu">
-                {% block member_sub %}
+                {% block sub %}
                     {% if perms.juntagrico.change_member or perms.juntagrico.can_filter_members %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'manage-member-active' %}">

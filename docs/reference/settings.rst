@@ -364,7 +364,7 @@ ENABLE_SHARES
     True
 
 REQUIRED_SHARES
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
     .. note::
     Added in version 1.7.0.
 
