@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('juntagrico', '0043_member_subscriptions_subscription_types_and_more'),
+        ('juntagrico', '0044_alter_subscriptionmembership_unique_together'),
     ]
 
     operations = [
