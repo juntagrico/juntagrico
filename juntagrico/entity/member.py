@@ -164,11 +164,12 @@ class Member(JuntagricoBaseModel):
 
     def join_subscription(self, subscription, primary=False):
         sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        if sub_membership and sub_membership.leave_date:
+        today = datetime.date.today()
+        if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date >= today):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = None if subscription.waiting else datetime.date.today()
+            join_date = None if subscription.waiting else today
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
@@ -178,14 +179,17 @@ class Member(JuntagricoBaseModel):
         subscription = subscription or self.subscription_current
         if subscription == self.subscription_current:
             del self.subscription_current  # clear cache
-        sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
-        membership_present = sub_membership and sub_membership.leave_date is None
-        if membership_present and sub_membership.join_date is not None:
+        if subscription:
+            sub_membership = self.subscriptionmembership_set.filter(subscription=subscription).first()
             changedate = changedate or datetime.date.today()
-            sub_membership.leave_date = changedate
-            sub_membership.save()
-        elif membership_present and sub_membership.join_date is None:
-            sub_membership.delete()
+            # if subscription will not have been left at change date already
+            if sub_membership and (sub_membership.leave_date is None or sub_membership.leave_date > changedate):
+                # if subscription will have been joined at change date
+                if sub_membership.join_date is not None and sub_membership.join_date <= changedate:
+                    sub_membership.leave_date = changedate
+                    sub_membership.save()
+                else:
+                    sub_membership.delete()
 
     @property
     def in_subscription(self):
@@ -312,6 +316,5 @@ class SubscriptionMembership(JuntagricoBaseModel):
         return self.subscription.co_members(self.member)
 
     class Meta:
-        unique_together = ('member', 'subscription')
         verbose_name = _('{}-Mitgliedschaft').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{}-Mitgliedschaften').format(Config.vocabulary('subscription'))
