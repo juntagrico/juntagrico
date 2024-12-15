@@ -8,11 +8,13 @@
         </a>
         <div class="collapse{% if 'manage-assignments' in request.resolver_match.url_name %} show{% endif %}" id="assman">
             <ul class="nav flex-column subadmin-menu">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'manage-assignments' %}">
-                         {% blocktrans %}Übersicht{% endblocktrans %}
-                    </a>
-                </li>
+                {% block sub %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manage-assignments' %}">
+                             {% blocktrans %}Übersicht{% endblocktrans %}
+                        </a>
+                    </li>
+                {% endblock %}
             </ul>
         </div>
     </li>
