@@ -59,14 +59,18 @@ class SimpleStateModel(models.Model):
         self.save()
 
     def cancel(self, date=None):
-        date = date or datetime.date.today()
+        today = datetime.date.today()
+        if date is None or date > today:
+            date = today
         self.cancellation_date = self.cancellation_date or date
         self.save()
 
     def deactivate(self, date=None):
-        date = date or datetime.date.today()
+        today = datetime.date.today()
+        date = date or today
         self.activation_date = self.activation_date or date  # allows immediate deactivation
-        self.cancellation_date = self.cancellation_date or date
+        if not self.cancellation_date:
+            self.cancellation_date = today if date > today else date  # can't cancel in the future
         self.deactivation_date = self.deactivation_date or date
         self.save()
 
