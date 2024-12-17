@@ -53,7 +53,7 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
                 f'amount[{type_id}]': 1 if i == 1 else 0
-                for i, type_id in enumerate(SubscriptionType.objects.values_list('id', flat=True))
+                for i, type_id in enumerate(SubscriptionType.objects.order_by('id').values_list('id', flat=True))
             }
             # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
             if settings.ENABLE_SHARES:
