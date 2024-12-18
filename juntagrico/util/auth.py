@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, _unicode_ci_compare
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
@@ -76,6 +76,14 @@ class JuntagricoPasswordResetForm(PasswordResetForm):
         # custom sender
         sender = EmailSender.get_sender_from_email(email_message)
         sender.send()
+
+    def get_users(self, email):
+        active_members = Member.objects.active().filter(email__iexact=email)
+        return (
+            member.user
+            for member in active_members
+            if member.user.has_usable_password() and _unicode_ci_compare(email, member.email)
+        )
 
 
 class MultiplePermissionsRequiredMixin(PermissionRequiredMixin):

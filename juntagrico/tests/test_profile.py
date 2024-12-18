@@ -135,6 +135,13 @@ class ProfileTests(JuntagricoTestCase):
             member.refresh_from_db()
             self.assertEqual(member.inactive, result, f'{member} {member.email}')
 
+
+class AuthTests(JuntagricoTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.deactivated_member = cls.create_member('deactivated_member@example.com', deactivation_date='2020-01-01')
+
     def testConfirmEmail(self):
         self.assertGet(reverse('send-confirm'))
         self.assertEqual(len(mail.outbox), 1)
@@ -151,8 +158,12 @@ class ProfileTests(JuntagricoTestCase):
         self.assertEqual(len(mail.outbox), 0)
 
     def testNewPasswordPost(self):
-        self.assertPost(reverse('password_reset'), {'email': 'member_without_shares@email.org'}, code=302)
+        self.assertPost(reverse('password_reset'), {'email': 'email1@email.org'}, code=302)
         self.assertEqual(len(mail.outbox), 1)
+
+    def testDeactivatedMemberNewPasswordPost(self):
+        self.assertPost(reverse('password_reset'), {'email': 'deactivated_member@example.com'}, code=302)
+        self.assertEqual(len(mail.outbox), 0)  # should send no email
 
     def testLogout(self):
         self.assertGet(reverse('logout'), code=302)
