@@ -319,6 +319,7 @@ textarea#recipients[disabled=disabled] {
 }
 
 #filter-table th {
+    /* TODO: Test this in mobile view */
 	position: sticky;
 	top: 2.6875rem;
 	z-index: 2;
@@ -338,28 +339,6 @@ textarea#recipients[disabled=disabled] {
     display: none;
 }
 
-/* stuff for responsive tables */
-table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
-    font-family: 'Font Awesome 5 Free';
-    font-style: normal;
-    font-weight: 900;
-    font-size: 27px;
-    line-height: 1;
-    color: #66cc66;
-    background: inherit;
-    border: none;
-    box-shadow: none;
-    margin-top: 0;
-    padding: 8px 0.445rem 8px 0;
-    content: "\f105";
-    top: 0px;
-    left: 0px;
-}
-
-table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before {
-    background: inherit;
-    content: "\f107";
-}
 
 .dtr-title > input {
     display: none;
@@ -399,6 +378,10 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::befor
 /* data table stuff checked */
 th {
     font-weight: normal;
+}
+
+.total-footer th {
+    font-weight: bold;
 }
 
 .table th {
