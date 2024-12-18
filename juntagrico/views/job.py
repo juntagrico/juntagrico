@@ -1,15 +1,15 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models import Min, Max
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import Job
+from juntagrico.entity.jobs import Job, Assignment
 from juntagrico.entity.member import Member
-from juntagrico.forms import JobSubscribeForm, EditAssignmentForm
+from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
 from juntagrico.util.admin import get_job_admin_url
 from juntagrico.util.messages import alert, error_message, job_messages
 from juntagrico.view_decorators import highlighted_menu
@@ -46,15 +46,30 @@ def all_jobs(request):
 @login_required
 @highlighted_menu('jobs')
 def memberjobs(request):
-    '''
-    All jobs of current user
-    '''
+    """
+    Assignments of current user
+    """
     member = request.user.member
-    allassignments = AssignmentDao.assignments_for_member(member)
-    renderdict = {
-        'assignments': allassignments,
-    }
-    return render(request, 'memberjobs.html', renderdict)
+
+    # get date range in which this member was doing assignments
+    date_range = Assignment.objects.filter(member=member).aggregate(
+        min_date=Min('job__time__date'), max_date=Max('job__time__date')
+    )
+    year_selection_form = BusinessYearForm(date_range['min_date'], date_range['max_date'], request.GET)
+
+    # get assignments of member in selected business year
+    if year_selection_form.is_valid():
+        assignments = Assignment.objects.filter(
+            member=member,
+            job__time__date__range=year_selection_form.date_range()
+        )
+    else:
+        assignments = Assignment.objects.none()
+
+    return render(request, 'memberjobs.html', {
+        'year_selection_form': year_selection_form,
+        'assignments': assignments,
+    })
 
 
 @login_required

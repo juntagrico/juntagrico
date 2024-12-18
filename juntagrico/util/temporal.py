@@ -18,6 +18,28 @@ weekday_choices = ((1, _('Montag')),
 weekdays = dict(weekday_choices)
 
 
+def get_business_year(date):
+    """
+    :param date: date for which to determine business year
+    :return: year in which business year containing date started
+    """
+    business_year = Config.business_year_start()
+    if date.month > business_year['month'] or (date.month == business_year['month'] and date.day >= business_year['day']):
+        return date.year
+    return date.year - 1
+
+
+def get_business_date_range(year):
+    """
+    :param year: year in which the business year starts
+    :return: date range of the selected business year
+    """
+    business_year = Config.business_year_start()
+    start = datetime.date(year, business_year['month'], business_year['day'])
+    end = datetime.date(year + 1, business_year['month'], business_year['day']) - timedelta(days=1)
+    return start, end
+
+
 def is_date_in_cancelation_period(date):
     return start_of_business_year() <= date <= cancelation_date()
 
