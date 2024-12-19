@@ -24,14 +24,23 @@
                             {% endblocktrans %}
                         {% endblock %}
                     </div>
-                {% else %}
-                    {% if not member.inactive%}
-                        <div class="alert alert-success">
-                            {% block info_active %}
-                                {% blocktrans with v_member_type=vocabulary.member_type %}Deine {{ v_member_type }}schaft ist aktiv.{% endblocktrans %}
-                            {% endblock %}
-                        </div>
-                    {% endif %}
+                {% elif not member.inactive%}
+                    <div class="alert alert-success">
+                        {% block info_active %}
+                            {% blocktrans with v_member_type=vocabulary.member_type %}Deine {{ v_member_type }}schaft ist aktiv.{% endblocktrans %}
+                        {% endblock %}
+                    </div>
+                {% endif %}
+
+                {% if member.number %}
+                    <p>
+                        {% blocktrans trimmed with number=member.number %}
+                            Nummer: {{ number }}
+                        {% endblocktrans %}
+                    </p>
+                {% endif %}
+
+                {% if not member.canceled %}
                     {% block button_cancel_membership %}
                         <a href="{% url 'cancel-membership' %}" class="btn btn-outline-danger">
                             {% trans "Mitgliedschaft künden" %}
