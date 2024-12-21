@@ -36,7 +36,7 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  'yourdatabasename.db',
+        'NAME':  'dev.1.7.db',
     }
 }
 
@@ -194,3 +194,5 @@ BYLAWS = 'https://juntagrico.juntagrico/bylaws'
 FAQ_DOC = 'https://juntagrico.juntagrico/faq'
 EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
 ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
+
+BUSINESS_YEAR_START = {"day": 24, "month": 12}

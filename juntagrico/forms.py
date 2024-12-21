@@ -849,7 +849,7 @@ class BusinessYearForm(Form):
         else:
             choices = [
                 (year, f'{year}/{year+1}')
-                for year in range(get_business_year(min_date), max(today.year, get_business_year(max_date)) + 1)
+                for year in range(get_business_year(min_date), get_business_year(max(today, max_date)) + 1)
             ]
         self.fields['year'].choices = choices
         # default to current business year
