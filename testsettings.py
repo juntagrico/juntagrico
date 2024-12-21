@@ -194,5 +194,3 @@ BYLAWS = 'https://juntagrico.juntagrico/bylaws'
 FAQ_DOC = 'https://juntagrico.juntagrico/faq'
 EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
 ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
-
-BUSINESS_YEAR_START = {"day": 24, "month": 12}
