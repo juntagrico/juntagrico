@@ -173,7 +173,7 @@ class MemberProfileForm(ModelForm):
             'phone', 'mobile_phone', 'email', 'birthday', 'iban',
             Slider('reachable_by_email'),
             FormActions(
-                Submit('submit', _('Personalien ändern'), css_class='btn-success'),
+                Submit('submit', _('Speichern'), css_class='btn-success'),
             ),
         )
 
