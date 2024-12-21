@@ -9,6 +9,20 @@ SECRET_KEY = 'fake-key'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
 IMPERSONATE = {
     'REDIRECT_URL': '/my/profile',
 }
@@ -36,7 +50,7 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  'yourdatabasename.db',
+        'NAME': 'yourdatabasename.db',
     }
 }
 
@@ -188,3 +202,5 @@ CONTACTS = {
 IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
 
 ENABLE_SHARES = os.environ.get('EXCLUDE_TEST', 'none') != 'shares'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
