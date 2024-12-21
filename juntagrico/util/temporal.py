@@ -18,11 +18,12 @@ weekday_choices = ((1, _('Montag')),
 weekdays = dict(weekday_choices)
 
 
-def get_business_year(date):
+def get_business_year(date=None):
     """
-    :param date: date for which to determine business year
+    :param date: date for which to determine business year, defaults to today
     :return: year in which business year containing date started
     """
+    date = date or datetime.date.today()
     business_year = Config.business_year_start()
     if date.month > business_year['month'] or (date.month == business_year['month'] and date.day >= business_year['day']):
         return date.year

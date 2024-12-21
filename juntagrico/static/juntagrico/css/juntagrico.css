@@ -319,7 +319,6 @@ textarea#recipients[disabled=disabled] {
 }
 
 #filter-table th {
-    /* TODO: Test this in mobile view */
 	position: sticky;
 	top: 2.6875rem;
 	z-index: 2;
