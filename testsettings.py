@@ -9,6 +9,20 @@ SECRET_KEY = 'fake-key'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING' if os.environ.get('GITHUB_WORKFLOW') else 'DEBUG',
+    },
+}
+
 IMPERSONATE = {
     'REDIRECT_URL': '/my/profile',
 }
@@ -36,7 +50,7 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  'dev.1.7.db',
+        'NAME': 'dev.1.7.db',
     }
 }
 
@@ -194,3 +208,5 @@ BYLAWS = 'https://juntagrico.juntagrico/bylaws'
 FAQ_DOC = 'https://juntagrico.juntagrico/faq'
 EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
 ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

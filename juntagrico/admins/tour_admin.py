@@ -15,5 +15,5 @@ class DepotInline(SortableTabularInline):
 
 class TourAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['name', 'visible_on_list']
-    search_fields = ['name', 'description', 'depots_name']
+    search_fields = ['name', 'description', 'depots__name']
     inlines = [DepotInline]

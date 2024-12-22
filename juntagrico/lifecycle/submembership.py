@@ -18,7 +18,7 @@ def check_submembership_dates(instance):
     join_date = instance.join_date or datetime.date.today()
     leave_date = instance.leave_date or join_date  # allow future join dates
     if has_left and not has_joined:
-        raise ValidationError(_('Bitte "Beitrittsdatum" ausfüllen'), code='invalid')
+        raise ValidationError(_('Bitte "Beitrittsdatum" ausfüllen'), code='missing_join_date')
     if not (join_date <= leave_date):
         raise ValidationError(_('Datenreihenfolge stimmt nicht.'), code='invalid')
 
@@ -44,16 +44,16 @@ def check_submembership_parent_dates(instance, check_empty_end=True):
 
 
 def check_sub_membership_consistency(instance):
-    check_submembership_dates(instance)
     if hasattr(instance, 'subscription'):
+        subscription = instance.subscription
         # keep leave date consistent with deactivation date
-        deactivation_date = instance.subscription.deactivation_date
-        if deactivation_date is not None and instance.leave_date is None:
-            instance.leave_date = deactivation_date
+        if subscription.deactivation_date is not None and instance.leave_date is None:
+            instance.leave_date = subscription.deactivation_date
         # check consistency
         check_submembership_parent_dates(instance)
         if hasattr(instance, 'member'):
             check_sub_membership_consistency_ms(instance)
+    check_submembership_dates(instance)
 
 
 def check_sub_membership_consistency_ms(sub_membership):

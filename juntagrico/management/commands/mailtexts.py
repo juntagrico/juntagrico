@@ -30,7 +30,7 @@ class Command(BaseCommand):
             management.call_command('generate_testdata')
             subscription = Subscription.objects.all()[0]
             if Config.enable_shares():
-                shares = Share.objects.all()[:2]
+                shares = list(Share.objects.all()[:2])
             job = RecuringJob.objects.all()[0]
             member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
             member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]

@@ -59,14 +59,18 @@ class SimpleStateModel(models.Model):
         self.save()
 
     def cancel(self, date=None):
-        date = date or datetime.date.today()
+        today = datetime.date.today()
+        if date is None or date > today:
+            date = today
         self.cancellation_date = self.cancellation_date or date
         self.save()
 
     def deactivate(self, date=None):
-        date = date or datetime.date.today()
+        today = datetime.date.today()
+        date = date or today
         self.activation_date = self.activation_date or date  # allows immediate deactivation
-        self.cancellation_date = self.cancellation_date or date
+        if not self.cancellation_date:
+            self.cancellation_date = today if date > today else date  # can't cancel in the future
         self.deactivation_date = self.deactivation_date or date
         self.save()
 
@@ -109,11 +113,11 @@ class SimpleStateModel(models.Model):
         is_deactivated = self.deactivation_date is not None
         if is_deactivated:
             if not is_active:
-                raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='invalid')
+                raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='missing_activation_date')
             elif self.activation_date > self.deactivation_date:
                 raise ValidationError(_('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
             elif not is_canceled:
-                raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='invalid')
+                raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='missing_cancellation_date')
             elif self.cancellation_date > self.deactivation_date:
                 raise ValidationError(_('"Kündigungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
         if is_canceled and self.cancellation_date > today:

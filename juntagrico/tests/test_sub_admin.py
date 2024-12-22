@@ -13,29 +13,8 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('admin:juntagrico_subscription_change', args=(self.sub.pk,)), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_changelist'), member=self.admin)
         self.assertGet(reverse('admin:juntagrico_subscription_add'), member=self.admin)
-        # Test adding a started subscription without parts and a member that joined before subscription start. Assert that it fails
-        data = {
-            'depot': str(self.depot.id),
-            'start_date': '01.01.2021',
-            'initial-start_date': '01.01.2021',
-            'notes': '',
-            'subscriptionmembership_set-TOTAL_FORMS': '1',
-            'subscriptionmembership_set-INITIAL_FORMS': '0',
-            'subscriptionmembership_set-MIN_NUM_FORMS': '0',
-            'subscriptionmembership_set-MAX_NUM_FORMS': '1000',
-            'subscriptionmembership_set-0-id': '',
-            'subscriptionmembership_set-0-subscription': '',
-            'subscriptionmembership_set-0-member': str(self.member4.id),
-            'subscriptionmembership_set-0-join_date': '17.08.2020',
-            'subscriptionmembership_set-0-leave_date': '',
-            'parts-TOTAL_FORMS': '0',
-            'extra_subscription_set-TOTAL_FORMS': '0'
-        }
-        response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
-        self.assertListEqual(
-            [None, 'missing_part'],  # first code 'part_activation_date_mismatch' reaches here as none somehow
-            [e.code for e in response.context_data['errors'].as_data()]
-        )
+
+    def testAddingStartedSubWithWaitingMember(self):
         # Test adding a started subscription with waiting member and unstarted part. Assert that it works
         data = {
             'depot': str(self.depot.id),
@@ -111,14 +90,114 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub_id]),
                         data=data, member=self.admin, code=302)
 
-    def testWithoutMembership(self):
+    def testAddingCanceledSubscription(self):
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2017',
+            'initial-start_date': '01.01.2017',
+            'activation_date': '01.01.2017',
+            'cancellation_date': '01.01.2018',
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
+            'subscriptionmembership_set-INITIAL_FORMS': '0',
+            'subscriptionmembership_set-0-id': '',
+            'subscriptionmembership_set-0-subscription': '',
+            'subscriptionmembership_set-0-member': str(self.member4.id),
+            'subscriptionmembership_set-0-join_date': '',
+            'subscriptionmembership_set-0-leave_date': '',
+            'parts-TOTAL_FORMS': '1',
+            'parts-INITIAL_FORMS': '0',
+            'parts-0-id': '',
+            'parts-0-subscription': '',
+            'parts-0-activation_date': '',
+            'parts-0-cancellation_date': '',
+            'parts-0-deactivation_date': '',
+            'parts-0-type': str(self.sub_type.id),
+            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-INITIAL_FORMS': '0',
+        }
+        # succeeds
+        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
+
+    def testAddingDeactivatedSubscription(self):
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2017',
+            'initial-start_date': '01.01.2017',
+            'activation_date': '01.01.2017',
+            'cancellation_date': '01.01.2018',
+            'deactivation_date': '01.01.2018',
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
+            'subscriptionmembership_set-INITIAL_FORMS': '0',
+            'subscriptionmembership_set-0-id': '',
+            'subscriptionmembership_set-0-subscription': '',
+            'subscriptionmembership_set-0-member': str(self.member4.id),
+            'subscriptionmembership_set-0-join_date': '',
+            'subscriptionmembership_set-0-leave_date': '',
+            'parts-TOTAL_FORMS': '1',
+            'parts-INITIAL_FORMS': '0',
+            'parts-0-id': '',
+            'parts-0-subscription': '',
+            'parts-0-activation_date': '',
+            'parts-0-cancellation_date': '',
+            'parts-0-deactivation_date': '',
+            'parts-0-type': str(self.sub_type.id),
+            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-INITIAL_FORMS': '0',
+        }
+        # fails, because join date and activation date on part are not set
+        response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
+        self.assertListEqual(
+            ['missing_join_date', 'missing_activation_date'],
+            [e.data[0].code for e in response.context_data["errors"].data],
+        )
+        # fails because cancellation date on part is not set
+        data['subscriptionmembership_set-0-join_date'] = '01.01.2017'
+        data['parts-0-activation_date'] = '01.01.2017'
+        response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
+        self.assertListEqual(
+            ['missing_cancellation_date'],
+            [e.data[0].code for e in response.context_data["errors"].data],
+        )
+        # succeeds
+        data['parts-0-cancellation_date'] = '01.01.2018'
+        self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin, code=302)
+
+    def testErrors(self):
+        # Test adding a started subscription without parts and a member that joined before subscription start. Assert that it fails
+        data = {
+            'depot': str(self.depot.id),
+            'start_date': '01.01.2021',
+            'initial-start_date': '01.01.2021',
+            'notes': '',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
+            'subscriptionmembership_set-INITIAL_FORMS': '0',
+            'subscriptionmembership_set-MIN_NUM_FORMS': '0',
+            'subscriptionmembership_set-MAX_NUM_FORMS': '1000',
+            'subscriptionmembership_set-0-id': '',
+            'subscriptionmembership_set-0-subscription': '',
+            'subscriptionmembership_set-0-member': str(self.member4.id),
+            'subscriptionmembership_set-0-join_date': '17.08.2020',
+            'subscriptionmembership_set-0-leave_date': '',
+            'parts-TOTAL_FORMS': '0',
+            'extra_subscription_set-TOTAL_FORMS': '0'
+        }
+        response = self.assertPost(reverse('admin:juntagrico_subscription_add'), data=data, member=self.admin)
+        self.assertListEqual(
+            [None, 'missing_part'],  # first code 'part_activation_date_mismatch' reaches here as none somehow
+            [e.code for e in response.context_data['errors'].as_data()]
+        )
+
+    def testAddingWithoutMembership(self):
+        # Assert that it fails
         data = {
             'depot': str(self.depot.id),
             'start_date': '01.01.2017',
             'initial-start_date': '01.01.2017',
             'activation_date': '01.01.2017',
             'notes': '',
-            'subscriptionmembership_set-TOTAL_FORMS': '0',
+            'subscriptionmembership_set-TOTAL_FORMS': '1',
             'subscriptionmembership_set-INITIAL_FORMS': '0',
             'parts-TOTAL_FORMS': '1',
             'parts-INITIAL_FORMS': '0',
@@ -128,7 +207,7 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'parts-0-cancellation_date': '',
             'parts-0-deactivation_date': '',
             'parts-0-type': str(self.sub_type3.id),
-            'extra_subscription_set-TOTAL_FORMS': '0',
+            'extra_subscription_set-TOTAL_FORMS': '1',
             'extra_subscription_set-INITIAL_FORMS': '0',
         }
         response = self.assertPost(reverse('admin:juntagrico_subscription_add'),
@@ -138,8 +217,9 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             [e.code for e in response.context_data['errors'].as_data()]
         )
 
-    def testDeactivation(self):
+    def testDeactivation(self, deactivation_date=None):
         # setup
+        deactivation_date = deactivation_date or '01.01.2018'
         sub = self.create_sub(self.depot, [self.sub_type], datetime.date(2017, 1, 1))
         self.member4.join_subscription(sub, True)
         sub_membership = sub.subscriptionmembership_set.first()
@@ -151,7 +231,7 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'initial-start_date': '01.01.2017',
             'activation_date': '01.01.2017',
             'cancellation_date': '01.01.2018',
-            'deactivation_date': '01.01.2018',
+            'deactivation_date': deactivation_date,
             'notes': '',
             'subscriptionmembership_set-TOTAL_FORMS': '1',
             'subscriptionmembership_set-INITIAL_FORMS': '1',
@@ -173,3 +253,7 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
         # test deactivation of sub, by setting only deactivation date of sub.
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
                         data=data, member=self.admin, code=302)
+
+    def testFutureDeactivation(self):
+        future_date = datetime.date.today() + datetime.timedelta(days=2)
+        self.testDeactivation(future_date.strftime('%d.%m.%Y'))
