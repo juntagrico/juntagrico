@@ -217,8 +217,9 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             [e.code for e in response.context_data['errors'].as_data()]
         )
 
-    def testDeactivation(self):
+    def testDeactivation(self, deactivation_date=None):
         # setup
+        deactivation_date = deactivation_date or '01.01.2018'
         sub = self.create_sub(self.depot, datetime.date(2017, 1, 1), [self.sub_type])
         self.member4.join_subscription(sub, True)
         sub_membership = sub.subscriptionmembership_set.first()
@@ -230,7 +231,7 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
             'initial-start_date': '01.01.2017',
             'activation_date': '01.01.2017',
             'cancellation_date': '01.01.2018',
-            'deactivation_date': '01.01.2018',
+            'deactivation_date': deactivation_date,
             'notes': '',
             'subscriptionmembership_set-TOTAL_FORMS': '1',
             'subscriptionmembership_set-INITIAL_FORMS': '1',
@@ -252,3 +253,7 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
         # test deactivation of sub, by setting only deactivation date of sub.
         self.assertPost(reverse('admin:juntagrico_subscription_change', args=[sub.id]),
                         data=data, member=self.admin, code=302)
+
+    def testFutureDeactivation(self):
+        future_date = datetime.date.today() + datetime.timedelta(days=2)
+        self.testDeactivation(future_date.strftime('%d.%m.%Y'))
