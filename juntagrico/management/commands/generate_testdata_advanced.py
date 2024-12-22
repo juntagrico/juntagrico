@@ -12,7 +12,7 @@ from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType
 
 fake = Faker()
 
@@ -141,6 +141,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sub_types = []
         default_size = options['sub_size']
+        # TODO: Also generate categories here
         for product_sizes in options['products']:
             product_sizes_parts = product_sizes.split('/')
             product = product_sizes_parts[0]
@@ -158,7 +159,7 @@ class Command(BaseCommand):
                     'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
                     'product': sub_product
                 }
-                size, _ = SubscriptionSize.objects.get_or_create(**subsize_fields)
+                size, _ = SubscriptionBundle.objects.get_or_create(**subsize_fields)
 
                 subtype_fields = {
                     'name': 'Abo {}'.format(product),

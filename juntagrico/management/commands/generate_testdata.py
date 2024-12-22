@@ -12,7 +12,7 @@ from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory
 
 
 class Command(BaseCommand):
@@ -78,19 +78,24 @@ class Command(BaseCommand):
                 share_all_fields['member'] = member_3
                 Share.objects.create(**share_all_fields)
             subproduct, _ = SubscriptionProduct.objects.get_or_create(name='Gemüse')
+            category, _ = SubscriptionCategory.objects.get_or_create(name='Kategorie 1', description='Beschreibung 1')
             subsize_name = 'Normales Abo'
-            subsize_fields = {'long_name': 'Ganz Normales Abo', 'units': 1, 'visible': True, 'depot_list': True,
+            subsize_fields = {'name': subsize_name,
+                              'long_name': 'Ganz Normales Abo',
+                              'category': category,
+                              'units': 1,
+                              'depot_list': True,
                               'product': subproduct,
-                              'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen '
+                              'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                              'Zwei personen Haushalt für eine Woche.'}
-            subsize = SubscriptionSize.objects.filter(
-                Q(units=subsize_fields['units']) | Q(name=subsize_name), product=subsize_fields['product']
+            subsize = SubscriptionBundle.objects.filter(
+                Q(units=subsize_fields['units']) | Q(name=subsize_name), category=subsize_fields['category']
             ).first()
             if not subsize:
-                subsize = SubscriptionSize.objects.create(**subsize_fields)
+                subsize = SubscriptionBundle.objects.create(**subsize_fields)
             subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': subsize, 'shares': 2,
                               'visible': True, 'required_assignments': 10, 'price': 1000,
-                              'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen '
+                              'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                              'Zwei personen Haushalt für eine Woche.'}
             subtype, _ = SubscriptionType.objects.get_or_create(name=subtype_fields['name'], defaults=subtype_fields)
             depot1_location_fields = {'name': 'Depot Toblerplatz', 'latitude': '47.379308',

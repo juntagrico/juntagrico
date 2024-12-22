@@ -530,7 +530,7 @@ SUB_OVERVIEW_FORMAT
   .. code-block:: python
 
     {'delimiter': '|',
-     'format': '{product}:{size}:{type}={amount}',
+     'format': '{category}:{size}:{type}={amount}',
      'part_format': '{size}'
     }
 

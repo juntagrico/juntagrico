@@ -19,10 +19,8 @@ from django.utils.translation import gettext_lazy
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
-from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionType, SubscriptionCategory
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed, assignment_changed
 from juntagrico.util.temporal import get_business_year, get_business_date_range
@@ -429,13 +427,13 @@ class SubscriptionTypeOption(Div):
 
 
 class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
-    def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
+    def __init__(self, *args, extra=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
-        self._product_method = product_method
+        self.extra = extra
 
     def get_type_field(self, subscription_type):
         field_name = f'amount[{subscription_type.id}]'
@@ -445,16 +443,17 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
 
     def _collect_type_fields(self):
         containers = []
-        for product in self._product_method().all():
-            product_container = CategoryContainer(instance=product)
-            for subscription_size in product.sizes.filter(visible=True).exclude(types=None):
+        for category in SubscriptionCategory.objects.exclude(bundles=None):
+            category_container = CategoryContainer(instance=category)
+            for subscription_size in category.bundles.exclude(types=None):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
-                for subscription_type in subscription_size.types.filter(visible=True):
+                for subscription_type in subscription_size.types.filter(visible=True, is_extra=self.extra):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         size_container.append(type_field)
-                product_container.append(size_container)
-            if len(product_container):
-                containers.append(product_container)
+                if len(size_container):
+                    category_container.append(size_container)
+            if len(category_container):
+                containers.append(category_container)
         return containers
 
     def _get_initial(self, subscription_type):
@@ -463,7 +462,7 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def get_selected(self):
         return {
             sub_type: getattr(self, 'cleaned_data', {}).get('amount[' + str(sub_type.id) + ']', 0)
-            for sub_type in SubscriptionTypeDao.get_all()
+            for sub_type in SubscriptionType.objects.all()
         }
 
 
@@ -555,7 +554,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
         return SubscriptionTypeOption('part_type', instance=subscription_type)
 
     def get_choices(self):
-        for subscription_type in SubscriptionTypeDao.get_normal_visible().exclude(pk=self.part.type.pk):
+        for subscription_type in SubscriptionType.objects.normal().visible().exclude(pk=self.part.type.pk):
             yield subscription_type.id, subscription_type.name
 
     def clean(self):

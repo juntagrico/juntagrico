@@ -19,9 +19,9 @@ from juntagrico.dao.mailtemplatedao import MailTemplateDao
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
-from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
+from juntagrico.entity.subtypes import SubscriptionBundle
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
@@ -156,10 +156,10 @@ def amount_overview(request):
 def future(request):
     subscriptionsizes = []
     subscription_lines = dict({})
-    for subscription_size in SubscriptionSizeDao.all_sizes_ordered():
+    for subscription_size in SubscriptionBundle.objects.order_by('category', 'units'):
         subscriptionsizes.append(subscription_size.id)
         subscription_lines[subscription_size.id] = {
-            'name': subscription_size.product.name + '-' + subscription_size.name,
+            'name': subscription_size.category.name + '-' + subscription_size.name,
             'future': 0,
             'now': 0
         }

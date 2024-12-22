@@ -16,7 +16,7 @@ from juntagrico.admins.share_admin import ShareAdmin
 from juntagrico.admins.subscription_admin import SubscriptionAdmin
 from juntagrico.admins.subscription_product_admin import SubscriptionProductAdmin
 from juntagrico.admins.subscription_size_admin import SubscriptionSizeAdmin
-from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin
+from juntagrico.admins.subscription_type_admin import SubscriptionTypeAdmin, SubscriptionCategoryAdmin
 from juntagrico.admins.tour_admin import TourAdmin
 from juntagrico.config import Config
 from juntagrico.entity.billing import BillingPeriod
@@ -29,7 +29,7 @@ from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member, SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription
-from juntagrico.entity.subtypes import SubscriptionSize, SubscriptionType, SubscriptionProduct
+from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionType, SubscriptionProduct, SubscriptionCategory
 from juntagrico.util import addons
 
 # loading addons here so that we have the information about admin extensions stuff like inlines etc
@@ -38,7 +38,8 @@ addons.load_addons()
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Depot, DepotAdmin)
 admin.site.register(Tour, TourAdmin)
-admin.site.register(SubscriptionSize, SubscriptionSizeAdmin)
+admin.site.register(SubscriptionCategory, SubscriptionCategoryAdmin)
+admin.site.register(SubscriptionBundle, SubscriptionSizeAdmin)
 admin.site.register(SubscriptionType, SubscriptionTypeAdmin)
 admin.site.register(SubscriptionProduct, SubscriptionProductAdmin)
 admin.site.register(Assignment, AssignmentAdmin)

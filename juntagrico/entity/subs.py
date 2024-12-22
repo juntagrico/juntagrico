@@ -51,17 +51,17 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def get_part_overview(parts):
-        # building multi-dimensional dictionary [product_name][size_long_name][(type_name, type_long_name)] -> amount
+        # building multi-dimensional dictionary [category_name][size_long_name][(type_name, type_long_name)] -> amount
         result = {}
         for part in parts.all():
-            product_name = part.type.size.product.name
-            product = result.get(product_name, {})
+            category_name = part.type.size.category.name
+            category = result.get(category_name, {})
             size_name = part.type.size.long_name
-            size = product.get(size_name, {})
+            size = category.get(size_name, {})
             type_name = (part.type.name, part.type.long_name)
             size[type_name] = 1 + size.get(type_name, 0)
-            product[size_name] = size
-            result[product_name] = product
+            category[size_name] = size
+            result[category_name] = category
         return result
 
     @property
@@ -87,18 +87,18 @@ class Subscription(Billable, SimpleStateModel):
     @cached_property
     def content(self):
         """
-        :return: list of parts annotated with size_sum, size_name and product_name
+        :return: list of parts annotated with size_sum, size_name and category_name
         """
         return self.types.with_active_or_future_parts().annotate_content()
 
     def content_strings(self, sformat=None):
         """
         :param sformat: format string. defaults to SUB_OVERVIEW_FORMAT.format
-        :return: list of formated strings desribing each type and amount in this subscription
+        :return: list of formated strings describing each type and amount in this subscription
         """
         sformat = sformat or Config.sub_overview_format('format')
         return [sformat.format(
-            product=t.product_name,
+            category=t.category_name,
             size=t.size_name,
             type=t.name,
             amount=t.size_sum,
@@ -115,7 +115,7 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def types_changed(self):
-        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=False).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__is_extra=False).count()
 
     @staticmethod
     def calc_subscription_amount(parts, size):
@@ -181,19 +181,19 @@ class Subscription(Billable, SimpleStateModel):
 
     @property
     def extra_subscriptions(self):
-        return self.active_parts.filter(type__size__product__is_extra=True)
+        return self.active_parts.filter(type__is_extra=True)
 
     @property
     def future_extra_subscriptions(self):
-        return self.future_parts.filter(type__size__product__is_extra=True)
+        return self.future_parts.filter(type__is_extra=True)
 
     @property
     def active_and_future_extra_subscriptions(self):
-        return self.active_and_future_parts.filter(type__size__product__is_extra=True)
+        return self.active_and_future_parts.filter(type__is_extra=True)
 
     @property
     def extrasubscriptions_changed(self):
-        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__size__product__is_extra=True).count()
+        return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__is_extra=True).count()
 
     def extra_subscription_amount(self, extra_sub_type):
         return self.extra_subscriptions.filter(type=extra_sub_type).count()
@@ -250,7 +250,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
 
     @property
     def is_extra(self):
-        return self.type.size.product.is_extra
+        return self.type.is_extra
 
     def clean(self):
         check_sub_part_consistency(self)

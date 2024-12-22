@@ -4,5 +4,5 @@ from juntagrico.admins import RichTextAdmin
 
 
 class SubscriptionProductAdmin(SortableAdminMixin, RichTextAdmin):
-    list_display = ['name', 'is_extra']
-    search_fields = ['name']
+    list_display = ['name']
+    search_fields = ['name', 'description']

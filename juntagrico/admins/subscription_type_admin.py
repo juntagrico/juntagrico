@@ -1,9 +1,10 @@
 from adminsortable2.admin import SortableAdminMixin
-from django.contrib.admin import RelatedOnlyFieldListFilter
+from django.contrib.admin import RelatedOnlyFieldListFilter, TabularInline
 
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.depot_subscriptiontype_inline import DepotSubscriptionTypeInline
 from juntagrico.config import Config
+from juntagrico.entity.subtypes import SubscriptionBundle
 
 
 class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
@@ -26,3 +27,18 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
 if Config.enable_shares():
     SubscriptionTypeAdmin.list_display.insert(2, 'shares')
     SubscriptionTypeAdmin.list_filter.insert(1, 'shares')
+
+
+class SubscriptionBundleInline(TabularInline):
+    model = SubscriptionBundle
+    fields = ['name', 'long_name']
+    extra = 0
+    max_num = 0
+    show_change_link = True
+    can_delete = False
+
+
+class SubscriptionCategoryAdmin(SortableAdminMixin, RichTextAdmin):
+    list_display = ['__str__']
+    search_fields = ['name', 'description']
+    inlines = [SubscriptionBundleInline]

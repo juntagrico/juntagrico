@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
 from juntagrico.entity.depot import Tour
-from juntagrico.entity.subtypes import SubscriptionSize
+from juntagrico.entity.subtypes import SubscriptionBundle
 
 
 class Delivery(JuntagricoBaseModel):
@@ -13,7 +13,7 @@ class Delivery(JuntagricoBaseModel):
     """
     delivery_date = models.DateField(_('Lieferdatum'))
     tour = models.ForeignKey(Tour, verbose_name=_('Ausfahrt'), on_delete=models.PROTECT, null=True, blank=True, default=None)
-    subscription_size = models.ForeignKey(SubscriptionSize,
+    subscription_size = models.ForeignKey(SubscriptionBundle,
                                           verbose_name=_('{0}-Grösse').format(Config.vocabulary('subscription')),
                                           on_delete=models.PROTECT)
 

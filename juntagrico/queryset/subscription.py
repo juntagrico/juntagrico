@@ -182,10 +182,10 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
 
 class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_normal(self):
-        return self.filter(type__size__product__is_extra=False)
+        return self.filter(type__is_extra=False)
 
     def is_extra(self):
-        return self.filter(type__size__product__is_extra=True)
+        return self.filter(type__is_extra=True)
 
     def ordered(self):
         return self.filter(activation_date=None)
@@ -205,7 +205,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
                                                      output_field=PositiveIntegerField())).filter(week_mod=0))
 
     def sorted(self):
-        return self.order_by('type__size__product__is_extra', 'type__size__product',
+        return self.order_by('type__is_extra', 'type__size__product',
                              F('deactivation_date').desc(nulls_first=True),
                              F('cancellation_date').desc(nulls_first=True),
                              F('activation_date').desc(nulls_first=True))

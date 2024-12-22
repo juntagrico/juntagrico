@@ -12,7 +12,7 @@ from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
@@ -236,16 +236,20 @@ class JuntagricoTestCase(TestCase):
             'name': 'product'
         }
         cls.sub_product = SubscriptionProduct.objects.create(**sub_product_data)
+        sub_category_data = {
+            'name': 'category'
+        }
+        cls.sub_category = SubscriptionCategory.objects.create(**sub_category_data)
         sub_size_data = {
             'name': 'sub_name',
             'long_name': 'sub_long_name',
             'units': 1,
-            'visible': True,
+            'category': cls.sub_category,
             'depot_list': True,
             'product': cls.sub_product,
             'description': 'sub_desc'
         }
-        cls.sub_size = SubscriptionSize.objects.create(**sub_size_data)
+        cls.sub_size = SubscriptionBundle.objects.create(**sub_size_data)
         cls.sub_type = cls.create_sub_type(cls.sub_size)
         cls.sub_type2 = cls.create_sub_type(cls.sub_size, shares=2)
         cls.sub_type3 = cls.create_sub_type(cls.sub_size, shares=0)
@@ -316,25 +320,11 @@ class JuntagricoTestCase(TestCase):
         """
         subscription product, size and types
         """
-        extrasub_product_data = {
-            'name': 'extraproduct',
-            'is_extra': True
-        }
-        cls.extrasub_product = SubscriptionProduct.objects.create(**extrasub_product_data)
-        extrasub_size_data = {
-            'name': 'extrasub_name',
-            'long_name': 'sub_long_name',
-            'units': 1,
-            'visible': True,
-            'depot_list': True,
-            'product': cls.extrasub_product,
-            'description': 'sub_desc'
-        }
-        cls.extrasub_size = SubscriptionSize.objects.create(**extrasub_size_data)
         extrasub_type_data = {
             'name': 'extrasub_type_name',
             'long_name': 'sub_type_long_name',
-            'size': cls.extrasub_size,
+            'is_extra': True,
+            'size': cls.sub_size,
             'shares': 0,
             'visible': True,
             'required_assignments': 10,

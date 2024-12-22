@@ -5,13 +5,13 @@ from django.db.models import QuerySet, Sum, F, Q
 
 class SubscriptionTypeQueryset(QuerySet):
     def normal(self):
-        return self.filter(size__product__is_extra=False)
+        return self.filter(is_extra=False)
 
     def is_extra(self):
-        return self.filter(size__product__is_extra=True)
+        return self.filter(is_extra=True)
 
     def visible(self):
-        return self.filter(visible=True, size__visible=True)
+        return self.filter(visible=True, size__category__isnull=False)
 
     def on_depot_list(self):
         return self.filter(size__depot_list=True)
@@ -26,6 +26,9 @@ class SubscriptionTypeQueryset(QuerySet):
         return self.annotate(
             size_units=F('size__units'),
             size_name=F('size__name'),
-            product_name=F('size__product__name'),
+            category_name=F('size__category__name'),
             size_sum=Sum('size_units')
         )
+
+    def can_change(self):
+        return self.normal().visible().count() > 1
