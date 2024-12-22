@@ -100,11 +100,14 @@ jobs:
       CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/download-artifact@v4
+        with:
+          path: coverage
+          merge-multiple: true
       - name: collect and publish code coverage
         if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' }}
         run: |
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           ./cc-test-reporter before-build
-          ./cc-test-reporter sum-coverage coverage*.json -p 2
+          ./cc-test-reporter sum-coverage coverage/*.json -p 2
           ./cc-test-reporter upload-coverage
