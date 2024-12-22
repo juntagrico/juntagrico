@@ -85,12 +85,12 @@ jobs:
         curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
         chmod +x ./cc-test-reporter
         coverage xml
-        ./cc-test-reporter format-coverage -t coverage.py -o coverage-${{ matrix.exclude-test }}
+        ./cc-test-reporter format-coverage -t coverage.py -o coverage-${{ matrix.exclude-test }}.json
     - uses: actions/upload-artifact@v4
       if: ${{ matrix.python-version  == '3.11' }}
       with:
         name: coverage-${{ matrix.exclude-test }}
-        path: coverage-${{ matrix.exclude-test }}
+        path: coverage-${{ matrix.exclude-test }}.json
 
   coverage:
     name: Coverage Report
@@ -106,5 +106,5 @@ jobs:
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
           ./cc-test-reporter before-build
-          ./cc-test-reporter sum-coverage
+          ./cc-test-reporter sum-coverage coverage*.json -p 2
           ./cc-test-reporter upload-coverage
