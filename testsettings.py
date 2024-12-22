@@ -19,7 +19,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'WARNING' if os.environ.get('GITHUB_WORKFLOW') else 'DEBUG',
     },
 }
 
