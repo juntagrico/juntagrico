@@ -2,27 +2,27 @@
 {% load juntagrico.config %}
 {% config "enable_shares" as c_enable_shares %}
 {% if c_enable_shares %}
-    {% if perms.juntagrico.change_share or perms.juntagrico.view_shares %}
+    {% if perms.juntagrico.change_share or perms.juntagrico.view_share %}
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#shareman">
                 {% blocktrans %}{{ v_share_pl }}{% endblocktrans %}
                 <i class="fas fa-angle-right">
                 </i>
             </a>
-            <div class="collapse" id="shareman">
+            <div class="collapse{% if 'manage-share' in request.resolver_match.url_name %} show{% endif %}" id="shareman">
                 <ul class="nav flex-column subadmin-menu">
-                    {% if perms.juntagrico.view_shares %}
+                    {% block sub %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'manage-share-unpaid' %}">{% trans "Unbezahlt" %}</a>
-                        </li>
-                    {% endif %}
-                    {% if perms.juntagrico.change_share %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'share-mgmt-canceledlist' %}">
-                                 {% blocktrans %}Kündigungsliste{% endblocktrans %}
+                            <a class="nav-link" href="{% url 'manage-share-unpaid' %}">
+                                {% trans "Unbezahlt" %}
                             </a>
                         </li>
-                    {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'manage-share-canceled' %}">
+                                {% trans "Gekündigt" %}
+                            </a>
+                        </li>
+                    {% endblock %}
                 </ul>
             </div>
         </li>

@@ -1,0 +1,127 @@
+{% extends "../base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+{% block page_title %}
+    {% vocabulary "share_pl" as v_share_pl %}
+    <h3>
+        {% blocktrans %}Gekündigte {{ v_share_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% action_date request %}
+    {% include '../member/snippets/toggle_buttons.html' %}
+    {{ block.super }}
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "share" %}
+                </th>
+                <th class="filter">
+                    {% vocabulary "member" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kündigungsdatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Enddatum" %}
+                </th>
+                <th class="filter">
+                    {% trans "Zurückgesandt" %}
+                </th>
+                <th class="filter">
+                    {% trans "IBAN" %}
+                </th>
+                <th>
+                    {% trans "Aktionen" %}
+                </th>
+                <th class="filter">
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for share in object_list %}
+                <tr>
+                    <td>
+                        <a href="{% url 'admin:juntagrico_share_change' share.id %}">
+                            {{ share }}
+                        </a>
+                        <div class="d-none share_id{% if share.backpayable %} backpayable{% endif %}">
+                            {{ share.id }}{# spaces are required here #}
+                        </div>
+                    </td>
+                    <td>
+                        {% include 'juntagrico/manage/member/snippets/display_linked.html' with member=share.member %}
+                    </td>
+                    <td>
+                        {{ share.cancelled_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {{ share.termination_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% if share.sent_back %}
+                            {% trans "(J)" %}
+                        {% else %}
+                            {% trans "(N)" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if share.member.iban %}
+                        {{ share.member.iban }}
+                        {% else %}
+                        {% trans "keine IBAN angegeben" %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perms.juntagrico.change_share %}
+                            {% if share.backpayable %}
+                                <a href="{% url 'manage-share-payout-single' share.id %}" class="btn btn-primary">
+                                    {% trans "Ausbuchen" %}
+                                </a>
+                            {% else %}
+                                {% trans "Enddatum ausstehend" %}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ share.notes }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    config.layout.topStart.buttons.push(
+        id_action_button(
+            '<i class="fa-solid fa-file-invoice-dollar"></i> {% trans "Zahlungsdatei erzeugen" %}',
+            '{% url "share-pain001" %}',
+            '{% csrf_token %}',
+            '.share_id', 'share_ids'
+        ),
+        {% if perms.juntagrico.change_share %}
+            id_action_button(
+                '<i class="fa-regular fa-circle-check"></i> {% trans "Ausbuchen" %}',
+                '{% url 'manage-share-payout' %}',
+                '{% csrf_token %}', 
+                '.backpayable', 'share_ids',
+                [
+                    {% vocabulary "share" as v_share %}
+                    '{% blocktrans %}1 {{ v_share }} ausbuchen?{% endblocktrans %}',
+                    {% vocabulary "share_pl" as v_share_pl %}
+                    '{% blocktrans %}Diese {count} {{ v_share_pl }} ausbuchen?{% endblocktrans %}'
+                ]
+            )
+        {% endif %}
+    )
+{% endblock %}

@@ -95,7 +95,8 @@ def member_created(member, **kwargs):
 
 
 @requires_someone_with_perm('notified_on_member_cancellation')
-def member_canceled(member, end_date, message, **kwargs):
+def member_canceled(member, message='', **kwargs):
+    end_date = member.end_date
     EmailSender.get_sender(
         organisation_subject(_('{} gekündigt').format(Config.vocabulary('member_type'))),
         get_email_content('m_canceled', base_dict(locals())),
@@ -119,3 +120,50 @@ def member_changed_depot(**kwargs):
         get_template('juntagrico/mails/admin/depot_changed.txt').render(base_dict(kwargs)),
         bcc=kwargs['emails']
     ).send()
+
+
+def _template_member_in_job(job, subject, template_name, **kwargs):
+    kwargs['job'] = job
+    EmailSender.get_sender(
+        organisation_subject(subject),
+        get_template(f'juntagrico/mails/admin/job/{template_name}.txt').render(base_dict(kwargs)),
+        to=job.get_emails(),
+        reply_to=[kwargs['member'].email],
+    ).send()
+
+
+def member_subscribed_to_job(job, **kwargs):
+    # TODO: Allow contacts to subscribe/unsubscribe from notifications
+    if kwargs.get('message'):
+        subject = _('Neue Anmeldung zum Einsatz mit Mitteilung')
+    else:
+        subject = _('Neue Anmeldung zum Einsatz')
+    _template_member_in_job(job, subject, 'signup', **kwargs)
+
+
+def member_changed_job_subscription(job, **kwargs):
+    _template_member_in_job(job, _('Änderung der Einsatzanmeldung'), 'changed_subscription', **kwargs)
+
+
+def member_unsubscribed_from_job(job, **kwargs):
+    _template_member_in_job(job, _('Abmeldung vom Einsatz'), 'unsubscribed', **kwargs)
+
+
+def _template_assignment_changed(job, subject, template_name, **kwargs):
+    to = job.get_emails(exclude=kwargs['editor'].email)
+    if to:
+        kwargs['job'] = job
+        EmailSender.get_sender(
+            organisation_subject(subject),
+            get_template(f'juntagrico/mails/admin/assignment/{template_name}.txt').render(base_dict(kwargs)),
+            to=to,
+            reply_to=[kwargs['editor'].email],
+        ).send()
+
+
+def assignment_changed(job, **kwargs):
+    _template_assignment_changed(job, _('Änderung der Einsatzanmeldung'), 'changed', **kwargs)
+
+
+def assignment_removed(job, **kwargs):
+    _template_assignment_changed(job, _('Einsatzanmeldung entfernt'), 'removed', **kwargs)

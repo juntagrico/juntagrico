@@ -24,7 +24,9 @@
     {% include "./snippets/snippet_depotlist_header.html" with first=True %}
     {% for sub in subscriptions|by_depot:depot %}
         <tr class="bottom-border">
-            <td class="namecol top-border left-border horz-left">{{ sub.recipients_display_name }}</td>
+            <td class="namecol top-border left-border horz-left">
+                {% include "juntagrico/snippets/subscription/recipients.html" with subscription=sub %}
+            </td>
             {% for product in products %}
                 {% for size in product.sizes_for_depot_list %}
                     <td class="top-border left-border">{{ sub|parts_by_size:size|active_on:date|count|default:'' }}</td>

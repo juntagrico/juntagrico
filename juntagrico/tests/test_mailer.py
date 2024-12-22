@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 from django.core import mail
+from django.test import override_settings, tag
 from django.urls import reverse
 
-from . import JuntagricoTestCase
-from django.test import override_settings
+from . import JuntagricoTestCaseWithShares
 
 
 def mock_batch_mailer(msg):
@@ -15,12 +15,26 @@ def mock_batch_mailer(msg):
     Mailer._send_batches(msg, 4, 3)  # testing with waiting time
 
 
-class MailerTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class MailerTests(JuntagricoTestCaseWithShares):
     def testMailer(self):
         self.assertGet(reverse('mail'))
         self.assertGet(reverse('mail'), member=self.member2, code=302)
+
+    def testMemberFromEmailSelection(self):
+        self.assertListEqual(self.member.all_emails(), ['email1@email.org'])
+        self.assertListEqual(self.member2.all_emails(), ['info@juntagrico.juntagrico', 'email2@email.org'])
+        self.assertListEqual(self.member3.all_emails(), [
+            'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico', 'email3@email.org'
+        ])
+        self.assertListEqual(self.member4.all_emails(), ['share@juntagrico.juntagrico', 'email4@email.org'])
+        self.assertListEqual(self.member5.all_emails(), ['it@juntagrico.juntagrico', 'email5@email.org'])
+        self.assertListEqual(self.area_admin.all_emails(), [
+            'email_contact@example.org', 'email2@email.org', 'areaadmin@email.org'
+        ])
+        self.assertListEqual(self.admin.all_emails(), [
+            'info@juntagrico.juntagrico', 'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico',
+            'share@juntagrico.juntagrico', 'it@juntagrico.juntagrico', 'admin@email.org'
+        ])
 
     def testMailSend(self):
         with open('juntagrico/tests/test_mailer.py') as fp:
@@ -37,6 +51,7 @@ class MailerTests(JuntagricoTestCase):
             self.assertGet(reverse('mail-send'), code=404)
             self.assertPost(reverse('mail-send'), post_data, code=302)
 
+    @tag('shares')
     def testAllSharesMailSend(self):
         post_data = {
             'sender': 'test@mail.org',
@@ -78,4 +93,4 @@ class MailerTests(JuntagricoTestCase):
             'recipients': 'test2@mail.org',
         }
         self.assertPost(reverse('mail-send'), post_data, code=302)
-        self.assertEqual(len(mail.outbox), 14)  # check that email was split into batches
+        self.assertEqual(len(mail.outbox), 17)  # check that email was split into batches

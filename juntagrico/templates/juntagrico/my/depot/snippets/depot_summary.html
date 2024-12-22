@@ -1,12 +1,17 @@
 {% load juntagrico.config %}
 {% load i18n %}
 {% vocabulary "depot" as v_depot %}
+{% if subscription.future_depot %}
+    <div class="alert alert-warning">
+        {% include "juntagrico/my/depot/snippets/change_pending_info.html" %}
+    </div>
+{% endif %}
 <a href="{% url 'depot' subscription.depot.id %}">
     {{ subscription.depot.name }}
 </a>
 <br>
 {% blocktrans %}Name auf der {{ v_depot }}-Liste:{% endblocktrans %}
-{{ subscription.recipients_display_name }}
+{% include "juntagrico/snippets/subscription/recipients.html" %}
 <br>
 {% if not subscription.inactive %}
     {% if subscription.primary_member == member %}

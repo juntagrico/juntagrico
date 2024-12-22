@@ -1,0 +1,6 @@
+{% with has_normal_cancelled_parts=cancelled_parts.is_normal.exists has_normal_ordered_parts=ordered_parts.is_normal.exists %}
+    {% with has_extra_cancelled_parts=cancelled_parts.is_extra.exists has_extra_ordered_parts=ordered_parts.is_extra.exists %}
+        {% if not has_normal_cancelled_parts and not has_normal_ordered_parts %}show-extra{% endif %}
+        {% if not has_extra_cancelled_parts and not has_extra_ordered_parts %}show-normal{% endif %}
+    {% endwith %}
+{% endwith %}

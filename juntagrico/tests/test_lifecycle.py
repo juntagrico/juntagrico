@@ -1,20 +1,22 @@
 import datetime
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from . import JuntagricoTestCase
 
 
-class ListTests(JuntagricoTestCase):
+class LifeCycleTests(JuntagricoTestCase):
 
     def testSubDeactivation(self):
         today = datetime.date.today()
         start = today - datetime.timedelta(days=10)
         end = today - datetime.timedelta(days=5)
         member = self.create_member('email@email.email')
-        self.create_paid_share(member)
-        self.create_paid_share(member)
+        if settings.ENABLE_SHARES:
+            self.create_paid_share(member)
+            self.create_paid_share(member)
         sub_data = {'depot': self.depot,
                     'future_depot': None,
                     'activation_date': start,

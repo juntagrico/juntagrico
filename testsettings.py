@@ -9,6 +9,20 @@ SECRET_KEY = 'fake-key'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING' if os.environ.get('GITHUB_WORKFLOW') else 'DEBUG',
+    },
+}
+
 IMPERSONATE = {
     'REDIRECT_URL': '/my/profile',
 }
@@ -36,21 +50,34 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  'yourdatabasename.db',
+        'NAME': 'dev.1.7.db',
     }
 }
 
+# settings for CI
 if os.environ.get('GITHUB_WORKFLOW'):
-    DATABASES = {
-        'default': {
-           'ENGINE': 'django.db.backends.postgresql',
-           'NAME': 'testdb',
-           'USER': 'postgres',
-           'PASSWORD': 'postgres',
-           'HOST': '127.0.0.1',
-           'PORT': '5432',
+    if os.environ.get('GITHUB_MYSQL'):
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'mysql',
+                'USER': 'root',
+                'PASSWORD': 'mysql',
+                'HOST': '127.0.0.1',
+                'PORT': '3306',
+            }
         }
-    }
+    else:
+        DATABASES = {
+            'default': {
+               'ENGINE': 'django.db.backends.postgresql',
+               'NAME': 'testdb',
+               'USER': 'postgres',
+               'PASSWORD': 'postgres',
+               'HOST': '127.0.0.1',
+               'PORT': '5432',
+            }
+        }
 
 ROOT_URLCONF = 'testurls'
 
@@ -131,6 +158,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'juntagrico.context_processors.vocabulary',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -142,7 +170,7 @@ TEMPLATES = [
     },
 ]
 
-LOGIN_REDIRECT_URL = "/my/home"
+LOGIN_REDIRECT_URL = "/"
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
@@ -164,4 +192,21 @@ DJRICHTEXTFIELD_CONFIG = {
     }
 }
 
+CONTACTS = {
+    'general': "info@juntagrico.juntagrico",
+    'for_members': "member@juntagrico.juntagrico",
+    'for_subscriptions': "subscription@juntagrico.juntagrico",
+    'for_shares': "share@juntagrico.juntagrico",
+    'technical': "it@juntagrico.juntagrico",
+}
+
 IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
+
+ENABLE_SHARES = os.environ.get('EXCLUDE_TEST', 'none') != 'shares'
+BUSINESS_REGULATIONS = 'https://juntagrico.juntagrico/business-regulations'
+BYLAWS = 'https://juntagrico.juntagrico/bylaws'
+FAQ_DOC = 'https://juntagrico.juntagrico/faq'
+EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
+ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

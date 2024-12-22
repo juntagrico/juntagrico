@@ -1,0 +1,4 @@
+{% if request.user.member %}
+    {% include "juntagrico/widgets/assignment_progress.html" %}
+    {% include "widgets/jobs.html" %}
+{% endif %}

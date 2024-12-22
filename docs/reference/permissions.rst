@@ -105,6 +105,12 @@ juntagrico.is_area_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
 Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
+They also have the permission to modify assignments in jobs of their area.
+
+people with this permission have limited access to certain fields. They can not:
+- change name, core, hidden and coordinator fields of areas
+- see assignments of anybody but people from their areas
+- see job types which are not from their areas
 
 Search Hints:
     * German: Benutzer ist Tätigkeitsbereichskoordinator
@@ -114,50 +120,77 @@ Search Hints:
 
 Notifications
 -------------
-Some entities send a notification email when they are created or cancelled. Should a member be notified on a certain event it has to have the corresponding
+Some entities send a notification email when they are created or canceled.
+Should a member be notified on a certain event it has to have the corresponding
 permission for that entity type and event.
+
+.. note::
+    These permissions need to be given explicitly, i.e., administrators are not notified implicitly.
 
 juntagrico.notified_on_share_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a share is created.
+Person gets notified when a share is created.
 
 Search Hints:
     * German: Erstellung informiert
 
 juntagrico.notified_on_share_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a share is cancelled.
+Person gets notified when a share is canceled.
 
 Search Hints:
     * German: Kündigung informiert
 
 juntagrico.notified_on_member_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a member is created.
+Person gets notified when a member is created.
 
 Search Hints:
     * German: Erstellung informiert
 
 juntagrico.notified_on_member_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when any member cancels their membership.
+Person gets notified when any member cancels their membership.
 
 Search Hints:
     * German: Kündigung informiert
 
 juntagrico.notified_on_subscription_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a subscription is created.
+Person gets notified when a subscription is created.
 
 Search Hints:
     * German: Erstellung informiert
 
 juntagrico.notified_on_subscription_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when a subscription is cancelled.
+Person gets notified when a subscription is cancelled.
 
 Search Hints:
     * German: Kündigung informiert
+
+juntagrico.notified_on_subscriptionpart_creation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets notified when a subscription part is created.
+
+Search Hints:
+    * German: Erstellung informiert
+
+juntagrico.notified_on_subscriptionpart_cancellation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets notified when a subscription part is canceled.
+
+Search Hints:
+    * German: Kündigung informiert
+
+
+juntagrico.notified_on_depot_change
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person gets notified when a member wants to change their depot.
+
+Search Hints:
+    * German: Änderung informiert
+
 
 juntagrico.depot_list_notification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -173,49 +206,49 @@ Which entries can be seen on the administration menu depend on a set of permissi
 
 juntagrico.change_subscription
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the subscription entry in the administration menu.
+Person sees the subscription entry in the administration menu.
 
 Search Hints:
     * German: Abo
 
 juntagrico.change_subscriptionpart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the extra subscription entry in the administration menu.
+Person sees the extra subscription entry in the administration menu.
 
 Search Hints:
     * German: Bestandteil
 
 juntagrico.change_member
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the member entry in the administration menu.
+Person sees the member entry in the administration menu.
 
 Search Hints:
     * German: Mitglied
 
 juntagrico.change_assignment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the assignment entry in the administration menu.
+Person sees the assignment entry in the administration menu.
 
 Search Hints:
     * German: Arbeitseinsatz
 
 juntagrico.change_share
 ^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the share entry in the administration menu.
+Person sees the share entry in the administration menu.
 
 Search Hints:
     * German: Anteilsschein
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can access the send mail form in the administration menu.
+Person can access the email form in the administration menu.
 
 Search Hints:
     * German: Emails versenden
 
 juntagrico.can_email_all_in_system
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the mail form in the administration menu to send mails to all active users in the system.
+Person can send emails to all active users in the system via the email form.
 
 Requires:
     * juntagrico.can_send_mails
@@ -225,7 +258,7 @@ Search Hints:
 
 juntagrico.can_email_all_with_share
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the mail form in the administration menu to send mails to all users with active shares.
+Person can send emails to all users with active shares via the email form.
 
 Requires:
     * juntagrico.can_send_mails
@@ -235,7 +268,7 @@ Search Hints:
 
 juntagrico.can_email_all_with_sub
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the mail form in the administration menu to send mails to all users with active subscription.
+Person send emails to all users with active subscription via the email form.
 
 Requires:
     * juntagrico.can_send_mails
@@ -245,7 +278,7 @@ Search Hints:
 
 juntagrico.can_email_free_address_list
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the mail form in the administration menu to send mails to a any manual list of addresses.
+Person send mails to a any manual list of addresses via the email form.
 
 Requires:
     * juntagrico.can_send_mails
@@ -255,28 +288,35 @@ Search Hints:
 
 juntagrico.can_view_lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the lists entry in the administration menu.
+Person can open the generated lists in the administration menu.
 
 Search Hints:
-    * German: Listen öffnen
+    * German: Benutzer kann Listen öffnen
+
+juntagrico.can_generate_lists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can generate lists (of depot etc.)
+
+Search Hints:
+    * German: Benutzer kann Listen erzeugen
 
 juntagrico.can_view_exports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the exports entry in the administration menu.
+Person sees the exports entry in the administration menu.
 
 Search Hints:
-    * German: Exporte öffnen
+    * German: Benutzer kann Exporte öffnen
 
 juntagrico.can_filter_members
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the member filter entry in the administration menu without the permission to change members.
+Person sees the member filter entry in the administration menu without the permission to change members.
 
 Search Hints:
     * German: filtern
 
 juntagrico.can_filter_subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member sees the subscription filter entry in the administration menu without the permission to change subscriptions.
+Person sees the subscription filter entry in the administration menu without the permission to change subscriptions.
 
 Search Hints:
     * German: filtern
@@ -284,26 +324,91 @@ Search Hints:
 
 Email Permissions
 -----------------
+These permissions are related to sending emails.
+
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can use the email address specified in the setting :ref:`INFO_EMAIL <reference-settings-info-email>` as sender in the mail form.
+Person can use the "general" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
 
 Search Hints:
-    * German: General Email
+    * German: Benutzer kann allgemeine E-Mail-Adresse verwenden
 
+juntagrico.can_use_for_members_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "for_member" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann E-Mail-Adresse "for_members" verwenden
+
+juntagrico.can_use_for_subscriptions_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "for_subscriptions" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann E-Mail-Adresse "for_subscription" verwenden
+
+juntagrico.can_use_for_shares_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "for_shares" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann E-Mail-Adresse "for_shares" verwenden
+
+juntagrico.can_use_technical_email
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can use the "technical" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
+
+Search Hints:
+    * German: Benutzer kann technische E-Mail-Adresse verwenden
 
 Edit Permissions
 ----------------
+These permissions allow to edit certain entities.
+
 juntagrico.can_edit_past_jobs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can edit jobs which are in the past.
+Person can edit jobs which are in the past.
 
 Search Hints:
     * German: vergangene
 
+juntagrico.change_assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can edit all assignments on all jobs.
+To reduce the assignments, the `juntagrico.delete_assignment` permission is needed. See below.
+
+Search Hints:
+    * German: Arbeitseinsatz
+
+juntagrico.delete_assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can remove any assignment on any job.
+
+Search Hints:
+    * German: Arbeitseinsatz
+
 juntagrico.can_change_deactivated_subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member can edit subscriptions which are deactivated.
+Person can edit subscriptions which are deactivated.
 
 Search Hints:
     * German: deaktivierte
+
+Other Permissions
+-----------------
+
+juntagrico.is_operations_group
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning::
+    Deprecated. This permission will be replaced by more granular permissions in the next releases.
+
+- Download payment file for shares
+- (De)activate subscriptions
+- Add attachments in the form to contact members
+
+In addition, the limitations applied by ``juntagrico.is_area_admin`` become ineffective,
+when this permission is also given.
+
+Search Hints:
+    * German: Benutzer ist in der BG

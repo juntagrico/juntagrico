@@ -1,0 +1,4 @@
+{% extends "juntagrico/mails/admin/job/signup.txt" %}
+{% load i18n %}
+{% block intro %}{% blocktrans %}Soeben hat {{ member }} die Anmeldung zu einem Einsatz geändert.{% endblocktrans %}{% endblock %}
+{% block count %}{% blocktrans with before=initial_count after=count %}Anzahl Personen bisher: {{ before }}, neu: {{ after }}{% endblocktrans %}{% endblock %}

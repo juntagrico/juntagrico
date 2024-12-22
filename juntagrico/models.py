@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import gettext as _
@@ -31,7 +30,7 @@ class SpecialRoles(models.Model):
         managed = False
         default_permissions = ()
         permissions = (('is_operations_group', _('Ist in der BG')),
-                       ('is_book_keeper', _('Ist Buchhalter')),
+                       ('is_book_keeper', _('Ist Buchhalter')),  # DEPRECATED
                        ('can_send_mails', _('Kann E-Mails versenden')),
                        ('can_use_general_email', _('Kann Haupt-E-Mail-Adresse verwenden')),
                        ('can_use_for_members_email', _('Kann E-Mail-Adresse "for_members" verwenden')),
@@ -89,14 +88,3 @@ juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
 ''' lifecycle all post init'''
 register_entities_for_post_init_and_save()
-
-'''monkey patch User email method'''
-
-
-def member_email(self):
-    return self.member.email
-
-
-User.member__email = property(member_email)
-
-User.EMAIL_FIELD = 'member__email'

@@ -2,11 +2,13 @@
 {% load i18n %}
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
+
 {% block page_title %}
     <h3>
         {% trans "Kündige deine Mitgliedschaft" %}
     </h3>
 {% endblock %}
+
 {% block content %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     {% vocabulary "subscription" as v_subscription %}
@@ -14,14 +16,16 @@
     {% config "enable_shares" as enable_shares %}
     <div class="row mb-3">
         <div class="col-md-12">
-            {% blocktrans trimmed %}
-            Hier kannst du deine Mitgliedschaft bei {{ v_d_enriched_organisation }} kündigen.
-            {% endblocktrans %}
-            {% if coop_member %}
-                {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
-                Der nächste reguläre Kündigungstermin ist der {{ ed }}.
+            {% block intro %}
+                {% blocktrans trimmed %}
+                Hier kannst du deine Mitgliedschaft bei {{ v_d_enriched_organisation }} kündigen.
                 {% endblocktrans %}
-            {% endif %}
+                {% if coop_member %}
+                    {% blocktrans trimmed with ed=end_date|date:"d.m.Y" %}
+                    Der nächste reguläre Kündigungstermin ist der {{ ed }}.
+                    {% endblocktrans %}
+                {% endif %}
+            {% endblock %}
         </div>
     </div>
     <div class="row mb-3">
@@ -59,7 +63,7 @@
         <div class="col-md-12">
             {% if can_cancel %}
                {%  crispy form %}
-            {% elif share_error%}
+            {% elif share_error %}
                 {% blocktrans trimmed %}
                 Deine {{ v_share_pl }} werden noch benötigt in einem Abo.
                 {% endblocktrans %}

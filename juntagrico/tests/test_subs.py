@@ -1,14 +1,17 @@
 import datetime
 
+from django.conf import settings
+from django.core import mail
 from django.core.exceptions import ValidationError
+from django.test import tag
 from django.urls import reverse
 
-from . import JuntagricoTestCase
+from . import JuntagricoTestCaseWithShares
+from ..entity.member import SubscriptionMembership
+from ..entity.subtypes import SubscriptionType
 
 
-class SubscriptionTests(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + ['test/shares']
-
+class SubscriptionTests(JuntagricoTestCaseWithShares):
     def testSub(self):
         self.assertGet(reverse('subscription-landing'), 302)
         self.assertGet(reverse('subscription-single', args=[self.sub.pk]))
@@ -46,57 +49,63 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertEqual(self.sub.nickname, test_nickname)
 
     def testPartOrder(self):
-        with self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12):
-            # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
+        with (self.settings(BUSINESS_YEAR_CANCELATION_MONTH=12)):
             self.assertGet(reverse('part-order', args=[self.sub.pk]))
             post_data = {
-                'amount[' + str(self.sub_type.pk) + ']': 0,
-                'amount[' + str(self.sub_type2.pk) + ']': 1
+                f'amount[{type_id}]': 1 if i == 1 else 0
+                for i, type_id in enumerate(SubscriptionType.objects.order_by('id').values_list('id', flat=True))
             }
-            self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
-            self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
-            self.assertEqual(self.sub.future_parts.count(), 1)
+            # order a type2 part, but with insufficient shares. Should fail, i.e., not change anything
+            if settings.ENABLE_SHARES:
+                self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
+                self.sub.refresh_from_db()
+                self.assertEqual(self.sub.future_parts.first().type, self.sub_type)
+                self.assertEqual(self.sub.future_parts.count(), 1)
             # Add a share and cancel an existing part. Then order a part that requires 2 shares. Should succeed.
             self.create_paid_share(self.member)
-            self.assertGet(reverse('part-cancel', args=[self.sub.parts.all()[0].id, self.sub.pk]), code=302)
+            self.assertGet(reverse('part-cancel', args=[self.sub.parts.first().id, self.sub.pk]), code=302)
             self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
-            self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
+            self.assertEqual(self.sub.future_parts.first().type, self.sub_type2)
             self.assertEqual(self.sub.future_parts.count(), 1)
 
-    def testTypeChange(self):
-        # change type, with unsufficient shares
+    @tag('shares')
+    def testTypeChangeOnInsufficientShares(self):
         part = self.sub.parts.all()[0]
         self.assertGet(reverse('part-change', args=[part.pk]))
         post_data = {'part_type': self.sub_type2.pk}
+        # should fail
         self.assertPost(reverse('part-change', args=[part.pk]), post_data)
         self.sub.refresh_from_db()
         # check: type and amount unchanged
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
+    def testTypeChange(self):
         # add a shares for type2
         self.create_paid_share(self.member)
+        mail.outbox.clear()
         # change active type
         part = self.sub.parts.all()[0]
         self.assertGet(reverse('part-change', args=[part.pk]))
         post_data = {'part_type': self.sub_type2.pk}
         self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
         self.sub.refresh_from_db()
-        # check: has only one uncancelled part with new type
+        # check: has only one uncanceled part with new type
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type2)
-        # check: previous part was cancelled
+        # check: previous part was canceled
         part.refresh_from_db()
         self.assertTrue(part.canceled)
+        # check notification was sent to admins
+        self.assertEqual(len(mail.outbox), 2)
 
         # change future type
         part = self.sub.future_parts.all()[0]
         post_data = {'part_type': self.sub_type.pk}
         self.assertPost(reverse('part-change', args=[part.pk]), post_data, code=302)
         self.sub.refresh_from_db()
-        # check: has only one uncancelled part with first type
+        # check: has only one uncanceled part with first type
         self.assertEqual(self.sub.future_parts.count(), 1)
         self.assertEqual(self.sub.future_parts.all()[0].type, self.sub_type)
 
@@ -111,12 +120,13 @@ class SubscriptionTests(JuntagricoTestCase):
             self.assertEqual(self.sub.future_parts.count(), 0)
 
     def testLeave(self):
-        self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
-        self.create_paid_share(self.member3)
+        if settings.ENABLE_SHARES:
+            self.assertGet(reverse('sub-leave', args=[self.sub.pk]), 302, self.member3)
+            self.create_paid_share(self.member3)
         self.assertGet(reverse('sub-leave', args=[self.sub.pk]), member=self.member3)
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member3)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 1)
+        self.assertEqual(self.sub.current_members.count(), 1)
 
     def testJoin(self):
         self.assertGet(reverse('add-member', args=[self.sub.pk]), member=self.member)
@@ -124,6 +134,7 @@ class SubscriptionTests(JuntagricoTestCase):
                         data={'email': self.member4.email})
 
     def testJoinLeaveRejoin(self):
+        # leaving on the same day should delete the subscription membership again
         post_data = {
             'email': self.member4.email,
             'first_name': self.member4.first_name,
@@ -138,7 +149,24 @@ class SubscriptionTests(JuntagricoTestCase):
         self.assertPost(reverse('sub-leave', args=[self.sub.pk]), code=302, member=self.member4)
         self.assertPost(reverse('add-member', args=[self.sub.pk]), code=302, member=self.member, data=post_data)
         self.sub.refresh_from_db()
-        self.assertEqual(len(self.sub.recipients), 3)
+        self.assertEqual(self.sub.current_members.count(), 3)
+
+    def testRejoinPreviousSub(self):
+        # rejoining on a later day should keep 2 subscription memberships
+        today = datetime.date.today()
+        a_while_ago = today - datetime.timedelta(days=10)
+        old_sub = self.create_sub(self.depot, self.sub_type, activation_date=a_while_ago)
+        SubscriptionMembership.objects.create(subscription=old_sub, member=self.member4, join_date=a_while_ago)
+        self.member4.leave_subscription(changedate=datetime.date.today() - datetime.timedelta(days=5))
+        self.assertEqual(old_sub.current_members.count(), 0)
+        self.member4.join_subscription(old_sub)
+        self.assertEqual(old_sub.current_members.count(), 1)
+        self.assertEqual(old_sub.subscriptionmembership_set.count(), 2)
+        # joining again should fail
+        with self.assertRaises(ValidationError):
+            self.member4.join_subscription(old_sub)
+        with self.assertRaises(ValidationError):
+            self.member4.join_subscription(self.sub)
 
     def testCancel(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), 200)
@@ -173,3 +201,6 @@ class SubscriptionTests(JuntagricoTestCase):
 
     def testPrimaryMember(self):
         self.assertGet(reverse('sub-cancel', args=[self.sub.pk]), member=self.member3, code=302)
+
+    def testMembers(self):
+        self.assertListEqual(list(self.sub.current_members.order_by('id')), [self.member, self.member3])

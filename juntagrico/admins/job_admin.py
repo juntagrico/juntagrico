@@ -57,13 +57,19 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
 
     def get_inlines(self, request, obj):
         if self.is_copy_view(request):
-            return []  # special case for mass job copy action
+            return [ContactInline]  # special case for mass job copy action
         return super().get_inlines(request, obj)
+
+    def save_related(self, request, form, formsets, change):
+        if self.is_copy_view(request):
+            form.save_related(formsets)
+        else:
+            super().save_related(request, form, formsets, change)
 
     @admin.action(description=_('Job mehrfach kopieren...'))
     @single_element_action('Genau 1 Job auswählen!')
     def mass_copy_job(self, request, queryset):
-        inst, = queryset.all()
+        inst = queryset.first()
         return HttpResponseRedirect(reverse('admin:action-mass-copy-job', args=[inst.id]))
 
     @admin.action(description=_('Jobs kopieren'))
@@ -72,7 +78,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
             time = inst.time
             if not can_edit_past_jobs(request) and time <= timezone.now():
                 # create copy in future if job is in past and member can't edit past jobs
-                time = datetime.combine(date.today() + timedelta(7), time)
+                time = datetime.combine(date.today() + timedelta(7), time.time())
             newjob = RecuringJob(type=inst.type, slots=inst.slots, time=time)
             newjob.save()
 

@@ -207,7 +207,7 @@ External Documents
 
 BUSINESS_REGULATIONS
 ^^^^^^^^^^^^^^^^^^^^
-  URL to your business regulations document
+  URL to your business regulations document. The link will be displayed in the signup form and in the welcome mail after a successful registration.
   
   Type: String
 
@@ -219,8 +219,8 @@ BUSINESS_REGULATIONS
 
 BYLAWS
 ^^^^^^
-  URL to your bylaws document
-  
+  URL to your bylaws document. The link will be displayed in the signup form and in the welcome mail after a successful registration.
+ 
   Type: String
 
   default value
@@ -231,7 +231,7 @@ BYLAWS
 
 FAQ_DOC
 ^^^^^^^
-  URL to your FAQ document
+  URL to your FAQ document. The link will be displayed in the welcome mail after a successful registration.
 
   Type: String
 
@@ -363,6 +363,22 @@ ENABLE_SHARES
 
     True
 
+REQUIRED_SHARES
+^^^^^^^^^^^^^^^
+    .. note::
+    Added in version 1.7.0.
+
+  Specifies the minimum amount of shares that the main member must order during registration
+  regardless of the subscription requirements.
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    1
+
 SHARE_PRICE
 ^^^^^^^^^^^
   Price of one share
@@ -390,6 +406,25 @@ ASSIGNMENT_UNIT
   .. code-block:: python
 
     "ENTITY"
+
+ALLOW_JOB_UNSUBSCRIBE
+^^^^^^^^^^^^^^^^^^^^^
+  If set to true, members can unsubscribe themselves (or reduce the slots they reserved)
+  from a job they signed up to previously by filling out a form.
+
+  Job contacts will be notified.
+
+  If the value is a string, unsubscribing will be allowed and the string will be displayed to the member, when they
+  try to unsubscribe from a job.
+
+  Type: Boolean or String
+
+  default value
+
+  .. code-block:: python
+
+    False
+
 
 PROMOTED_JOB_TYPES
 ^^^^^^^^^^^^^^^^^^
@@ -581,6 +616,9 @@ Email
 
 EMAILS
 ^^^^^^
+  .. warning::
+    Deprecated since version 1.6.0. :ref:`Override template directly instead <reference-templates>`.
+
   Defining the different email templates
 
   default value
@@ -588,20 +626,27 @@ EMAILS
   .. code-block:: python
 
     {
-        'welcome': 'mails/welcome_mail.txt',
-        'co_welcome': 'mails/welcome_added_mail.txt',
-        'co_added': 'mails/added_mail.txt',
-        'password': 'mails/password_reset_mail.txt',
-        'j_reminder': 'mails/job_reminder_mail.txt',
-        'j_canceled': 'mails/job_canceled_mail.txt',
-        'confirm': 'mails/confirm.txt',
-        'j_changed': 'mails/job_time_changed_mail.txt',
-        'j_signup': 'mails/job_signup_mail.txt',
-        'd_changed': 'mails/depot_changed_mail.txt',
-        's_created': 'mails/share_created_mail.txt',
-        'n_sub': 'mails/new_subscription.txt',
-        's_canceled': 'mails/subscription_canceled_mail.txt',
-        'm_canceled': 'mails/membership_canceled_mail.txt',
+        'welcome': 'mails/member/member_welcome.txt',
+        'co_welcome': 'mails/member/co_member_welcome.txt',
+        'co_added': 'mails/member/co_member_added.txt',
+        'password': 'mails/member/password_reset.txt',
+        'confirm': 'mails/member/email_confirm.txt',
+        'j_reminder': 'mails/member/job_reminder.txt',
+        'j_canceled': 'mails/member/job_canceled.txt',
+        'j_changed': 'mails/member/job_time_changed.txt',
+        'j_signup': 'mails/member/job_signup.txt',
+        'd_changed': 'mails/member/depot_changed.txt',
+        's_created': 'mails/member/share_created.txt',
+        'm_left_subscription': 'mails/member/co_member_left_subscription.txt',
+        'n_sub': 'mails/admin/subscription_created.txt',
+        's_canceled': 'mails/admin/subscription_canceled.txt',
+        'a_share_created': 'mails/admin/share_created.txt',
+        'a_share_canceled': 'mails/admin/share_canceled.txt',
+        'a_subpart_created': 'mails/admin/subpart_created.txt',
+        'a_subpart_canceled': 'mails/admin/subpart_canceled.txt',
+        'a_member_created': 'mails/admin/member_created.txt',
+        'a_depot_list_generated': 'mails/admin/depot_list_generated.txt',
+        'm_canceled': 'mails/admin/member_canceled.txt',
     }
 
 MAIL_TEMPLATE

@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="toggle-button-container mt-3 mb-3">
+    <span class="switch switch-sm">
+        <input class="switch toggle-display" type="checkbox" id="show_emails" data-filter=".email" checked="checked">
+        <label for="show_emails">{% trans "E-Mail-Adressen anzeigen" %}</label>
+    </span>
+    <span class="switch switch-sm">
+        <input class="switch toggle-display" type="checkbox" id="show_phone_numbers" data-filter=".phone-number">
+        <label for="show_phone_numbers">{% trans "Telefonnummern anzeigen" %}</label>
+    </span>
+    {% if co_members %}
+        <span class="switch switch-sm">
+            <input class="switch toggle-display" type="checkbox" id="show_co_members" data-filter=".co-member">
+            <label for="show_co_members">{% trans "MitabonnentInnen anzeigen" %}</label>
+        </span>
+    {% endif %}
+</div>

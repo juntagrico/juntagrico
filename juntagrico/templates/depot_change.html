@@ -15,17 +15,13 @@
     {% vocabulary "depot" as v_depot %}
     {% vocabulary "subscription" as v_subscription %}
     {% if saved %}
-        <div class="alert alert-success">
-            {% if subscription.waiting %}
+        {% if subscription.waiting %}
+            <div class="alert alert-success">
                 {% blocktrans %}Dein/e {{ v_depot }} wurde geändert.{% endblocktrans %}
-            {% else %}
-                {% blocktrans trimmed with spe=subscription.primary_member.email sde=subscription.depot.name%}
-                !!!Achtung! Dein/e {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}-Listen Generierung.
-                Solange keine Email an {{ spe }}
-                mit der Bestätigung für dein/e/n neue/s/n {{ v_depot }} gesendet wurde ist noch dein/e/n alte/s/n {{ v_depot }}
-                {{ sde }} aktiv!!!
-                {% endblocktrans %}
-            {% endif %}
+        {% else %}
+            <div class="alert alert-warning">
+                {% include "juntagrico/my/depot/snippets/change_pending_info.html" %}
+        {% endif %}
             <br/>
             <a href="{% url 'subscription-single' subscription.id %}">
                 {% blocktrans %}Zurück zur {{ v_subscription }}-Übersicht{% endblocktrans %}
@@ -46,26 +42,28 @@
                 <label class="control-label col-md-3" for="depot">
                     {% blocktrans %}Neue/s/r {{ v_depot }}{% endblocktrans %}
                 </label>
-                <div class="controls col-md-9" id="map-container">
-                    <select name="depot" id="depot" class="form-control">
-                        {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == subscription.depot %}selected{% endif %}>
-                                {{ depot.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                <div class="controls col-md-9">
                     <label for="depot">
-                        {% blocktrans %}Wähle 1 {{ v_depot }} aus als zukünftiger {{ v_subscription }}-Abholort. {% endblocktrans %}
+                        {% blocktrans %}Wähle 1 {{ v_depot }} aus als zukünftigen {{ v_subscription }}-Abholort. {% endblocktrans %}
                     </label>
+                    {% include "juntagrico/snippets/depot/select.html" with selected=subscription.depot subscriptions=subscription.future_active %}
                 </div>
             </div>
+            {% include "juntagrico/snippets/depot/descriptions.html" %}
+            <div class="depot-map form-group row">
+                <div class="offset-md-3 col-md-9" id="map-container">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="offset-md-3 col-md-9 alert alert-info">
+                    {% blocktrans trimmed %}
+                    Achtung! Hiermit sendest du erst eine Anfrage für die Änderung. Du wirst
+                    darüber informiert wenn dein/e {{ v_depot }} sich ändert.
+                    {% endblocktrans %}
+                </div>
+            </div>
+            <div class="form-group row">
             <div class="offset-md-3 form-actions">
-                {% blocktrans trimmed %}
-                Achtung! Dein/e {{ v_depot }} änderst erst bei der nächsten {{ v_depot }}listen Generierung. Du wirst
-                darüber informiert wenn dein/e {{ v_depot }} ändert.
-                {% endblocktrans %}
-                <br/>
-                <br/>
                 <button type="submit" class="btn btn-success">
                     {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}
                 </button>

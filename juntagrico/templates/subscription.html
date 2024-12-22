@@ -164,7 +164,7 @@
                 {% blocktrans %}Name auf {{ v_depot }}-Liste{% endblocktrans %}
             </div>
             <div class="col-md-9">
-                {{ subscription.recipients_display_name }}
+                {% include "juntagrico/snippets/subscription/recipients.html" %}
             </div>
         </div>
         {% endif %}

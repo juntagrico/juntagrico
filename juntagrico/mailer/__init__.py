@@ -96,6 +96,8 @@ class EmailSender:
         self.send()
 
     def send(self):
+        if getattr(settings, "TMP_DISABLE_EMAILS", False):
+            return  # prevent sending emails during generation of test data
         # only send to whitelisted emails in dev
         self.email.to = filter_whitelist_emails(self.email.to)
         self.email.cc = filter_whitelist_emails(self.email.cc)

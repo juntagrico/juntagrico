@@ -1,62 +1,32 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-{% load juntagrico.common %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     <h3>
         {% trans "Mails verschicken" %}
     </h3>
 {% endblock %}
+
 {% block content %}
     {% vocabulary "subscription" as v_subscription %}
     {% vocabulary "co_member_pl" as v_co_member_pl %}
     {% vocabulary "share" as v_share %}
     {% config "enable_shares" as enable_shares %}
-    {% area_admin request as area_admin %}
-    <form action="{% url mail_url %}" method="POST"class="form-horizontal" enctype="multipart/form-data">
+    <form action="{% url mail_url %}" method="POST" class="form-horizontal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group row">
             <label for="sender-email" class="col-md-2">
                 {% trans "Absender" %}
             </label>
-            <div class="col-md-10" id="sender-email">
-                <select name="sender" class="form-control">
-                    {% for area in area_admin %}
-                        {% for email in area.get_emails %}
-                            <option value="{{ email }}">
-                                {{ email }}
-                            </option>
-                        {% endfor %}
+            <div class="col-md-10">
+                <select id="sender-email" name="sender" class="form-control">
+                    {% for email in request.user.member.all_emails %}
+                        <option value="{{ email }}">
+                            {{ email }}
+                        </option>
                     {% endfor %}
-                    {% if perms.juntagrico.can_use_general_email %}
-                        <option value="{% contacts "general" %}">
-                            {% contacts "general" %}
-                        </option>
-                    {% endif %}
-                    {% if perms.juntagrico.can_use_for_members_email %}
-                        <option value="{% contacts "for_members" %}">
-                            {% contacts "for_members" %}
-                        </option>
-                    {% endif %}
-                    {% if perms.juntagrico.can_use_for_subscriptions_email %}
-                        <option value="{% contacts "for_subscriptions" %}">
-                            {% contacts "for_subscriptions" %}
-                        </option>
-                    {% endif %}
-                    {% if perms.juntagrico.can_use_for_shares_email %}
-                        <option value="{% contacts "for_shares" %}">
-                            {% contacts "for_shares" %}
-                        </option>
-                    {% endif %}
-                    {% if perms.juntagrico.can_use_technical_email %}
-                        <option value="{% contacts "technical" %}">
-                            {% contacts "technical" %}
-                        </option>
-                    {% endif %}
-                    <option value="{{ email }}">
-                        {{ email }}
-                    </option>
                 </select>
             </div>
         </div>
@@ -74,7 +44,7 @@
             </div>
         {% else %}
             <div class="form-group row">
-                <label for="sender-email--" class="col-md-2">
+                <label class="col-md-2">
                     Empfänger
                 </label>
                 <div class="col-md-10">
@@ -136,13 +106,13 @@
                         </label>
                     </span>
                 </div>
-                <label class="col-md-9" for="allsingleemail">
+                <label class="col-md-9" for="singleemail">
                     {% trans "Nur an diese Email(s getrennt durch Leerzeichen)" %}:
                 </label>
             </div>
             <div class="form-group row">
-                <div class=" offset-md-2 col-md-10">
-                    <input type="text" class="form-control" id="singleemail" name="singleemail"placeholder="{% trans "Nur an diese Email" %}" style="display:none"/>
+                <div class="offset-md-2 col-md-10">
+                    <input type="text" class="form-control" id="singleemail" name="singleemail" placeholder="{% trans "Nur an diese Email" %}" style="display:none"/>
                 </div>
             </div>
             {% endif %}
@@ -160,7 +130,7 @@
                 {% trans "Mitteilung" %}
             </label>
             <div class="col-md-10">
-                <textarea name="message" id="message" class="mailer" rows="12"placeholder="{% trans "Nachricht hier eingeben" %}">
+                <textarea name="message" id="message" class="mailer" rows="12" placeholder="{% trans "Nachricht hier eingeben" %}">
                     {% if mail_message %}
                         {{ mail_message }}
                     {% endif %}
@@ -170,7 +140,7 @@
         </div>
         {% if perms.juntagrico.can_load_templates and templates %}
             <div class="form-group row">
-                <label for="templates" class="col-md-2">
+                <label for="template-list" class="col-md-2">
                     {% trans "Templates" %}
                 </label>
                 <div class="col-md-10">
@@ -219,6 +189,7 @@
         </div>
     </form>
 {% endblock %}
+
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/js/attachment_appender.js' %}">
     </script>
