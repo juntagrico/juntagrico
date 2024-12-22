@@ -370,7 +370,6 @@ def part_waitinglist(request):
 @permission_required('juntagrico.change_subscriptionpart')
 def part_canceledlist(request):
     render_dict = get_changedate(request)
-    render_dict['show_mail_button'] = request.user.has_perm('juntagrico.can_send_mails')
     changedlist = SubscriptionPartDao.canceled_parts_for_active_subscriptions()
     return subscription_management_list(changedlist, render_dict, 'management_lists/part_canceledlist.html', request)
 

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if show_mail_button %}
+{% if perms.juntagrico.can_send_mails %}
     <div class="row mb-3">
         <div class="col-md-12">
             <form id="email-sender" action="{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}" method="POST">
