@@ -25,6 +25,7 @@ from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed, assignment_changed
+from juntagrico.util.temporal import get_business_year, get_business_date_range
 
 
 class Slider(Field):
@@ -828,3 +829,50 @@ class DateRangeForm(Form):
         self.helper.label_class = 'mr-2'
         self.helper.field_class = 'mr-2'
         self.helper.add_input(Submit('submit', _('Anwenden')))
+
+
+class BusinessYearForm(Form):
+    year = ChoiceField(label=_('Saison'), required=False)
+
+    def __init__(self, min_date, max_date, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['year'].choices = self.get_choices(min_date, max_date)
+        # default to current business year
+        if not self.data.get('year'):
+            self.data = {'year': get_business_year()}
+        # build form
+        self.helper = FormHelper()
+        self.helper.form_method = 'get'
+        self.helper.form_class = 'form-inline'
+        self.helper.label_class = 'mr-2'
+        self.helper.field_class = 'mr-2'
+        self.helper.add_input(Submit('submit', _('Anzeigen')))
+
+    @staticmethod
+    def get_choices(min_date, max_date):
+        """ returns choices with each business year from min_date or max_date
+        :param min_date: date to start range from, defaults to today
+        :param max_date: date to end range, defaults to today
+        :return: list of tuples (year, label)
+        """
+        today = datetime.date.today()
+        min_date = min_date or today
+        max_date = max_date or today
+        business_year = Config.business_year_start()
+        if business_year["day"] == 1 and business_year["month"] == 1:
+            choices = [
+                (year, str(year))
+                for year in range(min_date.year, max(today.year, max_date.year) + 1)
+            ]
+        else:
+            choices = [
+                (year, f"{year}/{year+1}")
+                for year in range(
+                    get_business_year(min_date),
+                    get_business_year(max(today, max_date)) + 1,
+                )
+            ]
+        return choices
+
+    def date_range(self):
+        return get_business_date_range(int(self.cleaned_data.get('year')))
