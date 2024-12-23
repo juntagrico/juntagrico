@@ -24,11 +24,15 @@ class SubscriptionTypeQueryset(QuerySet):
 
     def annotate_content(self):
         return self.annotate(
-            size_units=F('size__units'),
             size_name=F('size__name'),
             category_name=F('size__category__name'),
-            size_sum=Sum('size_units')
+            amount=Sum('size_id')
         )
 
     def can_change(self):
         return self.normal().visible().count() > 1
+
+
+class SubscriptionItemQueryset(QuerySet):
+    def sorted(self):
+        return self.order_by('units')

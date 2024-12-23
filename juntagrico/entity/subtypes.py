@@ -4,7 +4,7 @@ from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
 from juntagrico.entity import JuntagricoBaseModel
-from juntagrico.queryset.subtypes import SubscriptionTypeQueryset
+from juntagrico.queryset.subtypes import SubscriptionTypeQueryset, SubscriptionItemQueryset
 from juntagrico.util import temporal
 
 
@@ -19,14 +19,21 @@ class SubscriptionProduct(JuntagricoBaseModel):
     def __str__(self):
         return self.name
 
-    @property
-    def sizes_for_depot_list(self):
-        return self.sizes.filter(depot_list=True).order_by('units')
-
     class Meta:
         verbose_name = _('{0}-Produkt').format(Config.vocabulary('subscription'))
         verbose_name_plural = _('{0}-Produkt').format(Config.vocabulary('subscription'))
         ordering = ['sort_order']
+
+
+class SubscriptionItem(JuntagricoBaseModel):
+    """
+    Items inside a subscription bundle
+    """
+    units = models.FloatField(_('Einheiten'), default=1.0)
+    product = models.ForeignKey('SubscriptionProduct', on_delete=models.CASCADE, related_name='items', verbose_name=_('Produkt'))
+    bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.CASCADE, related_name='items', verbose_name=_('Grösse'))
+
+    objects = SubscriptionItemQueryset.as_manager()
 
 
 class SubscriptionCategory(JuntagricoBaseModel):
@@ -53,15 +60,11 @@ class SubscriptionBundle(JuntagricoBaseModel):
     '''
     name = models.CharField(_('Name'), max_length=100)
     long_name = models.CharField(_('Langer Name'), max_length=100)
-    units = models.FloatField(_('Einheiten'))
-    depot_list = models.BooleanField(
-        _('Sichtbar auf Depotliste'), default=True)
     description = models.TextField(_('Beschreibung'), blank=True)
     category = models.ForeignKey('SubscriptionCategory', on_delete=models.SET_NULL,
                                  related_name='bundles', verbose_name=_('Kategorie'), null=True, blank=True,
                                  help_text=_('Wenn leer, kann dieses Paket nicht bestellt werden.'))
-    product = models.ForeignKey('SubscriptionProduct', on_delete=models.PROTECT,
-                                related_name='sizes', verbose_name=_('Produkt'))
+    products = models.ManyToManyField('SubscriptionProduct', through='SubscriptionItem', related_name='sizes', verbose_name=_('Produkte'))
 
     def __str__(self):
         return self.name
@@ -71,7 +74,6 @@ class SubscriptionBundle(JuntagricoBaseModel):
         verbose_name_plural = _('{0}-Grössen').format(Config.vocabulary('subscription'))
         constraints = [
             models.UniqueConstraint(fields=['name', 'category'], name='unique_name_category'),
-            models.UniqueConstraint(fields=['units', 'category'], name='unique_units_category'),
         ]
 
 

@@ -28,8 +28,8 @@
                 {% include "juntagrico/snippets/subscription/recipients.html" with subscription=sub %}
             </td>
             {% for product in products %}
-                {% for size in product.sizes_for_depot_list %}
-                    <td class="top-border left-border">{{ sub|parts_by_size:size|active_on:date|count|default:'' }}</td>
+                {% for item in product.items.sorted %}
+                    <td class="top-border left-border">{{ sub|parts_by_size:item.bundle|active_on:date|count|default:'' }}</td>
                 {% empty %}
                     <td class="top-border left-border"></td>
                 {% endfor %}

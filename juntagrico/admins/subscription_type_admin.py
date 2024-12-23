@@ -12,11 +12,11 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
                     'required_core_assignments', 'visible']
     exclude = ['trial']
     inlines = [DepotSubscriptionTypeInline]
-    search_fields = ['name', 'long_name', 'size__name', 'size__long_name', 'size__product__name']
+    search_fields = ['name', 'long_name', 'size__name', 'size__long_name', 'size__products__name']
     autocomplete_fields = ['size']
     list_filter = ['visible',
                    ('size', RelatedOnlyFieldListFilter),
-                   ('size__product', RelatedOnlyFieldListFilter)]
+                   ('size__category', RelatedOnlyFieldListFilter)]
 
     def get_exclude(self, request, obj=None):
         if not Config.enable_shares():

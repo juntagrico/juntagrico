@@ -83,13 +83,10 @@ class Command(BaseCommand):
             subsize_fields = {'name': subsize_name,
                               'long_name': 'Ganz Normales Abo',
                               'category': category,
-                              'units': 1,
-                              'depot_list': True,
-                              'product': subproduct,
                               'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                              'Zwei personen Haushalt für eine Woche.'}
             subsize = SubscriptionBundle.objects.filter(
-                Q(units=subsize_fields['units']) | Q(name=subsize_name), category=subsize_fields['category']
+                name=subsize_name, category=subsize_fields['category']
             ).first()
             if not subsize:
                 subsize = SubscriptionBundle.objects.create(**subsize_fields)

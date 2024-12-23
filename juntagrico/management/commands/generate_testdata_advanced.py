@@ -12,7 +12,7 @@ from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionType, SubscriptionCategory
 
 fake = Faker()
 
@@ -127,7 +127,7 @@ class Command(BaseCommand):
         self.generate_subscription(main_member, co_member, depot, sub_types)
 
     def add_arguments(self, parser):
-        parser.add_argument('--products', type=str, help='Products[/size1,size2,...] to use', default=["Gemüse/1"], nargs="+")
+        parser.add_argument('--categories', type=str, help='Categories[/size1,size2,...] to use', default=["Hof/1"], nargs="+")
         parser.add_argument('--sub-size', type=int, help='Default size of subscription', default=1)
         parser.add_argument('--sub-shares', type=int, help='Required shares per subscription', default=2)
         parser.add_argument('--sub-assignments', type=int, help='Required assignment per subscription', default=6)
@@ -141,29 +141,28 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sub_types = []
         default_size = options['sub_size']
-        # TODO: Also generate categories here
-        for product_sizes in options['products']:
-            product_sizes_parts = product_sizes.split('/')
-            product = product_sizes_parts[0]
-            if product_sizes_parts[1:]:
-                product_sizes = map(int, product_sizes_parts[1].split(','))
+        # TODO: Also generate products here
+        for categories_sizes in options['categories']:
+            category_sizes_parts = categories_sizes.split('/')
+            category = category_sizes_parts[0]
+            if category_sizes_parts[1:]:
+                categories_sizes = map(int, category_sizes_parts[1].split(','))
             else:
-                product_sizes = [default_size]
+                categories_sizes = [default_size]
 
-            subprod_field = {'name': product}
-            sub_product, created = SubscriptionProduct.objects.get_or_create(**subprod_field)
-            for size in product_sizes:
+            subcategory_field = {'name': category}
+            sub_category, created = SubscriptionCategory.objects.get_or_create(**subcategory_field)
+            for size in categories_sizes:
                 subsize_fields = {
-                    'name': random.choice(['Tasche', 'Portion', '500g']), 'units': size,
-                    'depot_list': True,
+                    'name': random.choice(['Tasche', 'Portion', '500g']),
                     'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
-                    'product': sub_product
+                    'category': sub_category
                 }
                 size, _ = SubscriptionBundle.objects.get_or_create(**subsize_fields)
 
                 subtype_fields = {
-                    'name': 'Abo {}'.format(product),
-                    'long_name': 'Ganz Normales {} Abo'.format(product),
+                    'name': 'Abo {}'.format(category),
+                    'long_name': 'Ganz Normales {} Abo'.format(category),
                     'shares': options['sub_shares'],
                     'required_assignments': options['sub_assignments'],
                     'price': options['sub_price'],

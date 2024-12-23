@@ -87,7 +87,7 @@ class Subscription(Billable, SimpleStateModel):
     @cached_property
     def content(self):
         """
-        :return: list of parts annotated with size_sum, size_name and category_name
+        :return: list of parts annotated with size_name, category_name and amount
         """
         return self.types.with_active_or_future_parts().annotate_content()
 
@@ -101,7 +101,7 @@ class Subscription(Billable, SimpleStateModel):
             category=t.category_name,
             size=t.size_name,
             type=t.name,
-            amount=t.size_sum,
+            amount=t.amount,
         ) for t in self.content]
 
     @property
@@ -234,7 +234,7 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     def __str__(self):
         try:
             return Config.sub_overview_format('part_format').format(
-                product=self.type.size.product.name,
+                category=self.type.size.category.name,
                 size=self.type.size.name,
                 size_long=self.type.size.long_name,
                 type=self.type.name,

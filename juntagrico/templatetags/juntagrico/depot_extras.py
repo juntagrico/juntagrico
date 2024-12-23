@@ -29,10 +29,10 @@ def count_units(subs_or_types, date=None):
     elif isinstance(subs_or_types, QuerySet):
         if subs_or_types.model is Subscription:
             # case 2: sum each unit of each subscription type
-            units = {'units': str(sum([float(sub.parts.on_depot_list().active_on(date).aggregate(units=Sum('type__size__units'))['units'] or 0) for sub in subs_or_types.all()]))}
+            units = {'units': str(sum([float(sub.parts.on_depot_list().active_on(date).aggregate(units=Sum('type__size__items__units'))['units'] or 0) for sub in subs_or_types.all()]))}
         elif subs_or_types.model is SubscriptionType:
             # case 3: queryset of types is passed
-            units = subs_or_types.on_depot_list().aggregate(units=Sum('size__units'))
+            units = subs_or_types.on_depot_list().aggregate(units=Sum('size__items__units'))
     return float(units['units'] or 0)
 
 

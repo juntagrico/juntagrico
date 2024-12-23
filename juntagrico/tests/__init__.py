@@ -12,7 +12,8 @@ from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory
+from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionBundle, SubscriptionType, SubscriptionCategory, \
+    SubscriptionItem
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
@@ -243,13 +244,11 @@ class JuntagricoTestCase(TestCase):
         sub_size_data = {
             'name': 'sub_name',
             'long_name': 'sub_long_name',
-            'units': 1,
             'category': cls.sub_category,
-            'depot_list': True,
-            'product': cls.sub_product,
             'description': 'sub_desc'
         }
         cls.sub_size = SubscriptionBundle.objects.create(**sub_size_data)
+        SubscriptionItem.objects.create(bundle=cls.sub_size, product=cls.sub_product, units=1.0)
         cls.sub_type = cls.create_sub_type(cls.sub_size)
         cls.sub_type2 = cls.create_sub_type(cls.sub_size, shares=2)
         cls.sub_type3 = cls.create_sub_type(cls.sub_size, shares=0)

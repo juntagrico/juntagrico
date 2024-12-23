@@ -156,7 +156,7 @@ def amount_overview(request):
 def future(request):
     subscriptionsizes = []
     subscription_lines = dict({})
-    for subscription_size in SubscriptionBundle.objects.order_by('category', 'units'):
+    for subscription_size in SubscriptionBundle.objects.order_by('category', 'name'):
         subscriptionsizes.append(subscription_size.id)
         subscription_lines[subscription_size.id] = {
             'name': subscription_size.category.name + '-' + subscription_size.name,
