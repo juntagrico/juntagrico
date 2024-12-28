@@ -64,7 +64,7 @@ class SubscriptionBundle(JuntagricoBaseModel):
     category = models.ForeignKey('SubscriptionCategory', on_delete=models.SET_NULL,
                                  related_name='bundles', verbose_name=_('Kategorie'), null=True, blank=True,
                                  help_text=_('Wenn leer, kann dieses Paket nicht bestellt werden.'))
-    products = models.ManyToManyField('SubscriptionProduct', through='SubscriptionItem', related_name='sizes', verbose_name=_('Produkte'))
+    products = models.ManyToManyField('SubscriptionProduct', through='SubscriptionItem', related_name='bundles', verbose_name=_('Produkte'))
 
     def __str__(self):
         return f'{self.category or _("(Nicht Bestellbar)")} - {self.name}'
@@ -83,8 +83,8 @@ class SubscriptionType(JuntagricoBaseModel):
     '''
     name = models.CharField(_('Name'), max_length=100)
     long_name = models.CharField(_('Langer Name'), max_length=100, blank=True)
-    size = models.ForeignKey('SubscriptionBundle', on_delete=models.PROTECT,
-                             related_name='types', verbose_name=_('Grösse'))
+    bundle = models.ForeignKey('SubscriptionBundle', on_delete=models.PROTECT,
+                               related_name='types', verbose_name=_('Grösse'))
     shares = models.PositiveIntegerField(
         _('Anz benötigter Anteilsscheine'), default=0)
     required_assignments = models.PositiveIntegerField(
@@ -124,13 +124,13 @@ class SubscriptionType(JuntagricoBaseModel):
 
     @property
     def display_name(self):
-        name_parts = [self.size.category.name, self.size.name]
+        name_parts = [self.bundle.category.name, self.bundle.name]
         if self.long_name:
             name_parts.append(self.long_name)
         return '-'.join(name_parts)
 
     def __str__(self):
-        return self.name + ' - ' + _('Grösse') + ': ' + self.size.name + ' - ' + _('Kategorie') + ': ' + self.size.category.name
+        return self.name + ' - ' + _('Grösse') + ': ' + self.bundle.name + ' - ' + _('Kategorie') + ': ' + self.bundle.category.name
 
     def __lt__(self, other):
         return self.pk < other.pk

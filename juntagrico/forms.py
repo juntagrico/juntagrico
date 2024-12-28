@@ -445,13 +445,13 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
         containers = []
         for category in SubscriptionCategory.objects.exclude(bundles=None):
             category_container = CategoryContainer(instance=category)
-            for subscription_size in category.bundles.exclude(types=None):
-                size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
-                for subscription_type in subscription_size.types.filter(visible=True, is_extra=self.extra):
+            for bundle in category.bundles.exclude(types=None):
+                bundle_container = CategoryContainer(instance=bundle, name=bundle.long_name)
+                for subscription_type in bundle.types.filter(visible=True, is_extra=self.extra):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
-                        size_container.append(type_field)
-                if len(size_container):
-                    category_container.append(size_container)
+                        bundle_container.append(type_field)
+                if len(bundle_container):
+                    category_container.append(bundle_container)
             if len(category_container):
                 containers.append(category_container)
         return containers

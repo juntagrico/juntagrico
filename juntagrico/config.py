@@ -119,8 +119,8 @@ class Config:
         'SUB_OVERVIEW_FORMAT',
         {
             'delimiter': '|',
-            'format': '{category}:{size}:{type}={amount}',
-            'part_format': '{size}'
+            'format': '{category}:{bundle}:{type}={amount}',
+            'part_format': '{bundle}'
         }
     )
 

@@ -212,14 +212,14 @@ class JuntagricoTestCase(TestCase):
         cls.depot2 = Depot.objects.create(**depot_data)
 
     @staticmethod
-    def create_sub_type(size, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
+    def create_sub_type(bundle, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
         JuntagricoTestCase._count_sub_types += 1
         name = kwargs.get('name', None)
         long_name = kwargs.get('long_name', 'sub_type_long_name')
         return SubscriptionType.objects.create(
             name=name or 'sub_type_name' + str(JuntagricoTestCase._count_sub_types),
             long_name=long_name,
-            size=size,
+            bundle=bundle,
             shares=shares,
             visible=visible,
             required_assignments=required_assignments,
@@ -231,7 +231,7 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def set_up_sub_types(cls):
         """
-        subscription product, size and types
+        subscription categories, bundles, types and products
         """
         sub_product_data = {
             'name': 'product'
@@ -241,17 +241,17 @@ class JuntagricoTestCase(TestCase):
             'name': 'category'
         }
         cls.sub_category = SubscriptionCategory.objects.create(**sub_category_data)
-        sub_size_data = {
+        bundle_data = {
             'name': 'sub_name',
             'long_name': 'sub_long_name',
             'category': cls.sub_category,
             'description': 'sub_desc'
         }
-        cls.sub_size = SubscriptionBundle.objects.create(**sub_size_data)
-        SubscriptionItem.objects.create(bundle=cls.sub_size, product=cls.sub_product, units=1.0)
-        cls.sub_type = cls.create_sub_type(cls.sub_size)
-        cls.sub_type2 = cls.create_sub_type(cls.sub_size, shares=2)
-        cls.sub_type3 = cls.create_sub_type(cls.sub_size, shares=0)
+        cls.bundle = SubscriptionBundle.objects.create(**bundle_data)
+        SubscriptionItem.objects.create(bundle=cls.bundle, product=cls.sub_product, units=1.0)
+        cls.sub_type = cls.create_sub_type(cls.bundle)
+        cls.sub_type2 = cls.create_sub_type(cls.bundle, shares=2)
+        cls.sub_type3 = cls.create_sub_type(cls.bundle, shares=0)
         DepotSubscriptionTypeCondition.objects.create(
             depot=cls.depot,
             subscription_type=cls.sub_type,
@@ -317,13 +317,13 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def set_up_extra_sub_types(cls):
         """
-        subscription product, size and types
+        subscription extra types
         """
         extrasub_type_data = {
             'name': 'extrasub_type_name',
             'long_name': 'sub_type_long_name',
             'is_extra': True,
-            'size': cls.sub_size,
+            'bundle': cls.bundle,
             'shares': 0,
             'visible': True,
             'required_assignments': 10,
@@ -350,7 +350,7 @@ class JuntagricoTestCase(TestCase):
     def set_up_deliveries(cls):
         delivery_data = {'delivery_date': '2017-03-27',
                          'tour': cls.tour,
-                         'subscription_size': cls.sub_size}
+                         'subscription_bundle': cls.bundle}
         cls.delivery1 = Delivery.objects.create(**delivery_data)
         delivery_data['delivery_date'] = '2017-03-28'
         cls.delivery2 = Delivery.objects.create(**delivery_data)

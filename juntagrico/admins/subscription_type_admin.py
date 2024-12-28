@@ -1,10 +1,13 @@
 from adminsortable2.admin import SortableAdminMixin
+
+from django.contrib import admin
 from django.contrib.admin import RelatedOnlyFieldListFilter, TabularInline
+from django.utils.translation import gettext as _
 
 from juntagrico.admins import RichTextAdmin
 from juntagrico.admins.inlines.depot_subscriptiontype_inline import DepotSubscriptionTypeInline
 from juntagrico.config import Config
-from juntagrico.entity.subtypes import SubscriptionBundle
+from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionItem
 
 
 class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
@@ -12,11 +15,11 @@ class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
                     'required_core_assignments', 'visible']
     exclude = ['trial']
     inlines = [DepotSubscriptionTypeInline]
-    search_fields = ['name', 'long_name', 'size__name', 'size__long_name', 'size__products__name']
-    autocomplete_fields = ['size']
+    search_fields = ['name', 'long_name', 'bundle__name', 'bundle__long_name', 'bundle__products__name']
+    autocomplete_fields = ['bundle']
     list_filter = ['visible',
-                   ('size', RelatedOnlyFieldListFilter),
-                   ('size__category', RelatedOnlyFieldListFilter)]
+                   ('bundle', RelatedOnlyFieldListFilter),
+                   ('bundle__category', RelatedOnlyFieldListFilter)]
 
     def get_exclude(self, request, obj=None):
         if not Config.enable_shares():
@@ -42,3 +45,23 @@ class SubscriptionCategoryAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['__str__']
     search_fields = ['name', 'description']
     inlines = [SubscriptionBundleInline]
+
+
+class SubscriptionItemInline(TabularInline):
+    model = SubscriptionItem
+    fields = ['product', 'units']
+
+
+class SubscriptionBundleAdmin(RichTextAdmin):
+    list_display = ['name', 'long_name', 'category', 'orderable']
+    autocomplete_fields = ['category']
+    search_fields = ['name', 'long_name', 'description', 'category__name', 'products__name']
+    inlines = [SubscriptionItemInline]
+
+    @admin.display(
+        boolean=True,
+        ordering='category',
+        description=_('Bestellbar')
+    )
+    def orderable(self, obj):
+        return obj.category is not None

@@ -205,7 +205,7 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
                                                      output_field=PositiveIntegerField())).filter(week_mod=0))
 
     def sorted(self):
-        return self.order_by('type__is_extra', 'type__size__category',
+        return self.order_by('type__is_extra', 'type__bundle__category',
                              F('deactivation_date').desc(nulls_first=True),
                              F('cancellation_date').desc(nulls_first=True),
                              F('activation_date').desc(nulls_first=True))
@@ -214,4 +214,4 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         return self.filter(subscription__primary_member=member)
 
     def on_depot_list(self):
-        return self.filter(type__size__items=True)
+        return self.filter(type__bundle__items__isnull=False)

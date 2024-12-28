@@ -9,22 +9,22 @@ from juntagrico.entity.subtypes import SubscriptionBundle
 
 class Delivery(JuntagricoBaseModel):
     """
-    Delivery for a specific tour and subscription size
+    Delivery for a specific tour and subscription bundle
     """
     delivery_date = models.DateField(_('Lieferdatum'))
     tour = models.ForeignKey(Tour, verbose_name=_('Ausfahrt'), on_delete=models.PROTECT, null=True, blank=True, default=None)
-    subscription_size = models.ForeignKey(SubscriptionBundle,
-                                          verbose_name=_('{0}-Grösse').format(Config.vocabulary('subscription')),
-                                          on_delete=models.PROTECT)
+    subscription_bundle = models.ForeignKey(SubscriptionBundle,
+                                            verbose_name=_('{0}-Grösse').format(Config.vocabulary('subscription')),
+                                            on_delete=models.PROTECT)
 
     def __str__(self):
-        return u"%s - %s - %s" % (self.delivery_date, self.tour or _('Keine'), self.subscription_size.long_name)
+        return u"%s - %s - %s" % (self.delivery_date, self.tour or _('Keine'), self.subscription_bundle.long_name)
 
     class Meta:
         verbose_name = _('Lieferung')
         verbose_name_plural = _('Lieferungen')
         constraints = [
-            models.UniqueConstraint(fields=['delivery_date', 'tour', 'subscription_size'], name='unique_delivery'),
+            models.UniqueConstraint(fields=['delivery_date', 'tour', 'subscription_bundle'], name='unique_delivery'),
         ]
 
 

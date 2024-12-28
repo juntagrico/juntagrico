@@ -11,10 +11,10 @@ class SubscriptionTypeQueryset(QuerySet):
         return self.filter(is_extra=True)
 
     def visible(self):
-        return self.filter(visible=True, size__category__isnull=False)
+        return self.filter(visible=True, bundle__category__isnull=False)
 
     def on_depot_list(self):
-        return self.filter(size__depot_list=True)
+        return self.filter(bundle__depot_list=True)
 
     def with_active_or_future_parts(self):
         return self.filter(
@@ -24,9 +24,9 @@ class SubscriptionTypeQueryset(QuerySet):
 
     def annotate_content(self):
         return self.annotate(
-            size_name=F('size__name'),
-            category_name=F('size__category__name'),
-            amount=Sum('size_id')
+            bundle_name=F('bundle__name'),
+            category_name=F('bundle__category__name'),
+            amount=Sum('bundle_id')
         )
 
     def can_change(self):

@@ -51,16 +51,16 @@ class Subscription(Billable, SimpleStateModel):
 
     @staticmethod
     def get_part_overview(parts):
-        # building multi-dimensional dictionary [category_name][size_long_name][(type_name, type_long_name)] -> amount
+        # building multi-dimensional dictionary [category_name][bundle_long_name][(type_name, type_long_name)] -> amount
         result = {}
         for part in parts.all():
-            category_name = part.type.size.category.name
+            category_name = part.type.bundle.category.name
             category = result.get(category_name, {})
-            size_name = part.type.size.long_name
-            size = category.get(size_name, {})
+            bundle_name = part.type.bundle.long_name
+            bundle = category.get(bundle_name, {})
             type_name = (part.type.name, part.type.long_name)
-            size[type_name] = 1 + size.get(type_name, 0)
-            category[size_name] = size
+            bundle[type_name] = 1 + bundle.get(type_name, 0)
+            category[bundle_name] = bundle
             result[category_name] = category
         return result
 
@@ -87,7 +87,7 @@ class Subscription(Billable, SimpleStateModel):
     @cached_property
     def content(self):
         """
-        :return: list of parts annotated with size_name, category_name and amount
+        :return: list of parts annotated with bundle_name, category_name and amount
         """
         return self.types.with_active_or_future_parts().annotate_content()
 
@@ -99,7 +99,7 @@ class Subscription(Billable, SimpleStateModel):
         sformat = sformat or Config.sub_overview_format('format')
         return [sformat.format(
             category=t.category_name,
-            size=t.size_name,
+            bundle=t.bundle_name,
             type=t.name,
             amount=t.amount,
         ) for t in self.content]
@@ -118,14 +118,14 @@ class Subscription(Billable, SimpleStateModel):
         return self.parts.filter(~q_activated() | (q_canceled() & ~q_deactivation_planned())).filter(type__is_extra=False).count()
 
     @staticmethod
-    def calc_subscription_amount(parts, size):
-        return parts.filter(type__size=size).count()
+    def calc_subscription_amount(parts, bundle):
+        return parts.filter(type__bundle=bundle).count()
 
-    def subscription_amount(self, size):
-        return self.calc_subscription_amount(self.active_parts, size)
+    def subscription_amount(self, bundle):
+        return self.calc_subscription_amount(self.active_parts, bundle)
 
-    def subscription_amount_future(self, size):
-        return self.calc_subscription_amount(self.future_parts, size)
+    def subscription_amount_future(self, bundle):
+        return self.calc_subscription_amount(self.future_parts, bundle)
 
     @property
     def price(self):
@@ -234,9 +234,9 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     def __str__(self):
         try:
             return Config.sub_overview_format('part_format').format(
-                category=self.type.size.category.name,
-                size=self.type.size.name,
-                size_long=self.type.size.long_name,
+                category=self.type.bundle.category.name,
+                bundle=self.type.bundle.name,
+                bundle_long=self.type.bundle.long_name,
                 type=self.type.name,
                 type_long=self.type.long_name,
                 price=self.type.price

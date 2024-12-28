@@ -33,7 +33,7 @@
         <td class="horz-left">{% trans "TOTAL" %}:</td>
         {% for product in products %}
             {% for item in product.items.sorted %}
-                <td>{{ subscriptions|by_depot:depot|parts_by_size:item.bundle|active_on:date|count }}</td>
+                <td>{{ subscriptions|by_depot:depot|parts_by_bundle:item.bundle|active_on:date|count }}</td>
             {% empty %}
                 <td></td>
             {% endfor %}

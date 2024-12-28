@@ -29,7 +29,7 @@
             </td>
             {% for product in products %}
                 {% for item in product.items.sorted %}
-                    <td class="top-border left-border">{{ sub|parts_by_size:item.bundle|active_on:date|count|default:'' }}</td>
+                    <td class="top-border left-border">{{ sub|parts_by_bundle:item.bundle|active_on:date|count|default:'' }}</td>
                 {% empty %}
                     <td class="top-border left-border"></td>
                 {% endfor %}

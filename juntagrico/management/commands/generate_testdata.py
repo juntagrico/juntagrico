@@ -78,18 +78,18 @@ class Command(BaseCommand):
                 Share.objects.create(**share_all_fields)
             subproduct, _ = SubscriptionProduct.objects.get_or_create(name='Gemüse')
             category, _ = SubscriptionCategory.objects.get_or_create(name='Kategorie 1', description='Beschreibung 1')
-            subsize_name = 'Normales Abo'
-            subsize_fields = {'name': subsize_name,
+            bundle_name = 'Normales Abo'
+            bundle_fields = {'name': bundle_name,
                               'long_name': 'Ganz Normales Abo',
                               'category': category,
                               'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                              'Zwei personen Haushalt für eine Woche.'}
-            subsize = SubscriptionBundle.objects.filter(
-                name=subsize_name, category=subsize_fields['category']
+            bundle = SubscriptionBundle.objects.filter(
+                name=bundle_name, category=bundle_fields['category']
             ).first()
-            if not subsize:
-                subsize = SubscriptionBundle.objects.create(**subsize_fields)
-            subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'size': subsize, 'shares': 2,
+            if not bundle:
+                bundle = SubscriptionBundle.objects.create(**bundle_fields)
+            subtype_fields = {'name': 'Normales Abo', 'long_name': 'Ganz Normales Abo', 'bundle': bundle, 'shares': 2,
                               'visible': True, 'required_assignments': 10, 'price': 1000,
                               'description': 'Das einzige Abo welches wir haben, bietet genug Gemüse für einen '
                                              'Zwei personen Haushalt für eine Woche.'}

@@ -154,24 +154,24 @@ def amount_overview(request):
 
 @permission_required('juntagrico.change_subscription')
 def future(request):
-    subscriptionsizes = []
+    subscriptionbundles = []
     subscription_lines = dict({})
-    for subscription_size in SubscriptionBundle.objects.order_by('category', 'name'):
-        subscriptionsizes.append(subscription_size.id)
-        subscription_lines[subscription_size.id] = {
-            'name': subscription_size.category.name + '-' + subscription_size.name,
+    for subscription_bundle in SubscriptionBundle.objects.order_by('category', 'name'):
+        subscriptionbundles.append(subscription_bundle.id)
+        subscription_lines[subscription_bundle.id] = {
+            'name': subscription_bundle.category.name + '-' + subscription_bundle.name,
             'future': 0,
             'now': 0
         }
     for subscription in SubscriptionDao.all_active_subscritions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['now'] += subscription.subscription_amount(
-                subscription_size)
+        for subscription_bundle in subscriptionbundles:
+            subscription_lines[subscription_bundle]['now'] += subscription.subscription_amount(
+                subscription_bundle)
 
     for subscription in SubscriptionDao.future_subscriptions():
-        for subscription_size in subscriptionsizes:
-            subscription_lines[subscription_size]['future'] += subscription.subscription_amount_future(
-                subscription_size)
+        for subscription_bundle in subscriptionbundles:
+            subscription_lines[subscription_bundle]['future'] += subscription.subscription_amount_future(
+                subscription_bundle)
 
     renderdict = {
         'changed': request.GET.get('changed'),

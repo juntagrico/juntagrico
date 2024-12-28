@@ -127,8 +127,8 @@ class Command(BaseCommand):
         self.generate_subscription(main_member, co_member, depot, sub_types)
 
     def add_arguments(self, parser):
-        parser.add_argument('--categories', type=str, help='Categories[/size1,size2,...] to use', default=["Hof/1"], nargs="+")
-        parser.add_argument('--sub-size', type=int, help='Default size of subscription', default=1)
+        parser.add_argument('--categories', type=str, help='Categories[/bundle1,bundle2,...] to use', default=["Hof/1"], nargs="+")
+        parser.add_argument('--sub-bundle', type=int, help='Default bundle of subscription', default=1)
         parser.add_argument('--sub-shares', type=int, help='Required shares per subscription', default=2)
         parser.add_argument('--sub-assignments', type=int, help='Required assignment per subscription', default=6)
         parser.add_argument('--sub-price', type=int, help='Price of suscription', default=250)
@@ -140,25 +140,25 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         sub_types = []
-        default_size = options['sub_size']
+        default_bundle = options['sub_bundle']
         # TODO: Also generate products here
-        for categories_sizes in options['categories']:
-            category_sizes_parts = categories_sizes.split('/')
-            category = category_sizes_parts[0]
-            if category_sizes_parts[1:]:
-                categories_sizes = map(int, category_sizes_parts[1].split(','))
+        for categories_bundles in options['categories']:
+            category_bundle_parts = categories_bundles.split('/')
+            category = category_bundle_parts[0]
+            if category_bundle_parts[1:]:
+                categories_bundles = map(int, category_bundle_parts[1].split(','))
             else:
-                categories_sizes = [default_size]
+                categories_bundles = [default_bundle]
 
             subcategory_field = {'name': category}
             sub_category, created = SubscriptionCategory.objects.get_or_create(**subcategory_field)
-            for size in categories_sizes:
-                subsize_fields = {
+            for bundle in categories_bundles:
+                bundle_fields = {
                     'name': random.choice(['Tasche', 'Portion', '500g']),
                     'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
                     'category': sub_category
                 }
-                size, _ = SubscriptionBundle.objects.get_or_create(**subsize_fields)
+                bundle, _ = SubscriptionBundle.objects.get_or_create(**bundle_fields)
 
                 subtype_fields = {
                     'name': 'Abo {}'.format(category),
@@ -167,7 +167,7 @@ class Command(BaseCommand):
                     'required_assignments': options['sub_assignments'],
                     'price': options['sub_price'],
                     'description': '',
-                    'size': size
+                    'bundle': bundle
                 }
                 sub_type, _ = SubscriptionType.objects.get_or_create(
                     name=subtype_fields['name'],

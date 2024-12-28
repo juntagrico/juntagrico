@@ -40,7 +40,7 @@
                 <td style="text-align:right">{{ subscriptions|by_tour:tour|count_units:date|floatformat }}</td>
                 {% for product in products %}
                     {% for item in product.items.sorted %}
-                        <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_size:item.bundle|active_on:date|count|floatformat }}</td>
+                        <td style="text-align:right">{{ subscriptions|by_tour:tour|parts_by_bundle:item.bundle|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
@@ -51,7 +51,7 @@
                 <td style="text-align:right">{{ subscriptions|by_tour:None|count_units:date|floatformat }}</td>
                 {% for product in products %}
                     {% for item in product.items.sorted %}
-                        <td style="text-align:right">{{ subscriptions|by_tour:None|parts_by_size:item.bundle|active_on:date|count|floatformat }}</td>
+                        <td style="text-align:right">{{ subscriptions|by_tour:None|parts_by_bundle:item.bundle|active_on:date|count|floatformat }}</td>
                     {% endfor %}
                 {% endfor %}
             </tr>
@@ -61,7 +61,7 @@
             <td style="text-align:right">{{ subscriptions|count_units:date|floatformat }}</td>
             {% for product in products %}
                 {% for item in product.items.sorted %}
-                    <td style="text-align:right">{{ subscriptions|parts_by_size:item.bundle|active_on:date|count|floatformat }}</td>
+                    <td style="text-align:right">{{ subscriptions|parts_by_bundle:item.bundle|active_on:date|count|floatformat }}</td>
                 {% endfor %}
             {% endfor %}
         </tr>
