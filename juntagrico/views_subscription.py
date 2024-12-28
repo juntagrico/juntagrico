@@ -198,11 +198,11 @@ def part_change(request, part):
             else:
                 # cancel existing part and create new waiting one
                 with transaction.atomic():
-                    SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
+                    new_part = SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
                     part.cancel()
                 # notify admin
                 adminnotification.subpart_canceled(part)
-                adminnotification.subparts_created([part], part.subscription)
+                adminnotification.subparts_created([new_part], part.subscription)
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
         form = SubscriptionPartChangeForm(part)
