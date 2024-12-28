@@ -10,13 +10,14 @@ on:
     branches: [ main, 'releases/**' ]
 
 jobs:
-  build:
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     env:
       DJANGO_SETTINGS_MODULE: testsettings
       PYTHONPATH: .
-      CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
       EXCLUDE_TEST: ${{ matrix.exclude-test }}
+      COVERAGE_FILE: coverage${{ matrix.exclude-test }}
     strategy:
       matrix:
         include:
@@ -66,12 +67,6 @@ jobs:
     - name: ruff
       run: |
         ruff check juntagrico
-    - name: install CodeClimate reporter
-      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' && matrix.exclude-test != 'shares' }}
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-        ./cc-test-reporter before-build
     - name: run tests on mysql
       run: |
         python -m django makemigrations --noinput
@@ -83,10 +78,35 @@ jobs:
         python -m django makemigrations --noinput
         coverage run -m manage test --exclude-tag=$EXCLUDE_TEST
         python -m manage test juntagrico.tests.test_deploy --settings="deploytestsettings"
-    - name: publish code coverage
-      if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' && matrix.exclude-test != 'shares'}}
+    - name: format coverage
+      if: ${{ matrix.python-version  == '3.11' }}
       run: |
-        coverage report
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
         coverage xml
-        ./cc-test-reporter format-coverage -t coverage.py -o coverageupload
-        ./cc-test-reporter upload-coverage -i coverageupload
+        ./cc-test-reporter format-coverage -t coverage.py -o coverage-${{ matrix.exclude-test }}.json
+    - uses: actions/upload-artifact@v4
+      if: ${{ matrix.python-version  == '3.11' }}
+      with:
+        name: coverage-${{ matrix.exclude-test }}
+        path: coverage-${{ matrix.exclude-test }}.json
+
+  coverage:
+    name: Coverage Report
+    needs: tests
+    runs-on: ubuntu-latest
+    env:
+      CC_TEST_REPORTER_ID: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: coverage
+          merge-multiple: true
+      - name: collect and publish code coverage
+        if: ${{ env.CC_TEST_REPORTER_ID != null && github.event_name == 'push' }}
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ./cc-test-reporter before-build
+          ./cc-test-reporter sum-coverage coverage/*.json -p 2
+          ./cc-test-reporter upload-coverage

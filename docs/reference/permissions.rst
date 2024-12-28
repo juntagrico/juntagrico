@@ -120,8 +120,12 @@ Search Hints:
 
 Notifications
 -------------
-Some entities send a notification email when they are created or canceled. Should a member be notified on a certain event it has to have the corresponding
+Some entities send a notification email when they are created or canceled.
+Should a member be notified on a certain event it has to have the corresponding
 permission for that entity type and event.
+
+.. note::
+    These permissions need to be given explicitly, i.e., administrators are not notified implicitly.
 
 juntagrico.notified_on_share_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

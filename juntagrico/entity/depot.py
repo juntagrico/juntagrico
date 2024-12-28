@@ -12,7 +12,6 @@ from juntagrico.util.models import q_isactive
 from juntagrico.util.temporal import weekday_choices
 
 
-@absolute_url(name='tour')
 class Tour(JuntagricoBaseModel):
     """
     Delivery Tour to depots
