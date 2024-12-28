@@ -67,7 +67,7 @@ class SubscriptionBundle(JuntagricoBaseModel):
     products = models.ManyToManyField('SubscriptionProduct', through='SubscriptionItem', related_name='sizes', verbose_name=_('Produkte'))
 
     def __str__(self):
-        return self.name
+        return f'{self.category or _("(Nicht Bestellbar)")} - {self.name}'
 
     class Meta:
         verbose_name = _('{0}-Grösse').format(Config.vocabulary('subscription'))

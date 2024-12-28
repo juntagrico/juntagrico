@@ -12,7 +12,7 @@ class SubscriptionItemInline(TabularInline):
 
 
 class SubscriptionSizeAdmin(RichTextAdmin):
-    list_display = ['__str__', 'category', 'orderable']
+    list_display = ['name', 'long_name', 'category', 'orderable']
     autocomplete_fields = ['category']
     search_fields = ['name', 'long_name', 'description', 'category__name', 'products__name']
     inlines = [SubscriptionItemInline]
