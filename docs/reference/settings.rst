@@ -48,6 +48,7 @@ ORGANISATION_ADDRESS
   The address of your organisation
   
   Type: dict with the keys
+
   - name
   - street
   - number
@@ -175,6 +176,7 @@ ORGANISATION_BANK_CONNECTION
   the bank connection information of your organisation
   
   Type: dict with the keys
+
   - PC (postkonto)
   - BIC
   - IBAN
@@ -274,6 +276,7 @@ BUSINESS_YEAR_START
   Defining the start of the business year
 
   Type: dict with the keys
+
   - day
   - month
 
