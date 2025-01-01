@@ -12,7 +12,7 @@ from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionItem
 
 class SubscriptionTypeAdmin(SortableAdminMixin, RichTextAdmin):
     list_display = ['__str__', 'price', 'required_assignments',
-                    'required_core_assignments', 'visible']
+                    'required_core_assignments', 'visible', 'is_extra']
     exclude = ['trial']
     inlines = [DepotSubscriptionTypeInline]
     search_fields = ['name', 'long_name', 'bundle__name', 'bundle__long_name', 'bundle__products__name']

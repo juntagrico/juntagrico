@@ -4,7 +4,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 import juntagrico.entity
 
-# TODO: Do data migration
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -36,6 +35,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('units', models.FloatField(default=1.0, verbose_name='Einheiten')),
+                ('bundle', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.subscriptionbundle', verbose_name='Grösse')),
+                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.subscriptionproduct', verbose_name='Produkt')),
             ],
             options={
                 'abstract': False,
@@ -43,47 +44,23 @@ class Migration(migrations.Migration):
             bases=(models.Model, juntagrico.entity.OldHolder),
         ),
         migrations.RemoveConstraint(
-            model_name='subscriptionbundle',
-            name='unique_name_product',
+            model_name='delivery',
+            name='unique_delivery',
         ),
-        migrations.RemoveConstraint(
-            model_name='subscriptionbundle',
-            name='unique_units_product',
+        migrations.RenameField(
+            model_name='delivery',
+            old_name='subscription_size',
+            new_name='subscription_bundle',
         ),
-        migrations.RemoveField(
-            model_name='subscriptionbundle',
-            name='depot_list',
-        ),
-        migrations.RemoveField(
-            model_name='subscriptionbundle',
-            name='product',
-        ),
-        migrations.RemoveField(
-            model_name='subscriptionbundle',
-            name='units',
-        ),
-        migrations.RemoveField(
-            model_name='subscriptionbundle',
-            name='visible',
-        ),
-        migrations.RemoveField(
-            model_name='subscriptionproduct',
-            name='is_extra',
+        migrations.RenameField(
+            model_name='subscriptiontype',
+            old_name='size',
+            new_name='bundle',
         ),
         migrations.AddField(
             model_name='subscriptiontype',
             name='is_extra',
             field=models.BooleanField(default=False, verbose_name='Ist Zusatzabo'),
-        ),
-        migrations.AddField(
-            model_name='subscriptionitem',
-            name='bundle',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.subscriptionbundle', verbose_name='Grösse'),
-        ),
-        migrations.AddField(
-            model_name='subscriptionitem',
-            name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='juntagrico.subscriptionproduct', verbose_name='Produkt'),
         ),
         migrations.AddField(
             model_name='subscriptionbundle',
@@ -93,10 +70,23 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='subscriptionbundle',
             name='products',
-            field=models.ManyToManyField(related_name='sizes', through='juntagrico.SubscriptionItem', to='juntagrico.subscriptionproduct', verbose_name='Produkte'),
+            field=models.ManyToManyField(related_name='bundles', through='juntagrico.SubscriptionItem', to='juntagrico.subscriptionproduct', verbose_name='Produkte'),
+        ),
+        migrations.RemoveConstraint(
+            model_name='subscriptionbundle',
+            name='unique_name_product',
+        ),
+        migrations.RemoveConstraint(
+            model_name='subscriptionbundle',
+            name='unique_units_product',
         ),
         migrations.AddConstraint(
             model_name='subscriptionbundle',
             constraint=models.UniqueConstraint(fields=('name', 'category'), name='unique_name_category'),
+        ),
+        migrations.AddConstraint(
+            model_name='delivery',
+            constraint=models.UniqueConstraint(fields=('delivery_date', 'tour', 'subscription_bundle'),
+                                               name='unique_delivery'),
         ),
     ]
