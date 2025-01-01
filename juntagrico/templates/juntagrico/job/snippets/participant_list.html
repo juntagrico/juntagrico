@@ -1,0 +1,76 @@
+{% load juntagrico.common %}
+{% load i18n %}
+<ul>
+    {% for participant in job.unique_participants %}
+        <li class="participant">
+            <span class="participant-name">{{ participant }}</span>
+            {% if participant.slots > 1 %}
+                <span class="participant-count">(+{{ participant.slots|add:"-1" }})</span>
+            {% endif %}
+            <span class="participant-job-extras">
+            {% for extra in job.all_participant_extras|get_item:participant %}
+                {{ extra.extra_type.display_full|safe }}
+            {% endfor %}
+            </span>
+            {% if can_edit_assignments %}
+                {% spaceless %}
+                    <a class="edit-assignment" href="#" data-url="{% url 'assignment-edit' job.id participant.id %}">
+                        <i class="fas fa-pen"></i>
+                    </a>
+                {% endspaceless %}
+            {% endif %}
+            {% if can_contact or participant.reachable_by_email %}
+                {% spaceless %}
+                    <a class="contact-member" href="{% url 'contact-member' participant.id %}">
+                        <i class="far fa-envelope"></i>
+                    </a>
+                {% endspaceless %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+{# button to contact all #}
+{% if can_contact %}
+    {% block send_mail %}
+        <div>
+            <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="recipients" id="recipients"
+                       value="{% for e in job.participant_emails %}{{ e }}
+{% endfor %}"/>
+                <input type="hidden" name="recipients_count" id="recipients_count" value="{{ job.unique_participants.count }}"/>
+                <button type="submit" class="btn btn-outline-primary" id="send-email">
+                    {% trans "Allen ein E-Mail senden" %}
+                </button>
+            </form>
+        </div>
+    {% endblock %}
+{% endif %}
+
+{# Modal for editing assignment #}
+{% if can_edit or True %}
+    <div class="modal" id="edit_assignment_modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Einsatz bearbeiten" %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="spinner-grow" id="edit_assignment_loader" role="status">
+                        <span class="sr-only">{% trans "Lädt..." %}</span>
+                    </div>
+                    <div id="edit_assignment_content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Abbrechen" %}</button>
+                    <input type="submit" id="edit_assignment_submit" form="assignment-edit-form" class="btn btn-primary" 
+                           value="{% trans "Speichern" %}">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

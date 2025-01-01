@@ -109,18 +109,18 @@ class SimpleStateModel(models.Model):
     def check_date_order(self):
         today = datetime.date.today()
         is_active = self.activation_date is not None
-        is_cancelled = self.cancellation_date is not None
+        is_canceled = self.cancellation_date is not None
         is_deactivated = self.deactivation_date is not None
         if is_deactivated:
             if not is_active:
                 raise ValidationError(_('Bitte "Aktivierungsdatum" ausfüllen'), code='missing_activation_date')
             elif self.activation_date > self.deactivation_date:
                 raise ValidationError(_('"Aktivierungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
-            elif not is_cancelled:
+            elif not is_canceled:
                 raise ValidationError(_('Bitte "Kündigungsdatum" ausfüllen'), code='missing_cancellation_date')
             elif self.cancellation_date > self.deactivation_date:
                 raise ValidationError(_('"Kündigungsdatum" kann nicht nach "Deaktivierungsdatum" liegen'), code='invalid')
-        if is_cancelled and self.cancellation_date > today:
+        if is_canceled and self.cancellation_date > today:
             raise ValidationError(_('Das "Kündigungsdatum" kann nicht in der Zukunft liegen'), code='invalid')
 
     class Meta:

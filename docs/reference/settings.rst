@@ -48,6 +48,7 @@ ORGANISATION_ADDRESS
   The address of your organisation
   
   Type: dict with the keys
+
   - name
   - street
   - number
@@ -175,6 +176,7 @@ ORGANISATION_BANK_CONNECTION
   the bank connection information of your organisation
   
   Type: dict with the keys
+
   - PC (postkonto)
   - BIC
   - IBAN
@@ -274,6 +276,7 @@ BUSINESS_YEAR_START
   Defining the start of the business year
 
   Type: dict with the keys
+
   - day
   - month
 
@@ -363,6 +366,22 @@ ENABLE_SHARES
 
     True
 
+REQUIRED_SHARES
+^^^^^^^^^^^^^^^
+    .. note::
+    Added in version 1.7.0.
+
+  Specifies the minimum amount of shares that the main member must order during registration
+  regardless of the subscription requirements.
+
+  Type: Integer
+
+  default value
+
+  .. code-block:: python
+
+    1
+
 SHARE_PRICE
 ^^^^^^^^^^^
   Price of one share
@@ -390,6 +409,25 @@ ASSIGNMENT_UNIT
   .. code-block:: python
 
     "ENTITY"
+
+ALLOW_JOB_UNSUBSCRIBE
+^^^^^^^^^^^^^^^^^^^^^
+  If set to true, members can unsubscribe themselves (or reduce the slots they reserved)
+  from a job they signed up to previously by filling out a form.
+
+  Job contacts will be notified.
+
+  If the value is a string, unsubscribing will be allowed and the string will be displayed to the member, when they
+  try to unsubscribe from a job.
+
+  Type: Boolean or String
+
+  default value
+
+  .. code-block:: python
+
+    False
+
 
 PROMOTED_JOB_TYPES
 ^^^^^^^^^^^^^^^^^^

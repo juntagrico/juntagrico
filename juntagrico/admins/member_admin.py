@@ -12,14 +12,14 @@ from juntagrico.resources.member import MemberResource, MemberAssignmentsPerArea
 
 
 class MemberAdmin(DateRangeExportMixin, BaseAdmin):
-    list_display = ['email', 'first_name', 'last_name', 'addr_street', 'addr_zipcode', 'addr_location', 'active']
+    list_display = ['email', 'first_name', 'last_name', 'number', 'addr_street', 'addr_zipcode', 'addr_location', 'active']
     list_filter = ['user__is_superuser', 'user__is_staff', 'user__groups']
     search_fields = ['first_name', 'last_name', 'email', 'phone', 'mobile_phone',
-                     'addr_street', 'addr_zipcode', 'addr_location', 'id']
+                     'addr_street', 'addr_zipcode', 'addr_location', 'id', 'number']
     readonly_fields = ['user']
     inlines = [SubscriptionMembershipInline]
     fieldsets = [
-        (None, {'fields': ['first_name', 'last_name', 'birthday']}),
+        (None, {'fields': ['first_name', 'last_name', 'birthday', 'number']}),
         (_('Kontakt'), {'fields': ['email', 'confirmed', 'reachable_by_email', 'phone', 'mobile_phone']}),
         (_('Adresse'), {'fields': ['addr_street', 'addr_zipcode', 'addr_location']}),
         (_('Bankdaten'), {'fields': ['iban']}),

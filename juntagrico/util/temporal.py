@@ -1,8 +1,8 @@
 import calendar
 import datetime
 from datetime import timedelta
-from dateutil.relativedelta import relativedelta
 
+from dateutil.relativedelta import relativedelta
 from django.utils.translation import gettext as _
 
 from juntagrico.config import Config
@@ -16,6 +16,29 @@ weekday_choices = ((1, _('Montag')),
                    (7, _('Sonntag')))
 
 weekdays = dict(weekday_choices)
+
+
+def get_business_year(date=None):
+    """
+    :param date: date for which to determine business year, defaults to today
+    :return: year in which business year containing date started
+    """
+    date = date or datetime.date.today()
+    business_year = Config.business_year_start()
+    if date.month > business_year['month'] or (date.month == business_year['month'] and date.day >= business_year['day']):
+        return date.year
+    return date.year - 1
+
+
+def get_business_date_range(year):
+    """
+    :param year: year in which the business year starts
+    :return: date range of the selected business year
+    """
+    business_year = Config.business_year_start()
+    start = datetime.date(year, business_year['month'], business_year['day'])
+    end = datetime.date(year + 1, business_year['month'], business_year['day']) - timedelta(days=1)
+    return start, end
 
 
 def is_date_in_cancelation_period(date):
@@ -82,13 +105,15 @@ def next_cancelation_date_from(start):
     return datetime.date(year, c_month, days_in_month(year, c_month))
 
 
-def next_membership_end_date():
+def next_membership_end_date(cancellation_date=None):
     """
-    :return: end date of membership when canceling now
+    :param cancellation_date: calculate end date from this cancellation date, defaults to today
+    :return: end date of membership when canceling on cancellation_date
     """
+    date = cancellation_date or datetime.date.today()
     endmonth = Config.membership_end_month()
     noticemonths = Config.membership_end_notice_period()
-    nowplusnotice = datetime.date.today() + relativedelta(months=noticemonths)
+    nowplusnotice = date + relativedelta(months=noticemonths)
     if nowplusnotice.month <= endmonth:
         endyear = nowplusnotice.year
     else:
@@ -97,15 +122,8 @@ def next_membership_end_date():
     return datetime.date(endyear, endmonth, day)
 
 
-def calculate_next(day, month):
-    return calculate_next_offset(day, month, datetime.date.today())
-
-
-def calculate_last(day, month):
-    return calculate_last_offset(day, month, datetime.date.today())
-
-
-def calculate_next_offset(day, month, offset):
+def calculate_next_offset(day, month, offset=None):
+    offset = offset or datetime.date.today()
     if offset.month < month or (offset.month == month and offset.day < day):
         year = offset.year
     else:
@@ -113,12 +131,19 @@ def calculate_next_offset(day, month, offset):
     return datetime.date(year, month, day)
 
 
-def calculate_last_offset(day, month, offset):
+calculate_next = calculate_next_offset  # todo: remove in 2.0
+
+
+def calculate_last_offset(day, month, offset=None):
+    offset = offset or datetime.date.today()
     if offset.month > month or (offset.month == month and offset.day >= day):
         year = offset.year
     else:
         year = offset.year - 1
     return datetime.date(year, month, day)
+
+
+calculate_last = calculate_last_offset  # todo: remove in 2.0
 
 
 def calculate_remaining_days_percentage(date):

@@ -1,0 +1,8 @@
+{% load juntagrico.snippets %}
+<select name="depot" id="depot" class="form-control">
+    {% for depot in depots %}
+        <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == selected %}selected{% endif %}>
+            {{ depot.name }} {% depot_fee depot subscription_count "(" ")" %}
+        </option>
+    {% endfor %}
+</select>

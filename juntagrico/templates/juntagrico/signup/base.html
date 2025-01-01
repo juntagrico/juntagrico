@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block small_menu_content %}
+{% endblock %}
+
+{% block all_page_title %}
+    <div class="page-title offset-md-2 col-md-8">
+        <h3>
+            {% block title %}{% endblock %}
+        </h3>
+    </div>
+{% endblock %}
+
+{% block allcontent %}
+    <div class="offset-md-2 col-md-8 mb-3">
+        {% block intro %}{% endblock %}
+    </div>
+    <div class="offset-md-2 col-md-8">
+        {% block content %}{% endblock %}
+    </div>
+{% endblock %}
+
+{% block footer_content %}
+{% endblock %}

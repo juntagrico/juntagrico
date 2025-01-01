@@ -50,7 +50,7 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'yourdatabasename.db',
+        'NAME': 'dev.1.7.db',
     }
 }
 
@@ -158,6 +158,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
+                'juntagrico.context_processors.vocabulary',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -169,7 +170,7 @@ TEMPLATES = [
     },
 ]
 
-LOGIN_REDIRECT_URL = "/my/home"
+LOGIN_REDIRECT_URL = "/"
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
@@ -202,5 +203,10 @@ CONTACTS = {
 IMPORT_EXPORT_EXPORT_PERMISSION_CODE = 'view'
 
 ENABLE_SHARES = os.environ.get('EXCLUDE_TEST', 'none') != 'shares'
+BUSINESS_REGULATIONS = 'https://juntagrico.juntagrico/business-regulations'
+BYLAWS = 'https://juntagrico.juntagrico/bylaws'
+FAQ_DOC = 'https://juntagrico.juntagrico/faq'
+EXTRA_SUB_INFO = 'https://juntagrico.juntagrico/sub-info'
+ACTIVITY_AREA_INFO = 'https://juntagrico.juntagrico/area-info'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

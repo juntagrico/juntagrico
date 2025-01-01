@@ -1,0 +1,31 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% config "bylaws" as c_bylaws %}
+{% config "business_regulations" as c_business_regulations %}
+{% config "faq_doc" as c_faq %}
+{% if c_bylaws.strip or c_business_regulations.strip or c_faq.strip %}
+    <div class="row mb-5 documents">
+        <div class="col-md-3">
+            {% trans "Dokumente" %}
+        </div>
+        <div class="col-md-9">
+            <ul>
+                {% if c_bylaws.strip %}
+                    <li>
+                        <a href="{{ c_bylaws }}">{% trans "Statuten" %}</a>
+                    </li>
+                {% endif %}
+                {% if c_business_regulations.strip %}
+                    <li>
+                        <a href="{{ c_business_regulations }}">{% trans "Betriebsreglement" %}</a>
+                    </li>
+                {% endif %}
+                {% if c_faq.strip %}
+                    <li>
+                        <a href="{{ c_faq }}">{% trans "Häufig gestellte Fragen" %}</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+{% endif %}

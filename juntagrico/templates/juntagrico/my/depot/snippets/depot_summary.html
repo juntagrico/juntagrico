@@ -11,7 +11,7 @@
 </a>
 <br>
 {% blocktrans %}Name auf der {{ v_depot }}-Liste:{% endblocktrans %}
-{{ subscription.recipients_display_name }}
+{% include "juntagrico/snippets/subscription/recipients.html" %}
 <br>
 {% if not subscription.inactive %}
     {% if subscription.primary_member == member %}

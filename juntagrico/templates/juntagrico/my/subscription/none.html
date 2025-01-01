@@ -12,6 +12,10 @@
 {% block content %}
     {% include 'juntagrico/my/subscription/snippets/banners/no_subscription.html' %}
     {% include 'juntagrico/my/share/snippets/subscription_overview.html' %}
+    {# Documents #}
+    {% block documents %}
+        {% include "juntagrico/snippets/documents.html" %}
+    {% endblock %}
     {# Additional #}
     {% block extend %}
     {% endblock %}

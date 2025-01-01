@@ -1,0 +1,146 @@
+{% extends "../base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+
+{% block page_title %}
+    <h3>
+        {% vocabulary "subscription_pl" as v_subscription_pl %}
+        {% blocktrans %}Pendente Änderungen an {{ v_subscription_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% action_date request %}
+    {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
+    {% has_extra_subscriptions as b_has_extra_subscriptions %}
+    {% if b_has_extra_subscriptions %}
+        <div>
+            <span class="switch switch-sm">
+                <input class="switch" type="checkbox" id="show_normals" checked="checked">
+                <label for="show_normals">{% trans "Normale Bestandteile anzeigen" %}</label>
+            </span>
+            <span class="switch switch-sm">
+                <input class="switch" type="checkbox" id="show_extras" checked="checked">
+                <label for="show_extras">{% trans "Zusatz-Abos anzeigen" %}</label>
+            </span>
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block list %}
+    {% config "enable_shares" as enable_shares %}
+    {% vocabulary "subscription" as v_subscription %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+                <th class="filter">
+                    {% trans "Gekündigt" %}
+                </th>
+                <th class="filter">
+                    {% trans "Bestellt" %}
+                </th>
+                <th class="filter">
+                    {% trans "Kontakt" %}
+                </th>
+                {% if enable_shares %}
+                    <th class="filter">
+                        {% trans "Bezahlte Anteilsscheine" %}
+                    </th>
+                {% endif %}
+                <th class="filter">
+                    {% trans "Aktionen" %}
+                </th>
+                <th>
+                    {% trans "Notizen" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subscription in object_list %}
+                {% with cancelled_parts=subscription.parts.cancelled ordered_parts=subscription.parts.ordered %}
+                    <tr class="{% include "./snippets/row_class.html" %}">
+                        <td>
+                            <a href="{% url 'admin:juntagrico_subscription_change' subscription.id %}">
+                                {{ subscription.id }}
+                            </a>
+                        </td>
+                        <td class="cancelled-parts pl-5">
+                            {% regroup cancelled_parts by cancellation_date as parts_by_date %}
+                            {% include "./snippets/parts_by_date.html" with grouper_title=_('Kündigungsdatum') %}
+                            {% if parts_by_date and subscription.cancellation_date %}
+                                <div class="end-date pre" title="{% trans "Gewünschtes Enddatum" %}"
+                                >Auf: {{ subscription.end_date|date:"Y-m-d"|default:"?" }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="ordered-parts pl-5">
+                            {% regroup ordered_parts by creation_date as parts_by_date %}
+                            {% include "./snippets/parts_by_date.html" with grouper_title=_('Bestelldatum') %}
+                            {% if parts_by_date and not subscription.activation_date %}
+                                <div class="start-date pre" title="{% trans "Gewünschtes Startdatum" %}"
+                                >Auf: {{ subscription.start_date|date:"Y-m-d"|default:"?" }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% include "./snippets/members_linked.html" %}
+                        </td>
+                        {% if enable_shares %}
+                            <td>
+                                {{ subscription.paid_shares }}
+                                {% if subscription.paid_shares %}
+                                    {% trans "(J)" %}
+                                {% else %}
+                                    {% trans "(N)" %}
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        <td>
+                            <form method="post" id="form-sub-{{ subscription.id }}">
+                                {% csrf_token %}
+                                <button formaction="{% url 'parts-apply' %}" type="submit" class="btn btn-primary mb-1">
+                                    {% trans "Ausgewählte anwenden" %}
+                                </button>
+                            </form>
+                        </td>
+                        <td>
+                            {{ subscription.notes }}
+                        </td>
+                    </tr>
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function redraw_on_show_normal_extra (button, this_selector, is_checked) {
+            // en/disable checkboxes to not include them in form submit
+            $(this_selector + '>input').prop('disabled', !is_checked);
+            // this makes the buttons show up correctly taking show-normal and show-extra status into account
+            $('#filter-table').DataTable().draw()
+        }
+
+        $(function(){
+            $('.parts-for-date:not(:has(.show-normal))').addClass('show-extra')  // makes date also hide if only has extras
+            $('.parts-for-date:not(:has(.show-extra))').addClass('show-normal')  // makes date also hide if only has normals
+            $("#show_extras").ToggleButton('.show-extra', redraw_on_show_normal_extra)
+            $("#show_normals").ToggleButton('.show-normal', redraw_on_show_normal_extra)
+            redraw_on_show_normal_extra()
+            
+            // prevent selection of row when clicking checkbox
+            $("input, label").click(function(e) {e.stopPropagation()})
+        })
+    </script>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    config.info = false  // disabled, because it doesn't count correctly
+{% endblock %}

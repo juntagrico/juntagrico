@@ -1,0 +1,112 @@
+{% extends "../base.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.snippets %}
+
+{% block page_title %}
+    <h3>
+        {{ title }}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% include './snippets/toggle_buttons.html' %}
+    {{ block.super }}
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                {% block list_head %}
+                    <th class="filter">
+                        {% trans "Kontakt" %}
+                    </th>
+                    {% if not hide_areas %}
+                        <th class="filter">
+                            {% trans "Tätigkeitsbereiche" %}
+                        </th>
+                    {% endif %}
+                    <th class="filter">
+                        {% vocabulary "subscription" %}
+                    </th>
+                    <th class="filter">
+                        {% trans "Inhalt" %}
+                    </th>
+                    <th class="filter">
+                        {% vocabulary "depot" %}
+                    </th>
+                {% endblock %}
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>
+                    {% trans "Kontakt" %}
+                </th>
+                {% if not hide_areas %}
+                    <th>
+                        {% trans "Tätigkeitsbereiche" %}
+                    </th>
+                {% endif %}
+                <th>
+                    {% vocabulary "subscription" %}
+                </th>
+                <th>
+                    {% trans "Inhalt" %}
+                </th>
+                <th>
+                    {% vocabulary "depot" %}
+                </th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for member in object_list %}
+                {% with subscription=member.subscription_current %}
+                    <tr>
+                        {% block list_entry %}
+                            <td>
+                                {% include './snippets/display_linked.html' %}
+                            </td>
+                            {% if not hide_areas %}
+                                <td>
+                                    {% for area in member.areas.all %}
+                                        {{ area.name }},
+                                    {% empty %}
+                                        {% trans "-Kein Tätigkeitsbereich-" %}
+                                    {% endfor %}
+                                </td>
+                            {% endif %}
+                            <td>
+                                {% if subscription %}
+                                    {% include '../subscription/snippets/display_linked.html' %}
+                                {% else %}
+                                    {% trans "-" %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if subscription %}
+                                    {% for item in subscription.content_strings %}
+                                        <div>
+                                            {{ item }}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    {% trans "-" %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if subscription %}
+                                    {{ subscription.depot_name }}
+                                {% else %}
+                                    {% trans "-" %}
+                                {% endif %}
+                            </td>
+                        {% endblock %}
+                    </tr>
+                {% endwith %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
