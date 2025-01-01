@@ -160,7 +160,7 @@ class AssignmentTests(JuntagricoTestCase):
         self.assertGet(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), member=admin)
         # test increase subscription
         self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
-                        {'edit-slots': 2},302, admin)
+                        {'edit-slots': 2}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 2)
         self.assertTrue(self.signal_called)
         self.assertEqual(len(mail.outbox), 2 if admin != self.member else 1)  # (member notification +) admin notification
