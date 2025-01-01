@@ -100,6 +100,8 @@ $.fn.AjaxSlider = function(activate_url, disable_url, placeholder='{value}') {
 
 function map_with_markers(locations, selected) {
     let markers = []
+    // only use locations with coordinates
+    locations = locations.filter(function (location) {return location.latitude && location.longitude})
     if (locations[0]) {
         $('#map-container').append('<div id="location-map">')
         let map = L.map('location-map').setView([locations[0].latitude, locations[0].longitude], 11);
