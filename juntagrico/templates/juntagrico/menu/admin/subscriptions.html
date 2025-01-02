@@ -1,3 +1,4 @@
+{% load juntagrico.common %}
 {% load juntagrico.menu %}
 {% load juntagrico.config %}
 {% load i18n %}
@@ -31,6 +32,16 @@
                                 {% trans "Pendente Änderungen" %}
                             </a>
                         </li>
+                    {% endif %}
+                    {% if perms.juntagrico.change_subscriptionpart %}
+                        {% has_trial_subscriptions as b_has_trial_sub %}
+                        {% if b_has_trial_sub %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'manage-sub-trial' %}">
+                                    {% blocktrans with v_subscription_pl=vocabulary.subscription_pl %}Probe-{{ v_subscription_pl }}{% endblocktrans %}
+                                </a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                     {% if perms.juntagrico.change_subscription %}
                         <li class="nav-item">

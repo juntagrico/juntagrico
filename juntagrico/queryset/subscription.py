@@ -44,6 +44,11 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         self._end_required = False
 
     def active(self, on_date=None):
+        """
+        Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
+        :param on_date: defaults to today
+        :return: a queryset of subscriptions active on the given date.
+        """
         on_date = on_date or datetime.date.today()
         return self.in_date_range(on_date, on_date).exclude(activation_date=None)
 
@@ -187,8 +192,18 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
     def is_extra(self):
         return self.filter(type__size__product__is_extra=True)
 
+    def is_trial(self):
+        return self.filter(type__trial_days__gt=0)
+
+    def non_trial(self):
+        return self.filter(type__trial_days=0)
+
     def ordered(self):
         return self.filter(activation_date=None)
+
+    def waiting(self, date=None):
+        date = date or datetime.date.today()
+        return self.exclude(activation_date__lte=date)
 
     def cancelled(self):
         return self.filter(cancellation_date__isnull=False, deactivation_date=None)

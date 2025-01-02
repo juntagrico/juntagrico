@@ -127,6 +127,7 @@ urlpatterns = [
     path('manage/subscription/recent', manage.SubscriptionRecentView.as_view(), name='manage-sub-recent'),
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
+    path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),
     path('my/future', juntagrico_admin.future, name='future'),
