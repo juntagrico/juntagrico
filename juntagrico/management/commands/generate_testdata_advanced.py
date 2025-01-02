@@ -12,7 +12,7 @@ from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionProduct, SubscriptionSize, SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionBundle, SubscriptionType, SubscriptionCategory
 
 fake = Faker()
 
@@ -127,8 +127,8 @@ class Command(BaseCommand):
         self.generate_subscription(main_member, co_member, depot, sub_types)
 
     def add_arguments(self, parser):
-        parser.add_argument('--products', type=str, help='Products[/size1,size2,...] to use', default=["Gemüse/1"], nargs="+")
-        parser.add_argument('--sub-size', type=int, help='Default size of subscription', default=1)
+        parser.add_argument('--categories', type=str, help='Categories[/bundle1,bundle2,...] to use', default=["Hof/1"], nargs="+")
+        parser.add_argument('--sub-bundle', type=int, help='Default bundle of subscription', default=1)
         parser.add_argument('--sub-shares', type=int, help='Required shares per subscription', default=2)
         parser.add_argument('--sub-assignments', type=int, help='Required assignment per subscription', default=6)
         parser.add_argument('--sub-price', type=int, help='Price of suscription', default=250)
@@ -140,34 +140,34 @@ class Command(BaseCommand):
     # entry point used by manage.py
     def handle(self, *args, **options):
         sub_types = []
-        default_size = options['sub_size']
-        for product_sizes in options['products']:
-            product_sizes_parts = product_sizes.split('/')
-            product = product_sizes_parts[0]
-            if product_sizes_parts[1:]:
-                product_sizes = map(int, product_sizes_parts[1].split(','))
+        default_bundle = options['sub_bundle']
+        # TODO: Also generate products here
+        for categories_bundles in options['categories']:
+            category_bundle_parts = categories_bundles.split('/')
+            category = category_bundle_parts[0]
+            if category_bundle_parts[1:]:
+                categories_bundles = map(int, category_bundle_parts[1].split(','))
             else:
-                product_sizes = [default_size]
+                categories_bundles = [default_bundle]
 
-            subprod_field = {'name': product}
-            sub_product, created = SubscriptionProduct.objects.get_or_create(**subprod_field)
-            for size in product_sizes:
-                subsize_fields = {
-                    'name': random.choice(['Tasche', 'Portion', '500g']), 'units': size,
-                    'depot_list': True,
+            subcategory_field = {'name': category}
+            sub_category, created = SubscriptionCategory.objects.get_or_create(**subcategory_field)
+            for bundle in categories_bundles:
+                bundle_fields = {
+                    'name': random.choice(['Tasche', 'Portion', '500g']),
                     'description': 'Das einzige abo welches wir haben, bietet genug Gemüse für einen Zwei personen Haushalt für eine Woche.',
-                    'product': sub_product
+                    'category': sub_category
                 }
-                size, _ = SubscriptionSize.objects.get_or_create(**subsize_fields)
+                bundle, _ = SubscriptionBundle.objects.get_or_create(**bundle_fields)
 
                 subtype_fields = {
-                    'name': 'Abo {}'.format(product),
-                    'long_name': 'Ganz Normales {} Abo'.format(product),
+                    'name': 'Abo {}'.format(category),
+                    'long_name': 'Ganz Normales {} Abo'.format(category),
                     'shares': options['sub_shares'],
                     'required_assignments': options['sub_assignments'],
                     'price': options['sub_price'],
                     'description': '',
-                    'size': size
+                    'bundle': bundle
                 }
                 sub_type, _ = SubscriptionType.objects.get_or_create(
                     name=subtype_fields['name'],
