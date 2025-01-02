@@ -4,14 +4,21 @@ from django.core import mail
 from django.core.management import call_command
 
 from . import JuntagricoTestCaseWithShares
+from ..entity.member import Member
 
 
 class ManagementCommandsTest(JuntagricoTestCaseWithShares):
     def test_create_member_for_superuser(self):
-        call_command('createsuperuser', username='testsuperuer', email='super@mail.com', no_input='')
+        call_command('createsuperuser', username='testsuperuser', email='super@mail.com', no_input='')
         out = StringIO()
         call_command('create_member_for_superusers', stdout=out)
-        self.assertEqual(out.getvalue(), '')
+        self.assertEqual(out.getvalue(), 'Created 1 member(s) for superusers.\n')
+
+    def test_createadmin(self):
+        username = 'testsuperuser'
+        email = 'super@mail.com'
+        call_command('createadmin', username=username, email=email, no_input='')
+        self.assertEqual(Member.objects.get(user__username=username).email, email)
 
     def test_generate_testdata(self):
         out = StringIO()

@@ -46,9 +46,11 @@ Getting started
 .. code:: bash
 
    # Create local database and apply schemas
-   python manage.py migrate
+   python -m manage migrate
+   # Create a super user account
+   python -m manage createadmin
    # Start local development server on port 8000
-   python manage.py runserver 8000
+   python -m manage runserver 8000
 
 Generating documentation
 ------------------------
