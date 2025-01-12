@@ -1,13 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.defaultfilters import date
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from juntagrico.dao.jobdao import JobDao
-from juntagrico.entity.jobs import Job, Assignment
+from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
 from juntagrico.util.admin import get_job_admin_url
@@ -30,17 +33,80 @@ def jobs(request):
 
 
 @login_required
+def list_data(request):
+    """
+    returns json data objects with jobs for datatables
+    """
+    draw = int(request.GET.get('draw'))
+    start = int(request.GET.get('start'))
+    length = min(int(request.GET.get('length')), 1000)  # limit maximum size
+
+    all_jobs = Job.objects.all().order_by('time')  # default order
+
+    # filter by search
+    filtered_jobs = all_jobs
+    if search_time := request.GET.get('columns[0][search][value]'):
+        filtered_jobs = filtered_jobs.search_time(search_time)
+    if search_name := request.GET.get('columns[1][search][value]'):
+        filtered_jobs = filtered_jobs.search_name(search_name)
+    if search_location := request.GET.get('columns[2][search][value]'):
+        filtered_jobs = filtered_jobs.search_location(search_location)
+    if search_area := request.GET.get('columns[4][search][value]'):
+        filtered_jobs = filtered_jobs.search_area(search_area)
+    if search_value := request.GET.get('search[value]'):
+        filtered_jobs = filtered_jobs.full_text_search(search_value)
+
+    # sort results
+    columns = {0: 'time'}
+    order = 0
+    while column := request.GET.get(f'order[{order}][column]'):
+        column = columns.get(int(column))
+        if column:
+            direction = request.GET.get(f'order[{order}][dir]')
+            if direction == 'desc':
+                column = f'-{column}'
+            filtered_jobs = filtered_jobs.order_by(column)
+        order += 1
+
+    # write to data
+    data = []
+    show_extra = JobExtra.objects.exists()
+    show_core = ActivityArea.objects.filter(core=True).exists()
+    for job in filtered_jobs[start:start + length]:
+        data.append([
+            date(job.time, 'D d.m.Y'),
+            '<a href="' + reverse('job', args=[job.id]) + '" '
+               'class="' + job.get_css_classes + '">' + job.type.get_name + '</a>',
+            str(job.type.location),
+            f"{date(job.time, 'H:i')} - {date(job.end_time(), 'H:i')}",
+            job.type.activityarea.name,
+            f"{job.occupied_slots}/{'&infin;' if job.infinite_slots else job.slots}",
+        ])
+        if show_core:
+            data[-1].insert(-1, '&#10003;' if job.type.activityarea.core else '')
+        if show_extra:
+            data[-1].append(job.extras())
+
+    return JsonResponse({
+        'draw': draw,
+        'recordsTotal': all_jobs.count(),
+        'recordsFiltered': filtered_jobs.count(),
+        'data': data
+    })
+
+@login_required
 @highlighted_menu('jobs')
 def all_jobs(request):
     '''
     All jobs to be sorted etc.
     '''
     jobs = JobDao.jobs_ordered_by_time()
-    renderdict = {
-        'jobs': jobs
-    }
-
-    return render(request, 'jobs.html', renderdict)
+    if jobs.count() > 1000:
+        # use server side processing when data set is too large
+        return render(request, 'juntagrico/job/list/all.html', {
+            'jobs': Job.objects.none()
+        })
+    return render(request, 'jobs.html', {'jobs': jobs})
 
 
 @login_required
