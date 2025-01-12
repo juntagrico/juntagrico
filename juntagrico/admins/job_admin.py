@@ -77,6 +77,15 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
         return (self.is_copy_view(request) or obj is None or obj.can_modify(request)
                 ) and super().has_delete_permission(request, obj)
 
+    def get_fields(self, request, obj=None):
+        if self.is_copy_view(request):
+            original_fields = self.fields
+            self.fields = None
+            fields = super().get_fields(request, obj)
+            self.fields = original_fields
+            return fields
+        return super().get_fields(request, obj)
+
     def get_readonly_fields(self, request, obj=None):
         if self.is_copy_view(request):
             return []  # special case for mass job copy action
