@@ -19,6 +19,7 @@ from juntagrico.util.models import attribute_copy
 
 
 class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
+    fields = ('name', 'displayed_name', 'activityarea', 'location', 'default_duration', 'description', 'visible')
     list_display = ['__str__', 'default_duration', 'location', 'contacts_text', 'visible', 'last_used']
     list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), 'visible')
     autocomplete_fields = ['activityarea', 'location']

@@ -6,6 +6,7 @@ from django.urls import path, reverse
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
@@ -32,7 +33,19 @@ class OnlyFutureJobAdminForm(forms.ModelForm):
         return time
 
 
+def type_div(field, value=None):
+    value = value or _('(Wähle eine Jobart aus)')
+    return mark_safe(
+        '<div id="id_type_' + field + '" '
+             'data-url="' + reverse('api-jobtype-' + field, args=[99]) + '">' +
+            str(value) +
+        '</div>'
+    )
+
+
 class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
+    fields = ('type', 'time', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots', 'free_slots'),
+              'type_description', 'additional_description', 'pinned', 'canceled')
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
@@ -40,7 +53,21 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
     exclude = ['reminder_sent']
     autocomplete_fields = ['type']
     inlines = [ContactInline, AssignmentInline]
-    readonly_fields = ['free_slots']
+    readonly_fields = ['free_slots', 'type_description', 'type_duration']
+
+    @admin.display(
+        description=_('Beschreibung der Jobart'),
+    )
+    def type_description(self, instance):
+        # when adding a new job, instance is an empty job queryset
+        return type_div('description', instance.type.description if instance.type_id else None)
+
+    @admin.display(
+        description=_('Standardwert'),
+        #empty_value=type_div('duration')
+    )
+    def type_duration(self, instance):
+        return type_div('duration', instance.type.default_duration if instance.type_id else None)
 
     def has_change_permission(self, request, obj=None):
         return (self.is_copy_view(request) or obj is None or obj.can_modify(request)
@@ -119,3 +146,6 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
             queryset=JobTypeDao.visible_types()
         )['queryset']
         return (JobType.objects.filter(recuringjob=obj) | visible_by_coordinator).distinct()
+
+    class Media:
+        js = ["juntagrico/js/job_admin.js"]
