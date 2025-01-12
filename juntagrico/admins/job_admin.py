@@ -55,17 +55,12 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
     inlines = [ContactInline, AssignmentInline]
     readonly_fields = ['free_slots', 'type_description', 'type_duration']
 
-    @admin.display(
-        description=_('Beschreibung der Jobart'),
-    )
+    @admin.display(description=_('Beschreibung der Jobart'))
     def type_description(self, instance):
         # when adding a new job, instance is an empty job queryset
         return type_div('description', instance.type.description if instance.type_id else None)
 
-    @admin.display(
-        description=_('Standardwert'),
-        #empty_value=type_div('duration')
-    )
+    @admin.display(description=_('Standardwert'))
     def type_duration(self, instance):
         return type_div('duration', instance.type.default_duration if instance.type_id else None)
 
