@@ -6,11 +6,18 @@ Read the `official documentation <https://docs.djangoproject.com/en/4.2/ref/djan
 
 Call the commands with ``-h`` for more details on the usage.
 
+createadmin
+-----------
+
+This creates a super user like the command ``createsuperuser`` and creates a member for that new user,
+which is required by juntagrico to be able to log in.
+If you need to create members for previously created superusers, use ``create_member_for_superusers`` instead.
+
 create_member_for_superusers
 ----------------------------
 
-The django command ``createsuperuser`` will create a super user. However to be able to login juntagrico requires,
-that the user has a member. The command ``create_member_for_superusers`` will create such a member for all existing super users.
+The command ``create_member_for_superusers`` will create such a member for all existing super users.
+The member is required by juntagrico to be able to log in.
 
 .. _reference-generate-depot-list:
 

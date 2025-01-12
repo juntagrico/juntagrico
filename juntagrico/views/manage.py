@@ -83,6 +83,7 @@ class MemberActiveView(MemberView):
     queryset = Member.objects.active
     title = _('Alle aktiven {}').format(Config.vocabulary('member_pl'))
 
+
 class AreaMemberView(MemberView):
     permission_required = 'juntagrico.is_area_admin'
     title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(

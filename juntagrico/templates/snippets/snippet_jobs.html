@@ -20,13 +20,13 @@
 <table id="filter-table" class="list table" data-search='{"smart": true, "regex": false}'>
     <thead>
         <tr>
-            <th class="job-description d-none"></th>
             <th class="align-top filter job-date" data-priority="1">
                 {% trans "Datum" %}
             </th>
             <th class="align-top filter job-name" data-priority="1">
                 {% trans "Job" %}
             </th>
+            <th class="job-description d-none"></th>
             <th class="align-top filter">
                 {% trans "Ort" %}
             </th>
@@ -66,9 +66,6 @@
     <tbody>
         {% for job in jobs %}
             <tr>
-                <td class="d-none">
-                    {{ job.type.description }}
-                </td>
                 <td>
                     {{ job.time|date:"D d.m.Y" }}
                 </td>
@@ -76,6 +73,9 @@
                     <a href="{% url 'job' job.id %}" class="{{ job.get_css_classes }}">
                         {{ job.type.get_name }}
                     </a>
+                </td>
+                <td class="d-none">
+                    {{ job.type.description }}
                 </td>
                 <td>
                     {{ job.type.location }}

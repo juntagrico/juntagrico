@@ -325,6 +325,10 @@ textarea#recipients[disabled=disabled] {
     background-color: #fefffa;
 }
 
+#home #filter-table th {
+    top: 0;
+}
+
 #filter-table_wrapper > div.justify-content-between {
     position: sticky;
     top: 0;

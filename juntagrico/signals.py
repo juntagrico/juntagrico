@@ -70,6 +70,7 @@ def on_job_subscribed(sender, **kwargs):
         membernotification.job_subscription_changed(member.email, job, count)
         adminnotification.member_changed_job_subscription(job, **kwargs)
 
+
 def on_assignment_changed(sender, **kwargs):
     member = kwargs.get('instance')
     editor = kwargs.get('editor')

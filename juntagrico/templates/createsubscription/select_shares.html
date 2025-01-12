@@ -8,40 +8,43 @@
 {% endblock %}
 
 {% block intro %}
-    {% config "currency" as c_currency %}
-    {% config "share_price" as c_share_price %}
-    {% config "required_shares" as c_required_shares %}
-    {% enriched_organisation "D" as v_d_enriched_organisation %}
-    
     <p>
-        {% trans "Infos" %}:
-        {% blocktrans trimmed with v_member_type=vocabulary.member_type v_share=vocabulary.share v_share_pl=vocabulary.share_pl %}
-        Um {{ v_member_type }} bei {{ v_d_enriched_organisation }} zu werden, musst du mindestens
-        1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
-        Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }}
-        zurückerstattet.
-        {% endblocktrans %}
+        {% block intro_1 %}
+            {% config "currency" as c_currency %}
+            {% config "share_price" as c_share_price %}
+            {% enriched_organisation "D" as v_d_enriched_organisation %}
+            {% trans "Infos" %}:
+            {% blocktrans trimmed with v_member_type=vocabulary.member_type v_share=vocabulary.share v_share_pl=vocabulary.share_pl %}
+            Um {{ v_member_type }} bei {{ v_d_enriched_organisation }} zu werden, musst du mindestens
+            1 {{ v_share }} ({{ c_currency }} {{ c_share_price }}) erwerben.
+            Beim Austritt aus {{ v_d_enriched_organisation }} bekommst du deine {{ v_share_pl }}
+            zurückerstattet.
+            {% endblocktrans %}
+        {% endblock %}
     </p>
 
     <p>
-    {% if shares.total_required > c_required_shares %}
-        {% blocktrans trimmed with st=shares.total_required v_subscription=vocabulary.subscription v_share_pl=vocabulary.share_pl %}
-        Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ st }}
-        {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
-        {% endblocktrans %}
-    {% elif c_required_shares > 0 %}
-        {% blocktrans trimmed %}
-        Du benötigst mindestens {{ c_required_shares }} {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
-        {% endblocktrans %}
-    {% endif %}
+        {% block intro_2 %}
+            {% config "required_shares" as c_required_shares %}
+            {% if shares.total_required > c_required_shares %}
+                {% blocktrans trimmed with st=shares.total_required v_subscription=vocabulary.subscription v_share_pl=vocabulary.share_pl %}
+                Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ st }}
+                {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
+                {% endblocktrans %}
+            {% elif c_required_shares > 0 %}
+                {% blocktrans trimmed %}
+                Du benötigst mindestens {{ c_required_shares }} {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
+                {% endblocktrans %}
+            {% endif %}
 
-    {% if co_members|length > 0 and shares.remaining_required > 0 %}
-        <br/>
-        {% blocktrans trimmed with sr=shares.remaining_required v_share_pl=vocabulary.share_pl v_co_member_pl=vocabulary.co_member_pl %}
-        Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
-        deinen {{ v_co_member_pl }} auf.
-        {% endblocktrans %}
-    {% endif %}
+            {% if co_members|length > 0 and shares.remaining_required > 0 %}
+                <br/>
+                {% blocktrans trimmed with sr=shares.remaining_required v_share_pl=vocabulary.share_pl v_co_member_pl=vocabulary.co_member_pl %}
+                Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
+                deinen {{ v_co_member_pl }} auf.
+                {% endblocktrans %}
+            {% endif %}
+        {% endblock %}
     </p>
 {% endblock %}
 

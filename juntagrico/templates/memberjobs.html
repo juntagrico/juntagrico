@@ -37,7 +37,7 @@
                     {% trans "Job" %}
                 </th>
                 {% if b_show_core %}
-                    <th class="align-top" data-priority="2">
+                    <th class="align-top core-column" data-priority="2">
                         {% trans "Kern" %}
                     </th>
                 {% endif %}
@@ -100,19 +100,19 @@
 
                             // Total
                             let total = api
-                                .column(3, { search: 'applied' })
+                                .column(-1, { search: 'applied' })
                                 .data()
                                 .reduce((a, b) => floatVal(a) + floatVal(b), 0);
+                            api.column(-1).footer().innerHTML = total.toString().split('.').join(dt_language.decimal);
 
-                            // Total of core
-                            let total_core = api
-                                .cells('.is_core', { search: 'applied' })
-                                .data()
-                                .reduce((a, b) => floatVal(a) + floatVal(b), 0);
-
-                            // Update footer
-                            api.column(2).footer().innerHTML = total_core.toString().split('.').join(dt_language.decimal);
-                            api.column(3).footer().innerHTML = total.toString().split('.').join(dt_language.decimal);
+                            if (api.column('.core-column')) {
+                                // Total of core
+                                let total_core = api
+                                    .cells('.is_core', {search: 'applied'})
+                                    .data()
+                                    .reduce((a, b) => floatVal(a) + floatVal(b), 0);
+                                api.column('.core-column').footer().innerHTML = total_core.toString().split('.').join(dt_language.decimal);
+                            }
                         }
                     }
                 {% endblock %}

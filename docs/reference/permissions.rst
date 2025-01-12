@@ -108,6 +108,7 @@ Also it allows them to create new jobs and communicate with the members particip
 They also have the permission to modify assignments in jobs of their area.
 
 people with this permission have limited access to certain fields. They can not:
+
 - change name, core, hidden and coordinator fields of areas
 - see assignments of anybody but people from their areas
 - see job types which are not from their areas

@@ -164,6 +164,12 @@ select_start_date.html
 - ``label``: Label of date selection field
 - ``hint``: text below selection field
 
+select_shares.html
+^^^^^^^^^^^^^^^^^^^^^^
+
+- ``intro_1``: First part of intro
+- ``intro_2``  Last part of intro
+
 summary.html
 ^^^^^^^^^^^^
 
