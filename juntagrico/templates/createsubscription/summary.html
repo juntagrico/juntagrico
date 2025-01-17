@@ -111,9 +111,9 @@
             {% config "share_price" as c_share_price %}
             <h4>{% trans "Anteilscheine" %} <a href="{% url 'cs-shares' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
             <p>
-                {{ main_member.first_name }} {{ main_member.last_name }}: <b>{{ main_member.new_shares|default:'Keine' }}</b>
+                {{ main_member.first_name }} {{ main_member.last_name }}: <b>{{ shares.of_member|default:'Keine' }}</b>
                 {% for co_member in co_members %}
-                <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
+                    <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
                 {% endfor %}
             </p>
             <p><strong>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</strong></p>

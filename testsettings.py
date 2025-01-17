@@ -171,8 +171,6 @@ TEMPLATES = [
 
 LOGIN_REDIRECT_URL = "/"
 
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
-
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'juntagrico/locale'),
 )
