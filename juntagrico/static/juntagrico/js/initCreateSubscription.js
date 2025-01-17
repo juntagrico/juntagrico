@@ -33,5 +33,7 @@ define([], function () {
     })
 
     // show Spinner in multi selection
-    $("input[type='number']").inputSpinner();
+    if($().inputSpinner) {
+        $("input[type='number']").inputSpinner();
+    }
 });
