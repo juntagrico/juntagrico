@@ -40,9 +40,15 @@
                         {{ period.price }} {% config "currency" %}
                     {% endfor %}
                 {% else %}
-                    {%blocktrans with tp=type.price%}
-                     à {{ c_currency }} {{ tp }}/Jahr.
-                    {%endblocktrans%}
+                    {% if type.trial_days %}
+                        {%blocktrans with tp=type.price%}
+                         à {{ c_currency }} {{ tp }}.
+                        {%endblocktrans%}
+                    {% else %}
+                        {%blocktrans with tp=type.price%}
+                         à {{ c_currency }} {{ tp }}/Jahr.
+                        {%endblocktrans%}
+                    {% endif %}
                     {{ type.min_duration_info }}
                 {% endif %}
                 {% if not forloop.last %}<br>{% endif %}
