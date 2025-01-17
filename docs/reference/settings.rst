@@ -732,6 +732,44 @@ MAILER_RICHTEXT_OPTIONS
 
     {}
 
+Notifications
+-------------
+
+ENABLE_NOTIFICATIONS
+^^^^^^^^^^^^^^^^^^^^
+  List of strings, of notifications that should be enabled:
+
+  -  `'job_subscribed'`: Send an email to the job admin, if a member signs up to a job without leaving a message.
+
+  example:
+
+  .. code-block:: python
+
+    ENABLE_NOTIFICATIONS = ['job_subscribed']
+
+  default value:
+
+  .. code-block:: python
+
+    []
+
+
+DISABLE_NOTIFICATIONS
+^^^^^^^^^^^^^^^^^^^^^
+
+  List of strings, of notifications that should be disabled:
+
+  - `'job_subscription_changed'`: Don't send an email to the job admin if a member changes their job signup without leaving a message.
+  - `'job_unsubscribed'`: Don't send an email to the job admin if a member unsubscribes from a job without leaving a message.
+
+  .. note::
+    Notifications are always sent, when the member leaves a message, because the message is not stored outside of the email.
+
+  default value:
+
+  .. code-block:: python
+
+    []
 
 GDPR
 ----
