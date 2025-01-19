@@ -16,7 +16,7 @@ from juntagrico.util.temporal import weekday_choices
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
-        fields = ['type', 'slots', 'infinite_slots', 'multiplier', 'additional_description', 'duration_override']
+        fields = ['type', 'slots', 'infinite_slots', 'duration_override', 'multiplier', 'additional_description']
 
     weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
