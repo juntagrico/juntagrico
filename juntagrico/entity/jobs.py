@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Count
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
@@ -14,6 +15,7 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.queryset.job import JobQueryset
 
 
 @absolute_url(name='area')
@@ -186,6 +188,8 @@ class Job(JuntagricoBasePoly):
     members = models.ManyToManyField('Member', through='Assignment', related_name='jobs')
 
     contact_set = GenericRelation(Contact)
+
+    objects = PolymorphicManager.from_queryset(JobQueryset)()
 
     @property
     def type(self):

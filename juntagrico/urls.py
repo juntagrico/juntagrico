@@ -94,6 +94,7 @@ urlpatterns = [
     # /job
     path('my/jobs', job.jobs, name='jobs'),
     path('my/jobs/all', job.all_jobs, name='jobs-all'),
+    path('job/list/data', job.list_data, name='jobs-list-data'),
     path('my/jobs/<int:job_id>/', job.job, name='job'),
 
     # /assignment
