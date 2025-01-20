@@ -77,11 +77,14 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         co_member_data = self.newMemberData('test2@user.com')
         response = self.client.post(reverse('cs-co-members'), co_member_data)
         self.assertRedirects(response, reverse('cs-co-members'))
+        response = self.client.get(reverse('cs-co-members'), {'next': '1'})
+        self.assertRedirects(response, reverse('cs-shares'))
         self.assertGet(reverse('cs-shares'), 200)
         response = self.client.post(
             reverse('cs-shares'),
             {
-                'shares_mainmember': 1
+                'of_member': 1,
+                'of_co_member[0]': 0,
             }
         )
         self.assertRedirects(response, reverse('cs-summary'))
@@ -105,10 +108,10 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         # welcome mail, share mail & same for co-member & 3 admin notifications
         self.assertEqual(len(mail.outbox), 7 if settings.ENABLE_SHARES else 5)
 
-        # signup with different case email address should fail
+        # signup with different case email address should return form error
         new_member_data['email'] = 'Test@user.com'
         response = self.client.post(reverse('signup'), new_member_data)
-        self.assertEqual(response.status_code, 200)  # no redirect = failed
+        self.assertEqual(response.status_code, 200)
 
     def testSignupLogout(self):
         self.client.force_login(self.member.user)
@@ -144,7 +147,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         """ test order of new sub by existing member without sub
         """
         self.client.force_login(self.member4.user)
-        self.commonAddSub(self.member4.email, 'test comment', 2 if settings.ENABLE_SHARES else 0)
+        self.commonAddSub(self.member4.email, 'test comment', 3 if settings.ENABLE_SHARES else 1)
         # share mail (if enabled) for member & welcome mail for co-member & 3 admin notifications
         self.assertEqual(len(mail.outbox), 5 if settings.ENABLE_SHARES else 3)
 

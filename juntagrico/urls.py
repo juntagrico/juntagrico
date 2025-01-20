@@ -18,7 +18,7 @@ from juntagrico.views_admin import ShiftTimeFormView
 
 urlpatterns = [
     # /signup
-    path('my/signup/', juntagrico_subscription.SignupView.as_view(), name='signup'),
+    path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
     path('my/create/subscription/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
     path('my/create/subscription/selectdepot/', juntagrico_cs.cs_select_depot, name='cs-depot'),
     path('my/create/subscription/start/', juntagrico_cs.cs_select_start_date, name='cs-start'),

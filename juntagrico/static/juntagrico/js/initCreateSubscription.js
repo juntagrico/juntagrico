@@ -1,5 +1,4 @@
-/*global define, $, mwember_shares, depots, destinations, google */
-define([], function () {
+$(function () {
     let depot_element = document.getElementById('depots')
     if (depot_element) {
         let depots = JSON.parse(depot_element.textContent)
@@ -21,7 +20,7 @@ define([], function () {
     }
 
     // interactive checkbox
-    $("input[name='subscription'][value='-1']").change(function(){
+    $("input[name='no_subscription']").change(function(){
         if (this.checked) {
             $("input[type='number'][name^='amount']+div input").val(0).change()
         } else if (total_selected_subs() == 0)  {
@@ -29,7 +28,7 @@ define([], function () {
         }
     })
     $("input[type='number'][name^='amount']").change(function(){
-        $("input[name='subscription'][value='-1']").prop('checked', total_selected_subs() == 0)
+        $("input[name='no_subscription']").prop('checked', total_selected_subs() == 0)
     })
 
     // show Spinner in multi selection

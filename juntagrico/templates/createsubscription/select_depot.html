@@ -47,10 +47,10 @@
 
 {% block scripts %}
     {% if selected %}
-        {{ selected.name|json_script:'selected_depot' }}
+        {{ selected|json_script:'selected_depot' }}
     {% endif %}
     {{ depots.map_info|json_script:'depots' }}
     {% include 'snippets/scripts/leaflet.html' %}
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initCreateSubscription.js' %}">
+    <script type="text/javascript" src="{% static 'juntagrico/js/initCreateSubscription.js' %}">
      </script>
 {% endblock %}

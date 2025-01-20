@@ -1,4 +1,5 @@
 {% extends "juntagrico/signup/base.html" %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
@@ -26,8 +27,8 @@
     <p>
         {% block intro_2 %}
             {% config "required_shares" as c_required_shares %}
-            {% if shares.total_required > c_required_shares %}
-                {% blocktrans trimmed with st=shares.total_required v_subscription=vocabulary.subscription v_share_pl=vocabulary.share_pl %}
+            {% if form.required > c_required_shares %}
+                {% blocktrans trimmed with st=form.required v_subscription=vocabulary.subscription v_share_pl=vocabulary.share_pl %}
                 Für die von dir ausgewählten {{ v_subscription }}-Bestandteile brauchst du insgesamt {{ st }}
                 {{ v_share_pl }}. Du kannst natürlich noch mehr erwerben.
                 {% endblocktrans %}
@@ -37,9 +38,9 @@
                 {% endblocktrans %}
             {% endif %}
 
-            {% if co_members|length > 0 and shares.remaining_required > 0 %}
+            {% if form.co_members and form.remaining %}
                 <br/>
-                {% blocktrans trimmed with sr=shares.remaining_required v_share_pl=vocabulary.share_pl v_co_member_pl=vocabulary.co_member_pl %}
+                {% blocktrans trimmed with sr=form.remaining v_share_pl=vocabulary.share_pl v_co_member_pl=vocabulary.co_member_pl %}
                 Teile die restlichen benötigten {{ sr }} {{ v_share_pl }} unter dir und
                 deinen {{ v_co_member_pl }} auf.
                 {% endblocktrans %}
@@ -49,79 +50,13 @@
 {% endblock %}
 
 {% block content %}
-    {% config "required_shares" as c_required_shares %}
-    
-    {% if shares.error %}
-        <div class="alert alert-danger">
-            {% blocktrans trimmed with v_share_pl=vocabulary.share_pl v_subscription=vocabulary.subscription %}
-            Du brauchst entweder mehr {{ v_share_pl }} für die von dir gewählten {{ v_subscription }}-Bestandteile
-            oder eine deiner Eingaben ist keine positive Zahl.
-            {% endblocktrans %}
-            (x &#8713; &#8469;)
-        </div>
-    {% endif %}
-    
-    <form action="" method="post">
-        {% csrf_token %}
-        <div class="form-group row">
-            <label class="col-md-3 col-form-label">
-                {% blocktrans with v_share_pl=vocabulary.share_pl %}Neue {{ v_share_pl }}{% endblocktrans %}:
-            </label>
-            <div class="col-md-3">
-                <input type="number" name="shares_mainmember" class="form-control" value="{{ member.new_shares|default:shares.total_required }}"
-                       min="{{ shares.remaining_required_main_member }}"/>
-            </div>
-            <label class="col-md-6 col-form-label">
-                {% if shares.existing_main_member < c_required_shares %}
-                    {% if c_required_shares == 1 %}
-                        {% blocktrans trimmed with v_share=vocabulary.share %}
-                        Du brauchst als HauptbezieherIn mindestens {{ c_required_shares }} {{ v_share }}.
-                        {% endblocktrans %}
-                    {% elif c_required_shares > 1 %}
-                        {% blocktrans trimmed with v_share_pl=vocabulary.share_pl %}
-                        Du brauchst als HauptbezieherIn mindestens {{ c_required_shares }} {{ v_share_pl }}.
-                        {% endblocktrans %}
-                    {% endif %}
-                {% elif shares.existing_main_member > 0 %}
-                    {% blocktrans trimmed with msc=member.active_shares_count v_share_pl=vocabulary.share_pl %}
-                    Du hast bereits {{ msc }} {{ v_share_pl }}
-                    {% endblocktrans %}
-                {% endif %}
-            </label>
-        </div>
-    
-        {% for co_member in co_members %}
-            <div class="form-group row">
-                <label class="col-md-3 col-form-label">
-                    {{ co_member.first_name }} {{ co_member.last_name }}
-                </label>
-                <div class="col-md-3">
-                    <input type="number" name="{{ co_member.email }}" class="form-control" value="{{ co_member.new_shares|default:0 }}" min="0"/>
-                </div>
-                <label class="col-md-6 col-form-label">
-                    {% blocktrans trimmed with cac=co_member.active_shares_count v_share_pl=vocabulary.share_pl %}
-                    besitzt bereits {{ cac }} {{ v_share_pl }}
-                    {% endblocktrans %}
-                </label>
-            </div>
-        {% endfor %}
-    
-        <div class="form-group row">
-            <div class="offset-md-3 col-md-9">
-                <button type="submit" class="btn btn-success">
-                    {% trans "Weiter" %}
-                </button>
-                <a href="{% url 'cs-cancel' %}" class="btn">
-                    {% trans "Abbrechen" %}
-                </a>
-            </div>
-        </div>
-    </form>
+    {% crispy form %}
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/bootstrap-input-spinner.js' %}">
     </script>
-    <script type="text/javascript" src="{% static 'juntagrico/external/require.min.js' %}" data-main="{% static 'juntagrico/js/initChangeExtra.js' %}">
+    <script type="text/javascript">
+        $("input[type='number']").inputSpinner();
     </script>
 {% endblock %}

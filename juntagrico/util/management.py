@@ -1,45 +1,11 @@
 import itertools
-import random
-import string
 
 from juntagrico.config import Config
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import membernotification
-
-
-def password_generator(size=8, chars=string.ascii_uppercase + string.digits):
-    return ''.join(
-        random.choice(chars) for _ in range(size))
-
-
-def new_signup(signup_data):
-    """ create all elements from data collected during the signup process
-    :param signup_data: a CSSessionObject
-    :return the main member
-    """
-    # create member (or get existing)
-    member, creation_data = create_or_update_member(signup_data.main_member)
-
-    # create share(s) for member
-    create_share(member, signup_data.main_member.new_shares)
-
-    # create subscription for member
-    subscription = None
-    if sum(signup_data.subscriptions.values()) > 0:
-        subscription = create_subscription(signup_data.start_date, signup_data.depot, signup_data.subscriptions,
-                                           member, signup_data.main_member.comment)
-
-    # add co-members
-    for co_member in signup_data.co_members:
-        create_or_update_co_member(co_member, subscription, co_member.new_shares)
-
-    # send notifications
-    if creation_data['created']:
-        membernotification.welcome(member, creation_data['password'])
-
-    return member
+from juntagrico.util.users import make_password
 
 
 def create_or_update_co_member(co_member, subscription, new_shares):
@@ -47,7 +13,7 @@ def create_or_update_co_member(co_member, subscription, new_shares):
     # create share(s) for co-member(s)
     create_share(co_member, new_shares)
     # add co-member to subscription
-    add_recipient_to_subscription(subscription, co_member)
+    co_member.join_subscription(subscription)
     # notify co-member
     membernotification.welcome_co_member(co_member, creation_data['password'], new_shares, new=creation_data['created'])
 
@@ -58,7 +24,7 @@ def create_or_update_member(member):
     # generate password if member is new
     password = None
     if created:
-        password = password_generator()
+        password = make_password()
         member.user.set_password(password)
         member.user.save()
     return member, {
@@ -75,24 +41,12 @@ def create_share(member, amount=1):
         membernotification.shares_created(member, shares)
 
 
-def create_subscription(start_date, depot, subscription_types, member, comment=''):
-    # create instance
-    subscription = Subscription.objects.create(start_date=start_date, depot=depot)
-    # add member
-    add_recipient_to_subscription(subscription, member)
-    subscription.primary_member = member
-    subscription.save()
-    # set types
-    create_subscription_parts(subscription, subscription_types)
-    adminnotification.subscription_created(subscription, comment)
-    return subscription
-
-
-def add_recipient_to_subscription(subscription, recipient):
-    recipient.join_subscription(subscription)
-
-
 def create_subscription_parts(subscription, selected_types, notify=False):
+    """
+    :param subscription: subscription to add the parts to
+    :param selected_types: a dict of subscription_types -> amount
+    :param notify: if True will send an admin notification
+    """
     parts = SubscriptionPart.objects.bulk_create(
         itertools.chain(*[[SubscriptionPart(subscription=subscription, type=sub_type)] * amount
                           for sub_type, amount in selected_types.items()]))
