@@ -787,7 +787,6 @@ class EditAssignmentForm(JobSubscribeForm):
         return True
 
     def send_signals(self, slots, message=''):
-        # send signals
         assignment_changed.send(
             Member, instance=self.member, job=self.job, editor=self.editor,
             count=slots, initial_count=self.current_slots,

@@ -368,7 +368,7 @@ ENABLE_SHARES
 
 REQUIRED_SHARES
 ^^^^^^^^^^^^^^^
-    .. note::
+  .. note::
     Added in version 1.7.0.
 
   Specifies the minimum amount of shares that the main member must order during registration
