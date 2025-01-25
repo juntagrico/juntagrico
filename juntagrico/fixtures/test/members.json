@@ -60,6 +60,11 @@
                 "share"
             ],
             [
+                "notified_on_share_cancellation",
+                "juntagrico",
+                "share"
+            ],
+            [
                 "can_send_mails",
                 "juntagrico",
                 "specialroles"
