@@ -28,9 +28,9 @@ class Command(BaseCommand):
         with transaction.atomic(durable=True):
             # generate temporary test data to ensure that required objects are available
             management.call_command('generate_testdata')
-            subscription = Subscription.objects.all()[0]
-            future_parts = subscription.future_parts
-            canceled_part = subscription.active_parts[0]
+            subscription = Subscription.objects.filter(parts__isnull=False).first()
+            future_parts = subscription.parts.all()
+            canceled_part = subscription.parts.first()
             if Config.enable_shares():
                 shares = list(Share.objects.all()[:2])
             job = RecuringJob.objects.all()[0]
