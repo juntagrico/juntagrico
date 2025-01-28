@@ -82,7 +82,6 @@ class CoMemberTests(JuntagricoTestCase):
             ).exists()
         )
 
-
     def testAddExistingCoMember(self):
         co_member_before = self.co_member.__dict__
         new_co_member_data = self.get_co_member_data(self.co_member.email)
