@@ -46,6 +46,7 @@ class SpecialRoles(models.Model):
                        )
 
 
+# Don't connect new signals here, connect them in apps.py instead
 ''' non lifecycle related signals '''
 signals.pre_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)
@@ -83,6 +84,7 @@ juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
 ''' lifecycle all post init'''
 register_entities_for_post_init_and_save()
+
 
 '''monkey patch User email method'''
 

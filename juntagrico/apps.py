@@ -9,6 +9,8 @@ class JuntagricoAppconfig(AppConfig):
 
     def ready(self):
         from . import signals
-        from .models import Subscription
+        from .models import Subscription, Share
 
         signals.depot_changed.connect(signals.on_depot_changed, sender=Subscription)
+        signals.share_canceled.connect(signals.on_share_canceled, sender=Share)
+        # See models.py for older signal connections
