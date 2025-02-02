@@ -64,6 +64,6 @@ brows through the documentation.
 .. code:: bash
 
    # Install sphinx to generate the documentation locally
-   pip install sphinx
+   pip install sphinx sphinx-rtd-theme
    # Generate the documentation from the docs folder and place it in .docs
-   sphinx-build -C docs .docs
+   sphinx-build docs .docs
