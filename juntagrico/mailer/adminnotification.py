@@ -85,8 +85,7 @@ def share_canceled(share, **kwargs):
 
 @requires_someone_with_perm('notified_on_member_creation')
 def member_created(member, **kwargs):
-    if not hasattr(member, 'comment'):
-        member.comment = ''
+    member.comment = member.signup_comment  # backwards compatibility
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
         get_email_content('a_member_created', base_dict(locals())),

@@ -699,7 +699,7 @@ BATCH_MAILER
 FROM_FILTER
 ^^^^^^^^^^^
   Allows overriding the "from" field of outgoing emails. This can be used to prevent sending emails with a sender of different domain than the SMTP server, which triggers most spam filters.
-  The setting consists of a regular expression and a default replacement. If the regular expression does NOT match the default replacement is used as "from", and the origonal "from" is set as "reply to"
+  The setting consists of a regular expression (``filter_expression``) and a default replacement (``replacement_from``). If the regular expression does NOT match, the default replacement is used as "from", and the original "from" is set as "reply to".
 
   default value
 

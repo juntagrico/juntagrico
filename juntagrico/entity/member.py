@@ -63,6 +63,9 @@ class Member(JuntagricoBaseModel):
         _('Notizen'), blank=True,
         help_text=_('Notizen für Administration. Nicht sichtbar für {}'.format(Config.vocabulary('member'))))
     number = models.IntegerField(_('Mitglieder-Nummer'), null=True, blank=True)
+    signup_comment = models.TextField(
+        _('Kommentar bei Anmeldung'), blank=True, default='', help_text=_('Kommentar, den das Mitglied bei der Anmeldung hinterlassen hat')
+    )
 
     subscriptions = models.ManyToManyField('Subscription', through='SubscriptionMembership', related_name='members')
 
@@ -169,7 +172,13 @@ class Member(JuntagricoBaseModel):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = None if subscription.waiting else today
+            if subscription.waiting:
+                join_date = None
+            # allow common corner case, where co-member just left another subscription on the same day
+            elif self.subscriptionmembership_set.filter(leave_date=today).exists():
+                join_date = today + datetime.timedelta(days=1)
+            else:
+                join_date = today
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self
