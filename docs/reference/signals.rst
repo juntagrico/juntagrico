@@ -226,7 +226,14 @@ Default receivers:
 share_canceled
 ^^^^^^^^^^^^^^
 
-Trigger: None
+Trigger: A member cancels one of their shares
+
+Arguments:
+
+* instance: The share instance that was cancelled
+
+* on_share_canceled: :ref:`Notify <reference-notifications-share-canceled>` users
+  with permission :ref:`notified_on_share_cancellation <reference-permissions-notified_on_share_cancellation>` via email.
 
 
 Member signals

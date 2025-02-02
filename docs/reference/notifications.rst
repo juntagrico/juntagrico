@@ -192,7 +192,7 @@ Recipients: Users with the permission :ref:`juntagrico.notified_on_share_creatio
 
 Canceled
 ^^^^^^^^
-Trigger: None
+Trigger: On signal :ref:`share_canceled <reference-signals-share_canceled>`
 
 Template: ``mails/admin/share_canceled.txt``
 
