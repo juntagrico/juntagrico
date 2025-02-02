@@ -307,7 +307,7 @@ class CoMemberBaseForm(MemberBaseForm):
         email = self.cleaned_data['email'].lower()
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
-                                            .format(Config.vocabulary('co_member_pl'))))
+                                            .format(Config.vocabulary('co_member_pl'))), 'email_exists')
         existing_member = MemberDao.member_by_email(email)
         if existing_member:
             if existing_member.blocked:
@@ -317,7 +317,7 @@ class CoMemberBaseForm(MemberBaseForm):
                     '<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
                     Config.vocabulary('member_type_pl'),
                     Config.vocabulary('co_member_pl')
-                )))
+                )), 'has_active_subscription')
             else:
                 # store existing member for reevaluation
                 self.existing_member = existing_member

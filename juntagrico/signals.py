@@ -47,6 +47,10 @@ def on_depot_changed(sender, **kwargs):
     adminnotification.member_changed_depot(**kwargs)
 
 
+def on_share_canceled(sender, instance, **kwargs):
+    adminnotification.share_canceled(instance, **kwargs)
+
+
 def on_depot_change_confirmed(sender, instance, **kwargs):
     membernotification.depot_changed(instance, **kwargs)
 

@@ -172,7 +172,13 @@ class Member(JuntagricoBaseModel):
             sub_membership.leave_date = None
             sub_membership.save()
         else:
-            join_date = None if subscription.waiting else today
+            if subscription.waiting:
+                join_date = None
+            # allow common corner case, where co-member just left another subscription on the same day
+            elif self.subscriptionmembership_set.filter(leave_date=today).exists():
+                join_date = today + datetime.timedelta(days=1)
+            else:
+                join_date = today
             SubscriptionMembership.objects.create(member=self, subscription=subscription, join_date=join_date)
         if primary:
             subscription.primary_member = self

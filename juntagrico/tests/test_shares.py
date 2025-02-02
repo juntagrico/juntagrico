@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.template import Template, Context
+from django.core import mail
 from django.test import tag
 from django.urls import reverse
 
@@ -106,15 +107,28 @@ class ShareTests(JuntagricoTestCase):
 
     def testMemberShareCancel(self):
         # member can not cancel share because it is used
-        share = self.member.share_set.first()
+        share = self.member.share_set.last()
+        today = datetime.date.today()
         self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
         share.refresh_from_db()
-        self.assertEqual(share.cancelled_date, None)
+        self.assertIsNone(share.cancelled_date)
         # add share to cancel
         share = self.create_paid_share(self.member)
+        mail.outbox.clear()
         self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
         share.refresh_from_db()
-        self.assertEqual(share.cancelled_date, datetime.date.today())
+        self.assertEqual(share.cancelled_date, today)
+        self.assertIsNotNone(share.termination_date)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].recipients(), ['email1@email.org'])
+
+    def testCancelWrongShare(self):
+        # should fail
+        share = self.member4.share_set.first()
+        self.assertGet(reverse('share-cancel', args=[share.pk]), 404)
+        share.refresh_from_db()
+        self.assertEqual(share.cancelled_date, None)
+        self.assertEqual(share.termination_date, None)
 
     def testManageShareCanceledList(self):
         self.assertGet(reverse('manage-share-canceled'))
