@@ -221,7 +221,7 @@ class CSSummaryView(FormView):
 
     @transaction.atomic
     def form_valid(self, form):
-        self.cs_session.main_member.comment = form.cleaned_data["comment"]
+        self.cs_session.main_member.signup_comment = form.cleaned_data["comment"]
         # handle new signup
         member = new_signup(self.cs_session.pop())
         # finish registration
