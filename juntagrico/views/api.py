@@ -8,6 +8,7 @@ from juntagrico.entity.jobs import JobType
 def job_type_description(request, id):
     return HttpResponse(JobType.objects.get(id=id).description)
 
+
 @login_required
 def job_type_duration(request, id):
     return HttpResponse(JobType.objects.get(id=id).default_duration)

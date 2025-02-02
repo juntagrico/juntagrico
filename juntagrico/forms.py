@@ -618,7 +618,7 @@ class JobSubscribeForm(Form):
             2: _('Zu Zweit'),
             3: _('Zu Dritt'),
             4: _('Zu Viert'),
-            None: lambda x: _('{0} weitere Personen und ich').format(x-1)
+            None: lambda x: _('{0} weitere Personen und ich').format(x - 1)
         },
     }
     message_wrapper_class = 'd-none'  # let js display the field if needed
@@ -691,7 +691,7 @@ class JobSubscribeForm(Form):
     def get_choices(self):
         max_slots = min(self.available_slots, self.MAX_VALUE)
         min_slots = 0 if self.can_unsubscribe else max(1, self.current_slots)
-        for i in range(min_slots, max_slots+1):
+        for i in range(min_slots, max_slots + 1):
             label = self.get_option_text(i)
             yield i, label
 
@@ -865,7 +865,7 @@ class BusinessYearForm(Form):
             ]
         else:
             choices = [
-                (year, f"{year}/{year+1}")
+                (year, f"{year}/{year + 1}")
                 for year in range(
                     get_business_year(min_date),
                     get_business_year(max(today, max_date)) + 1,

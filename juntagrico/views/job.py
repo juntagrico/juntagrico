@@ -94,6 +94,7 @@ def list_data(request):
         'data': data
     })
 
+
 @login_required
 @highlighted_menu('jobs')
 def all_jobs(request):

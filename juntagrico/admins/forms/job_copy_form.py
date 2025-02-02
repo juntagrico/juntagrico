@@ -91,7 +91,6 @@ class JobCopyForm(forms.ModelForm):
             for contact in contacts:
                 job.contact_set.add(contact, bulk=False)
 
-
     @staticmethod
     def cleaned(cleaned_data):
         return all(k in cleaned_data for k in ('start_date', 'end_date', 'weekdays', 'weekly', 'time'))

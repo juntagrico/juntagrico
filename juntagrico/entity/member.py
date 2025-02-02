@@ -252,7 +252,7 @@ class Member(JuntagricoBaseModel):
         '''
         if not kwds.get('raw', False) and getattr(instance, 'user', None) is None:
             username = make_username(instance.first_name, instance.last_name)
-            user, created = User.objects.get_or_create(username=username)
+            user, _ = User.objects.get_or_create(username=username)
             instance.user = user
 
     @classmethod
