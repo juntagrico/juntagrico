@@ -1,35 +1,32 @@
-{% extends "no_menu_base.html" %}
+{% extends "juntagrico/signup/base.html" %}
+{% load juntagrico.snippets %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
-{% block all_page_title %}
-    <div class="offset-md-3 col-md-9 juntagrico">
-        <h3>
-            {% blocktrans %}Zusammenfassung{% endblocktrans %}
-        </h3>
-    </div>
+
+{% block title %}
+    {% trans "Zusammenfassung" %}
 {% endblock %}
-{% block allcontent %}
+
+{% block content %}
     {% config "currency" as c_currency %}
-    <div class="offset-md-2 col-md-8">
-        {% block profile %}
-            <h4>{% trans "Personalien" %}
-                {% if not main_member.pk %}<a href="{% url 'signup' %}" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
-            </h4>
-            <p>{{ main_member.first_name }} {{ main_member.last_name }}
-                <br>{{ main_member.addr_street }}
-                <br>{{ main_member.addr_zipcode }} {{ main_member.addr_location }}
-                <br>{% trans 'E-Mail' %}: <b>{{ main_member.email }}</b>
-                <br>{% trans 'Telefon' %}: {{ main_member.phone }}
-                <br>{% trans 'Mobil' %}: {{ main_member.mobile_phone|default:'-' }}
-                <br>{% trans 'Geburtstag' %}: {{ main_member.birthday|default:'-' }}
-            </p>
-        {% endblock %}
+
+    {% block profile %}
+        <h4>{% trans "Personalien" %}
+            {% if not main_member.pk %}<a href="{% url 'signup' %}" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
+        </h4>
+        <p>{{ main_member.first_name }} {{ main_member.last_name }}
+            <br>{{ main_member.addr_street }}
+            <br>{{ main_member.addr_zipcode }} {{ main_member.addr_location }}
+            <br>{% trans 'E-Mail' %}: <b>{{ main_member.email }}</b>
+            <br>{% trans 'Telefon' %}: {{ main_member.phone }}
+            <br>{% trans 'Mobil' %}: {{ main_member.mobile_phone|default:'-' }}
+            <br>{% trans 'Geburtstag' %}: {{ main_member.birthday|default:'-' }}
+        </p>
+    {% endblock %}
 
         {% block subscription %}
-            {% vocabulary "subscription" as v_subscription %}
-            {% vocabulary "subscription_pl" as v_subscription_pl %}
-            <h4>{{ v_subscription }} <a href="{% url 'cs-subscription' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
+            <h4>{{ vocabulary.subscription }} <a href="{% url 'cs-subscription' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
             <p>
             {% for type, amount in subscriptions.items %}
                 <strong>{{ amount }}</strong>&times; {{ type.name }}
@@ -40,6 +37,7 @@
                         {{ period.price }} {% config "currency" %}
                     {% endfor %}
                 {% else %}
+                    <strong>
                     {% if type.trial_days %}
                         {%blocktrans with tp=type.price%}
                          à {{ c_currency }} {{ tp }}.
@@ -49,89 +47,89 @@
                          à {{ c_currency }} {{ tp }}/Jahr.
                         {%endblocktrans%}
                     {% endif %}
+                    </strong>
                     {{ type.min_duration_info }}
                 {% endif %}
                 {% if not forloop.last %}<br>{% endif %}
             {% endfor %}
             {% if subscriptions|length == 0 %}
-                {%blocktrans%}Keine {{ v_subscription_pl }}{%endblocktrans%}
+                {% blocktrans with v_subscription_pl=vocabulary.subscription %}Keine {{ v_subscription_pl }}{%endblocktrans%}
             {% endif %}
             </p>
         {% endblock %}
 
-        {% if subscriptions|length > 0 %}
-            {% block depot %}
-                <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
-                <p>{{ depot.name }}
-                    <br>{% trans 'Abholung jeweils am' %} {{ depot.weekday_name }}
-                    {% if depot.location.address %}<br>{{ depot.location.address_html|safe }}{% endif %}
-                </p>
-            {% endblock %}
-
-            {% block start_date %}
-                <h4>{% trans "Gewünschtes Startdatum" %} <a href="{% url 'cs-start' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
-                <p>{{ start_date }}</p>
-            {% endblock %}
-
-            {% block co_member %}
-                {% vocabulary "co_member_pl" as v_co_member_pl %}
-                <h4>{{ v_co_member_pl }}</h4>
-                {% for co_member in co_members %}
-                    <p>{{ co_member.first_name }} {{ co_member.last_name }}
-                        {% if not co_member.pk %}<a href="{% url 'cs-co-members' %}?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
-                        <a href="{% url 'cs-co-members' %}?remove={{forloop.counter}}" class="delete"><i class="fas fa-trash"></i></a>
-                        <br>{{ co_member.addr_street }}
-                        <br>{{ co_member.addr_zipcode }} {{ co_member.addr_location }}
-                        <br>{% trans 'E-Mail' %}: <b>{{ co_member.email }}</b>
-                        <br>{% trans 'Telefon' %}: {{ co_member.phone }}
-                        <br>{% trans 'Mobil' %}: {{ co_member.mobile_phone|default:'-' }}
-                        <br>{% trans 'Geburtstag' %}: {{ co_member.birthday|default:'-' }}
-                    </p>
-                {% endfor %}
-                <p><a href="{% url 'cs-co-members' %}"><i class="fas fa-plus"></i>
-                    {% if co_members|length > 0 %}
-                        {% blocktrans %}Weitere {{ v_co_member_pl }} hinzufügen{% endblocktrans %}
-                    {% else %}
-                        {% blocktrans %}{{ v_co_member_pl }} hinzufügen{% endblocktrans %}
-                    {% endif %}
-                </a></p>
-            {% endblock %}
-        {% endif %}
-
-        {% if activity_areas %}
-            {% block activity_areas %}
-                <h4>{% trans "Tätigkeitsbereiche" %}</h4>
-                <p>{% blocktrans %}Du wirst automatisch in folgende Tätigkeitsbereiche eingetragen.{% endblocktrans %}</p>
-                <ul>
-                    {% for area in activity_areas %}
-                        <li><strong>{{ area.name }}</strong> {{ area.description |safe }}</li>
-                    {% endfor %}
-                </ul>
-
-                <p>{% blocktrans %}Du kannst das jederzeit unter dem Menupunkt Tätigkeitsbereiche ändern.{% endblocktrans %}</p>
-            {% endblock %}
-        {% endif %}
-
-        {% config "enable_shares" as c_enable_shares %}
-        {% if c_enable_shares %}
-            {% block shares %}
-                {% config "share_price" as c_share_price %}
-                <h4>{% trans "Anteilscheine" %} <a href="{% url 'cs-shares' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
-                <p>
-                    {{ main_member.first_name }} {{ main_member.last_name }}: <b>{{ main_member.new_shares|default:'Keine' }}</b>
-                    {% for co_member in co_members %}
-                    <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
-                    {% endfor %}
-                </p>
-                <p>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</p>
-            {% endblock %}
-        {% endif %}
-
-        {% block comment %}
-            <h4>Kommentar</h4>
-            <form action="" method="post">
-                {% crispy form %}
-            </form>
+    {% if subscriptions|length > 0 %}
+        {% block depot %}
+            <h4>{% trans "Depot" %} <a href="{% url 'cs-depot' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
+            <p>{{ depot.name }}
+                {% depot_fee depot subscriptions "<br><strong>" "</strong>" %}
+                <br>{% trans 'Abholung jeweils am' %} {{ depot.pickup_display }}
+                {% if depot.location.address %}<br>{{ depot.location.address_html|safe }}{% endif %}
+            </p>
         {% endblock %}
-    </div>
+
+        {% block start_date %}
+            <h4>{% trans "Gewünschtes Startdatum" %} <a href="{% url 'cs-start' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
+            <p>{{ start_date }}</p>
+        {% endblock %}
+
+        {% block co_member %}
+            <h4>{{ vocabulary.co_member_pl }}</h4>
+            {% for co_member in co_members %}
+                <p>{{ co_member.first_name }} {{ co_member.last_name }}
+                    {% if not co_member.pk %}<a href="{% url 'cs-co-members' %}?edit={{forloop.counter}}" class="edit"><i class="fas fa-pen"></i></a>{% endif %}
+                    <a href="{% url 'cs-co-members' %}?remove={{forloop.counter}}" class="delete"><i class="fas fa-trash"></i></a>
+                    <br>{{ co_member.addr_street }}
+                    <br>{{ co_member.addr_zipcode }} {{ co_member.addr_location }}
+                    <br>{% trans 'E-Mail' %}: <b>{{ co_member.email }}</b>
+                    <br>{% trans 'Telefon' %}: {{ co_member.phone }}
+                    <br>{% trans 'Mobil' %}: {{ co_member.mobile_phone|default:'-' }}
+                    <br>{% trans 'Geburtstag' %}: {{ co_member.birthday|default:'-' }}
+                </p>
+            {% endfor %}
+            <p><a href="{% url 'cs-co-members' %}"><i class="fas fa-plus"></i>
+                {% if co_members|length > 0 %}
+                    {% blocktrans with v_co_member_pl=vocabulary.co_member_pl %}Weitere {{ v_co_member_pl }} hinzufügen{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with v_co_member_pl=vocabulary.co_member_pl %}{{ v_co_member_pl }} hinzufügen{% endblocktrans %}
+                {% endif %}
+            </a></p>
+        {% endblock %}
+    {% endif %}
+
+    {% if activity_areas %}
+        {% block activity_areas %}
+            <h4>{% trans "Tätigkeitsbereiche" %}</h4>
+            <p>{% blocktrans %}Du wirst automatisch in folgende Tätigkeitsbereiche eingetragen.{% endblocktrans %}</p>
+            <ul>
+                {% for area in activity_areas %}
+                    <li><strong>{{ area.name }}</strong> {{ area.description |safe }}</li>
+                {% endfor %}
+            </ul>
+
+            <p>{% blocktrans %}Du kannst das jederzeit unter dem Menupunkt Tätigkeitsbereiche ändern.{% endblocktrans %}</p>
+        {% endblock %}
+    {% endif %}
+
+    {% config "enable_shares" as c_enable_shares %}
+    {% if c_enable_shares %}
+        {% block shares %}
+            {% config "share_price" as c_share_price %}
+            <h4>{% trans "Anteilscheine" %} <a href="{% url 'cs-shares' %}" class="edit"><i class="fas fa-pen"></i></a></h4>
+            <p>
+                {{ main_member.first_name }} {{ main_member.last_name }}: <b>{{ main_member.new_shares|default:'Keine' }}</b>
+                {% for co_member in co_members %}
+                <br>{{ co_member.first_name }} {{ co_member.last_name }}: <b>{{ co_member.new_shares|default:'Keine' }}</b>
+                {% endfor %}
+            </p>
+            <p><strong>{% blocktrans %}Zu je einmalig {{ c_currency }} {{ c_share_price }}{% endblocktrans %}</strong></p>
+        {% endblock %}
+    {% endif %}
+
+    {% block comment %}
+        <h4>Kommentar</h4>
+        <form action="" method="post">
+            {% crispy form %}
+        </form>
+    {% endblock %}
 {% endblock %}

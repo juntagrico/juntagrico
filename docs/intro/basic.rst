@@ -95,7 +95,7 @@ Read :ref:`Permissions <reference-permissions>` on how to set permissions.
 Configure Admin Notifications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Email notifications for admins are also configured :ref:`using permissions <reference-notifications>`.
+Email notifications for admins are also configured :ref:`using permissions <reference-permission-notifications>`.
 
 
 Text Adjustments

@@ -16,22 +16,26 @@
         </span>
     </div>
     <label class="col-md-9">
-        {% vocabulary "subscription" as v_subscription %}
-        {% config "organisation_name" as c_organisation_name %}
-        {% vocabulary "member_type" as v_member_type %}
-        {% blocktrans trimmed %}
-        Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-{{ v_member_type }}
-        sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
-        {% endblocktrans %}
-        <br/>
-        {% config "base_fee" as base_fee %}
-        {% if base_fee.strip %}
-            {% vocabulary "member_type_pl" as v_member_type_pl %}
-            {% config "currency" as c_currency %}
-            {% blocktrans trimmed%}
-            {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
-            einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
+        {% block description %}
+            {% vocabulary "subscription" as v_subscription %}
+            {% config "organisation_name" as c_organisation_name %}
+            {% vocabulary "member_type" as v_member_type %}
+            {% blocktrans trimmed %}
+            Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-{{ v_member_type }}
+            sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
             {% endblocktrans %}
-        {% endif %}
+        {% endblock %}
+        <br/>
+        {% block base_fee %}
+            {% config "base_fee" as base_fee %}
+            {% if base_fee.strip %}
+                {% vocabulary "member_type_pl" as v_member_type_pl %}
+                {% config "currency" as c_currency %}
+                {% blocktrans trimmed%}
+                {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
+                einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
+                {% endblocktrans %}
+            {% endif %}
+        {% endblock %}
     </label>
 </div>

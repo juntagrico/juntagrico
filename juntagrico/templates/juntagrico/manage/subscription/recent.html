@@ -1,0 +1,184 @@
+{% extends "../base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% load juntagrico.common %}
+{% load juntagrico.snippets %}
+{% block page_title %}
+    <h3>
+        {% vocabulary "subscription_pl" as v_subscription_pl %}
+        {% blocktrans %}Änderungen an {{ v_subscription_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block content %}
+    {% crispy date_form %}
+    {% include '../member/snippets/toggle_buttons.html' with co_members=True %}
+    {{ block.super }}
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% trans "Änderung" %}
+                </th>
+                <th class="filter">
+                    {% trans "Datum" %}
+                </th>
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+                <th class="filter">
+                    {% trans "Bestandteil" %}
+                </th>
+                <th class="filter">
+                    {% vocabulary "member" %}
+                </th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>
+                    {% trans "Änderung" %}
+                </th>
+                <th>
+                    {% trans "Datum" %}
+                </th>
+                <th>
+                    {% vocabulary "subscription" %}
+                </th>
+                <th>
+                    {% trans "Bestandteil" %}
+                </th>
+                <th>
+                    {% vocabulary "member" %}
+                </th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for deactivated_part in deactivated_parts %}
+                <tr>
+                    <td>
+                        {% trans "Deaktivierung" %}
+                    </td>
+                    <td>
+                        {{ deactivated_part.deactivation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=deactivated_part.subscription %}
+                    </td>
+                    <td>
+                        {{ deactivated_part.type.display_name }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=deactivated_part.subscription %}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for cancelled_part in cancelled_parts %}
+                <tr>
+                    <td>
+                        {% trans "Kündigung" %}
+                    </td>
+                    <td>
+                        {{ cancelled_part.cancellation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=cancelled_part.subscription %}
+                    </td>
+                    <td>
+                        {{ cancelled_part.type.display_name }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=cancelled_part.subscription %}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for left_membership in left_memberships %}
+                <tr>
+                    <td>
+                        {% trans "Austritt" %}
+                    </td>
+                    <td>
+                        {{ left_membership.leave_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=left_membership.subscription %}
+                    </td>
+                    <td>
+                        -
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/member/snippets/display_linked.html" with member=left_membership.member %}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for joined_membership in joined_memberships %}
+                <tr>
+                    <td>
+                        {% trans "Beitritt" %}
+                    </td>
+                    <td>
+                        {{ joined_membership.join_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=joined_membership.subscription %}
+                    </td>
+                    <td>
+                        -
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/member/snippets/display_linked.html" with member=joined_membership.member %}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for activated_part in activated_parts %}
+                <tr>
+                    <td>
+                        {% trans "Aktivierung" %}
+                    </td>
+                    <td>
+                        {{ activated_part.activation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=activated_part.subscription %}
+                    </td>
+                    <td>
+                        {{ activated_part.type.display_name }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=activated_part.subscription %}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% for ordered_part in ordered_parts %}
+                <tr>
+                    <td>
+                        {% trans "Bestellung" %}
+                    </td>
+                    <td>
+                        {{ ordered_part.creation_date|date:"Y-m-d" }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/display_linked.html" with subscription=ordered_part.subscription %}
+                    </td>
+                    <td>
+                        {{ ordered_part.type.display_name }}
+                    </td>
+                    <td>
+                        {% include "juntagrico/manage/subscription/snippets/members_linked.html" with subscription=ordered_part.subscription %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    config.ordering = true
+    config.order = [[1, 'desc']]
+{% endblock %}

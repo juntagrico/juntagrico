@@ -1,64 +1,55 @@
-{% extends "no_menu_base.html" %}
+{% extends "juntagrico/signup/base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
-{% block all_page_title %}
-    {% vocabulary "member_type" as v_member_type %}
-    <div class="page-title col-md-12">
-        <h3>
-            {% blocktrans %}{{ v_member_type }} werden{% endblocktrans %}
-        </h3>
-    </div>
+
+{% block title %}
+    {% blocktrans with v_member_type=vocabulary.member_type %}{{ v_member_type }} werden{% endblocktrans %}
 {% endblock %}
-{% block allcontent %}
-    <div class="col-md-12">
-        {% config "enable_shares" as c_enable_shares %}
-        {% config "bylaws" as c_bylaws %}
-        {% config "business_regulations" as c_business_regulations %}
-        {% config "gdpr_info" as c_gdpr_info %}
-        {% config "share_price" as c_share_price %}
-        {% enriched_organisation "D" as v_d_enriched_organisation %}
-        {% vocabulary "share" as v_share %}
-        {% vocabulary "share_pl" as v_share_pl %}
-        {% vocabulary "subscription" as v_subscription %}
-        {% vocabulary "member_type" as v_member_type %}
-        {% vocabulary "member_type_pl" as v_member_type_pl %}
-        <div class="row mb-3">
-            <div class="col-md-12">
-                Interessiert an {% enriched_organisation "D" %}?
-            </div>
-        </div>
-        {% if c_enable_shares %}
-            <div class="row mb-3">
-                <div class="col-md-12">
-                    {% blocktrans trimmed %}
+
+{% block intro %}
+    {% config "enable_shares" as c_enable_shares %}
+    {% config "share_price" as c_share_price %}
+    {% enriched_organisation "D" as v_d_enriched_organisation %}
+    {% block intro_1 %}
+        <p>Interessiert an {% enriched_organisation "D" %}?</p>
+    {% endblock %}
+
+    {% if c_enable_shares %}
+        {% block intro_with_shares %}
+            <p>
+                {% blocktrans trimmed with v_share=vocabulary.share v_share_pl=vocabulary.share_pl v_subscription=vocabulary.subscription %}
                     Die Mitgliedschaft bei {{ v_d_enriched_organisation }} ist geknüpft an den Erwerb von
                     {{ v_share_pl }} in der Höhe
                     von CHF {{ c_share_price }} pro {{ v_share }}. Die Anzahl {{ v_share_pl }}
                     ist abhängig von den {{ v_subscription }}-Bestandteilen. Die {{ v_share_pl }} sind das
-                    Kapital, das vor allem zur Finanzierung von Investitionen – zum Beispiel Infrastruktur – verwendet
-                    wird.
+                    Kapital, das vor allem zur Finanzierung von Investitionen –
+                    zum Beispiel Infrastruktur - verwendet wird.
                     Beim Austritt werden die {{ v_share_pl }} rückerstattet.
-                    {% endblocktrans %}
-                </div>
-            </div>
-        {% endif %}
-        <div class="row mb-3">
-            <div class="col-md-12">
-                {% blocktrans trimmed %}
-                Die {{ v_member_type_pl }} tragen im Rahmen ihrer Motivationen, Prioritäten und Möglichkeiten
-                gemeinsam zum Gelingen des Betriebes bei.
+                {% endblocktrans %}
+            </p>
+        {% endblock %}
+    {% endif %}
+
+    <p>
+        {% block intro_2 %}
+            {% blocktrans trimmed with v_member_type=vocabulary.member_type v_member_type_pl=vocabulary.member_type_pl %}
+                Die {{ v_member_type_pl }} tragen im Rahmen ihrer Motivationen, Prioritäten und
+                Möglichkeiten gemeinsam zum Gelingen des Betriebes bei.
                 Wer bei {{ v_d_enriched_organisation }} {{ v_member_type }} ist, verpflichtet sich zur
                 Mitarbeit. Zusätzliches wie auch spontanes Engagement ist jederzeit willkommen.
+            {% endblocktrans %}
+        {% endblock %}
+    </p>
+
+    {% config "bylaws" as c_bylaws %}
+    {% config "business_regulations" as c_business_regulations %}
+    {% if c_bylaws.strip or c_business_regulations.strip %}
+        {% block read_instructions %}
+            <p>
+                {% blocktrans trimmed with v_member_type=vocabulary.member_type %}
+                Bevor du dich als {{ v_member_type }} anmeldest, lies bitte Folgendes durch:
                 {% endblocktrans %}
-            </div>
-        </div>
-        {% if c_bylaws.strip or c_business_regulations.strip %}
-        <div class="row mb-4">
-            <div class="col-md-12">
-                {% blocktrans trimmed %}
-                Bevor du dich als {{ v_member_type }} anmeldest, lies bitte folgendes durch
-                {% endblocktrans %} :
                 <ul>
                     {% if c_bylaws.strip %}
                         <li>
@@ -75,15 +66,13 @@
                         </li>
                     {% endif %}
                 </ul>
-            </div>
-        </div>
-        {% endif %}
-        <div class="row">
-            <div class="offset-md-2 col-md-8">
-                <form action="" method="post">
-                    {% crispy form %}
-                </form>
-            </div>
-        </div>
-    </div>
+            </p>
+        {% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        {% crispy form %}
+    </form>
 {% endblock %}

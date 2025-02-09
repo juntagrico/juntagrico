@@ -2,47 +2,87 @@
 {% load i18n %}
 {% load juntagrico.config %}
 {% load crispy_forms_tags %}
+
 {% block page_title %}
     <h3>
-        {% trans "Personalien ändern" %}
+        {% trans "Mitgliedschaft" %}
     </h3>
 {% endblock %}
+
 {% block content %}
-    {% vocabulary "member_type" as v_member_type %}
-    {% if success %}
-        <div class="alert alert-success">
-            {% trans "Personalien erfolgreich geändert" %}
-        </div>
-    {% endif %}
-    {% if member.canceled %}
-        <div class="alert alert-warning">
-            {% blocktrans trimmed with cd=member.cancellation_date|date:"d.m.Y"%}
-                Deine {{ v_member_type }}schaft ist seit dem {{ cd }} gekündigt.
-            {% endblocktrans %}
-        </div>
-    {% endif %}
-    {% if not member.canceled and not member.inactive%}
-        <div class="alert alert-success">
-            {% blocktrans %}Deine {{ v_member_type }}schaft ist aktiv.{% endblocktrans %}
-        </div>
-    {% endif %}
-    <form method="post" class="mb-4">
-        {% crispy memberform %}
-    </form>
-    <div class="row mb-2">
-        <div class="offset-md-3 col-md-9">
-            <a href="{% url 'password' %}" class="btn btn-success">
-                {% trans "Passwort ändern" %}
-            </a>
-        </div>
-    </div>
-    {% if not member.canceled %}
-        <div class="row mb-2">
-            <div class="offset-md-3 col-md-9">
-                <a href="{% url 'cancel-membership' %}" class="btn btn-danger">
-                    {% trans "Mitgliedschaft künden" %}
-                </a>
+    {% block membership %}
+        <div class="row mb-5 membership-status">
+            <div class="col-md-3">
+                {% trans "Status" %}
+            </div>
+            <div class="col-md-9">
+                {% if member.canceled %}
+                    <div class="alert alert-warning">
+                        {% block info_canceled %}
+                            {% blocktrans trimmed with cd=member.cancellation_date|date:"d.m.Y" v_memebr_type=vocabulary.member_type %}
+                                Deine {{ v_member_type }}schaft ist seit dem {{ cd }} gekündigt.
+                            {% endblocktrans %}
+                        {% endblock %}
+                    </div>
+                {% elif not member.inactive%}
+                    <div class="alert alert-success">
+                        {% block info_active %}
+                            {% blocktrans with v_member_type=vocabulary.member_type %}Deine {{ v_member_type }}schaft ist aktiv.{% endblocktrans %}
+                        {% endblock %}
+                    </div>
+                {% endif %}
+
+                {% if member.number %}
+                    <p>
+                        {% blocktrans trimmed with number=member.number %}
+                            Nummer: {{ number }}
+                        {% endblocktrans %}
+                    </p>
+                {% endif %}
+
+                {% if not member.canceled %}
+                    {% block button_cancel_membership %}
+                        <a href="{% url 'cancel-membership' %}" class="btn btn-outline-danger">
+                            {% trans "Mitgliedschaft künden" %}
+                        </a>
+                    {% endblock %}
+                {% endif %}
             </div>
         </div>
-    {% endif %}
+    {% endblock %}
+
+    {% block documents %}
+        {% include "juntagrico/snippets/documents.html" %}
+    {% endblock %}
+
+    {% block password %}
+        <div class="row mb-5 password">
+            <div class="col-md-3">
+                {% trans "Passwort" %}
+            </div>
+            <div class="col-md-9">
+                {% block button_change_password %}
+                    <a href="{% url 'password' %}" class="btn btn-primary">
+                        {% trans "Passwort ändern" %}
+                    </a>
+                {% endblock %}
+            </div>
+        </div>
+    {% endblock %}
+
+    {% block profile %}
+        <div class="mb-5">
+            <h4>
+                {% trans "Personalien" %}
+            </h4>
+            {% if success %}
+                <div class="alert alert-success">
+                    {% trans "Personalien erfolgreich geändert" %}
+                </div>
+            {% endif %}
+            <form method="post" class="mb-4">
+                {% crispy memberform %}
+            </form>
+        </div>
+    {% endblock %}
 {% endblock %}

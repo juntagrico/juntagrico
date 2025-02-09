@@ -42,23 +42,32 @@
                 <label class="control-label col-md-3" for="depot">
                     {% blocktrans %}Neue/s/r {{ v_depot }}{% endblocktrans %}
                 </label>
-                <div class="controls col-md-9" id="map-container">
-                    <select name="depot" id="depot" class="form-control">
-                        {% for depot in depots %}
-                            <option value="{{ depot.id }}" id="depot{{ depot.sort_order }}" {% if depot == subscription.depot %}selected{% endif %}>
-                                {{ depot.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                <div class="controls col-md-9">
                     <label for="depot">
-                        {% blocktrans %}Wähle 1 {{ v_depot }} aus als zukünftiger {{ v_subscription }}-Abholort. {% endblocktrans %}
+                        {% blocktrans %}Wähle 1 {{ v_depot }} aus als zukünftigen {{ v_subscription }}-Abholort. {% endblocktrans %}
                     </label>
+                    {% include "juntagrico/snippets/depot/select.html" with selected=subscription.depot subscriptions=subscription.future_active %}
                 </div>
             </div>
+            <div class="depot-description form-group row">
+                <div class="offset-md-3 col-md-9" id="depot-description-container">
+                    {% include "juntagrico/snippets/depot/descriptions.html" %}
+                </div>
+            </div>
+            <div class="depot-map form-group row">
+                <div class="offset-md-3 col-md-9" id="map-container">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="offset-md-3 col-md-9 alert alert-info">
+                    {% blocktrans trimmed %}
+                    Achtung! Hiermit sendest du erst eine Anfrage für die Änderung. Du wirst
+                    darüber informiert wenn dein/e {{ v_depot }} sich ändert.
+                    {% endblocktrans %}
+                </div>
+            </div>
+            <div class="form-group row">
             <div class="offset-md-3 form-actions">
-                {% include "juntagrico/my/depot/snippets/change_pending_info.html" %}
-                <br/>
-                <br/>
                 <button type="submit" class="btn btn-success">
                     {% blocktrans %}{{ v_depot }} ändern{% endblocktrans %}
                 </button>

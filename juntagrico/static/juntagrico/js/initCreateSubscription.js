@@ -8,10 +8,8 @@ define([], function () {
         if (selected_depot_element) {
             selected_depot = JSON.parse(selected_depot_element.textContent)
         }
-        let markers = map_with_markers(depots, selected_depot)
-        $('#depot').on('change', function(e){
-            open_marker(markers, $("option:selected", this)[0].text)
-        })
+        let [map, markers] = map_with_markers(depots, selected_depot)
+        init_depot_map(map, markers)
     }
 
     function total_selected_subs() {
@@ -35,5 +33,7 @@ define([], function () {
     })
 
     // show Spinner in multi selection
-    $("input[type='number']").inputSpinner();
+    if($().inputSpinner) {
+        $("input[type='number']").inputSpinner();
+    }
 });

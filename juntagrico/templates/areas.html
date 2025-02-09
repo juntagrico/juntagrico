@@ -11,23 +11,9 @@
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     <div class="row">
         <div class="col-md-12">
-            {% blocktrans trimmed%}
-            Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
-            Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
-            {% endblocktrans %}
-            <br/>
-            {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
-            <br/>
-            {% config "activity_area_info" as activity_area_info %}
-            {% if activity_area_info.strip %}
-                {% trans "Infos zu den Tätigkeitsbereichen erhältst du im" %}
-                <a target="_blank" href="{{ activity_area_info }}">
-                    {% trans "Infoblatt" %}
-                </a>
-                .
-            {% endif %}
-            <br/>
-
+            {% include "juntagrico/my/area/snippets/intro.html" %}
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-12 activity-area-list">
             {% for area in areas %}

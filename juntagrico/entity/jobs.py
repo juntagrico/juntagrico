@@ -1,9 +1,13 @@
+from functools import cached_property
+
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Count
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from polymorphic.managers import PolymorphicManager
 
 from juntagrico.config import Config
 from juntagrico.dao.assignmentdao import AssignmentDao
@@ -11,6 +15,7 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
+from juntagrico.queryset.job import JobQueryset
 
 
 @absolute_url(name='area')
@@ -40,8 +45,20 @@ class ActivityArea(JuntagricoBaseModel):
             return self.contact_set.all()
         return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
 
-    def get_emails(self):
-        return get_emails(self.contact_set, lambda: [self.coordinator.email])
+    def _get_email_fallback(self, get_member=False, exclude=None):
+        if exclude is None or self.coordinator.email not in exclude:
+            if get_member:
+                return [(self.coordinator.email, self.coordinator)]
+            return [self.coordinator.email]
+
+    def get_emails(self, get_member=False, exclude=None):
+        """
+        :param get_member: If true returns a member (or None) in addition to the email address
+        :param exclude: List of email addresses to exclude
+        :return: list of email addresses of area coordinator(s) or,
+                 if `get_member` is true, a list of tuples with email and member object
+        """
+        return get_emails(self.contact_set, self._get_email_fallback, get_member, exclude)
 
     class Meta:
         verbose_name = _('Tätigkeitsbereich')
@@ -141,8 +158,14 @@ class JobType(AbstractJobType):
             return self.contact_set.all()
         return self.activityarea.contacts
 
-    def get_emails(self):
-        return get_emails(self.contact_set, self.activityarea.get_emails)
+    def get_emails(self, get_member=False, exclude=None):
+        """
+        :param get_member: If true returns a member (or None) in addition to the email address
+        :param exclude: List of email addresses to exclude
+        :return: list of email addresses of job type coordinator(s) or,
+                 if `get_member` is true, a list of tuples with email and member object
+        """
+        return get_emails(self.contact_set, self.activityarea.get_emails, get_member, exclude)
 
     class Meta:
         verbose_name = _('Jobart')
@@ -162,7 +185,11 @@ class Job(JuntagricoBasePoly):
         _('Reminder verschickt'), default=False)
     canceled = models.BooleanField(_('abgesagt'), default=False)
 
+    members = models.ManyToManyField('Member', through='Assignment', related_name='jobs')
+
     contact_set = GenericRelation(Contact)
+
+    objects = PolymorphicManager.from_queryset(JobQueryset)()
 
     @property
     def type(self):
@@ -238,7 +265,21 @@ class Job(JuntagricoBasePoly):
 
     @property
     def participants(self):
-        return [a.member for a in self.assignment_set.all().prefetch_related('member') if a.member]
+        return self.members.all()
+
+    @property
+    def unique_participants(self):
+        return self.participants.annotate(slots=Count('id')).distinct()
+
+    @cached_property
+    def all_participant_extras(self):
+        extras = {}
+        for assignment in self.assignment_set.all():
+            if assignment.member not in extras:
+                extras[assignment.member] = []
+            for extra in assignment.job_extras.all():
+                extras[assignment.member].append(extra)
+        return extras
 
     @property
     def participant_names(self):
@@ -247,6 +288,21 @@ class Job(JuntagricoBasePoly):
     @property
     def participant_emails(self):
         return set(m.email for m in self.participants)
+
+    def get_emails(self, get_member=False, exclude=None):
+        """
+        :param get_member: If true returns a member (or None) in addition to the email address
+        :param exclude: List of email addresses to exclude
+        :return: list of email addresses of job coordinator(s) or,
+                 if `get_member` is true, a list of tuples with email and member object
+        """
+        raise NotImplementedError
+
+    def contacts(self):
+        """
+        :return: list job coordinator(s)
+        """
+        raise NotImplementedError
 
     def clean(self):
         check_job_consistency(self)
@@ -283,8 +339,8 @@ class RecuringJob(Job):
             return self.contact_set.all()
         return self.type.contacts
 
-    def get_emails(self):
-        return get_emails(self.contact_set, self.type.get_emails)
+    def get_emails(self, get_member=False, exclude=None):
+        return get_emails(self.contact_set, self.type.get_emails, get_member, exclude)
 
     class Meta:
         verbose_name = _('Job')
@@ -309,8 +365,8 @@ class OneTimeJob(Job, AbstractJobType):
             return self.contact_set.all()
         return self.activityarea.contacts
 
-    def get_emails(self):
-        return get_emails(self.contact_set, self.activityarea.get_emails)
+    def get_emails(self, get_member=False, exclude=None):
+        return get_emails(self.contact_set, self.activityarea.get_emails, get_member, exclude)
 
     @classmethod
     def pre_save(cls, sender, instance, **kwds):

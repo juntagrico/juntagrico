@@ -36,7 +36,7 @@ def handle_sub_activated(sender, instance, **kwargs):
         # see https://github.com/juntagrico/juntagrico/pull/641
         return
     activation_date = instance.activation_date or datetime.date.today()
-    for member in instance.recipients:
+    for member in instance.current_members:
         current_sub = member.subscription_current is not None
         sub_deactivated = current_sub and member.subscription_current.deactivation_date is not None
         dates_do_not_overlap = current_sub and sub_deactivated and member.subscription_current.deactivation_date <= activation_date
@@ -46,8 +46,9 @@ def handle_sub_activated(sender, instance, **kwargs):
                 code='invalid')
     instance.activation_date = activation_date
     change_date = instance.activation_date
-    for part in instance.future_parts.all():
-        part.activate(change_date)
+    if not getattr(instance, '__skip_part_activation__', False):
+        for part in instance.future_parts.all():
+            part.activate(change_date)
     for sub_membership in instance.subscriptionmembership_set.all():
         sub_membership.join_date = change_date
         sub_membership.save()
@@ -91,7 +92,7 @@ def check_sub_reactivation(instance):
 def check_sub_primary(instance):
     if instance.primary_member is not None:
         # compatibility fix. See https://github.com/juntagrico/juntagrico/pull/641
-        pm_sub = instance.pk and instance.primary_member in instance.recipients
+        pm_sub = instance.pk and instance.primary_member in instance.current_members
         # this check works also for new instances, because future_members is populated with form data, if available
         pm_form = instance.future_members and instance.primary_member in instance.future_members
         if not (pm_sub or pm_form):

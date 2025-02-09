@@ -9,6 +9,7 @@ from juntagrico.entity import notifiable
 from juntagrico.entity.billing import Billable
 from juntagrico.lifecycle.share import check_share_consistency
 from juntagrico.queryset.share import ShareQueryset
+from juntagrico.util.temporal import next_membership_end_date
 
 reason_for_acquisition_choices = ((1, _('Gründungsmitglied')),
                                   (2, _('Beitrittserklärung')),
@@ -28,13 +29,13 @@ def share_value_default():
 
 
 class Share(Billable):
-    member = models.ForeignKey('Member', blank=True, on_delete=models.PROTECT)
-    value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, default=share_value_default)
+    member = models.ForeignKey('Member', on_delete=models.PROTECT)
+    value = models.DecimalField(_('Wert'), max_digits=8, decimal_places=2, blank=True, default=share_value_default)
     creation_date = models.DateField(_('Erzeugt am'), null=True, blank=True, default=datetime.date.today)
     paid_date = models.DateField(_('Bezahlt am'), null=True, blank=True)
     issue_date = models.DateField(_('Ausgestellt am'), null=True, blank=True)
     booking_date = models.DateField(_('Eingebucht am'), null=True, blank=True)
-    cancelled_date = models.DateField(_('Gekündigt am'), null=True, blank=True)
+    cancelled_date = models.DateField(_('Gekündigt am'), null=True, blank=True)  # TODO: rename to cancellation_date
     termination_date = models.DateField(
         _('Gekündigt auf'), null=True, blank=True)
     payback_date = models.DateField(
@@ -62,9 +63,9 @@ class Share(Billable):
     def state_text(self):
         today = datetime.date.today()
         paid = (self.paid_date is not None and self.paid_date <= today) << 0
-        cancelled = (self.cancelled_date is not None and self.cancelled_date <= today) << 1
+        canceled = (self.cancelled_date is not None and self.cancelled_date <= today) << 1
         paid_back = (self.payback_date is not None and self.payback_date <= today) << 2
-        state_code = paid + cancelled + paid_back
+        state_code = paid + canceled + paid_back
         return Share.__state_text_dict.get(state_code, _('Fehler!'))
 
     @property
@@ -76,6 +77,17 @@ class Share(Billable):
 
     def __str__(self):
         return _('Anteilschein {0} ({1})').format(self.id, self.state_text)
+
+    def cancel(self, date=None, end_date=None):
+        self.cancelled_date = self.cancelled_date or date or datetime.date.today()
+        self.termination_date = self.termination_date or end_date or next_membership_end_date(self.cancelled_date)
+        self.save()
+
+    def payback(self, date=None):
+        date = date or datetime.date.today()
+        self.payback_date = date
+        self.save()
+        self.member.deactivate(date)
 
     @notifiable
     class Meta:

@@ -1,0 +1,23 @@
+{% load juntagrico.config %}
+{% load i18n %}
+{% block all %}
+    <p>
+        {% blocktrans trimmed%}
+        Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
+        Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
+        {% endblocktrans %}
+    </p>
+    <p>
+        {% trans "Trage dich für die Tätigkeitsbereiche ein, in denen du regelmässig Mitarbeiten und Verantwortung übernehmen möchtest." %}
+    </p>
+    
+    {% config "activity_area_info" as activity_area_info %}
+    {% if activity_area_info.strip %}
+        <p>
+        {% trans "Infos zu den Tätigkeitsbereichen erhältst du im" %}
+        <a target="_blank" href="{{ activity_area_info }}">
+            {% trans "Infoblatt" %}
+        </a>.
+        </p>
+    {% endif %}
+{% endblock %}

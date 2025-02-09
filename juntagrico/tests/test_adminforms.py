@@ -74,7 +74,7 @@ class JobFormTests(JuntagricoTestCase):
         self.assertEqual(self.complex_job.type, new_job.type)
         self.assertEqual(self.complex_job.slots, new_job.slots)
         self.assertEqual(self.complex_job.infinite_slots, new_job.infinite_slots)
-        dt = datetime.datetime.fromisoformat('2020-07-06T'+data['time'])
+        dt = datetime.datetime.fromisoformat('2020-07-06T' + data['time'])
         if settings.USE_TZ:
             dt = dt.astimezone(timezone.get_default_timezone())
         self.assertEqual(dt, new_job.time)
@@ -156,7 +156,6 @@ class JobFormTests(JuntagricoTestCase):
         self.assertEqual(new_job.additional_description, "New Description")
         self.assertEqual(new_job.duration_override, 9)
         self.assertListEqual(new_job.get_emails(), [self.member.email, 'test2@test.org'])
-
 
     def testCopyJobToFutureForm(self):
         # test failing case

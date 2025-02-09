@@ -1,19 +1,21 @@
-{% extends "no_menu_base.html" %}
+{% extends "juntagrico/signup/base.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% block all_page_title %}
+
+{% block title %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
-    <h3 class="page-title">
-        {% blocktrans %}Herzlich willkommen bei {{ v_d_enriched_organisation }}!{% endblocktrans %}
-    </h3>
+    {% blocktrans %}Herzlich willkommen bei {{ v_d_enriched_organisation }}!{% endblocktrans %}
 {% endblock %}
-{% block allcontent %}
+
+{% block content %}
     <div class="alert alert-success">
-        {% enriched_organisation "D" as v_d_enriched_organisation %} {% vocabulary "member_type" as v_member_type %} {% vocabulary "subscription" as v_subscription %}
-        {% blocktrans %}Du bist jetzt {{ v_member_type }} bei {{ v_d_enriched_organisation }}.{% endblocktrans %}
+        {% enriched_organisation "D" as v_d_enriched_organisation %}
+        {% blocktrans with v_member_type=vocabulary.member_type %}Du bist jetzt {{ v_member_type }} bei {{ v_d_enriched_organisation }}.{% endblocktrans %}
+        <br>
         {% if not no_subscription %}
-            {% blocktrans %}Du wurdest als {{ v_subscription }}-BezieherIn zur Warteliste hinzugefügt.{% endblocktrans %}
+            {% blocktrans with v_subscription=vocabulary.subscription %}Du wurdest als {{ v_subscription }}-BezieherIn zur Warteliste hinzugefügt.{% endblocktrans %}
         {% endif %}
-        {% trans "Du erhälst eine Email mit allen weiteren Infos an die von dir angegebene Emailadresse ( unsere Mails verirren sich manchmal in den SPAM Ordner )." %}
+        <br>
+        {% trans "Du erhältst eine Email mit allen weiteren Infos an die von dir angegebene E-Mail-Adresse (Schaue auch im SPAM Ordner)." %}
     </div>
 {% endblock %}

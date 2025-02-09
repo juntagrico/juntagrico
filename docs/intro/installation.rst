@@ -64,29 +64,24 @@ Add the juntagrico urls to you urls.py e.g.:
 Initial Django setup
 --------------------
 
-Use the django commands to set up the database e.g.:
+Use the django commands to set up the database:
 
 .. code-block:: bash
 
     $ python -m manage migrate
 
-In production (``DEBUG=False``) the static files must be collected e.g.:
+In production (``DEBUG=False``) the static files must be collected:
 
 .. code-block:: bash
 
     $ python -m manage collectstatic
 
-Create a superuser to login into your instance. e.g.:
+Create a superuser with member to login into your instance:
 
 .. code-block:: bash
 
-    $ python -m manage createsuperuser
+    $ python -m manage createadmin
 
-For juntagrico a member needs to be created for the super user using
-
-.. code-block:: bash
-
-    $ python -m manage create_member_for_superusers
 
 Create Test Data (optional)
 ---------------------------
