@@ -63,12 +63,20 @@
         <div class="col-md-12">
             {% if can_cancel %}
                {%  crispy form %}
-            {% elif share_error %}
-                {% blocktrans trimmed %}
-                Deine {{ v_share_pl }} werden noch benötigt in einem Abo.
-                {% endblocktrans %}
             {% else %}
-                {% blocktrans%}Du bist noch in eine/r/m {{ v_subscription }} als BezieherIn eingetragen.{% endblocktrans %}
+                <div class="alert alert-danger">
+                    {% blocktrans trimmed %}
+                        Du kannst deine Mitgliedschaft aus folgenden Gründen noch nicht kündigen:
+                    {% endblocktrans %}
+                    <br>
+                    {% if share_error %}
+                        {% blocktrans trimmed %}
+                        Deine {{ v_share_pl }} werden noch benötigt in einem Abo.
+                        {% endblocktrans %}
+                    {% else %}
+                        {% blocktrans%}Du bist noch in eine/r/m {{ v_subscription }} als BezieherIn eingetragen.{% endblocktrans %}
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>
