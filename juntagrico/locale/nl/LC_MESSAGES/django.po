@@ -4090,7 +4090,7 @@ msgid "Du bist nicht %(v_subscription)s-BezieherIn "
 msgstr ""
 
 #: juntagrico/templates/messages/not_confirmed.html:4
-msgid "Deine Email Adresse ist nich verifiziert."
+msgid "Deine Email Adresse ist nicht verifiziert."
 msgstr ""
 
 #: juntagrico/templates/messages/not_confirmed.html:6
