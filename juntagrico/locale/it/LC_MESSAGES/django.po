@@ -5731,7 +5731,7 @@ msgid "Du bist nicht %(v_subscription)s-BezieherIn "
 msgstr "Non sei abbonato %(v_subscription)s"
 
 #: juntagrico/templates/messages/not_confirmed.html:4
-msgid "Deine Email Adresse ist nich verifiziert."
+msgid "Deine Email Adresse ist nicht verifiziert."
 msgstr "Il tuo indirizzo e-mail non è verificato."
 
 #: juntagrico/templates/messages/not_confirmed.html:6

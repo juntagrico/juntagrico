@@ -5650,7 +5650,7 @@ msgid "Du bist nicht %(v_subscription)s-BezieherIn "
 msgstr "You are not a subscriber "
 
 #: juntagrico/templates/messages/not_confirmed.html:4
-msgid "Deine Email Adresse ist nich verifiziert."
+msgid "Deine Email Adresse ist nicht verifiziert."
 msgstr "Your email address is not verified."
 
 #: juntagrico/templates/messages/not_confirmed.html:6
