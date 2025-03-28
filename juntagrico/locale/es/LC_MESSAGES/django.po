@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-02 09:13-0600\n"
+"POT-Creation-Date: 2025-03-28 14:20-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2262,13 +2262,22 @@ msgstr "Sus %(v_share_pl)s serán cancelados"
 msgid "Dein Zugang wird deaktiviert"
 msgstr "se desactiva a los %(ed)s"
 
-#: juntagrico/templates/cancelmembership.html:67
+#: juntagrico/templates/cancelmembership.html:68
+#, fuzzy
+#| msgid ""
+#| "Hier kannst du deine Mitgliedschaft bei %(v_d_enriched_organisation)s "
+#| "kündigen."
+msgid ""
+"Du kannst deine Mitgliedschaft aus folgenden Gründen noch nicht kündigen:"
+msgstr "Aquí puedes cancelar tu membresía con %(v_d_enriched_organisation)s."
+
+#: juntagrico/templates/cancelmembership.html:73
 #, fuzzy, python-format
 #| msgid "Deine %(v_share_pl)s werden gekündigt"
 msgid "Deine %(v_share_pl)s werden noch benötigt in einem Abo."
 msgstr "Sus %(v_share_pl)s serán cancelados"
 
-#: juntagrico/templates/cancelmembership.html:71
+#: juntagrico/templates/cancelmembership.html:77
 #, fuzzy, python-format
 #| msgid "Du wirst bei deinem/r %(v_subscription)s ausgetragen"
 msgid "Du bist noch in eine/r/m %(v_subscription)s als BezieherIn eingetragen."
