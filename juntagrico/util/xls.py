@@ -82,7 +82,7 @@ class ExcelWriter(object):
                 if isinstance(fielddef, str):
                     fieldname = fielddef
                 else:
-                    fieldname, label = fielddef
+                    fieldname, _label = fielddef
                 value = self.get_value(item, fieldname)
                 self.worksheet.write(row, col, value)
 
@@ -134,7 +134,7 @@ class ExcelWriter(object):
                 else:
                     label = fielddef
             else:
-                fieldname, label = fielddef
+                _fieldname, label = fielddef
             result.append(label)
 
         return result

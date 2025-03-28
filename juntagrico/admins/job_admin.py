@@ -37,7 +37,7 @@ def type_div(field, value=None):
     value = value or _('(Wähle eine Jobart aus)')
     return mark_safe(
         '<div id="id_type_' + field + '" '
-             'data-url="' + reverse('api-jobtype-' + field, args=[99]) + '">' +
+            'data-url="' + reverse('api-jobtype-' + field, args=[99]) + '">' +
             str(value) +
         '</div>'
     )

@@ -3,6 +3,7 @@ from django.core.checks import Tags, Warning, Error, register
 from django.template import engines
 from django.template.backends.django import DjangoTemplates
 
+
 @register(Tags.compatibility)
 def check_deprecated_settings(app_configs, **kwargs):
     errors = []
@@ -25,6 +26,7 @@ def check_deprecated_settings(app_configs, **kwargs):
             )
         )
     return errors
+
 
 @register(Tags.templates)
 def check_context_processors(app_configs, **kwargs):

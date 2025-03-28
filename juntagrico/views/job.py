@@ -76,7 +76,7 @@ def list_data(request):
         data.append([
             date(job.time, 'D d.m.Y'),
             '<a href="' + reverse('job', args=[job.id]) + '" '
-               'class="' + job.get_css_classes + '">' + job.type.get_name + '</a>',
+                'class="' + job.get_css_classes + '">' + job.type.get_name + '</a>',
             str(job.type.location),
             f"{date(job.time, 'H:i')} - {date(job.end_time(), 'H:i')}",
             job.type.activityarea.name,
