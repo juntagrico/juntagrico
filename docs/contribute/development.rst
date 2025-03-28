@@ -46,9 +46,11 @@ Getting started
 .. code:: bash
 
    # Create local database and apply schemas
-   python manage.py migrate
+   python -m manage migrate
+   # Create a super user account
+   python -m manage createadmin
    # Start local development server on port 8000
-   python manage.py runserver 8000
+   python -m manage runserver 8000
 
 Generating documentation
 ------------------------
@@ -62,6 +64,6 @@ brows through the documentation.
 .. code:: bash
 
    # Install sphinx to generate the documentation locally
-   pip install sphinx
+   pip install sphinx sphinx-rtd-theme
    # Generate the documentation from the docs folder and place it in .docs
-   sphinx-build -C docs .docs
+   sphinx-build docs .docs

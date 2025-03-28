@@ -10,7 +10,6 @@ from juntagrico.entity.depot import Tour
 from juntagrico.entity.subs import Subscription
 from juntagrico.mailer import adminnotification
 from juntagrico.util.pdf import render_to_pdf_storage
-from juntagrico.util.subs import activate_future_depots
 
 
 def depot_list_data(days=0):
@@ -39,7 +38,7 @@ def default_depot_list_generation(*args, days=0, force=False, future=False, no_f
             print('DEPRECATION WARNING: Running depot list generation without --future flag will change behaviour in an upcoming release. '
                   'See release notes of Juntagrico version 1.6.0. Run this command with --future or with --no-future to remove this warning.')
         if future or weekday in Config.depot_list_generation_days():
-            activate_future_depots()
+            Subscription.objects.activate_future_depots()
         else:
             print('future depots ignored, use --future to override')
 

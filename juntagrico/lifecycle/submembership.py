@@ -52,14 +52,16 @@ def check_sub_membership_consistency(instance):
         # check consistency
         check_submembership_parent_dates(instance)
         if hasattr(instance, 'member'):
-            check_sub_membership_consistency_ms(instance.member, subscription, instance.join_date, instance.leave_date)
+            check_sub_membership_consistency_ms(instance)
     check_submembership_dates(instance)
 
 
-def check_sub_membership_consistency_ms(member, subscription, join_date, leave_date):
+def check_sub_membership_consistency_ms(sub_membership):
     from juntagrico.entity.member import SubscriptionMembership
     # check for subscription membership overlaps
-    memberships = SubscriptionMembership.objects.exclude(subscription=subscription).filter(member=member)
+    memberships = SubscriptionMembership.objects.filter(member=sub_membership.member).exclude(pk=sub_membership.pk)
+    join_date = sub_membership.join_date
+    leave_date = sub_membership.leave_date
     if join_date is None:
         check = Q(join_date__isnull=True)
     elif leave_date is None:
@@ -69,6 +71,9 @@ def check_sub_membership_consistency_ms(member, subscription, join_date, leave_d
             Q(join_date__lte=join_date, leave_date__gte=join_date)
     if memberships.filter(check).exists():
         raise ValidationError(
-            _('{} kann nur 1 {} gleichzeitig haben.').format(Config.vocabulary('member'),
-                                                             Config.vocabulary('subscription')),
-            code='invalid')
+            _('{} kann nur 1 {} gleichzeitig haben.').format(
+                Config.vocabulary('member'),
+                Config.vocabulary('subscription')
+            ),
+            code='invalid'
+        )

@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load juntagrico.config %}
+{% load juntagrico.widgets %}
+<div class="assignment-progress assignment-progress-classic">
+    {% if assignments.subscription %}
+        {% spaceless %}
+            {% with sub=assignments.subscription %}
+            {% with partner_core_bound=sub.member_assignment_count|add:sub.partner_core_assignment_count %}
+            {% with partner_bound=sub.member_assignment_count|add:sub.partner_assignment_count %}
+            {% with total=sub|remaining_assignments|add:partner_bound %}
+               {% for _ in ''|ljust:total %}
+                    {% if forloop.counter <= sub.member_core_assignment_count %}
+                        <img alt="{% trans "Kernbereich" %}"
+                             title="{% trans "Kernbereich" %}"
+                             src="{% images "single_core" %}"/>
+                    {% elif forloop.counter <= sub.member_assignment_count %}
+                        <img alt="{% trans "anderer Tätigkeitsbereich" %}"
+                             title="{% trans "anderer Tätigkeitsbereich" %}"
+                             src="{% images "single_full" %}"/>
+                    {% elif forloop.counter <= partner_core_bound %}
+                        <img alt="{% trans "Kernbereich Partner" %}"
+                             title="{% trans "Kernbereich Partner" %}"
+                             src="{% images "single_core" %}" class="partner-assignments"/>
+                    {% elif forloop.counter <= partner_bound %}
+                        <img alt="{% trans "anderer Tätigkeitsbereich Partner" %}"
+                             title="{% trans "anderer Tätigkeitsbereich Partner" %}"
+                             src="{% images "single_full" %}" class="partner-assignments"/>
+                    {% else %}
+                        <img alt="{% trans "noch zu erledigen" %} ({% vocabulary "subscription" %})"
+                             title="{% trans "noch zu erledigen" %} ({% vocabulary "subscription" %})"
+                             src="{% images "single_empty" %}"/>
+                    {% endif %}
+                {% endfor %}
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+        {% endspaceless %}
+    {% else %}
+        {# display member assignments, without subscription #}
+        {% for _ in ''|ljust:assignments.member.assignment_count %}
+            <img alt="{% trans "anderer Tätigkeitsbereich" %}"
+                 title="{% trans "anderer Tätigkeitsbereich" %}"
+                 src="{% images "single_full" %}"/>
+        {% endfor %}
+    {% endif %}
+</div>

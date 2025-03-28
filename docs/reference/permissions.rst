@@ -105,8 +105,10 @@ juntagrico.is_area_admin
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Should be assigned to members which are administrator of an activity area, so that they can filter and communicate with the members in their area.
 Also it allows them to create new jobs and communicate with the members participating in one of the jobs of their area.
+They also have the permission to modify assignments in jobs of their area.
 
 people with this permission have limited access to certain fields. They can not:
+
 - change name, core, hidden and coordinator fields of areas
 - see assignments of anybody but people from their areas
 - see job types which are not from their areas
@@ -115,85 +117,104 @@ Search Hints:
     * German: Benutzer ist Tätigkeitsbereichskoordinator
 
 
-.. _reference-notifications:
+.. _reference-permission-notifications:
 
 Notifications
 -------------
-Some entities send a notification email when they are created or cancelled.
+Some entities send a notification email when they are created or canceled.
 Should a member be notified on a certain event it has to have the corresponding
 permission for that entity type and event.
 
 .. note::
     These permissions need to be given explicitly, i.e., administrators are not notified implicitly.
 
+
+.. _reference-permissions-notified_on_share_creation:
+
 juntagrico.notified_on_share_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a share is created.
+Person gets :ref:`notified <reference-notifications-share-created>` when a share is created.
 
 Search Hints:
     * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_share_cancellation:
 
 juntagrico.notified_on_share_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a share is cancelled.
+Person gets :ref:`notified <reference-notifications-share-canceled>` when a share is canceled.
 
 Search Hints:
     * German: Kündigung informiert
+
+.. _reference-permissions-notified_on_member_creation:
 
 juntagrico.notified_on_member_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a member is created.
+Person gets :ref:`notified <reference-notifications-member-created>` when a member is created.
 
 Search Hints:
     * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_member_cancellation:
 
 juntagrico.notified_on_member_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when any member cancels their membership.
+Person gets :ref:`notified <reference-notifications-member-canceled>` when any member cancels their membership.
 
 Search Hints:
     * German: Kündigung informiert
+
+.. _reference-permissions-notified_on_subscription_creation:
 
 juntagrico.notified_on_subscription_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription is created.
+Person gets :ref:`notified <reference-notifications-subscription-created>` when a subscription is created.
 
 Search Hints:
     * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_subscription_cancellation:
 
 juntagrico.notified_on_subscription_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription is cancelled.
+Person gets :ref:`notified <reference-notifications-subscription-canceled>` when a subscription is cancelled.
 
 Search Hints:
     * German: Kündigung informiert
 
+.. _reference-permissions-notified_on_subscriptionpart_creation:
+
 juntagrico.notified_on_subscriptionpart_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription part is created.
+Person gets :ref:`notified <reference-notifications-subscription-part-created>` when a subscription part is created.
 
 Search Hints:
     * German: Erstellung informiert
 
+.. _reference-permissions-notified_on_subscriptionpart_cancellation:
+
 juntagrico.notified_on_subscriptionpart_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription part is cancelled.
+Person gets :ref:`notified <reference-notifications-subscription-part-canceled>` when a subscription part is canceled.
 
 Search Hints:
     * German: Kündigung informiert
 
+.. _reference-permissions-notified_on_depot_change:
 
 juntagrico.notified_on_depot_change
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a member wants to change their depot.
+Person gets :ref:`notified <reference-notifications-depot-change-request>` when a member wants to change their depot.
 
 Search Hints:
     * German: Änderung informiert
 
+.. _reference-permissions-depot_list_notification:
 
 juntagrico.depot_list_notification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when the depot list is generated.
+Member gets :ref:`notified <reference-notifications-depot-list-generated>` when the depot list is generated.
 
 Search Hints:
     * German: Listen-Erstellung informiert
@@ -240,7 +261,7 @@ Search Hints:
 
 juntagrico.can_send_mails
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-Person can access the mail from from the administration menu.
+Person can access the email form from the administration menu.
 
 Search Hints:
     * German: Emails versenden
@@ -283,6 +304,8 @@ Search Hints:
 
 Email Permissions
 -----------------
+These permissions are related to sending emails.
+
 juntagrico.can_use_general_email
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can use the "general" email address specified in the setting :ref:`CONTACTS <reference-settings-contacts>` as sender in the mail form.
@@ -320,12 +343,29 @@ Search Hints:
 
 Edit Permissions
 ----------------
+These permissions allow to edit certain entities.
+
 juntagrico.can_edit_past_jobs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Person can edit jobs which are in the past.
 
 Search Hints:
     * German: vergangene
+
+juntagrico.change_assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can edit all assignments on all jobs.
+To reduce the assignments, the `juntagrico.delete_assignment` permission is needed. See below.
+
+Search Hints:
+    * German: Arbeitseinsatz
+
+juntagrico.delete_assignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Person can remove any assignment on any job.
+
+Search Hints:
+    * German: Arbeitseinsatz
 
 juntagrico.can_change_deactivated_subscriptions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

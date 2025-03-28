@@ -2,22 +2,17 @@ from datetime import timedelta
 
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
-from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
-from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.dao.jobtypedao import JobTypeDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import Job, Assignment, ActivityArea
+from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
     CoopMemberCancellationForm
@@ -25,9 +20,8 @@ from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
-from juntagrico.signals import area_joined, area_left, subscribed
-from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.messages import home_messages, job_messages, error_message
+from juntagrico.signals import area_joined, area_left, canceled
+from juntagrico.util.messages import home_messages
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
 
@@ -51,86 +45,6 @@ def home(request):
     }
 
     return render(request, 'home.html', renderdict)
-
-
-@login_required
-def job(request, job_id):
-    '''
-    Details for a job
-    '''
-    member = request.user.member
-    job = get_object_or_404(Job, id=int(job_id))
-    slotrange = list(range(0, job.slots))
-    allowed_additional_participants = list(
-        range(1, job.free_slots + 1))
-    job_fully_booked = len(allowed_additional_participants) == 0
-    job_is_in_past = job.end_time() < timezone.now()
-    job_is_running = job.start_time() < timezone.now()
-    job_canceled = job.canceled
-    can_subscribe = job.infinite_slots or not (job_fully_booked or job_is_in_past or job_is_running or job_canceled)
-
-    if request.method == 'POST' and can_subscribe:
-        num = int(request.POST.get('jobs'))
-        if 0 < num and (job.free_slots >= num or job.infinite_slots):
-            # adding participants
-            amount = 1
-            if Config.assignment_unit() == 'ENTITY':
-                amount = job.multiplier
-            elif Config.assignment_unit() == 'HOURS':
-                amount = job.multiplier * job.duration
-            for _i in range(num):
-                assignment = Assignment.objects.create(
-                    member=member, job=job, amount=amount)
-            for extra in job.type.job_extras_set.all():
-                if request.POST.get('extra' + str(extra.extra_type.id)) == str(extra.extra_type.id):
-                    assignment.job_extras.add(extra)
-            assignment.save()
-            subscribed.send(Job, instance=job, member=member, count=num)
-            membernotification.job_signup(member.email, job)
-            # redirect to same page such that refresh in the browser or back
-            # button does not trigger a resubmission of the form
-            return redirect('job', job_id=job_id)
-    if request.method == 'POST':
-        messages = getattr(request, 'member_messages', []) or []
-        messages.extend(error_message(request))
-        request.member_messages = messages
-
-    all_participants = MemberDao.members_by_job(job)
-    number_of_participants = len(all_participants)
-    unique_participants = all_participants.annotate(
-        assignment_for_job=Count('id')).distinct()
-
-    participants_summary = []
-    emails = []
-    for participant in unique_participants:
-        name = '{} {}'.format(participant.first_name, participant.last_name)
-        if participant.assignment_for_job == 2:
-            name += _(' (mit einer weiteren Person)')
-        elif participant.assignment_for_job > 2:
-            name += _(' (mit {} weiteren Personen)').format(participant.assignment_for_job - 1)
-        contact_url = reverse('contact-member', args=[participant.id])
-        extras = []
-        for assignment in AssignmentDao.assignments_for_job_and_member(job.id, participant):
-            for extra in assignment.job_extras.all():
-                extras.append(extra.extra_type.display_full)
-        reachable = participant.reachable_by_email is True or request.user.is_staff or job.type.activityarea.coordinator == participant
-        participants_summary.append((name, contact_url, reachable, ' '.join(extras)))
-        emails.append(participant.email)
-    messages = getattr(request, 'member_messages', []) or []
-    messages.extend(job_messages(request, job))
-    request.member_messages = messages
-    renderdict = {
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or (job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')),
-        'emails': '\n'.join(emails),
-        'number_of_participants': number_of_participants,
-        'participants_summary': participants_summary,
-        'job': job,
-        'slotrange': slotrange,
-        'allowed_additional_participants': allowed_additional_participants,
-        'can_subscribe': can_subscribe,
-        'edit_url': get_job_admin_url(request, job)
-    }
-    return render(request, 'job.html', renderdict)
 
 
 @login_required
@@ -175,20 +89,6 @@ def areas(request):
 
 
 @login_required
-@highlighted_menu('jobs')
-def memberjobs(request):
-    '''
-    All jobs of current user
-    '''
-    member = request.user.member
-    allassignments = AssignmentDao.assignments_for_member(member)
-    renderdict = {
-        'assignments': allassignments,
-    }
-    return render(request, 'memberjobs.html', renderdict)
-
-
-@login_required
 def show_area(request, area_id):
     '''
     Details for an area
@@ -230,34 +130,6 @@ def area_leave(request, area_id):
     adminnotification.member_left_activityarea(old_area, member)
     old_area.save()
     return HttpResponse()
-
-
-@login_required
-@highlighted_menu('jobs')
-def jobs(request):
-    '''
-    All jobs to be sorted etc.
-    '''
-    jobs = JobDao.get_jobs_for_current_day()
-    renderdict = {
-        'jobs': jobs,
-        'show_all': True,
-    }
-    return render(request, 'jobs.html', renderdict)
-
-
-@login_required
-@highlighted_menu('jobs')
-def all_jobs(request):
-    '''
-    All jobs to be sorted etc.
-    '''
-    jobs = JobDao.jobs_ordered_by_time()
-    renderdict = {
-        'jobs': jobs
-    }
-
-    return render(request, 'jobs.html', renderdict)
 
 
 @login_required
@@ -361,7 +233,7 @@ def profile(request):
 @login_required
 def cancel_membership(request):
     member = request.user.member
-    # Check if membership can be cancelled
+    # Check if membership can be canceled
     asc = member.usable_shares_count
     sub = member.subscription_current
     f_sub = member.subscription_future
@@ -382,6 +254,7 @@ def cancel_membership(request):
         form = form_type(request.POST, instance=member)
         if form.is_valid():
             form.save()
+            canceled.send(Member, instance=form.instance, message=form.cleaned_data.get('message'))
             return redirect('profile')
     else:
         form = form_type(instance=member)

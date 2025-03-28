@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load juntagrico.common %}
+
+{% for depot in depots %}
+    <div id="depot-description-container-{{ depot.id }}" style="display: none">
+        {% if not depot.location.longitude and not depot.location.latitude %}
+            <p class="depot-location">
+                {{ depot.location.address_html|safe }}
+            </p>
+        {% endif %}
+        <p class="depot-pickup">
+            {% trans "Abholung am" %} {{ depot.pickup_display }}
+        </p>
+        <div class="depot-description">
+            {{ depot.location.description|richtext|safe }}
+            {{ depot.description|richtext|safe }}
+        </div>
+    </div>
+{% endfor %}

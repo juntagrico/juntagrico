@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 {% load crispy_forms_field %}
 <label for="type{{ type.id }}" class="{{ class }}">
     {% if type.long_name.strip %}
@@ -18,8 +19,10 @@
             {{ period.start_day }}.{{ period.start_month }}. - {{ period.end_day }}.{{ period.end_month }}.
             {{ period.price }} {% config "currency" %}
         {% endfor %}
+        {% include "juntagrico/snippets/subscription/depot_fee.html" %}
     {% else %}
         {% vocabulary "price" %}: {{ type.price }} {% config "currency" %}
+        {% include "juntagrico/snippets/subscription/depot_fee.html" %}
         <br/>
         {% trans "Laufzeit" %}: {{ type.min_duration_info }}
     {% endif %}

@@ -1,27 +1,123 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load juntagrico.common %}
+{% load static %}
 {% load i18n %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     <h3>
-        {% trans "Alle deine Einsätze" %}
+        {% blocktrans with v_assignment_pl=vocabulary.assignment_pl %}Alle deine {{ v_assignment_pl }}{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block content %}
-    {% for assignment in assignments %}
-        <div class="row align-items-center mt-2">
-            <div class="col-md-3">
-                <a href="{% url 'job' assignment.job.id %}">
-                    {{ assignment.job.type }}
-                </a>
-            </div>
-            <div class="col-md-3">
-                {{ assignment.job.time|date:"d.m.y H:i" }}-{{ assignment.job.end_time|date:"H:i" }}
-            </div>
-            <div class="col-md-2">
-                {% if assignment.job.type.activityarea.core %}
-                    <img alt="Kernbereich" title="Kernbereich" src="{% images "core" %}"/>
-                {% endif %}
-            </div>
+    {% if request.user.member.subscription_current.current_members.count > 1 %}
+        <div class="alert alert-info">
+            {% blocktrans trimmed with v_subscription=vocabulary.subscription v_assignment_pl=vocabulary.assignment_pl %}
+                Hier werden nur deine eigenen {{ v_assignment_pl }} angezeigt.
+                Eine Übersicht der {{ v_assignment_pl }} für dein/e
+                {{ v_subscription }} findest du im Abschnitt {{ v_assignment_pl }} hier:
+            {% endblocktrans %}
+            <a href="{% url 'subscription-landing' %}">{{ vocabulary.subscription }}</a>
         </div>
-    {% endfor %}
+    {% endif %}
+
+    {% crispy year_selection_form %}
+
+    {% show_core as b_show_core %}
+    {% config "assignment_unit" as c_assignment_unit %}
+    <table id="assignments-table" class="list table" data-search='{"smart": true, "regex": false}'>
+        <thead>
+            <tr>
+                <th class="align-top filter job-date" data-priority="1">
+                    {% trans "Datum" %}
+                </th>
+                <th class="align-top filter job-name">
+                    {% trans "Job" %}
+                </th>
+                {% if b_show_core %}
+                    <th class="align-top core-column" data-priority="2">
+                        {% trans "Kern" %}
+                    </th>
+                {% endif %}
+                <th class="align-top filter job-amount" data-priority="1">
+                    {% trans "Wert" %}{% if c_assignment_unit == 'HOURS' %} [h]{% endif %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assignment in assignments %}
+                <tr>
+                    <td data-order="{{ assignment.job.time|date:"U" }}">
+                        {{ assignment.job.time|date:"D d.m.Y" }}
+                    </td>
+                    <td>
+                        <a href="{% url 'job' assignment.job.id %}">
+                            {{ assignment.job.type }}
+                        </a>
+                    </td>
+                    {% if b_show_core %}
+                        <td>
+                            {% if assignment.core_cache %}
+                                <img alt="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                    <td class="{% if assignment.core_cache %}is_core{% endif %}">
+                        {{ assignment.amount }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="total-footer">
+            <tr>
+                <th colspan="2" style="text-align:right">Total:</th>
+                {% if b_show_core %}<th></th>{% endif %}
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
+    </script>
+    {% block init_script %}
+        <script type="text/javascript">
+            $(function(){
+                {% block datatable_constructor %}
+                    let config = {
+                        ordering: true,
+                        info: true,
+                        footerCallback: function (row, data, start, end, display) {
+                            let api = this.api();
+
+                            // Remove the formatting to get float data for summation
+                            let floatVal = function (i) {
+                                return typeof(i) === 'string' ? parseFloat(i.split(dt_language.decimal).join('.')) : typeof(i) === 'number' ? i : 0;
+                            };
+
+                            // Total
+                            let total = api
+                                .column(-1, { search: 'applied' })
+                                .data()
+                                .reduce((a, b) => floatVal(a) + floatVal(b), 0);
+                            api.column(-1).footer().innerHTML = total.toString().split('.').join(dt_language.decimal);
+
+                            if (api.column('.core-column')) {
+                                // Total of core
+                                let total_core = api
+                                    .cells('.is_core', {search: 'applied'})
+                                    .data()
+                                    .reduce((a, b) => floatVal(a) + floatVal(b), 0);
+                                api.column('.core-column').footer().innerHTML = total_core.toString().split('.').join(dt_language.decimal);
+                            }
+                        }
+                    }
+                {% endblock %}
+                $("#assignments-table").DataTable(config);
+            });
+        </script>
+    {% endblock %}
 {% endblock %}

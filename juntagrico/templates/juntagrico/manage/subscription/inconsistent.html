@@ -1,0 +1,43 @@
+{% extends "../base.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block page_title %}
+    {% vocabulary "subscription_pl" as v_subscription_pl %}
+    <h3>
+        {% blocktrans %}Inkonsistente {{ v_subscription_pl }}{% endblocktrans %}
+    </h3>
+{% endblock %}
+
+{% block list %}
+    <table id="filter-table" class="list table">
+        <thead>
+            <tr>
+                <th class="filter">
+                    {% vocabulary "subscription" %}
+                </th>
+                <th class="filter">
+                    {% trans "Fehler" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for element in object_list %}
+                <tr>
+                    <td>
+                        {% include './snippets/display_linked.html' with subscription=element.subscription %}
+                    </td>
+                    <td>
+                        {{ element.error }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block datatable_constructor %}
+    {{ block.super }}
+    delete config.layout
+    delete config.select
+{% endblock %}

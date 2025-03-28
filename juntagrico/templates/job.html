@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
@@ -38,23 +39,25 @@
         </div>
     {% endblock %}
 
-    {% if job.free_slots > -1 %}
+    {% if not job.infinite_slots %}
         {% block status %}
             <div class="row pb-4">
                 <div class="col-md-3">
                     {% trans "Status" %}:
                 </div>
-                <div class="col-md-5">
-                    {% spaceless %}
-                    {% for i in slotrange %}
-                        {% if i < number_of_participants %}
-                            <img src="{% images "single_full" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
-                        {% else %}
-                            <img src="{% images "single_empty" %}" title="{{ number_of_participants }} von {{ job.slots }} gebucht"/>
-                        {% endif %}
-                    {% endfor %}
-                    {% endspaceless %}
-                </div>
+                {% with slots_taken=job.occupied_slots %}
+                    <div class="col-md-5" title="{{ slots_taken }} von {{ job.slots }} gebucht">
+                        {% spaceless %}
+                            {% for _ in ''|ljust:job.slots %}
+                                {% if forloop.counter <= slots_taken %}
+                                    <img src="{% images "single_full" %}" alt="{% trans "Belegter Platz" %}"/>
+                                {% else %}
+                                    <img src="{% images "single_empty" %}" alt="{% trans "Freier Platz" %}"/>
+                                {% endif %}
+                            {% endfor %}
+                        {% endspaceless %}
+                    </div>
+                {% endwith %}
             </div>
         {% endblock %}
     {% endif %}
@@ -137,26 +140,6 @@
         </div>
     {% endblock %}
 
-    {% if can_contact %}
-        {% block send_mail %}
-            <div class="row pb-4">
-                <div class="col-md-3">
-                    {% trans "Kontaktieren" %}:
-                </div>
-                <div class="col-md-5">
-                    <form id="email-sender" action="{% url 'mail-job' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="recipients" id="recipients" value="{{ emails }}"/>
-                        <input type="hidden" name="recipients_count" id="recipients_count"value="{{ number_of_participants }}"/>
-                        <button type="submit" class="btn" id="send-email">
-                            {% trans "Allen eine Email senden" %}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        {% endblock %}
-    {% endif %}
-
     {% block contact %}
         <div class="row pb-4">
             <div class="col-md-3">
@@ -176,88 +159,20 @@
                 {% trans "Dabei sind" %}:
             </div>
             <div class="col-md-5">
-                {% if number_of_participants == 0 and not job_fully_booked %}
+                {% if job.occupied_slots == 0 and job.free_slots != 0 %}
                     {% trans "Noch niemand" %} 🥺
                 {% else %}
-                    <ul>
-                        {% for participant, url, reachable, extras in participants_summary %}
-                            <li>
-                                {{ participant }}
-                                {{ extras|safe }}
-                                {% if reachable %}
-                                    &nbsp;
-                                    <a href="{{ url }}">
-                                        <i class="far fa-envelope">
-                                        </i>
-                                    </a>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    {% include "juntagrico/job/snippets/participant_list.html" %}
                 {% endif %}
             </div>
         </div>
     {% endblock %}
-    {% if can_subscribe %}
-        {% block subscribe %}
-            <div class="row">
-                <div class="col-md-3">
-                    {% trans "Ich trage mich ein" %}:
-                </div>
-                <div class="col-md-3">
-                    <form action="" method="POST" onsubmit="return confirm('{% trans "Möchtest du dich verbindlich für diesen Einsatz eintragen?" %}')">
-                        {% csrf_token %}
-                        {% if allowed_additional_participants|length > 1 %}
-                            <div class="pg-4">
-                                <select name="jobs" class="form-control">
-                                    {% for i in allowed_additional_participants %}
-                                        {% if i == 1 %}
-                                            <option value="1">
-                                                {% trans "Unbegleitet" %}
-                                            </option>
-                                        {% elif i == 2 %}
-                                            <option value="2">
-                                                {% trans "Zu Zweit" %}
-                                            </option>
-                                        {% elif i == 3 %}
-                                            <option value="3">
-                                                {% trans "Zu Dritt" %}
-                                            </option>
-                                        {% elif i == 4 %}
-                                            <option value="4">
-                                                {% trans "Zu Viert" %}
-                                            </option>
-                                        {% elif i < 16 %}
-                                            <option value="{{ i }}">
-                                                {{ i|add:"-1" }} {% trans "weitere Personen und ich" %}
-                                            </option>
-                                        {% endif %}
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        {% else %}
-                            <input type="hidden" name="jobs" value="1"/>
-                        {% endif %}
-                        {% for extra in job.empty_per_job_extras %}
-                            <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
-                            {{ extra.extra_type.name }}
-                            <br/>
-                        {% endfor %}
-                        {% for extra in job.per_member_extras %}
-                            <input type="checkbox" name="extra{{ extra.extra_type.id }}" value="{{ extra.extra_type.id }}"/>
-                            {{ extra.extra_type.name }}
-                            <br/>
-                        {% endfor %}
-                        <div>
-                            <button type="submit" class="btn btn-success">
-                                {% trans "Bestätigen" %}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        {% endblock %}
-    {% endif %}
+
+    {% block subscribe %}
+        {% if form.can_interact %}
+            {% crispy form %}
+        {% endif %}
+    {% endblock %}
 {% endblock %}
 {% block scripts %}
     {{ job.type.location.map_info|json_script:'location_data' }}

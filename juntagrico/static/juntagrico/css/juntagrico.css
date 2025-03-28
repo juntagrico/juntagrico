@@ -47,6 +47,10 @@ a.canceled:hover, a.canceled:focus {
     color: #ff3399;
 }
 
+.pre {
+    white-space: pre;
+}
+
 /* crispy-form */
 .asteriskField {
     padding-left: 0.2em;
@@ -293,6 +297,10 @@ textarea#recipients[disabled=disabled] {
     color: #780fff;
 }
 
+.bg-core {
+    background-color: #780fff;
+}
+
 /* map stuff checked */
 #map-canvas {
     width: 100%;
@@ -303,28 +311,37 @@ textarea#recipients[disabled=disabled] {
     height: 20rem;
 }
 
-/* stuff for responsive tables */
-table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
-    font-family: 'Font Awesome 5 Free';
-    font-style: normal;
-    font-weight: 900;
-    font-size: 27px;
-    line-height: 1;
-    color: #66cc66;
-    background: inherit;
-    border: none;
-    box-shadow: none;
-    margin-top: 0;
-    padding: 8px 0.445rem 8px 0;
-    content: "\f105";
-    top: 0px;
-    left: 0px;
+/* datatable styling */
+
+:root {
+    --dt-row-selected: 255, 204, 102;
+    --dt-row-selected-text: 0, 0, 0;
 }
 
-table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before {
-    background: inherit;
-    content: "\f107";
+#filter-table th {
+	position: sticky;
+	top: 2.6875rem;
+	z-index: 2;
+    background-color: #fefffa;
 }
+
+#home #filter-table th {
+    top: 0;
+}
+
+#filter-table_wrapper > div.justify-content-between {
+    position: sticky;
+    top: 0;
+	z-index: 2;
+    background-color: #fefffa;
+    margin-bottom: 0;
+    padding-bottom: .5rem;
+}
+
+.dtsb-titleRow {
+    display: none;
+}
+
 
 .dtr-title > input {
     display: none;
@@ -366,6 +383,10 @@ th {
     font-weight: normal;
 }
 
+.total-footer th {
+    font-weight: bold;
+}
+
 .table th {
     border-top-style: none;
 }
@@ -398,6 +419,20 @@ th {
 #managementlist table th {
     vertical-align: top;
     padding-left: 0;
+}
+
+.primary-member {
+    font-weight: bold;
+}
+
+.email {
+    display: block;
+}
+
+.co-member {
+    border-top: 1px solid rgb(222, 226, 230);
+    margin-top: .5rem;
+    padding-top: .5rem;
 }
 
 /* deliveries stuff checked */
@@ -440,10 +475,4 @@ a.phone-number {
     color: #606560;
     float: right;
     display: inline-block;
-}
-
-/* co-member separator */
-
-.co-member:not(:last-child)::after {
-    content: ', ';
 }

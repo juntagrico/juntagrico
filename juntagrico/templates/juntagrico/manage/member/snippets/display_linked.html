@@ -1,0 +1,14 @@
+{% load juntagrico.snippets %}
+{% impersonate_start request member %}
+{% if perms.juntagrico.view_member or perms.juntagrico.change_member %}
+    <a href="{% url 'admin:juntagrico_member_change' member.id %}"
+       {% if css_class %}class="{{ css_class }}"{% endif %}>
+        {{ member }}
+    </a>
+{% else %}
+    <span {% if css_class %}class="{{ css_class }}"{% endif %}>
+        {{ member }}
+    </span>
+{% endif %}
+{% include "./email_linked.html" %}
+{% include "./phone_linked.html" %}

@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from django.utils.translation import gettext as _
@@ -84,15 +83,3 @@ juntagrico.signals.member_created.connect(handle_member_created, sender=Member)
 juntagrico.signals.member_deactivated.connect(handle_member_deactivated, sender=Member)
 ''' lifecycle all post init'''
 register_entities_for_post_init_and_save()
-
-
-'''monkey patch User email method'''
-
-
-def member_email(self):
-    return self.member.email
-
-
-User.member__email = property(member_email)
-
-User.EMAIL_FIELD = 'member__email'

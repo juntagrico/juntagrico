@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+{% block body_extra_classes %}wide-layout{% endblock %}
+
+{% block content %}
+    <div id="managementlist" class="row mt-3 mb-6">
+        <div class="col-md-12">
+            {% block list %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
+    </script>
+    {% block init_script %}
+        <script type="text/javascript">
+            $(function(){
+                {% block datatable_constructor %}
+                    let config = {
+                        ordering: true,
+                        responsive: false,
+                        info: true,
+                        select: {
+                            blurable: true,
+                            style: 'multi+shift',
+                        },
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    email_button(
+                                        '{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}',
+                                        '{% csrf_token %}'
+                                    ),
+                                    email_copy_button()
+                                ]
+                            }
+                        },
+                    }
+                {% endblock %}
+                // Assuming default ids
+                let datatable = $("#filter-table").DataTable(config);
+                
+                // initialize toggle buttons
+                $(".toggle-display").ToggleButton(null, function(button, selector, is_selected) {
+                    // toggle classes to collect or not collect co-member emails
+                    if (is_selected) {
+                        $('.no-email', selector).addClass('email').removeClass('no-email')
+                    } else {
+                        $('.email', selector).addClass('no-email').removeClass('email')
+                    }
+                    datatable.draw()
+                })
+            })
+        </script>
+    {% endblock %}
+    {% block extrascripts %}
+    {% endblock %}
+{% endblock %}

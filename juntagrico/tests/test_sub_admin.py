@@ -220,7 +220,7 @@ class SubAdminTests(JuntagricoTestCaseWithShares):
     def testDeactivation(self, deactivation_date=None):
         # setup
         deactivation_date = deactivation_date or '01.01.2018'
-        sub = self.create_sub(self.depot, datetime.date(2017, 1, 1), [self.sub_type])
+        sub = self.create_sub(self.depot, [self.sub_type], datetime.date(2017, 1, 1))
         self.member4.join_subscription(sub, True)
         sub_membership = sub.subscriptionmembership_set.first()
         sub_membership.join_date = datetime.date(2017, 1, 1)

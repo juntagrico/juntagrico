@@ -55,6 +55,10 @@
         {% include 'juntagrico/my/assignment/snippets/subscription_overview.html' %}
         {# Share #}
         {% include 'juntagrico/my/share/snippets/subscription_overview.html' %}
+        {# Documents #}
+        {% block documents %}
+            {% include "juntagrico/snippets/documents.html" %}
+        {% endblock %}
         {# Additional #}
         {% block extend %}
         {% endblock %}

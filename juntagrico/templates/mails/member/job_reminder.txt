@@ -16,6 +16,7 @@ Am {{ jt }}-{{ jet }} findet dein {{ c_organisation_name }}-Arbeitseinsatz "{{ j
 {% trans "Ort" %}:             {{ job.type.location }}
 {% trans "Teilnehmer" %}:      {{ job.participant_names }}
 {% trans "Kontakt" %}:         {% for contact in job.contacts %}{{ contact }}{% if not forloop.last %}, {% endif %}{% endfor %}
+{% trans "Einsatz ansehen" %}: {{ serverurl }}{% url 'job' job.id %}
 {% blocktrans trimmed %}
 Wir freuen uns, dich zu sehen und zählen auf dich!
 {% endblocktrans %}

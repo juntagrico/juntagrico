@@ -42,6 +42,11 @@ class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
     def text_state(self, instance):
         return instance.state_text
 
+    @admin.display(description='{}-BezieherInnen'.format(Config.vocabulary('subscription')))
+    def recipients_names(self, instance):
+        members = instance.current_members.order_by('first_name', 'last_name')
+        return ', '.join(str(m) for m in members)
+
     def get_fieldsets(self, request, obj=None):
         if not obj:
             return self.add_fieldsets

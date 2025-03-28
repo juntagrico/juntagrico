@@ -16,7 +16,7 @@ class CoMemberTests(JuntagricoTestCase):
         cls.co_member = cls.create_member('co_member@email.org', iban='CH6189144414396247884')
         # add member, that just left another subscription
         cls.switching_co_member = cls.create_member('co_member2@email.org', iban='CH6189144414396247884')
-        cls.old_sub = cls.create_sub(cls.depot, datetime.date(2025, 1, 27), [cls.sub_type])
+        cls.old_sub = cls.create_sub(cls.depot, [cls.sub_type], datetime.date(2025, 1, 27))
         SubscriptionMembership.objects.create(
             member=cls.switching_co_member,
             subscription=cls.old_sub,
