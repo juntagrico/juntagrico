@@ -36,7 +36,7 @@ There are 4 basic permissions for each entity which are self explanatory:
 
 Juntagrico provides some additional permissions, that are described in the sections below.
 
-Add Users to the group
+Add users to the group
 ^^^^^^^^^^^^^^^^^^^^^^
 
 1. Login with a super admin user.
@@ -60,7 +60,16 @@ Try out all actions with the test user, to confirm that they work.
 
 .. _reference-dependent-permissions:
 
-Dependent Permissions
+Staff status and superuser status
+---------------------------------
+
+In addition to the permissions a user can be granted staff status ("Mitarbeiter-Status") and superuser status ("Administrator-Status").
+These have the following effects:
+
+- staff status: Allows the user to login to the django admin page ("Datenverwaltung"), to see which version of juntagrico is installed and to contact any member via email.
+- superuser status: Grants the user all permissions, except the notification permissions, which need to be granted specifically.
+
+Dependent permissions
 ---------------------
 In order to be able to edit some types of entities not only the ``change`` permission of this entity type has to be granted to a member but also
 some dependent permissions.
