@@ -59,7 +59,7 @@ class DateRangeExportMixin(ExportMixin):
         ext = file_format.get_extension()
         start_date = self.get_export_date(request.POST, 'start')
         end_date = self.get_export_date(request.POST, 'end')
-        return f'{super().get_export_filename(request, queryset, file_format)[:-len(ext)-1]}--{start_date}--{end_date}.{ext}'
+        return f'{super().get_export_filename(request, queryset, file_format)[:-len(ext) - 1]}--{start_date}--{end_date}.{ext}'
 
 
 class SortableExportMixin(ExportMixin):

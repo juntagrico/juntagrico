@@ -307,7 +307,7 @@ class CoMemberBaseForm(MemberBaseForm):
         email = self.cleaned_data['email'].lower()
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
-                                            .format(Config.vocabulary('co_member_pl'))))
+                                            .format(Config.vocabulary('co_member_pl'))), 'email_exists')
         existing_member = MemberDao.member_by_email(email)
         if existing_member:
             if existing_member.blocked:
@@ -317,7 +317,7 @@ class CoMemberBaseForm(MemberBaseForm):
                     '<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
                     Config.vocabulary('member_type_pl'),
                     Config.vocabulary('co_member_pl')
-                )))
+                )), 'has_active_subscription')
             else:
                 # store existing member for reevaluation
                 self.existing_member = existing_member
@@ -691,7 +691,7 @@ class JobSubscribeForm(Form):
             2: _('Zu Zweit'),
             3: _('Zu Dritt'),
             4: _('Zu Viert'),
-            None: lambda x: _('{0} weitere Personen und ich').format(x-1)
+            None: lambda x: _('{0} weitere Personen und ich').format(x - 1)
         },
     }
     message_wrapper_class = 'd-none'  # let js display the field if needed
@@ -764,7 +764,7 @@ class JobSubscribeForm(Form):
     def get_choices(self):
         max_slots = min(self.available_slots, self.MAX_VALUE)
         min_slots = 0 if self.can_unsubscribe else max(1, self.current_slots)
-        for i in range(min_slots, max_slots+1):
+        for i in range(min_slots, max_slots + 1):
             label = self.get_option_text(i)
             yield i, label
 
@@ -860,7 +860,6 @@ class EditAssignmentForm(JobSubscribeForm):
         return True
 
     def send_signals(self, slots, message=''):
-        # send signals
         assignment_changed.send(
             Member, instance=self.member, job=self.job, editor=self.editor,
             count=slots, initial_count=self.current_slots,
@@ -939,7 +938,7 @@ class BusinessYearForm(Form):
             ]
         else:
             choices = [
-                (year, f"{year}/{year+1}")
+                (year, f"{year}/{year + 1}")
                 for year in range(
                     get_business_year(min_date),
                     get_business_year(max(today, max_date)) + 1,

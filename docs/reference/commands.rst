@@ -50,14 +50,13 @@ you will have to adapt the times of all existing jobs. This command helps you wi
 
 This command is also available to super users under the hidden url ``/command/shifttime``.
 
+.. _reference-commands-mailtexts:
+
 mailtexts
 ---------
 
 Prints the text of all notification emails using real data from the database, but without sending any emails.
 This can be used to test, if the emails meet your expectations, e.g. if your modifications work as expected.
-
-.. note::
-    As this commands depends on real data, it fails, if no elements are found that meet the criteria, e.g. if there are no co-members.
 
 generate_testdata
 -----------------

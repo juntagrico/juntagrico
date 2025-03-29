@@ -1,0 +1,32 @@
+{% extends "jobs.html" %}
+{% load juntagrico.common %}
+{% load i18n %}
+{% load static %}
+{% load juntagrico.config %}
+
+{% block content %}
+    {% show_core as b_show_core %}
+    {% show_job_extras as b_show_job_extras %}
+    <table id="filter-table" class="list table"
+           data-search='{"smart": true, "regex": false}'
+           data-paging='true'
+           data-page-length='25'
+           data-ordering='true'
+           data-info='true'
+           data-server-side='true'
+           data-ajax='{% url 'jobs-list-data' %}'>
+        {% include "./snippets/header.html" %}
+        <tbody>
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            $("#filter-table").DataTable();
+        })
+    </script>
+{% endblock %}

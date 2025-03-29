@@ -9,6 +9,8 @@ Besides `djangos built-in signals <https://docs.djangoproject.com/en/4.2/ref/sig
 Job signals
 -----------
 
+.. _reference-signals-job_canceled:
+
 job_canceled
 ^^^^^^^^^^^^
 
@@ -20,7 +22,10 @@ Arguments:
 
 Default receivers:
 
-* handle_job_canceled: Send notification email to members that were signed up to that job and remove them from the job.
+* handle_job_canceled: :ref:`Sends notification email <reference-notifications-job-canceled>` to members
+  that were signed up to that job and remove them from the job.
+
+.. _reference-signals-job_time_changed:
 
 job_time_changed
 ^^^^^^^^^^^^^^^^
@@ -33,7 +38,9 @@ Arguments:
 
 Default receivers:
 
-* handle_job_time_changed: Send notification email to members that are signed up to that job.
+* handle_job_time_changed: :ref:`Sends notification email <reference-notifications-job-time-changed>` to members that are signed up to that job.
+
+.. _reference-signals-subscribed:
 
 subscribed
 ^^^^^^^^^^
@@ -52,7 +59,7 @@ Arguments:
 
 Default receivers:
 
-* on_job_subscribed: Sends confirmation to member and notification to admin.
+* on_job_subscribed: :ref:`Sends confirmation <reference-notifications-job-subscribed>` to member and notification to admin.
 
 
 Subscription signals
@@ -116,6 +123,46 @@ Default receivers:
 * handle_sub_canceled: Sets cancellation date of all active parts of subscription and deletes the not yet active parts.
 
 
+.. _reference-signals-depot_changed:
+
+depot_changed
+^^^^^^^^^^^^^
+
+Trigger: A member requests to change their depot
+
+Arguments:
+
+* subscription: The subscription instance on which the depot should be changed
+* member: Member that requested the depot change
+* old_depot: Original depot of the subscription
+* new_depot: Newly requested depot of the subscription
+* immediate: True, if the change was performed automatically. This is done, when the subscription is not yet activated.
+
+Default receivers:
+
+* on_depot_changed: :ref:`Notify <reference-notifications-depot-change-request>` users
+  with permission :ref:`notified_on_depot_change <reference-permissions-notified_on_depot_change>` via email.
+
+
+.. _reference-signals-depot_change_confirmed:
+
+depot_change_confirmed
+^^^^^^^^^^^^^^^^^^^^^^
+
+Triggers:
+
+* Depot lists are generated using the management command `generate_depot_list` without the `--no-future` flag
+* Admin confirms the depot change in the management list.
+
+Arguments:
+
+* instance: The subscription instance on which the depot change was confirmed
+
+Default receivers:
+
+* on_depot_change_confirmed: :ref:`Notify <reference-notifications-depot-change-confirmation>` Member
+  and co-members of the subscription about the change.
+
 Extra subscription signals
 --------------------------
 
@@ -160,6 +207,8 @@ Default receivers: None
 Share signals
 -------------
 
+.. _reference-signals-share_created:
+
 share_created
 ^^^^^^^^^^^^^
 
@@ -171,16 +220,26 @@ Arguments:
 
 Default receivers:
 
-* handle_share_created: Notify users with permission `notified_on_share_creation` via email.
+* handle_share_created: :ref:`Notify <reference-notifications-share-created>` users
+  with permission :ref:`notified_on_share_creation <reference-permissions-notified_on_share_creation>` via email.
 
 share_canceled
 ^^^^^^^^^^^^^^
 
-Trigger: None
+Trigger: A member cancels one of their shares
+
+Arguments:
+
+* instance: The share instance that was cancelled
+
+* on_share_canceled: :ref:`Notify <reference-notifications-share-canceled>` users
+  with permission :ref:`notified_on_share_cancellation <reference-permissions-notified_on_share_cancellation>` via email.
 
 
 Member signals
 --------------
+
+.. _reference-signals-member-created:
 
 member_created
 ^^^^^^^^^^^^^^
@@ -193,7 +252,8 @@ Arguments:
 
 Default receivers:
 
-* handle_member_created: Notify users with permission `notified_on_member_creation` via email.
+* handle_member_created: :ref:`Notify <reference-notifications-member-created>` users
+  with permission :ref:`notified_on_member_creation <reference-permissions-notified_on_member_creation>` via email.
 
 
 member_canceled
@@ -227,7 +287,8 @@ Arguments:
 
 Default receivers:
 
-* on_member_canceled: Notify users with permission `notified_on_member_cancellation` via email.
+* on_member_canceled: :ref:`Notify <reference-notifications-member-canceled>` users with
+  permission :ref:`notified_on_member_cancellation <reference-permissions-notified_on_member_cancellation>` via email.
 
 member_deactivated
 ^^^^^^^^^^^^^^^^^^
@@ -241,3 +302,23 @@ Arguments:
 Default receivers:
 
 * handle_member_deactivated: Remove the member from all activity areas.
+
+.. _reference-signals-member-assignment_changed:
+
+assignment_changed
+^^^^^^^^^^^^^^^^^^
+
+Trigger: A user with permission changed the job assignments of a member on the job page.
+
+Arguments:
+
+* instance: The member instance whose assignment was changed
+* job: job of the changed assignments
+* editor: User who changed the assignment
+* count: New number of assignments of member on this job
+* initial_count: Original number of assignments of member on this job
+* message: Message entered by the editor.
+
+Default receivers:
+
+* on_assignment_changed: :ref:`Inform member and job contact <reference-notifications-job-assignment-changed>` about the changed assignments
