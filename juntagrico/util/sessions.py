@@ -120,10 +120,12 @@ class SignupManager(SessionManager):
         # create member
         if self.request.user.is_authenticated:
             member = self.request.user.member
+            member.signup_comment = self.get('comment', '')  # save new comment
+            member.save()
             password = None
         else:
             member_form = self._main_member_form()
-            member_form.instance.comment = self.get('comment', '')  # inject comment to be available in admin notification
+            member_form.instance.signup_comment = self.get('comment', '')  # inject comment to be available in admin notification
             member = member_form.save()
             password = member.set_password()
 
