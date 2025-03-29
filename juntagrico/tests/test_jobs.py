@@ -34,7 +34,7 @@ class JobTests(JuntagricoTestCase):
             self.assertEqual(instance.pk, self.job1.pk)
             self.assertEqual(member, self.member)
 
-        self.assertPost(reverse('job', args=[self.job1.pk]), {'slots': 1, 'subscribe': True}, 302)
+        self.assertPost(reverse('job', args=[self.job1.pk]), {'slots': 1, 'subscribe': True, 'message': 'hello'}, 302)
         self.assertEqual(self.job1.free_slots, 0)
         self.assertEqual(self.job1.assignment_set.first().amount, 1)
         self.assertTrue(self.signal_called)
@@ -52,7 +52,7 @@ class JobTests(JuntagricoTestCase):
         # should override slots not add
         self.assertPost(reverse('job', args=[self.job4.pk]), {'slots': 1, 'subscribe': True}, 302)
         self.assertEqual(self.job4.assignment_set.count(), 1)
-        self.assertEqual(len(mail.outbox), 2)  # member and admin notification
+        self.assertEqual(len(mail.outbox), 1)  # member notification, no admin notification, because of no message
         mail.outbox = []
         self.assertGet(reverse('job', args=[self.job4.pk]))
         self.assertPost(reverse('job', args=[self.job4.pk]), {'slots': 2, 'subscribe': True}, 302)
@@ -160,7 +160,7 @@ class AssignmentTests(JuntagricoTestCase):
         self.assertGet(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]), member=admin)
         # test increase subscription
         self.assertPost(reverse('assignment-edit', args=[self.job2.pk, self.member.pk]),
-                        {'edit-slots': 2},302, admin)
+                        {'edit-slots': 2}, 302, admin)
         self.assertEqual(self.job2.occupied_slots, 2)
         self.assertTrue(self.signal_called)
         self.assertEqual(len(mail.outbox), 2 if admin != self.member else 1)  # (member notification +) admin notification

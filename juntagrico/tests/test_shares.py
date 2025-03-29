@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.template import Template, Context
+from django.core import mail
 from django.test import tag
 from django.urls import reverse
 
@@ -11,7 +12,7 @@ from ..entity.subs import SubscriptionPart
 
 
 @tag('shares')
-class ShareTests(JuntagricoTestCase):
+class ShareTestCase(JuntagricoTestCase):
     fixtures = JuntagricoTestCase.fixtures + ['test/shares']
 
     @classmethod
@@ -23,6 +24,8 @@ class ShareTests(JuntagricoTestCase):
     def load_shares(cls):
         cls.share1, cls.share2, cls.share3 = Share.objects.order_by('id')[:3]
 
+
+class ShareTests(ShareTestCase):
     def testMemberShareManage(self):
         self.assertGet(reverse('manage-shares'), 200)
         self.assertPost(reverse('manage-shares'), {'shares': 0}, 200, member=self.member2)
@@ -104,17 +107,12 @@ class ShareTests(JuntagricoTestCase):
         response = self.client.get(reverse('share-certificate') + '?year=2017')
         self.assertEqual(response['content-type'], 'application/pdf')
 
-    def testMemberShareCancel(self):
+    def testMemberCantCancelShare(self):
         # member can not cancel share because it is used
-        share = self.member.share_set.first()
+        share = self.member.share_set.last()
         self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
         share.refresh_from_db()
-        self.assertEqual(share.cancelled_date, None)
-        # add share to cancel
-        share = self.create_paid_share(self.member)
-        self.assertGet(reverse('share-cancel', args=[share.pk]), 302)
-        share.refresh_from_db()
-        self.assertEqual(share.cancelled_date, datetime.date.today())
+        self.assertIsNone(share.cancelled_date)
 
     def testManageShareCanceledList(self):
         self.assertGet(reverse('manage-share-canceled'))
@@ -142,3 +140,27 @@ class ShareTests(JuntagricoTestCase):
         self.assertEqual(self.member.active_shares.count(), 0)
         self.assertEqual(self.member4.active_shares.count(), 0)
         self.assertEqual(self.member5.active_shares.count(), 0)
+
+
+class ShareCancelTests(ShareTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        # add share to cancel
+        cls.spare_share = cls.create_paid_share(cls.member)
+        mail.outbox.clear()
+
+    def testMemberShareCancel(self):
+        self.assertGet(reverse('share-cancel', args=[self.spare_share.pk]), 302)
+        self.spare_share.refresh_from_db()
+        self.assertEqual(self.spare_share.cancelled_date, datetime.date.today())
+        self.assertIsNotNone(self.spare_share.termination_date)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].recipients(), ['email1@email.org'])
+
+    def testCancelWrongShareFails(self):
+        share = self.member4.share_set.first()
+        self.assertGet(reverse('share-cancel', args=[share.pk]), 404)
+        share.refresh_from_db()
+        self.assertEqual(share.cancelled_date, None)
+        self.assertEqual(share.termination_date, None)

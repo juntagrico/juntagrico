@@ -8,7 +8,7 @@ from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, manage, email, job
+from juntagrico.views import subscription, manage, email, job, api
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -94,6 +94,7 @@ urlpatterns = [
     # /job
     path('my/jobs', job.jobs, name='jobs'),
     path('my/jobs/all', job.all_jobs, name='jobs-all'),
+    path('job/list/data', job.list_data, name='jobs-list-data'),
     path('my/jobs/<int:job_id>/', job.job, name='job'),
 
     # /assignment
@@ -214,6 +215,10 @@ urlpatterns = [
     # /api
     # /api/share
     path('my/iso20022/shares/pain001', juntagrico_iso20022.share_pain001, name='share-pain001'),
+
+    # /api/jobtype
+    path('api/jobtype/<int:id>/description', api.job_type_description, name='api-jobtype-description'),
+    path('api/jobtype/<int:id>/duration', api.job_type_duration, name='api-jobtype-duration'),
 
     # /js
     path('my/js/i18n', juntagrico.i18njs, name='js-i18n'),
