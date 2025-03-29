@@ -85,8 +85,7 @@ def share_canceled(share, **kwargs):
 
 @requires_someone_with_perm('notified_on_member_creation')
 def member_created(member, **kwargs):
-    if not hasattr(member, 'comment'):
-        member.comment = ''
+    member.comment = member.signup_comment  # backwards compatibility
     EmailSender.get_sender(
         organisation_subject(_('Neue/r/s {}').format(Config.vocabulary('member_type'))),
         get_email_content('a_member_created', base_dict(locals())),
@@ -137,16 +136,20 @@ def member_subscribed_to_job(job, **kwargs):
     if kwargs.get('message'):
         subject = _('Neue Anmeldung zum Einsatz mit Mitteilung')
     else:
+        if not Config.notifications('job_subscribed'):
+            return
         subject = _('Neue Anmeldung zum Einsatz')
     _template_member_in_job(job, subject, 'signup', **kwargs)
 
 
 def member_changed_job_subscription(job, **kwargs):
-    _template_member_in_job(job, _('Änderung der Einsatzanmeldung'), 'changed_subscription', **kwargs)
+    if Config.notifications('job_subscription_changed') or kwargs.get('message'):
+        _template_member_in_job(job, _('Änderung der Einsatzanmeldung'), 'changed_subscription', **kwargs)
 
 
 def member_unsubscribed_from_job(job, **kwargs):
-    _template_member_in_job(job, _('Abmeldung vom Einsatz'), 'unsubscribed', **kwargs)
+    if Config.notifications('job_unsubscribed') or kwargs.get('message'):
+        _template_member_in_job(job, _('Abmeldung vom Einsatz'), 'unsubscribed', **kwargs)
 
 
 def _template_assignment_changed(job, subject, template_name, **kwargs):

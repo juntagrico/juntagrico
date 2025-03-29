@@ -26,7 +26,7 @@ from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm, SubscriptionPartChangeForm
 from juntagrico.mailer import membernotification, adminnotification
-from juntagrico.signals import depot_changed
+from juntagrico.signals import depot_changed, share_canceled
 from juntagrico.util import addons
 from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.management import cancel_sub, create_subscription_parts
@@ -198,11 +198,11 @@ def part_change(request, part):
             else:
                 # cancel existing part and create new waiting one
                 with transaction.atomic():
-                    SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
+                    new_part = SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
                     part.cancel()
                 # notify admin
                 adminnotification.subpart_canceled(part)
-                adminnotification.subparts_created([part], part.subscription)
+                adminnotification.subparts_created([new_part], part.subscription)
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
         form = SubscriptionPartChangeForm(part)
@@ -496,4 +496,5 @@ def cancel_share(request, share_id):
         share.cancelled_date = datetime.date.today()
         share.termination_date = next_membership_end_date()
         share.save()
+        share_canceled.send(sender=Share, instance=share)
     return return_to_previous_location(request)

@@ -23,7 +23,7 @@ class Command(BaseCommand):
                       'activation_date': activation_date,
                       'deactivation_date': None, 'creation_date': '2017-03-27', 'start_date': '2018-01-01'}
         subscription = Subscription.objects.create(**sub_fields)
-        member.leave_subscription(changedate=datetime.date.today()-datetime.timedelta(1))
+        member.leave_subscription(changedate=datetime.date.today() - datetime.timedelta(1))
         if member.subscription_future:
             member.leave_subscription(member.subscription_future)
         member.join_subscription(subscription)
@@ -64,7 +64,7 @@ class Command(BaseCommand):
             member_2, _ = Member.objects.get_or_create(email=mem2_fields['email'], defaults=mem2_fields)
             member_3, _ = Member.objects.get_or_create(email=mem3_fields['email'], defaults=mem3_fields)
             member_4, _ = Member.objects.get_or_create(email=mem4_fields['email'], defaults=mem4_fields)
-            member_5, _ = Member.objects.get_or_create(email=mem5_fields['email'], defaults=mem5_fields)
+            Member.objects.get_or_create(email=mem5_fields['email'], defaults=mem5_fields)
             if Config.enable_shares():
                 share_all_fields = {'member': member_1, 'paid_date': '2017-03-27', 'issue_date': '2017-03-27', 'booking_date': None,
                                     'cancelled_date': None, 'termination_date': None, 'payback_date': None, 'number': None,

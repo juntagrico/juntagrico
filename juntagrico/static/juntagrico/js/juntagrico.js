@@ -237,13 +237,15 @@ function map_with_markers(locations, selected) {
             let marker = add_marker(position, map)
             if (marker) {
                 let index = position.id || i
-                if (index === selected) { marker.openPopup() }
                 markers.set(index, marker)
             }
         });
         if (markers.size > 0) {
             let group = new L.featureGroup(Array.from(markers.values()));
             map.fitBounds(group.getBounds(), {padding: [100, 100]});
+        }
+        if (markers.get(selected)) {
+            markers.get(selected).openPopup()
         }
     }
     return [map, markers]

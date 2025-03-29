@@ -24,6 +24,12 @@ var dt_language = {
             _: "{% trans "%d Einträge ausgewählt" %}",
         },
     },
+    entries: {
+        _: "{% trans "Einträge" %}",
+        1: "{% trans "Eintrag" %}",
+    },
+    lengthMenu: "{% trans "_MENU_ _ENTRIES_ pro Seite" %}",
+    loadingRecords: "{% trans "Lädt..." %}",
     searchBuilder: {
         "search": "{% trans "Suchen" %}",
         "add": "<i class=\"fa-solid fa-magnifying-glass\"></i> {% trans "Suchkriterium hinzufügen" %}",

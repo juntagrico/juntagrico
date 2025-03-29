@@ -47,6 +47,10 @@ def on_depot_changed(sender, **kwargs):
     adminnotification.member_changed_depot(**kwargs)
 
 
+def on_share_canceled(sender, instance, **kwargs):
+    adminnotification.share_canceled(instance, **kwargs)
+
+
 def on_depot_change_confirmed(sender, instance, **kwargs):
     membernotification.depot_changed(instance, **kwargs)
 
@@ -69,6 +73,7 @@ def on_job_subscribed(sender, **kwargs):
     else:
         membernotification.job_subscription_changed(member.email, job, count)
         adminnotification.member_changed_job_subscription(job, **kwargs)
+
 
 def on_assignment_changed(sender, **kwargs):
     member = kwargs.get('instance')

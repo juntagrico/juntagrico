@@ -1,0 +1,48 @@
+{% load i18n %}
+<thead>
+    <tr>
+        <th class="align-top filter job-date" data-priority="1">
+            {% trans "Datum" %}
+        </th>
+        <th class="align-top filter job-name" data-priority="1" data-dt-order="disable">
+            {% trans "Job" %}
+        </th>
+        {% if hidden_description_column %}
+            <th class="job-description d-none"></th>
+        {% endif %}
+        <th class="align-top filter" data-dt-order="disable">
+            {% trans "Ort" %}
+        </th>
+        <th class="align-top" data-dt-order="disable">
+            {% trans "Zeit" %}
+        </th>
+        <th class="align-top filter" data-dt-order="disable">
+            {% trans "Bereich" %}
+        </th>
+
+        {% if b_show_core %}
+            <th class="align-top" data-dt-order="disable">
+                {% trans "Kern" %}
+            </th>
+        {% endif %}
+        <th class="align-top job-status" data-priority="1" data-dt-order="disable">
+            {% trans "Status" %}<br>
+            {% if show_free_slot_filter %}
+            <form id="free_slot_filter_form" class="form-inline">
+                <label for="free_slot_filter">{% trans "Freie Plätze" %}&nbsp;&ge;&nbsp;</label>
+                <input id="free_slot_filter" type='number' placeholder='' style='width: 4em;'
+                       class='form-control' value="0" min="0"/>
+            </form>
+            {% endif %}
+        </th>
+        {% if show_free_slot_filter %}
+            <th class="align-top free-slot-count d-none">
+            </th>
+        {% endif %}
+        {% if b_show_job_extras %}
+            <th class="align-top" data-dt-order="disable">
+                {% trans "Extras" %}
+            </th>
+        {% endif %}
+    </tr>
+</thead>

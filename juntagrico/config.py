@@ -199,6 +199,16 @@ class Config:
     )
     mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
 
+    @classmethod
+    def notifications(cls, name):
+        default_notifications = [
+            'job_subscription_changed',
+            'job_unsubscribed',
+        ]
+        enabled_notifications = getattr(settings, 'ENABLE_NOTIFICATIONS', []) + default_notifications
+        disabled_notifications = getattr(settings, 'DISABLE_NOTIFICATIONS', [])
+        return name in enabled_notifications and name not in disabled_notifications
+
     # demo settings
     demouser = _get_setting('DEMO_USER')
     demopwd = _get_setting('DEMO_PWD')

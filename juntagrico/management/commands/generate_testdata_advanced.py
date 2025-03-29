@@ -151,7 +151,7 @@ class Command(BaseCommand):
                 categories_bundles = [default_bundle]
 
             subcategory_field = {'name': category}
-            sub_category, created = SubscriptionCategory.objects.get_or_create(**subcategory_field)
+            sub_category, _ = SubscriptionCategory.objects.get_or_create(**subcategory_field)
             for bundle in categories_bundles:
                 bundle_fields = {
                     'name': random.choice(['Tasche', 'Portion', '500g']),
@@ -187,7 +187,7 @@ class Command(BaseCommand):
             self.generate_shares(co_member, options['sub_shares'])
             self.generate_subscription(main_member, co_member, depot, sub_types)
             for _ in range(1, options['subs_per_depot']):
-                random_sub_types = random.choices(sub_types, k=(len(sub_types)+1)//2)
+                random_sub_types = random.choices(sub_types, k=(len(sub_types) + 1) // 2)
                 self.generate_depot_sub(depot, options['sub_shares'], random_sub_types)
 
         area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,

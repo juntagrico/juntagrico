@@ -91,9 +91,11 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertEqual(Member.objects.filter(email=member_email).count(), 1)
         if settings.ENABLE_SHARES:
             self.assertEqual(Share.objects.filter(member__email=member_email).count(), initial_share_count + 1)
-        self.assertEqual(Subscription.objects.filter(primary_member__email=member_email).count(), 1)
+        subscription = Subscription.objects.filter(primary_member__email=member_email).first()
+        self.assertNotEqual(subscription, None)
         # look for comment in admin notification
         self.assertIn(comment, mail.outbox[comment_in].body)
+        self.assertEqual(subscription.primary_member.signup_comment, comment)
 
     def commonSignupTest(self, with_comment=False):
         new_member_data = self.newMemberData()

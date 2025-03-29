@@ -116,7 +116,7 @@ class SubscriptionType(JuntagricoBaseModel):
 
     def min_duration_info(self):
         if self.trial_days:
-            return _('{} Tage. Keine automatische Verlängerung.').format(self.trial_days)
+            return _('Für {} Tage. Keine automatische Verlängerung.').format(self.trial_days)
         if self.has_periods:
             return None  # price list already shows end of periods
         date = temporal.end_of_business_year()

@@ -36,7 +36,7 @@ There are 4 basic permissions for each entity which are self explanatory:
 
 Juntagrico provides some additional permissions, that are described in the sections below.
 
-Add Users to the group
+Add users to the group
 ^^^^^^^^^^^^^^^^^^^^^^
 
 1. Login with a super admin user.
@@ -60,7 +60,16 @@ Try out all actions with the test user, to confirm that they work.
 
 .. _reference-dependent-permissions:
 
-Dependent Permissions
+Staff status and superuser status
+---------------------------------
+
+In addition to the permissions a user can be granted staff status ("Mitarbeiter-Status") and superuser status ("Administrator-Status").
+These have the following effects:
+
+- staff status: Allows the user to login to the django admin page ("Datenverwaltung"), to see which version of juntagrico is installed and to contact any member via email.
+- superuser status: Grants the user all permissions, except the notification permissions, which need to be granted specifically.
+
+Dependent permissions
 ---------------------
 In order to be able to edit some types of entities not only the ``change`` permission of this entity type has to be granted to a member but also
 some dependent permissions.
@@ -117,7 +126,7 @@ Search Hints:
     * German: Benutzer ist Tätigkeitsbereichskoordinator
 
 
-.. _reference-notifications:
+.. _reference-permission-notifications:
 
 Notifications
 -------------
@@ -128,74 +137,93 @@ permission for that entity type and event.
 .. note::
     These permissions need to be given explicitly, i.e., administrators are not notified implicitly.
 
+
+.. _reference-permissions-notified_on_share_creation:
+
 juntagrico.notified_on_share_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a share is created.
+Person gets :ref:`notified <reference-notifications-share-created>` when a share is created.
 
 Search Hints:
     * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_share_cancellation:
 
 juntagrico.notified_on_share_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a share is canceled.
+Person gets :ref:`notified <reference-notifications-share-canceled>` when a share is canceled.
 
 Search Hints:
     * German: Kündigung informiert
+
+.. _reference-permissions-notified_on_member_creation:
 
 juntagrico.notified_on_member_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a member is created.
+Person gets :ref:`notified <reference-notifications-member-created>` when a member is created.
 
 Search Hints:
     * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_member_cancellation:
 
 juntagrico.notified_on_member_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when any member cancels their membership.
+Person gets :ref:`notified <reference-notifications-member-canceled>` when any member cancels their membership.
 
 Search Hints:
     * German: Kündigung informiert
+
+.. _reference-permissions-notified_on_subscription_creation:
 
 juntagrico.notified_on_subscription_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription is created.
+Person gets :ref:`notified <reference-notifications-subscription-created>` when a subscription is created.
 
 Search Hints:
     * German: Erstellung informiert
+
+.. _reference-permissions-notified_on_subscription_cancellation:
 
 juntagrico.notified_on_subscription_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription is cancelled.
+Person gets :ref:`notified <reference-notifications-subscription-canceled>` when a subscription is cancelled.
 
 Search Hints:
     * German: Kündigung informiert
 
+.. _reference-permissions-notified_on_subscriptionpart_creation:
+
 juntagrico.notified_on_subscriptionpart_creation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription part is created.
+Person gets :ref:`notified <reference-notifications-subscription-part-created>` when a subscription part is created.
 
 Search Hints:
     * German: Erstellung informiert
 
+.. _reference-permissions-notified_on_subscriptionpart_cancellation:
+
 juntagrico.notified_on_subscriptionpart_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a subscription part is canceled.
+Person gets :ref:`notified <reference-notifications-subscription-part-canceled>` when a subscription part is canceled.
 
 Search Hints:
     * German: Kündigung informiert
 
+.. _reference-permissions-notified_on_depot_change:
 
 juntagrico.notified_on_depot_change
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets notified when a member wants to change their depot.
+Person gets :ref:`notified <reference-notifications-depot-change-request>` when a member wants to change their depot.
 
 Search Hints:
     * German: Änderung informiert
 
+.. _reference-permissions-depot_list_notification:
 
 juntagrico.depot_list_notification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Member gets notified when the depot list is generated.
+Member gets :ref:`notified <reference-notifications-depot-list-generated>` when the depot list is generated.
 
 Search Hints:
     * German: Listen-Erstellung informiert
