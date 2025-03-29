@@ -48,7 +48,7 @@ class SubscriptionResource(DateRangeResourceMixin, ModQuerysetModelResource):
 class SubscriptionPartResource(ModQuerysetModelResource):
     type_name = Field('type__name')
     subscription_id = Field('subscription__pk', widget=IntegerWidget(coerce_to_string=False))
-    is_extra = Field('type__size__product__is_extra')
+    is_extra = Field('type__is_extra')
 
     def update_queryset(self, queryset):
         return SubscriptionPart.objects.filter(subscription__in=queryset)
