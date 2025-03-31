@@ -43,6 +43,13 @@ class SessionManager:
         self.data = self.request.session[self.session_name] = {}
 
 
+class MemberDetails:
+    def __init__(self, member, password=None, share_count=0):
+        self.member = member
+        self.password = password
+        self.share_count = share_count
+
+
 class SignupManager(SessionManager):
     session_name = 'signup'
 
@@ -112,12 +119,7 @@ class SignupManager(SessionManager):
             return 'cs-shares'
         return 'cs-summary'
 
-    @transaction.atomic
-    def apply(self):
-        """ create all elements from data the collected data
-        :return the new main member
-        """
-        # create member
+    def apply_member(self):
         if self.request.user.is_authenticated:
             member = self.request.user.member
             member.signup_comment = self.get('comment', '')  # save new comment
@@ -128,25 +130,29 @@ class SignupManager(SessionManager):
             member_form.instance.signup_comment = self.get('comment', '')  # inject comment to be available in admin notification
             member = member_form.save()
             password = member.set_password()
+        return MemberDetails(member, password)
 
-        # create co-members
-        co_members = {}
+    def apply_co_member(self):
+        co_members = []
         for co_member_data in self.get('co_members', []):
             if isinstance(co_member_data, str):
-                co_members[Member.objects.get(email=co_member_data)] = [None]
+                # member exists
+                co_members.append(MemberDetails(Member.objects.get(email=co_member_data)))
             else:
+                # create new co-member
                 co_member = CoMemberBaseForm(co_member_data).save()
-                co_members[co_member] = [co_member.set_password()]
+                co_members.append(MemberDetails(co_member, co_member.set_password()))
+        return co_members
 
-        # create shares (notifies member and admin)
+    def apply_shares(self, member, co_members):
         shares = self.get('shares')
-        create_share(member, int(shares['of_member']))
-        for i, co_member in enumerate(co_members.keys()):
-            shares_of_co_member = int(shares[f'of_co_member[{i}]'])
-            co_members[co_member].append(shares_of_co_member)
-            create_share(co_member, shares_of_co_member)
+        member.share_count = int(shares['of_member'])
+        create_share(member.member, member.share_count)
+        for i, co_member in enumerate(co_members):
+            co_member.share_count = int(shares[f'of_co_member[{i}]'])
+            create_share(co_member.member, co_member.share_count)
 
-        # create subscription
+    def apply_subscriptions(self, member, co_members):
         subscription = None
         if self.has_parts():
             # create instance
@@ -154,20 +160,39 @@ class SignupManager(SessionManager):
             subscription.depot = self.depot()
             subscription.save()
             # let members join it
-            member.join_subscription(subscription, primary=True)
-            for co_member in co_members.keys():
-                co_member.join_subscription(subscription)
+            member.member.join_subscription(subscription, primary=True)
+            for co_member in co_members:
+                co_member.member.join_subscription(subscription)
             # add parts
             create_subscription_parts(subscription, self.subscriptions())
-            # notify admin
-            adminnotification.subscription_created(subscription, self.get('comment', ''))
+        return subscription
 
+    def send_emails(self, member, co_members, subscription):
+        # notify admin about subscription
+        if subscription:
+            adminnotification.subscription_created(subscription, self.get('comment', ''))
         # send welcome email to members and co-members
-        if password:
-            membernotification.welcome(member, password)
-        for co_member, details in co_members.items():
-            password, shares = details
-            membernotification.welcome_co_member(co_member, password, shares, new=password is not None)
+        if member.password:
+            membernotification.welcome(member.member, member.password)
+        for co_member in co_members:
+            membernotification.welcome_co_member(co_member.member, co_member.password, co_member.share_count,
+                                                 new=co_member.password is not None)
+
+    @transaction.atomic
+    def apply(self):
+        """ create all elements from data the collected data
+        :return the new main member object
+        """
+        # create member
+        member = self.apply_member()
+        # create co-members
+        co_members = self.apply_co_member()
+        # create shares (notifies member and admin)
+        self.apply_shares(member, co_members)
+        # create subscription
+        subscription = self.apply_subscriptions(member, co_members)
+        # send emails and notifications
+        self.send_emails(member, co_members, subscription)
 
         self.clear()
-        return member
+        return member.member

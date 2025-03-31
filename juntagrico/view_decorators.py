@@ -3,11 +3,12 @@ from functools import wraps
 
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.module_loading import import_string
 
+from juntagrico.config import Config
 from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.models import Subscription
 from juntagrico.util import temporal
-from juntagrico.util.sessions import SignupManager
 from juntagrico.util.views_admin import date_from_get
 
 
@@ -61,7 +62,7 @@ def signup_session(view):
     """
     @wraps(view)
     def wrapper(request, *args, **kwargs):
-        signup_manager = SignupManager(request)
+        signup_manager = import_string(Config.signup_manager())(request)
         # make sure signup process is followed
         next_page = signup_manager.get_next_page()
         if next_page != request.resolver_match.url_name:

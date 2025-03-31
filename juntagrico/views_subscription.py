@@ -10,6 +10,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import FormView
@@ -35,7 +36,6 @@ from juntagrico.util import temporal, return_to_previous_location
 from juntagrico.util.management import cancel_sub, create_subscription_parts
 from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
-from juntagrico.util.sessions import SignupManager
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date, next_membership_end_date
 from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part, \
@@ -249,7 +249,7 @@ class SignupView(View):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        self.signup_manager = SignupManager(request)
+        self.signup_manager = import_string(Config.signup_manager())(request)
 
     def dispatch(self, request, *args, **kwargs):
         # make sure signup process is followed

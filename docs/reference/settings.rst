@@ -300,12 +300,12 @@ BUSINESS_YEAR_CANCELATION_MONTH
     12
 
 
-Membership
-----------
+Sign-up
+-------
 
 ENABLE_REGISTRATION
 ^^^^^^^^^^^^^^^^^^^
-  Decides if new member can register
+  Decides if new members can sign up
 
   Type: Boolean
 
@@ -314,6 +314,24 @@ ENABLE_REGISTRATION
   .. code-block:: python
 
     True
+
+SIGNUP_MANAGER
+^^^^^^^^^^^^^^
+
+  Overrides the sign-up manager class.
+  Change this to modify the sign-up process or when an addon instructs to do so.
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    "juntagrico.util.sessions.SignupManager"
+
+
+Membership
+----------
 
 BASE_FEE
 ^^^^^^^^
