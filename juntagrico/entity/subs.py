@@ -1,3 +1,4 @@
+import datetime
 from functools import cached_property
 
 from django.contrib import admin
@@ -251,6 +252,27 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     @property
     def is_extra(self):
         return self.type.size.product.is_extra
+
+    @property
+    def is_trial(self):
+        return self.type.trial_days > 0
+
+    @cached_property
+    def remaining_trial_days(self):
+        """
+        The end of the trial period is the deactivation_date, if set, otherwise it is activation_date + trial_days.
+        :return: remaining days of trial if is a trial and has started, otherwise None
+        """
+        if self.is_trial and self.activation_date is not None:
+            today = datetime.date.today()
+            end = self.deactivation_date or (self.activation_date + datetime.timedelta(days=self.type.trial_days))
+            return (end - today).days
+
+    def follow_up_parts(self):
+        """
+        :return: non-trial parts from the same subscription that are waiting or active after this part.
+        """
+        return self.subscription.parts.non_trial().waiting(self.activation_date)
 
     def clean(self):
         check_sub_part_consistency(self)
