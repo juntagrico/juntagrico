@@ -19,6 +19,7 @@ from juntagrico.forms import DateRangeForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
 from juntagrico.util.views_admin import date_from_get
+from juntagrico.view_decorators import using_change_date
 
 
 class DateRangeMixin:
@@ -113,8 +114,8 @@ class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_member')
-def member_deactivate(request, member_id=None):
-    change_date = request.session.get('changedate', None)
+@using_change_date
+def member_deactivate(request, change_date, member_id=None):
     if member_id:
         members = [get_object_or_404(Member, id=member_id)]
     else:
@@ -131,8 +132,8 @@ class ShareCanceledView(MultiplePermissionsRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_share')
-def share_payout(request, share_id=None):
-    change_date = request.session.get('changedate', None)
+@using_change_date
+def share_payout(request, change_date, share_id=None):
     if share_id:
         shares = [get_object_or_404(Share, id=share_id)]
     else:
@@ -199,9 +200,9 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def parts_apply(request):
+@using_change_date
+def parts_apply(request, change_date):
     parts = SubscriptionPart.objects.filter(id__in=request.POST.getlist('parts[]'))
-    change_date = request.session.get('changedate', None)
     with transaction.atomic():
         for part in parts:
             if part.activation_date is None and part.deactivation_date is None:

@@ -1,64 +1,66 @@
 from django.db import transaction
+from django.forms.models import model_to_dict
 from django.shortcuts import render, redirect
-from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, FormView
-from django.views.generic.edit import ModelFormMixin
+from django.views.generic import FormView
 
 from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
-from juntagrico.forms import SubscriptionForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm
+from juntagrico.forms import StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
+    RegisterFirstMultiCoMemberForm, SubscriptionPartSelectForm, RegisterSummaryForm, ShareOrderForm
 from juntagrico.util import temporal
-from juntagrico.util.management import new_signup
-from juntagrico.view_decorators import create_subscription_session
+from juntagrico.view_decorators import signup_session
+from juntagrico.views_subscription import SignupView
 
 
-@create_subscription_session
-def cs_select_subscription(request, cs_session):
+@signup_session
+def cs_select_subscription(request, signup_manager):
+    subscriptions = signup_manager.get('subscriptions', {})
     if request.method == 'POST':
-        form = SubscriptionPartSelectForm(cs_session.subscriptions, request.POST)
+        form = SubscriptionPartSelectForm(subscriptions, request.POST)
         if form.is_valid():
-            cs_session.subscriptions = form.get_selected()
-            return redirect(cs_session.next_page())
+            signup_manager.set('subscriptions', {str(t.id): amount for t, amount in form.get_selected().items()})
+            return redirect(signup_manager.get_next_page())
     else:
-        form = SubscriptionPartSelectForm(cs_session.subscriptions)
+        form = SubscriptionPartSelectForm(subscriptions)
 
     render_dict = {
         'form': form,
         'subscription_selected': sum(form.get_selected().values()) > 0,
         'hours_used': Config.assignment_unit() == 'HOURS',
-        'selected_depot': cs_session.depot,
+        'selected_depot': signup_manager.depot(),
     }
     return render(request, 'createsubscription/select_subscription.html', render_dict)
 
 
-@create_subscription_session
-def cs_select_depot(request, cs_session):
+@signup_session
+def cs_select_depot(request, signup_manager):
     if request.method == 'POST':
-        cs_session.depot = DepotDao.depot_by_id(request.POST.get('depot'))
-        return redirect(cs_session.next_page())
+        signup_manager.set('depot', request.POST.get('depot'))
+        return redirect(signup_manager.get_next_page())
 
     depots = DepotDao.all_visible_depots_with_map_info()
-    render_dict = {
-        'member': cs_session.main_member,
+    selected = signup_manager.get('depot')
+    if selected is not None:
+        selected = int(selected)
+
+    return render(request, 'createsubscription/select_depot.html', {
         'depots': depots,
-        'subscription_count': cs_session.subscriptions,
-        'selected': cs_session.depot,
-    }
-    return render(request, 'createsubscription/select_depot.html', render_dict)
+        'subscription_count': signup_manager.get('subscriptions', {}),
+        'selected': selected,
+    })
 
 
-@create_subscription_session
-def cs_select_start_date(request, cs_session):
-    subscription_form = SubscriptionForm(initial={
-        'start_date': cs_session.start_date or temporal.start_of_next_business_year()
+@signup_session
+def cs_select_start_date(request, signup_manager):
+    subscription_form = StartDateForm(initial={
+        'start_date': signup_manager.get('start_date', temporal.start_of_next_business_year())
     })
     if request.method == 'POST':
-        subscription_form = SubscriptionForm(request.POST)
+        subscription_form = StartDateForm(request.POST)
         if subscription_form.is_valid():
-            cs_session.start_date = subscription_form.cleaned_data['start_date']
-            return redirect(cs_session.next_page())
+            signup_manager.set('start_date', subscription_form.data['start_date'])
+            return redirect(signup_manager.get_next_page())
     render_dict = {
         'start_date': temporal.start_of_next_business_year(),
         'subscriptionform': subscription_form,
@@ -66,57 +68,59 @@ def cs_select_start_date(request, cs_session):
     return render(request, 'createsubscription/select_start_date.html', render_dict)
 
 
-class CSAddMemberView(FormView, ModelFormMixin):
+class CSAddMemberView(SignupView, FormView):
     template_name = 'createsubscription/add_member_cs.html'
 
     def __init__(self):
         super().__init__()
-        self.cs_session = None
-        self.object = None
         self.edit = False
-        self.existing_emails = []
+        self.member_data = {}
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.edit = int(request.GET.get('edit', request.POST.get('edit', 0)))
+        if request.user.is_authenticated:
+            self.member_data = model_to_dict(request.user.member, ['email', 'addr_street', 'addr_zipcode', 'addr_location'])
+        else:
+            self.member_data = self.signup_manager.get('main_member')
+
 
     def get_form_class(self):
         return EditCoMemberForm if self.edit else \
-            RegisterMultiCoMemberForm if self.cs_session.co_members else RegisterFirstMultiCoMemberForm
+            RegisterMultiCoMemberForm if self.signup_manager.get('co_members') else RegisterFirstMultiCoMemberForm
 
     def get_form_kwargs(self):
         form_kwargs = super().get_form_kwargs()
-        form_kwargs['existing_emails'] = self.existing_emails
+        # edit co-member from list
+        own_email = None
+        if self.edit :
+            if 'data' not in form_kwargs:
+                form_kwargs['data'] = self.signup_manager.get('co_members', [])[self.edit - 1]
+                form_kwargs['data']['edit'] = self.edit
+            own_email = form_kwargs['data']['email'].lower()
+        # collect used email addresses to block reusage
+        existing_emails = [self.member_data['email'].strip().lower()]
+        for co_member in self.signup_manager.get('co_members', []):
+            email = co_member['email'].lower()
+            if email != own_email:
+                existing_emails.append(email)
+        form_kwargs['existing_emails'] = existing_emails
         return form_kwargs
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(
-            **{},
-            co_members=self.cs_session.co_members if not self.edit else [],
+            co_members=self.signup_manager.get('co_members', []) if not self.edit else [],
             **kwargs
         )
 
     def get_initial(self):
         # use address from main member as default
-        mm = self.cs_session.main_member
         return {
-            'addr_street': mm.addr_street,
-            'addr_zipcode': mm.addr_zipcode,
-            'addr_location': mm.addr_location,
-            'edit': self.edit
+            'addr_street': self.member_data['addr_street'],
+            'addr_zipcode': self.member_data['addr_zipcode'],
+            'addr_location': self.member_data['addr_location'],
+            'edit': str(self.edit)
         }
-
-    @method_decorator(create_subscription_session)
-    def dispatch(self, request, cs_session, *args, **kwargs):
-        self.cs_session = cs_session
-        self.edit = int(request.GET.get('edit', request.POST.get('edit', 0)))
-        # function: edit co-member from list
-        if self.edit:
-            self.object = self.cs_session.get_co_member(self.edit - 1)
-
-        # collect used email addresses to block reusage
-        self.existing_emails.append(cs_session.main_member.email.lower())
-        for co_member in self.cs_session.co_members:
-            if co_member is not self.object:
-                self.existing_emails.append(co_member.email.lower())
-
-        return super().dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
         if form.existing_member:  # use existing member if found
@@ -125,105 +129,71 @@ class CSAddMemberView(FormView, ModelFormMixin):
 
     def form_valid(self, form):
         # create new member from form data
-        return self._add_or_replace_co_member(form.existing_member or form.instance)
+        return self._add_or_replace_co_member(form.existing_member.email if form.existing_member else form.data.dict())
 
     def _add_or_replace_co_member(self, member):
         if self.edit:
-            return redirect(self.cs_session.next_page())
+            self.signup_manager.replace('co_members', self.edit - 1, member)
+            return redirect(self.signup_manager.get_next_page())
         else:
-            self.cs_session.add_co_member(member)
+            self.signup_manager.append('co_members', member)
             return redirect('.')
 
     def get(self, request, *args, **kwargs):
         # done: move to next page
         if request.GET.get('next') is not None:
-            self.cs_session.co_members_done = True
-            return redirect(self.cs_session.next_page())
+            self.signup_manager.set('co_members_done', True)
+            return redirect(self.signup_manager.get_next_page())
 
         # function: remove co-members from list
         remove_member = int(request.GET.get('remove', 0))
         if remove_member:
-            self.cs_session.remove_co_member(remove_member - 1)
-            return redirect(self.cs_session.next_page())
+            self.signup_manager.remove('co_members', remove_member - 1)
+            return redirect(self.signup_manager.get_next_page())
 
         # render page
         return super().get(request, *args, **kwargs)
 
 
-class CSSelectSharesView(TemplateView):
+class CSSelectSharesView(SignupView, FormView):
     template_name = 'createsubscription/select_shares.html'
+    form_class = ShareOrderForm
 
-    def __init__(self):
-        super().__init__()
-        self.cs_session = None
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        form_kwargs['required'] = self.signup_manager.required_shares()
+        form_kwargs['existing'] = self.signup_manager.existing_shares()
+        form_kwargs['co_members'] = self.signup_manager.co_members()
+        if 'data' not in form_kwargs:
+            form_kwargs['data'] = self.signup_manager.get('shares')
+        return form_kwargs
 
-    def get_context_data(self, shares, **kwargs):
-        return super().get_context_data(
-            **{},
-            **{
-                'shares': shares,
-                'member': self.cs_session.main_member,
-                'co_members': self.cs_session.co_members
-            },
-            **kwargs
-        )
-
-    @method_decorator(create_subscription_session)
-    def dispatch(self, request, cs_session, *args, **kwargs):
-        self.cs_session = cs_session
-        return super().dispatch(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        # read form
-        self.cs_session.main_member.new_shares = int(request.POST.get('shares_mainmember', 0) or 0)
-        for co_member in self.cs_session.co_members:
-            co_member.new_shares = int(request.POST.get(co_member.email, 0) or 0)
-        # evaluate
-        shares = self.cs_session.count_shares()
-        if self.cs_session.evaluate_ordered_shares(shares):
-            return redirect('cs-summary')
-        # show error otherwise
-        shares['error'] = True
-        return super().get(request, *args, shares=shares, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        # evaluate number of ordered shares
-        shares = self.cs_session.count_shares()
-        return super().get(request, *args, shares=shares, **kwargs)
+    def form_valid(self, form):
+        self.signup_manager.set('shares', form.data.dict())
+        return redirect(self.signup_manager.get_next_page())
 
 
-class CSSummaryView(FormView):
+class CSSummaryView(SignupView, FormView):
     template_name = 'createsubscription/summary.html'
     form_class = RegisterSummaryForm
 
-    def __init__(self):
-        super().__init__()
-        self.cs_session = None
-
     def get_initial(self):
-        return {'comment': getattr(self.cs_session.main_member, 'comment', '')}
+        return {'comment': self.signup_manager.comment()}
 
     def get_context_data(self, **kwargs):
-        args = self.cs_session.to_dict()
+        args = super().get_context_data(**kwargs)
+        args.update(self.signup_manager.data.copy())
+        for i, co_member in enumerate(args['co_members']):
+            co_member['new_shares'] = int(args['shares'].get(f'of_co_member[{i}]', 0))
+        args['subscriptions'] = self.signup_manager.subscriptions()
+        args['depot'] = self.signup_manager.depot()
         args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
-        return super().get_context_data(
-            **{},
-            **args,
-            **kwargs
-        )
-
-    @method_decorator(create_subscription_session)
-    def dispatch(self, request, cs_session, *args, **kwargs):
-        self.cs_session = cs_session
-        # remember that user reached summary to come back here after editing
-        cs_session.edit = True
-        return super().dispatch(request, *args, **kwargs)
+        return args
 
     @transaction.atomic
     def form_valid(self, form):
-        self.cs_session.main_member.signup_comment = form.cleaned_data["comment"]
-        # handle new signup
-        member = new_signup(self.cs_session.pop())
+        self.signup_manager.set('comment', form.cleaned_data.get('comment'))
+        member = self.signup_manager.apply()
         # finish registration
         if member.subscription_future is None:
             return redirect('welcome')
@@ -237,9 +207,9 @@ def cs_welcome(request, with_sub=False):
     return render(request, 'welcome.html', render_dict)
 
 
-@create_subscription_session
-def cs_cancel(request, cs_session):
-    cs_session.clear()
+@signup_session
+def cs_cancel(request, signup_manager):
+    signup_manager.clear()
     if request.user.is_authenticated:
         return redirect('subscription-landing')
     else:

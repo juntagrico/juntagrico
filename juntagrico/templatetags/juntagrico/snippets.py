@@ -35,7 +35,10 @@ def subscription_depot_fee(subscription_type, depot=''):
 
 @register.inclusion_tag('juntagrico/snippets/action_date.html')
 def action_date(request):
-    change_date = request.session.get('changedate', None)
-    date_changed = change_date is not None
-    change_date = change_date or datetime.date.today()
+    change_date_string = request.session.get('changedate', None)
+    date_changed = change_date_string is not None
+    if date_changed:
+        change_date = datetime.date.fromisoformat(change_date_string)
+    else:
+        change_date = datetime.date.today()
     return {'change_date': change_date, 'date_changed': date_changed}

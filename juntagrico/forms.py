@@ -186,7 +186,7 @@ class MemberProfileForm(ModelForm):
         )
 
 
-class SubscriptionForm(ModelForm):
+class StartDateForm(ModelForm):
     class Meta:
         model = Subscription
         fields = ['start_date']
@@ -474,7 +474,7 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
         containers = self._collect_type_fields()
 
         self.fields['no_subscription'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
-                                                      initial=True, required=False)
+                                                      initial=not any(selected.values()), required=False)
 
         self.helper.layout = Layout(
             *containers,
@@ -486,9 +486,7 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
         )
 
     def _get_initial(self, subscription_type):
-        if subscription_type in self.selected.keys():
-            return self.selected[subscription_type]
-        return 0
+        return self.selected.get(subscription_type, 0)
 
 
 class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
@@ -578,6 +576,81 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
             for error_code, error in self.errors.items():
                 raise ValidationError(error, code=error_code)
         return super().clean()
+
+
+class ShareOrderForm(Form):
+    field_template = 'forms/share_field.html'
+    text = dict(
+        member_info='Du brauchst als HauptbezieherIn mindestens {0} {1}.',
+        member_existing='Du hast bereits {0} {1}.',
+        co_member_info='Besitzt bereits {0} {1}.',
+        form_error='Du brauchst insgesamt {0} {1} für die von dir gewählten {2}-Bestandteile'
+    )
+
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-3'
+    helper.field_class = 'col-md-3'
+
+    def __init__(self, required, existing=0, co_members=None, *args, **kwargs):
+        """
+        :param required: number of shares that are required (for the subscriptions)
+        :param existing: number of shares that the member already has
+        :param co_members: an iterable of (name, existing_share_count) of co-members
+        """
+        super().__init__(*args, **kwargs)
+        self.required = required
+        self.existing = existing
+        self.co_members = co_members or []
+        required_shares = Config.required_shares()
+        self.remaining = max(required_shares - existing, 0)
+
+        # build share field for member
+        v_share = Config.vocabulary('share') if required_shares == 1 else Config.vocabulary('share_pl')
+        help_text = _(self.text['member_info']).format(required_shares, v_share)
+        if existing:
+            v_share = Config.vocabulary('share') if existing == 1 else Config.vocabulary('share_pl')
+            help_text = _(self.text['member_existing']).format(required_shares, v_share)
+        self.fields['of_member'] = IntegerField(
+            label=_('Neue {}').format(Config.vocabulary('share_pl')), required=False,
+            initial=self.remaining, min_value=self.remaining,
+            help_text=help_text
+        )
+
+        # build share fields for co-members
+        for i, co_member in enumerate(self.co_members):
+            name = co_member[0]
+            existing_shares = co_member[1]
+            v_share = Config.vocabulary('share') if existing_shares == 1 else Config.vocabulary('share_pl')
+            help_text = _(self.text['co_member_info']).format(existing_shares, v_share)
+            self.fields[f'of_co_member[{i}]'] = IntegerField(
+                label=name, initial=0, min_value=0, required=False,
+                help_text=help_text
+            )
+
+        self.helper.layout = Layout(
+            Field('of_member', template=self.field_template),
+            *[Field(f'of_co_member[{i}]', template=self.field_template) for i in range(len(self.co_members))],
+            FormActions(
+                Submit('submit', _('Weiter'), css_class='btn-success'),
+                HTML('<a href="{0}" class="btn">{1}</a>'.format(reverse('cs-cancel'), _("Abbrechen")))
+            )
+        )
+
+    def clean(self):
+        total_required = max(self.required, Config.required_shares())
+        total_existing = max(0, self.existing + sum(dict(self.co_members).values()))
+        remaining_required = max(0, total_required - total_existing)
+        # count new shares
+        of_member = self.cleaned_data.get('of_member', 0)
+        of_co_member = sum([self.cleaned_data.get(f'of_co_member[{i}]', 0) for i in range(len(self.co_members))])
+        # evaluate
+        if of_member + of_co_member < remaining_required:
+            raise ValidationError(_(self.text['form_error']).format(
+                total_required,
+                Config.vocabulary('share') if total_required == 1 else Config.vocabulary('share_pl'),
+                Config.vocabulary('subscription')
+            ))
 
 
 class NicknameForm(Form):

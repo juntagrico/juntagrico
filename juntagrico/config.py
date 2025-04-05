@@ -91,6 +91,8 @@ class Config:
     enable_shares = _get_setting('ENABLE_SHARES', True)
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
+    signup_manager = _get_setting('SIGNUP_MANAGER', 'juntagrico.util.sessions.SignupManager')
+
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
 

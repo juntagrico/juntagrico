@@ -9,9 +9,8 @@
 <div class="form-group row">
     <div class="offset-md-2 col-md-1">
         <span class="switch switch-sm">
-            <input type="checkbox" class="switch" name="subscription" value="-1" id="none"
-                   {% if not subscription_selected %}checked="checked"{% endif %}/>
-            <label for="none">
+            {{ field }}
+            <label for="{{ field.id_for_label }}">
             </label>
         </span>
     </div>
