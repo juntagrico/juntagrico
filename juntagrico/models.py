@@ -51,6 +51,7 @@ class SpecialRoles(models.Model):
                        )
 
 
+# Don't connect new signals here, connect them in apps.py instead
 ''' non lifecycle related signals '''
 signals.pre_save.connect(Member.create, sender=Member)
 signals.post_delete.connect(Member.post_delete, sender=Member)

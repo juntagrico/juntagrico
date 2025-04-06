@@ -61,6 +61,12 @@ Roughly these are the steps:
     {% endblock %}
 
 
+Email Templates
+---------------
+
+Email Templates can be overridden in the same way as every other template.
+Read the :ref:`Notification reference <reference-notifications>` to see which email templates exist.
+
 Menu Templates
 --------------
 
@@ -111,8 +117,8 @@ juntagrico/menu/admin/subscriptions.html|extend
 
 Add entries to the subscription section in the admin menu.
 
-juntagrico/menu/admin/*.html|sub
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+juntagrico/menu/admin/\*.html|sub
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Change admin sub menu entries of:
 

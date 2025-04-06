@@ -300,12 +300,12 @@ BUSINESS_YEAR_CANCELATION_MONTH
     12
 
 
-Membership
-----------
+Sign-up
+-------
 
 ENABLE_REGISTRATION
 ^^^^^^^^^^^^^^^^^^^
-  Decides if new member can register
+  Decides if new members can sign up
 
   Type: Boolean
 
@@ -314,6 +314,24 @@ ENABLE_REGISTRATION
   .. code-block:: python
 
     True
+
+SIGNUP_MANAGER
+^^^^^^^^^^^^^^
+
+  Overrides the sign-up manager class.
+  Change this to modify the sign-up process or when an addon instructs to do so.
+
+  Type: String
+
+  default value
+
+  .. code-block:: python
+
+    "juntagrico.util.sessions.SignupManager"
+
+
+Membership
+----------
 
 BASE_FEE
 ^^^^^^^^
@@ -368,7 +386,7 @@ ENABLE_SHARES
 
 REQUIRED_SHARES
 ^^^^^^^^^^^^^^^
-    .. note::
+  .. note::
     Added in version 1.7.0.
 
   Specifies the minimum amount of shares that the main member must order during registration
@@ -699,7 +717,7 @@ BATCH_MAILER
 FROM_FILTER
 ^^^^^^^^^^^
   Allows overriding the "from" field of outgoing emails. This can be used to prevent sending emails with a sender of different domain than the SMTP server, which triggers most spam filters.
-  The setting consists of a regular expression and a default replacement. If the regular expression does NOT match the default replacement is used as "from", and the origonal "from" is set as "reply to"
+  The setting consists of a regular expression (``filter_expression``) and a default replacement (``replacement_from``). If the regular expression does NOT match, the default replacement is used as "from", and the original "from" is set as "reply to".
 
   default value
 
@@ -732,6 +750,44 @@ MAILER_RICHTEXT_OPTIONS
 
     {}
 
+Notifications
+-------------
+
+ENABLE_NOTIFICATIONS
+^^^^^^^^^^^^^^^^^^^^
+  List of strings, of notifications that should be enabled:
+
+  -  `'job_subscribed'`: Send an email to the job admin, if a member signs up to a job without leaving a message.
+
+  example:
+
+  .. code-block:: python
+
+    ENABLE_NOTIFICATIONS = ['job_subscribed']
+
+  default value:
+
+  .. code-block:: python
+
+    []
+
+
+DISABLE_NOTIFICATIONS
+^^^^^^^^^^^^^^^^^^^^^
+
+  List of strings, of notifications that should be disabled:
+
+  - `'job_subscription_changed'`: Don't send an email to the job admin if a member changes their job signup without leaving a message.
+  - `'job_unsubscribed'`: Don't send an email to the job admin if a member unsubscribes from a job without leaving a message.
+
+  .. note::
+    Notifications are always sent, when the member leaves a message, because the message is not stored outside of the email.
+
+  default value:
+
+  .. code-block:: python
+
+    []
 
 GDPR
 ----

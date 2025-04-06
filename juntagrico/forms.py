@@ -186,7 +186,7 @@ class MemberProfileForm(ModelForm):
         )
 
 
-class SubscriptionForm(ModelForm):
+class StartDateForm(ModelForm):
     class Meta:
         model = Subscription
         fields = ['start_date']
@@ -307,7 +307,7 @@ class CoMemberBaseForm(MemberBaseForm):
         email = self.cleaned_data['email'].lower()
         if email in self.existing_emails:
             raise ValidationError(mark_safe(_('Diese E-Mail-Adresse wird bereits von dir oder deinen {} verwendet.')
-                                            .format(Config.vocabulary('co_member_pl'))))
+                                            .format(Config.vocabulary('co_member_pl'))), 'email_exists')
         existing_member = MemberDao.member_by_email(email)
         if existing_member:
             if existing_member.blocked:
@@ -317,7 +317,7 @@ class CoMemberBaseForm(MemberBaseForm):
                     '<a href="mailto:{0}">{0}</a>'.format(Config.contacts('for_subscriptions')),
                     Config.vocabulary('member_type_pl'),
                     Config.vocabulary('co_member_pl')
-                )))
+                )), 'has_active_subscription')
             else:
                 # store existing member for reevaluation
                 self.existing_member = existing_member
@@ -474,7 +474,7 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
         containers = self._collect_type_fields()
 
         self.fields['no_subscription'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
-                                                      initial=True, required=False)
+                                                      initial=not any(selected.values()), required=False)
 
         self.helper.layout = Layout(
             *containers,
@@ -486,9 +486,7 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
         )
 
     def _get_initial(self, subscription_type):
-        if subscription_type in self.selected.keys():
-            return self.selected[subscription_type]
-        return 0
+        return self.selected.get(subscription_type, 0)
 
 
 class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
@@ -580,6 +578,81 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
         return super().clean()
 
 
+class ShareOrderForm(Form):
+    field_template = 'forms/share_field.html'
+    text = dict(
+        member_info='Du brauchst als HauptbezieherIn mindestens {0} {1}.',
+        member_existing='Du hast bereits {0} {1}.',
+        co_member_info='Besitzt bereits {0} {1}.',
+        form_error='Du brauchst insgesamt {0} {1} für die von dir gewählten {2}-Bestandteile'
+    )
+
+    helper = FormHelper()
+    helper.form_class = 'form-horizontal'
+    helper.label_class = 'col-md-3'
+    helper.field_class = 'col-md-3'
+
+    def __init__(self, required, existing=0, co_members=None, *args, **kwargs):
+        """
+        :param required: number of shares that are required (for the subscriptions)
+        :param existing: number of shares that the member already has
+        :param co_members: an iterable of (name, existing_share_count) of co-members
+        """
+        super().__init__(*args, **kwargs)
+        self.required = required
+        self.existing = existing
+        self.co_members = co_members or []
+        required_shares = Config.required_shares()
+        self.remaining = max(required_shares - existing, 0)
+
+        # build share field for member
+        v_share = Config.vocabulary('share') if required_shares == 1 else Config.vocabulary('share_pl')
+        help_text = _(self.text['member_info']).format(required_shares, v_share)
+        if existing:
+            v_share = Config.vocabulary('share') if existing == 1 else Config.vocabulary('share_pl')
+            help_text = _(self.text['member_existing']).format(required_shares, v_share)
+        self.fields['of_member'] = IntegerField(
+            label=_('Neue {}').format(Config.vocabulary('share_pl')), required=False,
+            initial=self.remaining, min_value=self.remaining,
+            help_text=help_text
+        )
+
+        # build share fields for co-members
+        for i, co_member in enumerate(self.co_members):
+            name = co_member[0]
+            existing_shares = co_member[1]
+            v_share = Config.vocabulary('share') if existing_shares == 1 else Config.vocabulary('share_pl')
+            help_text = _(self.text['co_member_info']).format(existing_shares, v_share)
+            self.fields[f'of_co_member[{i}]'] = IntegerField(
+                label=name, initial=0, min_value=0, required=False,
+                help_text=help_text
+            )
+
+        self.helper.layout = Layout(
+            Field('of_member', template=self.field_template),
+            *[Field(f'of_co_member[{i}]', template=self.field_template) for i in range(len(self.co_members))],
+            FormActions(
+                Submit('submit', _('Weiter'), css_class='btn-success'),
+                HTML('<a href="{0}" class="btn">{1}</a>'.format(reverse('cs-cancel'), _("Abbrechen")))
+            )
+        )
+
+    def clean(self):
+        total_required = max(self.required, Config.required_shares())
+        total_existing = max(0, self.existing + sum(dict(self.co_members).values()))
+        remaining_required = max(0, total_required - total_existing)
+        # count new shares
+        of_member = self.cleaned_data.get('of_member', 0)
+        of_co_member = sum([self.cleaned_data.get(f'of_co_member[{i}]', 0) for i in range(len(self.co_members))])
+        # evaluate
+        if of_member + of_co_member < remaining_required:
+            raise ValidationError(_(self.text['form_error']).format(
+                total_required,
+                Config.vocabulary('share') if total_required == 1 else Config.vocabulary('share_pl'),
+                Config.vocabulary('subscription')
+            ))
+
+
 class NicknameForm(Form):
     nickname = CharField(label=_('{}-Spitzname').format(Config.vocabulary('subscription')), max_length=30, required=False)
 
@@ -618,7 +691,7 @@ class JobSubscribeForm(Form):
             2: _('Zu Zweit'),
             3: _('Zu Dritt'),
             4: _('Zu Viert'),
-            None: lambda x: _('{0} weitere Personen und ich').format(x-1)
+            None: lambda x: _('{0} weitere Personen und ich').format(x - 1)
         },
     }
     message_wrapper_class = 'd-none'  # let js display the field if needed
@@ -691,7 +764,7 @@ class JobSubscribeForm(Form):
     def get_choices(self):
         max_slots = min(self.available_slots, self.MAX_VALUE)
         min_slots = 0 if self.can_unsubscribe else max(1, self.current_slots)
-        for i in range(min_slots, max_slots+1):
+        for i in range(min_slots, max_slots + 1):
             label = self.get_option_text(i)
             yield i, label
 
@@ -787,7 +860,6 @@ class EditAssignmentForm(JobSubscribeForm):
         return True
 
     def send_signals(self, slots, message=''):
-        # send signals
         assignment_changed.send(
             Member, instance=self.member, job=self.job, editor=self.editor,
             count=slots, initial_count=self.current_slots,
@@ -866,7 +938,7 @@ class BusinessYearForm(Form):
             ]
         else:
             choices = [
-                (year, f"{year}/{year+1}")
+                (year, f"{year}/{year + 1}")
                 for year in range(
                     get_business_year(min_date),
                     get_business_year(max(today, max_date)) + 1,

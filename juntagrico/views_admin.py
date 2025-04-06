@@ -393,10 +393,10 @@ def set_change_date(request):
         raise Http404
     raw_date = request.POST.get('date')
     try:
-        date = datetime.datetime.fromisoformat(raw_date).date()
+        date = datetime.date.fromisoformat(raw_date)
         if date == datetime.date.today():
-            date = None
-        request.session['changedate'] = date
+            raw_date = None
+        request.session['changedate'] = raw_date
     except ValueError:
         return error_page(request, _('Bitte gib ein Datum im Format JJJJ-MM-TT ein.'))
     return return_to_previous_location(request)

@@ -4,13 +4,13 @@
 {% show_core as b_show_core %}
 {% show_job_extras as b_show_job_extras %}
 {% block tools %}
-    {% if perms.juntagrico.can_create_recuringjob %}
+    {% if perms.juntagrico.change_recuringjob %}
         <a href="{% url 'admin:juntagrico_recuringjob_add' %}" class="edit">
             <i class="fas fa-plus"></i>
             {% trans "Wiederkehrenden Einsatz ausschreiben" %}
         </a><br>
     {% endif %}
-    {% if perms.juntagrico.can_create_onetimejob %}
+    {% if perms.juntagrico.change_onetimejob %}
         <a href="{% url 'admin:juntagrico_onetimejob_add' %}" class="edit">
             <i class="fas fa-plus"></i>
             {% trans "Einzel-Einsatz ausschreiben" %}
@@ -18,51 +18,7 @@
     {% endif %}
 {% endblock %}
 <table id="filter-table" class="list table" data-search='{"smart": true, "regex": false}'>
-    <thead>
-        <tr>
-            <th class="align-top filter job-date" data-priority="1">
-                {% trans "Datum" %}
-            </th>
-            <th class="align-top filter job-name" data-priority="1">
-                {% trans "Job" %}
-            </th>
-            <th class="job-description d-none"></th>
-            <th class="align-top filter">
-                {% trans "Ort" %}
-            </th>
-            <th class="align-top">
-                {% trans "Zeit" %}
-            </th>
-            <th class="align-top filter">
-                {% trans "Bereich" %}
-            </th>
-
-            {% if b_show_core %}
-                <th class="align-top">
-                    {% trans "Kern" %}
-                </th>
-            {% endif %}
-            <th class="align-top job-status" data-priority="1">
-                {% trans "Status" %}<br>
-                {% if show_free_slot_filter %}
-                <form id="free_slot_filter_form" class="form-inline">
-                    <label for="free_slot_filter">{% trans "Freie Plätze" %}&nbsp;&ge;&nbsp;</label>
-                    <input id="free_slot_filter" type='number' placeholder='' style='width: 4em;'
-                           class='form-control' value="0" min="0"/>
-                </form>
-                {% endif %}
-            </th>
-            {% if show_free_slot_filter %}
-                <th class="align-top free-slot-count d-none">
-                </th>
-            {% endif %}
-            {% if b_show_job_extras %}
-                <th class="align-top">
-                    {% trans "Extras" %}
-                </th>
-            {% endif %}
-        </tr>
-    </thead>
+    {% include "juntagrico/job/list/snippets/header.html" with hidden_description_column=True %}
     <tbody>
         {% for job in jobs %}
             <tr>

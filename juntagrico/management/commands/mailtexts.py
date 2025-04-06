@@ -28,13 +28,15 @@ class Command(BaseCommand):
         with transaction.atomic(durable=True):
             # generate temporary test data to ensure that required objects are available
             management.call_command('generate_testdata')
-            subscription = Subscription.objects.all()[0]
+            subscription = Subscription.objects.filter(parts__isnull=False).first()
+            future_parts = subscription.parts.all()
+            canceled_part = subscription.parts.first()
             if Config.enable_shares():
                 shares = list(Share.objects.all()[:2])
             job = RecuringJob.objects.all()[0]
             member, co_member = Member.objects.filter(MemberDao.has_future_subscription())[:2]
             member_wo_subs = Member.objects.filter(subscriptionmembership__isnull=True)[0]
-            depot = Depot.objects.all()[0]
+            depot, new_depot = Depot.objects.all()[:2]
             transaction.set_rollback(True)  # force rollback
 
         if 'signup' in selected:
@@ -84,6 +86,24 @@ class Command(BaseCommand):
                 'message': 'Nachricht'
             })))
             print()
+
+            print('*** mails/admin/subpart_created.txt (a_subpart_created) ***')
+            print(get_email_content('a_subpart_created', base_dict({
+                'subscription': subscription,
+                'parts': future_parts,
+            })), end='\n\n')
+
+            print('*** mails/admin/subpart_canceled.txt (a_subpart_canceled) ***')
+            print(get_email_content('a_subpart_canceled', base_dict({
+                'part': canceled_part,
+            })), end='\n\n')
+
+            print('*** mails/member/co_member_left_subscription.txt (m_left_subscription) ***')
+            print(get_email_content('m_left_subscription', base_dict({
+                'primary_member': member,
+                'co_member': co_member,
+                'message': '[Nachricht des Mitglieds]',
+            })), end='\n\n')
 
         if 'share' in selected and Config.enable_shares():
             print('*** s_created ***')
@@ -173,6 +193,15 @@ class Command(BaseCommand):
             print('*** d_changed ***')
             print(get_email_content('d_changed', base_dict({'depot': depot})))
             print()
+
+            print('*** juntagrico/mails/admin/depot_changed.txt ***')
+            print(get_template('juntagrico/mails/admin/depot_changed.txt').render({
+                'subscription': subscription,
+                'member': member,
+                'old_depot': depot,
+                'new_depot': new_depot,
+                'immediate': False,
+            }), end='\n\n')
 
         if 'member' in selected:
             print('*** a_member_created ***')
