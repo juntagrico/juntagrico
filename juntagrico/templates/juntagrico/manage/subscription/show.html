@@ -27,9 +27,11 @@
                     <th class="filter">
                         {% trans "Inhalt" %}
                     </th>
-                    <th class="filter">
-                        {% vocabulary "depot" %}
-                    </th>
+                    {% if not hide_depots %}
+                        <th class="filter">
+                            {% vocabulary "depot" %}
+                        </th>
+                    {% endif %}
                     <th class="filter">
                         {% trans "Aktivierungsdatum" %}
                     </th>
@@ -48,9 +50,11 @@
                     <th>
                         {% trans "Inhalt" %}
                     </th>
-                    <th>
-                        {% vocabulary "depot" %}
-                    </th>
+                    {% if not hide_depots %}
+                        <th>
+                            {% vocabulary "depot" %}
+                        </th>
+                    {% endif %}
                     <th>
                         {% trans "Aktivierungsdatum" %}
                     </th>
@@ -74,9 +78,11 @@
                                 </div>
                             {% endfor %}
                         </td>
-                        <td>
-                            {{ subscription.depot.name }}
-                        </td>
+                        {% if not hide_depots %}
+                            <td>
+                                {{ subscription.depot.name }}
+                            </td>
+                        {% endif %}
                         <td>
                             {{ subscription.activation_date|date:"Y-m-d" }}
                         </td>

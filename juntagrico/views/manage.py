@@ -234,6 +234,7 @@ class DepotSubscriptionView(SubscriptionView):
         context['title'] = self.title.format(depot_name=self.depot.name)
         context['mail_url'] = 'mail-depot'
         context['can_see_emails'] = True
+        context['hide_depots'] = True
         return context
 
 
