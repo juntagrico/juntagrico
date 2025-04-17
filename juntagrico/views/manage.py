@@ -194,7 +194,7 @@ class SubscriptionPendingView(PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         return Subscription.objects.filter(
-                Q(parts__activation_date=None)
+                Q(parts__activation_date=None, parts__isnull=False)
                 | Q(parts__cancellation_date__isnull=False, parts__deactivation_date=None)
             ).prefetch_related('parts').distinct()
 
