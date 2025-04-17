@@ -60,7 +60,7 @@
                                     </a>
                                 {% endif %}
                             {% else %}
-                                {% blocktrans with cd=part.cancellation_date %}
+                                {% blocktrans trimmed with cd=part.cancellation_date %}
                                     Gekündigt am {{cd}}
                                 {% endblocktrans %}
                             {% endif %}
