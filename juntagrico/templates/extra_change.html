@@ -39,7 +39,7 @@
                             </td>
                             <td>
                                 {% if extra.canceled %}
-                                    {% blocktrans with cd=extra.cancellation_date %}
+                                    {% blocktrans trimmed with cd=extra.cancellation_date %}
                                         Gekündigt am {{cd}}
                                     {% endblocktrans %}
                                 {% elif extra.deactivation_date is None and extra.can_cancel %}
