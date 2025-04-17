@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-16 20:50-0500\n"
+"POT-Creation-Date: 2025-04-16 21:01-0500\n"
 "PO-Revision-Date: 2021-10-18 06:38+0000\n"
 "Last-Translator: admin juntagrico, 2025\n"
 "Language-Team: English (https://app.transifex.com/juntagrico/teams/126289/"
@@ -3509,8 +3509,8 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:10
 #, python-format
-msgid "Pendente Änderungen an %(v_subscription_pl)s"
-msgstr ""
+msgid "Pendente Änderungen der %(v_subscription_pl)s"
+msgstr "Pending changes on %(v_subscription_pl)s"
 
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:22
 msgid "Normale Bestandteile anzeigen"

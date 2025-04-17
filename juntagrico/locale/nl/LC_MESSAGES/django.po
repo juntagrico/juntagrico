@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-16 20:42-0500\n"
+"POT-Creation-Date: 2025-04-16 21:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3457,7 +3457,7 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:10
 #, python-format
-msgid "Pendente Änderungen an %(v_subscription_pl)s"
+msgid "Pendente Änderungen der %(v_subscription_pl)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:22
