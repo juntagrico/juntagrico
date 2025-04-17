@@ -12,12 +12,10 @@ def home_messages(request):
         result.append(get_template('messages/not_confirmed.html').render())
     if member.subscription_current is None and member.subscription_future is None:
         result.append(get_template('messages/no_subscription.html').render())
-    if len(ShareDao.unpaid_shares(member)) > 0:
-        render_dict = {
-            'amount': len(ShareDao.unpaid_shares(member)),
-        }
+    unpaid_shares = member.share_set.unpaid().count()
+    if unpaid_shares > 0:
         template = get_template('messages/unpaid_shares.html')
-        render_result = template.render(render_dict)
+        render_result = template.render({'amount': unpaid_shares})
         result.append(render_result)
     return result
 
