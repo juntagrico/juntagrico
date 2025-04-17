@@ -18,6 +18,7 @@ from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
 from juntagrico.dao.jobtypedao import JobTypeDao
 from juntagrico.entity.jobs import RecuringJob, JobType
+from juntagrico.templatetags.juntagrico.common import richtext
 from juntagrico.util.admin import formfield_for_coordinator, queryset_for_coordinator
 
 
@@ -58,7 +59,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
     @admin.display(description=_('Beschreibung der Jobart'))
     def type_description(self, instance):
         # when adding a new job, instance is an empty job queryset
-        return type_div('description', instance.type.description if instance.type_id else None)
+        return type_div('description', richtext(instance.type.description) if instance.type_id else None)
 
     @admin.display(description=_('Standardwert'))
     def type_duration(self, instance):

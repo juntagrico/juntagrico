@@ -9,6 +9,7 @@ from django.utils.timezone import get_default_timezone as gdtz, localtime, is_na
 from django.utils.translation import gettext as _
 from djrichtextfield.widgets import RichTextWidget
 
+from juntagrico.config import Config
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.util.temporal import weekday_choices
 
@@ -44,7 +45,7 @@ class JobCopyForm(forms.ModelForm):
             self.fields['time'].initial = localtime(inst.time)
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
 
-        if 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
+        if Config.using_richtext():
             self.fields['additional_description'].widget = RichTextWidget()
 
         self.new_jobs = []

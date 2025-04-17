@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.contrib import admin
 from django.db.models import TextField
 from djrichtextfield.widgets import RichTextWidget
 from import_export.admin import ExportMixin
 
 from juntagrico.admins.forms.import_export_form import ExportAssignmentDateRangeForm
+from juntagrico.config import Config
 from juntagrico.util import addons
 
 
@@ -19,7 +19,7 @@ class BaseAdmin(admin.ModelAdmin):
 class RichTextAdmin(BaseAdmin):
 
     def __init__(self, model, admin_site):
-        if 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
+        if Config.using_richtext():
             self.formfield_overrides = self.formfield_overrides or {}
             self.formfield_overrides.update({TextField: {'widget': RichTextWidget}})
         super().__init__(model, admin_site)
