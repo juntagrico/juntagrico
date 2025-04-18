@@ -39,11 +39,11 @@
                 {% else %}
                     <strong>
                     {% if type.trial_days %}
-                        {%blocktrans with tp=type.price%}
+                        {%blocktrans trimmed with tp=type.price%}
                          à {{ c_currency }} {{ tp }}.
                         {%endblocktrans%}
                     {% else %}
-                        {%blocktrans with tp=type.price%}
+                        {%blocktrans trimmed with tp=type.price%}
                          à {{ c_currency }} {{ tp }}/Jahr.
                         {%endblocktrans%}
                     {% endif %}

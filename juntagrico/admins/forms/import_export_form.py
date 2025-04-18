@@ -28,6 +28,7 @@ class ExportAssignmentDateRangeForm(SelectableFieldsExportForm):
         super().__init__(formats, *args, **kwargs)
         # offer meaningful year range
         jobs = Job.objects.aggregate(oldest_year=Min('time__year'), newest_year=Max('time__year'))
-        years = range(jobs['oldest_year'], jobs['newest_year'] + 1)
+        # extend range to year before and after to be able to always select entire business year.
+        years = range(jobs['oldest_year'] - 1, jobs['newest_year'] + 2)
         self.fields['export_start_date'].widget.years = years
         self.fields['export_end_date'].widget.years = years

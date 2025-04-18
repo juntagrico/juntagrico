@@ -70,7 +70,7 @@
                         </a>
                         {% if subscription.canceled %}
                             -
-                            {% blocktrans with cd=subscription.cancellation_date|date:"Y-m-d" %}
+                            {% blocktrans trimmed with cd=subscription.cancellation_date|date:"Y-m-d" %}
                                 Gekündigt am {{cd}}
                             {% endblocktrans %}
                         {% endif %}

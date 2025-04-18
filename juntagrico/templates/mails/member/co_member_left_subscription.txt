@@ -5,12 +5,12 @@
 {% config "organisation_name" as c_organisation_name %}
 {% vocabulary "subscription" as v_subscription %}
 
-{% blocktrans %}
+{% blocktrans trimmed %}
 Soeben ist {{ co_member }} aus eurer/m gemeinsamen {{ v_subscription }} ausgetreten und hat folgende Nachricht hinterlassen:
 {% endblocktrans %}
 {{ message }}
 
-{% blocktrans %}
+{% blocktrans trimmed %}
 Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
 {% endblocktrans %}
 {% endblock %}

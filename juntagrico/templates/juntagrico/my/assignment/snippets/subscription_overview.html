@@ -9,32 +9,32 @@
     <div class="col-md-9">
         <div class="mb-3">
             {% vocabulary "subscription" as v_subscription %}
-            {% blocktrans with ra=subscription.required_assignments|floatformat:-1 rca=subscription.required_core_assignments|floatformat:-1 %}
+            {% blocktrans trimmed with ra=subscription.required_assignments|floatformat:-1 rca=subscription.required_core_assignments|floatformat:-1 %}
                 Benötigt für diese/n/s {{ v_subscription }}: {{ ra }}
             {% endblocktrans %}
             {% if subscription.required_core_assignments %}
-                {% blocktrans with rca=subscription.required_core_assignments|floatformat:-1 %}
+                {% blocktrans trimmed with rca=subscription.required_core_assignments|floatformat:-1 %}
                     (Davon {{ rca }} in Kernbereichen)
                 {% endblocktrans %}
             {% endif %}
         </div>
         <div class="mb-3">
-            {% blocktrans with mac=subscription.member_assignment_count|floatformat:-1 %}
+            {% blocktrans trimmed with mac=subscription.member_assignment_count|floatformat:-1 %}
                 Du hast selbst {{ mac }} gemacht oder geplant
             {% endblocktrans %}
             {% if subscription.required_core_assignments %}
-                {% blocktrans with mcac=subscription.member_core_assignment_count|floatformat:-1 %}
+                {% blocktrans trimmed with mcac=subscription.member_core_assignment_count|floatformat:-1 %}
                     (Davon {{ mcac }} in Kernbereichen)
                 {% endblocktrans %}
             {% endif %}
         </div>
         {% if co_members %}
             <div class="mb-3">
-                {% blocktrans with ac=subscription.assignment_count|floatformat:-1  %}
+                {% blocktrans trimmed with ac=subscription.assignment_count|floatformat:-1  %}
                     Zusammen mit deinen {{ v_co_member_pl }} hast du {{ ac }} gemacht oder geplant
                 {% endblocktrans %}
                 {% if subscription.required_core_assignments %}
-                    {% blocktrans with cac=subscription.core_assignment_count|floatformat:-1 %}
+                    {% blocktrans trimmed with cac=subscription.core_assignment_count|floatformat:-1 %}
                         (Davon {{ cac }} in Kernbereichen)
                     {% endblocktrans %}
                 {% endif %}

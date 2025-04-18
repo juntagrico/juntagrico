@@ -14,6 +14,9 @@
 {% include "juntagrico/snippets/subscription/recipients.html" %}
 <br>
 {% if not subscription.inactive %}
+    <a href="{% url 'depot' subscription.depot.id %}" class="btn btn-primary mt-3">
+        {% blocktrans %}{{ v_depot }} Details{% endblocktrans %}
+    </a>
     {% if subscription.primary_member == member %}
         <a href="{% url 'depot-change' subscription.id %}" class="btn btn-primary mt-3">
             {% blocktrans %}{{ v_depot }} wechseln{% endblocktrans %}
