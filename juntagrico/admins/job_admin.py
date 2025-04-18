@@ -53,7 +53,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
             'type', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots'),
             'type_description', 'additional_description'
         ]}),
-        (gettext_lazy('Kopieren nach'), { 'fields': [
+        (gettext_lazy('Kopieren nach'), {'fields': [
             'new_time', 'start_date', 'end_date', 'weekdays', 'weekly'
         ]}),
     ]
