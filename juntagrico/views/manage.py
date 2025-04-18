@@ -220,6 +220,12 @@ def parts_apply(request, change_date):
     return return_to_previous_location(request)
 
 
+class SubscriptionTrialPartView(PermissionRequiredMixin, ListView):
+    permission_required = ['juntagrico.change_subscriptionpart']
+    template_name = 'juntagrico/manage/subscription/trial.html'
+    queryset = SubscriptionPart.objects.is_trial().waiting_or_active
+
+
 class DepotSubscriptionView(SubscriptionView):
     permission_required = 'juntagrico.is_depot_admin'
     title = _('Alle aktiven {subs} im {depot} {depot_name}').format(

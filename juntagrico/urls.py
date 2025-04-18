@@ -7,6 +7,7 @@ from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
+from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
 from juntagrico.views import subscription, manage, email, job, api
 from juntagrico.views_admin import ShiftTimeFormView
@@ -86,6 +87,10 @@ urlpatterns = [
          name='extra-change'),
     # /my/subscription/part/{id}
     path('my/subscription/part/<int:part_id>/change', juntagrico_subscription.part_change, name='part-change'),
+    path('my/subscription/part/<int:part_id>/continue', juntagrico_subscription.part_change,{
+        'form_class': SubscriptionPartContinueForm,
+        'template_name': 'juntagrico/my/subscription/part/continue.html'
+    }, name='part-continue'),
     path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
          name='part-cancel'),
     # /my/assignments
@@ -128,6 +133,7 @@ urlpatterns = [
     path('manage/subscription/recent', manage.SubscriptionRecentView.as_view(), name='manage-sub-recent'),
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
+    path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),
     path('my/future', juntagrico_admin.future, name='future'),

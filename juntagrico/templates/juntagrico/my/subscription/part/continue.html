@@ -1,0 +1,10 @@
+{% extends "./change.html" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block page_title %}
+    {% vocabulary "subscription" as v_subscription %}
+    <h3>
+        {% blocktrans %}{{ v_subscription }} verlängern{% endblocktrans %}
+    </h3>
+{% endblock %}

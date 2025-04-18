@@ -11,6 +11,10 @@ def home_messages(request):
         result.append(get_template('messages/not_confirmed.html').render())
     if member.subscription_current is None and member.subscription_future is None:
         result.append(get_template('messages/no_subscription.html').render())
+    if member.subscription_current.parts.is_trial().exists():
+        result.append(get_template('messages/trial_sub.html').render(context={
+            'trial_parts': member.subscription_current.parts.is_trial(),
+        }))
     unpaid_shares = member.share_set.unpaid().count()
     if unpaid_shares > 0:
         template = get_template('messages/unpaid_shares.html')
