@@ -449,13 +449,16 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
             product_container = CategoryContainer(instance=product)
             for subscription_size in product.sizes.filter(visible=True).exclude(types=None):
                 size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
-                for subscription_type in subscription_size.types.filter(visible=True):
+                for subscription_type in self.type_filter(subscription_size.types):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
                         size_container.append(type_field)
                 product_container.append(size_container)
             if len(product_container):
                 containers.append(product_container)
         return containers
+
+    def type_filter(self, qs):
+        return qs.filter(visible=True)
 
     def _get_initial(self, subscription_type):
         return 0
@@ -548,12 +551,13 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
         )
 
     def get_type_field(self, subscription_type):
-        if subscription_type.pk == self.part.type.pk:
-            return None
         return SubscriptionTypeOption('part_type', instance=subscription_type)
 
+    def type_filter(self, qs):
+        return super().type_filter(qs).exclude(pk=self.part.type.pk)
+
     def get_choices(self):
-        for subscription_type in SubscriptionTypeDao.get_normal_visible().exclude(pk=self.part.type.pk):
+        for subscription_type in self.type_filter(SubscriptionType.objects.normal().visible()):
             yield subscription_type.id, subscription_type.name
 
     def clean(self):
@@ -576,6 +580,20 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
             for error_code, error in self.errors.items():
                 raise ValidationError(error, code=error_code)
         return super().clean()
+
+
+class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
+    def __init__(self, part=None, *args, **kwargs):
+        super().__init__(part, *args, **kwargs)
+        self.helper.layout = Layout(
+            *self._collect_type_fields(),
+            FormActions(
+                Submit('submit', _('Bestellen'), css_class='btn-success')
+            )
+        )
+
+    def type_filter(self, qs):
+        return super().type_filter(qs).exclude(trial_days__gt=0)
 
 
 class ShareOrderForm(Form):

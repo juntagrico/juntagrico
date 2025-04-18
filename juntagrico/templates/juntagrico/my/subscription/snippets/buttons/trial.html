@@ -1,6 +1,5 @@
 {% load i18n %}
-<a href="{% url 'part-change' part.id %}" class="btn btn-primary">
-    {# TODO: make text on change page more intuitive for this case #}
+<a href="{% url 'part-continue' part.id %}" class="btn btn-primary">
     {% trans "Ja gerne" %}
 </a>
 <a href="{% url 'part-cancel' part.id part.subscription.id %}" class="btn btn-danger"

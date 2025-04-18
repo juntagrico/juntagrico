@@ -65,8 +65,12 @@
                             {% endwith %}
                             {% if subscription.primary_member == member %}
                                 {% if part.is_trial %}
-                                    <div>{% trans "Willst du weitermachen?" %}</div>
-                                    {% include "./buttons/trial.html" %}
+                                    {% if part.follow_up_parts.exists %}
+                                        <div>{% trans "Wird verlängert" %}</div>
+                                    {% else %}
+                                        <div>{% trans "Willst du weitermachen?" %}</div>
+                                        {% include "./buttons/trial.html" %}
+                                    {% endif %}
                                 {% elif part.is_extra %}
                                     {% if part.state != 'canceled' and  part.state != 'inactive' %}
                                         <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"

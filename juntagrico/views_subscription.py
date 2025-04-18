@@ -183,7 +183,9 @@ def size_change(request, subscription_id):
 
 
 @primary_member_of_subscription_of_part
-def part_change(request, part):
+def part_change(request, part,
+                form_class=SubscriptionPartChangeForm,
+                template_name='juntagrico/my/subscription/part/change.html'):
     """
     change part of a subscription
     """
@@ -192,7 +194,7 @@ def part_change(request, part):
     if SubscriptionTypeDao.get_normal_visible().count() <= 1:
         raise Http404("Can't change subscription part if there is only one subscription type")
     if request.method == 'POST':
-        form = SubscriptionPartChangeForm(part, request.POST)
+        form = form_class(part, request.POST)
         if form.is_valid():
             subscription_type = get_object_or_404(SubscriptionType, id=form.cleaned_data['part_type'])
             if part.activation_date is None:
@@ -209,13 +211,13 @@ def part_change(request, part):
                 adminnotification.subparts_created([new_part], part.subscription)
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
-        form = SubscriptionPartChangeForm(part)
+        form = form_class(part)
     renderdict = {
         'form': form,
         'subscription': subscription,
         'hours_used': Config.assignment_unit() == 'HOURS',
     }
-    return render(request, 'part_change.html', renderdict)
+    return render(request, template_name, renderdict)
 
 
 @primary_member_of_subscription
