@@ -200,6 +200,10 @@ class Config:
     mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
 
     @classmethod
+    def using_richtext(cls):
+        return 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG')
+
+    @classmethod
     def notifications(cls, name):
         default_notifications = [
             'job_subscription_changed',
