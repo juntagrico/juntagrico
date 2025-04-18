@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.timezone import get_default_timezone as gdtz, localtime, is_naive
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _ly
 
 from juntagrico.entity.jobs import RecuringJob
 from juntagrico.util.temporal import weekday_choices
@@ -17,18 +18,18 @@ class JobCopyForm(forms.ModelForm):
         model = RecuringJob
         fields = []
 
-    weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
+    weekdays = forms.MultipleChoiceField(label=_ly('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
 
-    new_time = forms.TimeField(label=_('Zeit'), required=True,
+    new_time = forms.TimeField(label=_ly('Zeit'), required=True,
                                widget=admin.widgets.AdminTimeWidget)
 
-    start_date = forms.DateField(label=_('Anfangsdatum'), required=True,
+    start_date = forms.DateField(label=_ly('Anfangsdatum'), required=True,
                                  widget=admin.widgets.AdminDateWidget)
-    end_date = forms.DateField(label=_('Enddatum'), required=True,
+    end_date = forms.DateField(label=_ly('Enddatum'), required=True,
                                widget=admin.widgets.AdminDateWidget)
 
-    weekly = forms.ChoiceField(choices=[(7, _('jede Woche')), (14, _('Alle zwei Wochen'))],
+    weekly = forms.ChoiceField(label=_ly('Frequenz'), choices=[(7, _ly('jede Woche')), (14, _ly('Alle zwei Wochen'))],
                                widget=forms.widgets.RadioSelect, initial=7)
 
     def __init__(self, *a, **k):

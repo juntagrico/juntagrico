@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
@@ -47,9 +48,15 @@ def type_div(field, value=None):
 class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     fields = ('type', 'time', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots', 'free_slots'),
               'type_description', 'additional_description', 'pinned', 'canceled')
-    copy_fields = ('type', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots'),
-                   'type_description', 'additional_description',
-                   'weekdays', 'new_time', 'start_date', 'end_date', 'weekly')
+    copy_fieldsets = [
+        (None, {'fields': [
+            'type', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots'),
+            'type_description', 'additional_description'
+        ]}),
+        (gettext_lazy('Kopieren nach'), { 'fields': [
+            'new_time', 'start_date', 'end_date', 'weekdays', 'weekly'
+        ]}),
+    ]
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
@@ -79,8 +86,13 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
 
     def get_fields(self, request, obj=None):
         if self.is_copy_view(request):
-            return self.copy_fields
+            return None
         return super().get_fields(request, obj)
+
+    def get_fieldsets(self, request, obj=None):
+        if self.is_copy_view(request):
+            return self.copy_fieldsets
+        return super().get_fieldsets(request, obj)
 
     def get_readonly_fields(self, request, obj=None):
         if self.is_copy_view(request):
@@ -139,7 +151,12 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
         return request.resolver_match.url_name == 'action-mass-copy-job'
 
     def copy_job_view(self, request, jobid):
-        return self.change_view(request, jobid, extra_context={'title': 'Copy job'})
+        return self.change_view(request, jobid, extra_context={
+            'title': _('Job mehrfach kopieren'),
+            'show_save_and_continue': False,
+            'show_save_and_add_another': False,
+            'show_delete': False,
+        })
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'type__activityarea__coordinator')
