@@ -85,7 +85,7 @@ class Depot(JuntagricoBaseModel):
         fee = self.fee
         # normalize count dict
         subscription_count = {
-            k if isinstance(k, int) else k.id: v for k, v in subscription_count.items() if v > 0
+            int(k) if isinstance(k, (int, str)) else k.id: v for k, v in subscription_count.items() if v > 0
         }
         # get fees of relevant types and sum them
         conditions = self.subscription_type_conditions.filter(subscription_type__in=subscription_count.keys())

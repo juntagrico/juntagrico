@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 14:20-0500\n"
+"POT-Creation-Date: 2025-04-16 21:15-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,8 +29,8 @@ msgstr ""
 #: juntagrico/templates/juntagrico/manage/share/unpaid.html:29
 #: juntagrico/templates/juntagrico/manage/subscription/depot/changes.html:30
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:49
-#: juntagrico/templates/juntagrico/manage/subscription/show.html:37
-#: juntagrico/templates/juntagrico/manage/subscription/show.html:58
+#: juntagrico/templates/juntagrico/manage/subscription/show.html:39
+#: juntagrico/templates/juntagrico/manage/subscription/show.html:62
 #: juntagrico/templates/juntagrico/menu/user.html:57
 #: juntagrico/templates/mails/member/job_reminder.txt:18
 #: juntagrico/templates/management_lists/canceledlist.html:28
@@ -397,8 +397,8 @@ msgid "Erstellungsdatum"
 msgstr ""
 
 #: juntagrico/entity/__init__.py:52
-#: juntagrico/templates/juntagrico/manage/subscription/show.html:34
-#: juntagrico/templates/juntagrico/manage/subscription/show.html:55
+#: juntagrico/templates/juntagrico/manage/subscription/show.html:36
+#: juntagrico/templates/juntagrico/manage/subscription/show.html:59
 msgid "Aktivierungsdatum"
 msgstr ""
 
@@ -570,7 +570,7 @@ msgstr ""
 
 #: juntagrico/entity/delivery.py:21
 #: juntagrico/templates/exports/amount_overview.html:50
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:81
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:77
 msgid "Keine"
 msgstr ""
 
@@ -1632,8 +1632,8 @@ msgstr ""
 msgid "Bitte \"Gekündigt auf\" ausfüllen"
 msgstr ""
 
-#: juntagrico/lifecycle/share.py:39
-msgid "Daten Reihenfolge stimmt nicht."
+#: juntagrico/lifecycle/share.py:39 juntagrico/lifecycle/submembership.py:23
+msgid "Datenreihenfolge stimmt nicht."
 msgstr ""
 
 #: juntagrico/lifecycle/sub.py:45
@@ -1673,10 +1673,6 @@ msgstr ""
 
 #: juntagrico/lifecycle/submembership.py:21
 msgid "Bitte \"Beitrittsdatum\" ausfüllen"
-msgstr ""
-
-#: juntagrico/lifecycle/submembership.py:23
-msgid "Datenreihenfolge stimmt nicht."
 msgstr ""
 
 #: juntagrico/lifecycle/submembership.py:32
@@ -1928,8 +1924,8 @@ msgstr ""
 
 #: juntagrico/templates/admin/replace_location_intermediate.html:6
 msgid ""
-"Löscht und ersetzt diese Orte an allen verwendeten Stellen.\n"
-"    Dies kann nicht rückgängig gemacht werden."
+"Löscht und ersetzt diese Orte an allen verwendeten Stellen. Dies kann nicht "
+"rückgängig gemacht werden."
 msgstr ""
 
 #: juntagrico/templates/admin/replace_location_intermediate.html:27
@@ -2082,9 +2078,9 @@ msgstr ""
 #: juntagrico/templates/commands/shift_time.html:10
 msgid ""
 "Mit diesem Formular können alle Einsätze innerhalb des gewählten Zeitraums "
-"zeitlich verschoben werden.\n"
-"    Dies ist z.B. nötig, wenn die Zeitzoneneinstellung geändert wird. Es "
-"werden keine automatischen E-Mails verschickt!"
+"zeitlich verschoben werden. Dies ist z.B. nötig, wenn die "
+"Zeitzoneneinstellung geändert wird. Es werden keine automatischen E-Mails "
+"verschickt!"
 msgstr ""
 
 #: juntagrico/templates/contact.html:13
@@ -2143,40 +2139,21 @@ msgstr ""
 #: juntagrico/templates/cookie.html:13
 #, python-format
 msgid ""
-"\n"
-"    %(an)s verwendet Cookies.\n"
-"    %(an)s verwendet aber keine Cookies für Tracking etc.\n"
-"    %(an)s verwendet Session Cookies und Cookies zur CSRF Bekämpfung.\n"
-"    Und um zu speichern ob du den Cookie Consent bestätigt hast.\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    Standartmässig speichert %(an)s im Session Cookie nur eine ID und die "
-"Session Daten in der Datenbank.\n"
-"    Das Session Cookie wird 2 Wochen gespeichert. <br/>\n"
-"    Die Aktuelle Informationen zu den Standard Einstellungen findest du hier:"
-"<br/>\n"
-"    <a href=\"https://docs.djangoproject.com/en/dev/topics/http/sessions/"
-"\">https://docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/>\n"
-"    Diese Einstellungen können natürlich von deiner Initiative geändert "
-"worden sein.\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    Mehr Infos zum CSRF Cookie findest du hier:\n"
-"    <a href=\"https://docs.djangoproject.com/en/dev/ref/csrf/\">https://docs."
-"djangoproject.com/en/dev/ref/csrf/</a>\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    Das Cookie Consent Cookie speichert für ein Jahr ab, ob du den Cookies "
-"zugestimmt hast.\n"
-"\n"
-"    <p/>\n"
-"\n"
-"    Gerne kannst du das natürlich bei dir konkret überprüfen und uns "
-"mitteilen wenn das was hier steht nicht stimmt oder nicht mehr stimmt.\n"
-"    "
+"%(an)s verwendet Cookies. %(an)s verwendet aber keine Cookies für Tracking "
+"etc. %(an)s verwendet Session Cookies und Cookies zur CSRF Bekämpfung. Und "
+"um zu speichern ob du den Cookie Consent bestätigt hast. <p/> Standardmässig "
+"speichert %(an)s im Session Cookie nur eine ID und die Session Daten in der "
+"Datenbank. Das Session Cookie wird 2 Wochen gespeichert. <br/> Die Aktuelle "
+"Informationen zu den Standard Einstellungen findest du hier:<br/> <a "
+"href=\"https://docs.djangoproject.com/en/dev/topics/http/sessions/\">https://"
+"docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/> Diese "
+"Einstellungen können natürlich von deiner Initiative geändert worden sein. "
+"<p/> Mehr Infos zum CSRF Cookie findest du hier: <a href=\"https://docs."
+"djangoproject.com/en/dev/ref/csrf/\">https://docs.djangoproject.com/en/dev/"
+"ref/csrf/</a> <p/> Das Cookie Consent Cookie speichert für ein Jahr ab, ob "
+"du den Cookies zugestimmt hast. <p/> Gerne kannst du das natürlich bei dir "
+"konkret überprüfen und uns mitteilen wenn das was hier steht nicht stimmt "
+"oder nicht mehr stimmt."
 msgstr ""
 
 #: juntagrico/templates/createsubscription/add_member_cs.html:11
@@ -2334,18 +2311,12 @@ msgstr ""
 
 #: juntagrico/templates/createsubscription/summary.html:42
 #, python-format
-msgid ""
-"\n"
-"                         à %(c_currency)s %(tp)s.\n"
-"                        "
+msgid "à %(c_currency)s %(tp)s."
 msgstr ""
 
 #: juntagrico/templates/createsubscription/summary.html:46
 #, python-format
-msgid ""
-"\n"
-"                         à %(c_currency)s %(tp)s/Jahr.\n"
-"                        "
+msgid "à %(c_currency)s %(tp)s/Jahr."
 msgstr ""
 
 #: juntagrico/templates/createsubscription/summary.html:56
@@ -2512,10 +2483,8 @@ msgstr ""
 #: juntagrico/templates/exports/share_certificate.html:103
 #, python-format
 msgid ""
-"\n"
-"    Hiermit bestätigen wir dem oben genannten %(v_member)s folgende "
-"%(v_share_pl)s:\n"
-"    "
+"Hiermit bestätigen wir dem oben genannten %(v_member)s folgende "
+"%(v_share_pl)s:"
 msgstr ""
 
 #: juntagrico/templates/exports/share_certificate.html:109
@@ -2540,17 +2509,12 @@ msgstr ""
 
 #: juntagrico/templates/exports/share_certificate.html:134
 msgid ""
-"\n"
-"    Wir bitten Sie, diese Bescheinigung zu prüfen und Beanstandungen direkt "
-"zu melden.\n"
-"    "
+"Wir bitten Sie, diese Bescheinigung zu prüfen und Beanstandungen direkt zu "
+"melden."
 msgstr ""
 
 #: juntagrico/templates/exports/share_certificate.html:139
-msgid ""
-"\n"
-"    Bitte bewahren Sie diese Bescheinigung für Ihre Steuererklärung auf.\n"
-"    "
+msgid "Bitte bewahren Sie diese Bescheinigung für Ihre Steuererklärung auf."
 msgstr ""
 
 #: juntagrico/templates/exports/snippets/snippet_depotlist_header.html:33
@@ -2586,21 +2550,21 @@ msgid "Übersicht"
 msgstr ""
 
 #: juntagrico/templates/extra_change.html:42
+#: juntagrico/templates/juntagrico/manage/assignments.html:73
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:22
+#: juntagrico/templates/size_change.html:63
 #, python-format
-msgid ""
-"\n"
-"                                        Gekündigt am %(cd)s\n"
-"                                    "
+msgid "Gekündigt am %(cd)s"
 msgstr ""
 
 #: juntagrico/templates/extra_change.html:47
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:49
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:45
 msgid "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?"
 msgstr ""
 
 #: juntagrico/templates/extra_change.html:48
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:50
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:68
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:46
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:64
 #: juntagrico/templates/manage_shares.html:80
 #: juntagrico/templates/size_change.html:59
 msgid "kündigen"
@@ -2608,7 +2572,7 @@ msgstr ""
 
 #: juntagrico/templates/extra_change.html:60
 #: juntagrico/templates/juntagrico/my/subscription/part/order.html:9
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:94
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:90
 msgid "Zusatzabos bestellen"
 msgstr ""
 
@@ -2952,26 +2916,16 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/job/snippets/edit_assignment.html:9
 #, python-format
-msgid ""
-"\n"
-"    \tDu änderst den Einsatz von %(m)s\n"
-"    "
+msgid "Du änderst den Einsatz von %(m)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/job/snippets/edit_assignment.html:17
-msgid ""
-"\n"
-"                 Folgende Personen werden automatisch über diese Änderung "
-"informiert:<br>\n"
-"            "
+msgid "Folgende Personen werden automatisch über diese Änderung informiert:"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/job/snippets/edit_assignment.html:27
+#: juntagrico/templates/juntagrico/job/snippets/edit_assignment.html:28
 #, python-format
-msgid ""
-"\n"
-"                %(member)s wird automatisch über diese Änderung informiert.\n"
-"            "
+msgid "%(member)s wird automatisch über diese Änderung informiert."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/job/snippets/participant_list.html:44
@@ -3203,6 +3157,7 @@ msgstr ""
 #: juntagrico/templates/juntagrico/mails/member/job/subscription_changed.txt:23
 #: juntagrico/templates/juntagrico/mails/member/job/unsubscribed.txt:9
 #: juntagrico/templates/mails/member/co_member_added.txt:21
+#: juntagrico/templates/mails/member/co_member_left_subscription.txt:13
 #: juntagrico/templates/mails/member/co_member_welcome.txt:50
 #: juntagrico/templates/mails/member/depot_changed.txt:20
 #: juntagrico/templates/mails/member/email_confirm.txt:9
@@ -3256,14 +3211,6 @@ msgstr ""
 #: juntagrico/templates/juntagrico/manage/assignments.html:53
 #, python-format
 msgid "%(v_assignment_pl)s Kernbereich Status"
-msgstr ""
-
-#: juntagrico/templates/juntagrico/manage/assignments.html:73
-#, python-format
-msgid ""
-"\n"
-"                                Gekündigt am %(cd)s\n"
-"                            "
 msgstr ""
 
 #: juntagrico/templates/juntagrico/manage/list.html:7
@@ -3351,7 +3298,7 @@ msgstr ""
 #: juntagrico/templates/juntagrico/manage/member/show.html:57
 #: juntagrico/templates/juntagrico/manage/subscription/depot/changes.html:27
 #: juntagrico/templates/juntagrico/manage/subscription/show.html:28
-#: juntagrico/templates/juntagrico/manage/subscription/show.html:49
+#: juntagrico/templates/juntagrico/manage/subscription/show.html:51
 msgid "Inhalt"
 msgstr ""
 
@@ -3460,7 +3407,7 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:10
 #, python-format
-msgid "Pendente Änderungen an %(v_subscription_pl)s"
+msgid "Pendente Änderungen der %(v_subscription_pl)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/manage/subscription/pending.html:22
@@ -3688,51 +3635,33 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:12
 #, python-format
-msgid ""
-"\n"
-"                Benötigt für diese/n/s %(v_subscription)s: %(ra)s\n"
-"            "
+msgid "Benötigt für diese/n/s %(v_subscription)s: %(ra)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:16
 #, python-format
-msgid ""
-"\n"
-"                    (Davon %(rca)s in Kernbereichen)\n"
-"                "
+msgid "(Davon %(rca)s in Kernbereichen)"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:22
 #, python-format
-msgid ""
-"\n"
-"                Du hast selbst %(mac)s gemacht oder geplant\n"
-"            "
+msgid "Du hast selbst %(mac)s gemacht oder geplant"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:26
 #, python-format
-msgid ""
-"\n"
-"                    (Davon %(mcac)s in Kernbereichen)\n"
-"                "
+msgid "(Davon %(mcac)s in Kernbereichen)"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:33
 #, python-format
 msgid ""
-"\n"
-"                    Zusammen mit deinen %(v_co_member_pl)s hast du %(ac)s "
-"gemacht oder geplant\n"
-"                "
+"Zusammen mit deinen %(v_co_member_pl)s hast du %(ac)s gemacht oder geplant"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:37
 #, python-format
-msgid ""
-"\n"
-"                        (Davon %(cac)s in Kernbereichen)\n"
-"                    "
+msgid "(Davon %(cac)s in Kernbereichen)"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/assignment/snippets/subscription_overview.html:45
@@ -3759,34 +3688,33 @@ msgstr ""
 msgid "Name auf der %(v_depot)s-Liste:"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:19
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:18
+#, python-format
+msgid "%(v_depot)s Details"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:22
 #, python-format
 msgid "%(v_depot)s wechseln"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:22
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:25
 msgid "Namen auf der Liste ändern"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:26
+#: juntagrico/templates/juntagrico/my/depot/snippets/depot_summary.html:29
 #, python-format
 msgid "Nur %(v_subscription)s-VerwalterIn kann Depot wechseln."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:14
 #, python-format
-msgid ""
-"\n"
-"                        Benötigt für diese/n/s %(v_subscription)s: %(rs)s\n"
-"                    "
+msgid "Benötigt für diese/n/s %(v_subscription)s: %(rs)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:20
 #, python-format
-msgid ""
-"\n"
-"                    Du hast %(asc)s\n"
-"                "
+msgid "Du hast %(asc)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/share/snippets/subscription_overview.html:26
@@ -3824,49 +3752,34 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/landing.html:20
 #, python-format
-msgid ""
-"\n"
-"                                    Ab %(jd)s\n"
-"                                "
+msgid "Ab %(jd)s"
+msgstr ""
+
+#: juntagrico/templates/juntagrico/my/subscription/landing.html:23
+#, python-format
+msgid "%(jd)s - %(ld)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/landing.html:25
 #, python-format
-msgid ""
-"\n"
-"                                        %(jd)s - %(ld)s\n"
-"                                    "
+msgid "Seit %(jd)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/landing.html:29
-#, python-format
-msgid ""
-"\n"
-"                                        Seit %(jd)s\n"
-"                                    "
-msgstr ""
-
-#: juntagrico/templates/juntagrico/my/subscription/landing.html:35
 msgid "Start ausstehend"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/landing.html:42
+#: juntagrico/templates/juntagrico/my/subscription/landing.html:36
 #, python-format
-msgid ""
-"\n"
-"                                Geteilt mit %(cm)s\n"
-"                            "
+msgid "Geteilt mit %(cm)s"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/landing.html:52
+#: juntagrico/templates/juntagrico/my/subscription/landing.html:46
 #, python-format
-msgid ""
-"\n"
-"                        Depot: %(d)s\n"
-"                    "
+msgid "Depot: %(d)s"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/landing.html:56
+#: juntagrico/templates/juntagrico/my/subscription/landing.html:50
 msgid "Details Anzeigen"
 msgstr ""
 
@@ -3899,25 +3812,16 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/canceled.html:6
 #, python-format
-msgid ""
-"\n"
-"            %(v_subscription)s wurde am %(cd)s gekündigt.\n"
-"        "
+msgid "%(v_subscription)s wurde am %(cd)s gekündigt."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/canceled.html:12
 #, python-format
-msgid ""
-"\n"
-"                Deaktivierung erfolgt per %(dd)s.\n"
-"            "
+msgid "Deaktivierung erfolgt per %(dd)s."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/canceled.html:18
-msgid ""
-"\n"
-"                Deaktivierung ist ausstehend.\n"
-"            "
+msgid "Deaktivierung ist ausstehend."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/inactive.html:5
@@ -3938,18 +3842,12 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/leaving_membership.html:5
 #, python-format
-msgid ""
-"\n"
-"        Du trittst aus diesem/r %(v_subscription)s am %(ld)s aus.\n"
-"    "
+msgid "Du trittst aus diesem/r %(v_subscription)s am %(ld)s aus."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/left_membership.html:5
 #, python-format
-msgid ""
-"\n"
-"        Du bist am %(ld)s aus diesem/r %(v_subscription)s ausgetreten.\n"
-"    "
+msgid "Du bist am %(ld)s aus diesem/r %(v_subscription)s ausgetreten."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/no_subscription.html:5
@@ -3959,27 +3857,17 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/waiting_banner.html:5
 #, python-format
-msgid ""
-"\n"
-"        %(v_subscription)s ist noch auf der Warteliste.\n"
-"    "
+msgid "%(v_subscription)s ist noch auf der Warteliste."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/waiting_membership.html:6
 #, python-format
-msgid ""
-"\n"
-"            Du wirst diesem/r %(v_subscription)s am %(jd)s beitreten.\n"
-"        "
+msgid "Du wirst diesem/r %(v_subscription)s am %(jd)s beitreten."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/banners/waiting_membership.html:10
 #, python-format
-msgid ""
-"\n"
-"            Dein Beitritt zu diesem/r %(v_subscription)s ist noch "
-"ausstehend.\n"
-"        "
+msgid "Dein Beitritt zu diesem/r %(v_subscription)s ist noch ausstehend."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/co_members.html:10
@@ -4023,61 +3911,44 @@ msgstr ""
 msgid "%(v_subscription)s verlassen"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:22
-#, python-format
-msgid ""
-"\n"
-"                            Gekündigt am %(cd)s\n"
-"                        "
-msgstr ""
-
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:27
 #, python-format
-msgid ""
-"\n"
-"                                Noch aktiv bis am %(dd)s\n"
-"                            "
+msgid "Noch aktiv bis am %(dd)s"
 msgstr ""
 
 #: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:34
 #, python-format
-msgid ""
-"\n"
-"                                    Aktiv seit %(ad)s\n"
-"                                "
+msgid "Aktiv seit %(ad)s"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:39
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:37
 #, python-format
-msgid ""
-"\n"
-"                                    Wird aktiv am %(ad)s\n"
-"                                "
+msgid "Wird aktiv am %(ad)s"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:56
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:52
 #: juntagrico/templates/pm_change.html:36
 #: juntagrico/templates/size_change.html:48
 msgid "ändern"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:62
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:58
 #: juntagrico/templates/size_change.html:53
 #: juntagrico/templates/subscription_change.html:29
 #, python-format
 msgid "%(v_subscription)s komplett künden"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:67
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:63
 #: juntagrico/templates/size_change.html:58
 msgid "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:90
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:86
 msgid "Weitere Bestandteile bestellen"
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:99
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:95
 #: juntagrico/templates/size_change.html:83
 #, python-format
 msgid ""
@@ -4085,7 +3956,7 @@ msgid ""
 "werden."
 msgstr ""
 
-#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:102
+#: juntagrico/templates/juntagrico/my/subscription/snippets/part_list.html:98
 #, python-format
 msgid "Nur %(v_subscription)s-VerwalterIn kann Bestandteile bestellen."
 msgstr ""
@@ -4173,129 +4044,71 @@ msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:7
 #, python-format
-msgid ""
-"\n"
-"                        Ihr habt diese Saison bisher %(c)s Einsatz gemacht "
-"oder geplant.\n"
-"                    "
+msgid "Ihr habt diese Saison bisher %(c)s Einsatz gemacht oder geplant."
 msgid_plural ""
-"\n"
-"                        Ihr habt diese Saison bisher %(c)s Einsätze gemacht "
-"oder geplant.\n"
-"                    "
+"Ihr habt diese Saison bisher %(c)s Einsätze gemacht oder geplant."
 msgstr[0] ""
 msgstr[1] ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:13
 #, python-format
-msgid ""
-"\n"
-"                        Du hast diese Saison bisher %(c)s Einsatz gemacht "
-"oder geplant.\n"
-"                    "
-msgid_plural ""
-"\n"
-"                        Du hast diese Saison bisher %(c)s Einsätze gemacht "
-"oder geplant.\n"
-"                    "
+msgid "Du hast diese Saison bisher %(c)s Einsatz gemacht oder geplant."
+msgid_plural "Du hast diese Saison bisher %(c)s Einsätze gemacht oder geplant."
 msgstr[0] ""
 msgstr[1] ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:21
 #, python-format
-msgid ""
-"\n"
-"                        Ihr habt diese Saison bisher %(c)s Einsatz gemacht.\n"
-"                    "
-msgid_plural ""
-"\n"
-"                        Ihr habt diese Saison bisher %(c)s Einsätze "
-"gemacht.\n"
-"                    "
+msgid "Ihr habt diese Saison bisher %(c)s Einsatz gemacht."
+msgid_plural "Ihr habt diese Saison bisher %(c)s Einsätze gemacht."
 msgstr[0] ""
 msgstr[1] ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:27
 #, python-format
-msgid ""
-"\n"
-"                        Du hast diese Saison bisher %(c)s Einsatz gemacht.\n"
-"                    "
-msgid_plural ""
-"\n"
-"                        Du hast diese Saison bisher %(c)s Einsätze gemacht.\n"
-"                    "
+msgid "Du hast diese Saison bisher %(c)s Einsatz gemacht."
+msgid_plural "Du hast diese Saison bisher %(c)s Einsätze gemacht."
 msgstr[0] ""
 msgstr[1] ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:35
 #, python-format
-msgid ""
-"\n"
-"                    Davon %(c)s in Kernbereichen.\n"
-"                "
+msgid "Davon %(c)s in Kernbereichen."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:40
 #, python-format
-msgid ""
-"\n"
-"                    Ihr benötigt insgesamt %(r)s.\n"
-"                "
+msgid "Ihr benötigt insgesamt %(r)s."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:44
 #, python-format
-msgid ""
-"\n"
-"                    Du benötigst insgesamt %(r)s.\n"
-"                "
+msgid "Du benötigst insgesamt %(r)s."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:49
 #, python-format
-msgid ""
-"\n"
-"                    Davon %(r)s in Kernbereichen.\n"
-"                "
+msgid "Davon %(r)s in Kernbereichen."
 msgstr ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:55
 #, python-format
-msgid ""
-"\n"
-"                    %(c)s weiterer Einsatz ist schon geplant.\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(c)s weitere Einsätze sind schon geplant.\n"
-"                "
+msgid "%(c)s weiterer Einsatz ist schon geplant."
+msgid_plural "%(c)s weitere Einsätze sind schon geplant."
 msgstr[0] ""
 msgstr[1] ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:64
 #, python-format
-msgid ""
-"\n"
-"                Du hast diese Saison %(c)s Einsatz gemacht.\n"
-"            "
-msgid_plural ""
-"\n"
-"                Du hast diese Saison %(c)s Einsätze gemacht.\n"
-"            "
+msgid "Du hast diese Saison %(c)s Einsatz gemacht."
+msgid_plural "Du hast diese Saison %(c)s Einsätze gemacht."
 msgstr[0] ""
 msgstr[1] ""
 
 #: juntagrico/templates/juntagrico/widgets/assignment_progress/text.html:71
 #, python-format
-msgid ""
-"\n"
-"                    %(c)s weiteren Einsatz hast du schon geplant.\n"
-"                "
-msgid_plural ""
-"\n"
-"                    %(c)s weitere Einsätze hast du schon geplant.\n"
-"                "
+msgid "%(c)s weiteren Einsatz hast du schon geplant."
+msgid_plural "%(c)s weitere Einsätze hast du schon geplant."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -4482,16 +4295,8 @@ msgstr ""
 #: juntagrico/templates/mails/member/co_member_left_subscription.txt:8
 #, python-format
 msgid ""
-"\n"
 "Soeben ist %(co_member)s aus eurer/m gemeinsamen %(v_subscription)s "
-"ausgetreten und hat folgende Nachricht hinterlassen:\n"
-msgstr ""
-
-#: juntagrico/templates/mails/member/co_member_left_subscription.txt:13
-#, python-format
-msgid ""
-"\n"
-"Bis bald und liebe Grüsse die %(c_organisation_name)s-Betriebsgruppe\n"
+"ausgetreten und hat folgende Nachricht hinterlassen:"
 msgstr ""
 
 #: juntagrico/templates/mails/member/co_member_welcome.txt:17
@@ -4881,12 +4686,14 @@ msgstr ""
 msgid "Fordere hier einen neuen Link an."
 msgstr ""
 
-#: juntagrico/templates/messages/unpaid_shares.html:6
+#: juntagrico/templates/messages/unpaid_shares.html:5
 #, python-format
-msgid "Unbezahlte/r/s %(v_share)s."
-msgid_plural "Unbezahlte %(v_share_pl)s."
-msgstr[0] ""
-msgstr[1] ""
+msgid "Mindestens 1 %(v_share)s ist noch unbezahlt."
+msgstr ""
+
+#: juntagrico/templates/messages/unpaid_shares.html:7
+msgid "Finde hier mehr dazu."
+msgstr ""
 
 #: juntagrico/templates/newpassword.html:8
 msgid ""
@@ -4958,10 +4765,8 @@ msgstr ""
 #: juntagrico/templates/pm_change.html:42
 #, python-format
 msgid ""
-"\n"
-"                Leider kann niemand deiner %(v_co_member_pl)s Haupt-"
-"%(v_subscription)s-BezieherIn werden.\n"
-"                "
+"Leider kann niemand deiner %(v_co_member_pl)s Haupt-%(v_subscription)s-"
+"BezieherIn werden."
 msgstr ""
 
 #: juntagrico/templates/profile.html:22
@@ -5106,14 +4911,6 @@ msgstr ""
 msgid " Dein/e %(v_subscription)s braucht mindestens 1 Bestandteil"
 msgstr ""
 
-#: juntagrico/templates/size_change.html:63
-#, python-format
-msgid ""
-"\n"
-"                                    Gekündigt am %(cd)s\n"
-"                                "
-msgstr ""
-
 #: juntagrico/templates/size_change.html:76
 msgid "Bestandteile bestellen"
 msgstr ""
@@ -5189,11 +4986,9 @@ msgstr ""
 #: juntagrico/templates/snippets/snippet_subscription_change_main_member.html:12
 #, python-format
 msgid ""
-"\n"
-"            Du möchtest nicht mehr Haupt-%(v_subscription)s-BezieherIn sein? "
-"Du kannst jederzeit wechseln, vorausgesetzt jemand deiner %(v_co_member_pl)s "
-"kann Haupt-%(v_subscription)s-BezieherIn werden\n"
-"        "
+"Du möchtest nicht mehr Haupt-%(v_subscription)s-BezieherIn sein? Du kannst "
+"jederzeit wechseln, vorausgesetzt jemand deiner %(v_co_member_pl)s kann "
+"Haupt-%(v_subscription)s-BezieherIn werden"
 msgstr ""
 
 #: juntagrico/templates/snippets/snippet_subscription_change_main_member.html:16
@@ -5288,10 +5083,7 @@ msgstr ""
 
 #: juntagrico/templates/subscription.html:87
 #, python-format
-msgid ""
-"\n"
-"                        Gekündigt am %(cd)s auf den %(ed)s.\n"
-"                    "
+msgid "Gekündigt am %(cd)s auf den %(ed)s."
 msgstr ""
 
 #: juntagrico/templates/subscription.html:113
@@ -5540,16 +5332,16 @@ msgstr ""
 msgid "Alle aktiven {member} im Tätigkeitsbereich {area_name}"
 msgstr ""
 
-#: juntagrico/views/manage.py:163
+#: juntagrico/views/manage.py:164
 msgid "Alle aktiven {} im Überblick"
 msgstr ""
 
-#: juntagrico/views/manage.py:223
+#: juntagrico/views/manage.py:224
 #, python-brace-format
 msgid "Alle aktiven {subs} im {depot} {depot_name}"
 msgstr ""
 
-#: juntagrico/views/manage.py:265
+#: juntagrico/views/manage.py:268
 msgid "HauptbezieherIn ist nicht gesetzt"
 msgstr ""
 

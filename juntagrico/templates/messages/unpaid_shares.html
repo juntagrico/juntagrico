@@ -1,16 +1,9 @@
 {% load i18n %}
 {% load juntagrico.config %}
 {% vocabulary "share" as v_share %}
-{% vocabulary "share_pl" as v_share_pl %}
 <div class="alert alert-warning">
-    {% blocktrans trimmed count a=amount %}
-    Unbezahlte/r/s {{ v_share }}.
-    {% plural %}
-    Unbezahlte {{ v_share_pl }}.
-    {% endblocktrans %}
-    Finde
+    {% blocktrans %}Mindestens 1 {{ v_share }} ist noch unbezahlt.{% endblocktrans %}
     <a href="{% url 'info-unpaid-shares' %}" class="alert-link">
-        hier
+        {% trans "Finde hier mehr dazu." %}
     </a>
-    mehr dazu.
 </div>

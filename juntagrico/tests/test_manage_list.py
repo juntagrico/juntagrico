@@ -3,6 +3,12 @@ import datetime
 from django.urls import reverse
 
 from . import JuntagricoTestCase
+from ..view_decorators import using_change_date
+
+
+@using_change_date
+def get_change_date(request, change_date):
+    return change_date
 
 
 class ManageListTests(JuntagricoTestCase):
@@ -73,6 +79,6 @@ class ManageListTests(JuntagricoTestCase):
 
     def testChangeDate(self):
         self.assertGet(reverse('changedate-set'), code=404)
-        self.assertPost(reverse('changedate-set'), data={'date': '1970-01-01'}, code=302)
-        self.assertEqual(self.client.session['changedate'], datetime.date(1970, 1, 1))
+        self.assertPost(reverse('changedate-set'), data={'date': '1999-01-01'}, code=302)
+        self.assertEqual(get_change_date(self.client), datetime.date(1999, 1, 1))
         self.assertGet(reverse('changedate-unset'), code=302)
