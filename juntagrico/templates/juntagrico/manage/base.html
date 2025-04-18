@@ -30,13 +30,16 @@
                         },
                         layout: {
                             topStart: {
-                                buttons: [
-                                    email_button(
-                                        '{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}',
-                                        '{% csrf_token %}'
-                                    ),
-                                    email_copy_button()
-                                ]
+                                rowClass: 'row justify-content-between table-button-row',
+                                features: [{
+                                    buttons: [
+                                        email_button(
+                                            '{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}',
+                                            '{% csrf_token %}'
+                                        ),
+                                        email_copy_button()
+                                    ]
+                                }]
                             }
                         },
                     }

@@ -329,7 +329,7 @@ textarea#recipients[disabled=disabled] {
     top: 0;
 }
 
-#filter-table_wrapper > div.justify-content-between {
+#filter-table_wrapper > div.table-button-row {
     position: sticky;
     top: 0;
 	z-index: 2;
