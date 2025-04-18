@@ -17,13 +17,13 @@ from juntagrico.util.temporal import weekday_choices
 class JobCopyForm(forms.ModelForm):
     class Meta:
         model = RecuringJob
-        fields = ['type', 'slots', 'infinite_slots', 'duration_override', 'multiplier', 'additional_description']
+        fields = []
 
     weekdays = forms.MultipleChoiceField(label=_('Wochentage'), choices=weekday_choices,
                                          widget=forms.widgets.CheckboxSelectMultiple)
 
-    time = forms.TimeField(label=_('Zeit'), required=True,
-                           widget=admin.widgets.AdminTimeWidget)
+    new_time = forms.TimeField(label=_('Zeit'), required=True,
+                               widget=admin.widgets.AdminTimeWidget)
 
     start_date = forms.DateField(label=_('Anfangsdatum'), required=True,
                                  widget=admin.widgets.AdminDateWidget)
@@ -34,15 +34,15 @@ class JobCopyForm(forms.ModelForm):
                                widget=forms.widgets.RadioSelect, initial=7)
 
     def __init__(self, *a, **k):
-        super(JobCopyForm, self).__init__(*a, **k)
+        super().__init__(*a, **k)
         inst = k.pop('instance')
 
         self.fields['start_date'].initial = inst.time.date() + \
             datetime.timedelta(days=1)
         if is_naive(inst.time):
-            self.fields['time'].initial = inst.time.astimezone(gdtz())
+            self.fields['new_time'].initial = inst.time.astimezone(gdtz())
         else:
-            self.fields['time'].initial = localtime(inst.time)
+            self.fields['new_time'].initial = localtime(inst.time)
         self.fields['weekdays'].initial = [inst.time.isoweekday()]
 
         if Config.using_richtext():
@@ -94,13 +94,13 @@ class JobCopyForm(forms.ModelForm):
 
     @staticmethod
     def cleaned(cleaned_data):
-        return all(k in cleaned_data for k in ('start_date', 'end_date', 'weekdays', 'weekly', 'time'))
+        return all(k in cleaned_data for k in ('start_date', 'end_date', 'weekdays', 'weekly', 'new_time'))
 
     @staticmethod
     def get_datetimes(cleaned_data):
         start = cleaned_data['start_date']
         end = cleaned_data['end_date']
-        time = cleaned_data['time']
+        new_time = cleaned_data['new_time']
         weekdays = cleaned_data['weekdays']
         weekdays = set(int(i) for i in weekdays)
         skip_even_weeks = cleaned_data['weekly'] == '14'
@@ -111,7 +111,7 @@ class JobCopyForm(forms.ModelForm):
             date = start + datetime.timedelta(delta)
             if date.isoweekday() not in weekdays:
                 continue
-            dt = datetime.datetime.combine(date, time)
+            dt = datetime.datetime.combine(date, new_time)
             if settings.USE_TZ and is_naive(dt):
                 dt = dt.astimezone(gdtz())
             res.append(dt)

@@ -47,6 +47,8 @@ def type_div(field, value=None):
 class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTextAdmin):
     fields = ('type', 'time', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots', 'free_slots'),
               'type_description', 'additional_description', 'pinned', 'canceled')
+    copy_fields = ('type', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots'),
+                  'type_description', 'additional_description', 'weekdays', 'new_time', 'start_date', 'end_date', 'weekly')
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
@@ -55,6 +57,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
     autocomplete_fields = ['type']
     inlines = [ContactInline, AssignmentInline]
     readonly_fields = ['free_slots', 'type_description', 'type_duration']
+    copy_readonly_fields = ['type_description', 'type_duration']
 
     @admin.display(description=_('Beschreibung der Jobart'))
     def type_description(self, instance):
@@ -75,16 +78,12 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
 
     def get_fields(self, request, obj=None):
         if self.is_copy_view(request):
-            original_fields = self.fields
-            self.fields = None
-            fields = super().get_fields(request, obj)
-            self.fields = original_fields
-            return fields
+            return self.copy_fields
         return super().get_fields(request, obj)
 
     def get_readonly_fields(self, request, obj=None):
         if self.is_copy_view(request):
-            return []  # special case for mass job copy action
+            return self.copy_readonly_fields  # special case for mass job copy action
         return super().get_readonly_fields(request, obj)
 
     def get_inlines(self, request, obj):
@@ -118,8 +117,9 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
         # return forms for mass copy
         if self.is_copy_view(request):
             if can_edit_past_jobs(request):
-                return JobCopyForm
-            return JobCopyToFutureForm
+                kwds['form'] = JobCopyForm
+            else:
+                kwds['form'] = JobCopyToFutureForm
         # or return normal edit forms
         elif not can_edit_past_jobs(request):
             kwds['form'] = OnlyFutureJobAdminForm
@@ -138,8 +138,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
         return request.resolver_match.url_name == 'action-mass-copy-job'
 
     def copy_job_view(self, request, jobid):
-        res = self.change_view(request, jobid, extra_context={'title': 'Copy job'})
-        return res
+        return self.change_view(request, jobid, extra_context={'title': 'Copy job'})
 
     def get_queryset(self, request):
         return queryset_for_coordinator(self, request, 'type__activityarea__coordinator')
