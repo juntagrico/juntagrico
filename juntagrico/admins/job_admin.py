@@ -48,7 +48,8 @@ class JobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, RichTe
     fields = ('type', 'time', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots', 'free_slots'),
               'type_description', 'additional_description', 'pinned', 'canceled')
     copy_fields = ('type', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots'),
-                  'type_description', 'additional_description', 'weekdays', 'new_time', 'start_date', 'end_date', 'weekly')
+                   'type_description', 'additional_description',
+                   'weekdays', 'new_time', 'start_date', 'end_date', 'weekly')
     list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
     list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
