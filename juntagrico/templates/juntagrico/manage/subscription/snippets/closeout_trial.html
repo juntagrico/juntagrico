@@ -1,0 +1,151 @@
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+<p>
+    {% blocktrans trimmed%}
+    	Probe beenden und neuen Bestandteil aktivieren.
+        Wie soll der Wechsel stattfinden?
+    {% endblocktrans %}
+</p>
+
+<form action="#" method="post" id="closeout_trial_form">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card as-label border-success">
+                <div class="card-body">
+                    <div class="card-title custom-control custom-radio">
+                        <input type="radio" id="option1" name="mode" class="custom-control-input" value="append" checked>
+                        <label class="custom-control-label" for="option1">
+                            {% trans "Option 1: Anhängen" %}
+                        </label>
+                    </div>
+                    <div class="row no-gutters">
+                        <div class="col-4" style="padding-right: 0.3rem;">
+                            <span class="badge badge-success full-width">{% trans "Probe" %}</span>
+                        </div>
+                        <div class="col-8">
+                            <span class="badge badge-success full-width">{% trans "Neuer Bestandteil" %}</span>
+                        </div>
+                    </div>
+                    <p>
+                        {% trans "Der Probe-Bestandteil wird zum ausgewählten Datum deaktiviert." %}<br>
+                        {% trans "Der neue Bestandteil wird danach aktiviert." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card as-label">
+                <div class="card-body {% if not follow_up_part %}text-secondary{% endif %}">
+                    <div class="card-title custom-control custom-radio">
+                        <input type="radio" id="option2" name="mode" class="custom-control-input" value="replace"
+                            {% if not follow_up_part %}disabled{% endif %}>
+                        <label class="custom-control-label" for="option2">
+                            {% trans "Option 2: Ersetzen" %}
+                        </label>
+                    </div>
+                    {% if follow_up_part %}
+                        <span class="badge badge-danger" style="width:33%">{% trans "Probe" %}</span><br>
+                        <span class="badge badge-success full-width">{% trans "Neuer Bestandteil" %}</span>
+                        <p>
+                            {% blocktrans trimmed %}
+                                Probe-Bestandteil und neue bestellter Bestandteil "{{ follow_up_part }}" haben die gleiche Grösse.
+                            {% endblocktrans %}
+                            {% blocktrans trimmed with ad=trial_part.activation_date %}
+                                Der Probe-Bestandteil wird storniert und der neue Bestandteil wird so verrechnet,
+                                als wäre er am {{ ad }} gestartet.
+                            {% endblocktrans %}
+                        </p>
+                    {% else %}
+                        {% trans "Diese Option steht nicht zur Verfügung, weil der neue Bestandteil nicht die gleiche Grösse hat, wie der Probe-Bestandteil." %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="closeout_change_dates">
+        <h4>{% trans "Änderungsdaten" %}</h4>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5>{% trans "Deaktivierung" %}</h5>
+                <p>
+                    {% blocktrans %}{% trans "Wähle das Deaktivierungsdatum der Probe:" %}{% endblocktrans %}
+                </p>
+                <div class="custom-control custom-radio">
+                    <input type="radio" id="closeout_end_date_by_end" name="deactivation_mode" class="custom-control-input" value="by_end"
+                           checked>
+                    <label class="custom-control-label" for="closeout_end_date_by_end">
+                        {% trans "Per Ende der Laufzeit:" %}
+                        <strong id="end_of_trial_date" data-date="{{ trial_part.end_of_trial_date|date:"c" }}">
+                            {{ trial_part.end_of_trial_date }}
+                        </strong>
+                    </label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input type="radio" id="closeout_end_date_as_chosen" name="deactivation_mode" class="custom-control-input"
+                           value="by_date">
+                    <label class="custom-control-label form-inline" for="closeout_end_date_as_chosen">
+                        {% trans "Per" %}
+                        <input type="date" name="deactivation_date"
+                               id="closeout_deactivation_date" class="form-control as-label ml-2"
+                               data-for="closeout_end_date_as_chosen"
+                               value="{{ change_date|date:"c" }}">
+                    </label>
+                </div>
+            </div>
+
+            {% if follow_up_part %}
+                <div class="col-md-6">
+                    <h5>{% trans "Aktivierung" %}</h5>
+                    <p>
+                        {% blocktrans %}Wähle das Aktivierungsdatum von "{{ follow_up_part }}":{% endblocktrans %}
+                    </p>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="closeout_start_date_next_day" name="activation_mode" class="custom-control-input" value="next_day"
+                               checked>
+                        <label class="custom-control-label" for="closeout_start_date_next_day">
+                            {% trans "Am Tag danach:" %}
+                            <strong class="next-day-date"></strong>
+                        </label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="closeout_start_date_as_chosen" name="activation_mode" class="custom-control-input"
+                               value="by_date">
+                        <label class="custom-control-label form-inline" for="closeout_start_date_as_chosen">
+                            {% trans "Per" %}
+                            <input type="date" name="activation_date"
+                                   id="closeout_activation_date" class="form-control as-label ml-2"
+                                   data-for="closeout_start_date_as_chosen">
+                        </label>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if other_parts %}
+        <h4>{% trans "Weitere Bestellungen" %}</h4>
+
+        <p>
+            {% trans 'Weitere bestellte Bestandteile können jetzt gleich aktiviert werden, oder später unter "Pendente Änderungen"' %}
+        </p>
+
+        {% for other_part in other_parts %}
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="activate{{ other_part.id }}" name="activate{{ other_part.id }}" class="custom-control-input">
+                <label class="custom-control-label form-inline" for="activate{{ other_part.id }}">
+                    {% blocktrans %}{{ other_part }} aktivieren per{% endblocktrans %}
+                    <input type="date" name="activation_date{{ other_part.id }}"
+                           class="form-control as-label ml-2"
+                           data-for="activate{{ other_part.id }}"
+                           value="{{ change_date|date:"c" }}">
+                </label>
+            </div>
+        {% endfor %}
+    {% endif %}
+</form>

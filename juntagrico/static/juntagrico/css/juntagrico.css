@@ -123,6 +123,10 @@ body.wide-layout > .page-container {
     max-width: 95%;
 }
 
+.full-width {
+    width: 100%;
+}
+
 /* row size stuff checked */
 .page-container > div.row {
     margin-top: 60px;

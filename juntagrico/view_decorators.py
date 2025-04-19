@@ -71,6 +71,7 @@ def signup_session(view):
         return response
     return wrapper
 
+
 def any_permission_required(*perms):
     """
     Decorator for views that checks whether a user has any of the given permissions

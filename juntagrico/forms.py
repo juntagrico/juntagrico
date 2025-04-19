@@ -633,6 +633,16 @@ class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
         pass
 
 
+class TrialCloseoutForm(Form):
+    def __init__(self, part=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.part = part
+
+    def save(self):
+        # TODO: Implement
+        pass
+
+
 class ShareOrderForm(Form):
     field_template = 'forms/share_field.html'
     text = dict(

@@ -271,8 +271,12 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         """
         if self.is_trial and self.activation_date is not None:
             today = datetime.date.today()
-            end = self.deactivation_date or (self.activation_date + datetime.timedelta(days=self.type.trial_days))
+            end = self.end_of_trial_date
             return (end - today).days
+
+    @cached_property
+    def end_of_trial_date(self):
+        return self.deactivation_date or (self.activation_date + datetime.timedelta(days=self.type.trial_days))
 
     def follow_up_parts(self):
         """

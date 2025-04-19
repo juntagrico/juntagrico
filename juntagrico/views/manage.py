@@ -1,11 +1,14 @@
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.utils.dateparse import parse_date
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, TemplateView
 
@@ -16,9 +19,10 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm
+from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
+from juntagrico.util.management_list import get_changedate
 from juntagrico.util.views_admin import date_from_get
 from juntagrico.view_decorators import using_change_date
 
@@ -239,21 +243,6 @@ def cancel_part(request, change_date, part_id):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def continue_part(request, part_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
-    if request.method == 'POST':
-        form = SubscriptionPartContinueByAdminForm(part, request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse('manage-sub-trial'))
-    else:
-        form = SubscriptionPartContinueByAdminForm(part)
-    return render(request, 'juntagrico/my/subscription/part/continue.html', {
-        'form': form,
-    })
-
-
-@permission_required('juntagrico.change_subscriptionpart')
 @using_change_date
 def deactivate_part(request, change_date, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
@@ -265,6 +254,67 @@ class SubscriptionTrialPartView(PermissionRequiredMixin, ListView):
     permission_required = ['juntagrico.change_subscriptionpart']
     template_name = 'juntagrico/manage/subscription/trial.html'
     queryset = SubscriptionPart.objects.is_trial().waiting_or_active
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(get_changedate(self.request, datetime.date.today))
+        return context
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def continue_trial(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    if request.method == 'POST':
+        form = SubscriptionPartContinueByAdminForm(part, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('manage-sub-trial'))
+    else:
+        form = SubscriptionPartContinueByAdminForm(part)
+    return render(request, 'juntagrico/my/subscription/trial/continue.html', {
+        'form': form,
+    })
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def deactivate_trial(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    end_date = parse_date(request.POST.get('end_date')) or part.end_of_trial_date
+    part.deactivate(end_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_post=True):
+    trial_part = get_object_or_404(SubscriptionPart, id=part_id)
+
+    success = False
+    if request.method == 'POST':
+        # handle submit
+        form = form_class(trial_part, request.POST)
+        if form.is_valid():
+            form.save()
+            success = True
+        if redirect_on_post:
+            if success:
+                messages.success(request, mark_safe('<i class="fa-regular fa-circle-check"></i> ' +
+                                                    _("Änderungen angewendet")))
+            else:
+                messages.error(request, _('Änderungen fehlgeschlagen.'))
+            return redirect('manage-sub-trial')
+    else:
+        form = form_class(trial_part)
+
+    new_parts = trial_part.follow_up_parts()
+    follow_up_part = new_parts.filter(type__size=trial_part.type.size).first()
+    other_parts = new_parts.exclude(pk=follow_up_part.pk) if follow_up_part else new_parts
+    return render(request, 'juntagrico/manage/subscription/snippets/closeout_trial.html', {
+        'trial_part': trial_part,
+        'follow_up_part': follow_up_part,
+        'other_parts': other_parts,
+        'form': form,
+        **get_changedate(request, datetime.date.today),
+    })
 
 
 class DepotSubscriptionView(SubscriptionView):

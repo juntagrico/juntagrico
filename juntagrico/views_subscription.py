@@ -4,7 +4,6 @@ from datetime import date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.db.models import Count, Sum
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -26,7 +25,6 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm, SubscriptionPartChangeForm
 from juntagrico.mailer import membernotification, adminnotification
@@ -363,8 +361,7 @@ def deactivate_subscription(request, change_date, subscription_id):
 
 
 @primary_member_of_subscription_of_part
-def cancel_part(request, part_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
+def cancel_part(request, part):
     part.cancel()
     adminnotification.subpart_canceled(part)
     return return_to_previous_location(request)
