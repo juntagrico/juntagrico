@@ -77,7 +77,8 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
 
     def get_queryset(self, request):
         qs = queryset_for_coordinator(self, request, 'activityarea__coordinator')
-        qs = qs.annotate(last_used=Max('recuringjob__time'))
+        if request.resolver_match.view_name != 'admin:autocomplete':
+            qs = qs.annotate(last_used=Max('recuringjob__time'))
         return qs
 
     def get_search_results(self, request, queryset, search_term):
