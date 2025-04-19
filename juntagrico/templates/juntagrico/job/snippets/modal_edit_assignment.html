@@ -1,0 +1,9 @@
+{% extends "juntagrico/modal.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Einsatz bearbeiten" %}{% endblock %}
+
+{% block buttons %}
+    <input type="submit" id="{{ name }}_submit" form="assignment-edit-form" class="btn btn-primary"
+           value="{% trans "Speichern" %}">
+{% endblock %}

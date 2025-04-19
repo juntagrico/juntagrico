@@ -73,7 +73,7 @@
                                     {% endif %}
                                 {% elif part.is_extra %}
                                     {% if part.state != 'canceled' and  part.state != 'inactive' %}
-                                        <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
+                                        <a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
                                         onclick="return confirm('{% trans "Bist du sicher, dass du dieses Zusatzabo kündigen möchtest?" %}')">
                                             {% trans "kündigen" %}
                                         </a>
@@ -91,7 +91,7 @@
                                             </a>
                                         {% endif %}
                                     {% elif part.subscription.future_parts.is_normal.count > 1 %}
-                                        <a href="{% url 'part-cancel' part.id subscription.id %}" class="btn btn-danger"
+                                        <a href="{% url 'part-cancel' part.id %}" class="btn btn-danger"
                                         onclick="return confirm('{% trans "Bist du sicher, dass du diesen Bestandteil kündigen möchtest?" %}')">
                                             {% trans "kündigen" %}
                                         </a>

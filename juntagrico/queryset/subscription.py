@@ -205,8 +205,11 @@ class SubscriptionPartQuerySet(SimpleStateModelQuerySet):
         date = date or datetime.date.today()
         return self.exclude(activation_date__lte=date)
 
-    def cancelled(self):
+    def canceled(self):
         return self.filter(cancellation_date__isnull=False, deactivation_date=None)
+
+    def not_canceled(self):
+        return self.filter(cancellation_date=None)
 
     def waiting_or_active(self, date=None):
         date = date or datetime.date.today()

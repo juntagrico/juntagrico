@@ -27,6 +27,9 @@
         </div>
     {% endif %}
     {{ block.super }}
+
+    {# Modal: Cancel Part #}
+    {% include "./snippets/modal_cancel_part.html" with name='cancel_part' %}
 {% endblock %}
 
 {% block list %}
@@ -89,6 +92,12 @@
                                 {% if remaining < 0 %}
                                     <span class="badge badge-danger">{% trans "Überfällig" %}</span>
                                 {% endif %}
+                            {% else %}
+                                {% blocktrans trimmed count remaining=trial_part.type.trial_days %}
+                                    {{ remaining }} Tag ab Aktivierung
+                                {% plural %}
+                                    {{ remaining }} Tage ab Aktivierung
+                                {% endblocktrans %}
                             {% endif %}
                         </td>
                         <td>
@@ -128,10 +137,12 @@
                                     <div>{% trans "noch offen" %}</div>
                                     {% if trial_part.activation_date and not trial_part.deactivation_date %}
                                         <div class="actions">
-                                            <a class="btn btn-primary mb-1">
+                                            <a href="{% url 'manage-part-continue' trial_part.id %}" class="btn btn-primary mb-1">
                                                 {% trans "Verlängern" %}
                                             </a>
-                                            <a class="btn btn-outline-danger mb-1"
+                                            <a data-url="{% url 'manage-part-cancel' trial_part.id %}"
+                                               data-toggle="modal" data-target="#cancel_part_modal"
+                                               class="btn btn-outline-danger mb-1"
                                                title="{% trans "Lässt die Probe noch für die verbleibende Laufzeit laufen" %}">
                                                 {% trans "Nicht verlängern" %}
                                             </a>
@@ -165,6 +176,11 @@
             $("#show_extras").ToggleButton('.show-extra', redraw_on_show_normal_extra)
             $("#show_normals").ToggleButton('.show-normal', redraw_on_show_normal_extra)
             redraw_on_show_normal_extra()
+
+            // apply submit url to modal button
+            $('#cancel_part_modal').on('show.bs.modal', function (event) {
+                $(this).find('.modal-submit').attr('href', $(event.relatedTarget).data('url'))
+            })
         })
     </script>
 {% endblock %}

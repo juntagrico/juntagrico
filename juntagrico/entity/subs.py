@@ -95,7 +95,7 @@ class Subscription(Billable, SimpleStateModel):
     def content_strings(self, sformat=None):
         """
         :param sformat: format string. defaults to SUB_OVERVIEW_FORMAT.format
-        :return: list of formated strings desribing each type and amount in this subscription
+        :return: list of formated strings describing each type and amount in this subscription
         """
         sformat = sformat or Config.sub_overview_format('format')
         return [sformat.format(
@@ -248,6 +248,12 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     @property
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
+
+    def cancel(self, date=None):
+        super().cancel(date)
+        # if last part was canceled, also cancel subscription
+        if not self.subscription.canceled and not self.subscription.parts.not_canceled().exists():
+            self.subscription.cancel(date)
 
     @property
     def is_extra(self):

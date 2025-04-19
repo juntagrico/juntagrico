@@ -8,6 +8,8 @@ from django.db import transaction
 from django.forms import CharField, PasswordInput, Form, ValidationError, \
     ModelForm, DateInput, IntegerField, BooleanField, HiddenInput, Textarea, ChoiceField, DateField, FloatField, \
     DateTimeField, forms
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string, get_template
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -22,7 +24,9 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
+from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.mailer import adminnotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed, assignment_changed
 from juntagrico.util.temporal import get_business_year, get_business_date_range
@@ -538,6 +542,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
     part_type = ChoiceField()
 
     def __init__(self, part=None, *args, **kwargs):
+        self.pre_check(part)
         super().__init__(*args, **kwargs)
         self.part = part
         self.fields['part_type'].choices = self.get_choices
@@ -549,6 +554,13 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
                 Submit('submit', _('Ändern'), css_class='btn-success')
             )
         )
+
+    @staticmethod
+    def pre_check(part):
+        if part.subscription.canceled or part.subscription.inactive:
+            raise Http404("Can't change subscription part of canceled subscription")
+        if SubscriptionType.objects.normal().visible().count() <= 1:
+            raise Http404("Can't change subscription part if there is only one subscription type")
 
     def get_type_field(self, subscription_type):
         return SubscriptionTypeOption('part_type', instance=subscription_type)
@@ -581,6 +593,25 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
                 raise ValidationError(error, code=error_code)
         return super().clean()
 
+    def save(self):
+        subscription_type = get_object_or_404(SubscriptionType, id=self.cleaned_data['part_type'])
+        if self.part.activation_date is None:
+            # just change type of waiting part
+            self.part.type = subscription_type
+            self.part.save()
+        else:
+            # cancel existing part and create new waiting one
+            with transaction.atomic():
+                new_part = SubscriptionPart.objects.create(subscription=self.part.subscription, type=subscription_type)
+                self.part.cancel()
+            self.send_notification(new_part)
+        return self.part
+
+    def send_notification(self, new_part):
+        # notify admin
+        adminnotification.subpart_canceled(self.part)
+        adminnotification.subparts_created([new_part], self.part.subscription)
+
 
 class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
     def __init__(self, part=None, *args, **kwargs):
@@ -594,6 +625,12 @@ class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
 
     def type_filter(self, qs):
         return super().type_filter(qs).exclude(trial_days__gt=0)
+
+
+class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
+    def send_notification(self, qs):
+        # TODO: Inform member that part was continued
+        pass
 
 
 class ShareOrderForm(Form):

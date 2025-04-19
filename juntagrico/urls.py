@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
+import juntagrico.views.manage
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
 from juntagrico import views_create_subscription as juntagrico_cs
@@ -91,8 +92,7 @@ urlpatterns = [
         'form_class': SubscriptionPartContinueForm,
         'template_name': 'juntagrico/my/subscription/part/continue.html'
     }, name='part-continue'),
-    path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
-         name='part-cancel'),
+    path('my/subscription/part/<int:part_id>/cancel', juntagrico_subscription.cancel_part, name='part-cancel'),
     # /my/assignments
     path('my/memberjobs', job.memberjobs, name='memberjobs'),
 
@@ -147,9 +147,13 @@ urlpatterns = [
     path('manage/subscription/part/waitinglist', juntagrico_admin.part_waitinglist, name='sub-mgmt-part-waitinglist'),
     path('manage/subscription/part/canceledlist', juntagrico_admin.part_canceledlist,
          name='sub-mgmt-part-canceledlist'),
-    path('manage/subscription/part/<int:part_id>/activate/', juntagrico_subscription.activate_part,
+    path('manage/subscription/part/<int:part_id>/activate/', juntagrico.manage.activate_part,
          name='part-activate'),
-    path('manage/subscription/part/<int:part_id>/deactivate/', juntagrico_subscription.deactivate_part,
+    path('manage/subscription/part/<int:part_id>/cancel/', juntagrico.manage.cancel_part,
+         name='manage-part-cancel'),
+    path('manage/subscription/part/<int:part_id>/continue/', juntagrico.manage.continue_part,
+         name='manage-part-continue'),
+    path('manage/subscription/part/<int:part_id>/deactivate/', juntagrico.manage.deactivate_part,
          name='part-deactivate'),
     path('manage/subscription/parts/apply', manage.parts_apply, name='parts-apply'),
     # /manage/subscription/extra

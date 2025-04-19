@@ -1,0 +1,16 @@
+{% extends "juntagrico/modal.html" %}
+{% load i18n %}
+
+{% block title %}
+    {% blocktrans with v_member=vocabulary.member %}Bestandteil für {{ v_member }} kündigen{% endblocktrans %}
+{% endblock %}
+
+{% block body %}
+    {% trans "Bist du sicher?" %}
+{% endblock %}
+
+{% block buttons %}
+    <a href="#" class="modal-submit btn btn-danger mb-1">
+        {% trans "Kündigen" %}
+    </a>
+{% endblock %}

@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, TemplateView
 
@@ -15,7 +16,7 @@ from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
-from juntagrico.forms import DateRangeForm
+from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
 from juntagrico.util.views_admin import date_from_get
@@ -217,6 +218,46 @@ def parts_apply(request, change_date):
                 # deactivate entire subscription, if this was the last part
                 if not part.subscription.parts.waiting_or_active(change_date).exists():
                     part.subscription.deactivate(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def activate_part(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    if part.activation_date is None and part.deactivation_date is None:
+        part.activate(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def cancel_part(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part.cancel(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+def continue_part(request, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    if request.method == 'POST':
+        form = SubscriptionPartContinueByAdminForm(part, request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('manage-sub-trial'))
+    else:
+        form = SubscriptionPartContinueByAdminForm(part)
+    return render(request, 'juntagrico/my/subscription/part/continue.html', {
+        'form': form,
+    })
+
+
+@permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def deactivate_part(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part.deactivate(change_date)
     return return_to_previous_location(request)
 
 
