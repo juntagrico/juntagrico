@@ -186,7 +186,7 @@ class SubscriptionRecentView(MultiplePermissionsRequiredMixin, DateRangeMixin, T
         kwargs.update(dict(
             ordered_parts=SubscriptionPart.objects.filter(creation_date__range=date_range),
             activated_parts=SubscriptionPart.objects.filter(activation_date__range=date_range),
-            cancelled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
+            canceled_parts=SubscriptionPart.objects.filter(cancellation_date__range=date_range),
             deactivated_parts=SubscriptionPart.objects.filter(deactivation_date__range=date_range),
             joined_memberships=SubscriptionMembership.objects.filter(join_date__range=date_range),
             left_memberships=SubscriptionMembership.objects.filter(leave_date__range=date_range),

@@ -307,9 +307,9 @@ class JuntagricoTestCase(TestCase):
         # sub2 (waiting)
         cls.sub2 = cls.create_sub(cls.depot, cls.sub_type2)
         cls.member2.join_subscription(cls.sub2, True)
-        # cancelled_sub
-        cls.cancelled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
-        cls.member6.join_subscription(cls.cancelled_sub, True)
+        # canceled_sub
+        cls.canceled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
+        cls.member6.join_subscription(cls.canceled_sub, True)
         # inconsistent sub
         cls.inconsistent_sub = Subscription.objects.create(depot=cls.depot)
 

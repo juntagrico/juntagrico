@@ -24,7 +24,7 @@ from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import Subscription
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm, SubscriptionPartChangeForm
 from juntagrico.mailer import membernotification, adminnotification

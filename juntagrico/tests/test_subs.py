@@ -69,7 +69,6 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             self.assertEqual(self.sub.future_parts.count(), 2)
             self.assertEqual(self.sub.future_parts.all()[1].type, self.sub_type2)
 
-
     @tag('shares')
     def testTypeChangeOnInsufficientShares(self):
         part = self.sub.parts.all()[0]
