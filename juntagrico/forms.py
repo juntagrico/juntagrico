@@ -632,8 +632,13 @@ class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
         # TODO: Inform member that part was continued
         pass
 
-
 class TrialCloseoutForm(Form):
+    mode = ChoiceField(choices=(('append', ''), ('replace', '')))
+    deactivation_mode = ChoiceField(choices=(('by_end', ''), ('by_date', '')))
+    deactivation_date = DateField()
+    activation_mode = ChoiceField(choices=(('next_day', ''), ('by_date', '')))
+    activation_date = DateField()
+
     def __init__(self, part=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.part = part
