@@ -746,7 +746,7 @@ class JobSubscribeForm(Form):
         )
         if self.current_slots > 0:
             self.helper.layout.insert(-1, Div(
-                HTML(get_template('messages/job_assigned.html').render(dict(amount=self.current_slots - 1))),
+                HTML(get_template('messages/job_assigned.html').render(dict(others=self.current_slots - 1))),
                 css_id='subscribed_info',
                 css_class='offset-md-3 col-md-6 mb-3 d-none'
             ))

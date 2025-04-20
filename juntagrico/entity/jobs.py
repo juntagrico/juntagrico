@@ -218,8 +218,16 @@ class Job(JuntagricoBasePoly):
     def end_time(self):
         return self.time + timezone.timedelta(hours=self.duration)
 
+    def has_ended(self, time=None):
+        time = time or timezone.now()
+        return self.end_time() < time
+
     def start_time(self):
         return self.time
+
+    def has_started(self, time=None):
+        time = time or timezone.now()
+        return self.start_time() < time
 
     def status_percentage(self):
         assignments = AssignmentDao.assignments_for_job(self.id)
