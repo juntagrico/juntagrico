@@ -6,8 +6,8 @@
     </div>
 {% endif %}
 <p>
-    {% blocktrans trimmed with m=member %}
-    	Du änderst den Einsatz von {{ m }}
+    {% blocktrans trimmed with v_assignment=vocabulary.assignment m=member %}
+    	Du änderst den/die/das {{ v_assignment }} von {{ m }}
     {% endblocktrans %}
 </p>
 {% crispy form %}
