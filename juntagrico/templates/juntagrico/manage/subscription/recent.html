@@ -180,5 +180,6 @@
 {% block datatable_constructor %}
     {{ block.super }}
     config.ordering = true
-    config.order = [[1, 'desc'], [2, 'desc'], [0, 'desc']]
+    config.order = [[1, 'desc']]
+    config.columnDefs = [{ orderData: [1, 2, 0], targets: 1 }]
 {% endblock %}
