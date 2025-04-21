@@ -42,3 +42,14 @@ def action_date(request):
     else:
         change_date = datetime.date.today()
     return {'change_date': change_date, 'date_changed': date_changed}
+
+
+@register.inclusion_tag('juntagrico/alert.html')
+def alert(message):
+    if message.level_tag == 'error':
+        alert_lvl = 'danger'
+    elif message.level_tag == 'debug':
+        alert_lvl = 'secondary'
+    else:
+        alert_lvl = message.level_tag
+    return {'message': message, 'alert_level': 'alert-' + alert_lvl}

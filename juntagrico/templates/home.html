@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+
+{% block messages %}
+    {% with member=request.user.member %}
+        {% if not member.confirmed %}
+            {% include "messages/not_confirmed.html" %}
+        {% endif %}
+        {% if member.subscription_current is None and member.subscription_future is None %}
+            {% include "messages/no_subscription.html" %}
+        {% endif %}
+        {% if member.share_set.unpaid.exists %}
+            {% include "messages/unpaid_shares.html" with amount=member.share_set.unpaid.count %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
 {% block content %}
     {% block jobs %}
         <h3 id="jobs">
@@ -38,6 +53,7 @@
         {% endfor %}
     {% endblock %}
 {% endblock %}
+
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>

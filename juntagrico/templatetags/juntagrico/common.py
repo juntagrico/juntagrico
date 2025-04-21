@@ -53,11 +53,6 @@ def activemenu(request, expected):
     return ''
 
 
-@register.simple_tag
-def messages(request):
-    return getattr(request, 'member_messages', [])
-
-
 @register.filter
 def view_name(request):
     return request.resolver_match.view_name.replace('.', '-')
