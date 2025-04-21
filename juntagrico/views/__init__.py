@@ -21,7 +21,6 @@ from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.mailer import membernotification
 from juntagrico.signals import area_joined, area_left, canceled
-from juntagrico.util.messages import home_messages
 from juntagrico.util.temporal import next_membership_end_date
 from juntagrico.view_decorators import highlighted_menu
 
@@ -36,9 +35,7 @@ def home(request):
     next_jobs = set([j for j in JobDao.get_jobs_for_time_range(start, end) if j.free_slots > 0])
     pinned_jobs = set([j for j in JobDao.get_pinned_jobs() if j.free_slots > 0])
     next_promotedjobs = set([j for j in JobDao.get_promoted_jobs() if j.free_slots > 0])
-    messages = getattr(request, 'member_messages', []) or []
-    messages.extend(home_messages(request))
-    request.member_messages = messages
+
     renderdict = {
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),

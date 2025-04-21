@@ -4,6 +4,7 @@
 {% load juntagrico.common %}
 {% load juntagrico.config %}
 {% load static %}
+
 {% block page_title %}
     <h3>
         {{ job.type.get_name }}
@@ -15,9 +16,24 @@
         {% endif %}
     </h3>
 {% endblock %}
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
+
+{% block messages %}
+    {% if error %}
+        {% include "messages/error.html" %}
+    {% endif %}
+    {% if form.current_assignments.count %}
+        {% include "messages/job_assigned.html" with others=form.current_assignments.count|add:"-1" %}
+    {% elif job.canceled %}
+        {% include "messages/job_canceled.html" %}
+    {% elif job.has_ended %}
+        {% include "messages/job_past.html" %}
+    {% elif job.has_started %}
+        {% include "messages/job_running.html" %}
+    {% elif job.free_slots == 0 %}
+        {% include "messages/job_fully_booked.html" %}
+    {% endif %}
 {% endblock %}
+
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
     {% block time %}
@@ -174,6 +190,11 @@
         {% endif %}
     {% endblock %}
 {% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'juntagrico/external/leaflet/leaflet.css' %}" />
+{% endblock %}
+
 {% block scripts %}
     {{ job.type.location.map_info|json_script:'location_data' }}
     {% include 'snippets/scripts/leaflet.html' %}

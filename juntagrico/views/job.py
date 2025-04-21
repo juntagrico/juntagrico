@@ -14,7 +14,6 @@ from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
 from juntagrico.util.admin import get_job_admin_url
-from juntagrico.util.messages import alert, error_message, job_messages
 from juntagrico.view_decorators import highlighted_menu
 
 
@@ -147,10 +146,6 @@ def job(request, job_id, form_class=JobSubscribeForm):
     member = request.user.member
     job = get_object_or_404(Job, id=int(job_id))
 
-    member_messages = getattr(request, 'member_messages', []) or []
-    for message in messages.get_messages(request):
-        member_messages.append(alert(message))
-
     if request.method == 'POST':
         form = form_class(member, job, request.POST)
         if form.is_valid():
@@ -161,11 +156,6 @@ def job(request, job_id, form_class=JobSubscribeForm):
     else:
         form = form_class(member, job)
 
-    if request.method == 'POST':
-        member_messages.append(error_message())
-
-    member_messages.extend(job_messages(request, job))
-    request.member_messages = member_messages
     is_job_coordinator = job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')
     renderdict = {
         'job': job,
@@ -174,6 +164,7 @@ def job(request, job_id, form_class=JobSubscribeForm):
         # TODO: should also be able to contact, if is member-contact of this job or job type
         'can_contact': request.user.has_perm('juntagrico.can_send_mails') or is_job_coordinator,
         'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or is_job_coordinator,
+        'error': request.method == 'POST'
     }
     return render(request, 'job.html', renderdict)
 

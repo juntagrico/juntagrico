@@ -2,8 +2,8 @@
 {% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+{% load juntagrico.snippets %}
 {% load juntagrico.menu %}
-{% messages request as l_messages %}
 {% widgets_menu request as widgets_menu %}
 
 <!DOCTYPE html>
@@ -103,9 +103,10 @@
                     <div class="content-container col-md-9 col-sm-12">
                         <div class="messages row">
                             <div class="col-md-12">
-                                {% for message in l_messages %}
-                                    {{ message }}
+                                {% for message in messages %}
+                                    {% alert message %}
                                 {% endfor %}
+                                {% block messages %}{% endblock %}
                             </div>
                         </div>
                         <div class="content row">

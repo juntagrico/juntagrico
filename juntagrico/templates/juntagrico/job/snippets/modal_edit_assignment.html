@@ -1,7 +1,11 @@
 {% extends "juntagrico/modal.html" %}
 {% load i18n %}
 
-{% block title %}{% trans "Einsatz bearbeiten" %}{% endblock %}
+{% block title %}
+    {% blocktrans trimmed with v_assignment=vocabulary.assignment %}
+        {{ v_assignment }} bearbeiten
+    {% endblocktrans %}
+{% endblock %}
 
 {% block buttons %}
     <input type="submit" id="{{ name }}_submit" form="assignment-edit-form" class="btn btn-primary"

@@ -43,6 +43,10 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
         self._start_required = False
         self._end_required = False
 
+    @staticmethod
+    def _assignment_rounding(number):
+        return Round(number)
+
     def active(self, on_date=None):
         """
         Warning: "today" is evaluated internally. Make sure this method is called each time the date should be evaluated
@@ -150,8 +154,12 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                 default=F('parts__duration_in_period_float') / F('parts__reference_duration')
             )
         ).annotate(  # annotate the final results
-            required_assignments=Round(Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)),
-            required_core_assignments=Round(Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)),
+            required_assignments=self._assignment_rounding(
+                Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
+            ),
+            required_core_assignments=self._assignment_rounding(
+                Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)
+            ),
         )
 
     @method_decorator(default_to_business_year)
