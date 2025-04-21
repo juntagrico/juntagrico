@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.shortcuts import get_object_or_404, render, redirect
 
+from juntagrico.config import Config
 from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionType, SubscriptionProduct
 from juntagrico.forms import SubscriptionPartOrderForm
@@ -68,7 +69,8 @@ def single(request, subscription_id=None):
         'subscription': subscription,
         'subscription_membership': subscription_membership,
         'can_change_part': SubscriptionType.objects.normal().visible().count() > 1,
-        'has_extra': SubscriptionType.objects.is_extra().visible().exists()
+        'has_extra': SubscriptionType.objects.is_extra().visible().exists(),
+        'unit': 'h' if Config.assignment_unit() == 'HOURS' else '',
     })
 
 

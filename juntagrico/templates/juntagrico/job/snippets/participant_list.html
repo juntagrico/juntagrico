@@ -49,12 +49,16 @@
 {% endif %}
 
 {# Modal for editing assignment #}
-{% if can_edit or True %}
+{% if can_edit_assignments %}
     <div class="modal" id="edit_assignment_modal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{% trans "Einsatz bearbeiten" %}</h5>
+                    <h5 class="modal-title">
+                        {% blocktrans trimmed with v_assignment=vocabulary.assignment %}
+                            {{ v_assignment }} bearbeiten
+                        {% endblocktrans %}
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
