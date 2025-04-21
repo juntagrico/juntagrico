@@ -59,15 +59,15 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
             if settings.ENABLE_SHARES:
                 self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data)
                 self.sub.refresh_from_db()
-                self.assertEqual(self.sub.future_parts.first().type, self.sub_type)
                 self.assertEqual(self.sub.future_parts.count(), 1)
+                self.assertFalse(self.sub.future_parts.filter(type=self.sub_type2).exists())
             # Add 2 shares. Then order a part that requires 2 shares. Should succeed.
             self.create_paid_share(self.member)
             self.create_paid_share(self.member)
             self.assertPost(reverse('part-order', args=[self.sub.pk]), post_data, code=302)
             self.sub.refresh_from_db()
             self.assertEqual(self.sub.future_parts.count(), 2)
-            self.assertEqual(self.sub.future_parts.all()[1].type, self.sub_type2)
+            self.assertTrue(self.sub.future_parts.filter(type=self.sub_type2).exists())
 
     @tag('shares')
     def testTypeChangeOnInsufficientShares(self):

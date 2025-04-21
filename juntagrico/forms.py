@@ -633,6 +633,7 @@ class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
         # TODO: Inform member that part was continued
         pass
 
+
 class TrialCloseoutForm(Form):
     deactivation_mode = ChoiceField(choices=(('by_end', ''), ('by_date', '')))
     deactivation_date = DateField()
