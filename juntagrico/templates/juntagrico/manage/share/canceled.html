@@ -102,7 +102,7 @@
 
 {% block datatable_constructor %}
     {{ block.super }}
-    config.layout.topStart.buttons.push(
+    config.layout.topStart.features.buttons.push(
         id_action_button(
             '<i class="fa-solid fa-file-invoice-dollar"></i> {% trans "Zahlungsdatei erzeugen" %}',
             '{% url "share-pain001" %}',
