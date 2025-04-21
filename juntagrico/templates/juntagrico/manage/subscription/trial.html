@@ -220,6 +220,7 @@
                     $('input[name="deactivation_mode"], #closeout_deactivation_date').on('change', print_start_date)
                     print_start_date()
                     $('input[name="mode"]').on('change', toggle_change_dates)
+                    toggle_change_dates()
 
                     if (status === 'error') {
                         $(this).text(xhr.status + ' ' + xhr.statusText)
@@ -259,7 +260,10 @@
             }
 
             function toggle_change_dates() {
-                $('#closeout_change_dates').toggle($('input[name="mode"]:checked').val() === 'append')
+                $('.show-mode').hide()
+                $('.show-mode-' + $('input[name="mode"]:checked').val()).show()
+                $('.hide-mode').show()
+                $('.hide-mode-' + $('input[name="mode"]:checked').val()).hide()
             }
         })
     </script>

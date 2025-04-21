@@ -305,13 +305,10 @@ def closeout_trial(request, part_id, form_class=TrialCloseoutForm, redirect_on_p
     else:
         form = form_class(trial_part)
 
-    new_parts = trial_part.follow_up_parts()
-    follow_up_part = new_parts.filter(type__size=trial_part.type.size).first()
-    other_parts = new_parts.exclude(pk=follow_up_part.pk) if follow_up_part else new_parts
     return render(request, 'juntagrico/manage/subscription/snippets/closeout_trial.html', {
         'trial_part': trial_part,
-        'follow_up_part': follow_up_part,
-        'other_parts': other_parts,
+        'follow_up_part': form.follow_up_part,
+        'other_parts': form.other_new_parts,
         'form': form,
         **get_changedate(request, datetime.date.today),
     })

@@ -1,4 +1,5 @@
 import datetime
+from functools import cached_property
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
@@ -633,19 +634,54 @@ class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
         pass
 
 class TrialCloseoutForm(Form):
-    mode = ChoiceField(choices=(('append', ''), ('replace', '')))
     deactivation_mode = ChoiceField(choices=(('by_end', ''), ('by_date', '')))
     deactivation_date = DateField()
-    activation_mode = ChoiceField(choices=(('next_day', ''), ('by_date', '')))
-    activation_date = DateField()
 
     def __init__(self, part=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.part = part
+        # add fields
+        if self.follow_up_part or self.other_new_parts:
+            self.fields['mode'] = ChoiceField(choices=(('append', ''), ('replace', '')))
+            if self.follow_up_part:
+                self.fields['activation_mode'] = ChoiceField(choices=(('next_day', ''), ('by_date', '')))
+                self.fields['activation_date'] = DateField()
+            for other_part in self.other_new_parts:
+                self.fields[f'activate{other_part.id}'] = BooleanField(required=False)
+                self.fields[f'activation_date{other_part.id}'] = DateField()
+
+    @cached_property
+    def follow_up_part(self):
+        return self.part.follow_up_parts().waiting().filter(type__size=self.part.type.size).first()
+
+    @cached_property
+    def other_new_parts(self):
+        other_parts = self.part.follow_up_parts().waiting()
+        if self.follow_up_part:
+            other_parts = other_parts.exclude(pk=self.follow_up_part.pk)
+        return other_parts
 
     def save(self):
-        # TODO: Implement
-        pass
+        if self.cleaned_data.get('mode') == 'replace':
+            self.follow_up_part.activate(self.part.activation_date)
+            self.part.delete()
+        else:
+            # deactivate trial
+            if self.cleaned_data.get('deactivation_mode') == 'by_end':
+                self.part.deactivate(self.part.end_of_trial_date)
+            elif self.cleaned_data.get('deactivation_mode') == 'by_date':
+                self.part.deactivate(self.cleaned_data.get('deactivation_date'))
+        if self.cleaned_data.get('mode') == 'append':
+            # activate follow up part
+            if self.cleaned_data.get('activation_mode') == 'next_day':
+                self.follow_up_part.activate(self.part.end_of_trial_date + datetime.timedelta(days=1))
+            elif self.cleaned_data.get('activation_mode') == 'by_date':
+                self.follow_up_part.activate(self.cleaned_data.get('activation_date'))
+        # activate other new parts
+        for other_part in self.other_new_parts:
+            if self.cleaned_data.get(f'activate{other_part.id}'):
+                other_part.activate(self.cleaned_data.get(f'activation_date{other_part.id}'))
+        return self.part
 
 
 class ShareOrderForm(Form):

@@ -65,9 +65,7 @@
                             {% endwith %}
                             {% if subscription.primary_member == member %}
                                 {% if part.is_trial %}
-                                    {% if part.follow_up_parts.exists %}
-                                        <div>{% trans "Wird verlängert" %}</div>
-                                    {% else %}
+                                    {% if not part.follow_up_parts.exists %}
                                         <div>{% trans "Willst du weitermachen?" %}</div>
                                         {% include "./buttons/trial.html" %}
                                     {% endif %}
