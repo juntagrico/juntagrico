@@ -7,11 +7,24 @@ Installation
     Continue with the :ref:`basic setup <intro-basic-setup>`.
 
 
-Installation using Cookie Cutter
---------------------------------
-You may use the `cookiecutter template <https://github.com/juntagrico/juntagrico-science-django-cookiecutter>`_ to create your app.
-This will create an app, with all the required settings set as described in the manual installation.
-See `Cookiecutter <https://pypi.org/project/cookiecutter/>`_ for usage.
+Prerequisites
+-------------
+
+Make sure `python <https://www.python.org/>`_ is installed on your system.
+
+
+Create new Django app using Cookiecutter
+----------------------------------------
+You may use the `cookiecutter template <https://github.com/juntagrico/juntagrico-science-django-cookiecutter>`_
+to create a fresh django app.
+This will create a django project and app, with all the required settings and urls set up.
+
+.. code-block:: bash
+
+    $ pip install cookiecutter
+    $ cookiecutter gh:juntagrico/juntagrico-science-django-cookiecutter
+
+Check out the `Cookiecutter documentation <https://pypi.org/project/cookiecutter/>`_ on how to install cookiecutter on your system.
 
 Then install the requirements with :command:`pip`:
 
@@ -19,32 +32,44 @@ Then install the requirements with :command:`pip`:
 
     $ pip install -r requirements.txt
 
-Further the database and email connection need to be configured using environment variables or directly in the `settings.py`. Refer to the generated `settings.py` and the django documentation.
+The default setup will use a local SQLite database and fails to send out emails.
+For production you will need to configure the database and email connection using environment variables or directly in the `settings.py`.
+Refer to the generated `settings.py` and the django documentation.
 
-Continue with :ref:`Initial Django setup <intro-initial-django-setup>`.
+You are now ready to continue with :ref:`Initial Django setup <intro-initial-django-setup>`.
 
-Manual Installation
--------------------
-Juntagrico is an reusable django app. You should create your own django app and install juntagrico as an app (see below).
 
-See the `demo app <https://github.com/juntagrico/juntagrico-demo>`_ for reference.
+Alternative: Install in an existing Django app
+----------------------------------------------
+If instead you already have a django project you can add juntagrico as an app to it.
 
-Juntagrico can be installed via :command:`pip`:
+Install juntagrico, e.g. via :command:`pip`:
 
 .. code-block:: bash
 
     $ pip install juntagrico
 
 
-Django Settings
----------------
-If you used the cookiecutter template, above this settings will already be set.
-Otherwise refer to the `demo application settings <https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_.
+Update Django Settings
+^^^^^^^^^^^^^^^^^^^^^^
+
+Update your projects ``settings.py``.
+
+Refer to `settings/minimal.py <https://github.com/juntagrico/juntagrico/blob/main/settings/minimal.py>`_
+for the minimal settings required to run Juntagrico.
+
+For sending out emails, the corresponding django settings need to be configured properly.
+Read the `django documentation <https://docs.djangoproject.com/en/4.2/ref/settings/#email-backend>`_ for more details.
+
+In the `demo app <https://github.com/juntagrico/juntagrico-demo/blob/main/demo/settings.py>`_ you can find a
+more complete set of settings, suitable for the production environment.
+
+Additional settings will be explained in the :ref:`basic setup <intro-basic-setup>` section.
 
 Hook URLs in URLconf
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
-Add the juntagrico urls to you urls.py e.g.:
+Include these urls to your ``urls.py``:
 
 .. code-block:: python
 
@@ -60,6 +85,7 @@ Add the juntagrico urls to you urls.py e.g.:
 
 
 .. _intro-initial-django-setup:
+
 
 Initial Django setup
 --------------------
@@ -99,6 +125,7 @@ More complex example data
 .. code-block:: bash
 
     $ python -m manage generate_testdata_advanced
+
 
 Run the Server
 --------------
