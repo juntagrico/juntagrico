@@ -635,21 +635,21 @@ class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
 
 
 class TrialCloseoutForm(Form):
-    deactivation_mode = ChoiceField(choices=(('by_end', ''), ('by_date', '')))
-    deactivation_date = DateField()
+    deactivation_mode = ChoiceField(choices=(('by_end', ''), ('by_date', '')), required=False)
+    deactivation_date = DateField(required=False)
 
     def __init__(self, part=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.part = part
         # add fields
         if self.follow_up_part or self.other_new_parts:
-            self.fields['mode'] = ChoiceField(choices=(('append', ''), ('replace', '')))
+            self.fields['mode'] = ChoiceField(choices=(('append', ''), ('replace', '')), required=False)
             if self.follow_up_part:
-                self.fields['activation_mode'] = ChoiceField(choices=(('next_day', ''), ('by_date', '')))
-                self.fields['activation_date'] = DateField()
+                self.fields['activation_mode'] = ChoiceField(choices=(('next_day', ''), ('by_date', '')), required=False)
+                self.fields['activation_date'] = DateField(required=False)
             for other_part in self.other_new_parts:
                 self.fields[f'activate{other_part.id}'] = BooleanField(required=False)
-                self.fields[f'activation_date{other_part.id}'] = DateField()
+                self.fields[f'activation_date{other_part.id}'] = DateField(required=False)
 
     @cached_property
     def follow_up_part(self):
@@ -661,6 +661,20 @@ class TrialCloseoutForm(Form):
         if self.follow_up_part:
             other_parts = other_parts.exclude(pk=self.follow_up_part.pk)
         return other_parts
+
+    def clean(self):
+        if self.cleaned_data.get('mode') != 'replace':
+            if self.cleaned_data.get('deactivation_mode') == 'by_date':
+                if self.cleaned_data.get('deactivation_date') is None:
+                    raise ValidationError(_('Bitte gib ein Deaktivierungsdatum an.'), code='invalid_deactivation_date')
+        if self.cleaned_data.get('mode') == 'append':
+            if self.cleaned_data.get('activation_mode') == 'by_date':
+                if self.cleaned_data.get('activation_date') is None:
+                    raise ValidationError(_('Bitte gib ein Aktivierungsdatum an.'), code='invalid_activation_date')
+        for other_part in self.other_new_parts:
+            if self.cleaned_data.get(f'activate{other_part.id}'):
+                if not self.cleaned_data.get(f'activation_date{other_part.id}'):
+                    raise ValidationError(_('Bitte gib ein Aktivierungsdatum an.'), code='invalid_other_activation_date')
 
     def save(self):
         if self.cleaned_data.get('mode') == 'replace':

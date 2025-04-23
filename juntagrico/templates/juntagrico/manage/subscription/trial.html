@@ -78,7 +78,7 @@
                                 {{ trial_part.activation_date }}
                             {% else %}
                                 <div class="actions">
-                                    <a href="{% url "part-activate" trial_part.id %}" class="btn btn-primary mb-1">
+                                    <a href="{% url "manage-trial-activate" trial_part.id %}" class="btn btn-primary mb-1">
                                         {% trans "Aktivieren" %}
                                     </a>
                                 </div>

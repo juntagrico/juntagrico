@@ -152,6 +152,8 @@ urlpatterns = [
          name='manage-part-cancel'),
     path('manage/subscription/part/<int:part_id>/deactivate/', manage.deactivate_part,
          name='part-deactivate'),
+    path('manage/subscription/trial/<int:part_id>/activate/', manage.activate_trial,
+         name='manage-trial-activate'),
     path('manage/subscription/trial/<int:part_id>/continue/', manage.continue_trial,
          name='manage-trial-continue'),
     path('manage/subscription/trial/<int:part_id>/deactivate/', manage.deactivate_trial,

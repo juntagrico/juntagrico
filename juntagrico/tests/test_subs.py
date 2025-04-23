@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from . import JuntagricoTestCaseWithShares
 from ..entity.member import SubscriptionMembership
+from ..entity.subs import SubscriptionPart
 from ..entity.subtypes import SubscriptionType
 
 
@@ -203,6 +204,15 @@ class SubscriptionTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('sub-activate', args=[self.sub2.pk]), 302)
         self.sub2.refresh_from_db()
         self.assertFalse(self.sub2.active)
+
+    def testPartDeActivation(self):
+        new_part = SubscriptionPart.objects.create(subscription=self.sub, type=self.sub_type)
+        self.assertGet(reverse('part-activate', args=[new_part.pk]), 302)
+        new_part.refresh_from_db()
+        self.assertTrue(new_part.active)
+        self.assertGet(reverse('part-deactivate', args=[new_part.pk]), 302)
+        new_part.refresh_from_db()
+        self.assertTrue(new_part.inactive)
 
     def testFuture(self):
         self.assertGet(reverse('future'))

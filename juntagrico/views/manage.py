@@ -262,6 +262,15 @@ class SubscriptionTrialPartView(PermissionRequiredMixin, ListView):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
+@using_change_date
+def activate_trial(request, change_date, part_id):
+    part = get_object_or_404(SubscriptionPart, id=part_id)
+    part.subscription.activate(change_date)  # automatically activate subscription, if it isn't already
+    part.activate(change_date)
+    return return_to_previous_location(request)
+
+
+@permission_required('juntagrico.change_subscriptionpart')
 def continue_trial(request, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
     if request.method == 'POST':
@@ -279,7 +288,7 @@ def continue_trial(request, part_id):
 @permission_required('juntagrico.change_subscriptionpart')
 def deactivate_trial(request, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
-    end_date = parse_date(request.POST.get('end_date')) or part.end_of_trial_date
+    end_date = parse_date(request.POST.get('end_date') or '') or part.end_of_trial_date
     part.deactivate(end_date)
     return return_to_previous_location(request)
 
