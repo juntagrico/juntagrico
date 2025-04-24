@@ -19,26 +19,22 @@
                 <td>{{ part.state_text }}</td>
                 <td>
                     {% if part.cancellation_date %}
-                        {% blocktrans with cd=part.cancellation_date %}
+                        {% blocktrans trimmed with cd=part.cancellation_date %}
                             Gekündigt am {{ cd }}
                         {% endblocktrans %}
                         {% if part.deactivation_date %}
                             <br>
-                            {% blocktrans with dd=part.deactivation_date %}
+                            {% blocktrans trimmed with dd=part.deactivation_date %}
                                 Noch aktiv bis am {{ dd }}
                             {% endblocktrans %}
                         {% endif %}
                     {% else %}
                         {% with ad=part.activation_date %}
                             {% if part.active %}
-                                {% blocktrans %}
-                                    Aktiv seit {{ ad }}
-                                {% endblocktrans %}
+                                {% blocktrans %}Aktiv seit {{ ad }}{% endblocktrans %}
                                 <br>
                             {% elif ad %}
-                                {% blocktrans %}
-                                    Wird aktiv am {{ ad }}
-                                {% endblocktrans %}
+                                {% blocktrans %}Wird aktiv am {{ ad }}{% endblocktrans %}
                                 <br>
                             {% endif %}
                         {% endwith %}

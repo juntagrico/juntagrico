@@ -10,7 +10,9 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext as _
+from django.views import View
 from django.views.generic import FormView
 from django.views.generic.edit import ModelFormMixin
 
@@ -34,8 +36,8 @@ from juntagrico.util.management import create_or_update_co_member, create_share
 from juntagrico.util.pdf import render_to_pdf_http
 from juntagrico.util.temporal import end_of_next_business_year, next_cancelation_date, end_of_business_year, \
     cancelation_date, next_membership_end_date
-from juntagrico.view_decorators import primary_member_of_subscription, create_subscription_session, \
-    primary_member_of_subscription_of_part
+from juntagrico.view_decorators import primary_member_of_subscription, primary_member_of_subscription_of_part, \
+    using_change_date
 
 
 @login_required
@@ -237,35 +239,47 @@ def extra_change(request, subscription_id):
     return render(request, 'extra_change.html', renderdict)
 
 
-class SignupView(FormView, ModelFormMixin):
-    template_name = 'signup.html'
-
+class SignupView(View):
     def __init__(self):
         super().__init__()
-        self.cs_session = None
-        self.object = None
+        self.signup_manager = None
 
-    def get_form_class(self):
-        return EditMemberForm if self.cs_session.edit else RegisterMemberForm
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.signup_manager = import_string(Config.signup_manager())(request)
 
-    @method_decorator(create_subscription_session)
-    def dispatch(self, request, cs_session, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
+        # make sure signup process is followed
+        next_page = self.signup_manager.get_next_page()
+        if next_page != request.resolver_match.url_name:
+            return redirect(next_page)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class MemberSignupView(SignupView, FormView):
+    template_name = 'signup.html'
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
         if Config.enable_registration() is False:
             raise Http404
         # logout if existing user is logged in
         if request.user.is_authenticated:
             logout(request)
-            cs_session.clear()  # empty session object
+            self.signup_manager.clear()
 
-        self.cs_session = cs_session
-        self.object = self.cs_session.main_member
-        return super().dispatch(request, *args, **kwargs)
+    def get_form_class(self):
+        return EditMemberForm if self.signup_manager.get('main_member') else RegisterMemberForm
+
+    def get_form_kwargs(self):
+        form_kwargs = super().get_form_kwargs()
+        if 'data' not in form_kwargs:
+            form_kwargs['data'] = self.signup_manager.get('main_member')
+        return form_kwargs
 
     def form_valid(self, form):
-        self.cs_session.main_member = form.instance
-        # monkey patch comment field into main_member
-        self.cs_session.main_member.comment = form.cleaned_data.get('comment', '')
-        return redirect(self.cs_session.next_page())
+        self.signup_manager.set('main_member', form.data.dict())
+        return redirect(self.signup_manager.get_next_page())
 
 
 def confirm(request, member_hash):
@@ -336,9 +350,9 @@ def error_page(request, error_message):
 
 
 @permission_required('juntagrico.is_operations_group')
-def activate_subscription(request, subscription_id):
+@using_change_date
+def activate_subscription(request, change_date, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
     try:
         subscription.activate(change_date)
         add_subscription_member_to_activity_area(subscription)
@@ -352,9 +366,9 @@ def add_subscription_member_to_activity_area(subscription):
 
 
 @permission_required('juntagrico.is_operations_group')
-def deactivate_subscription(request, subscription_id):
+@using_change_date
+def deactivate_subscription(request, change_date, subscription_id):
     subscription = get_object_or_404(Subscription, id=subscription_id)
-    change_date = request.session.get('changedate', None)
     try:
         subscription.deactivate(change_date)
     except ValidationError as e:
@@ -402,18 +416,18 @@ def leave_subscription(request, subscription_id):
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def activate_part(request, part_id):
+@using_change_date
+def activate_part(request, change_date, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
-    change_date = request.session.get('changedate', None)
     if part.activation_date is None and part.deactivation_date is None:
         part.activate(change_date)
     return return_to_previous_location(request)
 
 
 @permission_required('juntagrico.change_subscriptionpart')
-def deactivate_part(request, part_id):
+@using_change_date
+def deactivate_part(request, change_date, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
-    change_date = request.session.get('changedate', None)
     part.deactivate(change_date)
     return return_to_previous_location(request)
 

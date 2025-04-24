@@ -1,8 +1,8 @@
 from django import template
-from django.conf import settings
 from django.template.defaultfilters import urlize, linebreaksbr
 
 from juntagrico import __version__
+from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.deliverydao import DeliveryDao
 from juntagrico.dao.depotdao import DepotDao
@@ -52,11 +52,6 @@ def activemenu(request, expected):
     return ''
 
 
-@register.simple_tag
-def messages(request):
-    return getattr(request, 'member_messages', [])
-
-
 @register.filter
 def view_name(request):
     return request.resolver_match.view_name.replace('.', '-')
@@ -83,7 +78,7 @@ def get_version():
 
 @register.filter
 def richtext(value):
-    if 'djrichtextfield' not in settings.INSTALLED_APPS or not hasattr(settings, 'DJRICHTEXTFIELD_CONFIG'):
+    if not Config.using_richtext():
         value = urlize(value)
         value = linebreaksbr(value)
     return value

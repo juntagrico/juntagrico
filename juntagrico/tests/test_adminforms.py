@@ -41,7 +41,7 @@ class JobFormTests(JuntagricoTestCase):
         # test 0 copies (fails)
         initial_count = RecuringJob.objects.all().count()
         data = {'type': self.job1.type.pk,
-                'time': '05:04:53',
+                'new_time': '05:04:53',
                 'slots': '2',
                 'weekdays': ['1'],
                 'start_date': '26.07.2020',
@@ -57,7 +57,7 @@ class JobFormTests(JuntagricoTestCase):
         # test 1 copy
         self.complex_job.time = datetime.datetime.now()
         data = {'type': self.complex_job.type.pk,
-                'time': '05:04:53',
+                'new_time': '05:04:53',
                 'slots': '2',
                 'weekdays': ['1'],
                 'start_date': '01.07.2020',
@@ -74,7 +74,7 @@ class JobFormTests(JuntagricoTestCase):
         self.assertEqual(self.complex_job.type, new_job.type)
         self.assertEqual(self.complex_job.slots, new_job.slots)
         self.assertEqual(self.complex_job.infinite_slots, new_job.infinite_slots)
-        dt = datetime.datetime.fromisoformat('2020-07-06T' + data['time'])
+        dt = datetime.datetime.fromisoformat('2020-07-06T' + data['new_time'])
         if settings.USE_TZ:
             dt = dt.astimezone(timezone.get_default_timezone())
         self.assertEqual(dt, new_job.time)
@@ -83,7 +83,7 @@ class JobFormTests(JuntagricoTestCase):
         self.assertEqual(self.complex_job.duration_override, new_job.duration_override)
         # Test 2 copies
         data = {'type': self.job1.type.pk,
-                'time': '05:04:53',
+                'new_time': '05:04:53',
                 'slots': '2',
                 'weekdays': ['1'],
                 'start_date': '01.07.2020',
@@ -105,7 +105,7 @@ class JobFormTests(JuntagricoTestCase):
             "additional_description": "New Description",
             "duration_override": "9",
             "weekdays": "2",
-            "time": "13:46:46",
+            "new_time": "13:46:46",
             "start_date": "18.06.2024",
             "end_date": "19.06.2024",
             "weekly": "7",
@@ -148,7 +148,7 @@ class JobFormTests(JuntagricoTestCase):
         self.assertEqual(new_job.type, self.complex_job.type)
         self.assertEqual(new_job.slots, 2)
         self.assertEqual(new_job.infinite_slots, False)
-        dt = datetime.datetime.fromisoformat('2024-06-18T' + data['time'])
+        dt = datetime.datetime.fromisoformat('2024-06-18T' + data['new_time'])
         if settings.USE_TZ:
             dt = dt.astimezone(timezone.get_default_timezone())
         self.assertEqual(new_job.time, dt)
@@ -161,7 +161,7 @@ class JobFormTests(JuntagricoTestCase):
         # test failing case
         initial_count = RecuringJob.objects.all().count()
         data = {'type': self.job1.type.pk,
-                'time': '05:04:53',
+                'new_time': '05:04:53',
                 'slots': '2',
                 'weekdays': ['1'],
                 'start_date': '01.07.2020',
@@ -178,7 +178,7 @@ class JobFormTests(JuntagricoTestCase):
         today = datetime.date.today()
         # test successful case
         data = {'type': self.job1.type.pk,
-                'time': '05:04:53',
+                'new_time': '05:04:53',
                 'slots': '2',
                 'weekdays': ['1'],
                 'start_date': today + datetime.timedelta(1),

@@ -37,6 +37,11 @@ class AdminTests(JuntagricoTestCaseWithShares):
         # delete job with assignment (will show a page, that assignments must be deleted first)
         self.assertGet(reverse('admin:juntagrico_recuringjob_delete', args=(self.job2.pk,)), member=self.admin)
 
+    def testJobTypeAutocomplete(self):
+        url = reverse('admin:autocomplete') + '?app_label=juntagrico&model_name=recuringjob&field_name=type'
+        self.assertGet(url, member=self.admin)
+        self.assertGet(url, member=self.area_admin)
+
     def testPastJobAdmin(self):
         add_url = reverse('admin:juntagrico_recuringjob_add')
         self.assertGet(add_url, member=self.area_admin)

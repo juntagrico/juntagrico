@@ -91,6 +91,8 @@ class Config:
     enable_shares = _get_setting('ENABLE_SHARES', True)
     required_shares = _get_setting('REQUIRED_SHARES', 1)
     enable_registration = _get_setting('ENABLE_REGISTRATION', True)
+    signup_manager = _get_setting('SIGNUP_MANAGER', 'juntagrico.util.sessions.SignupManager')
+
     base_fee = _get_setting('BASE_FEE')
     currency = _get_setting('CURRENCY', 'CHF')
 
@@ -198,6 +200,10 @@ class Config:
         }
     )
     mailer_richtext_options = _get_setting('MAILER_RICHTEXT_OPTIONS', {})
+
+    @classmethod
+    def using_richtext(cls):
+        return 'djrichtextfield' in settings.INSTALLED_APPS and hasattr(settings, 'DJRICHTEXTFIELD_CONFIG')
 
     @classmethod
     def notifications(cls, name):

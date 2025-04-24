@@ -13,7 +13,7 @@ from juntagrico.lifecycle.member import check_member_consistency
 from juntagrico.lifecycle.submembership import check_sub_membership_consistency
 from juntagrico.queryset.member import MemberQuerySet
 from juntagrico.util.temporal import next_membership_end_date
-from juntagrico.util.users import make_username
+from juntagrico.util.users import make_username, make_password
 
 
 def q_joined_subscription():
@@ -278,6 +278,12 @@ class Member(JuntagricoBaseModel):
         if self.active_shares_count == 0 and self.canceled is True:
             self.deactivation_date = date
             self.save()
+
+    def set_password(self, password=None):
+        password = password or make_password()
+        self.user.set_password(password)
+        self.user.save()
+        return password
 
     @notifiable
     class Meta:

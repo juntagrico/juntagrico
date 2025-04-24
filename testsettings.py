@@ -37,14 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'fontawesomefree',
     'impersonate',
+    # 'juntagrico_test_addon',  # enable only to test addon features
     'juntagrico',
     'crispy_forms',
     'adminsortable2',
     'djrichtextfield',
     'polymorphic',
     'import_export',
-    # enable only to test addon stuff
-    # 'juntagrico_test_addon',
 ]
 
 DATABASES = {
@@ -170,8 +169,6 @@ TEMPLATES = [
 ]
 
 LOGIN_REDIRECT_URL = "/"
-
-SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'juntagrico/locale'),

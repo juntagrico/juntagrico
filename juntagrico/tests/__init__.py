@@ -313,6 +313,8 @@ class JuntagricoTestCase(TestCase):
         # cancelled_sub
         cls.cancelled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
         cls.member6.join_subscription(cls.cancelled_sub, True)
+        # inconsistent sub
+        cls.inconsistent_sub = Subscription.objects.create(depot=cls.depot)
 
     @classmethod
     def set_up_extra_sub_types(cls):

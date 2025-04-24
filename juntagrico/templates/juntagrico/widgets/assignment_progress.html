@@ -11,6 +11,11 @@
     {% block progress %}
         {% assignment_progress request.user.member future=True as assignments %}
         {% include "./assignment_progress/bars.html" %}
-        {% include "./assignment_progress/text.html" %}
+        {% config 'assignment_unit' as unit %}
+        {% if unit == 'HOURS' %}
+            {% include "./assignment_progress/text_hours.html" %}
+        {% else %}
+            {% include "./assignment_progress/text.html" %}
+        {% endif %}
     {% endblock %}
 </div>

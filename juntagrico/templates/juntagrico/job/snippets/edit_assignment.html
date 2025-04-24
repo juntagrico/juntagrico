@@ -6,17 +6,18 @@
     </div>
 {% endif %}
 <p>
-    {% blocktrans with m=member %}
-    	Du änderst den Einsatz von {{ m }}
+    {% blocktrans trimmed with v_assignment=vocabulary.assignment m=member %}
+    	Du änderst den/die/das {{ v_assignment }} von {{ m }}
     {% endblocktrans %}
 </p>
 {% crispy form %}
 <p>
     <strong>
         {% if other_job_contacts %}
-            {% blocktrans%}
-                 Folgende Personen werden automatisch über diese Änderung informiert:<br>
+            {% blocktrans trimmed %}
+                 Folgende Personen werden automatisch über diese Änderung informiert:
             {% endblocktrans %}
+            <br>
             {% if member != editor %}
                 {{ member }}<br>
             {% endif %}
@@ -24,7 +25,7 @@
                 {{ coordinator|default:email }}<br>
             {% endfor %}
         {% elif editor != member %}
-            {% blocktrans %}
+            {% blocktrans trimmed %}
                 {{ member }} wird automatisch über diese Änderung informiert.
             {% endblocktrans %}
         {% endif %}

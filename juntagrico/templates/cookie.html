@@ -10,7 +10,7 @@
     </div>
 {% endblock %}
 {% block allcontent %}
-    {% blocktrans with an=request.site.name%}
+    {% blocktrans trimmed with an=request.site.name%}
     {{ an }} verwendet Cookies.
     {{ an }} verwendet aber keine Cookies für Tracking etc.
     {{ an }} verwendet Session Cookies und Cookies zur CSRF Bekämpfung.
@@ -18,7 +18,7 @@
 
     <p/>
 
-    Standartmässig speichert {{ an }} im Session Cookie nur eine ID und die Session Daten in der Datenbank.
+    Standardmässig speichert {{ an }} im Session Cookie nur eine ID und die Session Daten in der Datenbank.
     Das Session Cookie wird 2 Wochen gespeichert. <br/>
     Die Aktuelle Informationen zu den Standard Einstellungen findest du hier:<br/>
     <a href="https://docs.djangoproject.com/en/dev/topics/http/sessions/">https://docs.djangoproject.com/en/dev/topics/http/sessions/</a><br/>

@@ -4,74 +4,64 @@
         {% with sub=assignments.subscription %}
             {% if assignments.future is None %}
                 {% if sub.co_members.count %}
-                    {% blocktrans trimmed with c=sub.assignment_count|floatformat count p=sub.assignment_count %}
-                        Ihr habt diese Saison bisher {{ c }} Einsatz gemacht oder geplant.
-                    {% plural %}
-                        Ihr habt diese Saison bisher {{ c }} Einsätze gemacht oder geplant.
+                    {% blocktrans trimmed with c=sub.assignment_count|floatformat %}
+                        Ihr habt diese Saison bisher {{ c }}h geleistet oder geplant.
                     {% endblocktrans %}
                 {% else %}
-                    {% blocktrans trimmed with c=sub.assignment_count|floatformat count p=sub.assignment_count %}
-                        Du hast diese Saison bisher {{ c }} Einsatz gemacht oder geplant.
-                    {% plural %}
-                        Du hast diese Saison bisher {{ c }} Einsätze gemacht oder geplant.
+                    {% blocktrans trimmed with c=sub.assignment_count|floatformat %}
+                        Du hast diese Saison bisher {{ c }}h geleistet oder geplant.
                     {% endblocktrans %}
                 {% endif %}
             {% else %}
                 {% if sub.co_members.exists %}
-                    {% blocktrans trimmed with c=sub.assignment_count|floatformat count p=sub.assignment_count %}
-                        Ihr habt diese Saison bisher {{ c }} Einsatz gemacht.
-                    {% plural %}
-                        Ihr habt diese Saison bisher {{ c }} Einsätze gemacht.
+                    {% blocktrans trimmed with c=sub.assignment_count|floatformat %}
+                        Ihr habt diese Saison bisher {{ c }}h geleistet.
                     {% endblocktrans %}
                 {% else %}
-                    {% blocktrans trimmed with c=sub.assignment_count|floatformat count p=sub.assignment_count %}
-                        Du hast diese Saison bisher {{ c }} Einsatz gemacht.
-                    {% plural %}
-                        Du hast diese Saison bisher {{ c }} Einsätze gemacht.
+                    {% blocktrans trimmed with c=sub.assignment_count|floatformat %}
+                        Du hast diese Saison bisher {{ c }}h geleistet.
                     {% endblocktrans %}
                 {% endif %}
             {% endif %}
             {% if sub.required_core_assignments > 0 %}
                 {% blocktrans trimmed with c=sub.core_assignment_count|floatformat %}
-                    Davon {{ c }} in Kernbereichen.
+                    Davon {{ c }}h in Kernbereichen.
                 {% endblocktrans %}
             {% endif %}
             {% if sub.co_members.exists %}
                 {% blocktrans trimmed with r=sub.required_assignments|floatformat %}
-                    Ihr benötigt insgesamt {{ r }}.
+                    Ihr benötigt insgesamt {{ r }}h.
                 {% endblocktrans %}
             {% else %}
                 {% blocktrans trimmed with r=sub.required_assignments|floatformat %}
-                    Du benötigst insgesamt {{ r }}.
+                    Du benötigst insgesamt {{ r }}h.
                 {% endblocktrans %}
             {% endif %}
             {% if sub.required_core_assignments > 0 %}
                 {% blocktrans trimmed with r=sub.required_core_assignments|floatformat %}
-                    Davon {{ r }} in Kernbereichen.
+                    Davon {{ r }}h in Kernbereichen.
                 {% endblocktrans %}
             {% endif %}
             {% if sub.future_assignment_count %}
                 <br>
                 {% blocktrans trimmed with c=sub.future_assignment_count|floatformat count p=sub.future_assignment_count %}
-                    {{ c }} weiterer Einsatz ist schon geplant.
+                    {{ c }} weitere Stunde ist schon geplant.
                 {% plural %}
-                    {{ c }} weitere Einsätze sind schon geplant.
+                    {{ c }} weitere Stunden sind schon geplant.
                 {% endblocktrans %}
             {% endif %}
         {% endwith %}
     {% else %}
         {% with member=assignments.member %}
-            {% blocktrans trimmed with c=member.assignment_count|floatformat count p=member.assignment_count %}
-                Du hast diese Saison {{ c }} Einsatz gemacht.
-            {% plural %}
-                Du hast diese Saison {{ c }} Einsätze gemacht.
+            {% blocktrans trimmed with c=member.assignment_count|floatformat %}
+                Du hast diese Saison {{ c }}h geleistet.
             {% endblocktrans %}
             {% if member.future_assignment_count %}
                 <br>
                 {% blocktrans trimmed with c=member.future_assignment_count|floatformat count p=member.future_assignment_count %}
-                    {{ c }} weiteren Einsatz hast du schon geplant.
+                    {{ c }} weiteren Stunde hast du schon geplant.
                 {% plural %}
-                    {{ c }} weitere Einsätze hast du schon geplant.
+                    {{ c }} weitere Stunden hast du schon geplant.
                 {% endblocktrans %}
             {% endif %}
         {% endwith %}
