@@ -27,6 +27,8 @@ class ActivityArea(JuntagricoBaseModel):
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
     coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
+    coordinators = models.ManyToManyField('Member', verbose_name=_('Koordinatoren'), through='AreaCoordinator',
+                                          related_name='coordinated_areas')
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
@@ -67,6 +69,24 @@ class ActivityArea(JuntagricoBaseModel):
         permissions = (
             ('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
 
+
+class AreaCoordinator(JuntagricoBaseModel):
+    area = models.ForeignKey(ActivityArea, on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE)
+    can_modify_area = models.BooleanField(_('Kann Beschreibung ändern'), default=True)
+    can_view_member = models.BooleanField(_('Kann {0} sehen').format(Config.vocabulary('member_pl')), default=True)
+    can_contact_member = models.BooleanField(_('Kann {0} kontaktieren').format(Config.vocabulary('member_pl')), default=True)
+    can_modify_jobs = models.BooleanField(_('Kann Jobs verwalten'), default=True)
+    can_modify_assignments = models.BooleanField(_('Kann Einsatzanmeldungen verwalten'), default=True)
+    sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)
+
+    class Meta:
+        verbose_name = _('Koordinator')
+        verbose_name_plural = _('Koordinatoren')
+        ordering = ['sort_order']
+        constraints = [
+            models.UniqueConstraint(fields=['area', 'member'], name='unique_area_member'),
+        ]
 
 class JobExtraType(JuntagricoBaseModel):
     '''

@@ -86,7 +86,6 @@ class MemberActiveView(MemberView):
 
 
 class AreaMemberView(MemberView):
-    permission_required = 'juntagrico.is_area_admin'
     title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
         member=Config.vocabulary('member_pl'), area_name='{area_name}'
     )
@@ -95,7 +94,8 @@ class AreaMemberView(MemberView):
         self.area = get_object_or_404(
             ActivityArea,
             id=int(self.kwargs['area_id']),
-            coordinator=self.request.user.member
+            areacoordinator__member=self.request.user.member,
+            areacoordinator__can_view_member=True
         )
         return self.area.members.active().prefetch_for_list
 
