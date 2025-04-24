@@ -20,6 +20,7 @@ from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
 from juntagrico.entity.subs import Subscription, SubscriptionPart
 from juntagrico.forms import DateRangeForm, SubscriptionPartContinueByAdminForm, TrialCloseoutForm
+from juntagrico.mailer import membernotification
 from juntagrico.util import return_to_previous_location, temporal
 from juntagrico.util.auth import MultiplePermissionsRequiredMixin
 from juntagrico.util.management_list import get_changedate
@@ -239,6 +240,7 @@ def activate_part(request, change_date, part_id):
 def cancel_part(request, change_date, part_id):
     part = get_object_or_404(SubscriptionPart, id=part_id)
     part.cancel(change_date)
+    membernotification.part_canceled_for_you(part)
     return return_to_previous_location(request)
 
 

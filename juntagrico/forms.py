@@ -27,7 +27,7 @@ from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
-from juntagrico.mailer import adminnotification
+from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed, assignment_changed
 from juntagrico.util.temporal import get_business_year, get_business_date_range
@@ -629,8 +629,8 @@ class SubscriptionPartContinueForm(SubscriptionPartChangeForm):
 
 
 class SubscriptionPartContinueByAdminForm(SubscriptionPartContinueForm):
-    def send_notification(self, qs):
-        # TODO: Inform member that part was continued
+    def send_notification(self, new_part):
+        membernotification.trial_continued_for_you(self.part, new_part)
         pass
 
 
