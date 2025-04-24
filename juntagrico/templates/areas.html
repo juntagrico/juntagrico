@@ -2,11 +2,13 @@
 {% load i18n %}
 {% load static %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     <h3>
         {% trans "Mitarbeit" %}
     </h3>
 {% endblock %}
+
 {% block content %}
     {% enriched_organisation "D" as v_d_enriched_organisation %}
     <div class="row">
@@ -57,7 +59,21 @@
             {% endfor %}
         </div>
     </div>
+
+    {% if coordinated_areas %}
+        <div class="row mt-5">
+            <div class="col-md-12">
+                {% block coordinated_areas %}
+                    <h4>{% trans "Von dir koordiniert" %}</h4>
+                    {% for area in coordinated_areas %}
+                        <a href="{% url 'area' area.id %}">{{ area }}</a>
+                    {% endfor %}
+                {% endblock %}
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
+
 {% block scripts %}
     {% include 'snippets/scripts/area_slider.html' %}
 {% endblock %}

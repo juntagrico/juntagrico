@@ -174,6 +174,7 @@ urlpatterns = [
          name='manage-depot-subs'),
     # /manage/area
     path('manage/area/<int:area_id>/member', manage.AreaMemberView.as_view(), name='manage-area-member'),
+    path('manage/area/<int:area_id>/member/<int:member_id>/remove', manage.remove_area_member, name='manage-area-member-remove'),
 
     # /email
     path('my/mails', juntagrico_admin.mails, name='mail'),

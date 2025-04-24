@@ -76,6 +76,7 @@ class AreaCoordinator(JuntagricoBaseModel):
     can_modify_area = models.BooleanField(_('Kann Beschreibung ändern'), default=True)
     can_view_member = models.BooleanField(_('Kann {0} sehen').format(Config.vocabulary('member_pl')), default=True)
     can_contact_member = models.BooleanField(_('Kann {0} kontaktieren').format(Config.vocabulary('member_pl')), default=True)
+    can_remove_member = models.BooleanField(_('Kann {0} entfernen').format(Config.vocabulary('member_pl')), default=True)
     can_modify_jobs = models.BooleanField(_('Kann Jobs verwalten'), default=True)
     can_modify_assignments = models.BooleanField(_('Kann Einsatzanmeldungen verwalten'), default=True)
     sort_order = models.PositiveIntegerField(_('Reihenfolge'), default=0, blank=False, null=False)

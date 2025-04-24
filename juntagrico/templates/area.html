@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 {% load i18n %}
 {% load static %}
 {% load juntagrico.common %}
@@ -9,13 +10,37 @@
     </h3>
 {% endblock %}
 {% block content %}
+    <div class="row mb-3 no-gutters">
+        <div class="offset-md-3 col-md-9">
+            <span class="switch switch-sm">
+                <input type="checkbox" class="switch" value="{{ area.id }}"
+                       id="area{{ area.id }}" name="area{{ area.id }}"{% if area_checked %} checked="checked"{% endif %}/>
+                <label for="area{{ area.id }}">
+                    {% trans "Mitmachen" %}
+                </label>
+            </span>
+        </div>
+    </div>
     <div class="row mb-3">
         <div class="col-md-3">
             {% trans "Beschreibung" %}:
         </div>
-        <div class="col-md-9">
+        <div class="col-md-9 description-show">
             {{ area.description|richtext|safe }}
+            {% if edit_form %}
+                <div class="mt-3">
+                    <a href="#" id="edit_description" class="btn btn-primary">
+                        <i class="fa fa-pencil mr-1"></i>
+                        {% trans "Beschreibung ändern" %}
+                    </a>
+                </div>
+            {% endif %}
         </div>
+        {% if edit_form %}
+            <div class="col-md-9 description-edit d-none">
+                {% crispy edit_form %}
+            </div>
+        {% endif %}
     </div>
     <div class="row mb-4">
         <div class="col-md-3">
@@ -27,16 +52,20 @@
             {% endfor %}
         </div>
     </div>
-    <div class="row mb-3 no-gutters">
-        <div class="offset-md-3 col-md-9">
-            <span class="switch switch-sm">
-                <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area_checked %}checked="checked"{% endif %}/>
-                <label for="area{{ area.id }}">
-                    {% trans "Mitmachen" %}
-                </label>
-            </span>
+    {% if can_view_member %}
+        <div class="row mb-4">
+            <div class="col-md-3">
+                {{ vocabulary.member_pl }}:
+            </div>
+            <div class="col-md-9">
+                <span class="mr-3">{{ area.members.count|default:_('Keine') }}</span>
+                <a href="{% url 'manage-area-member' area.id %}" class="btn btn-outline-primary">
+                    <i class="fa fa-eye mr-1"></i>
+                    {% trans "Anzeigen" %}
+                </a>
+            </div>
         </div>
-    </div>
+    {% endif %}
     <div class="row mb-3">
         <div class="col-md-12">
             <h4>
@@ -59,6 +88,14 @@
     <script type="text/javascript">
         $(function() {
             $("#filter-table").DataTable({"searching": false});
+
+            $("#edit_description").on("click", function(e) {
+                $(this).hide();
+                $(".description-show").hide();
+                $(".description-edit").removeClass("d-none");
+                e.preventDefault();
+                return false;
+            })
         })
     </script>
     {% include 'snippets/scripts/area_slider.html' %}
