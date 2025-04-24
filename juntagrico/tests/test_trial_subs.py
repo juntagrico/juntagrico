@@ -24,6 +24,7 @@ class TrialSubscriptionTests(TrialSubscriptionTestCase):
         self.assertGet(reverse('part-cancel', args=[self.trial_part1.id]), 302)
         self.trial_part1.refresh_from_db()
         self.assertTrue(self.trial_part1.canceled)
+        self.assertTrue(self.trial_part1.subscription.canceled)
 
     def testContinueTrial(self):
         mail.outbox.clear()
@@ -71,6 +72,7 @@ class WaitingTrialSubscriptionAdminTests(TrialSubscriptionTestCase):
         self.assertGet(reverse('manage-part-cancel', args=[self.trial_part1.id]), 302, member=self.admin)
         self.trial_part1.refresh_from_db()
         self.assertTrue(self.trial_part1.canceled)
+        self.assertTrue(self.trial_part1.subscription.canceled)
         self.assertEqual(len(mail.outbox), 1)  # notification to member
 
 
@@ -104,13 +106,20 @@ class ActiveTrialSubscriptionAdminTests(TrialSubscriptionTestCase):
     def testDeactivateTrial(self):
         self.assertGet(reverse('manage-trial-deactivate', args=[self.trial_part1.pk]), 302, member=self.admin)
         self.trial_part1.refresh_from_db()
-        self.assertEqual(self.trial_part1.deactivation_date, self.trial_part1.activation_date + datetime.timedelta(30))
+        end_date = self.trial_part1.activation_date + datetime.timedelta(30)
+        self.assertEqual(self.trial_part1.deactivation_date, end_date)
+        self.assertEqual(self.trial_part1.subscription.deactivation_date, end_date)
+        self.assertEqual(self.trial_member1.subscriptionmembership_set.first().leave_date, end_date)
 
     def testDeactivateTrialOnDate(self):
         data = {'end_date': self.trial_sub1.activation_date}
         self.assertPost(reverse('manage-trial-deactivate', args=[self.trial_part1.pk]), data, 302, member=self.admin)
         self.trial_part1.refresh_from_db()
         self.assertTrue(self.trial_part1.inactive)
+        self.trial_sub1.refresh_from_db()
+        self.assertTrue(self.trial_sub1.inactive)
+        self.assertTrue(self.trial_sub1.subscription.inactive)
+        self.assertIsNotNone(self.trial_member1.subscriptionmembership_set.first().leave_date)
 
 
 class ContinueTrialSubscriptionAdminTests(TrialSubscriptionTestCase):

@@ -3,6 +3,7 @@ from functools import cached_property
 
 from django.contrib import admin
 from django.db import models
+from django.db.models import Max
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -254,6 +255,12 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
         # if last part was canceled, also cancel subscription
         if not self.subscription.canceled and not self.subscription.parts.not_canceled().exists():
             self.subscription.cancel(date)
+
+    def deactivate(self, date=None):
+        super().deactivate(date)
+        # if last part is deactivated, also deactivate subscription
+        if self.subscription.deactivation_date is None and not self.subscription.parts.filter(deactivation_date=None).exists():
+            self.subscription.deactivate(self.subscription.parts.aggregate(Max('deactivation_date'))['deactivation_date__max'])
 
     @property
     def is_extra(self):
