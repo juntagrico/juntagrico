@@ -1,4 +1,5 @@
 {% extends "../base.html" %}
+{% load static %}
 {% load juntagrico.config %}
 {% load juntagrico.common %}
 {% load juntagrico.snippets %}
@@ -251,8 +252,9 @@
                 }
                 let start_date = new Date(end_date)
                 start_date.setDate(start_date.getDate() + 1);
-                // TODO: use same date format as django
-                $('.next-day-date').text(start_date.toLocaleDateString())
+                $('.next-day-date').text(
+                    start_date.toLocaleDateString(undefined, {year: "numeric", month: "long", day: "numeric"})
+                )
                 let activation_date_input = $('#closeout_activation_date')
                 if (!activation_date_input.val()) {
                     activation_date_input.val(start_date.toISOString().split('T')[0])
