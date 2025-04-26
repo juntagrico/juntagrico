@@ -143,6 +143,7 @@ class JobAdmin(PolymorphicInlineSupportMixin, AreaCoordinatorMixin, RichTextAdmi
     list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']
+    date_hierarchy = 'time'
     exclude = ['reminder_sent']
     autocomplete_fields = ['type']
     inlines = [ContactInline, AssignmentInline]

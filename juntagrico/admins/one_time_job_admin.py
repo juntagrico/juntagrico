@@ -24,6 +24,7 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin,
     list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']
+    date_hierarchy = 'time'
     exclude = ['reminder_sent']
     autocomplete_fields = ['activityarea', 'location']
 
