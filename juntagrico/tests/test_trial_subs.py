@@ -199,7 +199,7 @@ class ContinueTrialWithOtherSubscriptionAdminTests(TrialSubscriptionTestCase):
         cls.activation_date = datetime.date(2025, 4, 24)
         cls.trial_sub1.activate(cls.activation_date)
         cls.trial_part1.refresh_from_db()
-        other_bundle = cls.create_bundle('other bundle', cls.sub_product, units=2)
+        other_bundle = cls.create_bundle('other bundle', cls.sub_category)
         other_bundle_type = cls.create_sub_type(other_bundle)
         cls.other_part = SubscriptionPart.objects.create(subscription=cls.trial_sub1, type=other_bundle_type)
         cls.trial_part1.cancel()
