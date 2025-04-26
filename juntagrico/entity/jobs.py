@@ -371,7 +371,8 @@ class CheckJobCapabilities:
         return not job_read_only or self.user.has_perm('juntagrico.can_edit_past_jobs')
 
     def can_copy(self):
-        return self.user.has_perm(f'juntagrico.add_{self.job_model_name}') or self.is_coordinator
+        is_recurring = isinstance(self.job.get_real_instance(), RecuringJob)
+        return is_recurring and (self.user.has_perm(f'juntagrico.add_recuringjob') or self.is_coordinator)
 
     def can_cancel(self):
         can_change = self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator
