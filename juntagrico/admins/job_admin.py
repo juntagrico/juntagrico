@@ -60,27 +60,20 @@ class JobCopy(admin.ModelAdmin):
     copy_readonly_fields = ['type_description', 'type_duration']
 
     def get_urls(self):
-        urls = super().get_urls()
-        my_urls = [
-            path('<str:object_id>/mass_copy/', self.admin_site.admin_view(self.mass_copy_job_view), name='action-mass-copy-job'),
-            path('<str:object_id>/copy/', self.admin_site.admin_view(self.change_view), {
-                'extra_context': {
-                    'title': _('Job kopieren'),
-                    'show_save_and_continue': False,
-                    'show_save_and_add_another': False,
-                    'show_delete': False,
-                }
-            }, name='action-copy-job'),
-        ]
-        return my_urls + urls
-
-    def mass_copy_job_view(self, request, object_id):
-        return self.change_view(request, object_id, extra_context={
-            'title': _('Job mehrfach kopieren'),
+        hide_buttons = {
             'show_save_and_continue': False,
             'show_save_and_add_another': False,
             'show_delete': False,
-        })
+        }
+        copy_urls = [
+            path('<str:object_id>/copy/multiple', self.admin_site.admin_view(self.change_view), {
+                'extra_context': {'title': _('Job mehrfach kopieren'), **hide_buttons}
+            }, name='action-mass-copy-job'),
+            path('<str:object_id>/copy/', self.admin_site.admin_view(self.change_view), {
+                'extra_context': {'title': _('Job kopieren'), **hide_buttons}
+            }, name='action-copy-job'),
+        ]
+        return copy_urls + super().get_urls()
 
     @staticmethod
     def is_mass_copy_view(request):

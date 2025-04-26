@@ -108,7 +108,7 @@ def all_jobs(request):
     if jobs.count() > 1000:
         # use server side processing when data set is too large
         return render(request, 'juntagrico/job/list/all.html', {
-            'jobs': Job.objects.none()
+            'jobs': Job.objects.none(),
             **context
         })
     return render(request, 'jobs.html', {'jobs': jobs, **context})
