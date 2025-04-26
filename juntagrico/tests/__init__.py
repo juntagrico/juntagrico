@@ -390,4 +390,4 @@ class JuntagricoTestCase(TestCase):
 
 
 class JuntagricoTestCaseWithShares(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + (['test/shares'] if settings.ENABLE_SHARES else [])
+    fixtures = JuntagricoTestCase.fixtures + (['test/shares'] if getattr(settings, 'ENABLE_SHARES', False) else [])

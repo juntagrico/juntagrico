@@ -6,6 +6,7 @@ from juntagrico.util.admin import formfield_for_coordinator
 class AssignmentAdmin(BaseAdmin):
     list_display = ['__str__', 'member', 'time', 'amount', 'job']
     search_fields = ['member__first_name', 'member__last_name']
+    date_hierarchy = 'job__time'
     raw_id_fields = ['member', 'job']
 
     def has_change_permission(self, request, obj=None):
