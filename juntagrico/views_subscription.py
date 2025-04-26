@@ -4,7 +4,6 @@ from datetime import date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
-from django.db import transaction
 from django.db.models import Count, Sum
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -23,7 +22,7 @@ from juntagrico.dao.memberdao import MemberDao
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
-from juntagrico.entity.subs import Subscription, SubscriptionPart
+from juntagrico.entity.subs import Subscription
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, EditMemberForm, AddCoMemberForm, SubscriptionPartOrderForm, \
     NicknameForm, SubscriptionPartChangeForm
@@ -181,39 +180,22 @@ def size_change(request, subscription_id):
 
 
 @primary_member_of_subscription_of_part
-def part_change(request, part):
+def part_change(request, part,
+                form_class=SubscriptionPartChangeForm,
+                template_name='juntagrico/my/subscription/part/change.html'):
     """
     change part of a subscription
     """
-    if part.subscription.canceled or part.subscription.inactive:
-        raise Http404("Can't change subscription part of canceled subscription")
-    if not SubscriptionType.objects.can_change():
-        raise Http404("Can't change subscription part if there is only one subscription type")
     if request.method == 'POST':
-        form = SubscriptionPartChangeForm(part, request.POST)
+        form = form_class(part, request.POST)
         if form.is_valid():
-            subscription_type = get_object_or_404(SubscriptionType, id=form.cleaned_data['part_type'])
-            if part.activation_date is None:
-                # just change type of waiting part
-                part.type = subscription_type
-                part.save()
-            else:
-                # cancel existing part and create new waiting one
-                with transaction.atomic():
-                    new_part = SubscriptionPart.objects.create(subscription=part.subscription, type=subscription_type)
-                    part.cancel()
-                # notify admin
-                adminnotification.subpart_canceled(part)
-                adminnotification.subparts_created([new_part], part.subscription)
+            form.save()
             return redirect(reverse('size-change', args=[part.subscription.id]))
     else:
-        form = SubscriptionPartChangeForm(part)
-    renderdict = {
+        form = form_class(part)
+    return render(request, template_name, {
         'form': form,
-        'subscription': subscription,
-        'hours_used': Config.assignment_unit() == 'HOURS',
-    }
-    return render(request, 'part_change.html', renderdict)
+    })
 
 
 @primary_member_of_subscription
@@ -376,9 +358,8 @@ def deactivate_subscription(request, change_date, subscription_id):
     return return_to_previous_location(request)
 
 
-@primary_member_of_subscription
-def cancel_part(request, part_id, subscription_id):
-    part = get_object_or_404(SubscriptionPart, subscription__id=subscription_id, id=part_id)
+@primary_member_of_subscription_of_part
+def cancel_part(request, part):
     part.cancel()
     adminnotification.subpart_canceled(part)
     return return_to_previous_location(request)
@@ -413,23 +394,6 @@ def leave_subscription(request, subscription_id):
         membernotification.co_member_left_subscription(primary_member, member, request.POST.get('message'))
         return redirect('home')
     return render(request, 'leavesubscription.html', {})
-
-
-@permission_required('juntagrico.change_subscriptionpart')
-@using_change_date
-def activate_part(request, change_date, part_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
-    if part.activation_date is None and part.deactivation_date is None:
-        part.activate(change_date)
-    return return_to_previous_location(request)
-
-
-@permission_required('juntagrico.change_subscriptionpart')
-@using_change_date
-def deactivate_part(request, change_date, part_id):
-    part = get_object_or_404(SubscriptionPart, id=part_id)
-    part.deactivate(change_date)
-    return return_to_previous_location(request)
 
 
 @primary_member_of_subscription

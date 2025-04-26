@@ -26,6 +26,7 @@ class JuntagricoTestCase(TestCase):
     def setUpTestData(cls):
         # load from fixtures
         cls.load_members()
+        cls.default_member = cls.member
         cls.load_areas()
         # setup other objects
         cls.set_up_job()
@@ -212,7 +213,18 @@ class JuntagricoTestCase(TestCase):
         cls.depot2 = Depot.objects.create(**depot_data)
 
     @staticmethod
-    def create_sub_type(bundle, shares=1, visible=True, required_assignments=10, required_core_assignments=3, price=1000, **kwargs):
+    def create_bundle(name, category, long_name='', description='', **kwargs):
+        return SubscriptionBundle.objects.create(
+            name=name,
+            long_name=long_name,
+            category=category,
+            description=description,
+            **kwargs
+        )
+
+    @staticmethod
+    def create_sub_type(bundle, shares=1, visible=True, required_assignments=10, required_core_assignments=3,
+                        price=1000, **kwargs):
         JuntagricoTestCase._count_sub_types += 1
         name = kwargs.get('name', None)
         long_name = kwargs.get('long_name', 'sub_type_long_name')
@@ -241,13 +253,7 @@ class JuntagricoTestCase(TestCase):
             'name': 'category'
         }
         cls.sub_category = SubscriptionCategory.objects.create(**sub_category_data)
-        bundle_data = {
-            'name': 'sub_name',
-            'long_name': 'sub_long_name',
-            'category': cls.sub_category,
-            'description': 'sub_desc'
-        }
-        cls.bundle = SubscriptionBundle.objects.create(**bundle_data)
+        cls.bundle = cls.create_bundle('sub_name', cls.sub_category, long_name='sub_long_name', description='sub_desc')
         SubscriptionItem.objects.create(bundle=cls.bundle, product=cls.sub_product, units=1.0)
         cls.sub_type = cls.create_sub_type(cls.bundle)
         cls.sub_type2 = cls.create_sub_type(cls.bundle, shares=2)
@@ -310,9 +316,9 @@ class JuntagricoTestCase(TestCase):
         # sub2 (waiting)
         cls.sub2 = cls.create_sub(cls.depot, cls.sub_type2)
         cls.member2.join_subscription(cls.sub2, True)
-        # cancelled_sub
-        cls.cancelled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
-        cls.member6.join_subscription(cls.cancelled_sub, True)
+        # canceled_sub
+        cls.canceled_sub = cls.create_sub_now(cls.depot, cancellation_date=today)
+        cls.member6.join_subscription(cls.canceled_sub, True)
         # inconsistent sub
         cls.inconsistent_sub = Subscription.objects.create(depot=cls.depot)
 
@@ -359,14 +365,14 @@ class JuntagricoTestCase(TestCase):
         DeliveryItem.objects.create(delivery=cls.delivery1)
 
     def assertGet(self, url, code=200, member=None):
-        login_member = member or self.member
+        login_member = member or self.default_member
         self.client.force_login(login_member.user)
         response = self.client.get(url)
         self.assertEqual(response.status_code, code)
         return response
 
     def assertPost(self, url, data=None, code=200, member=None):
-        login_member = member or self.member
+        login_member = member or self.default_member
         self.client.force_login(login_member.user)
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, code)
@@ -374,4 +380,4 @@ class JuntagricoTestCase(TestCase):
 
 
 class JuntagricoTestCaseWithShares(JuntagricoTestCase):
-    fixtures = JuntagricoTestCase.fixtures + (['test/shares'] if settings.ENABLE_SHARES else [])
+    fixtures = JuntagricoTestCase.fixtures + (['test/shares'] if getattr(settings, 'ENABLE_SHARES', False) else [])

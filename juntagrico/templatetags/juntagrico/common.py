@@ -25,6 +25,11 @@ def has_extra_subscriptions():
 
 
 @register.simple_tag
+def has_trial_subscriptions():
+    return SubscriptionType.objects.filter(trial_days__gt=0).exists()
+
+
+@register.simple_tag
 def show_core():
     return ActivityAreaDao.all_core_areas().count() > 0
 

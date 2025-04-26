@@ -1,0 +1,15 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block content %}
+
+{% blocktrans with name=member.first_name %}Hallo {{ name }}{% endblocktrans %}
+
+{% blocktrans %}Soeben wurde dein Bestandteil "{{ part }}" für dich gekündigt{% endblocktrans %}
+
+{% config "organisation_name" as c_organisation_name %}
+{% blocktrans trimmed %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
+{% endblock %}

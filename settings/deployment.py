@@ -1,5 +1,5 @@
-# testsettings to test collectstatic
-from testsettings import *
+# these settings tests if collectstatic will work during deployment
+from .dev import *  # noqa: F401
 
 DEBUG = False
 ALLOWED_HOSTS = ['localhost']

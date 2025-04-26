@@ -41,6 +41,9 @@ class AdminTests(JuntagricoTestCaseWithShares):
         url = reverse('admin:autocomplete') + '?app_label=juntagrico&model_name=recuringjob&field_name=type'
         self.assertGet(url, member=self.admin)
         self.assertGet(url, member=self.area_admin)
+        url += '&term=a'
+        self.assertGet(url, member=self.admin)
+        self.assertGet(url, member=self.area_admin)
 
     def testPastJobAdmin(self):
         add_url = reverse('admin:juntagrico_recuringjob_add')

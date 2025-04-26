@@ -84,7 +84,6 @@ class CSAddMemberView(SignupView, FormView):
         else:
             self.member_data = self.signup_manager.get('main_member')
 
-
     def get_form_class(self):
         return EditCoMemberForm if self.edit else \
             RegisterMultiCoMemberForm if self.signup_manager.get('co_members') else RegisterFirstMultiCoMemberForm
@@ -93,7 +92,7 @@ class CSAddMemberView(SignupView, FormView):
         form_kwargs = super().get_form_kwargs()
         # edit co-member from list
         own_email = None
-        if self.edit :
+        if self.edit:
             if 'data' not in form_kwargs:
                 form_kwargs['data'] = self.signup_manager.get('co_members', [])[self.edit - 1]
                 form_kwargs['data']['edit'] = self.edit

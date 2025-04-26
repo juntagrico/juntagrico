@@ -81,6 +81,12 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
             qs = qs.annotate(last_used=Max('recuringjob__time'))
         return qs
 
+    def get_search_fields(self, request):
+        search_fields = [*super().get_search_fields(request)]
+        if request.resolver_match.view_name == 'admin:autocomplete':
+            search_fields.remove('last_used')
+        return search_fields
+
     def get_search_results(self, request, queryset, search_term):
         queryset, use_distinct = super().get_search_results(request, queryset, search_term)
         if 'autocomplete' in request.path and request.GET.get('model_name') == 'recuringjob' and request.GET.get(

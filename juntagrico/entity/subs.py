@@ -1,7 +1,9 @@
+import datetime
 from functools import cached_property
 
 from django.contrib import admin
 from django.db import models
+from django.db.models import Max
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -248,9 +250,47 @@ class SubscriptionPart(JuntagricoBaseModel, SimpleStateModel):
     def can_cancel(self):
         return self.cancellation_date is None and self.subscription.future_parts.count() > 1
 
+    def cancel(self, date=None):
+        super().cancel(date)
+        # if last part was canceled, also cancel subscription
+        if not self.subscription.canceled and not self.subscription.parts.not_canceled().exists():
+            self.subscription.cancel(date)
+
+    def deactivate(self, date=None):
+        super().deactivate(date)
+        # if last part is deactivated, also deactivate subscription
+        if self.subscription.deactivation_date is None and not self.subscription.parts.filter(deactivation_date=None).exists():
+            self.subscription.deactivate(self.subscription.parts.aggregate(Max('deactivation_date'))['deactivation_date__max'])
+
     @property
     def is_extra(self):
         return self.type.is_extra
+
+    @property
+    def is_trial(self):
+        return self.type.trial_days > 0
+
+    @cached_property
+    def remaining_trial_days(self):
+        """
+        The end of the trial period is the deactivation_date, if set, otherwise it is activation_date + trial_days.
+        :return: remaining days of trial if is a trial and has started, otherwise None
+        """
+        if self.is_trial and self.activation_date is not None:
+            today = datetime.date.today()
+            end = self.end_of_trial_date
+            return (end - today).days
+
+    @cached_property
+    def end_of_trial_date(self):
+        if self.is_trial and self.activation_date is not None:
+            return self.deactivation_date or (self.activation_date + datetime.timedelta(days=self.type.trial_days))
+
+    def follow_up_parts(self):
+        """
+        :return: non-trial parts from the same subscription that are waiting or active after this part.
+        """
+        return self.subscription.parts.non_trial().waiting(self.activation_date)
 
     def clean(self):
         check_sub_part_consistency(self)

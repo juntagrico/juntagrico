@@ -7,7 +7,7 @@ recursive-include juntagrico/fixtures *
 include requirements.txt
 global-exclude *.pyc
 exclude manage.py
-exclude testsettings*.py
-exclude testurls*.py
+exclude settings/*
+exclude urls/*
 recursive-exclude juntagrico_test_addon *
 prune *bin

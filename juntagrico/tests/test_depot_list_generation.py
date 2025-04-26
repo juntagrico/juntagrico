@@ -23,4 +23,4 @@ class DepotlistTests(JuntagricoTestCase):
 
     def test_depot_list_data(self):
         data = depot_list_data()
-        self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4, self.cancelled_sub])
+        self.assertListEqual(list(data['subscriptions']), [self.sub2, self.sub, self.sub4, self.canceled_sub])
