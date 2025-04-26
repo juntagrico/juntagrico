@@ -27,6 +27,7 @@ def jobs(request):
     renderdict = {
         'jobs': jobs,
         'show_all': True,
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
     }
     return render(request, 'jobs.html', renderdict)
 
@@ -101,12 +102,16 @@ def all_jobs(request):
     All jobs to be sorted etc.
     '''
     jobs = JobDao.jobs_ordered_by_time()
+    context = {
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
+    }
     if jobs.count() > 1000:
         # use server side processing when data set is too large
         return render(request, 'juntagrico/job/list/all.html', {
             'jobs': Job.objects.none()
+            **context
         })
-    return render(request, 'jobs.html', {'jobs': jobs})
+    return render(request, 'jobs.html', {'jobs': jobs, **context})
 
 
 @login_required
