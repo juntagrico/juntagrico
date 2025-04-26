@@ -173,5 +173,23 @@
         "object_id": 2,
         "sort_order": 0
     }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "pk": 1,
+    "fields": {
+        "area": 1,
+        "member": 21,
+        "can_view_member": true
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "pk": 2,
+    "fields": {
+        "area": 2,
+        "member": 21,
+        "can_view_member": true
+    }
 }
 ]

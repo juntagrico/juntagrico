@@ -13,7 +13,7 @@ from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import JobSubscribeForm, EditAssignmentForm, BusinessYearForm
-from juntagrico.util.admin import get_job_admin_url
+from juntagrico.util import return_to_previous_location
 from juntagrico.view_decorators import highlighted_menu
 
 
@@ -156,17 +156,31 @@ def job(request, job_id, form_class=JobSubscribeForm):
     else:
         form = form_class(member, job)
 
-    is_job_coordinator = job.type.activityarea.coordinator == member and request.user.has_perm('juntagrico.is_area_admin')
+    permissions = job.check_if(request.user)
     renderdict = {
         'job': job,
-        'edit_url': get_job_admin_url(request, job),
-        'form': form,
+        'edit_url': permissions.get_edit_url(),
+        'can_copy': permissions.can_copy(),
+        'can_cancel': permissions.can_cancel(),
         # TODO: should also be able to contact, if is member-contact of this job or job type
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or is_job_coordinator,
-        'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or is_job_coordinator,
-        'error': request.method == 'POST'
+        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or permissions.is_coordinator,
+        'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or permissions.is_coordinator,
+        'error': request.method == 'POST',
+        'form': form,
     }
     return render(request, 'job.html', renderdict)
+
+
+@login_required
+def cancel(request, job_id):
+    job = get_object_or_404(Job, id=int(job_id))
+    # check permission
+    if not job.check_if(request.user).can_cancel():
+        raise PermissionDenied
+    # cancel the job
+    job.canceled = True
+    job.save()
+    return return_to_previous_location(request)
 
 
 @login_required

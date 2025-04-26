@@ -96,8 +96,8 @@ class AreaMemberView(MemberView):
         self.area = get_object_or_404(
             ActivityArea,
             id=int(self.kwargs['area_id']),
-            areacoordinator__member=self.request.user.member,
-            areacoordinator__can_view_member=True
+            coordinator_access__member=self.request.user.member,
+            coordinator_access__can_view_member=True
         )
         return self.area.members.active().prefetch_for_list
 
@@ -118,8 +118,8 @@ def remove_area_member(request, area_id, member_id):
     area = get_object_or_404(
         ActivityArea,
         id=area_id,
-        areacoordinator__member=request.user.member,
-        areacoordinator__can_remove_member=True
+        coordinator_access__member=request.user.member,
+        coordinator_access__can_remove_member=True
     )
     area.members.remove(member_id)
     return return_to_previous_location(request)

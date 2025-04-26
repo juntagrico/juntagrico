@@ -38,6 +38,7 @@ def home(request):
 
     renderdict = {
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
     }
 
@@ -93,7 +94,7 @@ def show_area(request, area_id):
     '''
     area = get_object_or_404(ActivityArea, id=int(area_id))
     edit_form = None
-    access = area.areacoordinator_set.filter(member=request.user.member).first()
+    access = request.user.member.area_access.filter(area=area).first()
     if access and access.can_modify_area:
         if request.method == 'POST':
             edit_form = AreaDescriptionForm(request.POST, instance=area)
@@ -118,6 +119,7 @@ def show_area(request, area_id):
         'area_checked': area_checked,
         'edit_form': edit_form,
         'can_view_member': access and access.can_view_member,
+        'can_manage_jobs': access and access.can_modify_jobs
     }
     return render(request, 'area.html', renderdict)
 

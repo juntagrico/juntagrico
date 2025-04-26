@@ -65,9 +65,11 @@
             <div class="col-md-12">
                 {% block coordinated_areas %}
                     <h4>{% trans "Von dir koordiniert" %}</h4>
-                    {% for area in coordinated_areas %}
-                        <a href="{% url 'area' area.id %}">{{ area }}</a>
-                    {% endfor %}
+                        <ul>
+                            {% for area in coordinated_areas %}
+                                <li><a href="{% url 'area' area.id %}">{{ area }}</a></li>
+                            {% endfor %}
+                        </ul>
                 {% endblock %}
             </div>
         </div>

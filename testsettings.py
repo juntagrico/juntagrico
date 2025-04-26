@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin',
+    'juntagrico.admin_sites.JuntagricoAdminConfig',
     'fontawesomefree',
     'impersonate',
     # 'juntagrico_test_addon',  # enable only to test addon features

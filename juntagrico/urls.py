@@ -96,6 +96,7 @@ urlpatterns = [
     path('my/jobs/all', job.all_jobs, name='jobs-all'),
     path('job/list/data', job.list_data, name='jobs-list-data'),
     path('my/jobs/<int:job_id>/', job.job, name='job'),
+    path('job/<int:job_id>/cancel', job.cancel, name='job-cancel'),
 
     # /assignment
     path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),

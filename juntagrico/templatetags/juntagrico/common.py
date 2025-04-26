@@ -69,8 +69,10 @@ def depot_admin(request):
 @register.simple_tag
 def area_admin(request):
     if hasattr(request.user, 'member'):
-        return ActivityArea.objects.filter(areacoordinator__member=request.user.member,
-                                           areacoordinator__can_view_member=True)
+        return ActivityArea.objects.filter(
+            coordinator_access__member=request.user.member,
+            coordinator_access__can_view_member=True
+        )
     return []
 
 
