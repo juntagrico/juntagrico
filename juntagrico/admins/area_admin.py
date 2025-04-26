@@ -17,7 +17,7 @@ class AreaCoordinatorInline(SortableTabularInline):
 
     def get_formset(self, *args, **kwargs):
         # validates, that at least min_num undeleted forms are sent
-        return super().get_formset(validate_min=True, *args, **kwargs)
+        return super().get_formset(*args, validate_min=True, **kwargs)
 
     def has_delete_permission(self, request, obj=None):
         # only show delete option of there is more than 1 coordinator
