@@ -187,7 +187,7 @@ Search Hints:
 
 juntagrico.notified_on_subscription_cancellation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Person gets :ref:`notified <reference-notifications-subscription-canceled>` when a subscription is cancelled.
+Person gets :ref:`notified <reference-notifications-subscription-canceled>` when a subscription is canceled.
 
 Search Hints:
     * German: Kündigung informiert

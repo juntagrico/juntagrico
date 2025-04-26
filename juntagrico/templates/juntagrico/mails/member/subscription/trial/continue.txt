@@ -1,0 +1,19 @@
+{% extends "mails/email.txt" %}
+{% load i18n %}
+{% load juntagrico.config %}
+
+{% block content %}
+
+{% blocktrans with name=member.first_name %}Hallo {{ name }}{% endblocktrans %}
+
+{% blocktrans with v_subscription=vocabulary.subscription %}
+Soeben wurde für dich der Bestandteil "{{ follow_up_part }}" bestellt.
+Dieser wird die Probe "{{ trial_part }}" ersetzen.
+Wir informieren dich, wenn es so weit ist.
+{% endblocktrans %}
+
+{% config "organisation_name" as c_organisation_name %}
+{% blocktrans %}
+Bis bald und liebe Grüsse die {{ c_organisation_name }}-Betriebsgruppe
+{% endblocktrans %}
+{% endblock %}

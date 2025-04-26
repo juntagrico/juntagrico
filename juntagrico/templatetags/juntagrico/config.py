@@ -36,6 +36,11 @@ def organisation_website(key):
 
 
 @register.simple_tag
+def server_url():
+    return Config.url_protocol() + Site.objects.get_current().domain
+
+
+@register.simple_tag
 def cookie_consent(key):
     return Config.cookie_consent(key)
 

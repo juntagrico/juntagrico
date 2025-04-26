@@ -87,6 +87,11 @@ class EmailSender:
 
     def __init__(self, email):
         self.email = email
+        self.email.body = self.trim_newlines(self.email.body)
+
+    @staticmethod
+    def trim_newlines(text):
+        return re.sub(r'((?:\r?\n|\r){,2})(?:\r?\n|\r)*', r'\1', text).strip()
 
     def send_to(self, to, **kwargs):
         to = [to] if isinstance(to, str) else to
@@ -123,7 +128,6 @@ class EmailSender:
 
     @chainable
     def attach_ics(self, ics):
-
         self.email.attach(ics.name, ics.content)
 
     @chainable

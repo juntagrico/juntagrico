@@ -10,6 +10,7 @@ from juntagrico.dao.jobextradao import JobExtraDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.subtypes import SubscriptionType
 
 register = template.Library()
 
@@ -24,6 +25,11 @@ def get_item(dictionary, key):
 @register.simple_tag
 def has_extra_subscriptions():
     return SubscriptionProductDao.all_extra_products().count() > 0
+
+
+@register.simple_tag
+def has_trial_subscriptions():
+    return SubscriptionType.objects.filter(trial_days__gt=0).exists()
 
 
 @register.simple_tag
