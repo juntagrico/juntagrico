@@ -652,7 +652,7 @@ class TrialCloseoutForm(Form):
 
     @cached_property
     def follow_up_part(self):
-        return self.part.follow_up_parts().waiting().filter(type__size=self.part.type.size).first()
+        return self.part.follow_up_parts().waiting().filter(type__bundle=self.part.type.bundle).first()
 
     @cached_property
     def other_new_parts(self):
