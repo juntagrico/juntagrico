@@ -1,19 +1,15 @@
-{% extends "base.html" %}
+{% extends "juntagrico/form.html" %}
 {% load i18n %}
 {% load juntagrico.config %}
-{% load crispy_forms_tags %}
+
 {% block page_title %}
     {% vocabulary "subscription" as v_subscription %}
     <h3>
         {% blocktrans %}{{ v_subscription }}-Bestandteil ändern{% endblocktrans %}
     </h3>
 {% endblock %}
+
 {% block content %}
-
-    <div class="row mb-3">
-        <h4>{% trans "Bestandteil ändern" %}</h4>
-    </div>
-
-    {% crispy form %}
-
+    <h4>{% trans "Wähle einen neuen Bestandteil" %}</h4>
+    {{ block.super }}
 {% endblock %}
