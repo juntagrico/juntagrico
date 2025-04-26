@@ -7,6 +7,7 @@ from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
+from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
 from juntagrico.views import subscription, manage, email, job, api
 from juntagrico.views_admin import ShiftTimeFormView
@@ -86,8 +87,11 @@ urlpatterns = [
          name='extra-change'),
     # /my/subscription/part/{id}
     path('my/subscription/part/<int:part_id>/change', juntagrico_subscription.part_change, name='part-change'),
-    path('my/subpart/cancel/<int:part_id>/<int:subscription_id>/', juntagrico_subscription.cancel_part,
-         name='part-cancel'),
+    path('my/subscription/part/<int:part_id>/continue', juntagrico_subscription.part_change, {
+        'form_class': SubscriptionPartContinueForm,
+        'template_name': 'juntagrico/my/subscription/trial/continue.html'
+    }, name='part-continue'),
+    path('my/subscription/part/<int:part_id>/cancel', juntagrico_subscription.cancel_part, name='part-cancel'),
     # /my/assignments
     path('my/memberjobs', job.memberjobs, name='memberjobs'),
 
@@ -128,6 +132,7 @@ urlpatterns = [
     path('manage/subscription/recent', manage.SubscriptionRecentView.as_view(), name='manage-sub-recent'),
     path('manage/subscription', manage.SubscriptionView.as_view(), name='manage-subscription'),
     path('manage/subscription/pending', manage.SubscriptionPendingView.as_view(), name='manage-sub-pending'),
+    path('manage/subscription/trial', manage.SubscriptionTrialPartView.as_view(), name='manage-sub-trial'),
     path('my/waitinglist', juntagrico_admin.waitinglist, name='sub-mgmt-waitinglist'),
     path('my/canceledlist', juntagrico_admin.canceledlist, name='sub-mgmt-canceledlist'),
     path('my/future', juntagrico_admin.future, name='future'),
@@ -141,10 +146,20 @@ urlpatterns = [
     path('manage/subscription/part/waitinglist', juntagrico_admin.part_waitinglist, name='sub-mgmt-part-waitinglist'),
     path('manage/subscription/part/canceledlist', juntagrico_admin.part_canceledlist,
          name='sub-mgmt-part-canceledlist'),
-    path('manage/subscription/part/<int:part_id>/activate/', juntagrico_subscription.activate_part,
+    path('manage/subscription/part/<int:part_id>/activate/', manage.activate_part,
          name='part-activate'),
-    path('manage/subscription/part/<int:part_id>/deactivate/', juntagrico_subscription.deactivate_part,
+    path('manage/subscription/part/<int:part_id>/cancel/', manage.cancel_part,
+         name='manage-part-cancel'),
+    path('manage/subscription/part/<int:part_id>/deactivate/', manage.deactivate_part,
          name='part-deactivate'),
+    path('manage/subscription/trial/<int:part_id>/activate/', manage.activate_trial,
+         name='manage-trial-activate'),
+    path('manage/subscription/trial/<int:part_id>/continue/', manage.continue_trial,
+         name='manage-trial-continue'),
+    path('manage/subscription/trial/<int:part_id>/deactivate/', manage.deactivate_trial,
+         name='manage-trial-deactivate'),
+    path('manage/subscription/trial/<int:part_id>/closeout', manage.closeout_trial,
+         name='manage-trial-closeout'),
     path('manage/subscription/parts/apply', manage.parts_apply, name='parts-apply'),
     # /manage/subscription/extra
     path('my/extra/waitinglist', juntagrico_admin.extra_waitinglist, name='sub-mgmt-extra-waitinglist'),

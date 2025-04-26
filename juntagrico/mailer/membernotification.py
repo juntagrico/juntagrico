@@ -65,6 +65,33 @@ def co_member_left_subscription(primary_member, co_member, message):
     ).send()
 
 
+def part_canceled_for_you(part):
+    member = part.subscription.primary_member
+    if member is not None:
+        EmailSender.get_sender(
+            organisation_subject(_('Bestandteil gekündigt')),
+            get_template('juntagrico/mails/member/subscription/part/canceled.txt').render({
+                'member': member,
+                'part': part,
+            }),
+            reply_to=[Config.contacts('for_subscriptions')]
+        ).send_to(member.email)
+
+
+def trial_continued_for_you(trial_part, follow_up_part):
+    member = trial_part.subscription.primary_member
+    if member is not None:
+        EmailSender.get_sender(
+            organisation_subject(_('Fortsetzung nach Probe-{0}').format(Config.vocabulary('subscription'))),
+            get_template('juntagrico/mails/member/subscription/trial/continue.txt').render({
+                'member': member,
+                'trial_part': trial_part,
+                'follow_up_part': follow_up_part,
+            }),
+            reply_to=[Config.contacts('for_subscriptions')]
+        ).send_to(member.email)
+
+
 def job_signup(email, job, count):
     EmailSender.get_sender(
         organisation_subject(_('Für Einsatz angemeldet')),

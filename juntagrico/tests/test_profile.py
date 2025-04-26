@@ -13,6 +13,7 @@ class ProfileTests(JuntagricoTestCase):
     @classmethod
     def setUpTestData(cls):
         cls.member = cls.create_member('member_with_shares@email.org')
+        cls.default_member = cls.member
         cls.member_without_shares = cls.create_member('member_without_shares@email.org')
         cls.member_with_unpaid_share = cls.create_member('member_with_unpaid_share@email.org')
         cls.member_with_canceled_share = cls.create_member('member_with_canceled_share@email.org')
