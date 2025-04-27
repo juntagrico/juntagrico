@@ -25,30 +25,29 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             'agb': 'on'
         }
 
-    def assertGet(self, url, code=302, member=None):
+    def assertGet(self, url, code=200, member=None, **kwargs):
         """ Stay logged out
         """
-        response = self.client.get(url)
+        response = self.client.get(url, **kwargs)
         self.assertEqual(response.status_code, code)
         return response
 
     def assertPost(self, url, data=None, code=302, member=None):
         """ Stay logged out
         """
-        response = self.client.post(url)
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, code)
         return response
 
-    def assertGetAndPost(self, url, code=302):
-        self.assertGet(reverse(url), code)
-        self.assertPost(reverse(url), code)
+    def assertGetAndPost(self, url, code=302, post_code=302, query=''):
+        self.assertGet(reverse(url) + query, code)
+        self.assertPost(reverse(url) + query, code=post_code)
 
     def assertGetAndRedirects(self, get, redirect='subscription-landing'):
         response = self.client.get(reverse(get))
         self.assertRedirects(response, reverse(redirect), fetch_redirect_response=False)
 
-    def commonAddSub(self, member_email, comment='', comment_in=0):
-        initial_share_count = Share.objects.filter(member__email=member_email).count()
+    def addSubToSummary(self, with_co_member=False):
         sub_types_id = SubscriptionType.objects.values_list('id', flat=True)
         response = self.client.post(
             reverse('cs-subscription'),
@@ -58,6 +57,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             }
         )
         self.assertRedirects(response, reverse('cs-depot'))
+        self.assertGet(reverse('cs-depot'))
         depot_id = Depot.objects.values_list('id', flat=True)
         response = self.client.post(
             reverse('cs-depot'),
@@ -66,6 +66,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             }
         )
         self.assertRedirects(response, reverse('cs-start'))
+        self.assertGet(reverse('cs-start'))
         response = self.client.post(
             reverse('cs-start'),
             {
@@ -74,12 +75,17 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             }
         )
         self.assertRedirects(response, reverse('cs-co-members'))
-        co_member_data = self.newMemberData('test2@user.com')
-        response = self.client.post(reverse('cs-co-members'), co_member_data)
-        self.assertRedirects(response, reverse('cs-co-members'))
-        response = self.client.get(reverse('cs-co-members'), {'next': '1'})
+        self.assertGet(reverse('cs-co-members'))
+
+        if with_co_member:
+            co_member_data = self.newMemberData('test2@user.com')
+            response = self.client.post(reverse('cs-co-members'), co_member_data)
+            self.assertRedirects(response, reverse('cs-co-members'))
+            self.assertGet(reverse('cs-co-members'))
+
+        response = self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
         self.assertRedirects(response, reverse('cs-shares'))
-        self.assertGet(reverse('cs-shares'), 200)
+        self.assertGet(reverse('cs-shares'))
         response = self.client.post(
             reverse('cs-shares'),
             {
@@ -89,6 +95,11 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         )
         self.assertRedirects(response, reverse('cs-summary'))
         # confirm summary
+        self.client.get(reverse('cs-summary'))
+
+    def commonAddSub(self, member_email, with_co_member, comment='', comment_in=0):
+        initial_share_count = Share.objects.filter(member__email=member_email).count()
+        self.addSubToSummary(with_co_member)
         response = self.client.post(reverse('cs-summary'), {'comment': comment})
         self.assertRedirects(response, reverse('welcome-with-sub'))
         self.assertEqual(Member.objects.filter(email=member_email).count(), 1)
@@ -100,15 +111,25 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertIn(comment, mail.outbox[comment_in].body)
         self.assertEqual(subscription.primary_member.signup_comment, comment)
 
-    def commonSignupTest(self, with_comment=False):
+    def signup(self, with_comment):
         new_member_data = self.newMemberData()
         if with_comment:
             new_member_data['comment'] = 'Short comment'
         response = self.client.post(reverse('signup'), new_member_data)
         self.assertRedirects(response, reverse('cs-subscription'))
-        self.commonAddSub(new_member_data['email'], 'new test comment' if with_comment else '')
-        # welcome mail, share mail & same for co-member & 3 admin notifications
-        self.assertEqual(len(mail.outbox), 7 if settings.ENABLE_SHARES else 5)
+        return new_member_data
+
+    def commonSignupTest(self, with_co_member, with_comment=False):
+        new_member_data = self.signup(with_comment)
+        self.commonAddSub(new_member_data['email'], with_co_member, 'new test comment' if with_comment else '')
+        mail_count = 3  # welcome email and 2 admin notifications
+        if with_co_member:
+            mail_count += 1  # Welcome to co-member
+        if settings.ENABLE_SHARES:
+            mail_count += 2  # share email & admin notification
+            if with_co_member:
+                mail_count += 1  # share email to co-member
+        self.assertEqual(len(mail.outbox), mail_count)
 
         # signup with different case email address should return form error
         new_member_data['email'] = 'Test@user.com'
@@ -131,8 +152,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertGetAndPost('cs-summary')
 
     def testWelcome(self):
-        response = self.client.get(reverse('welcome'))
-        self.assertEqual(response.status_code, 200)
+        self.assertGet(reverse('welcome'))
 
     def testAddSubWithExistingSub(self):
         """ subscription creation form should be inaccessible, for members with a subscription
@@ -149,12 +169,52 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         """ test order of new sub by existing member without sub
         """
         self.client.force_login(self.member4.user)
-        self.commonAddSub(self.member4.email, 'test comment', 3 if settings.ENABLE_SHARES else 1)
+        self.commonAddSub(self.member4.email, True, 'test comment', 3 if settings.ENABLE_SHARES else 1)
         # share mail (if enabled) for member & welcome mail for co-member & 3 admin notifications
         self.assertEqual(len(mail.outbox), 5 if settings.ENABLE_SHARES else 3)
 
+    def testAddSubWithoutComember(self):
+        """ test order of new sub by existing member without sub
+        """
+        self.client.force_login(self.member4.user)
+        self.commonAddSub(self.member4.email, False, 'test comment', 2 if settings.ENABLE_SHARES else 0)
+        # share mail (if enabled) for member & 2 admin notifications
+        self.assertEqual(len(mail.outbox), 3 if settings.ENABLE_SHARES else 2)
+
     def testSignupWithComment(self):
-        self.commonSignupTest(True)
+        self.commonSignupTest(False, True)
 
     def testSignupWithoutComment(self):
-        self.commonSignupTest()
+        self.commonSignupTest(False)
+
+    def testSignupWithCommentAndComember(self):
+        self.commonSignupTest(True, True)
+
+    def testSignupWithComember(self):
+        self.commonSignupTest(True)
+
+    def testSummaryModificationAndCancel(self):
+        self.signup(False)
+        self.addSubToSummary(False)
+        response = self.assertGet(reverse('signup') + '?mod')
+        self.assertDictEqual(response.context_data['form'].data, self.newMemberData())
+        self.assertPost(reverse('signup') + '?mod', response.context_data['form'].data)
+
+        self.assertGet(reverse('cs-subscription') + '?mod')
+        self.assertGet(reverse('cs-depot') + '?mod')
+        self.assertGet(reverse('cs-start') + '?mod')
+
+        self.assertGet(reverse('cs-co-members') + '?mod')
+        co_member_data = self.newMemberData('test2@user.com')
+        response = self.assertPost(reverse('cs-co-members'), co_member_data)
+        self.assertRedirects(response, reverse('cs-summary'))
+
+        self.assertGet(reverse('cs-shares') + '?mod')
+        self.assertGet(reverse('cs-cancel'), 302)
+
+
+    def testSummaryCancel(self):
+        with (self.settings(ORGANISATION_WEBSITE={'url': 'https://example.com'})):
+            self.signup(False)
+            response = self.assertGet(reverse('cs-cancel'), 302)
+            self.assertRedirects(response, 'https://example.com', fetch_redirect_response=False)
