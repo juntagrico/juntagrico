@@ -113,6 +113,9 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             parts__forecast_final_date=Least(
                 end,  # limit final date to period of interest
                 Case(
+                    # If activated and deactivated on same day, ignore the part
+                    When(parts__deactivation_date=F('parts__activation_date'),
+                         then=F('parts__deactivation_date') - self.one_day),
                     # use deactivation date if set
                     When(parts__deactivation_date__isnull=False,
                          then='parts__deactivation_date'),
@@ -124,7 +127,8 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                     output_field=DateField()
                 )
             ),
-            # number of days subscription part is actually active within period of interest. Add a day because activation day should also count to duration
+            # number of days subscription part is actually active within period of interest.
+            # Add a day because activation day should also count to duration
             parts__duration_in_period=F('parts__forecast_final_date') - Greatest('parts__activation_date', start) + self.one_day,
             parts__duration_in_period_float=Greatest(
                 0.0,  # ignore values <0 resulting from parts outside the period of interest
