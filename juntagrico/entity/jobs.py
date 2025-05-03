@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Count
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from polymorphic.managers import PolymorphicManager
 
@@ -207,6 +208,18 @@ class Job(JuntagricoBasePoly):
             return self.slots - self.occupied_slots
         return 0
 
+    @admin.display(description=_('Plätze'), ordering='slots')
+    def slots_display(self):
+        if self.infinite_slots:
+            return mark_safe('&infin;')
+        return self.slots
+
+    @admin.display(description=_('Freie Plätze'))
+    def free_slots_display(self):
+        if self.infinite_slots:
+            return mark_safe('&infin;')
+        return self.free_slots
+
     @property
     def occupied_slots(self):
         return self.assignment_set.count()
@@ -330,6 +343,7 @@ class RecuringJob(Job):
     )
 
     @property
+    @admin.display(description=_('Dauer'))
     def duration(self):
         return self.duration_override if self.duration_override else super().duration
 
