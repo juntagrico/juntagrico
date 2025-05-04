@@ -493,7 +493,7 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
         )
 
     def _get_initial(self, subscription_type):
-        return self.selected.get(subscription_type, 0)
+        return self.selected.get(str(subscription_type.id), 0)
 
 
 class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
@@ -744,7 +744,7 @@ class ShareOrderForm(Form):
             v_share = Config.vocabulary('share') if existing_shares == 1 else Config.vocabulary('share_pl')
             help_text = _(self.text['co_member_info']).format(existing_shares, v_share)
             self.fields[f'of_co_member[{i}]'] = IntegerField(
-                label=name, initial=0, min_value=0, required=False,
+                label=name, initial=0, min_value=0,
                 help_text=help_text
             )
 

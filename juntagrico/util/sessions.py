@@ -106,6 +106,9 @@ class SignupManager(SessionManager):
                 return 'subscription-landing'
         elif not self.get('main_member'):
             return 'signup'
+        url_name = self.request.resolver_match.url_name
+        if self.request.GET.get('mod') is not None or url_name == 'cs-cancel':
+            return url_name
         has_parts = self.has_parts()
         if not self.get('subscriptions'):
             return 'cs-subscription'

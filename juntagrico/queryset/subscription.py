@@ -118,6 +118,9 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
             parts__forecast_final_date=Least(
                 end,  # limit final date to period of interest
                 Case(
+                    # If activated and deactivated on same day, ignore the part
+                    When(parts__deactivation_date=F('parts__activation_date'),
+                         then=Cast(F('parts__deactivation_date') - self.one_day, DateField())),
                     # use deactivation date if set
                     When(parts__deactivation_date__isnull=False,
                          then='parts__deactivation_date'),
@@ -129,7 +132,8 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                     output_field=DateField()
                 )
             ),
-            # number of days subscription part is actually active within period of interest. Add a day because activation day should also count to duration
+            # number of days subscription part is actually active within period of interest.
+            # Add a day because activation day should also count to duration
             parts__duration_in_period=F('parts__forecast_final_date') - Greatest('parts__activation_date', start) + self.one_day,
             parts__duration_in_period_float=Greatest(
                 0.0,  # ignore values <0 resulting from parts outside the period of interest
@@ -154,12 +158,12 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                 default=F('parts__duration_in_period_float') / F('parts__reference_duration')
             )
         ).annotate(  # annotate the final results
-            required_assignments=self._assignment_rounding(
-                Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
-            ),
-            required_core_assignments=self._assignment_rounding(
+            required_core_assignments=Greatest(0.0, self._assignment_rounding(
                 Sum(F('parts__type__required_core_assignments') * F('parts__required_assignments_discount'), default=0.0)
-            ),
+            )),
+            required_assignments=Greatest(F('required_core_assignments'), self._assignment_rounding(
+                Sum(F('parts__type__required_assignments') * F('parts__required_assignments_discount'), default=0.0)
+            )),
         )
 
     @method_decorator(default_to_business_year)
