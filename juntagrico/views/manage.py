@@ -14,7 +14,7 @@ from django.views.generic import ListView, TemplateView
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.jobs import ActivityArea, AreaCoordinator
 from juntagrico.entity.member import Member
 from juntagrico.entity.member import SubscriptionMembership
 from juntagrico.entity.share import Share
@@ -92,7 +92,8 @@ class MemberActiveView(MemberView):
 
 
 class AreaMemberView(MemberView):
-    permission_required = 'juntagrico.is_area_admin'
+    permission_required = []  # checked in get_queryset
+    template_name = 'juntagrico/manage/member/show_for_area.html'
     title = _('Alle aktiven {member} im Tätigkeitsbereich {area_name}').format(
         member=Config.vocabulary('member_pl'), area_name='{area_name}'
     )
@@ -101,17 +102,33 @@ class AreaMemberView(MemberView):
         self.area = get_object_or_404(
             ActivityArea,
             id=int(self.kwargs['area_id']),
-            coordinator=self.request.user.member
+            coordinator_access__member=self.request.user.member,
+            coordinator_access__can_view_member=True
         )
         return self.area.members.active().prefetch_for_list
 
     def get_context_data(self, **kwargs):
+        access = AreaCoordinator.objects.filter(member=self.request.user.member, area=self.area).first()
         context = super().get_context_data(**kwargs)
+        context['area'] = self.area
         context['title'] = self.title.format(area_name=self.area.name)
         context['mail_url'] = 'mail-area'
-        context['can_see_emails'] = True
+        context['can_see_emails'] = access and access.can_contact_member
+        context['can_see_phone_numbers'] = context['can_see_emails']
+        context['can_remove_member'] = access and access.can_remove_member
         context['hide_areas'] = True
         return context
+
+
+def remove_area_member(request, area_id, member_id):
+    area = get_object_or_404(
+        ActivityArea,
+        id=area_id,
+        coordinator_access__member=request.user.member,
+        coordinator_access__can_remove_member=True
+    )
+    area.members.remove(member_id)
+    return return_to_previous_location(request)
 
 
 class MemberCanceledView(MultiplePermissionsRequiredMixin, ListView):

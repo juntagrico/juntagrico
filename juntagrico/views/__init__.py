@@ -15,7 +15,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.jobs import ActivityArea
 from juntagrico.entity.member import Member
 from juntagrico.forms import MemberProfileForm, PasswordForm, NonCoopMemberCancellationForm, \
-    CoopMemberCancellationForm
+    CoopMemberCancellationForm, AreaDescriptionForm
 from juntagrico.mailer import adminnotification
 from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
@@ -38,6 +38,7 @@ def home(request):
 
     renderdict = {
         'jobs': sorted(next_jobs.union(pinned_jobs).union(next_promotedjobs), key=lambda sort_job: sort_job.time),
+        'can_manage_jobs': request.user.member.area_access.filter(can_modify_jobs=True).exists(),
         'areas': ActivityAreaDao.all_visible_areas_ordered(),
     }
 
@@ -81,6 +82,7 @@ def areas(request):
         last_was_core = area.core
     renderdict = {
         'areas': areas,
+        'coordinated_areas': member.coordinated_areas.all(),
     }
     return render(request, 'areas.html', renderdict)
 
@@ -91,6 +93,17 @@ def show_area(request, area_id):
     Details for an area
     '''
     area = get_object_or_404(ActivityArea, id=int(area_id))
+    edit_form = None
+    access = request.user.member.area_access.filter(area=area).first()
+    if access and access.can_modify_area:
+        if request.method == 'POST':
+            edit_form = AreaDescriptionForm(request.POST, instance=area)
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect('area', area_id=area_id)
+        else:
+            edit_form = AreaDescriptionForm(instance=area)
+
     job_types = JobTypeDao.types_by_area(area_id)
     otjobs = JobDao.get_current_one_time_jobs().filter(activityarea=area_id)
     rjobs = JobDao.get_current_recuring_jobs().filter(type__in=job_types)
@@ -99,10 +112,14 @@ def show_area(request, area_id):
         jobs.extend(list(otjobs))
         jobs.sort(key=lambda job: job.time)
     area_checked = request.user.member in area.members.all()
+
     renderdict = {
         'area': area,
         'jobs': jobs,
         'area_checked': area_checked,
+        'edit_form': edit_form,
+        'can_view_member': access and access.can_view_member,
+        'can_manage_jobs': access and access.can_modify_jobs
     }
     return render(request, 'area.html', renderdict)
 
