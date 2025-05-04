@@ -139,7 +139,7 @@ class JobCopy(admin.ModelAdmin):
 class JobAdmin(PolymorphicInlineSupportMixin, AreaCoordinatorMixin, RichTextAdmin, OnlyFutureJobMixin, JobCopy):
     fields = ('type', 'time', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots', 'free_slots'),
               'type_description', 'additional_description', 'pinned', 'canceled')
-    list_display = ['__str__', 'type', 'time', 'slots', 'free_slots']
+    list_display = ['__str__', 'type', 'time', 'slots', 'duration', 'multiplier', 'slots_display', 'free_slots_display', 'pinned', 'canceled']
     list_filter = (('type__activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['copy_job', 'mass_copy_job']
     search_fields = ['type__name', 'type__activityarea__name', 'time']

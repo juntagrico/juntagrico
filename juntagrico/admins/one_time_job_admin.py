@@ -20,7 +20,7 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin,
                       JobTypeBaseAdmin):
     fields = ('name', 'displayed_name', 'activityarea', 'location', 'time', 'default_duration', 'multiplier',
               ('slots', 'infinite_slots', 'free_slots'), 'description', 'pinned', 'canceled')
-    list_display = ['__str__', 'time', 'slots', 'free_slots']
+    list_display = ['__str__', 'time', 'default_duration', 'multiplier', 'slots_display', 'free_slots_display', 'pinned', 'canceled']
     list_filter = (('activityarea', admin.RelatedOnlyFieldListFilter), ('time', FutureDateTimeFilter))
     actions = ['transform_job']
     search_fields = ['name', 'activityarea__name', 'time']

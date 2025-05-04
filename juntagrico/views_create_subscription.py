@@ -26,9 +26,7 @@ def cs_select_subscription(request, signup_manager):
 
     render_dict = {
         'form': form,
-        'subscription_selected': sum(form.get_selected().values()) > 0,
         'hours_used': Config.assignment_unit() == 'HOURS',
-        'selected_depot': signup_manager.depot(),
     }
     return render(request, 'createsubscription/select_subscription.html', render_dict)
 
@@ -182,8 +180,8 @@ class CSSummaryView(SignupView, FormView):
     def get_context_data(self, **kwargs):
         args = super().get_context_data(**kwargs)
         args.update(self.signup_manager.data.copy())
-        for i, co_member in enumerate(args['co_members']):
-            co_member['new_shares'] = int(args['shares'].get(f'of_co_member[{i}]', 0))
+        for i, co_member in enumerate(args.get('co_members', [])):
+            co_member['new_shares'] = int(args['shares'].get(f'of_co_member[{i}]', 0) or 0)
         args['subscriptions'] = self.signup_manager.subscriptions()
         args['depot'] = self.signup_manager.depot()
         args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
