@@ -266,6 +266,7 @@ E.g. to use the bean icon indicators of previous juntagrico versions do:
 .. code-block:: html
 
     {% extends 'juntagrico/widgets/assignment_progress.html' %}
+    {% load juntagrico.widgets %}
     {% block progress %}
         {% assignment_progress request.user.member future=False as assignments %}
         {% include "./assignment_progress/classic.html" %}

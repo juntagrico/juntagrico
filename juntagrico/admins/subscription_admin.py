@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext as _
 
 from juntagrico.admins import BaseAdmin, DateRangeExportMixin
+from juntagrico.admins.filters import SimpleStateModelFilter
 from juntagrico.admins.forms.subscription_admin_form import SubscriptionAdminForm
 from juntagrico.admins.inlines.subscription_membership_inlines import SubscriptionMembershipInlineWithShareCount
 from juntagrico.admins.inlines.subscription_part_inlines import SubscriptionPartInline
@@ -14,6 +15,7 @@ class SubscriptionAdmin(DateRangeExportMixin, BaseAdmin):
     readonly_fields = ('creation_date',)
     list_display = ['__str__', 'recipients_names',
                     'primary_member_nullsave', 'depot', 'text_state', 'cancellation_date']
+    list_filter = (SimpleStateModelFilter, 'cancellation_date', ('depot', admin.RelatedOnlyFieldListFilter))
     search_fields = ['subscriptionmembership__member__user__username',
                      'subscriptionmembership__member__first_name',
                      'subscriptionmembership__member__last_name',
