@@ -115,7 +115,7 @@ class SubscriptionQuerySet(SubscriptionMembershipQuerySetMixin, SimpleStateModel
                 Case(
                     # If activated and deactivated on same day, ignore the part
                     When(parts__deactivation_date=F('parts__activation_date'),
-                         then=F('parts__deactivation_date') - self.one_day),
+                         then=Cast(F('parts__deactivation_date') - self.one_day, DateField())),
                     # use deactivation date if set
                     When(parts__deactivation_date__isnull=False,
                          then='parts__deactivation_date'),
