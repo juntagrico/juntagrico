@@ -1,6 +1,6 @@
 import datetime
 
-from django.contrib.admin.filters import DateFieldListFilter
+from django.contrib.admin.filters import DateFieldListFilter, SimpleListFilter
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -27,3 +27,26 @@ class FutureDateTimeFilter(DateFieldListFilter):
                 self.lookup_kwarg_until: str(today + datetime.timedelta(days=7)),
             }),
         ) + self.links[1:]
+
+
+class SimpleStateModelFilter(SimpleListFilter):
+    title = _("Status")
+    parameter_name = "status"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("waiting", _("Wartend")),
+            ("future", _("Wartend oder aktiv")),
+            ("active", _("Aktiv")),
+            ("inactive", _("Inaktiv")),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "waiting":
+            return queryset.filter(activation_date=None)
+        if self.value() == "future":
+            return queryset.filter(deactivation_date=None)
+        if self.value() == "active":
+            return queryset.active()
+        if self.value() == "inactive":
+            return queryset.exclude(deactivation_date=None)
