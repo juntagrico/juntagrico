@@ -122,13 +122,12 @@ class CreateSubscriptionTests(JuntagricoTestCase):
     def commonSignupTest(self, with_co_member, with_comment=False):
         new_member_data = self.signup(with_comment)
         self.commonAddSub(new_member_data['email'], with_co_member, 'new test comment' if with_comment else '')
-        mail_count = 3  # welcome email and 2 admin notifications
+        mail_count = 3  # welcome email & 2 admin notifications for new member and new subscription
         if with_co_member:
-            mail_count += 1  # Welcome to co-member
+            mail_count += 2  # Welcome to co-member & admin notification
         if settings.ENABLE_SHARES:
             mail_count += 2  # share email & admin notification
-            if with_co_member:
-                mail_count += 1  # share email to co-member
+            # no shares are ordered for co-member, thus no more emails
         self.assertEqual(len(mail.outbox), mail_count)
 
         # signup with different case email address should return form error
@@ -178,8 +177,8 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         """
         self.client.force_login(self.member4.user)
         self.commonAddSub(self.member4.email, False, 'test comment', 2 if settings.ENABLE_SHARES else 0)
-        # share mail (if enabled) for member & 2 admin notifications
-        self.assertEqual(len(mail.outbox), 3 if settings.ENABLE_SHARES else 2)
+        # share mails (if enabled) for member & admin + 1 admin notification on new subscription
+        self.assertEqual(len(mail.outbox), 3 if settings.ENABLE_SHARES else 1)
 
     def testSignupWithComment(self):
         self.commonSignupTest(False, True)
