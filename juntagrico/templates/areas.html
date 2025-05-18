@@ -11,7 +11,7 @@
 
 {% block content %}
     {% block intro %}
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-md-12">
                 {% include "juntagrico/my/area/snippets/intro.html" %}
             </div>
@@ -24,48 +24,48 @@
                 {% with own_areas=request.user.member.areas.all %}
                     {% regroup areas by core as area_by_core %}
                     {% for core in area_by_core %}
-                        {% block section_head %}
-                            <br/>
-                            <div class="row activity-area-list-header">
-                                <div class="col-md-4">
+                        <div class="mb-4">
+                            {% block section_head %}
+                                <h4>
                                     {% if core.grouper %}
-                                        {% trans "Kernbereiche" %}:
-                                        <img alt="core_area" title="core_area" src="{% images "core" %}"/>
-                                    {% elif forloop.first %}
-                                        {% trans "Tätigkeitsbereiche" %}:
+                                        {% trans "Kernbereiche" %}
+                                        <img alt="{% trans "Kernbereich" %}" title="{% trans "Kernbereich" %}" src="{% images "core" %}"/>
+                                    {% elif not forloop.first %}
+                                        {% trans "Weitere Bereiche" %}
                                     {% else %}
-                                        {% trans "Weitere Bereiche" %}:
+                                        {% trans "Tätigkeitsbereiche" %}
                                     {% endif %}
-                                </div>
-                                <div class="col-md-8">
-                                    {% trans "Kontaktperson" %}:
-                                </div>
-                            </div>
-                            <div class="row separator">
-                            </div>
-                        {% endblock %}
-
-                        {% for area in core.list %}
-                            {% block area %}
-                                <div class="row align-items-center activity-area-list-element">
-                                    <div class="col-md-1">
-                                        <span class="switch switch-sm">
-                                            <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area in own_areas %} checked="checked"{% endif %}/>
-                                            <label for="area{{ area.id }}">
-                                            </label>
-                                        </span>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <a href="{% url 'area' area.id %}">{{ area.name }}</a>
-                                    </div>
-                                    <div class="col-md-8">
-                                        {% for contact in area.contacts %}
-                                            {{ contact.to_html }}
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                                </h4>
                             {% endblock %}
-                        {% endfor %}
+
+                            {% block area_list %}
+                                <ul class="list-group">
+                                    {% for area in core.list %}
+                                        {% block area %}
+                                            <li class="list-group-item activity-area-list-element">
+                                                <div class="d-flex flex-wrap flex-column flex-sm-row">
+                                                    <div class="switch switch-sm align-self-sm-center mt-2 mb-3 mr-3">
+                                                        <input type="checkbox" class="switch" value="{{ area.id }}" id="area{{ area.id }}" name="area{{ area.id }}"{% if area in own_areas %} checked="checked"{% endif %}/>
+                                                        <label for="area{{ area.id }}">
+                                                        </label>
+                                                    </div>
+                                                    <div>
+                                                        <p class="h4 mb-2">
+                                                            <a href="{% url 'area' area.id %}">{{ area.name }}</a>
+                                                        </p>
+                                                        <div class="mb-1">
+                                                            {% for contact in area.contacts %}
+                                                                {{ contact.to_html }}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        {% endblock %}
+                                    {% endfor %}
+                                </ul>
+                            {% endblock %}
+                        </div>
                     {% endfor %}
                 {% endwith %}
             </div>
@@ -73,7 +73,7 @@
     {% endblock %}
 
     {% if coordinated_areas %}
-        <div class="row mt-5">
+        <div class="row mt-2">
             <div class="col-md-12">
                 {% block coordinated_areas %}
                     <h4>{% trans "Von dir koordiniert" %}</h4>
