@@ -47,7 +47,8 @@ class ActivityArea(JuntagricoBaseModel):
     def contacts(self):
         if self.contact_set.count():
             return self.contact_set.all()
-        return MemberContact(member=self.coordinator),  # last resort: show area admin as contact
+        # last resort: show area admins as contact
+        return [MemberContact(member=m) for m in self.coordinators.all()]
 
     def _get_email_fallback(self, get_member=False, exclude=None):
         if exclude is None or self.coordinator.email not in exclude:
