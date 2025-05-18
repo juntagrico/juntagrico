@@ -71,20 +71,12 @@ def depot(request, depot_id):
 @highlighted_menu('area')
 def areas(request):
     '''
-    Details for all areas a member can participate
+    List all areas a member can participate in
     '''
-    member = request.user.member
-    areas = ActivityAreaDao.all_visible_areas_ordered()
-    last_was_core = True
-    for area in areas:
-        area.checked = member in area.members.all()
-        area.first_non_core = not area.core and last_was_core
-        last_was_core = area.core
-    renderdict = {
-        'areas': areas,
-        'coordinated_areas': member.coordinated_areas.all(),
-    }
-    return render(request, 'areas.html', renderdict)
+    return render(request, 'areas.html', {
+        'areas': ActivityArea.objects.filter(hidden=False).order_by('-core', 'name'),
+        'coordinated_areas': request.user.member.coordinated_areas.all(),
+    })
 
 
 @login_required
