@@ -8,12 +8,6 @@
 {% block page_title %}
     <h3>
         {{ job.type.get_name }}
-        {% if edit_url.strip %}
-         <a href="{{ edit_url }}" class="edit">
-            <i class="fas fa-pen">
-            </i>
-        </a>
-        {% endif %}
     </h3>
 {% endblock %}
 
@@ -36,6 +30,47 @@
 
 {% block content %}
     {% vocabulary "assignment_pl" as v_assignment_pl %}
+    {% block admin_actions %}
+        {% if edit_url.strip or can_copy or can_cancel %}
+            <div class="row pb-4">
+                <div class="col-md-12">
+                    {% if edit_url.strip %}
+                        <a href="{{ edit_url }}" class="btn btn-primary">
+                            <i class="fas fa-pen mr-1"></i>
+                            {% trans "Einsatz bearbeiten" %}
+                        </a>
+                    {% endif %}
+
+                    {% if can_copy %}
+                        <div class="btn-group">
+                            <a href="{% url 'admin:action-copy-job' job.id %}" type="button" class="btn btn-outline-primary">
+                                <i class="fa-solid fa-copy"></i>
+                                {% trans "Einsatz kopieren" %}
+                            </a>
+                            <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
+                                    data-toggle="dropdown" data-reference="parent" aria-expanded="false">
+                                <span class="sr-only">{% trans "Dropdown öffnen" %}</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{% url 'admin:action-mass-copy-job' job.id %}">
+                                    {% trans "Mehrfach kopieren" %}
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if can_cancel %}
+                        <a href="{% url 'job-cancel' job.id %}" class="btn btn-outline-danger"
+                        onclick="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %}')">
+                            <i class="fas fa-ban mr-1"></i>
+                            {% trans "Einsatz absagen" %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endblock %}
+
     {% block time %}
         <div class="row pb-4">
             <div class="col-md-3">

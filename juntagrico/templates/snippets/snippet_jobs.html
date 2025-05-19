@@ -3,20 +3,22 @@
 {% load juntagrico.config %}
 {% show_core as b_show_core %}
 {% show_job_extras as b_show_job_extras %}
+
 {% block tools %}
-    {% if perms.juntagrico.change_recuringjob %}
-        <a href="{% url 'admin:juntagrico_recuringjob_add' %}" class="edit">
-            <i class="fas fa-plus"></i>
+    {% if perms.juntagrico.change_recuringjob or can_manage_jobs %}
+        <a href="{% url 'admin:juntagrico_recuringjob_add' %}" class="btn btn-primary mr-1">
+            <i class="fas fa-calendar-plus mr-1"></i>
             {% trans "Wiederkehrenden Einsatz ausschreiben" %}
-        </a><br>
+        </a>
     {% endif %}
-    {% if perms.juntagrico.change_onetimejob %}
-        <a href="{% url 'admin:juntagrico_onetimejob_add' %}" class="edit">
-            <i class="fas fa-plus"></i>
+    {% if perms.juntagrico.change_onetimejob or can_manage_jobs %}
+        <a href="{% url 'admin:juntagrico_onetimejob_add' %}" class="btn btn-outline-primary">
+            <i class="fas fa-plus mr-1"></i>
             {% trans "Einzel-Einsatz ausschreiben" %}
         </a>
     {% endif %}
 {% endblock %}
+
 <table id="filter-table" class="list table" data-search='{"smart": true, "regex": false}'>
     {% include "juntagrico/job/list/snippets/header.html" with hidden_description_column=True %}
     <tbody>

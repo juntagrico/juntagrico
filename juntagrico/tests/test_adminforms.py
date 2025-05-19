@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.conf import settings
 
 from juntagrico.admins.forms.delivery_copy_form import DeliveryCopyForm
-from juntagrico.admins.forms.job_copy_form import JobCopyForm, JobCopyToFutureForm
+from juntagrico.admins.forms.job_copy_form import JobMassCopyForm, JobMassCopyToFutureForm
 from juntagrico.admins.forms.location_replace_form import LocationReplaceForm
 from juntagrico.entity.delivery import Delivery
 from juntagrico.entity.jobs import RecuringJob
@@ -48,7 +48,7 @@ class JobFormTests(JuntagricoTestCase):
                 'end_date': '26.07.2020',
                 'weekly': '7'
                 }
-        form = JobCopyForm(instance=self.job1, data=data)
+        form = JobMassCopyForm(instance=self.job1, data=data)
         form.full_clean()
         with self.assertRaises(ValidationError):
             # should raise, because no jobs are created in this date range
@@ -64,7 +64,7 @@ class JobFormTests(JuntagricoTestCase):
                 'end_date': '07.07.2020',
                 'weekly': '7'
                 }
-        form = JobCopyForm(instance=self.complex_job, data=data)
+        form = JobMassCopyForm(instance=self.complex_job, data=data)
         form.full_clean()
         form.clean()
         form.save()
@@ -90,7 +90,7 @@ class JobFormTests(JuntagricoTestCase):
                 'end_date': '15.07.2020',
                 'weekly': '14'
                 }
-        form = JobCopyForm(instance=self.job1, data=data)
+        form = JobMassCopyForm(instance=self.job1, data=data)
         form.full_clean()
         form.save()
         self.assertEqual(RecuringJob.objects.all().count(), initial_count + 2)
@@ -168,7 +168,7 @@ class JobFormTests(JuntagricoTestCase):
                 'end_date': '07.07.2020',
                 'weekly': '7'
                 }
-        form = JobCopyToFutureForm(instance=self.job1, data=data)
+        form = JobMassCopyToFutureForm(instance=self.job1, data=data)
         form.full_clean()
         with self.assertRaises(ValidationError) as validation_error:
             # should raise, because jobs are in the past
@@ -185,7 +185,7 @@ class JobFormTests(JuntagricoTestCase):
                 'end_date': today + datetime.timedelta(7),
                 'weekly': '7'
                 }
-        form = JobCopyToFutureForm(instance=self.job1, data=data)
+        form = JobMassCopyToFutureForm(instance=self.job1, data=data)
         form.full_clean()
         form.clean()
         form.save()
