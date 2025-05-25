@@ -103,7 +103,7 @@ def show_area(request, area_id):
     if len(otjobs) > 0:
         jobs.extend(list(otjobs))
         jobs.sort(key=lambda job: job.time)
-    area_checked = request.user.member in area.members.all()
+    area_checked = request.user.member.areas.filter(pk=area.pk).exists()
 
     renderdict = {
         'area': area,

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.admin.options import BaseModelAdmin
+from django.contrib.admin.options import BaseModelAdmin, InlineModelAdmin
 from django.db.models import TextField
 from djrichtextfield.widgets import RichTextWidget
 from import_export.admin import ExportMixin
@@ -69,10 +69,8 @@ class SortableExportMixin(ExportMixin):
     change_list_template = 'adminsortable2/change_list.html'
 
 
-class AreaCoordinatorMixin(BaseModelAdmin):
-    # TODO: also show job contacts and job extras?
+class AreaCoordinatorBaseMixin(BaseModelAdmin):
     coordinator_permissions = ['view', 'add', 'change', 'delete']
-    path_to_area = 'pk'
 
     def _has_permission(self, request, obj=None, access=None):
         if access is None or access in self.coordinator_permissions:
@@ -89,6 +87,9 @@ class AreaCoordinatorMixin(BaseModelAdmin):
     def has_view_permission(self, request, obj=None):
         return self._has_permission(request, obj, 'view') or super().has_view_permission(request)
 
+    def has_full_view_permission(self, request, obj=None):
+        return super().has_view_permission(request, obj)
+
     def has_add_permission(self, request):
         return self._has_permission(request, None, 'add') or super().has_add_permission(request)
 
@@ -98,12 +99,22 @@ class AreaCoordinatorMixin(BaseModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return self._has_permission(request, obj, 'delete') or super().has_delete_permission(request)
 
+
+class AreaCoordinatorMixin(AreaCoordinatorBaseMixin):
+    path_to_area = 'pk'
+
     def get_queryset(self, request):
-        if super().has_view_permission(request):
+        if self.has_full_view_permission(request):
             return super().get_queryset(request)
         else:
             allowed_areas = request.user.member.coordinated_areas.filter(coordinator_access__can_modify_jobs=True)
             return super().get_queryset(request).filter(**{f'{self.path_to_area}__in': allowed_areas})
+
+
+class AreaCoordinatorInlineMixin(InlineModelAdmin, AreaCoordinatorBaseMixin):
+    def get_area(self, obj):
+        related_modeladmin = self.admin_site._registry.get(type(obj))
+        return related_modeladmin.get_area(obj)
 
 
 def can_see_all(user, model):

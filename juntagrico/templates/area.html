@@ -4,11 +4,13 @@
 {% load static %}
 {% load juntagrico.common %}
 {% load juntagrico.config %}
+
 {% block page_title %}
     <h3>
         {{ area.name }}
     </h3>
 {% endblock %}
+
 {% block content %}
     <div class="row mb-3 no-gutters">
         <div class="offset-md-3 col-md-9">
@@ -50,6 +52,17 @@
             {% for contact in area.contacts %}
                 {{ contact.to_html }}
             {% endfor %}
+            {% if edit_form %}
+                <div class="mt-3">
+                    {# TODO: open popup instead #}
+                    <a href="{% url 'admin:juntagrico_activityarea_change' area.id %}#juntagrico-contact-content_type-object_id-group"
+                       target="_blank"
+                       id="edit_contacts" class="btn btn-outline-primary">
+                        <i class="fa fa-pencil mr-1"></i>
+                        {% trans "Kontakte ändern" %}
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
     {% if can_view_member %}
@@ -83,6 +96,7 @@
         </div>
     </div>
 {% endblock %}
+
 {% block scripts %}
     <script type="text/javascript" src="{% static 'juntagrico/external/datatables/datatables.min.js' %}">
     </script>
