@@ -2,6 +2,7 @@
 {% load i18n %}
 {% block all %}
     <p>
+        {% enriched_organisation "D" as v_d_enriched_organisation %}
         {% blocktrans trimmed%}
         Wer bei {{ v_d_enriched_organisation }} mitmacht verpflichtet sich, im Rahmen der eigenen
         Motivationen, Prioritäten und Möglichkeiten gemeinsam zum Gelingen des Betriebes beizutragen.
