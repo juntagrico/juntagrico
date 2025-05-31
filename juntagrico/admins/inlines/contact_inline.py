@@ -1,5 +1,6 @@
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.forms import ModelForm
+from django.utils.translation import gettext as _
 from polymorphic.admin import GenericStackedPolymorphicInline
 
 from juntagrico.admins import AreaCoordinatorInlineMixin
@@ -19,7 +20,7 @@ class MemberContactInlineForm(ContactInlineForm):
         # If user can't view members, limit options to members that are coordinators of that area
         super().__init__(*args, **kwargs)
         if not isinstance(self.fields["member"].widget, ForeignKeyRawIdWidget):
-            qs = self.area.coordinators.all()
+            qs = self.area.coordinators.all() if self.area else Member.objects.none()
             if self.instance.id:
                 qs = (qs | Member.objects.filter(pk=self.instance.member.pk)).distinct()
             self.fields["member"].queryset = qs
@@ -65,3 +66,10 @@ class ContactInline(AreaCoordinatorInlineMixin, GenericStackedPolymorphicInline)
         # pass parent objects area into formset
         formset.get_form_kwargs = lambda s, i: {'area': self.get_area(obj)}
         return formset
+
+    def get_max_num(self, request, obj=None, **kwargs):
+        if obj is None and not request.user.has_perm('juntagrico.view_member'):
+            # area admins must safe job(types) first, because contact selection depends on area of job
+            self.verbose_name_plural += _(' (Kann erst nach dem Speichern eingestellt werden)')
+            return 0
+        return super().get_max_num(request, obj, **kwargs)

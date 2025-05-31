@@ -114,6 +114,8 @@ class AreaCoordinatorMixin(AreaCoordinatorBaseMixin):
 class AreaCoordinatorInlineMixin(InlineModelAdmin, AreaCoordinatorBaseMixin):
     def get_area(self, obj):
         related_modeladmin = self.admin_site._registry.get(type(obj))
+        if related_modeladmin is None:
+            return None
         return related_modeladmin.get_area(obj)
 
 
