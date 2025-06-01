@@ -136,7 +136,7 @@ class JobCopy(admin.ModelAdmin):
         return super().response_change(request, obj)
 
 
-class JobAdmin(PolymorphicInlineSupportMixin, AreaCoordinatorMixin, RichTextAdmin, OnlyFutureJobMixin, JobCopy):
+class JobAdmin(PolymorphicInlineSupportMixin, OnlyFutureJobMixin, AreaCoordinatorMixin, RichTextAdmin, JobCopy):
     fields = ('type', 'time', ('duration_override', 'type_duration'), 'multiplier', ('slots', 'infinite_slots', 'free_slots'),
               'type_description', 'additional_description', 'pinned', 'canceled')
     list_display = ['__str__', 'type', 'time', 'slots', 'duration', 'multiplier', 'slots_display', 'free_slots_display', 'pinned', 'canceled']

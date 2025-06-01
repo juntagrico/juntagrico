@@ -364,16 +364,25 @@ class CheckJobCapabilities:
     def __init__(self, user, job):
         self.user = user
         self.job = job
+        self.access = self.job.type.activityarea.coordinator_access.filter(member__user=self.user).first()
 
     @cached_property
     def job_model_name(self):
         return self.job.get_real_instance_class().__name__.lower()
 
-    @cached_property
+    @property
     def is_coordinator(self):
-        return self.job.type.activityarea.coordinator_access.filter(
-            member__user=self.user, can_modify_jobs=True
-        ).exists()
+        return self.access and self.access.can_modify_jobs
+
+    @property
+    def is_assignment_coordinator(self):
+        return self.access and self.access.can_modify_assignments
+
+    def can_modify_assignments(self):
+        return self.user.has_perm('juntagrico.change_assignment') or self.is_assignment_coordinator
+
+    def can_contact_member(self):
+        return self.user.has_perm('juntagrico.can_send_mails') or self.access and self.access.can_contact_member
 
     def get_edit_url(self):
         if self.user.has_perm(f'juntagrico.change_{self.job_model_name}') or self.is_coordinator:

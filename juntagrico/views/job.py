@@ -168,8 +168,8 @@ def job(request, job_id, form_class=JobSubscribeForm):
         'can_copy': permissions.can_copy(),
         'can_cancel': permissions.can_cancel(),
         # TODO: should also be able to contact, if is member-contact of this job or job type
-        'can_contact': request.user.has_perm('juntagrico.can_send_mails') or permissions.is_coordinator,
-        'can_edit_assignments': request.user.has_perm('juntagrico.change_assignment') or permissions.is_coordinator,
+        'can_contact': permissions.can_contact_member(),
+        'can_edit_assignments': permissions.can_modify_assignments(),
         'error': request.method == 'POST',
         'form': form,
     }
@@ -193,15 +193,15 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
     job = get_object_or_404(Job, id=int(job_id))
     # check permission
     editor = request.user.member
-    is_job_coordinator = job.type.activityarea.coordinator == editor and request.user.has_perm('juntagrico.is_area_admin')
-    if not (is_job_coordinator
+    is_assignment_coordinator = job.check_if(editor).is_assignment_coordinator
+    if not (is_assignment_coordinator
             or request.user.has_perm('juntagrico.change_assignment')
             or request.user.has_perm('juntagrico.add_assignment')):
         raise PermissionDenied
-    can_delete = is_job_coordinator or request.user.has_perm('juntagrico.delete_assignment')
+    can_delete = is_assignment_coordinator or request.user.has_perm('juntagrico.delete_assignment')
     member = get_object_or_404(Member, id=int(member_id))
-    success = False
 
+    success = False
     if request.method == 'POST':
         # handle submit
         form = form_class(editor, can_delete, member, job, request.POST, prefix='edit')
@@ -219,11 +219,10 @@ def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, r
     else:
         form = form_class(editor, can_delete, member, job, prefix='edit')
 
-    renderdict = {
+    return render(request, 'juntagrico/job/snippets/edit_assignment.html', {
         'member': member,
         'other_job_contacts': job.get_emails(get_member=True, exclude=[editor.email]),
         'editor': editor,
         'form': form,
         'success': success,
-    }
-    return render(request, 'juntagrico/job/snippets/edit_assignment.html', renderdict)
+    })

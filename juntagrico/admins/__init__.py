@@ -71,11 +71,12 @@ class SortableExportMixin(ExportMixin):
 
 class AreaCoordinatorBaseMixin(BaseModelAdmin):
     coordinator_permissions = ['view', 'add', 'change', 'delete']
+    coordinator_access = 'can_modify_jobs'
 
     def _has_permission(self, request, obj=None, access=None):
         if access is None or access in self.coordinator_permissions:
             area = {'area': self.get_area(obj)} if obj else {}
-            return request.user.member.area_access.filter(**area, can_modify_jobs=True).exists()
+            return request.user.member.area_access.filter(**area, **{self.coordinator_access: True}).exists()
         return False
 
     def get_area(self, obj):
@@ -103,12 +104,17 @@ class AreaCoordinatorBaseMixin(BaseModelAdmin):
 class AreaCoordinatorMixin(AreaCoordinatorBaseMixin):
     path_to_area = 'pk'
 
+    def get_coordinator_queryset(self, request, qs):
+        allowed_areas = request.user.member.coordinated_areas.filter(
+            **{f'coordinator_access__{self.coordinator_access}': True}
+        )
+        return qs.filter(**{f'{self.path_to_area}__in': allowed_areas})
+
     def get_queryset(self, request):
         if self.has_full_view_permission(request):
             return super().get_queryset(request)
         else:
-            allowed_areas = request.user.member.coordinated_areas.filter(coordinator_access__can_modify_jobs=True)
-            return super().get_queryset(request).filter(**{f'{self.path_to_area}__in': allowed_areas})
+            return self.get_coordinator_queryset(request, super().get_queryset(request))
 
 
 class AreaCoordinatorInlineMixin(InlineModelAdmin, AreaCoordinatorBaseMixin):
