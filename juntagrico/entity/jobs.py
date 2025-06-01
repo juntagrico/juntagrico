@@ -28,7 +28,7 @@ class ActivityArea(JuntagricoBaseModel):
     hidden = models.BooleanField(
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
-    coordinators = models.ManyToManyField('Member',  verbose_name=_('Koordinatoren'), through='AreaCoordinator',
+    coordinators = models.ManyToManyField('Member', verbose_name=_('Koordinatoren'), through='AreaCoordinator',
                                           related_name='coordinated_areas')
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
@@ -88,6 +88,7 @@ class AreaCoordinator(JuntagricoBaseModel):
         constraints = [
             models.UniqueConstraint(fields=['area', 'member'], name='unique_area_member'),
         ]
+
 
 class JobExtraType(JuntagricoBaseModel):
     '''
