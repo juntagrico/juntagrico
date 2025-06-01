@@ -2,7 +2,8 @@ from datetime import timedelta
 
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, Http404
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -177,32 +178,33 @@ def contact_member(request, member_id):
     '''
     member contact form
     '''
-    member = request.user.member
-    contact_member = get_object_or_404(Member, id=int(member_id))
-    if not contact_member.reachable_by_email and not request.user.is_staff and not contact_member.activityarea_set.exists():
-        raise Http404()
+    sender = request.user.member
+    receiver = get_object_or_404(Member, id=int(member_id))
+    if not sender.can_contact(receiver):
+        raise PermissionDenied()
 
-    is_sent = False
+    enable_attachments = request.user.has_perm('juntagrico.can_email_attachments')
     back_url = request.META.get('HTTP_REFERER') or reverse('home')
 
+    is_sent = False
     if request.method == 'POST':
         # send mail to member
         back_url = request.POST.get('back_url')
         files = []
-        append_attachements(request, files)
-        formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), member, contact_member,
+        if enable_attachments:
+            append_attachements(request, files)
+        formemails.contact_member(request.POST.get('subject'), request.POST.get('message'), sender, receiver,
                                   request.POST.get('copy'), files)
         is_sent = True
-    renderdict = {
-        'admin': request.user.has_perm('juntagrico.is_operations_group') or request.user.has_perm(
-            'juntagrico.is_area_admin'),
-        'usernameAndEmail': member.first_name + ' ' + member.last_name + '<' + member.email + '>',
+
+    return render(request, 'contact_member.html', {
+        'enable_attachments': enable_attachments,
+        'usernameAndEmail': sender.first_name + ' ' + sender.last_name + '<' + sender.email + '>',
         'member_id': member_id,
-        'member_name': contact_member.first_name + ' ' + contact_member.last_name,
+        'member_name': receiver.first_name + ' ' + receiver.last_name,
         'is_sent': is_sent,
         'back_url': back_url
-    }
-    return render(request, 'contact_member.html', renderdict)
+    })
 
 
 @login_required

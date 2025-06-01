@@ -89,7 +89,6 @@ def requires_permission_to_contact(func):
     def check_perms_to_contact(user):
         # check if user can contact members
         return (
-            user.has_perm('juntagrico.is_area_admin') or
             user.has_perm('juntagrico.is_depot_admin') or
             user.has_perm('juntagrico.can_send_email') or
             AreaCoordinator.objects.filter(member=user.member, can_contact_member=True).exists()

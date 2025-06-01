@@ -27,15 +27,18 @@ class AreaCoordinatorInline(AreaCoordinatorInlineMixin, SortableTabularInline):
 
 class AreaAdmin(PolymorphicInlineSupportMixin, SortableAdminMixin, AreaCoordinatorMixin, RichTextAdmin):
     filter_horizontal = ['members']
-    raw_id_fields = ['coordinator']
-    list_display = ['name', 'core', 'hidden', 'coordinator', 'auto_add_new_members', 'contacts_text']
-    search_fields = ['name']
+    list_display = ['name', 'core', 'hidden', 'coordinators_text', 'auto_add_new_members', 'contacts_text']
+    search_fields = ['name', 'description', 'coordinators__first_name', 'coordinators__last_name']
     inlines = [AreaCoordinatorInline, ContactInline]
     coordinator_permissions = ['view', 'change']
 
     @admin.display(description=_('Kontakt'))
     def contacts_text(self, instance):
         return mark_safe("<br>".join([str(c) for c in instance.contacts]))
+
+    @admin.display(description=_('Koordination'))
+    def coordinators_text(self, instance):
+        return mark_safe("<br>".join([str(c) for c in instance.coordinators.all()]))
 
     def get_fields(self, request, obj=None):
         if self.has_full_view_permission(request):

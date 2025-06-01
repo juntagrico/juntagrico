@@ -17,7 +17,7 @@ from juntagrico.entity import JuntagricoBaseModel, JuntagricoBasePoly, absolute_
 from juntagrico.entity.contact import get_emails, MemberContact, Contact
 from juntagrico.entity.location import Location
 from juntagrico.lifecycle.job import check_job_consistency
-from juntagrico.queryset.job import JobQueryset
+from juntagrico.queryset.job import JobQueryset, AssignmentQuerySet
 
 
 @absolute_url(name='area')
@@ -28,8 +28,7 @@ class ActivityArea(JuntagricoBaseModel):
     hidden = models.BooleanField(
         _('versteckt'), default=False,
         help_text=_('Nicht auf der "Tätigkeitsbereiche"-Seite anzeigen. Einsätze bleiben sichtbar.'))
-    coordinator = models.ForeignKey('Member', on_delete=models.PROTECT, verbose_name=_('KoordinatorIn'))
-    coordinators = models.ManyToManyField('Member', verbose_name=_('Koordinatoren'), through='AreaCoordinator',
+    coordinators = models.ManyToManyField('Member',  verbose_name=_('Koordinatoren'), through='AreaCoordinator',
                                           related_name='coordinated_areas')
     members = models.ManyToManyField(
         'Member', related_name='areas', blank=True, verbose_name=Config.vocabulary('member_pl'))
@@ -69,13 +68,11 @@ class ActivityArea(JuntagricoBaseModel):
         verbose_name = _('Tätigkeitsbereich')
         verbose_name_plural = _('Tätigkeitsbereiche')
         ordering = ['sort_order']
-        permissions = (
-            ('is_area_admin', _('Benutzer ist TätigkeitsbereichskoordinatorIn')),)
 
 
 class AreaCoordinator(JuntagricoBaseModel):
     area = models.ForeignKey(ActivityArea, related_name='coordinator_access', on_delete=models.CASCADE)
-    member = models.ForeignKey('Member', related_name='area_access', on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', related_name='area_access', on_delete=models.PROTECT)
     can_modify_area = models.BooleanField(_('Kann Beschreibung ändern'), default=True)
     can_view_member = models.BooleanField(_('Kann {0} sehen').format(Config.vocabulary('member_pl')), default=True)
     can_contact_member = models.BooleanField(_('Kann {0} kontaktieren').format(Config.vocabulary('member_pl')), default=True)
@@ -475,6 +472,8 @@ class Assignment(JuntagricoBaseModel):
     core_cache = models.BooleanField(_('Kernbereich'), default=False)
     job_extras = models.ManyToManyField(JobExtra, related_name='assignments', blank=True, verbose_name=_('Job Extras'))
     amount = models.FloatField(_('Wert'))
+
+    objects = AssignmentQuerySet.as_manager()
 
     def __str__(self):
         return '%s #%s' % (Config.vocabulary('assignment'), self.id)
