@@ -192,13 +192,13 @@ def cancel(request, job_id):
 def edit_assignment(request, job_id, member_id, form_class=EditAssignmentForm, redirect_on_post=True):
     job = get_object_or_404(Job, id=int(job_id))
     # check permission
-    editor = request.user.member
-    is_assignment_coordinator = job.check_if(editor).is_assignment_coordinator
+    is_assignment_coordinator = job.check_if(request.user).is_assignment_coordinator
     if not (is_assignment_coordinator
             or request.user.has_perm('juntagrico.change_assignment')
             or request.user.has_perm('juntagrico.add_assignment')):
         raise PermissionDenied
     can_delete = is_assignment_coordinator or request.user.has_perm('juntagrico.delete_assignment')
+    editor = request.user.member
     member = get_object_or_404(Member, id=int(member_id))
 
     success = False
