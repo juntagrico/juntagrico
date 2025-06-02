@@ -211,7 +211,6 @@ class CreateSubscriptionTests(JuntagricoTestCase):
         self.assertGet(reverse('cs-shares') + '?mod')
         self.assertGet(reverse('cs-cancel'), 302)
 
-
     def testSummaryCancel(self):
         with (self.settings(ORGANISATION_WEBSITE={'url': 'https://example.com'})):
             self.signup(False)

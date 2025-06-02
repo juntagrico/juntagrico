@@ -7,7 +7,6 @@
         "description": "",
         "core": false,
         "hidden": false,
-        "coordinator": 21,
         "auto_add_new_members": true,
         "members": [
             1
@@ -22,7 +21,6 @@
         "description": "",
         "core": true,
         "hidden": true,
-        "coordinator": 21,
         "auto_add_new_members": false,
         "members": []
     }
@@ -172,6 +170,24 @@
         ],
         "object_id": 2,
         "sort_order": 0
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "pk": 1,
+    "fields": {
+        "area": 1,
+        "member": 21,
+        "can_view_member": true
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "pk": 2,
+    "fields": {
+        "area": 2,
+        "member": 21,
+        "can_view_member": true
     }
 }
 ]

@@ -43,7 +43,7 @@ class ManageListTests(JuntagricoTestCase):
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), code=404)
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.area_admin)
         # member2 has no access
-        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.member2, code=403)
+        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.member2, code=404)
 
     def testSubWaitingList(self):
         self.assertGet(reverse('sub-mgmt-waitinglist'))

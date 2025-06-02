@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from polymorphic.query import PolymorphicQuerySet
 
 
@@ -35,4 +35,15 @@ class JobQueryset(PolymorphicQuerySet):
                 self.name_fields + self.location_fields + self.area_fields + self.description_fields,
                 search_value
             ) | Q(time__icontains=search_value)
+        )
+
+
+class AssignmentQuerySet(QuerySet):
+    def by_areas(self, areas):
+        from juntagrico.entity.jobs import Job
+        return self.filter(
+            job__in=Job.objects.filter(
+                Q(OneTimeJob___activityarea__in=areas) |
+                Q(RecuringJob___type__activityarea__in=areas)
+            )
         )
