@@ -7,7 +7,7 @@ from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.filters import FutureDateTimeFilter
 from juntagrico.admins.inlines.assignment_inline import AssignmentInline
 from juntagrico.admins.inlines.contact_inline import ContactInline
-from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
+from juntagrico.admins.inlines.job_extra_inline import JobExtraInlineForOnetimeJob
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.entity.jobs import JobType, RecuringJob
@@ -27,7 +27,7 @@ class OneTimeJobAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin,
     exclude = ['reminder_sent']
     autocomplete_fields = ['activityarea', 'location']
 
-    inlines = [ContactInline, AssignmentInline, JobExtraInline]
+    inlines = [ContactInline, AssignmentInline, JobExtraInlineForOnetimeJob]
     readonly_fields = ['free_slots']
 
     def has_change_permission(self, request, obj=None):
