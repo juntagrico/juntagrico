@@ -3,11 +3,25 @@
 {% load juntagrico.config %}
 {% block page_title %}
     <h3>
-        {% trans "Mails verschickt!" %}
+        {% if sent > 0 %}
+            {% trans "Mails verschickt!" %}
+        {% else %}
+            {% trans "Mails NICHT verschickt!" %}
+        {% endif %}
     </h3>
 {% endblock %}
 {% block content %}
-    <div class="alert alert-success">
-        {% blocktrans %}Email wurde an {{ sent }} Empfänger verschickt.{% endblocktrans %}
-    </div>
+    {% for error in errors %}
+        {{ error }}
+    {% endfor %}
+
+    {% if sent > 0 %}
+        <div class="alert alert-success">
+            {% blocktrans %}Email wurde an {{ sent }} Empfänger verschickt.{% endblocktrans %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            {% trans "Email wurde NICHT verschickt." %}
+        </div>
+    {% endif %}
 {% endblock %}
