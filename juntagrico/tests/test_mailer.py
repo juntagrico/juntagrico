@@ -7,12 +7,12 @@ from django.urls import reverse
 from . import JuntagricoTestCaseWithShares
 
 
-def mock_batch_mailer(msg):
+def mock_batch_mailer(self, msgs):
     # patch batch mailer to not use threads to make it testable
-    from juntagrico.util.mailer.batch import Mailer
-    Mailer._send_batches(msg, 1, 0)  # testing with individual "to" emails
-    Mailer._send_batches(msg, 2, 0)  # testing in batches of 2
-    Mailer._send_batches(msg, 4, 3)  # testing with waiting time
+    for msg in msgs:
+        self._send_batches(msg, 1, 0)  # testing with individual "to" emails
+        self._send_batches(msg, 2, 0)  # testing in batches of 2
+        self._send_batches(msg, 4, 3)  # testing with waiting time
 
 
 class MailerTests(JuntagricoTestCaseWithShares):
@@ -21,19 +21,33 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertGet(reverse('mail'), member=self.member2, code=302)
 
     def testMemberFromEmailSelection(self):
-        self.assertListEqual(self.member.all_emails(), ['email1@email.org'])
-        self.assertListEqual(self.member2.all_emails(), ['info@juntagrico.juntagrico', 'email2@email.org'])
-        self.assertListEqual(self.member3.all_emails(), [
-            'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico', 'email3@email.org'
+        self.assertListEqual(self.member.all_emails(), [('private', 'email1@email.org')])
+        self.assertListEqual(self.member2.all_emails(), [
+            ('general', 'info@juntagrico.juntagrico'), ('private', 'email2@email.org')
         ])
-        self.assertListEqual(self.member4.all_emails(), ['share@juntagrico.juntagrico', 'email4@email.org'])
-        self.assertListEqual(self.member5.all_emails(), ['it@juntagrico.juntagrico', 'email5@email.org'])
+        self.assertListEqual(self.member3.all_emails(), [
+            ('for_members', 'member@juntagrico.juntagrico'),
+            ('for_subscriptions', 'subscription@juntagrico.juntagrico'),
+            ('private', 'email3@email.org')
+        ])
+        self.assertListEqual(self.member4.all_emails(), [
+            ('for_shares', 'share@juntagrico.juntagrico'), ('private', 'email4@email.org')
+        ])
+        self.assertListEqual(self.member5.all_emails(), [
+            ('technical', 'it@juntagrico.juntagrico'), ('private', 'email5@email.org')
+        ])
         self.assertListEqual(self.area_admin.all_emails(), [
-            'email_contact@example.org', 'email2@email.org', 'areaadmin@email.org'
+            ('area1-m0', 'email_contact@example.org'),
+            ('area2-m2', 'email2@email.org'),
+            ('private', 'areaadmin@email.org')
         ])
         self.assertListEqual(self.admin.all_emails(), [
-            'info@juntagrico.juntagrico', 'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico',
-            'share@juntagrico.juntagrico', 'it@juntagrico.juntagrico', 'admin@email.org'
+            ('general', 'info@juntagrico.juntagrico'),
+            ('for_members', 'member@juntagrico.juntagrico'),
+            ('for_subscriptions', 'subscription@juntagrico.juntagrico'),
+            ('for_shares', 'share@juntagrico.juntagrico'),
+            ('technical', 'it@juntagrico.juntagrico'),
+            ('private', 'admin@email.org')
         ])
 
     def testMailSend(self):
@@ -82,8 +96,8 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertPost(reverse('mail-{}-send'.format(concern)), code=302)
         self.assertGet(reverse('mail-{}'.format(concern)), member=self.member2, code=302)
 
-    @override_settings(DEFAULT_MAILER='juntagrico.util.mailer.batch.Mailer')
-    @patch('juntagrico.util.mailer.batch.Mailer.send', mock_batch_mailer)
+    @override_settings(EMAIL_BACKEND='juntagrico.backends.email.LocmemBatchEmailBackend')
+    @patch('juntagrico.backends.email.LocmemBatchEmailBackend.send_messages', mock_batch_mailer)
     def testBatchMailer(self):
         post_data = {
             'sender': 'test@mail.org',

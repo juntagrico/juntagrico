@@ -1,8 +1,7 @@
-{% load juntagrico.config %}{% load i18n %}
 {% spaceless %}
 {% autoescape off %}
 {% block content %}{% endblock %}
 {% endautoescape %}
 {% endspaceless %}
-============
-{% trans "weitere Infos:" %} {% organisation_website "url" %}
+
+{% include 'juntagrico/mails/signature.txt' %}

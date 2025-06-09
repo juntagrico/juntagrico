@@ -1,10 +1,35 @@
 import datetime
 
-from django.db.models import QuerySet, Sum, Case, When, Prefetch, F
+from django.db.models import QuerySet, Sum, Case, When, Prefetch, F, Q
 from django.utils.decorators import method_decorator
+from django.utils.itercompat import is_iterable
 
 from juntagrico.util.temporal import default_to_business_year
 from . import SubscriptionMembershipQuerySetMixin
+
+
+def q_joined_subscription(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptionmembership__join_date__isnull=False,
+             subscriptionmembership__join_date__lte=on_date)
+
+
+def q_left_subscription(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptionmembership__leave_date__isnull=False,
+             subscriptionmembership__leave_date__lte=on_date)
+
+
+def q_subscription_activated(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptions__activation_date__isnull=False,
+             subscriptions__activation_date__lte=on_date)
+
+
+def q_subscription_deactivated(on_date=None):
+    on_date = on_date or datetime.date.today()
+    return Q(subscriptions__deactivation_date__isnull=False,
+             subscriptions__deactivation_date__lte=on_date)
 
 
 class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
@@ -16,6 +41,27 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         return self.filter(
             cancellation_date__isnull=False,
             deactivation_date__isnull=True
+        )
+
+    def has_active_subscription(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.filter(
+            q_subscription_activated(on_date),
+            ~q_subscription_deactivated(on_date),
+            q_joined_subscription(on_date),
+            ~q_left_subscription(on_date)
+        )
+
+    def in_depot(self, depot):
+        if is_iterable(depot):
+            return self.filter(subscriptions__depot__in=depot)
+        return self.filter(subscriptions__depot=depot)
+
+    def has_active_shares(self, on_date=None):
+        on_date = on_date or datetime.date.today()
+        return self.filter(
+            Q(share__termination_date__isnull=True) | Q(share__termination_date__gt=on_date),
+            share__isnull=False,
         )
 
     def prefetch_for_list(self):
@@ -62,3 +108,9 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         """
         return self.annotate_assignment_count(start, end, prefix, **extra_filters)\
             .annotate_core_assignment_count(start, end, prefix, **extra_filters)
+
+    def id_string(self, sep='-'):
+        return sep.join(map(str, self.values_list('id', flat=True)))
+
+    def as_email_recipients(self):
+        return [f'{m} <{m.email}>' for m in self]

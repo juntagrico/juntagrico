@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'juntagrico',
     'crispy_forms',
     'adminsortable2',
+    'django_select2',
     'polymorphic',
     'import_export',
 ]
@@ -67,6 +68,8 @@ TEMPLATES = [
 LOCALE_PATHS = (
     BASE_DIR / 'juntagrico/locale',
 )
+
+EMAIL_BACKEND = 'juntagrico.backends.email.EmailBackend'
 
 # Auth Settings
 

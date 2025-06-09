@@ -195,6 +195,8 @@ urlpatterns = [
     path('email/to/<int:member_id>', email.to_member, name='email-to-member'),
     path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),
     path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),
+    path('email/write', email.write, name='email-write'),
+    path('email/recipients/count', email.count_recipients, name='email-count-recipients'),
     # /email/depot
     path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),
     path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),
@@ -233,6 +235,9 @@ urlpatterns = [
     # /api/jobtype
     path('api/jobtype/<int:id>/description', api.job_type_description, name='api-jobtype-description'),
     path('api/jobtype/<int:id>/duration', api.job_type_duration, name='api-jobtype-duration'),
+
+    # autocomplete
+    path("select2/fields/auto.json", email.InternalSelect2View.as_view(), name="internal-select2-view"),
 
     # /js
     path('my/js/i18n', juntagrico.i18njs, name='js-i18n'),

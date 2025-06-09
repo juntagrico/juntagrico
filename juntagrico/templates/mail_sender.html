@@ -22,7 +22,7 @@
             </label>
             <div class="col-md-10">
                 <select id="sender-email" name="sender" class="form-control">
-                    {% for email in request.user.member.all_emails %}
+                    {% for _, email in request.user.member.all_emails %}
                         <option value="{{ email }}">
                             {{ email }}
                         </option>
