@@ -6,7 +6,7 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from juntagrico.admins import RichTextAdmin, OverrideFieldQuerySetMixin
 from juntagrico.admins.inlines.contact_inline import ContactInline
-from juntagrico.admins.inlines.job_extra_inline import JobExtraInline
+from juntagrico.admins.inlines.job_extra_inline import JobExtraInlineForJobType
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.assignmentdao import AssignmentDao
 from juntagrico.dao.jobdao import JobDao
@@ -25,7 +25,7 @@ class JobTypeAdmin(PolymorphicInlineSupportMixin, OverrideFieldQuerySetMixin, Ri
     autocomplete_fields = ['activityarea', 'location']
     search_fields = ['name', 'activityarea__name', 'last_used']
     actions = ['transform_job_type', 'action_hide', 'action_make_visible']
-    inlines = [ContactInline, JobExtraInline]
+    inlines = [ContactInline, JobExtraInlineForJobType]
 
     @admin.display(
         ordering='last_used',
