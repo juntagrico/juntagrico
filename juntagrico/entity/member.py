@@ -262,8 +262,9 @@ class Member(JuntagricoBaseModel):
     def cancel(self, date=None, commit=True):
         date = date or datetime.date.today()
         self.cancellation_date = date
-        # if all shares of member are already paid back: deactivate automatically
-        if not self.share_set.potentially_pending_payback().exists():
+        # if all shares of member are already paid back and has no subscriptions: deactivate automatically
+        has_sub = self.subscription_current or self.subscription_future
+        if not has_sub and not self.share_set.potentially_pending_payback().exists():
             self.end_date = date
             self.deactivation_date = date
         else:
