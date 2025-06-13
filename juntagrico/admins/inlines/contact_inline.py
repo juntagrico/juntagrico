@@ -73,3 +73,7 @@ class ContactInline(AreaCoordinatorInlineMixin, GenericStackedPolymorphicInline)
             self.verbose_name_plural += _(' (Kann erst nach dem Speichern eingestellt werden)')
             return 0
         return super().get_max_num(request, obj, **kwargs)
+
+
+class ContactInlineForArea(ContactInline):
+    coordinator_access = 'can_modify_area'

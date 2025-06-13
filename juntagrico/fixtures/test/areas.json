@@ -174,7 +174,6 @@
 },
 {
     "model": "juntagrico.areacoordinator",
-    "pk": 1,
     "fields": {
         "area": 1,
         "member": 21,
@@ -183,11 +182,334 @@
 },
 {
     "model": "juntagrico.areacoordinator",
-    "pk": 2,
     "fields": {
         "area": 2,
         "member": 21,
         "can_view_member": true
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "area_admin11",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 31,
+    "fields": {
+        "user": [
+            "area_admin11"
+        ],
+        "first_name": "area_admin11",
+        "last_name": "who can modify area",
+        "email": "area_admin11@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "fields": {
+        "area": 1,
+        "member": 31,
+        "can_modify_area": true,
+        "can_view_member": false,
+        "can_contact_member": false,
+        "can_remove_member": false,
+        "can_modify_jobs": false,
+        "can_modify_assignments": false
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "area_admin12",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 32,
+    "fields": {
+        "user": [
+            "area_admin12"
+        ],
+        "first_name": "area_admin12",
+        "last_name": "who can see members",
+        "email": "area_admin12@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "fields": {
+        "area": 1,
+        "member": 32,
+        "can_modify_area": false,
+        "can_view_member": true,
+        "can_contact_member": false,
+        "can_remove_member": false,
+        "can_modify_jobs": false,
+        "can_modify_assignments": false
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "area_admin13",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 33,
+    "fields": {
+        "user": [
+            "area_admin13"
+        ],
+        "first_name": "area_admin13",
+        "last_name": "who can contact members",
+        "email": "area_admin13@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "fields": {
+        "area": 1,
+        "member": 33,
+        "can_modify_area": false,
+        "can_view_member": false,
+        "can_contact_member": true,
+        "can_remove_member": false,
+        "can_modify_jobs": false,
+        "can_modify_assignments": false
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "area_admin14",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 34,
+    "fields": {
+        "user": [
+            "area_admin14"
+        ],
+        "first_name": "area_admin14",
+        "last_name": "who can remove members",
+        "email": "area_admin14@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "fields": {
+        "area": 1,
+        "member": 34,
+        "can_modify_area": false,
+        "can_view_member": false,
+        "can_contact_member": false,
+        "can_remove_member": true,
+        "can_modify_jobs": false,
+        "can_modify_assignments": false
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "area_admin15",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 35,
+    "fields": {
+        "user": [
+            "area_admin15"
+        ],
+        "first_name": "area_admin15",
+        "last_name": "who can modify jobs",
+        "email": "area_admin15@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "fields": {
+        "area": 1,
+        "member": 35,
+        "can_modify_area": false,
+        "can_view_member": false,
+        "can_contact_member": false,
+        "can_remove_member": false,
+        "can_modify_jobs": true,
+        "can_modify_assignments": false
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "last_login": null,
+        "is_superuser": false,
+        "username": "area_admin16",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "juntagrico.member",
+    "pk": 36,
+    "fields": {
+        "user": [
+            "area_admin16"
+        ],
+        "first_name": "area_admin16",
+        "last_name": "who can modify assignments",
+        "email": "area_admin16@email.org",
+        "addr_street": "addr_street",
+        "addr_zipcode": "1234",
+        "addr_location": "addr_location",
+        "birthday": null,
+        "phone": "phone",
+        "mobile_phone": "phone",
+        "iban": "",
+        "confirmed": true,
+        "reachable_by_email": false,
+        "cancellation_date": null,
+        "deactivation_date": null,
+        "end_date": null,
+        "notes": "",
+        "number": null
+    }
+},
+{
+    "model": "juntagrico.areacoordinator",
+    "fields": {
+        "area": 1,
+        "member": 36,
+        "can_modify_area": false,
+        "can_view_member": false,
+        "can_contact_member": false,
+        "can_remove_member": false,
+        "can_modify_jobs": false,
+        "can_modify_assignments": true
     }
 }
 ]

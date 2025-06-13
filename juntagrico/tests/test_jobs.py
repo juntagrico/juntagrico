@@ -186,7 +186,10 @@ class AssignmentTests(JuntagricoTestCase):
         self.assertEqual(len(mail.outbox), 2)  # member notification and coordinator notification
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        mail.outbox.clear()
 
     def testAssignmentEditByCoordinator(self):
         self.testAssignmentEdit(self.area_admin)
         self.testAssignmentDelete(self.area_admin)
+        self.testAssignmentEdit(self.area_admin_assignment_modifier)
+        self.testAssignmentDelete(self.area_admin_assignment_modifier)

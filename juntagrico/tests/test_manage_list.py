@@ -28,9 +28,11 @@ class ManageListTests(JuntagricoTestCase):
         response = self.assertGet(reverse('manage-member'))
         # check that member list is correct
         objects = list(response.context['object_list']().order_by('id'))
-        self.assertEqual(objects, [
+        self.assertListEqual(objects, [
             self.member, self.member2, self.member3, self.member4, self.member5, self.member6,
-            self.admin, self.area_admin
+            self.admin, self.area_admin, self.area_admin_modifier, self.area_admin_viewer,
+            self.area_admin_contact, self.area_admin_remover, self.area_admin_job_modifier,
+            self.area_admin_assignment_modifier
         ])
         member = objects[0]
         self.assertEqual(member.subscription_current, self.sub)
@@ -42,6 +44,7 @@ class ManageListTests(JuntagricoTestCase):
     def testAreaMember(self):
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), code=404)
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.area_admin)
+        self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.area_admin_viewer)
         # member2 has no access
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.member2, code=404)
 

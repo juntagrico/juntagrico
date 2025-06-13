@@ -5,7 +5,7 @@ from django.utils.translation import gettext as _
 from django.contrib import admin
 
 from juntagrico.admins import RichTextAdmin, AreaCoordinatorMixin, AreaCoordinatorInlineMixin
-from juntagrico.admins.inlines.contact_inline import ContactInline
+from juntagrico.admins.inlines.contact_inline import ContactInlineForArea
 from juntagrico.entity.jobs import AreaCoordinator
 
 
@@ -29,7 +29,8 @@ class AreaAdmin(PolymorphicInlineSupportMixin, SortableAdminMixin, AreaCoordinat
     filter_horizontal = ['members']
     list_display = ['name', 'core', 'hidden', 'coordinators_text', 'auto_add_new_members', 'contacts_text']
     search_fields = ['name', 'description', 'coordinators__first_name', 'coordinators__last_name']
-    inlines = [AreaCoordinatorInline, ContactInline]
+    inlines = [AreaCoordinatorInline, ContactInlineForArea]
+    coordinator_access = 'can_modify_area'
     coordinator_permissions = ['view', 'change']
 
     @admin.display(description=_('Kontakt'))
