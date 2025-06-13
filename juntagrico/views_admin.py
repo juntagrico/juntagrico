@@ -1,7 +1,9 @@
 import datetime
 import re
 from io import BytesIO
+from smtplib import SMTPException
 
+from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
 from django.http import Http404, HttpResponse
@@ -80,22 +82,24 @@ def send_email_intern(request):
     append_attachements(request, files)
 
     if len(emails) > 0:
-        formemails.internal(
-            request.POST.get('subject'),
-            request.POST.get('message'),
-            request.POST.get('textMessage'),
-            emails, files, sender=sender
-        )
-        sent = len(emails)
+        try:
+            formemails.internal(
+                request.POST.get('subject'),
+                request.POST.get('message'),
+                request.POST.get('textMessage'),
+                emails, files, sender=sender
+            )
+            sent = len(emails)
+        except SMTPException as e:
+            messages.error(request, _('Fehler beim Senden des E-Mails: ') + str(e))
     return redirect('mail-result', numsent=sent)
 
 
 @requires_permission_to_contact
 def send_email_result(request, numsent):
-    renderdict = {
-        'sent': numsent
-    }
-    return render(request, 'mail_sender_result.html', renderdict)
+    return render(request, 'mail_sender_result.html', {
+        'sent': numsent,
+    })
 
 
 @permission_required('juntagrico.can_send_mails')
