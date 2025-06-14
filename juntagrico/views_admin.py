@@ -29,7 +29,6 @@ from juntagrico.mailer import append_attachements
 from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate
-from juntagrico.util.messages import alert
 from juntagrico.util.pdf import return_pdf_http
 from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
@@ -100,11 +99,9 @@ def send_email_intern(request):
                          'juntagrico.is_depot_admin',
                          'juntagrico.is_area_admin')
 def send_email_result(request, numsent):
-    renderdict = {
+    return render(request, 'mail_sender_result.html', {
         'sent': numsent,
-        'errors': [alert(m) for m in messages.get_messages(request)],
-    }
-    return render(request, 'mail_sender_result.html', renderdict)
+    })
 
 
 @permission_required('juntagrico.can_send_mails')
