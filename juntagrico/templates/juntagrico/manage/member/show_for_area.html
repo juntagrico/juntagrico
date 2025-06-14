@@ -29,15 +29,17 @@
 
 {% block list_entry %}
     <td>
-        {# TODO: display email and phone number in own column #}
         {% include './snippets/display_linked.html' %}
     </td>
     {% if can_remove_member %}
         <td>
-            <a href="{% url 'manage-area-member-remove' area.id member.id %}" class="btn btn-outline-danger"
-               onclick="return confirm('{% trans "Bist du sicher?" %}')">
-                {% trans "Entfernen" %}
-            </a>
+            <form action="{% url 'manage-area-member-remove' area.id %}" method="POST"
+                  onsubmit="return confirm('{% trans "Bist du sicher?" %}')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger" name="member_id" value="{{ member.id }}">
+                    {% trans "Entfernen" %}
+                </button>
+            </form>
         </td>
     {% endif %}
 {% endblock %}

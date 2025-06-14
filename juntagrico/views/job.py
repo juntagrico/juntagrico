@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, BadRequest
 from django.db.models import Min, Max
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -8,6 +8,7 @@ from django.template.defaultfilters import date
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 
 from juntagrico.dao.jobdao import JobDao
 from juntagrico.entity.jobs import Job, Assignment, JobExtra, ActivityArea
@@ -176,8 +177,12 @@ def job(request, job_id, form_class=JobSubscribeForm):
     return render(request, 'job.html', renderdict)
 
 
+@require_POST
 @login_required
-def cancel(request, job_id):
+def cancel(request):
+    job_id = request.POST.get('job_id')
+    if job_id is None:
+        raise BadRequest('job not specified')
     job = get_object_or_404(Job, id=int(job_id))
     # check permission
     if not job.check_if(request.user).can_cancel():

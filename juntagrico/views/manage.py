@@ -3,6 +3,7 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import BadRequest
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render, redirect
@@ -10,6 +11,7 @@ from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView, TemplateView
 
 from juntagrico.config import Config
@@ -120,7 +122,11 @@ class AreaMemberView(MemberView):
         return context
 
 
-def remove_area_member(request, area_id, member_id):
+@require_POST
+def remove_area_member(request, area_id):
+    member_id = request.POST.get('member_id')
+    if member_id is None:
+        raise BadRequest('member not specified')
     area = get_object_or_404(
         ActivityArea,
         id=area_id,

@@ -48,6 +48,22 @@ class ManageListTests(JuntagricoTestCase):
         # member2 has no access
         self.assertGet(reverse('manage-area-member', args=[self.area.pk]), member=self.member2, code=404)
 
+    def testAreaMemberRemove(self):
+        # incomplete and unpriviledged requests should fail
+        self.assertGet(reverse('manage-area-member-remove', args=[self.area.pk]), code=405)
+        self.assertPost(reverse('manage-area-member-remove', args=[self.area.pk]), code=400)
+        self.assertPost(reverse('manage-area-member-remove', args=[self.area.pk]), {
+            'member_id': 1
+        }, code=404)
+        self.area.refresh_from_db()
+        self.assertTrue(self.area.members.filter(id=1).exists())
+        # area admin with removal rights can remove
+        self.assertPost(reverse('manage-area-member-remove', args=[self.area.pk]), {
+            'member_id': 1
+        }, member=self.area_admin_remover, code=302)
+        self.area.refresh_from_db()
+        self.assertFalse(self.area.members.filter(id=1).exists())
+
     def testSubWaitingList(self):
         self.assertGet(reverse('sub-mgmt-waitinglist'))
         self.assertGet(reverse('sub-mgmt-waitinglist'), member=self.member2, code=302)

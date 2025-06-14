@@ -60,11 +60,14 @@
                     {% endif %}
 
                     {% if can_cancel %}
-                        <a href="{% url 'job-cancel' job.id %}" class="btn btn-outline-danger"
-                        onclick="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %}')">
-                            <i class="fas fa-ban mr-1"></i>
-                            {% trans "Einsatz absagen" %}
-                        </a>
+                        <form action="{% url 'job-cancel' %}" method="POST" class="d-inline"
+                              onsubmit="return confirm('{% trans "Bist du sicher, dass du diesen Einsatz absagen möchtest?" %}')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger" name="job_id" value="{{ job.id }}">
+                                <i class="fas fa-ban mr-1"></i>
+                                {% trans "Einsatz absagen" %}
+                            </button>
+                        </form>
                     {% endif %}
                 </div>
             </div>
