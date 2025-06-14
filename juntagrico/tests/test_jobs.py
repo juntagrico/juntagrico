@@ -105,6 +105,18 @@ class JobTests(JuntagricoTestCase):
         # assert nobody was notified
         self.assertEqual(len(mail.outbox), 0)
 
+    def testJobCancel(self):
+        # incomplete and unprivileged requests should fail
+        self.assertGet(reverse('job-cancel'), 405)
+        self.assertPost(reverse('job-cancel'), code=400)
+        self.assertPost(reverse('job-cancel'), {'job_id': self.job1.id}, 403)
+        self.job1.refresh_from_db()
+        self.assertFalse(self.job1.canceled)
+        # area admin who can edit jobs can cancel them
+        self.assertPost(reverse('job-cancel'), {'job_id': self.job1.id}, 302, self.area_admin_job_modifier)
+        self.job1.refresh_from_db()
+        self.assertTrue(self.job1.canceled)
+
 
 @override_settings(ALLOW_JOB_UNSUBSCRIBE=True)
 class UnsubscribableJobTests(JobTests):
@@ -186,7 +198,10 @@ class AssignmentTests(JuntagricoTestCase):
         self.assertEqual(len(mail.outbox), 2)  # member notification and coordinator notification
         self.assertEqual(mail.outbox[0].recipients(), [self.member.email])
         self.assertEqual(mail.outbox[1].recipients(), ['email_contact@example.org'])
+        mail.outbox.clear()
 
     def testAssignmentEditByCoordinator(self):
         self.testAssignmentEdit(self.area_admin)
         self.testAssignmentDelete(self.area_admin)
+        self.testAssignmentEdit(self.area_admin_assignment_modifier)
+        self.testAssignmentDelete(self.area_admin_assignment_modifier)

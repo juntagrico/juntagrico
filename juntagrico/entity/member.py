@@ -79,6 +79,15 @@ class Member(JuntagricoBaseModel):
     def inactive(self):
         return self.deactivation_date is not None and self.deactivation_date <= datetime.date.today()
 
+    def can_contact(self, member):
+        allowed_areas = self.coordinated_areas.filter(coordinator_access__can_contact_member=True)
+        return (
+            member.reachable_by_email
+            or self.user.has_perm('juntagrico.can_send_mails')
+            or (allowed_areas & member.areas.all()).exists()  # member is in area
+            or member.assignment_set.by_areas(allowed_areas).exists()  # member participated in job of area
+        )
+
     @property
     def active_shares(self):
         """ :return: shares that have been paid by member and not canceled AND paid back yet
@@ -228,11 +237,14 @@ class Member(JuntagricoBaseModel):
         :return: a list of all email addresses this member is allowed to send from
         """
         emails = []
-        for area in self.activityarea_set.all():  # areas that this member coordinates
+        # from areas that this member coordinates
+        for area in self.coordinated_areas.filter(coordinator_access__can_contact_member=True):
             emails += area.get_emails()
+        # from email permissions
         for target in ['general', 'for_members', 'for_subscriptions', 'for_shares', 'technical']:
             if self.user.has_perm(f'juntagrico.can_use_{target}_email'):
                 emails.append(Config.contacts(target))
+        # own email address
         emails.append(self.email)
         return list(dict.fromkeys(emails))  # make emails unique and return
 

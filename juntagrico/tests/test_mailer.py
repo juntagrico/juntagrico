@@ -31,6 +31,9 @@ class MailerTests(JuntagricoTestCaseWithShares):
         self.assertListEqual(self.area_admin.all_emails(), [
             'email_contact@example.org', 'email2@email.org', 'areaadmin@email.org'
         ])
+        self.assertListEqual(self.area_admin_contact.all_emails(), [
+            'email_contact@example.org', 'area_admin13@email.org'
+        ])
         self.assertListEqual(self.admin.all_emails(), [
             'info@juntagrico.juntagrico', 'member@juntagrico.juntagrico', 'subscription@juntagrico.juntagrico',
             'share@juntagrico.juntagrico', 'it@juntagrico.juntagrico', 'admin@email.org'
@@ -93,4 +96,4 @@ class MailerTests(JuntagricoTestCaseWithShares):
             'recipients': 'test2@mail.org',
         }
         self.assertPost(reverse('mail-send'), post_data, code=302)
-        self.assertEqual(len(mail.outbox), 17)  # check that email was split into batches
+        self.assertEqual(len(mail.outbox), 27)  # check that email was split into batches
