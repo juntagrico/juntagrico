@@ -278,6 +278,7 @@ textarea#recipients[disabled=disabled] {
 }
 
 /* mail attachement stuff checked */
+/* TODO: Obselete with the new email/write mailer */
 .file-upload {
     line-height: 30px;
 }

@@ -6,7 +6,7 @@ from smtplib import SMTPException
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.urls import reverse_lazy
@@ -188,7 +188,10 @@ def future(request):
 def get_mail_template(request, template_id):
     renderdict = {}
     template = MailTemplateDao.template_by_id(template_id)
-    exec(template.code)
+    try:
+        exec(template.code)
+    except SyntaxError as e:
+        return HttpResponseServerError(str(e))
     t = Template(template.template)
     c = Context(renderdict)
     result = t.render(c)

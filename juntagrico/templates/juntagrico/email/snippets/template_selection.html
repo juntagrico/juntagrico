@@ -1,0 +1,26 @@
+{% load i18n %}
+<div class="my-2">
+    <span>{% trans "Vorlage einfügen: " %}</span>
+    {% for template in templates %}
+        <button class="btn btn-secondary mr-2" data-template-url="{% url 'mail-template' template.id %}">
+            {{ template.name }}
+        </button>
+    {% endfor %}
+</div>
+
+<div id="template_error" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>

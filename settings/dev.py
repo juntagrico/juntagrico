@@ -100,6 +100,8 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Rich text Settings
 
+# TODO: this is now needed to configure to mailer richtext.
+#  Provide this in juntagrico.defaults to make it easer to set it up
 DJRICHTEXTFIELD_CONFIG = {
     'js': ['juntagrico/external/tinymce/tinymce.min.js'],
     'init_template': 'djrichtextfield/init/tinymce.js',
@@ -108,7 +110,25 @@ DJRICHTEXTFIELD_CONFIG = {
         'plugins': 'link  lists',
         'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
         'language': tinymce_lang(LANGUAGE_CODE)
-    }
+    },
+    'profiles': {
+        'juntagrico.mailer': {
+            'height': 500,
+            'relative_urls': False,
+            'remove_script_host': False,
+            'valid_styles': {
+                '*': 'color,text-align,font-size,font-weight,font-style,text-decoration'
+            },
+            'menubar': 'edit insert format',
+            'menu': {
+                'edit': {'title': 'Edit', 'items': 'undo redo | cut copy paste | selectall'},
+                'insert': {'title': 'Insert', 'items': 'link'},
+                'format': {'title': 'Format', 'items': 'bold italic underline strikethrough superscript subscript | formats | removeformat'}
+            },
+            'toolbar': 'undo redo | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | bullist numlist | link',
+        },
+        'juntagrico.admin': {}  # this enabled rich text in admin
+    },
 }
 
 

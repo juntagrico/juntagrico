@@ -20,7 +20,16 @@ ORGANISATION_NAME
 
 ORGANISATION_NAME_CONFIG
 ^^^^^^^^^^^^^^^^^^^^^^^^
-  Additional information to enrich the organisation name with the type of the organisation and its corresponding article
+  Additional information to adjust the language around the organisation name:
+
+  - the type of the organisation e.g. "Genossenschaft" or "Verein"
+  - the gender i.e. "f", "m" or "n"
+
+  E.g.
+
+  .. code-block:: python
+
+    ORGANISATION_NAME_CONFIG = {"type" : "Genossenschaft", "gender" : "f"}
 
   Type: Dictionary
 
@@ -28,8 +37,7 @@ ORGANISATION_NAME_CONFIG
 
   .. code-block:: python
 
-    {"type" : "",
-        "gender" : ""}
+    {"type" : "", "gender" : ""}
 
 ORGANISATION_LONG_NAME
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -514,6 +522,8 @@ VOCABULARY
 ^^^^^^^^^^
   Vocabulary dictionary for organisation specific words. _pl indicates the plural of a word. the member key describes the custom name you give your members. the member_type key describes what you call your member in accordance to your oganisation form.
 
+  The entry 'from' is used to define the binding word between "{somebody} from {organisation_name}" to your own organisation name.
+
   Type: Dictionary
 
   default value
@@ -537,6 +547,7 @@ VOCABULARY
         'depot' : 'Depot',
         'depot_pl' : 'Depots',
         'package': 'Tasche',
+        'from': '{} von {}'
     }
 
 
@@ -682,24 +693,11 @@ MAIL_TEMPLATE
 
     "mails/email.html"
 
-DEFAULT_MAILER
-^^^^^^^^^^^^^^
-  The code to send mails. for more info see the code specified in the default value
-  The setting ``'juntagrico.util.mailer.batch.Mailer'`` uses a built in batch mailer,
-  that sends the emails to the "bcc" recipients in separate emails.
-  See ``BATCH_MAILER`` to configure it.
-
-  default value
-
-  .. code-block:: python
-
-    'juntagrico.util.mailer.default.Mailer'
-
 
 BATCH_MAILER
 ^^^^^^^^^^^^^^
   Configuration for the batch mailer. These are only effective, if
-  DEFAULT_MAILER is set to ``'juntagrico.util.mailer.batch.Mailer'``.
+  EMAIL_BACKEND is set to ``'juntagrico.backends.email.BatchEmailBackend'``.
   ``batch_size`` is the number of emails, that is sent in one batch.
   When set to 1, all emails are sent using "to" instead of "bcc".
   ``wait_time`` is the interval in which the batches are sent.
