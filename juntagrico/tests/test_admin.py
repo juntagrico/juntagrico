@@ -50,7 +50,6 @@ class AdminTests(JuntagricoTestCaseWithShares):
         self.assertGet(url, member=self.area_admin)
         self.assertGet(url, member=self.area_admin_job_modifier)
 
-
     def testPastJobAdmin(self):
         add_url = reverse('admin:juntagrico_recuringjob_add')
         self.assertGet(add_url, member=self.area_admin)
