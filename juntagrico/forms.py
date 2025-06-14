@@ -22,11 +22,9 @@ from django.utils.translation import gettext_lazy
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
-from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
-from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
 from juntagrico.entity.jobs import Assignment, Job, JobExtra
 from juntagrico.entity.subs import SubscriptionPart
-from juntagrico.entity.subtypes import SubscriptionType
+from juntagrico.entity.subtypes import SubscriptionType, SubscriptionCategory
 from juntagrico.mailer import adminnotification, membernotification
 from juntagrico.models import Member, Subscription
 from juntagrico.signals import subscribed, assignment_changed
@@ -436,13 +434,13 @@ class SubscriptionTypeOption(Div):
 
 
 class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
-    def __init__(self, *args, product_method=SubscriptionProductDao.get_visible_normal_products, **kwargs):
+    def __init__(self, *args, extra=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-md-3'
         self.helper.field_class = 'col-md-9'
-        self._product_method = product_method
+        self.extra = extra
 
     def get_type_field(self, subscription_type):
         field_name = f'amount[{subscription_type.id}]'
@@ -452,20 +450,21 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
 
     def _collect_type_fields(self):
         containers = []
-        for product in self._product_method().all():
-            product_container = CategoryContainer(instance=product)
-            for subscription_size in product.sizes.filter(visible=True).exclude(types=None):
-                size_container = CategoryContainer(instance=subscription_size, name=subscription_size.long_name)
-                for subscription_type in self.type_filter(subscription_size.types):
+        for category in SubscriptionCategory.objects.exclude(bundles=None):
+            category_container = CategoryContainer(instance=category)
+            for bundle in category.bundles.exclude(types=None):
+                bundle_container = CategoryContainer(instance=bundle, name=bundle.long_name)
+                for subscription_type in self.type_filter(bundle.types):
                     if (type_field := self.get_type_field(subscription_type)) is not None:
-                        size_container.append(type_field)
-                product_container.append(size_container)
-            if len(product_container):
-                containers.append(product_container)
+                        bundle_container.append(type_field)
+                if len(bundle_container):
+                    category_container.append(bundle_container)
+            if len(category_container):
+                containers.append(category_container)
         return containers
 
     def type_filter(self, qs):
-        return qs.filter(visible=True)
+        return qs.filter(visible=True, is_extra=self.extra)
 
     def _get_initial(self, subscription_type):
         return 0
@@ -473,7 +472,7 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
     def get_selected(self):
         return {
             sub_type: getattr(self, 'cleaned_data', {}).get('amount[' + str(sub_type.id) + ']', 0)
-            for sub_type in SubscriptionTypeDao.get_all()
+            for sub_type in SubscriptionType.objects.all()
         }
 
 
@@ -562,7 +561,7 @@ class SubscriptionPartChangeForm(SubscriptionPartBaseForm):
     def pre_check(part):
         if part.subscription.canceled or part.subscription.inactive:
             raise Http404("Can't change subscription part of canceled subscription")
-        if SubscriptionType.objects.normal().visible().count() <= 1:
+        if not SubscriptionType.objects.can_change():
             raise Http404("Can't change subscription part if there is only one subscription type")
 
     def get_type_field(self, subscription_type):
@@ -655,7 +654,7 @@ class TrialCloseoutForm(Form):
 
     @cached_property
     def follow_up_part(self):
-        return self.part.follow_up_parts().waiting().filter(type__size=self.part.type.size).first()
+        return self.part.follow_up_parts().waiting().filter(type__bundle=self.part.type.bundle).first()
 
     @cached_property
     def other_new_parts(self):
