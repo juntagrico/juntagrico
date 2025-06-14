@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.db.models import Q
+from django.utils import timezone
 from polymorphic.query import PolymorphicQuerySet
 
 
@@ -36,3 +39,7 @@ class JobQueryset(PolymorphicQuerySet):
                 search_value
             ) | Q(time__icontains=search_value)
         )
+
+    def order_by_recent(self, days=7):
+        cutoff = timezone.now() - timedelta(days=days)
+        return self.annotate(is_old=Q(time__lt=cutoff)).order_by('is_old', 'time')

@@ -33,14 +33,9 @@
 {# button to contact all #}
 {% if can_contact %}
     {% block send_mail %}
-        <div>
-            <form id="email-sender" action="{% url 'email-write' %}" method="GET">
-                <input type="hidden" name="members" value="{{ job.unique_participants.id_string }}"/>
-                <button type="submit" class="btn btn-outline-primary" id="send-email">
-                    {% trans "Allen ein E-Mail senden" %}
-                </button>
-            </form>
-        </div>
+        <a href="{% url 'email-write' %}?job={{ job.id }}" class="btn btn-outline-primary">
+            {% trans "Allen ein E-Mail senden" %}
+        </a>
     {% endblock %}
 {% endif %}
 

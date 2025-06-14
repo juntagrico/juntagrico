@@ -9,6 +9,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.forms import Media
 from django.template.loader import get_template
 from django.urls import reverse
+from django.utils.formats import date_format
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2MultipleWidget
@@ -16,7 +17,7 @@ from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea
+from juntagrico.entity.jobs import ActivityArea, Job
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 
@@ -45,6 +46,11 @@ class InternalModelSelect2MultipleWidget(ModelSelect2MultipleWidget):
         super().__init__(*args, **kwargs)
 
 
+class JobSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
+    def label_from_instance(self, obj):
+        return f'{obj.type.get_name} ({date_format(obj.time, "SHORT_DATETIME_FORMAT")})'
+
+
 class EmailRecipientsForm(forms.Form):
     to_list = forms.MultipleChoiceField(label=False, required=False, widget=forms.CheckboxSelectMultiple)
     to_areas = forms.ModelMultipleChoiceField(
@@ -53,6 +59,18 @@ class EmailRecipientsForm(forms.Form):
             model=ActivityArea,
             search_fields=['name__icontains'],
             attrs={'data-minimum-input-length': 0}
+        )
+    )
+    to_jobs = forms.ModelMultipleChoiceField(
+        Job.objects.order_by_recent(), label=_('An alle in diesen Einsätzen'), required=False,
+        widget=JobSelect2MultipleWidget(
+            model=Job,
+            search_fields=[
+                'OneTimeJob___name__icontains', 'OneTimeJob___displayed_name__icontains',
+                'RecuringJob___type__name__icontains', 'RecuringJob___type__displayed_name__icontains',
+                'time__icontains'
+            ],
+            attrs={'data-minimum-input-length': 4}
         )
     )
     to_depots = forms.ModelMultipleChoiceField(
@@ -89,7 +107,7 @@ class EmailRecipientsForm(forms.Form):
     def get_form_layout(self):
         return Fieldset(
             _('An'),
-            'to_list', 'to_areas', 'to_depots', 'to_members', 'copy',
+            'to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy',
             css_id='fieldset_to', css_class='my-5'
         )
 
@@ -116,6 +134,8 @@ class EmailRecipientsForm(forms.Form):
             recipients |= Member.objects.active().has_active_shares()
         if cleaned_data['to_areas']:
             recipients |= Member.objects.active().filter(areas__in=cleaned_data['to_areas'])
+        if cleaned_data['to_jobs']:
+            recipients |= Member.objects.active().filter(assignment__job__in=cleaned_data['to_jobs'])
         if cleaned_data['to_members']:
             recipients |= Member.objects.active().filter(pk__in=cleaned_data['to_members'])
         if cleaned_data['copy']:

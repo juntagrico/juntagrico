@@ -57,6 +57,7 @@ def write(request):
     #       If all members or area/depot are selected, make sure to prefill the to_areas and to_depots field
     #       and not the to_members field.
     initial = dict(
+        to_jobs=[request.GET.get('job')],
         to_members=request.GET.get('members', '').split('-')
     )
 

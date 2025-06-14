@@ -109,8 +109,5 @@ class MemberQuerySet(SubscriptionMembershipQuerySetMixin, QuerySet):
         return self.annotate_assignment_count(start, end, prefix, **extra_filters)\
             .annotate_core_assignment_count(start, end, prefix, **extra_filters)
 
-    def id_string(self, sep='-'):
-        return sep.join(map(str, self.values_list('id', flat=True)))
-
     def as_email_recipients(self):
         return [f'{m} <{m.email}>' for m in self]
