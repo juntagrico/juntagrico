@@ -18,7 +18,7 @@ def select_parts(
         request, signup_manager,
         key='subscriptions',
         form_class=SubscriptionPartSelectForm,
-        template_name='createsubscription/select_subscription.html'
+        template_name='juntagrico/subscription/create/select_subscription.html'
     ):
     subscriptions = signup_manager.get(key, {})
     if request.method == 'POST':
@@ -56,7 +56,7 @@ def select_depot(request, signup_manager):
     if selected is not None:
         selected = int(selected)
 
-    return render(request, 'createsubscription/select_depot.html', {
+    return render(request, 'juntagrico/subscription/create/select_depot.html', {
         'depots': depots,
         'subscription_count': signup_manager.get('subscriptions', {}),
         'selected': selected,
@@ -77,11 +77,11 @@ def select_start_date(request, signup_manager):
         'start_date': temporal.start_of_next_business_year(),
         'subscriptionform': subscription_form,
     }
-    return render(request, 'createsubscription/select_start_date.html', render_dict)
+    return render(request, 'juntagrico/subscription/create/select_start_date.html', render_dict)
 
 
 class AddMemberView(SignupView, FormView):
-    template_name = 'createsubscription/add_member_cs.html'
+    template_name = 'juntagrico/subscription/create/add_member.html'
 
     def __init__(self):
         super().__init__()
@@ -167,7 +167,7 @@ class AddMemberView(SignupView, FormView):
 
 
 class SelectSharesView(SignupView, FormView):
-    template_name = 'createsubscription/select_shares.html'
+    template_name = 'juntagrico/subscription/create/select_shares.html'
     form_class = ShareOrderForm
 
     def get_form_kwargs(self):
@@ -185,7 +185,7 @@ class SelectSharesView(SignupView, FormView):
 
 
 class SummaryView(SignupView, FormView):
-    template_name = 'createsubscription/summary.html'
+    template_name = 'juntagrico/subscription/create/summary.html'
     form_class = RegisterSummaryForm
 
     def get_initial(self):

@@ -478,7 +478,7 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
 
 
 class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
-    no_selection_template = 'forms/no_subscription_field.html'
+    no_selection_template = 'juntagrico/subscription/create/form/no_subscription_field.html'
 
     def __init__(self, selected, *args, **kwargs):
         super().__init__(*args, **kwargs)
