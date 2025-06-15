@@ -20,7 +20,7 @@ $(function () {
     }
 
     // interactive checkbox
-    $("input[name='no_subscription']").change(function(){
+    $("input[name='no_selection']").change(function(){
         if (this.checked) {
             $("input[type='number'][name^='amount']+div input").val(0).change()
         } else if (total_selected_subs() == 0)  {
@@ -28,7 +28,7 @@ $(function () {
         }
     })
     $("input[type='number'][name^='amount']").change(function(){
-        $("input[name='no_subscription']").prop('checked', total_selected_subs() == 0)
+        $("input[name='no_selection']").prop('checked', total_selected_subs() == 0)
     })
 
     // show Spinner in multi selection

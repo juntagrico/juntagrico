@@ -1,0 +1,28 @@
+{% extends './no_selection_field.html' %}
+{% load juntagrico.config %}
+{% load i18n %}
+
+{% block label %}
+    <strong>{% blocktrans with v_subscription=vocabulary.subscription %}Kein {{ v_subscription }}{% endblocktrans %}</strong>
+{% endblock %}
+
+{% block description %}
+    {% block main_description %}
+        {% config "organisation_name" as c_organisation_name %}
+        {% blocktrans trimmed with v_subscription=vocabulary.subscription v_member_type=vocabulary.member_type %}
+            Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-{{ v_member_type }}
+            sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
+        {% endblocktrans %}
+    {% endblock %}
+    <br/>
+    {% block base_fee %}
+        {% config "base_fee" as base_fee %}
+        {% if base_fee.strip %}
+            {% config "currency" as c_currency %}
+            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
+                {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
+                einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
+            {% endblocktrans %}
+        {% endif %}
+    {% endblock %}
+{% endblock %}
