@@ -34,8 +34,8 @@
                                 features: {
                                     buttons: [
                                         email_button(
-                                            '{% if mail_url %}{% url mail_url %}{% else %}{% url 'mail' %}{% endif %}',
-                                            '{% csrf_token %}'
+                                            '{% if mail_url %}{{ mail_url }}{% else %}{% url 'email-write' %}{% endif %}',
+                                            {{ default_email_all|yesno:"true,false" }}
                                         ),
                                         email_copy_button()
                                     ]

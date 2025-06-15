@@ -1,0 +1,10 @@
+{% load juntagrico.config %}
+
+============
+{% config "organisation_address" as organisation_address %}{% config "organisation_phone" as organisation_phone %}
+{{ organisation_address.name }}
+{% if organisation_address.extra %}{{ organisation_address.extra }}
+{% endif %}{{ organisation_address.street }} {{ organisation_address.number }}
+{{ organisation_address.zip }} {{ organisation_address.city }}
+{% if organisation_phone %}{{ organisation_phone }}
+{% endif %}{% organisation_website "url" %}

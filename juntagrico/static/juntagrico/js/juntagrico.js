@@ -48,13 +48,13 @@ $(function () {
     }
 });
 
-function email_button(action, csrf_token) {
+function email_button(action, default_email_all) {
     return {
         text: '<i class="fa-regular fa-envelope"></i> ' + email_button_string[0],
         init: function (dt, node, config) {
             let that = this;
             dt.on('draw select.dt.DT deselect.dt.DT', function () {
-                const count = get_emails(dt).size
+                const count = get_email_ids(get_selected_or_all(dt)).size
                 that.enable(count > 0)
                 that.text(
                     '<i class="fa-regular fa-envelope"></i> ' +
@@ -63,11 +63,15 @@ function email_button(action, csrf_token) {
             })
         },
         action: function (e, dt, node, config) {
-            let emails = get_emails(dt)
-            post(action, csrf_token, {
-                recipients: Array.from(emails).join("\n"),
-                recipients_count: emails.size,
-            })
+            let email_ids = get_email_ids(get_selected_or_all(dt))
+            let data = null
+            // shortcut if all or no rows are selected, send no data, if form defaults to all recipients
+            if (!(default_email_all && email_ids.size === get_email_ids(dt.rows().nodes()).size)) {
+                data = {
+                    members: Array.from(email_ids).join("-"),
+                }
+            }
+            send_form(action, '', data, 'GET')
         }
     }
 }
@@ -121,11 +125,17 @@ function id_action_button(text, action, csrf_token, selector, field='ids', confi
                 let confirm_text = confirm[Math.min(2, elements.size)-1].replace('{count}', elements.size)
                 if (!window.confirm(confirm_text)) return
             }
-            post(action, csrf_token, {
+            send_form(action, csrf_token, {
                 [field]: Array.from(elements).join("_"),
             })
         }
     }
+}
+
+function get_email_ids(dt) {
+    return new  Set($('.email', dt).map(function () {
+        return $(this).data('id')
+    }).get())
 }
 
 function get_emails(dt) {
@@ -145,8 +155,8 @@ function get_selected_or_all(dt) {
     return selected.any() ? selected.nodes() : dt.rows(':visible', {search: 'applied'}).nodes()
 }
 
-function post(action, csrf_token, data) {
-    let form = $('<form action="' + action + '" method="POST">' + csrf_token + '</form>')
+function send_form(action, csrf_token, data, method='POST') {
+    let form = $('<form action="' + action + '" method="' + method + '">' + csrf_token + '</form>')
     for (const key in data) {
         form.append($('<input type="hidden" name="' + key + '" value="' + data[key] + '"/>'))
     }
@@ -160,11 +170,11 @@ $.fn.EmailButton = function (tables, selector = '.email') {
     let form = $(this)
 
     let fetch_emails = function () {
-        let table_nodes = tables.map((table) => table.table().node())
-        let table_emails = $(selector, table_nodes).text().trim().replace(/[\s,]+/gm, ',');
-        if (table_emails !== "")
-            return new Set(table_emails.split(','))
-        return new Set()
+        let email_ids = new Set()
+        for (let table of tables) {
+            email_ids = new Set([...email_ids, ...get_email_ids(get_selected_or_all(table))])
+        }
+        return email_ids
     }
 
     // Move the button (and the corresponding form) to the same level as the filter input
@@ -173,8 +183,7 @@ $.fn.EmailButton = function (tables, selector = '.email') {
     // On submit collect emails from table and first.
     form.submit(function (event) {
         let emails = fetch_emails()
-        $("[name='recipients']", this).val(Array.from(emails).join("\n"))
-        $("[name='recipients_count']", this).val(emails.size)
+        $("[name='members']", this).val(Array.from(emails).join("-"))
     })
 
     // update counter in email button when table if filtered
