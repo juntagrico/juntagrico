@@ -4,7 +4,7 @@ from datetime import date
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ValidationError
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, F
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -427,7 +427,7 @@ def manage_shares(request):
     else:
         shareerror = False
     member = request.user.member
-    shares = member.share_set.order_by('cancelled_date', '-paid_date')
+    shares = member.share_set.order_by(F('cancelled_date').asc(nulls_first=True), F('paid_date').desc(nulls_last=True))
 
     active_share_years = member.active_share_years
     current_year = datetime.date.today().year

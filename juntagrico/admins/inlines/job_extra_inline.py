@@ -8,3 +8,11 @@ class JobExtraInline(admin.TabularInline):
 
     def get_extra(self, request, obj=None, **kwargs):
         return 0
+
+
+class JobExtraInlineForJobType(JobExtraInline):
+    exclude = ['onetime_type']
+
+
+class JobExtraInlineForOnetimeJob(JobExtraInline):
+    exclude = ['recuring_type']

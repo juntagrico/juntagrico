@@ -106,9 +106,11 @@ class AbstractMemberCancellationForm(ModelForm):
 
     def save(self, commit=True):
         if (sub := self.instance.subscription_current) is not None:
-            self.instance.leave_subscription(sub)
+            if sub.primary_member != self.instance:
+                self.instance.leave_subscription(sub)
         if (sub := self.instance.subscription_future) is not None:
-            self.instance.leave_subscription(sub)
+            if sub.primary_member != self.instance:
+                self.instance.leave_subscription(sub)
         self.instance.cancel()
         return super().save(commit)
 
