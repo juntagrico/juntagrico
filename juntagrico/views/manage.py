@@ -108,7 +108,7 @@ class AreaMemberView(MemberView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title.format(area_name=self.area.name)
-        context['mail_url'] = 'mail-area'
+        context['mail_url'] = reverse('mail-area')
         context['can_see_emails'] = True
         context['hide_areas'] = True
         return context
@@ -338,7 +338,8 @@ class DepotSubscriptionView(SubscriptionView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title.format(depot_name=self.depot.name)
-        context['mail_url'] = 'mail-depot'
+        context['mail_url'] = reverse('email-to-depot', args=[self.depot.id])
+        context['default_email_all'] = True
         context['can_see_emails'] = True
         context['hide_depots'] = True
         return context

@@ -191,21 +191,15 @@ urlpatterns = [
     path('manage/area/<int:area_id>/member', manage.AreaMemberView.as_view(), name='manage-area-member'),
 
     # /email
-    path('my/mails', juntagrico_admin.mails, name='mail'),
-    path('email/to/<int:member_id>', email.to_member, name='email-to-member'),
-    path('my/mails/send', juntagrico_admin.send_email, name='mail-send'),
-    path('my/mails/send/result/<int:numsent>/', juntagrico_admin.send_email_result, name='mail-result'),
-    path('email/write', email.write, name='email-write'),
+    path('email/write/', email.write, name='email-write'),
+    path('email/to/<int:member_id>/', email.to_member, name='email-to-member'),
     path('email/recipients/count', email.count_recipients, name='email-count-recipients'),
     # /email/depot
-    path('my/mails/depot', juntagrico_admin.mails_depot, name='mail-depot'),
-    path('my/mails/send/depot', juntagrico_admin.send_email_depot, name='mail-depot-send'),
+    path('email/depot/<int:depot_id>/', email.to_depot, name='email-to-depot'),
+    path('email/depot/<int:depot_id>/recipients/count', email.count_depot_recipients, name='email-count-depot-recipients'),
     # /email/area
     path('my/mails/area', juntagrico_admin.mails_area, name='mail-area'),
     path('my/mails/send/area', juntagrico_admin.send_email_area, name='mail-area-send'),
-    # /email/job
-    path('my/mails/job', juntagrico_admin.mails_job, name='mail-job'),
-    path('my/mails/send/job', juntagrico_admin.send_email_job, name='mail-job-send'),
     # /email/template
     path('my/mailtemplate/<int:template_id>/', juntagrico_admin.get_mail_template, name='mail-template'),
 

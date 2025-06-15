@@ -1,50 +1,32 @@
 import datetime
-import re
 from io import BytesIO
-from smtplib import SMTPException
 
-from django.contrib import messages
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.core.management import call_command
 from django.http import Http404, HttpResponse, HttpResponseServerError
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.template import Template, Context
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext as _, get_language
+from django.utils.translation import gettext as _
 from django.views.generic import FormView
 from xlsxwriter import Workbook
 
 from juntagrico import __version__
 from juntagrico.config import Config
-from juntagrico.dao.mailtemplatedao import MailTemplateDao
-from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptiondao import SubscriptionDao
 from juntagrico.dao.subscriptionpartdao import SubscriptionPartDao
 from juntagrico.dao.subscriptionsizedao import SubscriptionSizeDao
+from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
 from juntagrico.forms import GenerateListForm, ShiftTimeForm
-from juntagrico.mailer import append_attachements
-from juntagrico.mailer import formemails
 from juntagrico.util import return_to_previous_location, addons
 from juntagrico.util.management_list import get_changedate
 from juntagrico.util.pdf import return_pdf_http
-from juntagrico.util.settings import tinymce_lang
 from juntagrico.util.views_admin import subscription_management_list
 from juntagrico.util.xls import generate_excel
-from juntagrico.view_decorators import any_permission_required
 from juntagrico.views_subscription import error_page
-
-
-@permission_required('juntagrico.can_send_mails')
-def send_email(request):
-    return send_email_intern(request)
-
-
-@permission_required('juntagrico.is_depot_admin')
-def send_email_depot(request):
-    return send_email_intern(request)
 
 
 @permission_required('juntagrico.is_area_admin')
@@ -52,93 +34,9 @@ def send_email_area(request):
     return send_email_intern(request)
 
 
-@any_permission_required('juntagrico.is_area_admin', 'juntagrico.can_send_mails')
-def send_email_job(request):
-    return send_email_intern(request)
-
-
-def send_email_intern(request):
-    sent = 0
-    if request.method != 'POST':
-        raise Http404
-    emails = set()
-    sender = request.POST.get('sender')
-    if request.POST.get('allsubscription') == 'on':
-        m_emails = MemberDao.members_for_email_with_subscription().values_list('email',
-                                                                               flat=True)
-        emails.update(m_emails)
-    if request.POST.get('allshares') == 'on':
-        emails.update(MemberDao.members_for_email_with_shares(
-        ).values_list('email', flat=True))
-    if request.POST.get('all') == 'on':
-        emails.update(MemberDao.members_for_email(
-        ).values_list('email', flat=True))
-    if request.POST.get('recipients'):
-        emails.update(re.split(r'[\s,;]+', request.POST.get('recipients')))
-    if request.POST.get('allsingleemail'):
-        emails.update(re.split(r'[\s,;]+', request.POST.get('singleemail')))
-
-    files = []
-    append_attachements(request, files)
-
-    if len(emails) > 0:
-        try:
-            formemails.internal(
-                request.POST.get('subject'),
-                request.POST.get('message'),
-                request.POST.get('textMessage'),
-                emails, files, sender=sender
-            )
-            sent = len(emails)
-        except SMTPException as e:
-            messages.error(request, _('Fehler beim Senden des E-Mails: ') + str(e))
-    return redirect('mail-result', numsent=sent)
-
-
-@any_permission_required('juntagrico.can_send_mails',
-                         'juntagrico.is_depot_admin',
-                         'juntagrico.is_area_admin')
-def send_email_result(request, numsent):
-    return render(request, 'mail_sender_result.html', {
-        'sent': numsent,
-    })
-
-
-@permission_required('juntagrico.can_send_mails')
-def mails(request, mail_url='mail-send'):
-    return my_mails_intern(request, mail_url)
-
-
-@permission_required('juntagrico.is_depot_admin')
-def mails_depot(request):
-    return my_mails_intern(request, 'mail-depot-send')
-
-
 @permission_required('juntagrico.is_area_admin')
 def mails_area(request):
     return my_mails_intern(request, 'mail-area-send')
-
-
-@any_permission_required('juntagrico.is_area_admin', 'juntagrico.can_send_mails')
-def mails_job(request):
-    return my_mails_intern(request, 'mail-job-send')
-
-
-def my_mails_intern(request, mail_url, error_message=None):
-    renderdict = {
-        'recipient_type': request.POST.get('recipient_type'),
-        'recipient_type_detail': request.POST.get('recipient_type_detail'),
-        'recipients': request.POST.get('recipients'),
-        'recipients_count': int(request.POST.get('recipients_count') or 0),
-        'filter_value': request.POST.get('filter_value'),
-        'mail_subject': request.POST.get('subject'),
-        'mail_message': request.POST.get('message'),
-        'mail_url': mail_url,
-        'error_message': error_message,
-        'templates': MailTemplateDao.all_templates(),
-        'richtext_language': tinymce_lang(get_language()),
-    }
-    return render(request, 'mail_sender.html', renderdict)
 
 
 @permission_required('juntagrico.can_view_lists')
@@ -187,7 +85,7 @@ def future(request):
 @permission_required('juntagrico.can_load_templates')
 def get_mail_template(request, template_id):
     renderdict = {}
-    template = MailTemplateDao.template_by_id(template_id)
+    template = MailTemplate.objects.get(id=template_id)
     try:
         exec(template.code)
     except SyntaxError as e:

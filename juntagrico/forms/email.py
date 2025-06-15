@@ -51,7 +51,59 @@ class JobSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
         return f'{obj.type.get_name} ({date_format(obj.time, "SHORT_DATETIME_FORMAT")})'
 
 
-class EmailRecipientsForm(forms.Form):
+class MemberSelect2MultipleWidget(InternalModelSelect2MultipleWidget):
+    model = Member
+    search_fields = [
+        'first_name__icontains',
+        'last_name__icontains',
+        'email__icontains',
+    ]
+
+
+class BaseRecipientsForm(forms.Form):
+    to_members = forms.ModelMultipleChoiceField(
+        Member.objects.active(), label=_('An diese Personen'), required=False, widget=MemberSelect2MultipleWidget
+    )
+    # TODO: the copy to self would ideally list the recipients
+    #  and contain a link to open the form again with the same recipients.
+    copy = forms.BooleanField(label=_('Kopie an mich'), required=False)
+
+    def __init__(self, sender, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.sender = sender
+        self.form_fields = ['to_members', 'copy']
+
+    def get_form_layout(self):
+        return Fieldset(
+            _('An'),
+            *self.form_fields,
+            css_id='fieldset_to', css_class='my-5'
+        )
+
+    def _populate_recipients_queryset(self, recipients):
+        cleaned_data = self.cleaned_data
+        if to_members := cleaned_data.get('to_members'):
+            recipients |= Member.objects.active().filter(pk__in=to_members)
+        if cleaned_data.get('copy'):
+            recipients |= Member.objects.active().filter(pk__in=[self.sender.pk])
+        return recipients
+
+    def _get_recipients_queryset(self):
+        recipients = Member.objects.none()
+        recipients = self._populate_recipients_queryset(recipients)
+        return recipients.distinct()
+
+    def _get_recipients(self):
+        return set(self._get_recipients_queryset().as_email_recipients())
+
+    def get_count_url(self):
+        return reverse('email-count-recipients')
+
+    def count_recipients(self):
+        return self._get_recipients_queryset().count()
+
+
+class RecipientsForm(BaseRecipientsForm):
     to_list = forms.MultipleChoiceField(label=False, required=False, widget=forms.CheckboxSelectMultiple)
     to_areas = forms.ModelMultipleChoiceField(
         ActivityArea.objects.none(), label=_('An alle in diesen Tätigkeitsbereichen'), required=False,
@@ -83,33 +135,22 @@ class EmailRecipientsForm(forms.Form):
             attrs={'data-minimum-input-length': 0}
         )
     )
-    to_members = forms.ModelMultipleChoiceField(
-        Member.objects.active(), label=_('An diese Personen'), required=False, widget=InternalModelSelect2MultipleWidget(
-            model=Member,
-            search_fields=[
-                'first_name__icontains',
-                'last_name__icontains',
-                'email__icontains',
-            ],
-        )
-    )
-    # TODO: the copy to self would ideally list the recipients
-    #  and contain a link to open the form again with the same recipients.
-    copy = forms.BooleanField(label=_('Kopie an mich'), required=False)
 
-    def __init__(self, sender, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.sender = sender
-        self.fields['to_list'].choices = self.get_recipient_list_choices()
-        # TODO: limit selection of areas, depots and members
-        self.fields['to_areas'].queryset = ActivityArea.objects.all()
-
-    def get_form_layout(self):
-        return Fieldset(
-            _('An'),
-            'to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy',
-            css_id='fieldset_to', css_class='my-5'
-        )
+    def __init__(self, sender, features=None, *args, **kwargs):
+        super().__init__(sender, *args, **kwargs)
+        # filter available fields
+        default_fields = ['to_list', 'to_areas', 'to_jobs', 'to_depots', 'to_members', 'copy']
+        if features:
+            for field in default_fields:
+                if field not in features:
+                    del self.fields[field]
+        self.form_fields = features or default_fields
+        # configure fields
+        if 'to_list' in self.fields:
+            self.fields['to_list'].choices = self.get_recipient_list_choices()
+        if 'to_areas' in self.fields:
+            # TODO: limit selection of areas, depots and members
+            self.fields['to_areas'].queryset = ActivityArea.objects.all()
 
     def get_recipient_list_choices(self):
         # TODO: only show options based on members permissions (future)
@@ -119,43 +160,63 @@ class EmailRecipientsForm(forms.Form):
             ('all_shares', _('Alle mit {}').format(Config.vocabulary('share')),),
         ]
 
-    def _get_recipients_queryset(self):
+    def _populate_recipients_queryset(self, recipients):
         cleaned_data = self.cleaned_data
-        if 'all' in cleaned_data['to_list']:
+        to_list = cleaned_data.get('to_list', [])
+        if 'all_subscriptions' in to_list:
+            recipients |= Member.objects.active().has_active_subscription()
+        elif to_depots := cleaned_data.get('to_depots'):
+            recipients |= Member.objects.active().has_active_subscription().in_depot(to_depots)
+        if 'all_shares' in to_list:
+            recipients |= Member.objects.active().has_active_shares()
+        if to_areas := cleaned_data.get('to_areas'):
+            recipients |= Member.objects.active().filter(areas__in=to_areas)
+        if to_jobs := cleaned_data.get('to_jobs'):
+            recipients |= Member.objects.active().filter(assignment__job__in=to_jobs)
+        return super()._populate_recipients_queryset(recipients)
+
+    def _get_recipients_queryset(self):
+        if 'all' in self.cleaned_data.get('to_list', []):
             # return all members directly
             return Member.objects.active()
 
         recipients = Member.objects.none()
-        if 'all_subscriptions' in cleaned_data['to_list']:
-            recipients |= Member.objects.active().has_active_subscription()
-        elif cleaned_data['to_depots']:
-            recipients |= Member.objects.active().has_active_subscription().in_depot(cleaned_data['to_depots'])
-        if 'all_shares' in cleaned_data['to_list']:
-            recipients |= Member.objects.active().has_active_shares()
-        if cleaned_data['to_areas']:
-            recipients |= Member.objects.active().filter(areas__in=cleaned_data['to_areas'])
-        if cleaned_data['to_jobs']:
-            recipients |= Member.objects.active().filter(assignment__job__in=cleaned_data['to_jobs'])
-        if cleaned_data['to_members']:
-            recipients |= Member.objects.active().filter(pk__in=cleaned_data['to_members'])
-        if cleaned_data['copy']:
-            recipients |= Member.objects.active().filter(pk__in=[self.sender.pk])
+        recipients = self._populate_recipients_queryset(recipients)
         return recipients.distinct()
 
-    def _get_recipients(self):
-        return set(self._get_recipients_queryset().as_email_recipients())
 
-    def count_recipients(self):
-        return self._get_recipients_queryset().count()
+class DepotRecipientsForm(BaseRecipientsForm):
+    to_depot = forms.BooleanField(
+        label=_('An alle mit aktivem/r {} im Depot {}').format(Config.vocabulary('subscription'), '{}'),
+        required=False
+    )
+
+    def __init__(self, sender, features=None, *args, **kwargs):
+        super().__init__(sender, *args, **kwargs)
+        self.depot_id = features['depot']
+        depot = Depot.objects.get(pk=self.depot_id)
+        self.fields['to_depot'].label = self.fields['to_depot'].label.format(depot.name)
+        self.fields['to_members'].label = _('An diese Personen im Depot')
+        self.fields['to_members'].queryset = Member.objects.active().has_active_subscription().in_depot(self.depot_id)
+        self.form_fields.insert(0, 'to_depot')
+
+    def get_count_url(self):
+        return reverse('email-count-depot-recipients', args=[self.depot_id])
+
+    def _populate_recipients_queryset(self, recipients):
+        if self.cleaned_data.get('to_depot'):
+            recipients |= Member.objects.active().has_active_subscription().in_depot(self.depot_id)
+        return super()._populate_recipients_queryset(recipients)
 
 
-class EmailForm(EmailRecipientsForm):
+class BaseForm(BaseRecipientsForm):
     from_email = forms.ChoiceField(label=_('Von'))
     subject = forms.CharField(label=_('Betreff'))
     body = forms.CharField(label=_('Nachricht'), required=False, widget=RichTextWidget(field_settings='juntagrico.mailer'))
 
     def __init__(self, sender, features, *args, **kwargs):
-        super().__init__(sender, *args, **kwargs)
+        super().__init__(sender, features.get('recipients'), *args, **kwargs)
+        self.sender = sender
         self.fields['from_email'].choices = self.get_sender_choices()
         if features['template']:
             self.fields['body'].widget = RichTextWidgetWithTemplates(field_settings='juntagrico.mailer')
@@ -171,14 +232,14 @@ class EmailForm(EmailRecipientsForm):
 
     def get_form_layout(self):
         layout = Layout(
-            'from_email',
+            Field('from_email', css_class='custom-select-lg'),
             super().get_form_layout(),
-            'subject', 'body',
+            Field('subject', css_class='form-control-lg'), 'body',
             HTML(get_template('juntagrico/email/snippets/signature_display.html').render()),
             FormActions(
                 Submit(
                     'submit', _('Senden'), css_class='btn-success btn-lg',
-                    data_count_url=reverse('email-count-recipients')
+                    data_count_url=self.get_count_url()
                 ),
                 css_class='text-right'
             ),
@@ -213,7 +274,7 @@ class EmailForm(EmailRecipientsForm):
             text_body,
             dict(self.fields['from_email'].choices)[self.cleaned_data['from_email']],
             # TODO: if there is only one recipient (besides copy to self) use to field directly.
-            bcc=self._get_recipients(),
+            bcc=list(self._get_recipients()),
             alternatives=[(html_body, 'text/html')],
         )
         # add attachments
@@ -226,3 +287,11 @@ class EmailForm(EmailRecipientsForm):
 
     class Media:
         js = ['juntagrico/js/forms/emailForm.js']
+
+
+class EmailForm(BaseForm, RecipientsForm):
+    pass
+
+
+class DepotForm(BaseForm, DepotRecipientsForm):
+    pass

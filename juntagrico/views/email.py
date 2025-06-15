@@ -1,18 +1,14 @@
+from smtplib import SMTPException
+
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
-from django.utils.translation import get_language
+from django.shortcuts import render, redirect
 from django.utils.translation import ngettext, gettext as _
 from django_select2.views import AutoResponseView
 
-from juntagrico.forms.email import EmailForm, EmailRecipientsForm
-from juntagrico.util.settings import tinymce_lang
-
-from juntagrico.entity.mailing import MailTemplate
-from juntagrico.entity.member import Member
-from juntagrico.view_decorators import any_permission_required
+from juntagrico.forms.email import EmailForm, RecipientsForm, DepotForm, BaseForm, DepotRecipientsForm
 
 
 class InternalSelect2View(LoginRequiredMixin, AutoResponseView):
@@ -21,24 +17,9 @@ class InternalSelect2View(LoginRequiredMixin, AutoResponseView):
     pass
 
 
-@any_permission_required('juntagrico.can_send_mails',
-                         'juntagrico.is_depot_admin',
-                         'juntagrico.is_area_admin')
-def to_member(request, member_id, mail_url='mail-send'):
-    renderdict = {
-        'recipients': get_object_or_404(Member, id=member_id).email,
-        'recipients_count': 1,
-        'mail_url': mail_url,
-        'email': request.user.member.email,
-        'templates': MailTemplate.objects.all(),
-        'richtext_language': tinymce_lang(get_language()),
-    }
-    return render(request, 'mail_sender.html', renderdict)
-
-
 @login_required
-def count_recipients(request):
-    form = EmailRecipientsForm(request.user.member, request.GET)
+def count_recipients(request, form=None):
+    form = form or RecipientsForm(request.user.member, data=request.GET)
     if form.is_valid():
         if count := form.count_recipients():
             return HttpResponse(ngettext(
@@ -50,32 +31,62 @@ def count_recipients(request):
 
 
 @login_required
+def count_depot_recipients(request, depot_id):
+    form = DepotRecipientsForm(request.user.member, {'depot': depot_id}, data=request.GET)
+    return count_recipients(request, form)
+
+
+@login_required
+def to_member(request, member_id):
+    # TODO: Check if request.user.member can contact member_id
+    return email_view(request, EmailForm, {
+        'recipients': ['to_members', 'copy']
+    }, {
+        'to_members': [member_id]
+    })
+
+
+@permission_required('juntagrico.is_depot_admin')
+def to_depot(request, depot_id):
+    # TODO: include an email footer that says "you receive this email because you are in the depot ..."
+    members = request.GET.get('members', '')
+    return email_view(request, DepotForm, {
+        'recipients': {'depot': depot_id}
+    }, {
+        'to_depot': not members,
+        'to_members': members.split('-')
+    })
+
+
+@login_required
 def write(request):
-    member = request.user.member
-    # TODO: try to remember the context of the request. If members were selected in the area list, include the
-    #       footer that says "you receive this email because you are in the area ..."
-    #       If all members or area/depot are selected, make sure to prefill the to_areas and to_depots field
-    #       and not the to_members field.
+    # TODO: limit access
     initial = dict(
         to_jobs=[request.GET.get('job')],
         to_members=request.GET.get('members', '').split('-')
     )
+    return email_view(request, EmailForm, initial=initial)
 
-    features = dict(
-        template=request.user.has_perm('juntagrico.can_load_templates'),
-        # TODO: using this permission from the future
-        attachment=request.user.has_perm('juntagrico.can_email_attachments'),
-    )
+
+def email_view(request, form_class: type(BaseForm) = EmailForm, features=None, initial=None):
+    member = request.user.member
+    features = features or {}
+    features.setdefault('template', request.user.has_perm('juntagrico.can_load_templates'))
+    # TODO: using this permission from the future
+    features.setdefault('attachment', request.user.has_perm('juntagrico.can_email_attachments'))
 
     if request.method == 'POST':
-        form = EmailForm(member, features, request.POST, request.FILES, initial=initial)
+        form = form_class(member, features, request.POST, request.FILES, initial=initial)
         if form.is_valid():
-            if form.send():
-                messages.success(request, _('E-Mail(s) gesendet'))
-                return redirect('email-write')  # TODO: redirect back to previous page ideally.
-            messages.error(request, _('E-Mail(s) konnten nicht gesendet werden.'))
+            try:
+                if form.send():
+                    messages.success(request, _('E-Mail(s) gesendet'))
+                    return redirect('.')  # TODO: redirect back to previous page ideally.
+                messages.error(request, _('E-Mail(s) konnten nicht gesendet werden.'))
+            except SMTPException as e:
+                messages.error(request, _('Fehler beim Senden des E-Mails: ') + str(e))
     else:
-        form = EmailForm(member, features, initial=initial)
+        form = form_class(member, features, initial=initial)
 
     return render(request, 'juntagrico/email/write.html', {
         'form': form,
