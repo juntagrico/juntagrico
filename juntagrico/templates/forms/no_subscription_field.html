@@ -1,40 +1,28 @@
-{% load i18n %}
+{% extends 'juntagrico/subscription/create/form/no_selection_field.html' %}
 {% load juntagrico.config %}
-{% load crispy_forms_field %}
-<div class="form-group row">
-    <div class="col-md-12">
-        <strong>Kein {% vocabulary "subscription" %}</strong>
-    </div>
-</div>
-<div class="form-group row">
-    <div class="offset-md-2 col-md-1">
-        <span class="switch switch-sm">
-            {{ field }}
-            <label for="{{ field.id_for_label }}">
-            </label>
-        </span>
-    </div>
-    <label class="col-md-9">
-        {% block description %}
-            {% vocabulary "subscription" as v_subscription %}
-            {% config "organisation_name" as c_organisation_name %}
-            {% vocabulary "member_type" as v_member_type %}
-            {% blocktrans trimmed %}
+{% load i18n %}
+
+{% block label %}
+    <strong>{% blocktrans with v_subscription=vocabulary.subscription %}Kein {{ v_subscription }}{% endblocktrans %}</strong>
+{% endblock %}
+
+{% block description %}
+    {% block main_description %}
+        {% config "organisation_name" as c_organisation_name %}
+        {% blocktrans trimmed with v_subscription=vocabulary.subscription v_member_type=vocabulary.member_type %}
             Du kannst auch ohne {{ v_subscription }} {{ c_organisation_name }}-{{ v_member_type }}
             sein. Bleibe auf dem Laufenden und mach mit, wenn du Lust hast.
-            {% endblocktrans %}
-        {% endblock %}
-        <br/>
-        {% block base_fee %}
-            {% config "base_fee" as base_fee %}
-            {% if base_fee.strip %}
-                {% vocabulary "member_type_pl" as v_member_type_pl %}
-                {% config "currency" as c_currency %}
-                {% blocktrans trimmed%}
+        {% endblocktrans %}
+    {% endblock %}
+    <br/>
+    {% block base_fee %}
+        {% config "base_fee" as base_fee %}
+        {% if base_fee.strip %}
+            {% config "currency" as c_currency %}
+            {% blocktrans trimmed with v_member_type_pl=vocabulary.member_type_pl %}
                 {{ v_member_type_pl }} ohne {{ v_subscription }} bezahlen
                 einen Jahresbeitrag von {{ base_fee }} {{ c_currency }}
-                {% endblocktrans %}
-            {% endif %}
-        {% endblock %}
-    </label>
-</div>
+            {% endblocktrans %}
+        {% endif %}
+    {% endblock %}
+{% endblock %}

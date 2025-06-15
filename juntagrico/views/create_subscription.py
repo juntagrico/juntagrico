@@ -7,28 +7,42 @@ from juntagrico.config import Config
 from juntagrico.dao.activityareadao import ActivityAreaDao
 from juntagrico.dao.depotdao import DepotDao
 from juntagrico.forms import SubscriptionPartSelectForm, StartDateForm, EditCoMemberForm, RegisterMultiCoMemberForm, \
-    RegisterFirstMultiCoMemberForm, ShareOrderForm, RegisterSummaryForm
+    RegisterFirstMultiCoMemberForm, ShareOrderForm, RegisterSummaryForm, SubscriptionExtraPartSelectForm
 from juntagrico.util import temporal
 from juntagrico.view_decorators import signup_session
 from juntagrico.views_subscription import SignupView
 
 
 @signup_session
-def select_subscription(request, signup_manager):
-    subscriptions = signup_manager.get('subscriptions', {})
+def select_parts(
+        request, signup_manager,
+        key='subscriptions',
+        form_class=SubscriptionPartSelectForm,
+        template_name='createsubscription/select_subscription.html'
+    ):
+    subscriptions = signup_manager.get(key, {})
     if request.method == 'POST':
-        form = SubscriptionPartSelectForm(subscriptions, request.POST)
+        form = form_class(subscriptions, request.POST)
         if form.is_valid():
-            signup_manager.set('subscriptions', {str(t.id): amount for t, amount in form.get_selected().items()})
+            signup_manager.set(key, {str(t.id): amount for t, amount in form.get_selected().items()})
             return redirect(signup_manager.get_next_page())
     else:
-        form = SubscriptionPartSelectForm(subscriptions)
+        form = form_class(subscriptions)
 
     render_dict = {
         'form': form,
         'hours_used': Config.assignment_unit() == 'HOURS',
     }
-    return render(request, 'createsubscription/select_subscription.html', render_dict)
+    return render(request, template_name, render_dict)
+
+
+def select_extras(request):
+    return select_parts(
+        request,
+        key='extras',
+        form_class=SubscriptionExtraPartSelectForm,
+        template_name='juntagrico/subscription/create/select_extras.html'
+    )
 
 
 @signup_session
@@ -183,6 +197,8 @@ class SummaryView(SignupView, FormView):
         for i, co_member in enumerate(args.get('co_members', [])):
             co_member['new_shares'] = int(args['shares'].get(f'of_co_member[{i}]', 0) or 0)
         args['subscriptions'] = self.signup_manager.subscriptions()
+        args['show_extras'] = self.signup_manager.extras_enabled()
+        args['extras'] = self.signup_manager.extras()
         args['depot'] = self.signup_manager.depot()
         args['activity_areas'] = ActivityAreaDao.all_auto_add_members_areas()
         return args

@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load crispy_forms_field %}
+
+<div class="form-group row">
+    <div class="col-md-12">
+        {% block label %}{% endblock %}
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="offset-md-2 col-md-1">
+        <span class="switch switch-sm">
+            {{ field }}
+            <label for="{{ field.id_for_label }}">
+            </label>
+        </span>
+    </div>
+    <label class="col-md-9">
+        {% block description %}
+        {% endblock %}
+    </label>
+</div>

@@ -56,6 +56,17 @@ class CreateSubscriptionTests(JuntagricoTestCase):
                 for i, type_id in enumerate(sub_types_id)
             }
         )
+        if self.with_extra_subs:
+            self.assertRedirects(response, reverse('cs-extras'))
+            self.assertGet(reverse('cs-extras'))
+            sub_types_id = SubscriptionType.objects.is_extra().values_list('id', flat=True)
+            response = self.client.post(
+                reverse('cs-extras'),
+                {
+                    f'amount[{type_id}]': 1 if i == 0 else 0
+                    for i, type_id in enumerate(sub_types_id)
+                }
+            )
         self.assertRedirects(response, reverse('cs-depot'))
         self.assertGet(reverse('cs-depot'))
         depot_id = Depot.objects.values_list('id', flat=True)
@@ -144,6 +155,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
 
     def testRedirect(self):
         self.assertGetAndPost('cs-subscription')
+        self.assertGetAndPost('cs-extras')
         self.assertGetAndPost('cs-depot')
         self.assertGetAndPost('cs-start')
         self.assertGetAndPost('cs-co-members')
@@ -216,3 +228,7 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.signup(False)
             response = self.assertGet(reverse('cs-cancel'), 302)
             self.assertRedirects(response, 'https://example.com', fetch_redirect_response=False)
+
+
+class CreateSubscriptionWithoutExtrasTests(CreateSubscriptionTests):
+    with_extra_subs = False

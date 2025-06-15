@@ -24,7 +24,8 @@ urlpatterns = [
     path('signup/welcome/with_sub/', create_subscription.welcome, {'with_sub': True}, name='welcome-with-sub'),
 
     # /subscription/create
-    path('subscription/create/parts/', create_subscription.select_subscription, name='cs-subscription'),
+    path('subscription/create/parts/', create_subscription.select_parts, name='cs-subscription'),
+    path('subscription/create/extras/', create_subscription.select_extras, name='cs-extras'),
     path('subscription/create/depot/', create_subscription.select_depot, name='cs-depot'),
     path('subscription/create/start/', create_subscription.select_start_date, name='cs-start'),
     path('subscription/create/comembers/', create_subscription.AddMemberView.as_view(), name='cs-co-members'),
