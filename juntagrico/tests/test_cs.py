@@ -7,6 +7,7 @@ from juntagrico.entity.depot import Depot
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.models import Member, Share, Subscription
 from . import JuntagricoTestCase
+from ..config import Config
 
 
 class CreateSubscriptionTests(JuntagricoTestCase):
@@ -95,15 +96,16 @@ class CreateSubscriptionTests(JuntagricoTestCase):
             self.assertGet(reverse('cs-co-members'))
 
         response = self.assertGet(reverse('cs-co-members'), 302, data={'next': '1'})
-        self.assertRedirects(response, reverse('cs-shares'))
-        self.assertGet(reverse('cs-shares'))
-        response = self.client.post(
-            reverse('cs-shares'),
-            {
-                'of_member': 1,
-                'of_co_member[0]': 0,
-            }
-        )
+        if Config.enable_shares():
+            self.assertRedirects(response, reverse('cs-shares'))
+            self.assertGet(reverse('cs-shares'))
+            response = self.client.post(
+                reverse('cs-shares'),
+                {
+                    'of_member': 1,
+                    'of_co_member[0]': 0,
+                }
+            )
         self.assertRedirects(response, reverse('cs-summary'))
         # confirm summary
         self.client.get(reverse('cs-summary'))

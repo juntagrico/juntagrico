@@ -194,8 +194,9 @@ class SummaryView(SignupView, FormView):
     def get_context_data(self, **kwargs):
         args = super().get_context_data(**kwargs)
         args.update(self.signup_manager.data.copy())
-        for i, co_member in enumerate(args.get('co_members', [])):
-            co_member['new_shares'] = int(args['shares'].get(f'of_co_member[{i}]', 0) or 0)
+        if Config.enable_shares():
+            for i, co_member in enumerate(args.get('co_members', [])):
+                co_member['new_shares'] = int(args['shares'].get(f'of_co_member[{i}]', 0) or 0)
         args['subscriptions'] = self.signup_manager.subscriptions()
         args['show_extras'] = self.signup_manager.extras_enabled()
         args['extras'] = self.signup_manager.extras()

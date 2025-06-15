@@ -203,12 +203,13 @@ class SignupManager(SessionManager):
         """ create all elements from data the collected data
         :return the new main member object
         """
-        # create member
+        # create memberd
         member = self.apply_member()
         # create co-members
         co_members = self.apply_co_member()
         # create shares (notifies member and admin)
-        self.apply_shares(member, co_members)
+        if Config.enable_shares():
+            self.apply_shares(member, co_members)
         # create subscription
         subscription = self.apply_subscriptions(member, co_members)
         # send emails and notifications
