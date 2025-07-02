@@ -104,6 +104,7 @@ urlpatterns = [
     path('my/jobs/all', job.all_jobs, name='jobs-all'),
     path('job/list/data', job.list_data, name='jobs-list-data'),
     path('my/jobs/<int:job_id>/', job.job, name='job'),
+    path('job/cancel', job.cancel, name='job-cancel'),
 
     # /assignment
     path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),
@@ -193,6 +194,7 @@ urlpatterns = [
          name='manage-depot-subs'),
     # /manage/area
     path('manage/area/<int:area_id>/member', manage.AreaMemberView.as_view(), name='manage-area-member'),
+    path('manage/area/<int:area_id>/member/remove', manage.remove_area_member, name='manage-area-member-remove'),
 
     # /email
     path('my/mails', juntagrico_admin.mails, name='mail'),

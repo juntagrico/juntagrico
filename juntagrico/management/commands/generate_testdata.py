@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
-from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob
+from juntagrico.entity.jobs import ActivityArea, JobType, RecuringJob, AreaCoordinator
 from juntagrico.entity.location import Location
 from juntagrico.entity.member import Member
 from juntagrico.entity.share import Share
@@ -119,17 +119,17 @@ class Command(BaseCommand):
             self.create_subscription(depot2, member_4, subtype)
 
             area1_fields = {'name': 'Ernten', 'description': 'Das Gemüse aus der Erde Ziehen', 'core': True,
-                            'hidden': False, 'coordinator': member_1,
-                            'auto_add_new_members': True}
+                            'hidden': False, 'auto_add_new_members': True}
             area2_fields = {'name': 'Jäten', 'description': 'Das Unkraut aus der Erde Ziehen', 'core': False,
-                            'hidden': False, 'coordinator': member_2,
-                            'auto_add_new_members': False}
+                            'hidden': False, 'auto_add_new_members': False}
             area_1, _ = ActivityArea.objects.get_or_create(name=area1_fields['name'], defaults=area1_fields)
             area_1.members.set([member_2])
             area_1.save()
+            AreaCoordinator.objects.update_or_create(member=member_1, area=area_1)
             area_2, _ = ActivityArea.objects.get_or_create(name=area2_fields['name'], defaults=area2_fields)
             area_2.members.set([member_1])
             area_2.save()
+            AreaCoordinator.objects.update_or_create(member=member_2, area=area_2)
 
             location_1_fields = {'name': 'auf dem Hof'}
             location_1, _ = Location.objects.get_or_create(**location_1_fields)

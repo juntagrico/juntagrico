@@ -19,12 +19,13 @@ from django.utils.safestring import mark_safe
 from django.utils.text import format_lazy
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy
+from djrichtextfield.widgets import RichTextWidget
 
 from juntagrico.config import Config
 from juntagrico.dao.memberdao import MemberDao
 from juntagrico.dao.subscriptionproductdao import SubscriptionProductDao
 from juntagrico.dao.subscriptiontypedao import SubscriptionTypeDao
-from juntagrico.entity.jobs import Assignment, Job, JobExtra
+from juntagrico.entity.jobs import Assignment, Job, JobExtra, ActivityArea
 from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.mailer import adminnotification, membernotification
@@ -807,6 +808,26 @@ class GenerateListForm(Form):
             del self.fields['future']
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', _('Listen Erzeugen')))
+
+
+class AreaDescriptionForm(ModelForm):
+    class Meta:
+        model = ActivityArea
+        fields = ['description']
+        labels = {'description': ''}
+        if Config.using_richtext():
+            widgets = {'description': RichTextWidget()}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.layout = Layout(
+            'description',
+            FormActions(
+                Submit('submit', _('Speichern')),
+            ),
+        )
 
 
 class JobSubscribeForm(Form):

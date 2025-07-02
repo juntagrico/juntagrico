@@ -51,6 +51,9 @@ class JuntagricoTestCase(TestCase):
     @classmethod
     def load_areas(cls):
         cls.area_admin = Member.objects.get(email='areaadmin@email.org')
+        (cls.area_admin_modifier, cls.area_admin_viewer,
+         cls.area_admin_contact, cls.area_admin_remover,
+         cls.area_admin_job_modifier, cls.area_admin_assignment_modifier) = Member.objects.filter(email__startswith='area_admin').order_by('id')
         cls.area, cls.area2 = ActivityArea.objects.order_by('id')[:2]
 
     @staticmethod

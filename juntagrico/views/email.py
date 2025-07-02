@@ -5,12 +5,10 @@ from juntagrico.util.settings import tinymce_lang
 
 from juntagrico.entity.mailing import MailTemplate
 from juntagrico.entity.member import Member
-from juntagrico.view_decorators import any_permission_required
+from juntagrico.view_decorators import requires_permission_to_contact
 
 
-@any_permission_required('juntagrico.can_send_mails',
-                         'juntagrico.is_depot_admin',
-                         'juntagrico.is_area_admin')
+@requires_permission_to_contact
 def to_member(request, member_id, mail_url='mail-send'):
     renderdict = {
         'recipients': get_object_or_404(Member, id=member_id).email,

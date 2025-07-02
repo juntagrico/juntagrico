@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin',
+    'juntagrico.admin_sites.JuntagricoAdminConfig',
     'fontawesomefree',
     'impersonate',
     'juntagrico',
@@ -28,7 +28,7 @@ INSTALLED_APPS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'dev.781.db',
+        'NAME': 'dev.340.db',
     }
 }
 
