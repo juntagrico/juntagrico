@@ -120,7 +120,7 @@ Area coordinator permissions are configured for each area and coordinator indivi
 These permissions can be set when editing an area in the data management ("Datenverwaltung") -> Activity Area ("Tätigkeitsbereiche").
 There you can add a coordinator and distribute the following permissions.
 
-- Can change description: Coordinator can change the description of this area
+- Can modify area: Coordinator can change the description and the contact(s) of this area
 - Can see members: Coordinator can see the list of members that participate in this activity area
 - Can contact members: Coordinator can see names, email addresses and phone numbers of area participants and can contact participants of jobs in their area
 - Can remove members: Coordinator can remove participants from this area

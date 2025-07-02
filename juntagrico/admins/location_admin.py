@@ -48,7 +48,6 @@ class LocationAdmin(SortableAdminMixin, RichTextAdmin):
 
     def get_queryset(self, request):
         # for autocomplete and coordinators only show visible locations
-        # TODO: backport autocomplete filter to 1.7
         if super().has_view_permission(request) and request.resolver_match.view_name != 'admin:autocomplete':
             return super().get_queryset(request)
         return super().get_queryset(request).filter(visible=True)
