@@ -1,6 +1,8 @@
-{% if member.mobile_phone %}
-    <a href="tel:{{ member.mobile_phone }}" class="phone-number">{{ member.mobile_phone }}</a>
-{% endif %}
-{% if member.phone %}
-    <a href="tel:{{ member.phone }}" class="phone-number">{{ member.phone }}</a>
+{% if can_see_phone_numbers or perms.juntagrico.view_member or perms.juntagrico.change_member %}
+    {% if member.mobile_phone %}
+        <a href="tel:{{ member.mobile_phone }}" class="phone-number">{{ member.mobile_phone }}</a>
+    {% endif %}
+    {% if member.phone %}
+        <a href="tel:{{ member.phone }}" class="phone-number">{{ member.phone }}</a>
+    {% endif %}
 {% endif %}
