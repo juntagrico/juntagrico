@@ -1,5 +1,6 @@
 from django import template
 from django.utils.translation import gettext as _
+from schwifty import IBAN
 
 register = template.Library()
 
@@ -20,3 +21,11 @@ def required_for_subscription(share, index):
                 ) + ". " + _("({} insgesamt)").format(remaining)
             return _("Ja")
     return _("Nein")
+
+
+@register.filter
+def clean_iban(iban_str):
+    iban = IBAN(iban_str, allow_invalid=True)
+    if iban.is_valid():
+        return str(iban)
+    return iban_str

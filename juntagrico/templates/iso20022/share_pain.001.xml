@@ -38,7 +38,7 @@
             </Dbtr>
             <DbtrAcct>
                 <Id>
-                    <IBAN>{{ banking_info.IBAN|cut:" " }}</IBAN>
+                    <IBAN>{{ banking_info.IBAN|clean_iban }}</IBAN>
                 </Id>
                 <Tp>
                     <Prtry>CND</Prtry>
@@ -68,7 +68,7 @@
                 </Cdtr>
                 <CdtrAcct>
                     <Id>
-                        <IBAN>{{ share.member.iban|cut:" " }}</IBAN>
+                        <IBAN>{{ share.member.iban|clean_iban }}</IBAN>
                     </Id>
                 </CdtrAcct>
                 <RmtInf>
