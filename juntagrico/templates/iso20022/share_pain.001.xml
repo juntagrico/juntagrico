@@ -1,10 +1,11 @@
 {% load i18n %}
 {% load juntagrico.config %}
+{% load juntagrico.share %}
 {% vocabulary "share" as v_share %}
 <Document
-        xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd pain.001.001.03.ch.02.xsd"
+        xsi:schemaLocation="http://www.six-interbank-clearing.com/de/pain.001.001.09.ch.03.xsd pain.001.001.09.ch.03.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://www.six-interbank-clearing.com/de/pain.001.001.03.ch.02.xsd">
+        xmlns="http://www.six-interbank-clearing.com/de/pain.001.001.09.ch.03.xsd">
     <CstmrCdtTrfInitn>
         <GrpHdr>
             <MsgId>MsgId-001</MsgId>
@@ -14,8 +15,14 @@
             <InitgPty>
                 <Nm>{{ name }}</Nm>
                 <CtctDtls>
-                    <Nm>juntagrico</Nm>
-                    <Othr>Version {{ version }}</Othr>
+                    <Othr>
+                        <ChanlTp>NAME</ChanlTp>
+                        <Id>juntagrico</Id>
+                    </Othr>
+                    <Othr>
+                        <ChanlTp>VRSN</ChanlTp>
+                        <Id>{{ version }}</Id>
+                    </Othr>
                 </CtctDtls>
             </InitgPty>
         </GrpHdr>
@@ -23,7 +30,9 @@
             <PmtInfId>PmtInfId-001-01</PmtInfId>
             <PmtMtd>TRF</PmtMtd>
             <BtchBookg>true</BtchBookg>
-            <ReqdExctnDt>{{ now|date:"Y-m-d" }}</ReqdExctnDt>
+            <ReqdExctn>
+                <Dt>{{ now|date:"Y-m-d" }}</Dt>
+            </ReqdExctn>
             <Dbtr>
                 <Nm>{{ name }}</Nm>
             </Dbtr>
@@ -37,7 +46,7 @@
             </DbtrAcct>
             <DbtrAgt>
                 <FinInstnId>
-                    <BIC>{{ banking_info.BIC }}</BIC>
+                    <BICFI>{{ banking_info.BIC }}</BICFI>
                 </FinInstnId>
             </DbtrAgt>
             {% for share in shares %}
