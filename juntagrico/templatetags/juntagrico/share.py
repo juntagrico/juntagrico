@@ -26,6 +26,6 @@ def required_for_subscription(share, index):
 @register.filter
 def clean_iban(iban_str):
     iban = IBAN(iban_str, allow_invalid=True)
-    if iban.is_valid():
+    if iban.is_valid:
         return str(iban)
     return iban_str
