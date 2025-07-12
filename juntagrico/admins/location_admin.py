@@ -45,3 +45,9 @@ class LocationAdmin(SortableAdminMixin, RichTextAdmin):
                           locations=queryset,
                           form=form
                       ))
+
+    def get_queryset(self, request):
+        # for autocomplete and coordinators only show visible locations
+        if super().has_view_permission(request) and request.resolver_match.view_name != 'admin:autocomplete':
+            return super().get_queryset(request)
+        return super().get_queryset(request).filter(visible=True)
