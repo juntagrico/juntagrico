@@ -101,5 +101,5 @@ jobs:
       - uses: qltysh/qlty-action/coverage@v2
         if: ${{ env.CODECOV_TOKEN != null }}
         with:
-          token: {{secrets.CODECOV_TOKEN}}
+          token: ${{ env.CODECOV_TOKEN }}
           files: coverage*.lcov
