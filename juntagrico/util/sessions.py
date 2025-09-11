@@ -3,7 +3,6 @@ from django.db import transaction
 from juntagrico.config import Config
 from juntagrico.entity.depot import Depot
 from juntagrico.entity.member import Member
-from juntagrico.entity.subs import SubscriptionPart
 from juntagrico.entity.subtypes import SubscriptionType
 from juntagrico.forms import RegisterMemberForm, ShareOrderForm, CoMemberBaseForm, StartDateForm
 from juntagrico.mailer import adminnotification, membernotification
@@ -82,7 +81,7 @@ class SignupManager(SessionManager):
         return get_parts_dict(subscription)
 
     def extras_enabled(self):
-        return SubscriptionPart.objects.is_extra().exists()
+        return SubscriptionType.objects.is_extra().visible().exists()
 
     def extras(self):
         extras = self.get('extras', {})
