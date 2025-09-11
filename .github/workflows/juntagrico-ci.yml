@@ -88,15 +88,18 @@ jobs:
 
   coverage:
     name: Coverage Report
-    if: ${{ secrets.CODECOV_TOKEN != null && github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' }}
     needs: tests
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/download-artifact@v4
         with:
           path: coverage
           merge-multiple: true
       - uses: qltysh/qlty-action/coverage@v2
+        if: ${{ env.CODECOV_TOKEN != null }}
         with:
           token: {{secrets.CODECOV_TOKEN}}
           files: coverage*.lcov
