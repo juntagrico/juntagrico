@@ -3,13 +3,12 @@ from django.urls import path
 
 from juntagrico import views as juntagrico
 from juntagrico import views_admin as juntagrico_admin
-from juntagrico import views_create_subscription as juntagrico_cs
 from juntagrico import views_iso20022 as juntagrico_iso20022
 from juntagrico import views_subscription as juntagrico_subscription
 from juntagrico.config import Config
 from juntagrico.forms import SubscriptionPartContinueForm
 from juntagrico.util.auth import JuntagricoLoginView, JuntagricoPasswordResetForm
-from juntagrico.views import subscription, manage, email, job, api
+from juntagrico.views import subscription, create_subscription, manage, email, job, api
 from juntagrico.views_admin import ShiftTimeFormView
 
 # GUIDELINES for adding urls
@@ -19,16 +18,21 @@ from juntagrico.views_admin import ShiftTimeFormView
 
 urlpatterns = [
     # /signup
-    path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
-    path('my/create/subscription/', juntagrico_cs.cs_select_subscription, name='cs-subscription'),
-    path('my/create/subscription/selectdepot/', juntagrico_cs.cs_select_depot, name='cs-depot'),
-    path('my/create/subscription/start/', juntagrico_cs.cs_select_start_date, name='cs-start'),
-    path('my/create/subscription/addmembers/', juntagrico_cs.CSAddMemberView.as_view(), name='cs-co-members'),
-    path('my/create/subscription/shares/', juntagrico_cs.CSSelectSharesView.as_view(), name='cs-shares'),
-    path('my/create/subscription/summary/', juntagrico_cs.CSSummaryView.as_view(), name='cs-summary'),
-    path('my/create/subscription/cancel/', juntagrico_cs.cs_cancel, name='cs-cancel'),
-    path('my/welcome/', juntagrico_cs.cs_welcome, name='welcome'),
-    path('my/welcome/with_sub', juntagrico_cs.cs_welcome, {'with_sub': True}, name='welcome-with-sub'),
+    path('my/signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),  # backwards compatibility 2.0
+    path('signup/', juntagrico_subscription.MemberSignupView.as_view(), name='signup'),
+    path('signup/welcome/', create_subscription.welcome, name='welcome'),
+    path('signup/welcome/with_sub/', create_subscription.welcome, {'with_sub': True}, name='welcome-with-sub'),
+
+    # /subscription/create
+    path('subscription/create/parts/', create_subscription.select_parts, name='cs-subscription'),
+    path('subscription/create/extras/', create_subscription.select_extras, name='cs-extras'),
+    path('subscription/create/depot/', create_subscription.select_depot, name='cs-depot'),
+    path('subscription/create/start/', create_subscription.select_start_date, name='cs-start'),
+    path('subscription/create/comembers/', create_subscription.AddMemberView.as_view(), name='cs-co-members'),
+    path('subscription/create/shares/', create_subscription.SelectSharesView.as_view(), name='cs-shares'),
+    path('subscription/create/summary/', create_subscription.SummaryView.as_view(), name='cs-summary'),
+    path('subscription/create/cancel/', create_subscription.cancel, name='cs-cancel'),
+
     path('my/confirm/<str:member_hash>/', juntagrico_subscription.confirm, name='confirm'),
 
     # login/
@@ -100,6 +104,7 @@ urlpatterns = [
     path('my/jobs/all', job.all_jobs, name='jobs-all'),
     path('job/list/data', job.list_data, name='jobs-list-data'),
     path('my/jobs/<int:job_id>/', job.job, name='job'),
+    path('job/cancel', job.cancel, name='job-cancel'),
 
     # /assignment
     path('assignment/<int:job_id>/<int:member_id>/edit', job.edit_assignment, name='assignment-edit'),
@@ -189,6 +194,7 @@ urlpatterns = [
          name='manage-depot-subs'),
     # /manage/area
     path('manage/area/<int:area_id>/member', manage.AreaMemberView.as_view(), name='manage-area-member'),
+    path('manage/area/<int:area_id>/member/remove', manage.remove_area_member, name='manage-area-member-remove'),
 
     # /email
     path('my/mails', juntagrico_admin.mails, name='mail'),

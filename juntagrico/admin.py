@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
 
 from juntagrico.admins import BaseAdmin
 from juntagrico.admins.area_admin import AreaAdmin
 from juntagrico.admins.assignment_admin import AssignmentAdmin
+from juntagrico.admins.auth_admin import UserAdmin
 from juntagrico.admins.billing_period_admin import BillingPeriodAdmin
 from juntagrico.admins.delivery_admin import DeliveryAdmin
 from juntagrico.admins.depot_admin import DepotAdmin
@@ -58,3 +60,7 @@ admin.site.register(ListMessage, ListMessageAdmin)
 admin.site.register(BillingPeriod, BillingPeriodAdmin)
 if Config.enable_shares():
     admin.site.register(Share, ShareAdmin)
+
+# override auth user admin
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
