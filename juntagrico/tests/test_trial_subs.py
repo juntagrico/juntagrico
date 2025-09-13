@@ -11,7 +11,7 @@ class TrialSubscriptionTestCase(JuntagricoTestCaseWithShares):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.trial_sub_type = cls.create_sub_type(cls.sub_size, trial_days=30)
+        cls.trial_sub_type = cls.create_sub_type(cls.bundle, trial_days=30)
         cls.trial_member1 = cls.create_member('trial1@example.com')
         cls.trial_sub1 = cls.create_sub(cls.depot, cls.trial_sub_type)
         cls.trial_member1.join_subscription(cls.trial_sub1, True)
@@ -175,9 +175,9 @@ class ContinueTrialSubscriptionAdminTests(TrialSubscriptionTestCase):
         self.assertEqual(self.follow_up_part.activation_date, datetime.date(2025, 5, 2))
 
     def testCloseoutTrialWithOtherParts(self):
-        other_sub_size = self.create_sub_size('other size', self.sub_product, units=2)
-        other_sub_size_type = self.create_sub_type(other_sub_size)
-        other_part = SubscriptionPart.objects.create(subscription=self.trial_sub1, type=other_sub_size_type)
+        other_bundle = self.create_bundle('other bundle', self.sub_category)
+        other_bundle_type = self.create_sub_type(other_bundle)
+        other_part = SubscriptionPart.objects.create(subscription=self.trial_sub1, type=other_bundle_type)
         data = {
             'mode': 'replace',
             f'activate{other_part.id}': 'by_date',
@@ -199,9 +199,9 @@ class ContinueTrialWithOtherSubscriptionAdminTests(TrialSubscriptionTestCase):
         cls.activation_date = datetime.date(2025, 4, 24)
         cls.trial_sub1.activate(cls.activation_date)
         cls.trial_part1.refresh_from_db()
-        other_sub_size = cls.create_sub_size('other size', cls.sub_product, units=2)
-        other_sub_size_type = cls.create_sub_type(other_sub_size)
-        cls.other_part = SubscriptionPart.objects.create(subscription=cls.trial_sub1, type=other_sub_size_type)
+        other_bundle = cls.create_bundle('other bundle', cls.sub_category)
+        other_bundle_type = cls.create_sub_type(other_bundle)
+        cls.other_part = SubscriptionPart.objects.create(subscription=cls.trial_sub1, type=other_bundle_type)
         cls.trial_part1.cancel()
 
     def testManagementList(self):
