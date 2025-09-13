@@ -99,6 +99,7 @@ jobs:
         with:
           path: coverage
           merge-multiple: true
+      - uses: actions/checkout@v4
       - uses: qltysh/qlty-action/coverage@v2
         with:
           oidc: true
