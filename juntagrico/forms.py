@@ -479,17 +479,20 @@ class SubscriptionPartBaseForm(ExtendableFormMixin, Form):
 
 
 class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
+    no_selection_template = 'juntagrico/subscription/create/form/no_subscription_field.html'
+
     def __init__(self, selected, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.selected = selected
-        containers = self._collect_type_fields()
-
-        self.fields['no_subscription'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
+        self.containers = self._collect_type_fields()
+        self.fields['no_selection'] = BooleanField(label=_('Kein {}').format(Config.vocabulary('subscription')),
                                                       initial=not any(selected.values()), required=False)
+        self.helper.layout = self.get_form_layout()
 
-        self.helper.layout = Layout(
-            *containers,
-            Field('no_subscription', template='forms/no_subscription_field.html'),
+    def get_form_layout(self):
+        return Layout(
+            *self.containers,
+            Field('no_selection', template=self.no_selection_template),
             FormActions(
                 Submit('submit', _('Weiter'), css_class='btn-success'),
                 LinkButton(_('Abbrechen'), reverse('cs-cancel'))
@@ -498,6 +501,13 @@ class SubscriptionPartSelectForm(SubscriptionPartBaseForm):
 
     def _get_initial(self, subscription_type):
         return self.selected.get(str(subscription_type.id), 0)
+
+
+class SubscriptionExtraPartSelectForm(SubscriptionPartSelectForm):
+    no_selection_template = 'juntagrico/subscription/create/form/no_extras_field.html'
+
+    def __init__(self, selected, *args, **kwargs):
+        super().__init__(selected, *args, product_method=SubscriptionProductDao.all_visible_extra_products, **kwargs)
 
 
 class SubscriptionPartOrderForm(SubscriptionPartBaseForm):
