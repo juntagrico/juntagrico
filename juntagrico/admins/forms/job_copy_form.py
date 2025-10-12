@@ -65,6 +65,7 @@ class JobCopyForm(forms.ModelForm):
                 multiplier=inst.multiplier,
                 additional_description=inst.additional_description,
                 duration_override=inst.duration_override,
+                pinned=inst.pinned,
             )
             if commit:
                 newjob.save()
